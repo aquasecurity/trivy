@@ -19,6 +19,8 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
+const npmProtocol = "npm"
+
 var (
 	// yarnPatternRegexp parses the top-level package pattern in yarn.lock
 	// e.g., "lodash@^4.17.0" or "my-alias@npm:lodash@^4.17.0"
@@ -95,7 +97,7 @@ func parsePattern(target string) (pkgName, protocol, version string, err error) 
 	// Based on yarn's alias detection:
 	// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/LegacyMigrationResolver.ts
 	// "If the range is a valid descriptor we're dealing with an alias"
-	if protocol == "npm" {
+	if protocol == npmProtocol {
 		if realPkg, realVersion, ok := tryParseDescriptor(rng); ok {
 			return realPkg, protocol, realVersion, nil
 		}
@@ -144,7 +146,7 @@ func tryParseDescriptor(descriptor string) (string, string, bool) {
 // rather than a valid npm package name.
 // npm package names: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#name
 func looksLikeVersionConstraint(s string) bool {
-	if len(s) == 0 {
+	if s == "" {
 		return true
 	}
 	// Version constraints start with: digits, ^, ~, >, <, =, *
@@ -181,7 +183,7 @@ func parsePackagePatterns(target string) (pkgName, protocol string, patterns []s
 		// Example: "ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1"
 		// Here "ip" is the alias, "@rootio/ip" is the real package.
 		// parsePattern returns the real name for npm: protocol aliases.
-		if proto == "npm" {
+		if proto == npmProtocol {
 			pkgName = name
 			protocol = proto
 			break
@@ -222,7 +224,7 @@ func getDependency(target string) (name, version string, err error) {
 func validProtocol(protocol string) bool {
 	switch protocol {
 	// only scan npm packages
-	case "npm", "":
+	case npmProtocol, "":
 		return true
 	}
 	return false
