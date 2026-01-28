@@ -33,6 +33,10 @@ type OutputAddr struct{ Name string }
 
 func (r OutputAddr) Key() string { return "output." + r.Name }
 
+type ProviderAddr struct{ Name string }
+
+func (r ProviderAddr) Key() string { return "provider." + r.Name }
+
 type ModuleCallAddr struct {
 	Name string
 }
@@ -82,6 +86,8 @@ func (r ResourceAddr) Key() string {
 		panic(fmt.Sprintf("unexpected resource mode: %d", r.Mode))
 	}
 }
+
+var RootModule ModuleAddr
 
 type ModuleAddr []string
 

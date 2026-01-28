@@ -7,11 +7,10 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/apparentlymart/go-versions/versions"
-	"github.com/hashicorp/go-slug/sourceaddrs"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/zclconf/go-cty/cty"
 )
 
 type LocalModuleParser struct{}
@@ -97,19 +96,18 @@ func (p *LocalModuleParser) parse(fsys fs.FS, path string) (*ModuleConfig, error
 				continue
 			}
 
-			val, err := sourceAttr.ToValue(&hcl.EvalContext{})
+			sourceVal, err := sourceAttr.ToValue(&hcl.EvalContext{})
 			if err != nil {
 				return nil, err
 			}
 
-			source, err := sourceaddrs.ParseSource(val.AsString())
-			if err != nil {
-				return nil, fmt.Errorf("parse module source: %w", err)
+			if !sourceVal.Type().Equals(cty.String) {
+				continue
 			}
 
 			mc := &ModuleCall{
 				Name:   labels[0],
-				Source: source,
+				Source: sourceVal.AsString(),
 				Config: block,
 				FS:     fsys,
 				Path:   path,
@@ -120,11 +118,9 @@ func (p *LocalModuleParser) parse(fsys fs.FS, path string) (*ModuleConfig, error
 				if err != nil {
 					return nil, err
 				}
-				ver, err := versions.ParseVersion(val.AsString())
-				if err != nil {
-					return nil, err
+				if val.Type().Equals(cty.String) {
+					mc.Version = val.AsString()
 				}
-				mc.Version = ver
 			}
 
 			module.ModuleCalls[mc.Name] = mc
@@ -152,7 +148,10 @@ func parseHclBlock(hclBlock *hcl.Block, module *ModuleConfig) *BlockConfig {
 		for _, child := range b.Blocks {
 			childBlock := child.AsHCLBlock()
 			if childBlock.Type == "dynamic" {
-				block.dynBlocks = append(block.dynBlocks, parseHclDynBlock(childBlock, module))
+				dynBlock := parseHclDynBlock(childBlock, module)
+				if dynBlock != nil {
+					block.dynBlocks = append(block.dynBlocks, dynBlock)
+				}
 			} else {
 				block.children = append(block.children, parseHclBlock(childBlock, module))
 			}
@@ -167,16 +166,16 @@ func parseHclBlock(hclBlock *hcl.Block, module *ModuleConfig) *BlockConfig {
 func parseHclDynBlock(hclBlock *hcl.Block, module *ModuleConfig) *DynBlockConfig {
 	dynBlock := DynBlockConfig{
 		blockType:    hclBlock.Labels[0],
-		iteratorName: hclBlock.Type,
+		iteratorName: hclBlock.Labels[0],
 	}
 
 	// content, diags := hclBlock.Body.Content(dynBlockSchema)
-
 	switch b := hclBlock.Body.(type) {
 	case *hclsyntax.Body:
 		forEachAttr, ok := b.Attributes["for_each"]
 		if !ok {
-			panic("expected for_each attr")
+			// TODO: log
+			return nil
 		}
 		dynBlock.forEach = &AttrConfig{
 			name:       forEachAttr.Name,
@@ -192,7 +191,10 @@ func parseHclDynBlock(hclBlock *hcl.Block, module *ModuleConfig) *DynBlockConfig
 				childBlock := child.AsHCLBlock()
 				dynBlock.content = parseHclBlock(childBlock, module)
 			}
-
+		}
+		if dynBlock.content == nil {
+			// TODO: log
+			return nil
 		}
 	default:
 		panic(fmt.Sprintf("unexpected dyn block's body type: %T", hclBlock.Body))

@@ -7,6 +7,8 @@ import (
 	"maps"
 	"strconv"
 	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type graph struct {
@@ -259,8 +261,9 @@ func buildEdges(g *graph) error {
 
 			depNode, exists := g.nodes[depNodeAddr.Key()]
 			if !exists {
-				return fmt.Errorf("dependency node %s not found for node %s",
-					ref.Addr.Key(), node.ID())
+				log.Debug("dependency node not found for node",
+					log.String("node", ref.Addr.Key()), log.String("dependency", node.ID()))
+				continue
 			}
 			g.AddEdge(depNode, node)
 		}

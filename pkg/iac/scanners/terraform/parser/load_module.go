@@ -146,7 +146,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		SkipCache:       e.skipCachedModules,
 	}
 
-	filesystem, prefix, downloadPath, err := resolveModule(ctx, e.filesystem, opt)
+	filesystem, prefix, downloadPath, err := resolvers.ResolveModule(ctx, e.filesystem, opt)
 	if err != nil {
 		return nil, err
 	}

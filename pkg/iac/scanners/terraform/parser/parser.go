@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -77,7 +78,7 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	}
 
 	// Scope the logger to the parser
-	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
+	p.logger = p.logger.With(log.Prefix("terraform parser"))
 
 	return p
 }
@@ -320,6 +321,22 @@ func (p *Parser) load(_ context.Context) (*evaluator, error) {
 	), nil
 }
 
+func (p *Parser) resolveInputVars() (map[string]cty.Value, error) {
+	vars := maps.Clone(p.tfvars)
+
+	tfvars, err := loadTFVars(p.configsFS, p.tfvarsPaths)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load tfvars: %w", err)
+	}
+
+	maps.Copy(vars, tfvars)
+
+	p.logger.Debug(
+		"Resolved input variables", log.Int("count", len(vars)),
+	)
+	return vars, nil
+}
+
 func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
 	var missing []*terraform.Block
 	for _, varBlock := range blocks.OfType("variable") {
@@ -372,8 +389,20 @@ func inputVariableType(b *terraform.Block) cty.Type {
 
 func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules, error) {
 	// if os.Getenv("TRIVY_EXPERIMENT_TF_GRAPH_EVAL") != "" {
-	if false {
-		e, err := eval.Eval(ctx, p.moduleFS, dir)
+	if true {
+		vars, err := p.resolveInputVars()
+		if err != nil {
+			return nil, fmt.Errorf("resolve input variables")
+		}
+
+		e, err := eval.Eval(ctx, p.moduleFS, dir, &eval.EvalOpts{
+			Logger:            p.logger,
+			Workspace:         p.workspaceName,
+			WorkDir:           p.cwd,
+			AllowDownloads:    p.allowDownloads,
+			SkipCachedModules: p.skipCachedModules,
+			InputVars:         vars,
+		})
 		if err != nil {
 			return nil, err
 		}
