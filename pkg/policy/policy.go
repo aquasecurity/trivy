@@ -67,12 +67,12 @@ type Metadata struct {
 	// MajorVersion indicates the major version of the bundle.
 	// Used to invalidate cache when the major version increases.
 	// Nil for old cache entries. Set to 0 for custom builds.
-	MajorVersion *int
+	MajorVersion *int `json:",omitempty"`
 
 	// CustomBuild is true if the bundle was built manually and did not go
 	// through the official build process that enriches the manifest with additional data.
 	// For custom builds, MajorVersion is not used for cache invalidation.
-	CustomBuild bool
+	CustomBuild bool `json:",omitempty"`
 }
 
 func (m Metadata) String() string {
