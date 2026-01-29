@@ -48,32 +48,28 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("image-store.com", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("EU", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Name:                           iacTypes.StringTest("image-store.com"),
+						Location:                       iacTypes.StringTest("EU"),
+						EnableUniformBucketLevelAccess: iacTypes.BoolTest(true),
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Members: []iacTypes.StringValue{
-									iacTypes.String("group:test@example.com", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("group:test@example.com"),
 								},
-								Role:                          iacTypes.String("roles/storage.admin #1", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Role: iacTypes.StringTest("roles/storage.admin #1"),
 							},
 						},
 						Members: []iam.Member{
 							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("serviceAccount:test@example.com", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("roles/storage.admin #2", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Member: iacTypes.StringTest("serviceAccount:test@example.com"),
+								Role:   iacTypes.StringTest("roles/storage.admin #2"),
 							},
 						},
 						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("default-kms-key-name", iacTypes.NewTestMetadata()),
+							DefaultKMSKeyName: iacTypes.StringTest("default-kms-key-name"),
 						},
+						Logging:    storage.BucketLogging{},
+						Versioning: storage.BucketVersioning{},
 					},
 				},
 			},
@@ -94,29 +90,73 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Buckets: []storage.Bucket{
 					{
-						Metadata:                       iacTypes.NewTestMetadata(),
-						Name:                           iacTypes.String("", iacTypes.NewTestMetadata()),
-						Location:                       iacTypes.String("", iacTypes.NewTestMetadata()),
-						EnableUniformBucketLevelAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 						Bindings: []iam.Binding{
-							{
-								Metadata:                      iacTypes.NewTestMetadata(),
-								Role:                          iacTypes.String("", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							},
+							{},
 						},
 						Members: []iam.Member{
-							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							},
+							{},
 						},
-						Encryption: storage.BucketEncryption{
-							Metadata:          iacTypes.NewTestMetadata(),
-							DefaultKMSKeyName: iacTypes.String("", iacTypes.NewTestMetadata()),
+						Encryption: storage.BucketEncryption{},
+						Logging:    storage.BucketLogging{},
+						Versioning: storage.BucketVersioning{},
+					},
+				},
+			},
+		},
+		{
+			name: "with logging and versioning",
+			terraform: `
+			resource "google_storage_bucket" "example" {
+			  name     = "example-bucket"
+			  location = "US"
+
+			  logging {
+			    log_bucket = "access-logs-bucket"
+			  }
+
+			  versioning {
+			    enabled = true
+			  }
+			}`,
+			expected: storage.Storage{
+				Buckets: []storage.Bucket{
+					{
+						Name:       iacTypes.StringTest("example-bucket"),
+						Location:   iacTypes.StringTest("US"),
+						Encryption: storage.BucketEncryption{},
+						Logging: storage.BucketLogging{
+							LogBucket: iacTypes.StringTest("access-logs-bucket"),
 						},
+						Versioning: storage.BucketVersioning{
+							Enabled: iacTypes.BoolTest(true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "with logging including log object prefix",
+			terraform: `
+			resource "google_storage_bucket" "example" {
+			  name     = "example-bucket"
+			  location = "US"
+
+			  logging {
+			    log_bucket = "access-logs-bucket"
+			    log_object_prefix = "access-logs/"
+			  }
+			}`,
+			expected: storage.Storage{
+				Buckets: []storage.Bucket{
+					{
+						Name:       iacTypes.StringTest("example-bucket"),
+						Location:   iacTypes.StringTest("US"),
+						Encryption: storage.BucketEncryption{},
+						Logging: storage.BucketLogging{
+							LogBucket:       iacTypes.StringTest("access-logs-bucket"),
+							LogObjectPrefix: iacTypes.StringTest("access-logs/"),
+						},
+						Versioning: storage.BucketVersioning{},
 					},
 				},
 			},

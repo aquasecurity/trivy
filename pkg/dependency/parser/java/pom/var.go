@@ -29,8 +29,8 @@ func evaluateVariable(s string, props map[string]string, seenProps []string) str
 
 		// env.X: https://maven.apache.org/pom.html#Properties
 		// e.g. env.PATH
-		if strings.HasPrefix(m[1], "env.") {
-			newValue = os.Getenv(strings.TrimPrefix(m[1], "env."))
+		if after, ok := strings.CutPrefix(m[1], "env."); ok {
+			newValue = os.Getenv(after)
 		} else {
 			// <properties> might include another property.
 			// e.g. <animal.sniffer.skip>${skipTests}</animal.sniffer.skip>

@@ -4,8 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
-	"net/url"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -13,9 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/x/slices"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type pom struct {
@@ -128,47 +127,13 @@ func (p *pom) artifact() artifact {
 }
 
 func (p *pom) licenses() []string {
-	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+	return xslices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
 	}))
 }
 
-func (p *pom) repositories(servers []Server) ([]string, []string) {
-	logger := log.WithPrefix("pom")
-	var releaseRepos, snapshotRepos []string
-	for _, rep := range p.content.Repositories.Repository {
-		snapshot := rep.Snapshots.Enabled == "true"
-		release := rep.Releases.Enabled == "true"
-		// Add only enabled repositories
-		if !release && !snapshot {
-			continue
-		}
-
-		repoURL, err := url.Parse(rep.URL)
-		if err != nil {
-			logger.Debug("Unable to parse remote repository url", log.Err(err))
-			continue
-		}
-
-		// Get the credentials from settings.xml based on matching server id
-		// with the repository id from pom.xml and use it for accessing the repository url
-		for _, server := range servers {
-			if rep.ID == server.ID && server.Username != "" && server.Password != "" {
-				repoURL.User = url.UserPassword(server.Username, server.Password)
-				break
-			}
-		}
-
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", rep.URL))
-		if snapshot {
-			snapshotRepos = append(snapshotRepos, repoURL.String())
-		}
-		if release {
-			releaseRepos = append(releaseRepos, repoURL.String())
-		}
-	}
-
-	return releaseRepos, snapshotRepos
+func (p *pom) repositories(servers []Server) []repository {
+	return resolvePomRepos(servers, p.content.Repositories)
 }
 
 type pomXML struct {
@@ -187,7 +152,7 @@ type pomXML struct {
 		Dependencies pomDependencies `xml:"dependencies"`
 	} `xml:"dependencyManagement"`
 	Dependencies pomDependencies `xml:"dependencies"`
-	Repositories pomRepositories `xml:"repositories"`
+	Repositories []pomRepository `xml:"repositories>repository"`
 }
 
 type pomParent struct {
@@ -253,25 +218,14 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		EndLine:    d.EndLine,
 	}
 
-	// If this dependency is managed in the root POM,
-	// we need to overwrite fields according to the managed dependency.
-	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
-		if managed.Version != "" {
-			dep.Version = evaluateVariable(managed.Version, props, nil)
-		}
-
-		if managed.Scope != "" {
-			dep.Scope = evaluateVariable(managed.Scope, props, nil)
-		}
-
-		if managed.Optional {
-			dep.Optional = managed.Optional
-		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
-		return dep
-	}
+	// Field resolution order:
+	// 1. Fill empty fields with values from dependencyManagement.
+	// 2. Overwrite non-empty fields with values from the root dependencyManagement.
+	//    2.1. Exception: if a dependency has the `test` scope (either defined explicitly
+	//         or inherited from dependencyManagement), we must NOT overwrite it
+	//         with the value from the root dependencyManagement.
+	//
+	// See the test "don't overwrite test scope from upper depManagement" for details.
 
 	// Inherit version, scope and optional from dependencyManagement if empty
 	if managed, found := findDep(dep.Name(), depManagement); found { // dependencyManagement from parent
@@ -287,6 +241,26 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		}
 		// `mvn` always merges exceptions for pom and parent
 		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
+	}
+
+	// If this dependency is managed in the root POM,
+	// we need to overwrite fields according to the managed dependency.
+	if managed, found := findDep(dep.Name(), rootDepManagement); found { // dependencyManagement from the root POM
+		if managed.Version != "" {
+			dep.Version = evaluateVariable(managed.Version, props, nil)
+		}
+
+		if managed.Scope != "" && dep.Scope != "test" {
+			dep.Scope = evaluateVariable(managed.Scope, props, nil)
+		}
+
+		if managed.Optional {
+			dep.Optional = managed.Optional
+		}
+		if len(managed.Exclusions.Exclusion) != 0 {
+			dep.Exclusions = managed.Exclusions
+		}
+		return dep
 	}
 	return dep
 }
@@ -322,6 +296,8 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Exclusions:   exclusions,
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
+		RootFilePath: opts.rootFilePath,
+		Repositories: slices.Clone(opts.repositories), // avoid sharing
 	}
 }
 
@@ -385,22 +361,10 @@ func findDep(name string, depManagement []pomDependency) (pomDependency, bool) {
 	})
 }
 
-type pomRepositories struct {
-	Text       string          `xml:",chardata"`
-	Repository []pomRepository `xml:"repository"`
-}
-
 type pomRepository struct {
-	Text     string `xml:",chardata"`
-	ID       string `xml:"id"`
-	Name     string `xml:"name"`
-	URL      string `xml:"url"`
-	Releases struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"releases"`
-	Snapshots struct {
-		Text    string `xml:",chardata"`
-		Enabled string `xml:"enabled"`
-	} `xml:"snapshots"`
+	ID               string `xml:"id"`
+	Name             string `xml:"name"`
+	URL              string `xml:"url"`
+	ReleasesEnabled  string `xml:"releases>enabled"`
+	SnapshotsEnabled string `xml:"snapshots>enabled"`
 }

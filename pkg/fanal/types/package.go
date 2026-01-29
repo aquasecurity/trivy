@@ -176,10 +176,26 @@ type BuildInfo struct {
 	Arch        string   `json:",omitempty"`
 }
 
+// RepositoryClass indicates the class of repository from which the package was distributed.
+type RepositoryClass string
+
+const (
+	RepositoryClassUnknown    RepositoryClass = ""            // Unknown or not set
+	RepositoryClassOfficial   RepositoryClass = "official"    // Official OS repository (Debian, Ubuntu, Red Hat, etc.)
+	RepositoryClassThirdParty RepositoryClass = "third-party" // Third-party repository (Docker, NVIDIA, etc.)
+)
+
+// PackageRepository indicates where the package was distributed from.
+type PackageRepository struct {
+	Class RepositoryClass `json:",omitempty"`
+	// Future: Add Name field for specific repository identification (e.g., "epel", "docker")
+	// Name string `json:",omitempty"`
+}
+
 type Package struct {
 	ID                 string        `json:",omitempty"`
 	Name               string        `json:",omitempty"`
-	Identifier         PkgIdentifier `json:",omitempty"`
+	Identifier         PkgIdentifier `json:",omitzero"`
 	Version            string        `json:",omitempty"`
 	Release            string        `json:",omitempty"`
 	Epoch              int           `json:",omitempty"`
@@ -196,6 +212,9 @@ type Package struct {
 	Modularitylabel string     `json:",omitempty"` // only for Red Hat based distributions
 	BuildInfo       *BuildInfo `json:",omitempty"` // only for Red Hat
 
+	// Repository indicates where the package was distributed from.
+	Repository PackageRepository `json:",omitzero"`
+
 	Indirect     bool         `json:",omitempty"` // Deprecated: Use relationship. Kept for backward compatibility.
 	Relationship Relationship `json:",omitempty"`
 
@@ -203,7 +222,7 @@ type Package struct {
 	// Note:　it may have interdependencies, which may lead to infinite loops.
 	DependsOn []string `json:",omitempty"`
 
-	Layer Layer `json:",omitempty"`
+	Layer Layer `json:",omitzero"`
 
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
@@ -216,6 +235,10 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+
+	// AnalyzedBy indicates which analyzer detected this package.
+	// This is not a property of the package itself, but metadata about the detection process.
+	AnalyzedBy AnalyzerType `json:",omitempty"`
 }
 
 func (pkg *Package) Empty() bool {
@@ -245,6 +268,8 @@ func (pkgs Packages) Less(i, j int) bool {
 		return pkgs[i].Name < pkgs[j].Name
 	case pkgs[i].Version != pkgs[j].Version:
 		return pkgs[i].Version < pkgs[j].Version
+	case pkgs[i].ID != pkgs[j].ID:
+		return pkgs[i].ID < pkgs[j].ID
 	}
 	return pkgs[i].FilePath < pkgs[j].FilePath
 }

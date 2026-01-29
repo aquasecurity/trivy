@@ -14,21 +14,19 @@ import (
 )
 
 type remoteResolver struct {
-	count int32
+	count atomic.Int32
 }
 
-var Remote = &remoteResolver{
-	count: 0,
-}
+var Remote = &remoteResolver{}
 
 func (r *remoteResolver) incrementCount(o Options) {
 
-	atomic.CompareAndSwapInt32(&r.count, r.count, r.count+1)
-	o.Logger.Debug("Incrementing the download counter", log.Int("count", int(r.count)))
+	r.count.Add(1)
+	o.Logger.Debug("Incrementing the download counter", log.Int("count", int(r.count.Load())))
 }
 
 func (r *remoteResolver) GetDownloadCount() int {
-	return int(atomic.LoadInt32(&r.count))
+	return int(r.count.Load())
 }
 
 func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {

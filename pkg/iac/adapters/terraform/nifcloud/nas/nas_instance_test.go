@@ -23,8 +23,7 @@ func Test_adaptNASInstances(t *testing.T) {
 			}
 `,
 			expected: []nas.NASInstance{{
-				Metadata:  iacTypes.NewTestMetadata(),
-				NetworkID: iacTypes.String("example-network", iacTypes.NewTestMetadata()),
+				NetworkID: iacTypes.StringTest("example-network"),
 			}},
 		},
 		{
@@ -35,8 +34,7 @@ func Test_adaptNASInstances(t *testing.T) {
 `,
 
 			expected: []nas.NASInstance{{
-				Metadata:  iacTypes.NewTestMetadata(),
-				NetworkID: iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
+				NetworkID: iacTypes.StringTest("net-COMMON_PRIVATE"),
 			}},
 		},
 	}

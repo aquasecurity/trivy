@@ -1,10 +1,12 @@
 package analyzer
 
 import (
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 )
 
-type Type string
+// Type is an alias for types.AnalyzerType for backward compatibility
+type Type = types.AnalyzerType
 
 const (
 	// ======
@@ -26,6 +28,7 @@ const (
 	TypeSUSE       Type = "suse"
 	TypeUbuntu     Type = "ubuntu"
 	TypeUbuntuESM  Type = "ubuntu-esm"
+	TypeCoreOS     Type = "coreos"
 
 	// OS Package
 	TypeApk                   Type = "apk"
@@ -131,6 +134,7 @@ const (
 	TypeTerraformPlanSnapshot Type = Type(detection.FileTypeTerraformPlanSnapshot)
 	TypeYAML                  Type = Type(detection.FileTypeYAML)
 	TypeJSON                  Type = Type(detection.FileTypeJSON)
+	TypeAnsible               Type = Type(detection.FileTypeAnsible)
 
 	// ========
 	// License
@@ -156,6 +160,7 @@ var (
 		TypeAlpine,
 		TypeAmazon,
 		TypeCBLMariner,
+		TypeCoreOS,
 		TypeDebian,
 		TypePhoton,
 		TypeCentOS,
@@ -264,5 +269,6 @@ var (
 		TypeTerraformPlanSnapshot,
 		TypeYAML,
 		TypeJSON,
+		TypeAnsible,
 	}
 )

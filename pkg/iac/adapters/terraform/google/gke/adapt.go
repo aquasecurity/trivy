@@ -2,7 +2,6 @@ package gke
 
 import (
 	"github.com/google/uuid"
-	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/gke"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
@@ -285,16 +284,8 @@ func adaptNodeConfig(resource *terraform.Block) gke.NodeConfig {
 
 	if metadata := resource.GetAttribute("metadata"); metadata.IsNotNil() {
 		disableLegacy := metadata.MapValue("disable-legacy-endpoints")
-		if disableLegacy.IsKnown() {
-			var enableLegacyEndpoints bool
-			switch disableLegacy.Type() {
-			case cty.Bool:
-				enableLegacyEndpoints = disableLegacy.False()
-			case cty.String:
-				enableLegacyEndpoints = disableLegacy.AsString() == "false"
-			}
-
-			config.EnableLegacyEndpoints = iacTypes.Bool(enableLegacyEndpoints, metadata.GetMetadata())
+		if val, ok := iacTypes.BoolFromCtyValue(disableLegacy, metadata.GetMetadata()); ok {
+			config.EnableLegacyEndpoints = val.Invert()
 		}
 	}
 

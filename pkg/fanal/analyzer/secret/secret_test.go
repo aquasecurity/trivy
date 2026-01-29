@@ -55,6 +55,7 @@ func TestSecretAnalyzer(t *testing.T) {
 				},
 			},
 		},
+		Offset: 55,
 	}
 	wantFinding2 := types.SecretFinding{
 		RuleID:    "rule1",
@@ -93,6 +94,7 @@ func TestSecretAnalyzer(t *testing.T) {
 				},
 			},
 		},
+		Offset: 100,
 	}
 	wantFindingGH_PAT := types.SecretFinding{
 		RuleID:    "github-fine-grained-pat",
@@ -102,6 +104,7 @@ func TestSecretAnalyzer(t *testing.T) {
 		StartLine: 1,
 		EndLine:   1,
 		Match:     "Binary file \"/testdata/secret.cpython-310.pyc\" matches a rule \"GitHub Fine-grained personal access tokens\"",
+		Offset:    2,
 	}
 
 	tests := []struct {

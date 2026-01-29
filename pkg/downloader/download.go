@@ -17,6 +17,7 @@ import (
 	"golang.org/x/xerrors"
 
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 var ErrSkipDownload = errors.New("skip download")
@@ -36,7 +37,7 @@ type Auth struct {
 
 // DownloadToTempDir downloads the configured source to a temp dir.
 func DownloadToTempDir(ctx context.Context, src string, opts Options) (string, error) {
-	tempDir, err := os.MkdirTemp("", "trivy-download")
+	tempDir, err := xos.MkdirTemp("", "download-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
@@ -104,6 +105,7 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 }
 
 type CustomTransport struct {
+	insecure   bool
 	auth       Auth
 	cachedETag string
 	newETag    string
@@ -111,6 +113,7 @@ type CustomTransport struct {
 
 func NewCustomTransport(opts Options) *CustomTransport {
 	return &CustomTransport{
+		insecure:   opts.Insecure,
 		auth:       opts.Auth,
 		cachedETag: opts.ETag,
 	}
@@ -126,7 +129,7 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 		req.SetBasicAuth(t.auth.Username, t.auth.Password)
 	}
 
-	transport := xhttp.Transport(req.Context())
+	transport := xhttp.RoundTripper(req.Context(), xhttp.WithInsecure(t.insecure))
 	if req.URL.Host == "github.com" {
 		transport = NewGitHubTransport(req.URL, t.auth.Token)
 	}

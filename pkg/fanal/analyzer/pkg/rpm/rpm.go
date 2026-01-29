@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 func init() {
@@ -39,6 +40,9 @@ var (
 		// SQLite3
 		"usr/lib/sysimage/rpm/rpmdb.sqlite",
 		"var/lib/rpm/rpmdb.sqlite",
+
+		// CoreOS
+		"usr/share/rpm/rpmdb.sqlite",
 	}
 
 	errUnexpectedNameFormat = xerrors.New("unexpected name format")
@@ -136,8 +140,12 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 
 		// Check if the package is vendor-provided.
 		// If the package is not provided by vendor, the installed files should not be skipped.
+		repo := types.PackageRepository{
+			Class: types.RepositoryClassThirdParty,
+		}
 		var files []string
 		if packageProvidedByVendor(pkg) {
+			repo.Class = types.RepositoryClassOfficial
 			files, err = pkg.InstalledFileNames()
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to get installed files: %w", err)
@@ -175,6 +183,7 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 			Licenses:        licenses,
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
+			Repository:      repo,
 			Digest:          d,
 			InstalledFiles:  files,
 		}
@@ -261,7 +270,7 @@ func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
 }
 
 func writeToTempFile(rc io.Reader) (string, error) {
-	tmpDir, err := os.MkdirTemp("", "rpm")
+	tmpDir, err := xos.MkdirTemp("", "rpmdb-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

@@ -1,6 +1,7 @@
 package language
 
 import (
+	"context"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -8,19 +9,18 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 type Parser interface {
 	// Parse parses the dependency file
-	Parse(r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
+	Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
 }
 
 // Analyze returns an analysis result of the lock file
-func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
-	app, err := Parse(fileType, filePath, r, parser)
+func Analyze(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
+	app, err := Parse(ctx, fileType, filePath, r, parser)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -33,8 +33,8 @@ func Analyze(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parse
 }
 
 // AnalyzePackage returns an analysis result of the package file other than lock files
-func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
-	app, err := ParsePackage(fileType, filePath, r, parser, checksum)
+func AnalyzePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
+	app, err := ParsePackage(ctx, fileType, filePath, r, parser, checksum)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -47,12 +47,12 @@ func AnalyzePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt
 }
 
 // Parse returns a parsed result of the lock file
-func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
+func Parse(ctx context.Context, fileType types.LangType, filePath string, r io.Reader, parser Parser) (*types.Application, error) {
 	rr, err := xio.NewReadSeekerAt(r)
 	if err != nil {
 		return nil, xerrors.Errorf("reader error: %w", err)
 	}
-	parsedPkgs, parsedDependencies, err := parser.Parse(rr)
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, rr)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -63,8 +63,8 @@ func Parse(fileType types.LangType, filePath string, r io.Reader, parser Parser)
 }
 
 // ParsePackage returns a parsed result of the package file
-func ParsePackage(fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
-	parsedPkgs, parsedDependencies, err := parser.Parse(r)
+func ParsePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
+	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, r)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
 	}
@@ -103,10 +103,6 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		pkgs[i].DependsOn = deps[pkg.ID]
 		pkgs[i].Digest = d
 		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
-
-		for j, license := range pkg.Licenses {
-			pkgs[i].Licenses[j] = licensing.Normalize(license)
-		}
 	}
 
 	return &types.Application{

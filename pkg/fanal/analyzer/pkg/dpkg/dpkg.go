@@ -41,17 +41,69 @@ func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) 
 }
 
 const (
-	analyzerVersion = 5
+	analyzerVersion = 6
 
 	statusFile    = "var/lib/dpkg/status"
 	statusDir     = "var/lib/dpkg/status.d/"
 	infoDir       = "var/lib/dpkg/info/"
 	availableFile = "var/lib/dpkg/available"
+
+	md5sumsExtension = ".md5sums"
 )
 
 var (
 	dpkgSrcCaptureRegexp      = regexp.MustCompile(`(?P<name>[^\s]*)( \((?P<version>.*)\))?`)
 	dpkgSrcCaptureRegexpNames = dpkgSrcCaptureRegexp.SubexpNames()
+
+	// thirdPartyMaintainerPatterns contains patterns that indicate a package is from a third-party repository.
+	// Packages with maintainers matching these patterns will NOT have their InstalledFiles tracked,
+	// allowing language scanners to properly analyze files installed by those packages.
+	// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
+	thirdPartyMaintainerPatterns = []string{
+		// Container & orchestration
+		"support@docker.com", // Docker
+
+		// Cloud providers & infrastructure
+		"@nvidia.com",              // NVIDIA CUDA
+		"Google Cloud CLI Authors", // Google Cloud SDK
+		"sapmachine@sap.com",       // SAP Machine JDK
+		"@hashicorp.com",           // HashiCorp (Terraform, Vault, Consul, etc.)
+		"@microsoft.com",           // Microsoft (VS Code, Azure CLI, .NET, etc.)
+
+		// Databases
+		"@mongodb.com",                 // MongoDB
+		"developers@lists.mariadb.org", // MariaDB
+		"dev@couchdb.apache.org",       // Apache CouchDB
+		"info@elastic.co",              // Elastic (Elasticsearch, Kibana, etc.)
+
+		// Web servers & API gateways
+		"nginx-packaging@f5.com", // NGINX (from nginx.org, not Debian)
+		"@konghq.com",            // Kong
+		"@cloudflare.com",        // Cloudflare (cloudflared, WARP)
+
+		// Monitoring & observability
+		"support@influxdb.com", // InfluxData (InfluxDB, Telegraf)
+		"support@gitlab.com",   // GitLab
+		"contact@grafana.com",  // Grafana Labs
+		"@datadoghq.com",       // Datadog
+
+		// Language runtimes (third-party repos)
+		"@nodesource.com", // NodeSource (Node.js)
+
+		// Networking & VPN
+		"info@tailscale.com", // Tailscale
+
+		// Robotics
+		"@openrobotics.org",  // ROS (Robot Operating System)
+		"@osrfoundation.org", // ROS (Robot Operating System)
+	}
+
+	// thirdPartyMaintainerExact contains maintainer strings that require exact match.
+	// These are too short or generic for substring matching.
+	thirdPartyMaintainerExact = []string{
+		"GitHub",    // GitHub CLI
+		"HashiCorp", // HashiCorp (Terraform, Vault, Consul, etc.)
+	}
 )
 
 func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -72,15 +124,15 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 	// parse other files
 	err = fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
-		// parse list files
-		if a.isListFile(filepath.Split(path)) {
+		// parse *md5sums files
+		if a.isMd5SumsFile(filepath.Split(path)) {
 			scanner := bufio.NewScanner(r)
-			systemFiles, err := a.parseDpkgInfoList(scanner)
+			systemFiles, err := a.parseDpkgMd5sums(scanner)
 			if err != nil {
-				return err
+				return xerrors.Errorf("failed to parse %s file: %w", path, err)
 			}
-			packageFiles[strings.TrimSuffix(filepath.Base(path), ".list")] = systemFiles
-			systemInstalledFiles = append(systemInstalledFiles, systemFiles...)
+			packageFiles[strings.TrimSuffix(filepath.Base(path), md5sumsExtension)] = systemFiles
+			// Note: systemInstalledFiles will be populated later based on maintainer check
 			return nil
 		}
 		// parse status files
@@ -95,14 +147,32 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
-	// map the packages to their respective files
+	// Map packages to their respective files.
+	// Third-party packages will NOT have their InstalledFiles populated to avoid filtering out
+	// language packages (npm, pip, etc.) installed by those third-party OS packages.
 	for i, pkgInfo := range packageInfos {
 		for j, pkg := range pkgInfo.Packages {
 			installedFiles, found := packageFiles[pkg.Name]
 			if !found {
 				installedFiles = packageFiles[pkg.Name+":"+pkg.Arch]
 			}
+
+			// Skip InstalledFiles for third-party packages
+			if isThirdPartyPackage(pkg.Maintainer) {
+				a.logger.Debug("Third-party package detected",
+					log.String("package", pkg.Name),
+					log.String("maintainer", pkg.Maintainer))
+				packageInfos[i].Packages[j].Repository = types.PackageRepository{
+					Class: types.RepositoryClassThirdParty,
+				}
+				continue
+			}
+
+			packageInfos[i].Packages[j].Repository = types.PackageRepository{
+				Class: types.RepositoryClassOfficial,
+			}
 			packageInfos[i].Packages[j].InstalledFiles = installedFiles
+			systemInstalledFiles = append(systemInstalledFiles, installedFiles...)
 		}
 	}
 
@@ -113,46 +183,31 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 
 }
 
-// parseDpkgInfoList parses /var/lib/dpkg/info/*.list
-func (a dpkgAnalyzer) parseDpkgInfoList(scanner *bufio.Scanner) ([]string, error) {
-	var (
-		allLines       []string
-		installedFiles []string
-		previous       string
-	)
-
+// parseDpkgMd5sums parses `/var/lib/dpkg/*/*.md5sums` file.
+//
+// `*.md5sums` files don't contain links (see https://github.com/aquasecurity/trivy/pull/9131#discussion_r2182557288).
+// But Trivy doesn't support links, so this will not cause problems.
+// TODO use `*.list` files instead of `*.md5sums` files when Trivy will support links.
+func (a dpkgAnalyzer) parseDpkgMd5sums(scanner *bufio.Scanner) ([]string, error) {
+	var installedFiles []string
 	for scanner.Scan() {
 		current := scanner.Text()
-		if current == "/." {
-			continue
+
+		// md5sums file use the following format:
+		// <digest>  <filepath> (2 spaces)
+		// cf. https://man7.org/linux/man-pages/man5/deb-md5sums.5.html
+		_, file, ok := strings.Cut(current, "  ")
+		if !ok {
+			return nil, xerrors.Errorf("invalid md5sums line format: %s", current)
 		}
-		allLines = append(allLines, current)
+		installedFiles = append(installedFiles, "/"+file) // md5sums files don't contain leading slash
 	}
 
 	if err := scanner.Err(); err != nil {
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	// Add the file if it is not directory.
-	// e.g.
-	//  /usr/sbin
-	//  /usr/sbin/tarcat
-	//
-	// In the above case, we should take only /usr/sbin/tarcat since /usr/sbin is a directory
-	// sort first,see here:https://github.com/aquasecurity/trivy/discussions/6543
-	sort.Strings(allLines)
-	for _, current := range allLines {
-		if !strings.HasPrefix(current, previous+"/") {
-			installedFiles = append(installedFiles, previous)
-		}
-		previous = current
-	}
-
-	// // Add the last file
-	if previous != "" && !strings.HasSuffix(previous, "/") {
-		installedFiles = append(installedFiles, previous)
-	}
-
+	sort.Strings(installedFiles)
 	return installedFiles, nil
 }
 
@@ -290,14 +345,10 @@ func (a dpkgAnalyzer) parseDpkgPkg(header textproto.MIMEHeader) *types.Package {
 
 func (a dpkgAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	dir, fileName := filepath.Split(filePath)
-	if a.isListFile(dir, fileName) || filePath == statusFile || filePath == availableFile {
+	if a.isMd5SumsFile(dir, fileName) || filePath == statusFile || filePath == availableFile || dir == statusDir {
 		return true
 	}
 
-	// skip `*.md5sums` files from `status.d` directory
-	if dir == statusDir && filepath.Ext(fileName) != ".md5sums" {
-		return true
-	}
 	return false
 }
 
@@ -356,12 +407,29 @@ func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pk
 	}
 }
 
-func (a dpkgAnalyzer) isListFile(dir, fileName string) bool {
-	if dir != infoDir {
+func (a dpkgAnalyzer) isMd5SumsFile(dir, fileName string) bool {
+	// - var/lib/dpkg/info/*.md5sums is default path
+	// - var/lib/dpkg/status.d/*.md5sums path in distroless images (see https://github.com/GoogleContainerTools/distroless/blob/5c119701429fb742ab45682cfc3073f911bad4bf/PACKAGE_METADATA.md#omitted-files)
+	if dir != infoDir && dir != statusDir {
 		return false
 	}
 
-	return strings.HasSuffix(fileName, ".list")
+	return strings.HasSuffix(fileName, md5sumsExtension)
+}
+
+// isThirdPartyPackage checks if a package is from a third-party repository
+// by examining the Maintainer field against known third-party patterns.
+//
+// Unlike RPM which has a dedicated "Vendor" field, dpkg packages don't have a reliable
+// way to identify their origin. We use a heuristic approach based on maintainer patterns.
+// See https://github.com/aquasecurity/trivy/issues/9916 for more details.
+func isThirdPartyPackage(maintainer string) bool {
+	if slices.Contains(thirdPartyMaintainerExact, maintainer) {
+		return true
+	}
+	return slices.ContainsFunc(thirdPartyMaintainerPatterns, func(pattern string) bool {
+		return strings.Contains(maintainer, pattern)
+	})
 }
 
 func (a dpkgAnalyzer) Type() analyzer.Type {

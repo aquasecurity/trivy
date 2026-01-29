@@ -151,6 +151,65 @@ func Test_composerAnalyzer_PostAnalyze(t *testing.T) {
 			dir:  "testdata/composer/sad",
 			want: &analyzer.AnalysisResult{},
 		},
+		{
+			name: "with dev dependencies",
+			dir:  "testdata/composer/with-dev",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Composer,
+						FilePath: "composer.lock",
+						Packages: types.Packages{
+							{
+								ID:           "pear/log@1.14.6",
+								Name:         "pear/log",
+								Version:      "1.14.6",
+								Dev:          true,
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 61,
+										EndLine:   121,
+									},
+								},
+								DependsOn: []string{"pear/pear_exception@v1.0.2"},
+							},
+							{
+								ID:           "psr/log@1.1.4",
+								Name:         "psr/log",
+								Version:      "1.1.4",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 9,
+										EndLine:   58,
+									},
+								},
+							},
+							{
+								ID:           "pear/pear_exception@v1.0.2",
+								Name:         "pear/pear_exception",
+								Version:      "v1.0.2",
+								Dev:          true,
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Licenses:     []string{"BSD-2-Clause"},
+								Locations: []types.Location{
+									{
+										StartLine: 122,
+										EndLine:   180,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

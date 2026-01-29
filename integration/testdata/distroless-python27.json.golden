@@ -1,6 +1,11 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:b9ec0b7f93064fddace988e9a901386ccd55a6c16a34c00d5c45b06f62ec20ca",
   "ArtifactName": "testdata/fixtures/images/distroless-python27.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -16,6 +21,10 @@
       "sha256:6189abe095d53c1c9f2bfc8f50128ee876b9a5d10f9eda1564e5f5357d6ffe61",
       "sha256:e92caab8efcf25a24bea5213ab7e54d4a5f5f08644836bb2d296070b1ae1044e"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:distroless-python27"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:distroless-python27",
     "ImageConfig": {
       "architecture": "amd64",
       "author": "Bazel",
@@ -97,7 +106,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "96b92444b87304a5"
+            "UID": "3e39945fa102851d"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -112,6 +121,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:621cf3bfcafb7e4e0e8a6d4e46b56e4ccf7e55c5383cb1a7eaaa179776acfbbc",
           "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
           "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
           "Severity": "MEDIUM",
@@ -182,7 +192,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "96b92444b87304a5"
+            "UID": "3e39945fa102851d"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
@@ -198,6 +208,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:43cbe4454d144da8fe2039fe6c6eafb8348fe278401934232f989393107473a2",
           "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
           "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
           "Severity": "LOW",
@@ -273,7 +284,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "ed86402b9a8c2be6"
+            "UID": "464eae002f08322"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -288,6 +299,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:26e7213b994b38ec9b2b1208220057c5a93c2d0eef0f175f8c275d2fdbe7563b",
           "Title": "openssl: Integer overflow in RSAZ modular exponentiation on x86_64",
           "Description": "There is an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli. No EC algorithms are affected. Analysis suggests that attacks against 2-prime RSA1024, 3-prime RSA1536, and DSA1024 as a result of this defect would be very difficult to perform and are not believed likely. Attacks against DH512 are considered just feasible. However, for an attack the target would have to re-use the DH512 private key, which is not recommended anyway. Also applications directly using the low level API BN_mod_exp may be affected if they use BN_FLG_CONSTTIME. Fixed in OpenSSL 1.1.1e (Affected 1.1.1-1.1.1d). Fixed in OpenSSL 1.0.2u (Affected 1.0.2-1.0.2t).",
           "Severity": "MEDIUM",
@@ -358,7 +370,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "ed86402b9a8c2be6"
+            "UID": "464eae002f08322"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
@@ -374,6 +386,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:d819fbc64a73608da70e6b6fa147954c1325f34448c10e7df60efef770dbcb08",
           "Title": "openssl: information disclosure in PKCS7_dataDecode and CMS_decrypt_set1_pkey",
           "Description": "In situations where an attacker receives automated notification of the success or failure of a decryption attempt an attacker, after sending a very large number of messages to be decrypted, can recover a CMS/PKCS7 transported encryption key or decrypt any RSA encrypted message that was encrypted with the public RSA key, using a Bleichenbacher padding oracle attack. Applications are not affected if they use a certificate together with the private RSA key to the CMS_decrypt or PKCS7_decrypt functions to select the correct recipient info to decrypt. Fixed in OpenSSL 1.1.1d (Affected 1.1.1-1.1.1c). Fixed in OpenSSL 1.1.0l (Affected 1.1.0-1.1.0k). Fixed in OpenSSL 1.0.2t (Affected 1.0.2-1.0.2s).",
           "Severity": "LOW",

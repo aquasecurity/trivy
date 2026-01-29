@@ -4,6 +4,9 @@
 #   id: TEST001
 #   avd_id: TEST001
 #   severity: LOW
+#   input:
+#     selector:
+#       - type: yaml
 package user.test_yaml_check
 
 deny[res] {

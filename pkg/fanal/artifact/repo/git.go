@@ -7,7 +7,6 @@ import (
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/transport/http"
-	"github.com/google/wire"
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
 
@@ -16,17 +15,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
-var (
-	ArtifactSet = wire.NewSet(
-		walker.NewFS,
-		wire.Bind(new(Walker), new(*walker.FS)),
-		NewArtifact,
-	)
-
-	_ Walker = (*walker.FS)(nil)
-)
+var _ Walker = (*walker.FS)(nil)
 
 type Walker interface {
 	Walk(root string, opt walker.Option, fn walker.WalkFunc) error
@@ -93,7 +85,7 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 }
 
 func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
-	tmpDir, err := os.MkdirTemp("", "trivy-remote-repo")
+	tmpDir, err := xos.MkdirTemp("", "git-clone-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}

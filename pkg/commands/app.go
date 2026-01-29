@@ -112,15 +112,6 @@ func NewApp() *cobra.Command {
 		rootCmd.AddCommand(plugins...)
 	}
 
-	// TODO(simar7): Only for backwards support guidance, delete the subcommand after a while.
-	if cmd, _, _ := rootCmd.Find([]string{"aws"}); cmd == cmd.Root() { // "trivy aws" not installed
-		rootCmd.AddCommand(&cobra.Command{
-			Hidden: true,
-			Long:   "Trivy AWS is now available as an optional plugin. See github.com/aquasecurity/trivy-aws for details.",
-			Use:    "aws",
-		})
-	}
-
 	return rootCmd
 }
 
@@ -134,7 +125,6 @@ func loadPluginCommands() []*cobra.Command {
 		return nil
 	}
 	for _, p := range plugins {
-		p := p
 		cmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s [flags]", p.Name),
 			Short:   p.Summary,
@@ -218,7 +208,6 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -550,7 +539,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Short:   "Convert Trivy JSON report into a different format",
 		Example: `  # report conversion
-  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy image --format json --output result.json debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {

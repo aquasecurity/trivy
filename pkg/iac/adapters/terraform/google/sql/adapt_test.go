@@ -42,40 +42,27 @@ func Test_Adapt(t *testing.T) {
 			expected: sql.SQL{
 				Instances: []sql.DatabaseInstance{
 					{
-						Metadata:        iacTypes.NewTestMetadata(),
-						IsReplica:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						DatabaseVersion: iacTypes.String("POSTGRES_12", iacTypes.NewTestMetadata()),
+						DatabaseVersion: iacTypes.StringTest("POSTGRES_12"),
 						Settings: sql.Settings{
-							Metadata: iacTypes.NewTestMetadata(),
 							Backups: sql.Backups{
-								Metadata: iacTypes.NewTestMetadata(),
-								Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Enabled: iacTypes.BoolTest(true),
 							},
 							Flags: sql.Flags{
-								Metadata:                        iacTypes.NewTestMetadata(),
-								LogMinDurationStatement:         iacTypes.Int(-1, iacTypes.NewTestMetadata()),
-								ContainedDatabaseAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								CrossDBOwnershipChaining:        iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								LocalInFile:                     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								LogCheckpoints:                  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								LogConnections:                  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								LogDisconnections:               iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								LogLockWaits:                    iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								LogMinMessages:                  iacTypes.String("", iacTypes.NewTestMetadata()),
-								LogTempFileSize:                 iacTypes.Int(-1, iacTypes.NewTestMetadata()),
+								LogMinDurationStatement:         iacTypes.IntTest(-1),
+								ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
+								CrossDBOwnershipChaining:        iacTypes.BoolTest(true),
+								LogTempFileSize:                 iacTypes.IntTest(-1),
 							},
 							IPConfiguration: sql.IPConfiguration{
-								Metadata:   iacTypes.NewTestMetadata(),
-								RequireTLS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								EnableIPv4: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								RequireTLS: iacTypes.BoolTest(true),
 								SSLMode:    iacTypes.StringTest("TRUSTED_CLIENT_CERTIFICATE_REQUIRED"),
 								AuthorizedNetworks: []struct {
 									Name iacTypes.StringValue
 									CIDR iacTypes.StringValue
 								}{
 									{
-										Name: iacTypes.String("internal", iacTypes.NewTestMetadata()),
-										CIDR: iacTypes.String("108.12.12.0/24", iacTypes.NewTestMetadata()),
+										Name: iacTypes.StringTest("internal"),
+										CIDR: iacTypes.StringTest("108.12.12.0/24"),
 									},
 								},
 							},
@@ -174,28 +161,22 @@ resource "google_sql_database_instance" "backup_source_instance" {
                 `,
 			expected: []sql.DatabaseInstance{
 				{
-					Metadata:        iacTypes.NewTestMetadata(),
-					DatabaseVersion: iacTypes.String("POSTGRES_11", iacTypes.NewTestMetadata()),
-					IsReplica:       iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+					DatabaseVersion: iacTypes.StringTest("POSTGRES_11"),
 					Settings: sql.Settings{
 						Backups: sql.Backups{
-							Enabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Flags: sql.Flags{
-							LogConnections:                  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogTempFileSize:                 iacTypes.Int(0, iacTypes.NewTestMetadata()),
-							LogCheckpoints:                  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogDisconnections:               iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LogLockWaits:                    iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							ContainedDatabaseAuthentication: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							CrossDBOwnershipChaining:        iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							LocalInFile:                     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							LogMinDurationStatement:         iacTypes.Int(-1, iacTypes.NewTestMetadata()),
-							LogMinMessages:                  iacTypes.String("", iacTypes.NewTestMetadata()),
+							LogConnections:                  iacTypes.BoolTest(true),
+							LogCheckpoints:                  iacTypes.BoolTest(true),
+							LogDisconnections:               iacTypes.BoolTest(true),
+							LogLockWaits:                    iacTypes.BoolTest(true),
+							ContainedDatabaseAuthentication: iacTypes.BoolTest(true),
+							CrossDBOwnershipChaining:        iacTypes.BoolTest(true),
+							LogMinDurationStatement:         iacTypes.IntTest(-1),
 						},
 						IPConfiguration: sql.IPConfiguration{
-							EnableIPv4: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							RequireTLS: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							RequireTLS: iacTypes.BoolTest(true),
 						},
 					},
 				},

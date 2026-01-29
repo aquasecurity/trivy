@@ -2,7 +2,10 @@ package flag
 
 import (
 	"net/http"
+	"net/url"
 	"strings"
+
+	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -112,6 +115,12 @@ func (f *RemoteFlagGroup) Flags() []Flagger {
 
 func (f *RemoteFlagGroup) ToOptions(opts *Options) error {
 	serverAddr := f.ServerAddr.Value()
+
+	// Validate server schema
+	if err := validateServerSchema(serverAddr); err != nil {
+		return err
+	}
+
 	customHeaders := splitCustomHeaders(f.CustomHeaders.Value())
 	listen := f.Listen.Value()
 	token := f.Token.Value()
@@ -158,4 +167,23 @@ func splitCustomHeaders(headers []string) http.Header {
 		result.Set(s[0], s[1])
 	}
 	return result
+}
+
+func validateServerSchema(serverAddr string) error {
+	if serverAddr == "" {
+		return nil
+	}
+
+	parsedURL, err := url.Parse(serverAddr)
+	if err != nil {
+		return xerrors.Errorf("invalid server address format: %w", err)
+	}
+
+	if parsedURL.Scheme == "" {
+		return xerrors.Errorf("server address must include HTTP or HTTPS schema (e.g., http://localhost:4954 or https://localhost:4954)")
+	} else if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
+		return xerrors.Errorf("server address must use HTTP or HTTPS schema, got '%s' (e.g., use http://localhost:4954 instead of %s)", parsedURL.Scheme, serverAddr)
+	}
+
+	return nil
 }

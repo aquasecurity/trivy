@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -48,6 +49,8 @@ var (
 		// https://setuptools.readthedocs.io/en/latest/deprecated/python_eggs.html#eggs-and-their-formats
 		".egg-info",
 		".egg-info/PKG-INFO",
+		// https://github.com/aquasecurity/trivy/issues/9171
+		".egg-info/METADATA",
 	}
 )
 
@@ -58,7 +61,7 @@ type packagingAnalyzer struct {
 }
 
 // PostAnalyze analyzes egg and wheel files.
-func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a packagingAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 
 	var apps []types.Application
 
@@ -72,7 +75,7 @@ func (a packagingAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAna
 			return xerrors.New("invalid reader")
 		}
 
-		app, err := a.parse(filePath, rsa, input.Options.FileChecksum)
+		app, err := a.parse(ctx, filePath, rsa, input.Options.FileChecksum)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -151,13 +154,13 @@ func classifyLicenses(opener fileOpener, licPath string, licenseClassifierConfid
 	}
 
 	// License found
-	return lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+	return xslices.Map(l.Findings, func(finding types.LicenseFinding) string {
 		return finding.Name
 	}), nil
 }
 
-func (a packagingAnalyzer) parse(filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {
-	return language.ParsePackage(types.PythonPkg, filePath, r, a.pkgParser, checksum)
+func (a packagingAnalyzer) parse(ctx context.Context, filePath string, r xio.ReadSeekerAt, checksum bool) (*types.Application, error) {
+	return language.ParsePackage(ctx, types.PythonPkg, filePath, r, a.pkgParser, checksum)
 }
 
 func (a packagingAnalyzer) Required(filePath string, _ os.FileInfo) bool {

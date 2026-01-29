@@ -1,6 +1,7 @@
 package pipenv
 
 import (
+	"context"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -24,7 +25,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile lockFile
 	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode Pipenv.lock: %w", err)

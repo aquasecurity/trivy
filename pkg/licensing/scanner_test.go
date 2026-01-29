@@ -109,6 +109,30 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "license with exception",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					"GPL-2.0-only WITH Classpath-exception-2.0",
+					expression.GPL30,
+					expression.Apache20,
+				},
+			},
+			licenseName:  "GPL-3.0-only OR GPL-2.0-only WITH Classpath-exception-2.0 AND Apache-2.0",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
+			name: "with separator in lowercase",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {
+					"Similar to Apache License but with the acknowledgment clause removed.",
+				},
+			},
+			licenseName:  "Similar to Apache License but with the acknowledgment clause removed.",
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
+		{
 			name: "compound unknown license",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {
@@ -140,6 +164,19 @@ func TestScanner_Scan(t *testing.T) {
 			name:         "unknown",
 			categories:   make(map[types.LicenseCategory][]string),
 			licenseName:  expression.BSD3Clause,
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+		{
+			// `Unlicensed` is a special license name in npm.
+			// It means the developer does not grant anyone the right to use the private or unpublished package under any circumstances.
+			name: "'unlicensed' npm license as unknown",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryUnencumbered: {
+					expression.Unlicense,
+				},
+			},
+			licenseName:  "UNLICENSED",
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},

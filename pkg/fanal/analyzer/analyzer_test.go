@@ -9,6 +9,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
@@ -275,6 +276,73 @@ func TestAnalysisResult_Merge(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "normalize licenses for PackageInfos and Applications",
+			args: args{
+				new: &analyzer.AnalysisResult{
+					Applications: []types.Application{
+						{
+							Type:     "gomod",
+							FilePath: "go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/example/package",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+										"BSD",
+										"GPL-2",
+										"GPL-2.0",
+									},
+								},
+							},
+						},
+						{
+							Type:     "gomod",
+							FilePath: "empty-license/go.mod",
+							Packages: types.Packages{
+								{
+									Name:    "github.com/empty/license",
+									Version: "v1.0.0",
+									Licenses: []string{
+										"",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     "gomod",
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								Name:    "github.com/example/package",
+								Version: "v1.0.0",
+								Licenses: []string{
+									"BSD-3-Clause",
+									"GPL-2.0-only",
+								},
+							},
+						},
+					},
+					{
+						Type:     "gomod",
+						FilePath: "empty-license/go.mod",
+						Packages: types.Packages{
+							{
+								Name:     "github.com/empty/license",
+								Version:  "v1.0.0",
+								Licenses: nil,
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -349,6 +417,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 									"lib/libc.musl-x86_64.so.1",
 									"lib/ld-musl-x86_64.so.1",
 								},
+								AnalyzedBy: analyzer.TypeApk,
 							},
 						},
 					},
@@ -395,6 +464,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   4,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 							{
 								ID:           "actionpack@5.2.3",
@@ -408,6 +478,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   6,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 						},
 					},
@@ -458,6 +529,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   4,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 							{
 								ID:           "actionpack@5.2.3",
@@ -471,6 +543,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 										EndLine:   6,
 									},
 								},
+								AnalyzedBy: analyzer.TypeBundler,
 							},
 						},
 					},
@@ -514,7 +587,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var wg sync.WaitGroup
+			eg, ctx := errgroup.WithContext(t.Context())
 			limit := semaphore.NewWeighted(3)
 
 			got := new(analyzer.AnalysisResult)
@@ -531,8 +604,7 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 			info, err := os.Stat(tt.args.testFilePath)
 			require.NoError(t, err)
 
-			ctx := t.Context()
-			err = a.AnalyzeFile(ctx, &wg, limit, got, "", tt.args.filePath, info,
+			err = a.AnalyzeFile(ctx, eg, limit, got, "", tt.args.filePath, info,
 				func() (xio.ReadSeekCloserAt, error) {
 					switch tt.args.testFilePath {
 					case "testdata/error":
@@ -548,7 +620,9 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 				nil, analyzer.AnalysisOptions{},
 			)
 
-			wg.Wait()
+			egErr := eg.Wait()
+			require.NoError(t, egErr)
+
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -579,9 +653,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 						Packages: types.Packages{
 							{
-								Name:     "com.fasterxml.jackson.core:jackson-annotations",
-								Version:  "2.15.0-rc2",
-								FilePath: "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+								Name:       "com.fasterxml.jackson.core:jackson-annotations",
+								Version:    "2.15.0-rc2",
+								FilePath:   "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
+								AnalyzedBy: analyzer.TypeJar,
 							},
 						},
 					},
@@ -602,9 +677,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/poetry/happy/poetry-pattern.lock",
 						Packages: types.Packages{
 							{
-								ID:      "certifi@2022.12.7",
-								Name:    "certifi",
-								Version: "2022.12.7",
+								ID:         "certifi@2022.12.7",
+								Name:       "certifi",
+								Version:    "2022.12.7",
+								AnalyzedBy: analyzer.TypePoetry,
 							},
 						},
 					},
@@ -613,9 +689,10 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 						FilePath: "testdata/post-apps/poetry/happy/poetry.lock",
 						Packages: types.Packages{
 							{
-								ID:      "certifi@2022.12.7",
-								Name:    "certifi",
-								Version: "2022.12.7",
+								ID:         "certifi@2022.12.7",
+								Name:       "certifi",
+								Version:    "2022.12.7",
+								AnalyzedBy: analyzer.TypePoetry,
 							},
 						},
 					},
@@ -674,7 +751,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 					"ubuntu-esm":   1,
 				},
 				PostAnalyzers: map[string]int{
-					"dpkg":   5,
+					"dpkg":   6,
 					"jar":    1,
 					"poetry": 1,
 				},
@@ -724,8 +801,10 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 		wantAllStatic     bool
 	}{
 		{
-			name:              "all analyzers including post-analyzers implement StaticPathAnalyzer",
-			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			name: "all analyzers including post-analyzers implement StaticPathAnalyzer",
+			disabledAnalyzers: []analyzer.Type{
+				analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler,
+			},
 			want: []string{
 				"etc/apk/repositories",
 				"etc/lsb-release",
@@ -743,8 +822,10 @@ func TestAnalyzerGroup_StaticPaths(t *testing.T) {
 			wantAllStatic: true,
 		},
 		{
-			name:              "all analyzers implement StaticPathAnalyzer, but there is file pattern",
-			disabledAnalyzers: []analyzer.Type{analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler},
+			name: "all analyzers implement StaticPathAnalyzer, but there is file pattern",
+			disabledAnalyzers: []analyzer.Type{
+				analyzer.TypeApkCommand, analyzer.TypeJar, analyzer.TypePoetry, analyzer.TypeBundler,
+			},
 			filePatterns: []string{
 				"alpine:etc/alpine-release-custom",
 			},

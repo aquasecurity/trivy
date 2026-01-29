@@ -2,7 +2,6 @@ package ospkg
 
 import (
 	"context"
-	"time"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -13,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/bottlerocket"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/coreos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/echo"
@@ -22,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/seal"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/suse"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/wolfi"
@@ -56,12 +57,14 @@ var (
 		ftypes.Chainguard:         chainguard.NewScanner(),
 		ftypes.Echo:               echo.NewScanner(),
 		ftypes.MinimOS:            minimos.NewScanner(),
+		ftypes.CoreOS:             coreos.NewScanner(),
 	}
 
 	// providers dynamically generate drivers based on package information
 	// and environment detection. They are tried before standard OS-specific drivers.
 	providers = []driver.Provider{
 		rootio.Provider,
+		seal.Provider,
 	}
 )
 
@@ -71,22 +74,22 @@ func RegisterDriver(name ftypes.OSType, drv driver.Driver) {
 }
 
 // Detect detects the vulnerabilities
-func Detect(ctx context.Context, _, osFamily ftypes.OSType, osName string, repo *ftypes.Repository, _ time.Time, pkgs []ftypes.Package) ([]types.DetectedVulnerability, bool, error) {
-	ctx = log.WithContextPrefix(ctx, string(osFamily))
+func Detect(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) ([]types.DetectedVulnerability, bool, error) {
+	ctx = log.WithContextPrefix(ctx, string(target.OS.Family))
 
-	d, err := newDriver(osFamily, pkgs)
+	d, err := newDriver(target.OS.Family, target.Packages)
 	if err != nil {
 		return nil, false, ErrUnsupportedOS
 	}
 
-	eosl := !d.IsSupportedVersion(ctx, osFamily, osName)
+	eosl := !d.IsSupportedVersion(ctx, target.OS.Family, target.OS.Name)
 
 	// Package `gpg-pubkey` doesn't use the correct version.
 	// We don't need to find vulnerabilities for this package.
-	filteredPkgs := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
+	filteredPkgs := lo.Filter(target.Packages, func(pkg ftypes.Package, _ int) bool {
 		return pkg.Name != "gpg-pubkey"
 	})
-	vulns, err := d.Detect(ctx, osName, repo, filteredPkgs)
+	vulns, err := d.Detect(ctx, target.OS.Name, target.Repository, filteredPkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}

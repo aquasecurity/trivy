@@ -7,20 +7,27 @@ import (
 	"github.com/docker/docker/client"
 	"github.com/google/go-containerregistry/pkg/name"
 	"golang.org/x/xerrors"
+
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 // DockerImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
-func DockerImage(ref name.Reference, host string) (Image, func(), error) {
+func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, func(), error) {
 	cleanup := func() {}
+
+	// Resolve Docker host based on priority: --docker-host > DOCKER_HOST > DOCKER_CONTEXT > current context
+	resolvedHost, err := resolveDockerHost(host)
+	if err != nil {
+		return nil, cleanup, xerrors.Errorf("failed to resolve Docker host: %w", err)
+	}
 
 	opts := []client.Opt{
 		client.FromEnv,
 		client.WithAPIVersionNegotiation(),
 	}
-	if host != "" {
-		// adding host parameter to the last assuming it will pick up more preference
-		opts = append(opts, client.WithHost(host))
+	if resolvedHost != "" {
+		opts = append(opts, client.WithHost(resolvedHost))
 	}
 	c, err := client.NewClientWithOpts(opts...)
 
@@ -37,21 +44,21 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	// or
 	// <image_name>@<digest> pattern like "alpine@sha256:21a3deaa0d32a8057914f36584b5288d2e5ecc984380bc0118285c70fa8c9300"
 	imageID := ref.Name()
-	inspect, err := c.ImageInspect(context.Background(), imageID)
+	inspect, err := c.ImageInspect(ctx, imageID)
 	if err != nil {
 		imageID = ref.String() // <image_id> pattern like `5ac716b05a9c`
-		inspect, err = c.ImageInspect(context.Background(), imageID)
+		inspect, err = c.ImageInspect(ctx, imageID)
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", imageID, err)
 		}
 	}
 
-	history, err := c.ImageHistory(context.Background(), imageID)
+	history, err := c.ImageHistory(ctx, imageID)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("unable to get history (%s): %w", imageID, err)
 	}
 
-	f, err := os.CreateTemp("", "fanal-*")
+	f, err := xos.CreateTemp("", "docker-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
@@ -63,7 +70,7 @@ func DockerImage(ref name.Reference, host string) (Image, func(), error) {
 	}
 
 	return &image{
-		opener:  imageOpener(context.Background(), imageID, f, c.ImageSave),
+		opener:  imageOpener(ctx, imageID, f, c.ImageSave),
 		inspect: inspect,
 		history: configHistory(history),
 	}, cleanup, nil

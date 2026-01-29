@@ -3,10 +3,12 @@ package ecr
 import (
 	"context"
 	"encoding/base64"
+	"net/http"
 	"regexp"
 	"strings"
 
 	"github.com/aws/aws-sdk-go-v2/aws"
+	awshttp "github.com/aws/aws-sdk-go-v2/aws/transport/http"
 	"github.com/aws/aws-sdk-go-v2/config"
 	"github.com/aws/aws-sdk-go-v2/credentials"
 	"github.com/aws/aws-sdk-go-v2/service/ecr"
@@ -29,6 +31,14 @@ type ECRClient struct {
 }
 
 func getSession(domain, region string, option types.RegistryOptions) (aws.Config, error) {
+	// Use BuildableClient to configure a custom Transport.
+	// See: https://docs.aws.amazon.com/sdk-for-go/v2/developer-guide/configure-http.html
+	// This is required because the xhttp.Client can cause issues when accessing IMDS.
+	// cf. https://github.com/aquasecurity/trivy/discussions/9429
+	client := awshttp.NewBuildableClient().WithTransportOptions(func(transport *http.Transport) {
+		transport.TLSClientConfig.InsecureSkipVerify = option.Insecure
+		transport.TLSClientConfig.RootCAs = option.CACerts
+	})
 	// create custom credential information if option is valid
 	if option.AWSSecretKey != "" && option.AWSAccessKey != "" && option.AWSRegion != "" {
 		if region != option.AWSRegion {
@@ -37,10 +47,15 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 		return config.LoadDefaultConfig(
 			context.TODO(),
 			config.WithRegion(region),
+			config.WithHTTPClient(client),
 			config.WithCredentialsProvider(credentials.NewStaticCredentialsProvider(option.AWSAccessKey, option.AWSSecretKey, option.AWSSessionToken)),
 		)
 	}
-	return config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	return config.LoadDefaultConfig(
+		context.TODO(),
+		config.WithRegion(region),
+		config.WithHTTPClient(client),
+	)
 }
 
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
@@ -64,11 +79,13 @@ func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.Re
 // <registry-id>.dkr.ecr.<region>.amazonaws.com.cn
 // <registry-id>.dkr.ecr.<region>.sc2s.sgov.gov
 // <registry-id>.dkr.ecr.<region>.c2s.ic.gov
+// <registry-id>.dkr-ecr.<region>.on.aws
 // see
 // - https://docs.aws.amazon.com/general/latest/gr/ecr.html
 // - https://docs.amazonaws.cn/en_us/aws/latest/userguide/endpoints-arns.html
+// - https://docs.aws.amazon.com/AmazonECR/latest/userguide/ecr-requests.html
 // - https://github.com/boto/botocore/blob/1.34.51/botocore/data/endpoints.json
-var ecrEndpointMatch = regexp.MustCompile(`^[^.]+\.dkr\.ecr(?:-fips)?\.([^.]+)\.(?:amazonaws\.com(?:\.cn)?|sc2s\.sgov\.gov|c2s\.ic\.gov)$`)
+var ecrEndpointMatch = regexp.MustCompile(`^[^.]+\.dkr[.-]ecr(?:-fips)?\.([^.]+)\.(?:amazonaws\.com(?:\.cn)?|sc2s\.sgov\.gov|c2s\.ic\.gov|on\.aws)$`)
 
 func determineRegion(domain string) string {
 	matches := ecrEndpointMatch.FindStringSubmatch(domain)

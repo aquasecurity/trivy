@@ -23,7 +23,7 @@ import (
 
 func Test_BasicParsing(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"test.tf": `
 
 locals {
@@ -41,6 +41,17 @@ provider "cats" {
 moved {
 
 }
+
+action "aws_lambda_invoke" "example" {
+  config {
+    function_name = "123456789012:function:my-function:1"
+    payload = jsonencode({
+      key1 = "value1"
+      key2 = "value2"
+    })
+  }
+}
+
 
 import {
   to = cats_cat.mittens
@@ -154,7 +165,7 @@ check "cats_mittens_is_special" {
 
 func Test_Modules(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 module "my-mod" {
 	source = "../module"
@@ -216,7 +227,7 @@ output "mod_result" {
 
 func Test_NestedParentModule(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 module "my-mod" {
 	source = "../."
@@ -275,7 +286,7 @@ output "mod_result" {
 
 func Test_UndefinedModuleOutputReference(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 resource "something" "blah" {
 	value = module.x.y
@@ -302,7 +313,7 @@ resource "something" "blah" {
 
 func Test_UndefinedModuleOutputReferenceInSlice(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 resource "something" "blah" {
 	value = ["first", module.x.y, "last"]
@@ -340,7 +351,7 @@ resource "something" "blah" {
 
 func Test_TemplatedSliceValue(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 
 variable "x" {
@@ -384,7 +395,7 @@ resource "something" "blah" {
 
 func Test_SliceOfVars(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 
 variable "x" {
@@ -429,7 +440,7 @@ resource "something" "blah" {
 
 func Test_VarSlice(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 
 variable "x" {
@@ -473,7 +484,7 @@ resource "something" "blah" {
 
 func Test_LocalSliceNested(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 
 variable "x" {
@@ -521,7 +532,7 @@ resource "something" "blah" {
 
 func Test_FunctionCall(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 
 variable "x" {
@@ -565,7 +576,7 @@ resource "something" "blah" {
 }
 
 func Test_NullDefaultValueForVar(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"test.tf": `
 variable "bucket_name" {
   type    = string
@@ -596,7 +607,7 @@ resource "aws_s3_bucket" "default" {
 }
 
 func Test_MultipleInstancesOfSameResource(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"test.tf": `
 
 resource "aws_kms_key" "key1" {
@@ -658,7 +669,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 }
 
 func Test_IfConfigFsIsNotSet_ThenUseModuleFsForVars(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 variable "bucket_name" {
 	type = string
@@ -689,7 +700,7 @@ resource "aws_s3_bucket" "main" {
 }
 
 func Test_ForEachRefToLocals(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 locals {
   buckets = toset([
@@ -725,7 +736,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 func Test_ForEachRefToVariableWithDefault(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 variable "buckets" {
 	type    = set(string)
@@ -759,7 +770,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 func Test_ForEachRefToVariableFromFile(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 variable "policy_rules" {
   type = object({
@@ -814,7 +825,7 @@ policy_rules = {
 }
 
 func Test_ForEachRefersToMapThatContainsSameStringValues(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `locals {
   buckets = {
     bucket1 = "test1"
@@ -853,7 +864,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 func TestDataSourceWithCountMetaArgument(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 data "http" "example" {
   count = 2
@@ -886,7 +897,7 @@ data "http" "example" {
 }
 
 func TestDataSourceWithForEachMetaArgument(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 locals {
 	ports = ["80", "8080"]
@@ -1120,7 +1131,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 func TestForEachRefToResource(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `
 	locals {
   vpcs = {
@@ -1166,7 +1177,7 @@ resource "aws_internet_gateway" "example" {
 func TestArnAttributeOfBucketIsCorrect(t *testing.T) {
 
 	t.Run("the bucket doesn't have a name", func(t *testing.T) {
-		fs := testutil.CreateFS(t, map[string]string{
+		fs := testutil.CreateFS(map[string]string{
 			"main.tf": `resource "aws_s3_bucket" "this" {}`,
 		})
 		parser := New(fs, "", OptionStopOnHCLError(true))
@@ -1192,7 +1203,7 @@ func TestArnAttributeOfBucketIsCorrect(t *testing.T) {
 	})
 
 	t.Run("the bucket has a name", func(t *testing.T) {
-		fs := testutil.CreateFS(t, map[string]string{
+		fs := testutil.CreateFS(map[string]string{
 			"main.tf": `resource "aws_s3_bucket" "this" {
   bucket = "test"
 }
@@ -1251,7 +1262,7 @@ data "aws_iam_policy_document" "this" {
 }
 
 func TestForEachWithObjectsOfDifferentTypes(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `module "backups" {
   bucket_name  = each.key
   client       = each.value.client
@@ -1302,7 +1313,7 @@ func TestCountMetaArgument(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, map[string]string{
+			fsys := testutil.CreateFS(map[string]string{
 				"main.tf": tt.src,
 			})
 			parser := New(fsys, "", OptionStopOnHCLError(true))
@@ -1353,7 +1364,7 @@ func TestCountMetaArgumentInModule(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
 			require.NoError(t, parser.ParseFS(t.Context(), "."))
 
@@ -1659,7 +1670,7 @@ func TestNestedDynamicBlock(t *testing.T) {
 }
 
 func parse(t *testing.T, files map[string]string, opts ...Option) terraform.Modules {
-	fs := testutil.CreateFS(t, files)
+	fs := testutil.CreateFS(files)
 	opts = append(opts, OptionStopOnHCLError(true))
 	parser := New(fs, "", opts...)
 	require.NoError(t, parser.ParseFS(t.Context(), "."))
@@ -1979,7 +1990,6 @@ func TestModuleParents(t *testing.T) {
 	modSet := set.New[*terraform.Module]()
 	var root *terraform.Module
 	for _, mod := range modules {
-		mod := mod
 		modChildren[mod] = make([]*terraform.Module, 0)
 		modSet.Append(mod)
 
@@ -2282,7 +2292,7 @@ func TestTFVarsFileDoesNotExist(t *testing.T) {
 }
 
 func Test_OptionsWithTfVars(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"main.tf": `resource "test" "this" {
   foo = var.foo
 }
@@ -2310,7 +2320,7 @@ variable "foo" {}
 
 func Test_AWSRegionNameDefined(t *testing.T) {
 
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"code/test.tf": `
 data "aws_region" "current" {}
 
@@ -2569,7 +2579,7 @@ resource "aws_s3_bucket" "example" {
 }
 
 func Test_AttrIsRefToOtherBlock(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.tf": `locals {
   baz_idx = 0
 }
@@ -2747,7 +2757,7 @@ func TestInstancedLogger(t *testing.T) {
 	})
 
 	t.Run("ModuleFetching", func(t *testing.T) {
-		fsys := testutil.CreateFS(t, map[string]string{
+		fsys := testutil.CreateFS(map[string]string{
 			"main.tf": `
 				module "invalid" {
 					source = "totally.invalid"
@@ -2793,7 +2803,7 @@ func TestInstancedLogger(t *testing.T) {
 
 func TestProvidedWorkingDirectory(t *testing.T) {
 	const fakeCwd = "/some/path"
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"main.tf": `
 			resource "foo" "bar" {
 			  cwd = path.cwd
@@ -2812,4 +2822,105 @@ func TestProvidedWorkingDirectory(t *testing.T) {
 	foo := modules[0].GetResourcesByType("foo")[0]
 	attr := foo.GetAttribute("cwd")
 	require.Equal(t, fakeCwd, attr.Value().AsString())
+}
+
+func Test_ResolveRemoteSubmoduleFromTerraformCache(t *testing.T) {
+	fsys := fstest.MapFS{
+		"main.tf": &fstest.MapFile{Data: []byte(`module "aws_bucket" {
+  source = "github.com/foo/bar.git//aws/modules/bucket?ref=v0.0.1"
+}
+
+locals {
+  test = module.aws_bucket.out
+}
+`)},
+		".terraform/modules/modules.json": &fstest.MapFile{Data: []byte(`{
+    "Modules": [
+        { "Key": "", "Source": "", "Dir": "." },
+        {
+            "Key": "aws_bucket",
+            "Source": "git::https://github.com/foo/bar.git//aws/modules/bucket?ref=v0.0.1",
+            "Dir": ".terraform/modules/aws_bucket/aws/modules/bucket"
+        }
+    ]
+}`)},
+		".terraform/modules/aws_bucket/aws/modules/bucket/main.tf": &fstest.MapFile{Data: []byte(`output "out" {
+  value = "some_value"
+}`)},
+	}
+
+	parser := New(fsys, "",
+		OptionWithSkipCachedModules(true),
+		OptionWithDownloads(false),
+		OptionStopOnHCLError(true),
+	)
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 2)
+	bucket := modules[0].GetBlocks().OfType("locals")[0]
+	attr := bucket.GetAttribute("test")
+	require.Equal(t, "some_value", attr.Value().AsString())
+}
+
+func Test_UnknownModuleSource(t *testing.T) {
+	files := map[string]string{
+		`main.tf`: `
+module "test" {
+  source = "${foo}/modules/foo"
+}
+`,
+	}
+
+	fsys := testutil.CreateFS(files)
+	parser := New(fsys, "",
+		OptionWithSkipCachedModules(true),
+		OptionStopOnHCLError(true),
+	)
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	require.Len(t, modules, 1)
+}
+
+func Test_MarkedValues(t *testing.T) {
+
+	tests := []struct {
+		name string
+		src  string
+	}{
+		{
+			name: "marked object",
+			src: `resource "foo" "bar" {
+  test = sensitive({})
+}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			files := map[string]string{
+				`main.tf`: tt.src,
+			}
+
+			fsys := testutil.CreateFS(files)
+			parser := New(fsys, "",
+				OptionWithSkipCachedModules(true),
+				OptionStopOnHCLError(true),
+			)
+			err := parser.ParseFS(t.Context(), ".")
+			require.NoError(t, err)
+
+			modules, err := parser.EvaluateAll(t.Context())
+			require.NoError(t, err)
+
+			require.Len(t, modules, 1)
+		})
+	}
 }

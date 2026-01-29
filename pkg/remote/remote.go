@@ -28,7 +28,7 @@ type Descriptor = remote.Descriptor
 // so that it can try multiple authentication methods.
 func Get(ctx context.Context, ref name.Reference, option types.RegistryOptions) (*Descriptor, error) {
 	return tryWithMirrors(ref, option, func(r name.Reference) (*Descriptor, error) {
-		return tryGet(ctx, xhttp.Transport(ctx), r, option)
+		return tryGet(ctx, xhttp.RoundTripper(ctx), r, option)
 	})
 }
 
@@ -72,7 +72,7 @@ func tryGet(ctx context.Context, tr http.RoundTripper, ref name.Reference, optio
 // so that it can try multiple authentication methods.
 func Image(ctx context.Context, ref name.Reference, option types.RegistryOptions) (v1.Image, error) {
 	return tryWithMirrors(ref, option, func(r name.Reference) (v1.Image, error) {
-		return tryImage(ctx, xhttp.Transport(ctx), r, option)
+		return tryImage(ctx, xhttp.RoundTripper(ctx), r, option)
 	})
 }
 
@@ -137,7 +137,7 @@ func Referrers(ctx context.Context, d name.Digest, option types.RegistryOptions)
 	// Try each authentication method until it succeeds
 	for _, authOpt := range authOptions(ctx, d, option) {
 		remoteOpts := []remote.Option{
-			remote.WithTransport(xhttp.Transport(ctx)),
+			remote.WithTransport(xhttp.RoundTripper(ctx)),
 			authOpt,
 		}
 		index, err := remote.Referrers(d, remoteOpts...)

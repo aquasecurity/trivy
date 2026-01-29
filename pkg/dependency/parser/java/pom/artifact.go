@@ -5,19 +5,18 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/samber/lo"
-
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
 	emptyVersionWarn = sync.OnceFunc(func() {
 		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
-			// e.g. https://trivy.dev/latest/docs/coverage/language/java/#empty-dependency-version
-			log.String("details", doc.URL("/docs/coverage/language/java/", "empty-dependency-version")))
+			// e.g. https://trivy.dev/docs/latest/coverage/language/java/#empty-dependency-version
+			log.String("details", doc.URL("guide/coverage/language/java/", "empty-dependency-version")))
 	})
 )
 
@@ -33,6 +32,14 @@ type artifact struct {
 	Relationship ftypes.Relationship
 
 	Locations ftypes.Locations
+
+	// For correctly calculation package ID (hash),
+	// We need to store the file paths for root or module artifacts.
+	// For other artifacts, it will be empty.
+	RootFilePath string
+
+	// Repositories got from current POM, upper-level POMs and parent POMs.
+	Repositories []repository
 }
 
 func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
@@ -65,7 +72,7 @@ func (a artifact) Equal(o artifact) bool {
 
 func (a artifact) ToPOMLicenses() pomLicenses {
 	return pomLicenses{
-		License: lo.Map(a.Licenses, func(lic string, _ int) pomLicense {
+		License: xslices.Map(a.Licenses, func(lic string) pomLicense {
 			return pomLicense{Name: lic}
 		}),
 	}

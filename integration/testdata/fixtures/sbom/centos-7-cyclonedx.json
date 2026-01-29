@@ -28,6 +28,14 @@
         {
           "name": "aquasecurity:trivy:DiffID",
           "value": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoTag",
+          "value": "ghcr.io/aquasecurity/trivy-test-images:centos-7"
+        },
+        {
+          "name": "aquasecurity:trivy:Reference",
+          "value": "ghcr.io/aquasecurity/trivy-test-images:centos-7"
         }
       ]
     }

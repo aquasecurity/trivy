@@ -1,0 +1,106 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:ff7e2292-989f-486b-a18e-29495b085c81",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2025-08-22T09:38:06+02:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "third-party",
+          "version": "[not provided]"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "64c458de142e8a93",
+      "type": "file",
+      "name": "C:\\dev\\IdeaProjects\\sample-spring-boot\\target\\demo-0.0.1-SNAPSHOT.jar",
+      "version": "sha256:7444fb30fbf253f431f9b80712ae6bb6fa52f86bae8b0f1b835e124b2baa8203"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/commons-io/commons-io@2.13.0?package-id=6033c6b2f2d3cf10",
+      "type": "file",
+      "group": "commons-io",
+      "name": "commons-io",
+      "version": "2.13.0",
+      "licenses": [
+        {
+          "license": {
+            "id": "Apache-2.0"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:apache:commons-io:2.13.0:*:*:*:*:*:*:*",
+      "purl": "pkg:maven/commons-io/commons-io@2.13.0",
+      "externalReferences": [
+        {
+          "url": "",
+          "hashes": [
+            {
+              "alg": "SHA-1",
+              "content": "8bb2bc9b4df17e2411533a0708a69f983bf5e83b"
+            }
+          ],
+          "type": "build-meta"
+        }
+      ],
+      "properties": [
+        {
+          "name": "third-party:package:foundBy",
+          "value": "java-archive-cataloger"
+        },
+        {
+          "name": "third-party:package:language",
+          "value": "java"
+        },
+        {
+          "name": "third-party:package:type",
+          "value": "java-archive"
+        },
+        {
+          "name": "third-party:package:metadataType",
+          "value": "java-archive"
+        },
+        {
+          "name": "third-party:cpe23",
+          "value": "cpe:2.3:a:apache:commons_io:2.13.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "third-party:cpe23",
+          "value": "cpe:2.3:a:apache:commons:2.13.0:*:*:*:*:*:*:*"
+        },
+        {
+          "name": "third-party:location:0:path",
+          "value": "\\demo-0.0.1-SNAPSHOT.jar"
+        },
+        {
+          "name": "third-party:metadata:-:artifactID",
+          "value": "commons-io"
+        },
+        {
+          "name": "third-party:metadata:-:groupID",
+          "value": "commons-io"
+        },
+        {
+          "name": "third-party:metadata:virtualPath",
+          "value": "\\demo-0.0.1-SNAPSHOT.jar:BOOT-INF/lib/commons-io-2.13.0.jar"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:maven/com.example/demo@0.0.1-SNAPSHOT?package-id=4ba90badb338f3a9",
+      "dependsOn": [
+        "pkg:maven/commons-io/commons-io@2.13.0?package-id=6033c6b2f2d3cf10"
+      ]
+    }
+  ]
+}

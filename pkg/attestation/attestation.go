@@ -17,6 +17,13 @@ type CosignPredicate struct {
 	Data any
 }
 
+// SigstoreBundle represents the structure of a Sigstore bundle containing a DSSE envelope.
+// This format is used by Cosign v3+ with the new bundle format.
+// cf. https://github.com/sigstore/cosign/blob/main/specs/BUNDLE_SPEC.md
+type SigstoreBundle struct {
+	DSSEEnvelope Statement `json:"dsseEnvelope"`
+}
+
 // Statement holds in-toto statement headers and the predicate.
 type Statement in_toto.Statement
 

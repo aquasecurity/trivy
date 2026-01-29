@@ -9,6 +9,7 @@ import (
 	"io"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"regexp"
 	"slices"
@@ -53,6 +54,10 @@ type gomodAnalyzer struct {
 
 	licenseClassifierConfidenceLevel float64
 
+	// gopathFS represents the $GOPATH directory as an fs.FS.
+	// It should contain the "pkg/mod" subdirectory structure.
+	gopathFS fs.FS
+
 	logger *log.Logger
 }
 
@@ -62,11 +67,12 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 		sumParser:                        sum.NewParser(),
 		leafModParser:                    mod.NewParser(false, false), // Don't detect stdlib for non-root go.mod files
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
+		gopathFS:                         os.DirFS(cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)),
 		logger:                           log.WithPrefix("golang"),
 	}, nil
 }
 
-func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -75,7 +81,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
 		// Parse go.mod
-		gomod, err := parse(input.FS, path, a.modParser)
+		gomod, err := parse(ctx, input.FS, path, a.modParser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if gomod == nil {
@@ -85,7 +91,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		if lessThanGo117(gomod) {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
-			gosum, err := parse(input.FS, sumPath, a.sumParser)
+			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return xerrors.Errorf("parse error: %w", err)
 			}
@@ -99,7 +105,7 @@ func (a *gomodAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalys
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}
 
-	if err = a.fillAdditionalData(input.FS, apps); err != nil {
+	if err = a.fillAdditionalData(ctx, input.FS, apps); err != nil {
 		a.logger.Warn("Unable to collect additional info", log.Err(err))
 	}
 
@@ -138,11 +144,11 @@ func (a *gomodAnalyzer) Version() int {
 }
 
 // fillAdditionalData collects licenses and dependency relationships, then update applications.
-func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application) error {
+func (a *gomodAnalyzer) fillAdditionalData(ctx context.Context, fsys fs.FS, apps []types.Application) error {
 	var modSearchDirs []searchDir
 
 	// $GOPATH/pkg/mod
-	if gopath, err := newGOPATH(); err != nil {
+	if gopath, err := newGOPATH(a.gopathFS); err != nil {
 		a.logger.Debug("GOPATH not found. Run 'go mod download' or 'go mod tidy' for identifying dependency graph and licenses", log.Err(err))
 	} else {
 		modSearchDirs = append(modSearchDirs, gopath)
@@ -177,7 +183,7 @@ func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application)
 			}
 
 			// Collect dependencies of the direct dependency from $GOPATH/pkg/mod because the vendor directory doesn't have go.mod files.
-			dep, err := a.collectDeps(modSearchDirs, pkg)
+			dep, err := a.collectDeps(ctx, modSearchDirs, pkg)
 			if err != nil {
 				return xerrors.Errorf("dependency graph error: %w", err)
 			} else if dep.ID == "" {
@@ -197,7 +203,7 @@ func (a *gomodAnalyzer) fillAdditionalData(fsys fs.FS, apps []types.Application)
 	return nil
 }
 
-func (a *gomodAnalyzer) collectDeps(searchDirs []searchDir, pkg types.Package) (types.Dependency, error) {
+func (a *gomodAnalyzer) collectDeps(ctx context.Context, searchDirs []searchDir, pkg types.Package) (types.Dependency, error) {
 	for _, searchDir := range searchDirs {
 		// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0
 		modDir, err := searchDir.Resolve(pkg)
@@ -205,7 +211,7 @@ func (a *gomodAnalyzer) collectDeps(searchDirs []searchDir, pkg types.Package) (
 			continue
 		}
 
-		dependsOn, err := a.resolveDeps(modDir)
+		dependsOn, err := a.resolveDeps(ctx, modDir)
 		if errors.Is(err, fs.ErrNotExist) {
 			a.logger.Debug("Unable to identify dependencies as it doesn't support Go modules",
 				log.String("module", pkg.ID))
@@ -223,7 +229,7 @@ func (a *gomodAnalyzer) collectDeps(searchDirs []searchDir, pkg types.Package) (
 }
 
 // resolveDeps parses go.mod under $GOPATH/pkg/mod and returns the dependencies
-func (a *gomodAnalyzer) resolveDeps(modDir fs.FS) ([]string, error) {
+func (a *gomodAnalyzer) resolveDeps(ctx context.Context, modDir fs.FS) ([]string, error) {
 	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v0.1.0/go.mod
 	f, err := modDir.Open("go.mod")
 	if err != nil {
@@ -237,7 +243,7 @@ func (a *gomodAnalyzer) resolveDeps(modDir fs.FS) ([]string, error) {
 	}
 
 	// Parse go.mod under $GOPATH/pkg/mod
-	pkgs, _, err := a.leafModParser.Parse(file)
+	pkgs, _, err := a.leafModParser.Parse(ctx, file)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	}
@@ -285,7 +291,7 @@ func (a *gomodAnalyzer) addOrphanIndirectDepsUnderRoot(apps []types.Application)
 	}
 }
 
-func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
+func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser) (*types.Application, error) {
 	f, err := fsys.Open(path)
 	if err != nil {
 		return nil, xerrors.Errorf("file open error: %w", err)
@@ -298,7 +304,7 @@ func parse(fsys fs.FS, path string, parser language.Parser) (*types.Application,
 	}
 
 	// Parse go.mod or go.sum
-	return language.Parse(types.GoModule, path, file, parser)
+	return language.Parse(ctx, types.GoModule, path, file, parser)
 }
 
 func lessThanGo117(gomod *types.Application) bool {
@@ -413,18 +419,26 @@ type searchDir interface {
 }
 
 type gopathDir struct {
-	root string
+	root fs.FS // $GOPATH/pkg/mod as fs.FS (can be os.DirFS or test fixture)
 }
 
-func newGOPATH() (searchDir, error) {
-	gopath := cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)
-
+func newGOPATH(gopathFS fs.FS) (searchDir, error) {
 	// $GOPATH/pkg/mod
-	modPath := filepath.Join(gopath, "pkg", "mod")
-	if !fsutils.DirExists(modPath) {
-		return nil, xerrors.Errorf("GOPATH not found: %s", modPath)
+	// Use path.Join instead of filepath.Join because fs.FS always uses forward slashes,
+	// regardless of the operating system.
+	modFS, err := fs.Sub(gopathFS, path.Join("pkg", "mod"))
+	if err != nil {
+		return nil, xerrors.Errorf("failed to access $GOPATH/pkg/mod: %w", err)
 	}
-	return &gopathDir{root: modPath}, nil
+
+	// Check if the directory exists.
+	// fs.Sub doesn't return an error for non-existent directories,
+	// so we need to explicitly verify the directory exists.
+	if _, err := fs.Stat(modFS, "."); err != nil {
+		return nil, xerrors.Errorf("$GOPATH/pkg/mod does not exist: %w", err)
+	}
+
+	return &gopathDir{root: modFS}, nil
 }
 
 // Resolve resolves the module directory for a given package.
@@ -437,9 +451,7 @@ func (d *gopathDir) Resolve(pkg types.Package) (fs.FS, error) {
 	// e.g. github.com/aquasecurity/go-dep-parser@v1.0.0
 	modDirName := fmt.Sprintf("%s@%s", name, pkg.Version)
 
-	// e.g. $GOPATH/pkg/mod/github.com/aquasecurity/go-dep-parser@v1.0.0
-	modDir := filepath.Join(d.root, modDirName)
-	return os.DirFS(modDir), nil
+	return fs.Sub(d.root, modDirName)
 }
 
 type vendorDir struct {
@@ -451,8 +463,16 @@ func newVendorDir(fsys fs.FS, modPath string) (vendorDir, error) {
 	vendor := filepath.Join(filepath.Dir(modPath), "vendor")
 	sub, err := fs.Sub(fsys, vendor)
 	if err != nil {
-		return vendorDir{}, xerrors.Errorf("vendor directory not found: %w", err)
+		return vendorDir{}, xerrors.Errorf("failed to access vendor directory: %w", err)
 	}
+
+	// Check if the directory exists.
+	// fs.Sub doesn't return an error for non-existent directories,
+	// so we need to explicitly verify the directory exists.
+	if _, err := fs.Stat(sub, "."); err != nil {
+		return vendorDir{}, xerrors.Errorf("vendor directory does not exist: %w", err)
+	}
+
 	return vendorDir{root: sub}, nil
 }
 

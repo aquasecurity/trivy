@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -52,13 +52,15 @@ var (
 		Usage:      "output template",
 	}
 	DependencyTreeFlag = Flag[bool]{
-		Name:       "dependency-tree",
-		ConfigName: "dependency-tree",
-		Usage:      "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		Name:          "dependency-tree",
+		ConfigName:    "dependency-tree",
+		Usage:         "[EXPERIMENTAL] show dependency origin tree of vulnerable packages",
+		TelemetrySafe: true,
 	}
 	ListAllPkgsFlag = Flag[bool]{
 		Name:          "list-all-pkgs",
 		ConfigName:    "list-all-pkgs",
+		Default:       true,
 		Usage:         "output all packages in the JSON report regardless of vulnerability",
 		TelemetrySafe: true,
 	}
@@ -74,14 +76,16 @@ var (
 		Usage:      "specify the Rego file path to evaluate each vulnerability",
 	}
 	ExitCodeFlag = Flag[int]{
-		Name:       "exit-code",
-		ConfigName: "exit-code",
-		Usage:      "specify exit code when any security issues are found",
+		Name:          "exit-code",
+		ConfigName:    "exit-code",
+		Usage:         "specify exit code when any security issues are found",
+		TelemetrySafe: true,
 	}
 	ExitOnEOLFlag = Flag[int]{
-		Name:       "exit-on-eol",
-		ConfigName: "exit-on-eol",
-		Usage:      "exit with the specified code when the OS reaches end of service/life",
+		Name:          "exit-on-eol",
+		ConfigName:    "exit-on-eol",
+		Usage:         "exit with the specified code when the OS reaches end of service/life",
+		TelemetrySafe: true,
 	}
 	OutputFlag = Flag[string]{
 		Name:       "output",
@@ -225,8 +229,9 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	}
 
 	// "--list-all-pkgs" option is unavailable with other than "--format json".
-	// If user specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
-	if listAllPkgs && format != types.FormatJSON {
+	// If user explicitly specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
+	// We check if the flag was explicitly set by the user to avoid warning when using the default value.
+	if f.ListAllPkgs.IsSet() && listAllPkgs && format != types.FormatJSON {
 		log.Warn(`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`)
 	}
 
@@ -299,7 +304,7 @@ func toSeverity(severity []string) []dbTypes.Severity {
 	if len(severity) == 0 {
 		return nil
 	}
-	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
+	severities := xslices.Map(severity, func(s string) dbTypes.Severity {
 		// Note that there is no need to check the error here
 		// since the severity value is already validated in the flag parser.
 		sev, _ := dbTypes.NewSeverity(s)

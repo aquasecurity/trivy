@@ -1,6 +1,11 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:1d4bc53b38b27a97aca270bea3abf3e9ea14964d02c71d2c93cd7bc53b74d660",
   "ArtifactName": "testdata/fixtures/images/photon-30.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -13,6 +18,10 @@
     "DiffIDs": [
       "sha256:0f379947a276b7b051643960392fa66c2f0cb493bc1dcd471abb5545005949fd"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:photon-30"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:photon-30",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "ed27e7f1fbd8ef9d3ea89947f682907e9a65a8e51bbe2e0eba60db6e69213848",
@@ -77,7 +86,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/bash@4.4.18-1.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "a092142482df7886"
+            "UID": "33364ec84901a6b0"
           },
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
@@ -93,6 +102,7 @@
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },
+          "Fingerprint": "sha256:4e81b35fc699744ea7b1f01c4d40f4be024599b0b89bc703b5d96118537d214b",
           "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
           "Description": "An issue was discovered in disable_priv_mode in shell.c in GNU Bash through 5.0 patch 11. By default, if Bash is run with its effective UID not equal to its real UID, it will drop privileges by setting its effective UID to its real UID. However, it does so incorrectly. On Linux and other systems that support \"saved UID\" functionality, the saved UID is not dropped. An attacker with command execution in the shell can use \"enable -f\" for runtime loading of a new builtin, which can be a shared object that calls setuid() and therefore regains privileges. However, binaries running with an effective UID of 0 are unaffected.",
           "Severity": "HIGH",
@@ -141,7 +151,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "1f44492024a630e8"
+            "UID": "26b82259da41314d"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
@@ -157,6 +167,7 @@
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },
+          "Fingerprint": "sha256:12a8a4ae7fd278f8aeb8001707801d38ca7ccea68430208692a2b7d40860f590",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "CRITICAL",
@@ -213,7 +224,7 @@
           "PkgName": "curl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl-libs@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "434cc417a46529a9"
+            "UID": "8bdb578e9ceef510"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
@@ -229,6 +240,7 @@
             "Name": "Photon OS CVE metadata",
             "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
           },
+          "Fingerprint": "sha256:8625bdfcbb7eeaffcef1af0571c227ca2c742411ee81cb598749dbfdc4a40d8c",
           "Title": "curl: double free due to subsequent call of realloc()",
           "Description": "Double-free vulnerability in the FTP-kerberos code in cURL 7.52.0 to 7.65.3.",
           "Severity": "CRITICAL",

@@ -1,6 +1,8 @@
 package pub
 
 import (
+	"context"
+
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -44,7 +46,7 @@ type Dep struct {
 
 type Description string
 
-func (p Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	l := &lock{}
 	if err := yaml.NewDecoder(r).Decode(&l); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pubspec.lock: %w", err)

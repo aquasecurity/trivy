@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
@@ -34,18 +35,10 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				NetworkWatcherFlowLogs: []network.NetworkWatcherFlowLog{{
-					RetentionPolicy: network.RetentionPolicy{
-						Days:    types.IntTest(0),
-						Enabled: types.BoolTest(false),
-					},
+					RetentionPolicy: network.RetentionPolicy{},
 				}},
 				SecurityGroups: []network.SecurityGroup{{
-					Rules: []network.SecurityGroupRule{{
-						DestinationAddresses: []types.StringValue{types.StringTest("")},
-						DestinationPorts:     []network.PortRange{{Start: types.IntTest(0), End: types.IntTest(65535)}},
-						SourceAddresses:      []types.StringValue{types.StringTest("")},
-						SourcePorts:          []network.PortRange{{Start: types.IntTest(0), End: types.IntTest(65535)}},
-					}},
+					Rules: []network.SecurityGroupRule{{}},
 				}},
 			},
 		},
@@ -111,7 +104,7 @@ func TestAdapt(t *testing.T) {
 							types.StringTest("10.0.2.0/24"),
 							types.StringTest("10.0.0.0/24"),
 						},
-						SourcePorts: []network.PortRange{
+						SourcePorts: []common.PortRange{
 							{
 								Start: types.IntTest(1000),
 								End:   types.IntTest(2000),
@@ -130,7 +123,7 @@ func TestAdapt(t *testing.T) {
 							types.StringTest("172.16.2.0/24"),
 							types.StringTest("172.16.0.0/16"),
 						},
-						DestinationPorts: []network.PortRange{
+						DestinationPorts: []common.PortRange{
 							{
 								Start: types.IntTest(8080),
 								End:   types.IntTest(8080),
@@ -146,6 +139,71 @@ func TestAdapt(t *testing.T) {
 						},
 					}},
 				}},
+			},
+		},
+		{
+			name: "network interface with ip configurations",
+			source: `{
+			"resources": [
+				{
+					"type": "Microsoft.Network/networkInterfaces",
+					"properties": {
+						"enableIPForwarding": true,
+						"ipConfigurations": [
+							{
+								"name": "primary-ip",
+								"properties": {
+									"primary": true,
+									"subnet": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary"
+									},
+									"publicIPAddress": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"
+									}
+								}
+							},
+							{
+								"name": "secondary-ip",
+								"properties": {
+									"primary": false,
+									"subnet": {
+										"id": "/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-secondary"
+									}
+								}
+							}
+						]
+					}
+				}
+			]
+		}`,
+			expected: network.Network{
+				NetworkInterfaces: []network.NetworkInterface{
+					{
+						EnableIPForwarding: types.BoolTest(true),
+
+						// backward compatibility — filled from primary config
+						SubnetID:        types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary"),
+						HasPublicIP:     types.BoolTest(true),
+						PublicIPAddress: types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"),
+
+						IPConfigurations: []network.IPConfiguration{
+							{
+								Primary: types.BoolTest(true),
+								SubnetID: types.StringTest(
+									"/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-primary",
+								),
+								HasPublicIP:     types.BoolTest(true),
+								PublicIPAddress: types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/publicIPAddresses/pip-primary"),
+							},
+							{
+								Primary:         types.BoolTest(false),
+								SubnetID:        types.StringTest("/subscriptions/abc/resourceGroups/rg/providers/Microsoft.Network/virtualNetworks/vnet/subnets/subnet-secondary"),
+								HasPublicIP:     types.BoolTest(false),
+								PublicIPAddress: types.StringTest(""),
+							},
+						},
+					},
+				},
 			},
 		},
 	}

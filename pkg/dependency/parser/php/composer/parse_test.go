@@ -55,6 +55,32 @@ var (
 			},
 		},
 		{
+			ID:       "pear/log@1.13.3",
+			Name:     "pear/log",
+			Version:  "1.13.3",
+			Dev:      true,
+			Licenses: []string{"MIT"},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 660,
+					EndLine:   719,
+				},
+			},
+		},
+		{
+			ID:       "pear/pear_exception@v1.0.2",
+			Name:     "pear/pear_exception",
+			Version:  "v1.0.2",
+			Dev:      true,
+			Licenses: []string{"BSD-2-Clause"},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 720,
+					EndLine:   778,
+				},
+			},
+		},
+		{
 			ID:       "psr/http-message@1.0.1",
 			Name:     "psr/http-message",
 			Version:  "1.0.1",
@@ -133,6 +159,12 @@ var (
 			},
 		},
 		{
+			ID: "pear/log@1.13.3",
+			DependsOn: []string{
+				"pear/pear_exception@v1.0.2",
+			},
+		},
+		{
 			ID: "symfony/polyfill-intl-idn@v1.27.0",
 			DependsOn: []string{
 				"symfony/polyfill-intl-normalizer@v1.27.0",
@@ -163,7 +195,7 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 			defer f.Close()
 
-			gotPkgs, gotDeps, err := NewParser().Parse(f)
+			gotPkgs, gotDeps, err := NewParser().Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)

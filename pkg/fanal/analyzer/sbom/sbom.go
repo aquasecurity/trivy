@@ -76,6 +76,13 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 }
 
 func (a sbomAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	// Exclude PEP 770 SBOMs in .dist-info/sboms/ directories.
+	// These are handled by the Python packaging analyzer instead.
+	// cf. https://peps.python.org/pep-0770/
+	if strings.Contains(filePath, ".dist-info/sboms/") {
+		return false
+	}
+
 	for _, suffix := range requiredSuffixes {
 		if strings.HasSuffix(filePath, suffix) {
 			return true

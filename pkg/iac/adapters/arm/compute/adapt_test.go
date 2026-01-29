@@ -84,6 +84,50 @@ func TestAdapt(t *testing.T) {
 				}},
 			},
 		},
+		{
+			name: "with network interfaces",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "properties": {
+        "osProfile": {
+          "customData": "test",
+          "linuxConfiguration": {
+            "disablePasswordAuthentication": false
+          },
+          "windowsConfiguration": {}
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-1"
+            },
+            {
+              "id": "/subscriptions/xxx/resourceGroups/xxx/providers/Microsoft.Network/networkInterfaces/nic-2"
+            }
+          ]
+        }
+      }
+    }
+  ]
+}`,
+			expected: compute.Compute{
+				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
+					VirtualMachine: compute.VirtualMachine{
+						CustomData: types.StringTest("test"),
+					},
+					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
+						DisablePasswordAuthentication: types.BoolTest(false),
+					},
+				}},
+				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
+					VirtualMachine: compute.VirtualMachine{
+						CustomData: types.StringTest("test"),
+					},
+				}},
+			},
+		},
 	}
 
 	for _, tt := range tests {

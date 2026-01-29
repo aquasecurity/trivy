@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/google/compute"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -45,19 +46,15 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
 					Firewall: &compute.Firewall{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.String("my-firewall-rule", iacTypes.NewTestMetadata()),
+						Name: iacTypes.StringTest("my-firewall-rule"),
 						IngressRules: []compute.IngressRule{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								FirewallRule: compute.FirewallRule{
-									Metadata: iacTypes.NewTestMetadata(),
-									IsAllow:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									Protocol: iacTypes.String("icmp", iacTypes.NewTestMetadata()),
-									Enforced: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-									Ports: []compute.PortRange{
+									IsAllow:  iacTypes.BoolTest(true),
+									Protocol: iacTypes.StringTest("icmp"),
+									Enforced: iacTypes.BoolTest(true),
+									Ports: []common.PortRange{
 										{
 											Start: iacTypes.IntTest(80),
 											End:   iacTypes.IntTest(80),
@@ -73,17 +70,16 @@ func Test_adaptNetworks(t *testing.T) {
 									},
 								},
 								SourceRanges: []iacTypes.StringValue{
-									iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("1.2.3.4/32"),
 								},
 							},
 						},
 					},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       iacTypes.NewTestMetadata(),
-							Name:           iacTypes.String("test-subnetwork", iacTypes.NewTestMetadata()),
-							EnableFlowLogs: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							Purpose:        iacTypes.StringDefault("PRIVATE_RFC_1918", iacTypes.NewTestMetadata()),
+							Name:           iacTypes.StringTest("test-subnetwork"),
+							EnableFlowLogs: iacTypes.BoolTest(true),
+							Purpose:        iacTypes.StringTest("PRIVATE_RFC_1918"),
 						},
 					},
 				},
@@ -106,17 +102,68 @@ func Test_adaptNetworks(t *testing.T) {
 `,
 			expected: []compute.Network{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Firewall: &compute.Firewall{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
-					},
+					Firewall: &compute.Firewall{},
 					Subnetworks: []compute.SubNetwork{
 						{
-							Metadata:       iacTypes.NewTestMetadata(),
-							Name:           iacTypes.String("", iacTypes.NewTestMetadata()),
-							EnableFlowLogs: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							Purpose:        iacTypes.String("REGIONAL_MANAGED_PROXY", iacTypes.NewTestMetadata()),
+							Purpose: iacTypes.StringTest("REGIONAL_MANAGED_PROXY"),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "private_ip_google_access_enabled",
+			terraform: `
+			resource "google_compute_subnetwork" "example" {
+				name          = "test-subnetwork"
+				network       = google_compute_network.example.id
+				private_ip_google_access = true
+			}
+			resource "google_compute_network" "example" {
+				name = "test-network"
+			}
+			`,
+			expected: []compute.Network{
+				{
+					Subnetworks: []compute.SubNetwork{
+						{
+							Name:                  iacTypes.StringTest("test-subnetwork"),
+							Purpose:               iacTypes.StringTest("PRIVATE_RFC_1918"),
+							PrivateIPGoogleAccess: iacTypes.BoolTest(true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "firewall without ports",
+			terraform: `resource "google_compute_firewall" "example" {
+  network       = "test"
+  source_ranges = ["1.2.3.4/32"]
+  allow {
+    protocol = "tcp"
+  }
+}
+`,
+			expected: []compute.Network{
+				{
+					Firewall: &compute.Firewall{
+						IngressRules: []compute.IngressRule{
+							{
+								FirewallRule: compute.FirewallRule{
+									Enforced: iacTypes.BoolTest(true),
+									IsAllow:  iacTypes.BoolTest(true),
+									Protocol: iacTypes.StringTest("tcp"),
+									Ports: []common.PortRange{
+										{
+											End: iacTypes.IntTest(65535),
+										},
+									},
+								},
+								SourceRanges: []iacTypes.StringValue{
+									iacTypes.StringTest("1.2.3.4/32"),
+								},
+							},
 						},
 					},
 				},

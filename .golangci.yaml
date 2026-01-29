@@ -59,6 +59,9 @@ linters:
               recommendations:
                 - github.com/aquasecurity/go-version
               reason: "`aquasecurity/go-version` is designed for our use-cases"
+          - github.com/liamg/memoryfs:
+              recommendations:
+                - github.com/aquasecurity/trivy/pkg/mapfs
     gosec:
       excludes:
         - G101
@@ -193,7 +196,7 @@ linters:
     warn-unused: true
 
 run:
-  go: '1.24'
+  go: '1.25'
   timeout: 30m
 
 formatters:

@@ -2,7 +2,6 @@ package http_test
 
 import (
 	"net/http"
-	"net/http/httptest"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -20,11 +19,6 @@ func TestUserAgentTransport_RoundTrip(t *testing.T) {
 		wantUA          string
 		wantHeaders     map[string]string
 	}{
-		{
-			name:      "default user agent",
-			userAgent: "",
-			wantUA:    "trivy/dev",
-		},
 		{
 			name:      "custom user agent",
 			userAgent: "custom-scanner/2.1",
@@ -53,32 +47,15 @@ func TestUserAgentTransport_RoundTrip(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a test server
-			server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				// Check User-Agent
-				gotUA := r.Header.Get("User-Agent")
-				assert.Equal(t, tt.wantUA, gotUA)
-
-				// Check other headers are preserved
-				for key, wantValue := range tt.wantHeaders {
-					gotValue := r.Header.Get(key)
-					assert.Equal(t, wantValue, gotValue, "header %s", key)
-				}
-
-				w.WriteHeader(http.StatusOK)
-			}))
-			defer server.Close()
+			// Create a request recorder
+			recorder := NewRequestRecorder()
 
 			// Create transport with user agent
-			transport := xhttp.NewTransport(xhttp.Options{
-				Insecure:  true,
-				UserAgent: tt.userAgent,
-			})
+			transport := xhttp.NewUserAgent(recorder, tt.userAgent)
 
-			client := &http.Client{Transport: transport}
-
-			// Create request
-			req, err := http.NewRequest(http.MethodGet, server.URL, http.NoBody)
+			// Create request with an invalid URL to avoid actual network calls
+			// cf. https://www.rfc-editor.org/rfc/rfc6761
+			req, err := http.NewRequest(http.MethodGet, "http://example.invalid/test", http.NoBody)
 			require.NoError(t, err)
 
 			// Set existing headers
@@ -86,17 +63,28 @@ func TestUserAgentTransport_RoundTrip(t *testing.T) {
 				req.Header.Set(key, value)
 			}
 
-			// Set existing User-Agent if specified
-			if tt.existingUA != "" {
-				req.Header.Set("User-Agent", tt.existingUA)
-			}
+			// Set User-Agent
+			req.Header.Set("User-Agent", tt.existingUA)
 
 			// Make request
-			resp, err := client.Do(req)
-			require.NoError(t, err)
-			defer resp.Body.Close()
+			resp, _ := transport.RoundTrip(req)
+			if resp != nil && resp.Body != nil {
+				resp.Body.Close()
+			}
 
-			assert.Equal(t, http.StatusOK, resp.StatusCode)
+			// Check the recorded request
+			recorded := recorder.Request()
+			require.NotNil(t, recorded)
+
+			// Check User-Agent
+			gotUA := recorded.UserAgent()
+			assert.Equal(t, tt.wantUA, gotUA)
+
+			// Check other headers are preserved
+			for key, wantValue := range tt.wantHeaders {
+				gotValue := recorded.Header.Get(key)
+				assert.Equal(t, wantValue, gotValue, "header %s", key)
+			}
 		})
 	}
 }

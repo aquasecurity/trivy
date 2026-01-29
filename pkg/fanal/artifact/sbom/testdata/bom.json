@@ -39,6 +39,10 @@
         {
           "name": "aquasecurity:trivy:RepoTag",
           "value": "maven-test-project:latest"
+        },
+        {
+          "name": "aquasecurity:trivy:Reference",
+          "value": "maven-test-project:latest"
         }
       ]
     }

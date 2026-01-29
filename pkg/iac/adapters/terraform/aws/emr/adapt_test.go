@@ -42,9 +42,8 @@ func Test_adaptSecurityConfiguration(t *testing.T) {
 				EOF
 			}`,
 			expected: emr.SecurityConfiguration{
-				Metadata: iacTypes.NewTestMetadata(),
-				Name:     iacTypes.StringExplicit("emrsc_test", iacTypes.NewTestMetadata()),
-				Configuration: iacTypes.String(
+				Name: iacTypes.StringTest("emrsc_test"),
+				Configuration: iacTypes.StringTest(
 					`				{
 					"EncryptionConfiguration": {
 					"AtRestEncryptionConfiguration": {
@@ -60,7 +59,7 @@ func Test_adaptSecurityConfiguration(t *testing.T) {
 					"EnableAtRestEncryption": true
 					}
 				}
-`, iacTypes.NewTestMetadata()),
+`),
 			},
 		},
 	}

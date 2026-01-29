@@ -1,0 +1,10 @@
+[workspace.package]
+name = "toml-workspace-members"
+version = "0.1.0"
+
+[workspace]
+resolver = "2"
+members = ["member*"]
+
+[workspace.dependencies]
+regex = "1"

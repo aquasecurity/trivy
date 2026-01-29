@@ -3,6 +3,7 @@ package scan
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"golang.org/x/text/cases"
@@ -36,7 +37,9 @@ type TerraformCustomCheck struct {
 }
 
 type Rule struct {
-	Deprecated          bool                             `json:"deprecated"`
+	ID         string `json:"id"`
+	Deprecated bool   `json:"deprecated"`
+	// Deprecated: Use the ID field instead.
 	AVDID               string                           `json:"avd_id"`
 	Aliases             []string                         `json:"aliases"`
 	ShortCode           string                           `json:"short_code"`
@@ -63,15 +66,10 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.AVDID == id || r.LongID() == id {
+	if r.ID == id || r.AVDID == id || r.LongID() == id {
 		return true
 	}
-	for _, alias := range r.Aliases {
-		if alias == id {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(r.Aliases, id)
 }
 
 func (r Rule) LongID() string {

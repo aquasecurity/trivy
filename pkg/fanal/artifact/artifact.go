@@ -2,11 +2,13 @@ package artifact
 
 import (
 	"context"
+	"slices"
 	"sort"
 
 	"github.com/google/go-containerregistry/pkg/v1"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -73,9 +75,7 @@ func (o *Option) ConfigAnalyzerOptions() analyzer.ConfigAnalyzerOptions {
 }
 
 func (o *Option) Sort() {
-	sort.Slice(o.DisabledAnalyzers, func(i, j int) bool {
-		return o.DisabledAnalyzers[i] < o.DisabledAnalyzers[j]
-	})
+	slices.Sort(o.DisabledAnalyzers)
 	sort.Strings(o.WalkerOption.SkipFiles)
 	sort.Strings(o.WalkerOption.SkipDirs)
 	sort.Strings(o.FilePatterns)
@@ -93,6 +93,7 @@ type Reference struct {
 	ID            string
 	BlobIDs       []string
 	ImageMetadata ImageMetadata
+	RepoMetadata  RepoMetadata
 
 	// SBOM
 	BOM *core.BOM
@@ -103,5 +104,16 @@ type ImageMetadata struct {
 	DiffIDs     []string // uncompressed layer IDs
 	RepoTags    []string
 	RepoDigests []string
+	Reference   name.Reference // image reference matching the artifact name
 	ConfigFile  v1.ConfigFile
+}
+
+type RepoMetadata struct {
+	RepoURL   string   // repository URL (from upstream/origin)
+	Branch    string   // current branch name
+	Tags      []string // tag names pointing to HEAD
+	Commit    string   // commit hash
+	CommitMsg string   // commit message
+	Author    string   // commit author
+	Committer string   // commit committer
 }

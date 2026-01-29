@@ -4,7 +4,7 @@ package gorules
 
 import "github.com/quasilyte/go-ruleguard/dsl"
 
-// cf. https://github.com/golang/go/wiki/CodeReviewComments#declaring-empty-slices
+// cf. https://go.dev/wiki/CodeReviewComments#declaring-empty-slices
 func declareEmptySlices(m dsl.Matcher) {
 	m.Match(
 		`$name := []$t{}`,
@@ -34,4 +34,17 @@ func errorsJoin(m dsl.Matcher) {
 func mapSet(m dsl.Matcher) {
 	m.Match(`map[$x]struct{}`).
 		Report("use github.com/aquasecurity/trivy/pkg/set.Set instead of map.")
+}
+
+// Enforce usage of x/os package for temporary file operations
+func tempFileOps(m dsl.Matcher) {
+	m.Match(`os.CreateTemp($*args)`).
+		Where(!m.File().Name.Matches(`.*_test\.go$`)).
+		Suggest(`xos.CreateTemp($args)`).
+		Report("use github.com/aquasecurity/trivy/pkg/x/os.CreateTemp instead of os.CreateTemp for process-safe temp file cleanup")
+
+	m.Match(`os.MkdirTemp($*args)`).
+		Where(!m.File().Name.Matches(`.*_test\.go$`)).
+		Suggest(`xos.MkdirTemp($args)`).
+		Report("use github.com/aquasecurity/trivy/pkg/x/os.MkdirTemp instead of os.MkdirTemp for process-safe temp file cleanup")
 }

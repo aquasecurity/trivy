@@ -44,7 +44,7 @@ func NewRemoteCache(ctx context.Context, opts RemoteOptions) *RemoteCache {
 }
 
 // PutArtifact sends artifact to remote client
-func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo) error {
+func (c RemoteCache) PutArtifact(_ context.Context, imageID string, artifactInfo types.ArtifactInfo) error {
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.PutArtifact(c.ctx, rpc.ConvertToRPCArtifactInfo(imageID, artifactInfo))
@@ -57,7 +57,7 @@ func (c RemoteCache) PutArtifact(imageID string, artifactInfo types.ArtifactInfo
 }
 
 // PutBlob sends blobInfo to remote client
-func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
+func (c RemoteCache) PutBlob(_ context.Context, diffID string, blobInfo types.BlobInfo) error {
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.PutBlob(c.ctx, rpc.ConvertToRPCPutBlobRequest(diffID, blobInfo))
@@ -70,7 +70,7 @@ func (c RemoteCache) PutBlob(diffID string, blobInfo types.BlobInfo) error {
 }
 
 // MissingBlobs fetches missing blobs from RemoteCache
-func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []string, error) {
+func (c RemoteCache) MissingBlobs(_ context.Context, imageID string, layerIDs []string) (bool, []string, error) {
 	var layers *rpcCache.MissingBlobsResponse
 	err := rpc.Retry(func() error {
 		var err error
@@ -84,7 +84,7 @@ func (c RemoteCache) MissingBlobs(imageID string, layerIDs []string) (bool, []st
 }
 
 // DeleteBlobs removes blobs by IDs from RemoteCache
-func (c RemoteCache) DeleteBlobs(blobIDs []string) error {
+func (c RemoteCache) DeleteBlobs(_ context.Context, blobIDs []string) error {
 	err := rpc.Retry(func() error {
 		var err error
 		_, err = c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))

@@ -10,6 +10,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/samber/lo"
+	bolt "go.etcd.io/bbolt"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
@@ -34,10 +35,15 @@ var (
 	DefaultGCRRepository = fmt.Sprintf("%s:%d", "mirror.gcr.io/aquasec/trivy-db", db.SchemaVersion)
 	defaultGCRRepository = lo.Must(name.NewTag(DefaultGCRRepository))
 
-	Init  = db.Init
 	Close = db.Close
 	Path  = db.Path
 )
+
+// Init initializes the vulnerability database with read-only mode
+func Init(dbDir string, opts ...db.Option) error {
+	opts = append(opts, db.WithBoltOptions(&bolt.Options{ReadOnly: true}))
+	return db.Init(dbDir, opts...)
+}
 
 type options struct {
 	artifact       *oci.Artifact
@@ -110,19 +116,24 @@ func (c *Client) NeedsUpdate(ctx context.Context, cliVersion string, skip bool) 
 		meta = metadata.Metadata{Version: db.SchemaVersion}
 	}
 
+	// We can't use the DB if either `trivy.db` or `metadata.json` is missing.
+	// In that case, we need to download the DB.
+	if noRequiredFiles {
+		if skip {
+			log.ErrorContext(ctx, "The first run cannot skip downloading DB")
+			return false, xerrors.New("--skip-db-update cannot be specified on the first run")
+		}
+		return true, nil
+	}
+
 	// There are 3 cases when DownloadAt field is zero:
 	// - metadata file was not created yet. This is the first run of Trivy.
 	// - trivy-db was downloaded with `oras`. In this case user can use `--skip-db-update` (like for air-gapped) or re-download trivy-db.
 	// - trivy-db was corrupted while copying from tmp directory to cache directory. We should update this trivy-db.
 	// We can't detect these cases, so we will show warning for users who use oras + air-gapped.
-	if !noRequiredFiles && meta.DownloadedAt.IsZero() && !skip {
+	if meta.DownloadedAt.IsZero() && !skip {
 		log.WarnContext(ctx, "Trivy DB may be corrupted and will be re-downloaded. If you manually downloaded DB - use the `--skip-db-update` flag to skip updating DB.")
 		return true, nil
-	}
-
-	if skip && noRequiredFiles {
-		log.ErrorContext(ctx, "The first run cannot skip downloading DB")
-		return false, xerrors.New("--skip-db-update cannot be specified on the first run")
 	}
 
 	if db.SchemaVersion < meta.Version {

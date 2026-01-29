@@ -56,7 +56,7 @@ func newCargoAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error)
 	}, nil
 }
 
-func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a cargoAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
 	required := func(path string, _ fs.DirEntry) bool {
@@ -65,7 +65,7 @@ func (a cargoAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysi
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
 		// Parse Cargo.lock
-		app, err := a.parseCargoLock(filePath, r)
+		app, err := a.parseCargoLock(ctx, filePath, r)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if app == nil {
@@ -104,8 +104,8 @@ func (a cargoAnalyzer) Version() int {
 	return version
 }
 
-func (a cargoAnalyzer) parseCargoLock(filePath string, r io.Reader) (*types.Application, error) {
-	return language.Parse(types.Cargo, filePath, r, a.lockParser)
+func (a cargoAnalyzer) parseCargoLock(ctx context.Context, filePath string, r io.Reader) (*types.Application, error) {
+	return language.Parse(ctx, types.Cargo, filePath, r, a.lockParser)
 }
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
@@ -222,16 +222,32 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 	var workspaces []string
 	for _, member := range members {
 		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
-		memberPkg, memberDeps, _, err := a.parseCargoTOML(fsys, memberPath)
+
+		// Cargo workspaces can be globs:
+		// https://github.com/rust-lang/cargo/pull/3979
+		resolvedPaths, err := fs.Glob(fsys, memberPath)
 		if err != nil {
-			a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", memberPath), log.Err(err))
+			a.logger.Warn("Invalid glob pattern in Cargo.toml member paths", log.String("member_path", memberPath), log.Err(err))
 			continue
 		}
-		workspaces = append(workspaces, memberPkg)
 
-		// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
-		maps.Copy(memberDeps, dependencies)
-		dependencies = memberDeps
+		if len(resolvedPaths) == 0 {
+			a.logger.Warn("Unable to find matching Cargo.toml files", log.String("member_path", memberPath))
+			continue
+		}
+
+		for _, pkg := range resolvedPaths {
+			memberPkg, memberDeps, _, err := a.parseCargoTOML(fsys, pkg)
+			if err != nil {
+				a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", pkg), log.Err(err))
+				continue
+			}
+			workspaces = append(workspaces, memberPkg)
+
+			// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
+			maps.Copy(memberDeps, dependencies)
+			dependencies = memberDeps
+		}
 	}
 
 	deps := make(map[string]string)

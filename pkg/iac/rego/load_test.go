@@ -9,7 +9,6 @@ import (
 	"testing"
 	"testing/fstest"
 
-	"github.com/open-policy-agent/opa/v1/ast"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -141,7 +140,25 @@ deny {
 # schemas:
 # - input: schema["fooschema"]
 # custom:
-#   avd_id: test-001
+#   id: test-001
+package builtin.test2
+
+deny {
+	input.evil == "foo bar"
+}`,
+					),
+				},
+			},
+		},
+		{
+			name: "match by check AVDID",
+			files: map[string]*fstest.MapFile{
+				"policies/my-check2.rego": {
+					Data: []byte(`# METADATA
+# schemas:
+# - input: schema["fooschema"]
+# custom:
+#   avd_id: avd-test-001
 package builtin.test2
 
 deny {
@@ -237,7 +254,7 @@ func Test_FallbackErrorWithoutLocation(t *testing.T) {
 		},
 	}
 
-	for i := 0; i < ast.CompileErrorLimitDefault+1; i++ {
+	for i := range rego.CompileErrorLimit + 1 {
 		src := `# METADATA
 # schemas:
 # - input: schema["fooschema"]
@@ -247,7 +264,7 @@ deny {
 	input.evil == "foo bar"
 }`
 		fsys[fmt.Sprintf("policies/my-check%d.rego", i)] = &fstest.MapFile{
-			Data: []byte(fmt.Sprintf(src, i)),
+			Data: fmt.Appendf(nil, src, i),
 		}
 	}
 
@@ -330,7 +347,7 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			fsys := fstest.MapFS{
-				"check.rego": &fstest.MapFile{Data: []byte(fmt.Sprintf(`# METADATA
+				"check.rego": &fstest.MapFile{Data: fmt.Appendf(nil, `# METADATA
 # title: "dummy title"
 # description: "some description"
 # scope: package
@@ -341,7 +358,7 @@ func TestIsMinimumTrivyVersion(t *testing.T) {
 package builtin.foo.ABC123
 deny {
     input.evil
-}`, tc.MinimumTrivyVersion))},
+}`, tc.MinimumTrivyVersion)},
 			}
 			scanner := rego.NewScanner(
 				rego.WithPolicyDirs("."),

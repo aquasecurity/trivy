@@ -3,18 +3,19 @@ package yarn
 import (
 	"bufio"
 	"bytes"
+	"context"
 	"io"
 	"regexp"
 	"sort"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
@@ -85,7 +86,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 	if err != nil {
 		return "", "", nil, err
 	}
-	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
+	patterns = xslices.Map(patternsSplit, func(pattern string) string {
 		_, _, version, _ := parsePattern(pattern)
 		return packageID(packagename, version)
 	})
@@ -131,7 +132,7 @@ func ignoreProtocol(protocol string) bool {
 func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
 	// find dependencies by patterns
 	for pkgID, depPatterns := range dependsOn {
-		depIDs := lo.Map(depPatterns, func(pattern string, _ int) string {
+		depIDs := xslices.Map(depPatterns, func(pattern string) string {
 			return patternIDs[pattern]
 		})
 		deps = append(deps, ftypes.Dependency{
@@ -269,7 +270,7 @@ func parseDependency(line string) (string, error) {
 	return packageID(name, version), nil
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, map[string][]string, error) {
 	lineNumber := 1
 	var pkgs ftypes.Packages
 

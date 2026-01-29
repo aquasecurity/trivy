@@ -1,20 +1,12 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/bun",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "bun.lock",
@@ -26,34 +18,34 @@
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.3.1",
-            "UID": "996607b7a767641"
+            "UID": "4ee32c908d25947f"
           },
           "Version": "3.3.1",
           "Relationship": "direct",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 24,
               "EndLine": 24
             }
-          ]
+          ],
+          "AnalyzedBy": "bun"
         },
         {
           "ID": "typescript@5.8.3",
           "Name": "typescript",
           "Identifier": {
             "PURL": "pkg:npm/typescript@5.8.3",
-            "UID": "dc420153a1d93546"
+            "UID": "57c0617aad078250"
           },
           "Version": "5.8.3",
           "Relationship": "direct",
-          "Layer": {},
           "Locations": [
             {
               "StartLine": 26,
               "EndLine": 26
             }
-          ]
+          ],
+          "AnalyzedBy": "bun"
         }
       ],
       "Vulnerabilities": [
@@ -63,12 +55,11 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.1",
-            "UID": "996607b7a767641"
+            "UID": "4ee32c908d25947f"
           },
           "InstalledVersion": "3.3.1",
           "FixedVersion": "3.4.0",
           "Status": "fixed",
-          "Layer": {},
           "SeveritySource": "ghsa",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-11358",
           "DataSource": {
@@ -76,6 +67,7 @@
             "Name": "GitHub Security Advisory Npm",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anpm"
           },
+          "Fingerprint": "sha256:b7d2e6c655945265efa1caa0b5aaab246390ffc7e2f64938c9e0a6c21d69b6b6",
           "Title": "jquery: Prototype pollution in object's prototype leading to denial of service, remote code execution, or property injection",
           "Description": "jQuery before 3.4.0, as used in Drupal, Backdrop CMS, and other products, mishandles jQuery.extend(true, {}, ...) because of Object.prototype pollution. If an unsanitized source object contained an enumerable __proto__ property, it could extend the native Object.prototype.",
           "Severity": "MEDIUM",

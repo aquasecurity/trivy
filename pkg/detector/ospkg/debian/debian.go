@@ -7,6 +7,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/debian"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
@@ -62,13 +63,21 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		// Skip third-party packages as they are not covered by Debian security advisories
+		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+			continue
+		}
+
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
 			log.DebugContext(ctx, "Installed package version error", log.Err(err))
 			continue
 		}
 
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.SrcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get debian advisories: %w", err)
 		}
