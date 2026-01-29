@@ -32,6 +32,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 
 	// Skip OS package scanning if the target is expected not to have OS packages
 	if !target.OS.Family.HasOSPackages() {
+		log.Debug("Skipping OS package scanning", log.String("family", string(target.OS.Family)))
 		return types.Result{}, false, nil
 	}
 
