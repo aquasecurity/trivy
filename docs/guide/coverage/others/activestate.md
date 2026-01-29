@@ -22,7 +22,8 @@ Trivy collects packages from two sources:
 
 ## Vulnerability
 Trivy detects vulnerabilities in language-specific packages found in the image.
-OS package vulnerability scanning is not applicable.
+
+ActiveState images don't contain OS packages, so vulnerability detection for OS packages is not performed.
 
 ## License
 Trivy detects licenses from language-specific packages found in the image.
