@@ -79,7 +79,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		// Some vendors don't use package manager and their images contains only language-specific packages.
 		// e.g. ActiveState images.
 		// In this case, we skip warning for no OS packages, because it's expected behavior.
-		if !ftypes.NoOSPkgsTypes.Contains(detail.OS.Family) {
+		if detail.OS.Family.HasOSPackages() {
 			log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 			log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 		}

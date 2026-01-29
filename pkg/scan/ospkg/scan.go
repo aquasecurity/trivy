@@ -8,7 +8,6 @@ import (
 	"golang.org/x/xerrors"
 
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -32,7 +31,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 		string(target.OS.Family)), log.String("version", target.OS.Name))
 
 	// Skip OS package scanning if the target is expected not to have OS packages
-	if ftypes.NoOSPkgsTypes.Contains(target.OS.Family) {
+	if !target.OS.Family.HasOSPackages() {
 		return types.Result{}, false, nil
 	}
 
