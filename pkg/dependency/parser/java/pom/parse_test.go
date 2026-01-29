@@ -435,7 +435,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] \- org.example:example-api3:jar:4.0.3:compile
 		{
 			name:      "dependencyManagement prefers child properties",
-			inputFile: filepath.Join("testdata", "parent-child-properties", "child", "pom.xml"),
+			inputFile: filepath.Join("testdata", "parent-child-properties", "pom.xml"),
 			local:     true,
 			want: []ftypes.Package{
 				{

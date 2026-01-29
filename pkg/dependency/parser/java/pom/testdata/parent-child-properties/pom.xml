@@ -12,7 +12,7 @@
         <groupId>com.example</groupId>
         <artifactId>parent</artifactId>
         <version>4.0.3</version>
-        <relativePath>../parent</relativePath>
+        <relativePath>./parent</relativePath>
     </parent>
 
     <properties>
