@@ -237,7 +237,7 @@ Legend:
 			tableWritten := bytes.Buffer{}
 			writer := table.NewWriter(table.Options{
 				Output:             &tableWritten,
-				Tree:               true,
+				DependencyTree:     true,
 				IncludeNonFailures: tc.includeNonFailures,
 				Severities: []dbTypes.Severity{
 					dbTypes.SeverityHigh,

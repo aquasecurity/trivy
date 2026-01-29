@@ -33,6 +33,7 @@ var (
 			Name:         "org.example:example-nested-scope-compile",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-nested-scope-compile", "1.0.0", "example-nested-scope-compile-1.0.0.pom"),
 			Locations:    location,
 		}
 	}
@@ -50,6 +51,7 @@ var (
 			Name:         "org.example:example-nested-scope-empty",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-nested-scope-empty", "1.0.0", "example-nested-scope-empty-1.0.0.pom"),
 			Locations:    location,
 		}
 	}
@@ -67,6 +69,7 @@ var (
 			Name:         "org.example:example-nested-scope-runtime",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-nested-scope-runtime", "1.0.0", "example-nested-scope-runtime-1.0.0.pom"),
 			Locations:    location,
 		}
 	}
@@ -77,6 +80,7 @@ var (
 			Name:         "org.example:example-scope-compile",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-scope-compile", "2.0.0", "example-scope-compile-2.0.0.pom"),
 		}
 	}
 
@@ -86,6 +90,7 @@ var (
 			Name:         "org.example:example-scope-empty",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-scope-empty", "2.0.0", "example-scope-empty-2.0.0.pom"),
 		}
 	}
 
@@ -95,6 +100,7 @@ var (
 			Name:         "org.example:example-scope-runtime",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipIndirect,
+			FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-scope-runtime", "2.0.0", "example-scope-runtime-2.0.0.pom"),
 		}
 	}
 	exampleApiCompile = func(hash string) ftypes.Package {
@@ -126,6 +132,58 @@ var (
 )
 
 func TestPom_Parse(t *testing.T) {
+	happy := filepath.Join("testdata", "happy", "pom.xml")
+	exampleApi := filepath.Join("testdata", "repository", "org", "example", "example-api", "1.7.30", "example-api-1.7.30.pom")
+	exampleApi2 := filepath.Join("testdata", "repository", "org", "example", "example-api", "2.0.0", "example-api-2.0.0.pom")
+	exampleDep := filepath.Join("testdata", "repository", "org", "example", "example-dependency", "1.2.3", "example-dependency-1.2.3.pom")
+	exampleDep125 := filepath.Join("testdata", "repository", "org", "example", "example-dependency", "1.2.5", "example-dependency-1.2.5.pom")
+	exampleDep20 := filepath.Join("testdata", "repository", "org", "example", "example-dependency", "2.0.0", "example-dependency-2.0.0.pom")
+	exampleDep2 := filepath.Join("testdata", "repository", "org", "example", "example-dependency2", "2.3.4", "example-dependency2-2.3.4.pom")
+	exampleNested := filepath.Join("testdata", "repository", "org", "example", "example-nested", "3.3.3", "example-nested-3.3.3.pom")
+	parentChild := filepath.Join("testdata", "parent-properties", "child", "pom.xml")
+	parentChildProps := filepath.Join("testdata", "parent-child-properties", "child", "pom.xml")
+	parentDep := filepath.Join("testdata", "parent-dependencies", "child", "pom.xml")
+	parentDepManagement := filepath.Join("testdata", "parent-dependency-management", "child", "pom.xml")
+	parentRelative := filepath.Join("testdata", "parent-relative-path", "pom.xml")
+	parentVerProp := filepath.Join("testdata", "parent-version-is-property", "child", "pom.xml")
+	parentRemote := filepath.Join("testdata", "parent-remote-repository", "pom.xml")
+	projectVersion := filepath.Join("testdata", "project-version-from-parent", "child", "pom.xml")
+	inheritProps := filepath.Join("testdata", "inherit-props", "base", "pom.xml")
+	transitiveParents := filepath.Join("testdata", "transitive-parents", "base", "pom.xml")
+	softReq := filepath.Join("testdata", "soft-requirement", "pom.xml")
+	softReqWithDeps := filepath.Join("testdata", "soft-requirement-with-transitive-dependencies", "pom.xml")
+	hardReq := filepath.Join("testdata", "hard-requirement", "pom.xml")
+	versionReq := filepath.Join("testdata", "version-requirement", "pom.xml")
+	importDep := filepath.Join("testdata", "import-dependency-management", "pom.xml")
+	importDepMult := filepath.Join("testdata", "import-dependency-management-multiple", "pom.xml")
+	exclusions := filepath.Join("testdata", "exclusions", "pom.xml")
+	exclusionChild := filepath.Join("testdata", "exclusions-in-child", "pom.xml")
+	exclusionParent := filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml")
+	wildcardExclusion := filepath.Join("testdata", "wildcard-exclusions", "pom.xml")
+	multiModule := filepath.Join("testdata", "multi-module", "pom.xml")
+	multiModuleGav := filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav", "pom.xml")
+	multiModuleSimDep := filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav-with-props", "pom.xml")
+	multiModuleSoft := filepath.Join("testdata", "multi-module-soft-requirement", "pom.xml")
+	nestedModule := filepath.Join("testdata", "nested-modules", "pom.xml")
+	moduleInfinityLoop := filepath.Join("testdata", "modules-infinity-loop", "pom.xml")
+	rootPom := filepath.Join("testdata", "root-pom-dep-management", "pom.xml")
+	rootPomOverwrite := filepath.Join("testdata", "root-pom-dep-management-for-deps-with-project-props", "pom.xml")
+	transitiveDepManagement := filepath.Join("testdata", "transitive-dependency-management", "pom.xml")
+	parentNotFound := filepath.Join("testdata", "not-found-parent", "pom.xml")
+	depNotFound := filepath.Join("testdata", "not-found-dependency", "pom.xml")
+	moduleNotFound := filepath.Join("testdata", "not-found-module", "pom.xml")
+	multipleLicenses := filepath.Join("testdata", "multiply-licenses", "pom.xml")
+	inheritLicenses := filepath.Join("testdata", "inherit-license", "module", "submodule", "pom.xml")
+	noParentInfinityLoop := filepath.Join("testdata", "no-parent-infinity-loop", "pom.xml")
+	depNoVersion := filepath.Join("testdata", "dep-without-version", "pom.xml")
+	rootDepManagement := filepath.Join("testdata", "use-root-dep-management-in-parent", "pom.xml")
+	depManagementChild := filepath.Join("testdata", "use-dep-management-from-child-in-parent", "pom.xml")
+	useChildDepManagement := filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml")
+	inheritScopesFromChild := filepath.Join("testdata", "inherit-scopes-from-child-deps-and-their-parents", "pom.xml")
+	inheritScopesInChild := filepath.Join("testdata", "inherit-scopes-in-children-from-root", "pom.xml")
+	inheritScopesInParent := filepath.Join("testdata", "inherit-scopes-in-parents-from-root", "pom.xml")
+	multiDepManagement := filepath.Join("testdata", "get-fields-from-multiple-depmanagements", "pom.xml")
+	spaces := filepath.Join("testdata", "with-spaces", "pom.xml")
 	tests := []struct {
 		name                      string
 		inputFile                 string
@@ -138,7 +196,7 @@ func TestPom_Parse(t *testing.T) {
 	}{
 		{
 			name:      "local repository",
-			inputFile: filepath.Join("testdata", "happy", "pom.xml"),
+			inputFile: happy,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -147,6 +205,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     happy,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -154,6 +213,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 32,
@@ -195,6 +255,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     happy,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -242,6 +303,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     filepath.Join("testdata", "snapshot", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3-SNAPSHOT::1f825e0f",
@@ -288,6 +350,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:happy",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     filepath.Join("testdata", "snapshot", "with-maven-metadata", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-dependency:2.17.0-SNAPSHOT::c991922a",
@@ -346,7 +409,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:                      "multiple repositories are used",
-			inputFile:                 filepath.Join("testdata", "happy", "pom.xml"),
+			inputFile:                 happy,
 			local:                     false,
 			enableRepoForSettingsRepo: true,
 			want: []ftypes.Package{
@@ -356,6 +419,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"BSD-3-Clause"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     happy,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::e71631e7",
@@ -395,7 +459,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "inherit parent properties",
-			inputFile: filepath.Join("testdata", "parent-properties", "child", "pom.xml"),
+			inputFile: parentChild,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -404,6 +468,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentChild,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::c5884361",
@@ -411,6 +476,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 33,
@@ -430,7 +496,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "inherit project properties from parent",
-			inputFile: filepath.Join("testdata", "project-version-from-parent", "child", "pom.xml"),
+			inputFile: projectVersion,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -438,6 +504,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     projectVersion,
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::9ca5a4d0",
@@ -445,6 +512,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi2,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -464,7 +532,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "inherit properties in parent depManagement with import scope",
-			inputFile: filepath.Join("testdata", "inherit-props", "base", "pom.xml"),
+			inputFile: inheritProps,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -472,6 +540,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:test",
 					Version:      "0.0.1-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     inheritProps,
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::ce31c866",
@@ -479,6 +548,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi2,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -498,7 +568,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "dependencyManagement prefers child properties",
-			inputFile: filepath.Join("testdata", "parent-child-properties", "child", "pom.xml"),
+			inputFile: parentChildProps,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -506,12 +576,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentChildProps,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::60fa7625",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 22,
@@ -543,7 +615,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "inherit parent dependencies",
-			inputFile: filepath.Join("testdata", "parent-dependencies", "child", "pom.xml"),
+			inputFile: parentDep,
 			local:     false,
 			want: []ftypes.Package{
 				{
@@ -552,6 +624,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentDep,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::2f579104",
@@ -572,7 +645,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "inherit parent dependencyManagement",
-			inputFile: filepath.Join("testdata", "parent-dependency-management", "child", "pom.xml"),
+			inputFile: parentDepManagement,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -581,6 +654,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentDepManagement,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d2229a7d",
@@ -588,6 +662,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -607,7 +682,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "transitive parents",
-			inputFile: filepath.Join("testdata", "transitive-parents", "base", "pom.xml"),
+			inputFile: transitiveParents,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -616,6 +691,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "4.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     transitiveParents,
 				},
 				{
 					ID:           "org.example:example-child:2.0.0::3bffdbee",
@@ -623,6 +699,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-child", "2.0.0", "example-child-2.0.0.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 28,
@@ -636,6 +713,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -655,7 +733,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "parent relativePath",
-			inputFile: filepath.Join("testdata", "parent-relative-path", "pom.xml"),
+			inputFile: parentRelative,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -664,6 +742,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentRelative,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d5f0ae9b",
@@ -671,6 +750,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -690,7 +770,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "parent version in property",
-			inputFile: filepath.Join("testdata", "parent-version-is-property", "child", "pom.xml"),
+			inputFile: parentVerProp,
 			local:     false,
 			want: []ftypes.Package{
 				{
@@ -698,6 +778,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child",
 					Version:      "1.0.0-SNAPSHOT",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentVerProp,
 				},
 				{
 					ID:           "org.example:example-api:1.1.1::a9f8fc7e",
@@ -723,7 +804,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "parent in a remote repository",
-			inputFile: filepath.Join("testdata", "parent-remote-repository", "pom.xml"),
+			inputFile: parentRemote,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -732,6 +813,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentRemote,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d7e76bdd",
@@ -739,6 +821,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -763,7 +846,7 @@ func TestPom_Parse(t *testing.T) {
 			// [INFO] \- org.example:example-dependency:jar:1.2.3:compile
 			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "soft requirement",
-			inputFile: filepath.Join("testdata", "soft-requirement", "pom.xml"),
+			inputFile: softReq,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -772,6 +855,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     softReq,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::2f38d7a0",
@@ -779,6 +863,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 32,
@@ -791,6 +876,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 37,
@@ -823,7 +909,7 @@ func TestPom_Parse(t *testing.T) {
 			// [INFO] \- org.example:example-dependency2:jar:2.3.4:compile
 			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "soft requirement with transitive dependencies",
-			inputFile: filepath.Join("testdata", "soft-requirement-with-transitive-dependencies", "pom.xml"),
+			inputFile: softReqWithDeps,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -831,12 +917,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:soft-transitive",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     softReqWithDeps,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::3ce2f1f4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 13,
@@ -849,6 +937,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep2,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 18,
@@ -862,6 +951,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -894,7 +984,7 @@ func TestPom_Parse(t *testing.T) {
 			//[INFO]    \- org.example:example-api:jar:2.0.0:compile
 			// Save DependsOn for each package - https://github.com/aquasecurity/go-dep-parser/pull/243#discussion_r1303904548
 			name:      "hard requirement for the specified version",
-			inputFile: filepath.Join("testdata", "hard-requirement", "pom.xml"),
+			inputFile: hardReq,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -903,12 +993,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     hardReq,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::31ca2fff",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 33,
@@ -921,6 +1013,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-nested", "3.3.4", "example-nested-3.3.4.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 28,
@@ -934,6 +1027,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -960,7 +1054,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "version requirement",
-			inputFile: filepath.Join("testdata", "version-requirement", "pom.xml"),
+			inputFile: versionReq,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -969,6 +1063,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     versionReq,
 				},
 				{
 					ID:           "org.example:example-api::ab862f6b",
@@ -985,7 +1080,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "import dependencyManagement",
-			inputFile: filepath.Join("testdata", "import-dependency-management", "pom.xml"),
+			inputFile: importDep,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -994,6 +1089,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     importDep,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::6537575e",
@@ -1001,6 +1097,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 34,
@@ -1020,7 +1117,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "import multiple dependencyManagement",
-			inputFile: filepath.Join("testdata", "import-dependency-management-multiple", "pom.xml"),
+			inputFile: importDepMult,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1029,6 +1126,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     importDepMult,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::807a5be4",
@@ -1036,6 +1134,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 42,
@@ -1055,7 +1154,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "exclusions",
-			inputFile: filepath.Join("testdata", "exclusions", "pom.xml"),
+			inputFile: exclusions,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1063,12 +1162,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     exclusions,
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::7d2a59bf",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleNested,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1081,6 +1182,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleDep,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1100,7 +1202,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "exclusions in child",
-			inputFile: filepath.Join("testdata", "exclusions-in-child", "pom.xml"),
+			inputFile: exclusionChild,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1108,12 +1210,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:example",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     exclusionChild,
 				},
 				{
 					ID:           "org.example:example-exclusions:4.0.0::d9903c57",
 					Name:         "org.example:example-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-exclusions", "4.0.0", "example-exclusions-4.0.0.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 10,
@@ -1127,12 +1231,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::5bdfcd45",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleDep,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1161,7 +1267,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] ------------------------------------------------------------------------
 		{
 			name:      "exclusions in child and parent dependency management",
-			inputFile: filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml"),
+			inputFile: exclusionParent,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1170,12 +1276,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "3.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     exclusionParent,
 				},
 				{
 					ID:           "org.example:example-exclusions:3.0.0::1e4e34b7",
 					Name:         "org.example:example-exclusions",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-exclusions", "3.0.0", "example-exclusions-3.0.0.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 26,
@@ -1188,6 +1296,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleNested,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1207,7 +1316,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "exclusions with wildcards",
-			inputFile: filepath.Join("testdata", "wildcard-exclusions", "pom.xml"),
+			inputFile: wildcardExclusion,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1215,12 +1324,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:wildcard-exclusions",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     wildcardExclusion,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::4ee336bf",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1233,6 +1344,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency2",
 					Version:      "2.3.4",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep2,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -1245,6 +1357,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleNested,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 36,
@@ -1266,7 +1379,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "multi module",
-			inputFile: filepath.Join("testdata", "multi-module", "pom.xml"),
+			inputFile: multiModule,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1275,6 +1388,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multiModule,
 				},
 				{
 					ID:           "com.example:module:1.1.1::822ec30d",
@@ -1282,12 +1396,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.1.1",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multi-module", "module", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::493c9a85",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep,
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::fb4eb559",
@@ -1295,6 +1411,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			// `mvn` doesn't include modules in dep tree of root pom and builds separate graphs.
@@ -1322,7 +1439,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "multi module with deps with same GAV",
-			inputFile: filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav", "pom.xml"),
+			inputFile: multiModuleGav,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1330,18 +1447,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multiModuleGav,
 				},
 				{
 					ID:           "com.example:module1:1.0.0::4c39d72a",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav", "module1", "pom.xml"),
 				},
 				{
 					ID:           "com.example:module2:2.0.0::57fc775b",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav", "module2", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::80048fd3",
@@ -1349,6 +1469,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::8810f687",
@@ -1356,6 +1477,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 				},
 			},
 			//[INFO] --------------------------------[ pom ]---------------------------------
@@ -1398,7 +1520,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "multi module with similar deps, but different children",
-			inputFile: filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav-with-props", "pom.xml"),
+			inputFile: multiModuleSimDep,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1406,30 +1528,35 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multiModuleSimDep,
 				},
 				{
 					ID:           "com.example:module1:1.0.0::919ee306",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav-with-props", "module1", "pom.xml"),
 				},
 				{
 					ID:           "com.example:module2:2.0.0::e4f6bb04",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multiple-modules-with-deps-with-same-gav-with-props", "module2", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.5::e2ecf3a4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.5",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep125,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.5::e3e3d7fe",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.5",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep125,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::a4032585",
@@ -1437,6 +1564,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi,
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::6c475df9",
@@ -1444,6 +1572,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			//[INFO] --------------------------------[ jar ]---------------------------------
@@ -1507,7 +1636,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "nested modules",
-			inputFile: filepath.Join("testdata", "nested-modules", "pom.xml"),
+			inputFile: nestedModule,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1515,18 +1644,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     nestedModule,
 				},
 				{
 					ID:           "com.example:module1:1.0.0::59758428",
 					Name:         "com.example:module1",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "nested-modules", "module1", "pom.xml"),
 				},
 				{
 					ID:           "com.example:module2:2.0.0::a36f3d58",
 					Name:         "com.example:module2",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "nested-modules", "module1", "module2", "pom.xml"),
 				},
 				{
 					ID:      "org.example:example-api:1.7.30::2946ca63",
@@ -1536,6 +1668,7 @@ func TestPom_Parse(t *testing.T) {
 						"The Apache Software License, Version 2.0",
 					},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1556,7 +1689,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "Infinity loop for modules",
-			inputFile: filepath.Join("testdata", "modules-infinity-loop", "pom.xml"),
+			inputFile: moduleInfinityLoop,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1564,6 +1697,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:root",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     moduleInfinityLoop,
 				},
 				// as module
 				{
@@ -1571,12 +1705,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:module-1",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "modules-infinity-loop", "module-1", "pom.xml"),
 				},
 				{
 					ID:           "org.example:module-2:3.0.0::70a6381c",
 					Name:         "org.example:module-2",
 					Version:      "3.0.0",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "modules-infinity-loop", "module-1", "module-2", "pom.xml"),
 				},
 				// as dependency
 				{
@@ -1604,7 +1740,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "multi module soft requirement",
-			inputFile: filepath.Join("testdata", "multi-module-soft-requirement", "pom.xml"),
+			inputFile: multiModuleSoft,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1612,18 +1748,21 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:aggregation",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multiModuleSoft,
 				},
 				{
 					ID:           "com.example:module1:1.1.1::ede50f46",
 					Name:         "com.example:module1",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multi-module-soft-requirement", "module1", "pom.xml"),
 				},
 				{
 					ID:           "com.example:module2:1.1.1::ce791b4f",
 					Name:         "com.example:module2",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipWorkspace,
+					FilePath:     filepath.Join("testdata", "multi-module-soft-requirement", "module2", "pom.xml"),
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::5832af90",
@@ -1631,6 +1770,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 				},
 				{
 					ID:           "org.example:example-api:2.0.0::95bb5ac5",
@@ -1638,6 +1778,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1664,7 +1805,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "overwrite artifact version from dependencyManagement in the root POM",
-			inputFile: filepath.Join("testdata", "root-pom-dep-management", "pom.xml"),
+			inputFile: rootPom,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1672,12 +1813,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-dep-management",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     rootPom,
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::99356a85",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleNested,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 20,
@@ -1691,6 +1834,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 				// dependency version is taken from `com.example:root-pom-dep-management` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
@@ -1699,6 +1843,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-dependency", "1.2.4", "example-dependency-1.2.4.pom"),
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1724,7 +1869,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "overwrite artifact version from dependencyManagement in the root POM when dependency uses `project.*` props",
-			inputFile: filepath.Join("testdata", "root-pom-dep-management-for-deps-with-project-props", "pom.xml"),
+			inputFile: rootPomOverwrite,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1732,12 +1877,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-dep-management-for-deps-with-project-props",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     rootPomOverwrite,
 				},
 				{
 					ID:           "org.example:example-dependency:1.7.30::6ae4efb4",
 					Name:         "org.example:example-dependency",
 					Version:      "1.7.30",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-dependency", "1.7.30", "example-dependency-1.7.30.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 21,
@@ -1751,6 +1898,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1770,7 +1918,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "transitive dependencyManagement should not be inherited",
-			inputFile: filepath.Join("testdata", "transitive-dependency-management", "pom.xml"),
+			inputFile: transitiveDepManagement,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1778,12 +1926,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:transitive-dependency-management",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     transitiveDepManagement,
 				},
 				{
 					ID:           "org.example:example-dependency-management3:1.1.1::c472e9e4",
 					Name:         "org.example:example-dependency-management3",
 					Version:      "1.1.1",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-dependency-management3", "1.1.1", "example-dependency-management3-1.1.1.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 14,
@@ -1799,12 +1949,14 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 				{
 					ID:           "org.example:example-dependency:1.2.3::a4863849",
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.3",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleDep,
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -1830,7 +1982,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "parent not found",
-			inputFile: filepath.Join("testdata", "not-found-parent", "pom.xml"),
+			inputFile: parentNotFound,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1839,6 +1991,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0-SNAPSHOT",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     parentNotFound,
 				},
 				{
 					ID:           "org.example:example-api:1.7.30::d09fe727",
@@ -1846,6 +1999,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.7.30",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleApi,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 27,
@@ -1865,7 +2019,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "dependency not found",
-			inputFile: filepath.Join("testdata", "not-found-dependency", "pom.xml"),
+			inputFile: depNotFound,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1874,6 +2028,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     depNotFound,
 				},
 				{
 					ID:           "org.example:example-not-found:999::af293727",
@@ -1899,7 +2054,7 @@ func TestPom_Parse(t *testing.T) {
 		},
 		{
 			name:      "module not found - unable to parse module",
-			inputFile: filepath.Join("testdata", "not-found-module", "pom.xml"),
+			inputFile: moduleNotFound,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1908,12 +2063,13 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     moduleNotFound,
 				},
 			},
 		},
 		{
 			name:      "multiply licenses",
-			inputFile: filepath.Join("testdata", "multiply-licenses", "pom.xml"),
+			inputFile: multipleLicenses,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1925,12 +2081,13 @@ func TestPom_Parse(t *testing.T) {
 						"Apache 2.0",
 					},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multipleLicenses,
 				},
 			},
 		},
 		{
 			name:      "inherit parent license",
-			inputFile: filepath.Join("testdata", "inherit-license", "module", "submodule", "pom.xml"),
+			inputFile: inheritLicenses,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1939,12 +2096,13 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"Apache-2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     inheritLicenses,
 				},
 			},
 		},
 		{
 			name:      "compare ArtifactIDs for base and parent pom's",
-			inputFile: filepath.Join("testdata", "no-parent-infinity-loop", "pom.xml"),
+			inputFile: noParentInfinityLoop,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1953,12 +2111,13 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "1.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     noParentInfinityLoop,
 				},
 			},
 		},
 		{
 			name:      "dependency without version",
-			inputFile: filepath.Join("testdata", "dep-without-version", "pom.xml"),
+			inputFile: depNoVersion,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1966,6 +2125,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:dep-without-version",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     depNoVersion,
 				},
 				{
 					ID:           "org.example:example-api::35b5f95d",
@@ -1985,7 +2145,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO]    \- org.example:example-api:jar:1.0.1:compile
 		{
 			name:      "dependency from parent uses version from root pom depManagement",
-			inputFile: filepath.Join("testdata", "use-root-dep-management-in-parent", "pom.xml"),
+			inputFile: rootDepManagement,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -1993,12 +2153,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     rootDepManagement,
 				},
 				{
 					ID:           "org.example:example-dependency:2.0.0::310f08f9",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep20,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 25,
@@ -2033,7 +2195,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO]    \- org.example:example-api:jar:2.0.1:compile
 		{
 			name:      "dependency from parent uses version from child pom depManagement",
-			inputFile: filepath.Join("testdata", "use-dep-management-from-child-in-parent", "pom.xml"),
+			inputFile: depManagementChild,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2041,12 +2203,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     depManagementChild,
 				},
 				{
 					ID:           "org.example:example-dependency:2.0.0::329a1653",
 					Name:         "org.example:example-dependency",
 					Version:      "2.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleDep20,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 15,
@@ -2082,7 +2246,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] \- org.example:example-api:jar:1.0.1:compile
 		{
 			name:      "dependency from parent uses version from child(scanned) pom depManagement",
-			inputFile: filepath.Join("testdata", "use-child-dep-management-in-parent", "pom.xml"),
+			inputFile: useChildDepManagement,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2090,6 +2254,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:child-depManagement-in-parent",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     useChildDepManagement,
 				},
 				{
 					ID:           "org.example:example-api:1.0.1::5e5fc05f",
@@ -2135,7 +2300,7 @@ func TestPom_Parse(t *testing.T) {
 		// `example-nested-*" dependencies and their parents contain `dependencyManagement` with changed scopes
 		{
 			name:      "inherit scopes from child dependencies and their parents",
-			inputFile: filepath.Join("testdata", "inherit-scopes-from-child-deps-and-their-parents", "pom.xml"),
+			inputFile: inheritScopesFromChild,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2143,6 +2308,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-from-child-deps-and-their-parents",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     inheritScopesFromChild,
 				},
 				exampleNestedScopeCompile("c5c1ec8f", 16, 21),
 				exampleNestedScopeEmpty("2e0c37ea", 22, 26),
@@ -2216,7 +2382,7 @@ func TestPom_Parse(t *testing.T) {
 		// scopes from `dependencyManagement` of root pom are used
 		{
 			name:      "inherit scopes in children from root pom",
-			inputFile: filepath.Join("testdata", "inherit-scopes-in-children-from-root", "pom.xml"),
+			inputFile: inheritScopesInChild,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2224,6 +2390,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-in-children-from-root",
 					Version:      "0.0.1",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     inheritScopesInChild,
 				},
 				exampleNestedScopeCompile("e66ec05e", 51, 56),
 				exampleNestedScopeEmpty("4c11808b", 57, 61),
@@ -2283,7 +2450,7 @@ func TestPom_Parse(t *testing.T) {
 		// scopes from `dependencyManagement` of root pom are used in parent dependencies
 		{
 			name:      "inherit scopes in parent from root pom",
-			inputFile: filepath.Join("testdata", "inherit-scopes-in-parents-from-root", "pom.xml"),
+			inputFile: inheritScopesInParent,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2291,6 +2458,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:inherit-scopes-in-parents-from-root",
 					Version:      "0.1.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     inheritScopesInParent,
 				},
 				exampleNestedScopeCompile("4ce69e4d", 0, 0),
 				exampleNestedScopeRuntime("9660d657", 0, 0),
@@ -2332,7 +2500,7 @@ func TestPom_Parse(t *testing.T) {
 		//[INFO]       \- org.example:example-api:jar:2.0.0:compile
 		{
 			name:      "space at the start and/or end of the text nodes",
-			inputFile: filepath.Join("testdata", "with-spaces", "pom.xml"),
+			inputFile: spaces,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2340,12 +2508,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:root-pom-with-spaces",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     spaces,
 				},
 				{
 					ID:           "org.example:example-nested:3.3.3::11f4a96e",
 					Name:         "org.example:example-nested",
 					Version:      "3.3.3",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     exampleNested,
 					Locations: ftypes.Locations{
 						{
 							StartLine: 24,
@@ -2359,6 +2529,7 @@ func TestPom_Parse(t *testing.T) {
 					Version:      "2.0.0",
 					Licenses:     []string{"The Apache Software License, Version 2.0"},
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     exampleApi2,
 				},
 				// dependency version is taken from `com.example:root-pom-with-spaces` from dependencyManagement
 				// not from `com.example:example-nested` from `com.example:example-nested`
@@ -2367,6 +2538,7 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "org.example:example-dependency",
 					Version:      "1.2.4",
 					Relationship: ftypes.RelationshipIndirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-dependency", "1.2.4", "example-dependency-1.2.4.pom"),
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -2401,7 +2573,7 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] ------------------------------------------------------------------------
 		{
 			name:      "don't overwrite test scope from upper depManagement",
-			inputFile: filepath.Join("testdata", "get-fields-from-multiple-depmanagements", "pom.xml"),
+			inputFile: multiDepManagement,
 			local:     true,
 			want: []ftypes.Package{
 				{
@@ -2409,12 +2581,14 @@ func TestPom_Parse(t *testing.T) {
 					Name:         "com.example:get-fields-from-multiple-depmanagements",
 					Version:      "1.0.0",
 					Relationship: ftypes.RelationshipRoot,
+					FilePath:     multiDepManagement,
 				},
 				{
 					ID:           "org.example:example-dependency:4.0.0::1c05143b",
 					Name:         "org.example:example-dependency",
 					Version:      "4.0.0",
 					Relationship: ftypes.RelationshipDirect,
+					FilePath:     filepath.Join("testdata", "repository", "org", "example", "example-dependency", "4.0.0", "example-dependency-4.0.0.pom"),
 					Locations: ftypes.Locations{
 						{
 							StartLine: 30,

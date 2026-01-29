@@ -538,6 +538,9 @@ exit-code: 0
 # Same as '--exit-on-eol'
 exit-on-eol: 0
 
+# Same as '--file-tree'
+file-tree: false
+
 # Same as '--format'
 format: "table"
 

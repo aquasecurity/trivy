@@ -45,6 +45,7 @@ trivy filesystem [flags] PATH
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
+      --file-tree                         [EXPERIMENTAL] show file name dependency origin tree of vulnerable packages
   -f, --format string                     format
                                           Allowed values:
                                             - table

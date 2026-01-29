@@ -22,6 +22,7 @@ trivy convert [flags] RESULT_JSON
       --dependency-tree            [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --exit-code int              specify exit code when any security issues are found
       --exit-on-eol int            exit with the specified code when the OS reaches end of service/life
+      --file-tree                  [EXPERIMENTAL] show file name dependency origin tree of vulnerable packages
   -f, --format string              format
                                    Allowed values:
                                      - table
