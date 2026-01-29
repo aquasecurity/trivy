@@ -75,14 +75,12 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 				Name:   detail.Repository.Release,
 			}
 		}
+	case !detail.OS.Family.HasOSPackages():
+		// Some OS types like ActiveState don't have OS packages, only language-specific packages.
+		// No warning needed.
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
-		// Some vendors don't use package manager and their images contains only language-specific packages.
-		// e.g. ActiveState images.
-		// In this case, we skip warning for no OS packages, because it's expected behavior.
-		if detail.OS.Family.HasOSPackages() {
-			log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
-			log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
-		}
+		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
+		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
 	case err != nil:
 		return types.ScanResponse{}, xerrors.Errorf("failed to apply layers: %w", err)
 	}
