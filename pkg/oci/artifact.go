@@ -219,6 +219,19 @@ func (a *Artifact) Digest(ctx context.Context) (string, error) {
 	return digest.String(), nil
 }
 
+func (a *Artifact) Manifest(ctx context.Context) (*v1.Manifest, error) {
+	if err := a.populate(ctx, a.RegistryOptions); err != nil {
+		return nil, err
+	}
+
+	manifest, err := a.image.Manifest()
+	if err != nil {
+		return nil, xerrors.Errorf("get manifest: %w", err)
+	}
+
+	return manifest, nil
+}
+
 type Artifacts []*Artifact
 
 // NewArtifacts returns a slice of artifacts.
