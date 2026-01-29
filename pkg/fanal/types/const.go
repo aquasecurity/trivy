@@ -21,6 +21,7 @@ const (
 
 // Operating systems
 const (
+	ActiveState        OSType = "activestate"
 	Alma               OSType = "alma"
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
@@ -47,6 +48,17 @@ const (
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
 )
+
+// HasOSPackages returns true if the OS type has OS-level packages managed by a package manager.
+// Some OS types like ActiveState only contain language-specific packages.
+func (o OSType) HasOSPackages() bool {
+	switch o {
+	case ActiveState:
+		return false
+	default:
+		return true
+	}
+}
 
 // PurlNamespace returns the normalized namespace for Package URL (PURL) representation.
 // For SUSE-based distributions (SLES, SLE Micro), it returns "suse".
@@ -125,6 +137,7 @@ const (
 
 var (
 	OSTypes = []OSType{
+		ActiveState,
 		Alma,
 		Alpine,
 		Amazon,

@@ -50,6 +50,7 @@ jobs:
             plugin
 
             # OS
+            activestate
             alpine
             wolfi
             chainguard

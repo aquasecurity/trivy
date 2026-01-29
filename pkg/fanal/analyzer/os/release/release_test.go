@@ -20,6 +20,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 		wantErr   string
 	}{
 		{
+			name:      "ActiveState",
+			inputFile: "testdata/activestate",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.ActiveState,
+					Name:   "1.0",
+				},
+			},
+		},
+		{
 			name:      "Fedora",
 			inputFile: "testdata/fedora",
 			want: &analyzer.AnalysisResult{

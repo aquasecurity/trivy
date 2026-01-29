@@ -117,6 +117,7 @@ nav:
               - Terraform: guide/coverage/iac/terraform.md
           - Others:
               - Overview: guide/coverage/others/index.md
+              - ActiveState Images: guide/coverage/others/activestate.md
               - Bitnami Images: guide/coverage/others/bitnami.md
               - Conda: guide/coverage/others/conda.md
               - Root.io Images: guide/coverage/others/rootio.md

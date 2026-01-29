@@ -69,6 +69,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 //nolint:gocyclo
 func idToOSFamily(id string) types.OSType {
 	switch id {
+	case "activestate":
+		return types.ActiveState
 	case "rhel":
 		return types.RedHat
 	case "centos":

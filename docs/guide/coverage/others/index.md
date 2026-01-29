@@ -12,6 +12,7 @@ Trivy supports them for
 
 | Element                        | File                                                | Image[^1] | Rootfs[^2] | Filesystem[^3] | Repository[^4] |
 |--------------------------------|-----------------------------------------------------|:---------:|:----------:|:--------------:|:--------------:|
+| [ActiveState images](activestate.md) | `/opt/activestate/<name>.spdx.json`           |     ✅     |     ✅      |       -        |       -        |
 | [Bitnami packages](bitnami.md) | `/opt/bitnami/<component>/.spdx-<component>.spdx`   |     ✅     |     ✅      |       -        |       -        |
 | [Conda](conda.md)              | `<conda-root>/envs/<env>/conda-meta/<package>.json` |     ✅     |     ✅      |       -        |       -        |
 |                                | `environment.yml`                                   |     -     |     -      |       ✅        |       ✅        |

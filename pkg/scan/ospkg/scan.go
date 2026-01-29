@@ -30,6 +30,12 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	log.Info("Detected OS", log.String("family",
 		string(target.OS.Family)), log.String("version", target.OS.Name))
 
+	// Skip OS package scanning if the target is expected not to have OS packages
+	if !target.OS.Family.HasOSPackages() {
+		log.Debug("Skipping OS package scanning", log.String("family", string(target.OS.Family)))
+		return types.Result{}, false, nil
+	}
+
 	if target.OS.Extended {
 		// TODO: move the logic to each detector
 		target.OS.Name += "-ESM"

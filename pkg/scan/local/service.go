@@ -75,6 +75,9 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 				Name:   detail.Repository.Release,
 			}
 		}
+	case !detail.OS.Family.HasOSPackages():
+		// Some OS types like ActiveState don't have OS packages, only language-specific packages.
+		// No warning needed.
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
