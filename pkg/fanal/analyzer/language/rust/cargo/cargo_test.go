@@ -437,6 +437,55 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			want: &analyzer.AnalysisResult{},
 		},
 		{
+			name: "version.workspace = true inherits from workspace.package.version",
+			dir:  "testdata/version-workspace-inherit",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "afc012b7e68b6638",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"myapp@2.0.0",
+								},
+							},
+							{
+								ID:           "myapp@2.0.0",
+								Name:         "myapp",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+								DependsOn: []string{
+									"serde@1.0.195",
+								},
+							},
+							{
+								ID:           "serde@1.0.195",
+								Name:         "serde",
+								Version:      "1.0.195",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   16,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "workspace members",
 			dir:  "testdata/toml-workspace-members",
 			want: &analyzer.AnalysisResult{
@@ -446,7 +495,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
-								ID:           "d0e1231acd612a0f",
+								ID:           "eeae9dc40f83d7dd",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"member@0.1.0",
@@ -618,7 +667,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
-								ID:           "18164bd748b1f49e",
+								ID:           "fbcbfc8e1114c435",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"member1@0.1.0",
