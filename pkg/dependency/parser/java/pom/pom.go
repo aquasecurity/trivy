@@ -247,9 +247,6 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
 		return dep
 	}
 	return dep
