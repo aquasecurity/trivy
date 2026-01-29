@@ -1,4 +1,4 @@
-package parser
+package parser_test
 
 import (
 	"path"
@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
@@ -72,7 +73,7 @@ module "this" {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(tt.files)
-			parser := New(fsys, "", OptionStopOnHCLError(true))
+			parser := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
 
 			modules := xslices.Map(lo.Keys(tt.files), path.Dir)
 
