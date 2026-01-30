@@ -1,12 +1,12 @@
 package cargo
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -15,12 +15,12 @@ import (
 func Test_cargoAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name string
-		dir  string
+		file string
 		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
-			dir:  "testdata/happy",
+			file: "testdata/happy.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -163,7 +163,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "Cargo.toml doesn't include `Dependencies` field",
-			dir:  "testdata/toml-only-workspace-deps",
+			file: "testdata/toml-only-workspace-deps.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -205,7 +205,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "no Cargo.toml",
-			dir:  "testdata/no-cargo-toml",
+			file: "testdata/no-cargo-toml.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -392,7 +392,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "wrong Cargo.toml",
-			dir:  "testdata/wrong-cargo-toml",
+			file: "testdata/wrong-cargo-toml.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -433,12 +433,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "broken Cargo.lock",
-			dir:  "testdata/sad",
+			file: "testdata/sad.txtar",
 			want: &analyzer.AnalysisResult{},
 		},
 		{
 			name: "version.workspace = true inherits from workspace.package.version",
-			dir:  "testdata/version-workspace-inherit",
+			file: "testdata/version-workspace-inherit.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -487,7 +487,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "workspace members",
-			dir:  "testdata/toml-workspace-members",
+			file: "testdata/toml-workspace-members.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -659,7 +659,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "workspace members",
-			dir:  "testdata/toml-workspace-glob",
+			file: "testdata/toml-workspace-glob.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -837,7 +837,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
-				FS: os.DirFS(tt.dir),
+				FS: testutil.TxtarToFS(t, tt.file),
 			})
 
 			require.NoError(t, err)
