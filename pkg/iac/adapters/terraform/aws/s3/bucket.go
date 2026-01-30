@@ -102,6 +102,7 @@ func getVersioning(block *terraform.Block, a *adapter) s3.Versioning {
 	}
 
 	if enabled, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_object_lock_configuration", func(resource *terraform.Block) *iacTypes.BoolValue {
+		// TODO: object_lock_enabled is a string
 		if block.GetAttribute("object_lock_enabled").IsTrue() {
 			return isObjeckLockEnabled(resource)
 		}

@@ -427,7 +427,7 @@ func CheckPathExists(path string) (fs.FileInfo, string, error) {
 	}
 	fi, err := os.Stat(abs)
 	if errors.Is(err, os.ErrNotExist) {
-		return nil, "", xerrors.Errorf("check file %q not found", abs)
+		return nil, "", xerrors.Errorf("cache does not exist at %q", abs)
 	} else if err != nil {
 		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
 	}

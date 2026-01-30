@@ -23,7 +23,7 @@ require (
 	github.com/aquasecurity/table v1.11.0
 	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-checks v1.11.3-0.20250604022615-9a7efa7c9169
+	github.com/aquasecurity/trivy-checks v1.12.2-0.20251219190323-79d27547baf5
 	github.com/aquasecurity/trivy-db v0.0.0-20251222105351-a833f47f8f0d
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
@@ -378,7 +378,7 @@ require (
 	github.com/oklog/ulid/v2 v2.1.1 // indirect
 	github.com/opencontainers/runtime-spec v1.2.1 // indirect
 	github.com/opencontainers/selinux v1.13.0 // indirect
-	github.com/owenrumney/squealer v1.2.11 // indirect
+	github.com/owenrumney/squealer v1.2.12 // indirect
 	github.com/pandatix/go-cvss v0.6.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.4 // indirect
@@ -502,7 +502,7 @@ require (
 	modernc.org/libc v1.66.10 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	mvdan.cc/sh/v3 v3.11.0 // indirect
+	mvdan.cc/sh/v3 v3.12.0 // indirect
 	oras.land/oras-go/v2 v2.6.0 // indirect
 	pluginrpc.com/pluginrpc v0.5.0 // indirect
 	sigs.k8s.io/json v0.0.0-20241014173422-cfa47c3a1cc8 // indirect
