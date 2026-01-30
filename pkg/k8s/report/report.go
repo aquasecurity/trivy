@@ -11,6 +11,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -34,6 +35,7 @@ type Option struct {
 	ColumnHeading []string
 	Scanners      types.Scanners
 	APIVersion    string
+	ColorMode     config.ColorMode
 }
 
 // Report represents a kubernetes scan report

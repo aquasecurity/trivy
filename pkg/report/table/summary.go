@@ -11,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
@@ -120,9 +121,10 @@ type summaryRenderer struct {
 	isTerminal bool
 	scanners   []Scanner
 	logger     *log.Logger
+	colorMode  config.ColorMode
 }
 
-func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scanners) *summaryRenderer {
+func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, colorMode config.ColorMode, scanners types.Scanners) *summaryRenderer {
 	if !isTerminal {
 		tml.DisableFormatting()
 	}
@@ -141,6 +143,7 @@ func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scann
 		isTerminal: isTerminal,
 		scanners:   ss,
 		logger:     log.WithPrefix("report"),
+		colorMode:  colorMode,
 	}
 }
 
@@ -150,9 +153,13 @@ func (r *summaryRenderer) Render(report types.Report) {
 		return
 	}
 
-	r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
+	if r.colorMode == config.NeverColor {
+		r.printf("\nReport Summary\n\n")
+	} else {
+		r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
+	}
 
-	t := newTableWriter(r.w, r.isTerminal)
+	t := newTableWriter(r.w, r.isTerminal, r.colorMode)
 	t.SetAutoMerge(false)
 	t.SetColumnMaxWidth(80)
 
