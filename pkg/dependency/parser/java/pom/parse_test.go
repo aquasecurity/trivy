@@ -1159,6 +1159,10 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] \- org.example:example-exclusions:jar:3.0.0:compile
 		// [INFO]    \- org.example:example-nested:jar:3.3.3:compile
 		// [INFO] ------------------------------------------------------------------------
+		// org.example:example-dependency is excluded via com.example:child (dependencies)
+		// org.example:example-dependency2 is excluded via com.example:parent (dependencyManagement)
+		// org.example:example-api2 is excluded via org.example:example-exclusions (dependencies)
+		// org.example:example-api3 is excluded via com.example:parent (dependencyManagement)
 		{
 			name:      "exclusions in child and parent dependency management",
 			inputFile: filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml"),

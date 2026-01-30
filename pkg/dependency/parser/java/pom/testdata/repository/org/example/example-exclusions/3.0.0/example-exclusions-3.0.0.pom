@@ -21,6 +21,12 @@
             <groupId>org.example</groupId>
             <artifactId>example-nested</artifactId>
             <version>3.3.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.example</groupId>
+                    <artifactId>example-api2</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     </dependencies>
 

@@ -31,6 +31,28 @@
                     </exclusion>
                 </exclusions>
             </dependency>
+            <dependency>
+                <artifactId>example-nested</artifactId>
+                <groupId>org.example</groupId>
+                <version>3.3.3</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.example</groupId>
+                        <artifactId>example-api3</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-nested</artifactId>
+                <version>3.3.3</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>org.example</groupId>
+                        <artifactId>example-api3</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
