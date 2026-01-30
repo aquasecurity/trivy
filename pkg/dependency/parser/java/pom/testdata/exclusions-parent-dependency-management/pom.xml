@@ -34,7 +34,7 @@
             <dependency>
                 <artifactId>example-nested</artifactId>
                 <groupId>org.example</groupId>
-                <version>3.3.3</version>
+                <version>3.3.5</version>
                 <exclusions>
                     <exclusion>
                         <groupId>org.example</groupId>
