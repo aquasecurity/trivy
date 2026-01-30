@@ -130,12 +130,13 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 		return xerrors.Errorf("digest error: %w", err)
 	}
 
-	ver, custom, err := c.getBundleMajorVersion(ctx)
+	ver, err := c.getBundleMajorVersion(ctx)
 	if err != nil {
 		return xerrors.Errorf("get bundle version: %w", err)
 	}
 
-	if custom {
+	isCustomBundle := ver == 0
+	if isCustomBundle {
 		log.DebugContext(ctx, "Built-in checks (custom build)",
 			log.String("digest", digest))
 	} else {
@@ -148,7 +149,7 @@ func (c *Client) DownloadBuiltinChecks(ctx context.Context, registryOpts types.R
 		Digest:       digest,
 		DownloadedAt: c.clock.Now(),
 		MajorVersion: &ver,
-		CustomBuild:  custom,
+		CustomBuild:  isCustomBundle,
 	}); err != nil {
 		return xerrors.Errorf("unable to update the check metadata: %w", err)
 	}
@@ -161,35 +162,35 @@ func (c *Client) BuiltinChecksPath() string {
 	return c.contentDir()
 }
 
-func (c *Client) getBundleMajorVersion(ctx context.Context) (ver int, custom bool, err error) {
+func (c *Client) getBundleMajorVersion(ctx context.Context) (ver int, err error) {
 	manifest, err := c.artifact.Manifest(ctx)
 	if err != nil {
-		return 0, false, err
+		return 0, err
 	}
 
 	// No annotations → treat as custom build
 	if manifest.Annotations == nil {
-		return 0, true, nil
+		return 0, nil
 	}
 
 	v, ok := manifest.Annotations[VersionAnnotationKey]
 	if !ok || v == "" {
-		return 0, true, nil
+		return 0, nil
 	}
 
 	version, err := semver.Parse(v)
 	if err != nil {
 		// Invalid version → treat as custom build
-		return 0, true, nil
+		return 0, nil
 	}
 
 	majorPart, ok := version.Major().(part.Uint64)
 	if !ok {
 		// Could not extract major part → treat as custom build
-		return 0, true, nil
+		return 0, nil
 	}
 
-	return int(majorPart), false, nil
+	return int(majorPart), nil
 }
 
 // NeedsUpdate returns if the default check should be updated
