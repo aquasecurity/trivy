@@ -12,7 +12,8 @@ import (
 
 // TrivyInfo contains Trivy-specific information
 type TrivyInfo struct {
-	Version string `json:",omitempty"` // Trivy version
+	Version string      `json:",omitempty"` // Client version
+	Server  VersionInfo `json:",omitzero"`  // Server info (client/server mode only)
 }
 
 // Report represents a scan result
