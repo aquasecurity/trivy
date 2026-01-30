@@ -74,7 +74,7 @@ func (a cargoAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnaly
 
 		// Parse Cargo.toml alongside Cargo.lock to identify the direct dependencies
 		if err = a.removeDevDependencies(input.FS, path.Dir(filePath), app); err != nil {
-			a.logger.Warn("Unable to parse Cargo.toml q to identify direct dependencies",
+			a.logger.Warn("Unable to parse Cargo.toml to identify direct dependencies",
 				log.FilePath(path.Join(path.Dir(filePath), types.CargoToml)), log.Err(err))
 		}
 		sort.Sort(app.Packages)
@@ -199,12 +199,15 @@ type cargoToml struct {
 
 type Package struct {
 	Name    string `toml:"name"`
-	Version string `toml:"version"`
+	Version any    `toml:"version"`
 }
 
 type cargoTomlWorkspace struct {
 	Dependencies Dependencies `toml:"dependencies"`
 	Members      []string     `toml:"members"`
+	Package      struct {
+		Version string `toml:"version"`
+	} `toml:"package"`
 }
 
 type Dependencies map[string]any
@@ -212,7 +215,7 @@ type Dependencies map[string]any
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
 func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
-	rootPkg, dependencies, members, err := a.parseCargoTOML(fsys, filePath)
+	rootPkg, dependencies, members, rootWorkspaceVersion, err := a.parseCargoTOML(fsys, filePath, "")
 	if err != nil {
 		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
 	}
@@ -237,7 +240,7 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 		}
 
 		for _, pkg := range resolvedPaths {
-			memberPkg, memberDeps, _, err := a.parseCargoTOML(fsys, pkg)
+			memberPkg, memberDeps, _, _, err := a.parseCargoTOML(fsys, pkg, rootWorkspaceVersion)
 			if err != nil {
 				a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", pkg), log.Err(err))
 				continue
@@ -314,24 +317,49 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	return c.Check(ver), nil
 }
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (string, Dependencies, []string, error) {
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion string) (string, Dependencies, []string, string, error) {
 	// Parse Cargo.toml
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return "", nil, nil, xerrors.Errorf("file open error: %w", err)
+		return "", nil, nil, "", xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
 	var tomlFile cargoToml
+	var pkgVersion string
 	// There are cases when toml file doesn't include `Dependencies` field (then map will be nil).
 	// e.g. when only `workspace.Dependencies` are used
 	// declare `dependencies` to avoid panic
 	dependencies := Dependencies{}
 	if _, err = toml.NewDecoder(f).Decode(&tomlFile); err != nil {
-		return "", nil, nil, xerrors.Errorf("toml decode error: %w", err)
+		return "", nil, nil, "", xerrors.Errorf("toml decode error: %w", err)
 	}
 
-	pkgID := a.packageID(tomlFile)
+	// https://rust-lang.github.io/rfcs/2906-cargo-workspace-deduplicate.html
+	if workspaceVersion == "" {
+		workspaceVersion = tomlFile.Workspace.Package.Version
+	}
+
+	switch ver := tomlFile.Package.Version.(type) {
+	// In case of purely virtual cargo workspace version only lives in `workspace.package.version`
+	case nil:
+		pkgVersion = workspaceVersion
+	// We assume a proper version string was used, like: `0.1.0`
+	// Empty version is not allowed in Cargo.toml
+	// cf. https://github.com/aquasecurity/trivy/pull/10011#discussion_r2740743095
+	case string:
+		pkgVersion = ver
+	// There are cases when `package.version` uses `version.workspace = true`,
+	// which must inherit the version from `workspace.version` or workspaceVersion (from root Cargo.toml)
+	case map[string]any:
+		if verWorkspace, found := ver["workspace"]; found {
+			if wv, ok := verWorkspace.(bool); ok && wv {
+				pkgVersion = workspaceVersion
+			}
+		}
+	}
+
+	pkgID := a.packageID(tomlFile, pkgVersion)
 
 	maps.Copy(dependencies, tomlFile.Dependencies)
 
@@ -343,14 +371,14 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath string) (string, Depe
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
 	maps.Copy(dependencies, tomlFile.Workspace.Dependencies)
 	// https://doc.rust-lang.org/cargo/reference/workspaces.html#the-members-and-exclude-fields
-	return pkgID, dependencies, tomlFile.Workspace.Members, nil
+	return pkgID, dependencies, tomlFile.Workspace.Members, workspaceVersion, nil
 }
 
 // packageID builds PackageID by Package name and version.
 // If name is empty - use hash of cargoToml.
-func (a cargoAnalyzer) packageID(cargoToml cargoToml) string {
+func (a cargoAnalyzer) packageID(cargoToml cargoToml, pkgVersion string) string {
 	if cargoToml.Package.Name != "" {
-		return dependency.ID(types.Cargo, cargoToml.Package.Name, cargoToml.Package.Version)
+		return dependency.ID(types.Cargo, cargoToml.Package.Name, pkgVersion)
 	}
 
 	hash, err := hashstructure.Hash(cargoToml, hashstructure.FormatV2, &hashstructure.HashOptions{

@@ -17,7 +17,6 @@ type repository struct {
 
 type repositories struct {
 	settings    []repository // Repositories from settings.xml files
-	pom         []repository // Repositories from pom file and its parents (parent and upper pom files)
 	defaultRepo repository   // Default repository - Maven Central for Release, empty for Snapshot
 }
 
