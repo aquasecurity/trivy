@@ -20,6 +20,21 @@ type VersionInfo struct {
 	CheckBundle     *policy.Metadata   `json:",omitempty"`
 }
 
+// VersionOption is a functional option for NewVersionInfo
+type VersionOption func(*versionOptions)
+
+type versionOptions struct {
+	forServer bool
+}
+
+// Server returns a VersionOption that excludes JavaDB and CheckBundle
+// from version info, as these are managed on the client side in client/server mode.
+func Server() VersionOption {
+	return func(o *versionOptions) {
+		o.forServer = true
+	}
+}
+
 func formatDBMetadata(title string, meta metadata.Metadata) string {
 	return fmt.Sprintf(`%s:
   Version: %d
@@ -43,9 +58,15 @@ func (v *VersionInfo) String() string {
 	return output
 }
 
-func NewVersionInfo(cacheDir string) VersionInfo {
+func NewVersionInfo(cacheDir string, opts ...VersionOption) VersionInfo {
+	var options versionOptions
+	for _, opt := range opts {
+		opt(&options)
+	}
+
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
+	var pbMeta *policy.Metadata
 
 	mc := metadata.NewClient(db.Dir(cacheDir))
 	meta, err := mc.Get()
@@ -61,35 +82,37 @@ func NewVersionInfo(cacheDir string) VersionInfo {
 		}
 	}
 
-	mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
-	metaJava, err := mcJava.Get()
-	if err != nil {
-		log.Debug("Failed to get Java DB metadata", log.Err(err))
-	}
-	if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
-		javadbMeta = &metadata.Metadata{
-			Version:      metaJava.Version,
-			NextUpdate:   metaJava.NextUpdate.UTC(),
-			UpdatedAt:    metaJava.UpdatedAt.UTC(),
-			DownloadedAt: metaJava.DownloadedAt.UTC(),
-		}
-	}
-
-	var pbMeta *policy.Metadata
-	pc, err := policy.NewClient(cacheDir, false, "")
-	if err != nil {
-		log.Debug("Failed to instantiate policy client", log.Err(err))
-	}
-	if pc != nil && err == nil {
-		ctx := log.WithContextPrefix(context.TODO(), log.PrefixMisconfiguration)
-		pbMetaRaw, err := pc.GetMetadata(ctx)
-
+	// Skip JavaDB and CheckBundle for server mode as they are managed on the client side
+	if !options.forServer {
+		mcJava := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
+		metaJava, err := mcJava.Get()
 		if err != nil {
-			log.Debug("Failed to get policy metadata", log.Err(err))
-		} else {
-			pbMeta = &policy.Metadata{
-				Digest:       pbMetaRaw.Digest,
-				DownloadedAt: pbMetaRaw.DownloadedAt.UTC(),
+			log.Debug("Failed to get Java DB metadata", log.Err(err))
+		}
+		if !metaJava.UpdatedAt.IsZero() && !metaJava.NextUpdate.IsZero() && metaJava.Version != 0 {
+			javadbMeta = &metadata.Metadata{
+				Version:      metaJava.Version,
+				NextUpdate:   metaJava.NextUpdate.UTC(),
+				UpdatedAt:    metaJava.UpdatedAt.UTC(),
+				DownloadedAt: metaJava.DownloadedAt.UTC(),
+			}
+		}
+
+		pc, err := policy.NewClient(cacheDir, false, "")
+		if err != nil {
+			log.Debug("Failed to instantiate policy client", log.Err(err))
+		}
+		if pc != nil && err == nil {
+			ctx := log.WithContextPrefix(context.TODO(), log.PrefixMisconfiguration)
+			pbMetaRaw, err := pc.GetMetadata(ctx)
+
+			if err != nil {
+				log.Debug("Failed to get policy metadata", log.Err(err))
+			} else {
+				pbMeta = &policy.Metadata{
+					Digest:       pbMetaRaw.Digest,
+					DownloadedAt: pbMetaRaw.DownloadedAt.UTC(),
+				}
 			}
 		}
 	}
