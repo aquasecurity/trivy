@@ -134,6 +134,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 		digestReturns digestReturns
 		metadata      any
 		want          bool
+		wantMetadata  *policy.Metadata
 		wantErr       bool
 	}{
 		{
@@ -157,6 +158,11 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				MajorVersion: lo.ToPtr(policy.BundleVersion),
 			},
 			want: false,
+			wantMetadata: &policy.Metadata{
+				Digest:       `sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d`,
+				DownloadedAt: time.Date(2021, 1, 2, 1, 0, 0, 0, time.UTC),
+				MajorVersion: lo.ToPtr(policy.BundleVersion),
+			},
 		},
 		{
 			name:          "different digest",
@@ -226,6 +232,12 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				MajorVersion: lo.ToPtr(1),
 			},
 			want: false,
+			wantMetadata: &policy.Metadata{
+				Digest:       `sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d`,
+				DownloadedAt: time.Date(2021, 1, 2, 1, 0, 0, 0, time.UTC),
+				CustomBuild:  true,
+				MajorVersion: lo.ToPtr(1),
+			},
 		},
 	}
 
@@ -277,8 +289,29 @@ func TestClient_NeedsUpdate(t *testing.T) {
 
 			// Assert results
 			got, err := c.NeedsUpdate(t.Context(), ftypes.RegistryOptions{})
-			assert.Equal(t, tt.wantErr, err != nil)
+			if tt.wantErr {
+				assert.Error(t, err)
+				return
+			}
 			assert.Equal(t, tt.want, got)
+
+			// Verify that metadata has been updated correctly
+			if metadata, ok := tt.metadata.(policy.Metadata); ok {
+				metadataPath := filepath.Join(tmpDir, "policy", "metadata.json")
+				b, err := os.ReadFile(metadataPath)
+				require.NoError(t, err)
+
+				var want policy.Metadata
+				err = json.Unmarshal(b, &want)
+				require.NoError(t, err)
+
+				if tt.wantMetadata == nil {
+					// Metadata has not been changed
+					tt.wantMetadata = lo.ToPtr(metadata)
+				}
+
+				assert.Equal(t, tt.wantMetadata, &want)
+			}
 		})
 	}
 }
