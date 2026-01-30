@@ -111,7 +111,7 @@ func TestClient_LoadBuiltinChecks(t *testing.T) {
 	}
 }
 
-type annotaions = map[string]string
+type annotations = map[string]string
 
 func TestClient_NeedsUpdate(t *testing.T) {
 	type digestReturns struct {
@@ -252,7 +252,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 						},
 					},
 				},
-				Annotations: annotaions{
+				Annotations: annotations{
 					policy.VersionAnnotationKey: usedBundleVersion,
 				},
 			}, nil)
@@ -297,7 +297,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 		clock         clock.Clock
 		layersReturns layersReturns
 		digestReturns digestReturns
-		annotations   annotaions
+		annotations   annotations
 		want          *policy.Metadata
 		wantErr       string
 	}{
@@ -356,7 +356,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				},
 			},
-			annotations: annotaions{},
+			annotations: annotations{},
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
@@ -376,7 +376,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				},
 			},
-			annotations: annotaions{
+			annotations: annotations{
 				policy.VersionAnnotationKey: "dev",
 			},
 			want: &policy.Metadata{
@@ -398,7 +398,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 					Hex:       "01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				},
 			},
-			annotations: annotaions{
+			annotations: annotations{
 				policy.VersionAnnotationKey: "2.0.1-nightly.20260129",
 			},
 			want: &policy.Metadata{
