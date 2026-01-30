@@ -154,30 +154,26 @@ func newURL(rawurl string) (*url.URL, error) {
 
 // Helper function to check for a GitHub/GitLab token from env vars in order to
 // make authenticated requests to access private repos
-func gitAuth() *http.BasicAuth {
-	var auth *http.BasicAuth
-
+func gitAuth() http.AuthMethod {
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
 
 	// We first check if a GitHub token was provided
 	githubToken := os.Getenv("GITHUB_TOKEN")
 	if githubToken != "" {
-		auth = &http.BasicAuth{
+		return &http.BasicAuth{
 			Username: gitUsername,
 			Password: githubToken,
 		}
-		return auth
 	}
 
 	// Otherwise we check if a GitLab token was provided
 	gitlabToken := os.Getenv("GITLAB_TOKEN")
 	if gitlabToken != "" {
-		auth = &http.BasicAuth{
+		return &http.BasicAuth{
 			Username: gitUsername,
 			Password: gitlabToken,
 		}
-		return auth
 	}
 
 	// If no token was provided, we simply return a nil,
