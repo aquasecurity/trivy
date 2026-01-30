@@ -257,9 +257,9 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
+
+		// 'mvn' always merges exceptions for pom and root POM
+		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
 		return dep
 	}
 	return dep

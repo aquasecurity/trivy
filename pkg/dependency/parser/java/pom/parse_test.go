@@ -1174,8 +1174,12 @@ func TestPom_Parse(t *testing.T) {
 		// [INFO] --- maven-dependency-plugin:2.8:tree (default-cli) @ child ---
 		// [INFO] com.example:child:jar:3.0.0
 		// [INFO] \- org.example:example-exclusions:jar:3.0.0:compile
-		// [INFO]    \- org.example:example-nested:jar:3.3.3:compile
+		// [INFO]    \- org.example:example-nested:jar:3.3.5:compile
 		// [INFO] ------------------------------------------------------------------------
+		// org.example:example-dependency is excluded via com.example:child (dependencies)
+		// org.example:example-dependency2 is excluded via com.example:parent (dependencyManagement)
+		// org.example:example-api2 is excluded via org.example:example-exclusions (dependencies)
+		// org.example:example-api3 is excluded via com.example:parent (dependencyManagement)
 		{
 			name:      "exclusions in child and parent dependency management",
 			inputFile: filepath.Join("testdata", "exclusions-parent-dependency-management", "child", "pom.xml"),
@@ -1201,9 +1205,9 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 				{
-					ID:           "org.example:example-nested:3.3.3::39880dca",
+					ID:           "org.example:example-nested:3.3.5::c5a28f33",
 					Name:         "org.example:example-nested",
-					Version:      "3.3.3",
+					Version:      "3.3.5",
 					Relationship: ftypes.RelationshipIndirect,
 				},
 			},
@@ -1217,7 +1221,7 @@ func TestPom_Parse(t *testing.T) {
 				{
 					ID: "org.example:example-exclusions:3.0.0::1e4e34b7",
 					DependsOn: []string{
-						"org.example:example-nested:3.3.3::39880dca",
+						"org.example:example-nested:3.3.5::c5a28f33",
 					},
 				},
 			},
