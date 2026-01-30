@@ -10,32 +10,62 @@ import (
 	"github.com/aquasecurity/trivy/pkg/policy"
 )
 
-func Test_BuildVersionInfo(t *testing.T) {
-
-	expected := VersionInfo{
-		Version: "dev",
-		VulnerabilityDB: &metadata.Metadata{
-			Version:      2,
-			NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
-			UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
-			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
+func TestNewVersionInfo(t *testing.T) {
+	tests := []struct {
+		name string
+		opts []VersionOption
+		want VersionInfo
+	}{
+		{
+			name: "default",
+			opts: nil,
+			want: VersionInfo{
+				Version: "dev",
+				VulnerabilityDB: &metadata.Metadata{
+					Version:      2,
+					NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
+					UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
+					DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
+				},
+				JavaDB: &metadata.Metadata{
+					Version:      1,
+					NextUpdate:   time.Date(2023, 7, 28, 1, 3, 52, 169192565, time.UTC),
+					UpdatedAt:    time.Date(2023, 7, 25, 1, 3, 52, 169192765, time.UTC),
+					DownloadedAt: time.Date(2023, 7, 25, 9, 37, 48, 906152000, time.UTC),
+				},
+				CheckBundle: &policy.Metadata{
+					Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
+					DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
+				},
+			},
 		},
-		JavaDB: &metadata.Metadata{
-			Version:      1,
-			NextUpdate:   time.Date(2023, 7, 28, 1, 3, 52, 169192565, time.UTC),
-			UpdatedAt:    time.Date(2023, 7, 25, 1, 3, 52, 169192765, time.UTC),
-			DownloadedAt: time.Date(2023, 7, 25, 9, 37, 48, 906152000, time.UTC),
-		},
-		CheckBundle: &policy.Metadata{
-			Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
-			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
+		{
+			name: "server mode excludes JavaDB and CheckBundle",
+			opts: []VersionOption{Server()},
+			want: VersionInfo{
+				Version: "dev",
+				VulnerabilityDB: &metadata.Metadata{
+					Version:      2,
+					NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
+					UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
+					DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
+				},
+				JavaDB:      nil,
+				CheckBundle: nil,
+			},
 		},
 	}
-	assert.Equal(t, expected, NewVersionInfo("testdata/testcache"))
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := NewVersionInfo("testdata/testcache", tt.opts...)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
-func Test_VersionInfoString(t *testing.T) {
-	expected := `Version: dev
+func TestVersionInfo_String(t *testing.T) {
+	want := `Version: dev
 Vulnerability DB:
   Version: 2
   UpdatedAt: 2023-07-20 12:11:37.696263932 +0000 UTC
@@ -50,6 +80,6 @@ Check Bundle:
   Digest: sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43
   DownloadedAt: 2023-07-23 16:40:33.122462 +0000 UTC
 `
-	versionInfo := NewVersionInfo("testdata/testcache")
-	assert.Equal(t, expected, versionInfo.String())
+	got := NewVersionInfo("testdata/testcache")
+	assert.Equal(t, want, got.String())
 }
