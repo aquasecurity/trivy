@@ -256,7 +256,7 @@ func (c *Client) NeedsUpdate(ctx context.Context, registryOpts types.RegistryOpt
 	// the digest will be fetched every time even after this.
 	if err = c.updateMetadata(Metadata{
 		Digest:       meta.Digest,
-		DownloadedAt: time.Now(),
+		DownloadedAt: c.clock.Now(),
 		MajorVersion: meta.MajorVersion,
 		CustomBuild:  meta.CustomBuild,
 	}); err != nil {
