@@ -1,0 +1,109 @@
+lock-version = "1.0"
+created-by = "pip"
+
+[[packages]]
+name = "attrs"
+version = "25.4.0"
+
+[[packages.wheels]]
+name = "attrs-25.4.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/3a/2a/7cc015f5b9f5db42b7d48157e23356022889fc354a2813c15934b7cb5c0e/attrs-25.4.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "adcf7e2a1fb3b36ac48d97835bb6d8ade15b8dcce26aba8bf1d14847b57a3373"
+
+[[packages]]
+name = "certifi"
+version = "2025.10.5"
+
+[[packages.wheels]]
+name = "certifi-2025.10.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/e4/37/af0d2ef3967ac0d6113837b44a4f0bfe1328c2b9763bd5b1744520e5cfed/certifi-2025.10.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "0f212c2744a9bb6de0c56639a6f68afe01ecd92d91f14ae897c4fe7bbeeef0de"
+
+[[packages]]
+name = "charset-normalizer"
+version = "3.4.3"
+
+[[packages.wheels]]
+name = "charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/87/df/b7737ff046c974b183ea9aa111b74185ac8c3a326c6262d413bd5a1b8c69/charset_normalizer-3.4.3-cp311-cp311-manylinux2014_x86_64.manylinux_2_17_x86_64.manylinux_2_28_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "0e78314bdc32fa80696f72fa16dc61168fda4d6a0c014e0380f9d02f0e5d8a07"
+
+[[packages]]
+name = "idna"
+version = "3.10"
+
+[[packages.wheels]]
+name = "idna-3.10-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"
+
+[[packages]]
+name = "requests"
+version = "2.32.5"
+
+[[packages.wheels]]
+name = "requests-2.32.5-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/1e/db/4254e3eabe8020b458f1a747140d32277ec7a271daf1d235b70dc0b4e6e3/requests-2.32.5-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "2462f94637a34fd532264295e186976db0f5d453d1cdd31473c85a6a161affb6"
+
+[[packages]]
+name = "urllib3"
+version = "2.5.0"
+
+[[packages.wheels]]
+name = "urllib3-2.5.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/a7/c2/fe1e52489ae3122415c51f387e221dd0773709bad6c6cdaa599e8a2c5185/urllib3-2.5.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "e6b01673c0fa6a13e374b50871808eb3bf7046c4b125b216f6bf1cc604cff0dc"
+
+# Packages with same name but different versions for different environments
+[[packages]]
+name = "spam"
+version = "1.0.0"
+marker = "sys_platform == 'linux'"
+
+[[packages.wheels]]
+name = "spam-1.0.0-py3-none-any.whl"
+url = "https://example.invalid/files/spam-1.0.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "deadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeefdeadbeef"
+
+[[packages]]
+name = "spam"
+version = "1.1.0"
+marker = "sys_platform == 'win32'"
+
+[[packages.wheels]]
+name = "spam-1.1.0-py3-none-any.whl"
+url = "https://example.invalid/files/spam-1.1.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "feebdaedfeebdaedfeebdaedfeebdaedfeebdaedfeebdaedfeebdaedfeebdaed"
+
+[[packages]]
+name = "ham"
+version = "3.0.0"
+marker = "sys_platform == 'linux'"
+dependencies = [
+  { name = "spam", version = "1.0.0" }
+]
+
+[[packages]]
+name = "ham"
+version = "3.0.0"
+marker = "sys_platform == 'win32'"
+dependencies = [
+  { name = "spam", version = "1.1.0" }
+]
