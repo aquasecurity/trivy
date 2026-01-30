@@ -563,7 +563,7 @@ COPY --from=dep /binary /`
 				rego.WithPolicyDirs("rules"),
 				rego.WithEmbeddedLibraries(true),
 				rego.WithTrace(&traceBuf),
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 			)
 
 			results, err := scanner.ScanFS(t.Context(), fsys, "code")
@@ -685,7 +685,7 @@ deny contains res if {
 				rego.WithPolicyReader(strings.NewReader(check)),
 				rego.WithPolicyNamespaces("user"),
 				rego.WithEmbeddedLibraries(true),
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 			)
 			results, err := scanner.ScanFS(t.Context(), fsys, ".")
 			require.NoError(t, err)
