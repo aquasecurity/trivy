@@ -20,6 +20,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0001",
+          "Aliases": [
+            "AVD-KSV-0001",
+            "KSV001",
+            "no-self-privesc"
+          ],
           "Title": "Can elevate its own privileges",
           "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'securityContext.allowPrivilegeEscalation' to false",
@@ -87,6 +92,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0003",
+          "Aliases": [
+            "AVD-KSV-0003",
+            "KSV003",
+            "drop-default-capabilities"
+          ],
           "Title": "Default capabilities: some containers do not drop all",
           "Description": "The container should drop all default capabilities and add only those that are needed for its execution.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should add 'ALL' to 'securityContext.capabilities.drop'",
@@ -154,6 +164,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0004",
+          "Aliases": [
+            "AVD-KSV-0004",
+            "KSV004",
+            "drop-unused-capabilities"
+          ],
           "Title": "Default capabilities: some containers do not drop any",
           "Description": "Security best practices require containers to run with minimal required capabilities.",
           "Message": "Container 'nginx' of 'deployment' 'nginx-deployment' in 'default' namespace should set securityContext.capabilities.drop",
@@ -221,6 +236,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0011",
+          "Aliases": [
+            "AVD-KSV-0011",
+            "KSV011",
+            "limit-cpu"
+          ],
           "Title": "CPU not limited",
           "Description": "Enforcing CPU limits prevents DoS via resource exhaustion.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'resources.limits.cpu'",
@@ -288,6 +308,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0012",
+          "Aliases": [
+            "AVD-KSV-0012",
+            "KSV012",
+            "no-root"
+          ],
           "Title": "Runs as root user",
           "Description": "Force the running image to run as a non-root user to ensure least privileges.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'securityContext.runAsNonRoot' to true",
@@ -355,6 +380,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0014",
+          "Aliases": [
+            "AVD-KSV-0014",
+            "KSV014",
+            "use-readonly-filesystem"
+          ],
           "Title": "Root file system is not read-only",
           "Description": "An immutable root file system prevents applications from writing to their local disk. This can limit intrusions, as attackers will not be able to tamper with the file system or write foreign executables to disk.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'securityContext.readOnlyRootFilesystem' to true",
@@ -422,6 +452,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0015",
+          "Aliases": [
+            "AVD-KSV-0015",
+            "KSV015",
+            "no-unspecified-cpu-requests"
+          ],
           "Title": "CPU requests not specified",
           "Description": "When containers have resource requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'resources.requests.cpu'",
@@ -489,6 +524,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0016",
+          "Aliases": [
+            "AVD-KSV-0016",
+            "KSV016",
+            "no-unspecified-memory-requests"
+          ],
           "Title": "Memory requests not specified",
           "Description": "When containers have memory requests specified, the scheduler can make better decisions about which nodes to place pods on, and how to deal with resource contention.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'resources.requests.memory'",
@@ -556,6 +596,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0018",
+          "Aliases": [
+            "AVD-KSV-0018",
+            "KSV018",
+            "limit-memory"
+          ],
           "Title": "Memory not limited",
           "Description": "Enforcing memory limits prevents DoS via resource exhaustion.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'resources.limits.memory'",
@@ -623,6 +668,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0020",
+          "Aliases": [
+            "AVD-KSV-0020",
+            "KSV020",
+            "use-high-uid"
+          ],
           "Title": "Runs with UID \u003c= 10000",
           "Description": "Force the container to run with user ID \u003e 10000 to avoid conflicts with the host’s user table.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'securityContext.runAsUser' \u003e 10000",
@@ -690,6 +740,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0021",
+          "Aliases": [
+            "AVD-KSV-0021",
+            "KSV021",
+            "use-high-gid"
+          ],
           "Title": "Runs with GID \u003c= 10000",
           "Description": "Force the container to run with group ID \u003e 10000 to avoid conflicts with the host’s user table.",
           "Message": "Container 'nginx' of Deployment 'nginx-deployment' should set 'securityContext.runAsGroup' \u003e 10000",
@@ -757,6 +812,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0030",
+          "Aliases": [
+            "AVD-KSV-0030",
+            "KSV030",
+            "use-default-seccomp"
+          ],
           "Title": "Runtime/Default Seccomp profile not set",
           "Description": "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
           "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
@@ -824,6 +884,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0104",
+          "Aliases": [
+            "AVD-KSV-0104",
+            "KSV104",
+            "no-seccomp-unconfined"
+          ],
           "Title": "Seccomp policies disabled",
           "Description": "A program inside the container can bypass Seccomp protection policies.",
           "Message": "container \"nginx\" of deployment \"nginx-deployment\" in \"default\" namespace should specify a seccomp profile",
@@ -891,6 +956,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0106",
+          "Aliases": [
+            "AVD-KSV-0106",
+            "KSV106",
+            "drop-caps-add-bind-svc"
+          ],
           "Title": "Container capabilities must only include NET_BIND_SERVICE",
           "Description": "Containers must drop ALL capabilities, and are only permitted to add back the NET_BIND_SERVICE capability.",
           "Message": "container should drop all",
@@ -958,6 +1028,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0110",
+          "Aliases": [
+            "AVD-KSV-0110",
+            "KSV110",
+            "default-namespace-should-not-be-used"
+          ],
           "Title": "Workloads in the default namespace",
           "Description": "Checks whether a workload is running in the default namespace.",
           "Message": "deployment nginx-deployment in default namespace should set metadata.namespace to a non-default namespace",
@@ -1025,6 +1100,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0117",
+          "Aliases": [
+            "AVD-KSV-0117",
+            "KSV117",
+            "no-privilege-port-binding"
+          ],
           "Title": "Prevent binding to privileged ports",
           "Description": "The ports which are lower than 1024 receive and transmit various sensitive and privileged data. Allowing containers to use them can bring serious implications.",
           "Message": "deployment nginx-deployment in default namespace should not set spec.template.spec.containers.ports.containerPort to less than 1024",
@@ -1047,6 +1127,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0118",
+          "Aliases": [
+            "AVD-KSV-0118",
+            "KSV118",
+            "no-default-security-context"
+          ],
           "Title": "Default security context configured",
           "Description": "Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.",
           "Message": "container nginx-deployment in default namespace is using the default security context",
@@ -1114,6 +1199,11 @@
         {
           "Type": "Helm Security Check",
           "ID": "KSV-0118",
+          "Aliases": [
+            "AVD-KSV-0118",
+            "KSV118",
+            "no-default-security-context"
+          ],
           "Title": "Default security context configured",
           "Description": "Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.",
           "Message": "deployment nginx-deployment in default namespace is using the default security context, which allows root privileges",

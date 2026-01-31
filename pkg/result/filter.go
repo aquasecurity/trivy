@@ -130,7 +130,11 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 		}
 
 		// Filter by ignore file
-		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
+		ids := append([]string{
+			misconf.ID,
+			misconf.AVDID,
+		}, misconf.Aliases...)
+		if f := ignoreConfig.MatchMisconfiguration(ids, result.Target); f != nil {
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue

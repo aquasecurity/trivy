@@ -8,6 +8,7 @@ type DetectedMisconfiguration struct {
 	ID   string `json:",omitempty"`
 	// Deprecated: Use the ID field instead.
 	AVDID         string               `json:",omitempty"`
+	Aliases       []string             `json:",omitempty"`
 	Title         string               `json:",omitempty"`
 	Description   string               `json:",omitempty"`
 	Message       string               `json:",omitempty"`
