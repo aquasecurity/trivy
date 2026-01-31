@@ -522,7 +522,6 @@ func (o *Options) RegistryOpts() ftypes.RegistryOptions {
 	return ftypes.RegistryOptions{
 		Credentials:     o.Credentials,
 		RegistryToken:   o.RegistryToken,
-		Insecure:        o.Insecure,
 		CACerts:         o.CACerts,
 		Platform:        o.Platform,
 		AWSRegion:       o.AWSOptions.Region,
@@ -570,7 +569,6 @@ func (o *Options) ClientScannerOpts() client.ServiceOption {
 	return client.ServiceOption{
 		RemoteURL:     o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
