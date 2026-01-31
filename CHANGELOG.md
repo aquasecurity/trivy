@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.70.0](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.70.0) (2026-01-31)
+
+
+### Features
+
+* **python:** add pylock.toml (PEP 751) parser ([#9632](https://github.com/aquasecurity/trivy/issues/9632)) ([1a72b32](https://github.com/aquasecurity/trivy/commit/1a72b326bba9e0959d5f3b63367bb311f064d795))
+
+
+### Bug Fixes
+
+* **java:** Disable overwriting exclusions ([#10088](https://github.com/aquasecurity/trivy/issues/10088)) ([9a3e0a8](https://github.com/aquasecurity/trivy/commit/9a3e0a845db68a79f4fd0e71f5cb7d8ca3976bbe))
+* **server:** exclude JavaDB and CheckBundle from /version endpoint ([#10100](https://github.com/aquasecurity/trivy/issues/10100)) ([b9a8d2d](https://github.com/aquasecurity/trivy/commit/b9a8d2d80adc47bf9f48e13c2738b099c907518b))
+
 ## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2026-01-30)
 
 
