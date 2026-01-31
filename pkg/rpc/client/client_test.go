@@ -238,7 +238,7 @@ func TestScanner_ScanServerInsecure(t *testing.T) {
 			c := rpc.NewScannerProtobufClient(ts.URL, &http.Client{
 				Transport: xhttp.NewTransport(xhttp.Options{Insecure: tt.insecure}).Build(),
 			})
-			s := NewService(ServiceOption{Insecure: tt.insecure}, WithRPCClient(c))
+			s := NewService(ServiceOption{}, WithRPCClient(c))
 			_, err := s.Scan(t.Context(), "dummy", "", nil, types.ScanOptions{})
 
 			if tt.wantErr != "" {
