@@ -14,9 +14,9 @@ import (
 func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 	checkIDs := map[types.Scanner][]string{
 		types.MisconfigScanner: {
-			"AVD-KSV012",
-			"AVD-1.2.31",
-			"AVD-1.2.32",
+			"KSV012",
+			"1.2.31",
+			"1.2.32",
 		},
 		types.VulnerabilityScanner: {
 			"CVE-9999-9999",
@@ -41,21 +41,21 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 				Type:   ftypes.Kubernetes,
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						AVDID:  "AVD-KSV012",
+						ID:     "KSV012",
 						Status: types.MisconfStatusFailure,
 					},
 					{
-						AVDID:  "AVD-KSV013",
+						ID:     "KSV013",
 						Status: types.MisconfStatusFailure,
 					},
 					{
-						AVDID:  "AVD-1.2.31",
+						ID:     "1.2.31",
 						Status: types.MisconfStatusFailure,
 					},
 				},
 			},
 			want: map[string]types.Results{
-				"AVD-KSV012": {
+				"KSV012": {
 					{
 						Target: "target",
 						Class:  types.ClassConfig,
@@ -66,13 +66,13 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								AVDID:  "AVD-KSV012",
+								ID:     "KSV012",
 								Status: types.MisconfStatusFailure,
 							},
 						},
 					},
 				},
-				"AVD-1.2.31": {
+				"1.2.31": {
 					{
 						Target: "target",
 						Class:  types.ClassConfig,
@@ -83,7 +83,7 @@ func TestMapSpecCheckIDToFilteredResults(t *testing.T) {
 						},
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								AVDID:  "AVD-1.2.31",
+								ID:     "1.2.31",
 								Status: types.MisconfStatusFailure,
 							},
 						},

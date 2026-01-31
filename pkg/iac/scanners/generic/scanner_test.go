@@ -55,7 +55,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",
 		Explanation:    "description",
@@ -123,7 +122,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",
 		Explanation:    "description",
@@ -190,7 +188,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "ABC123",
-		Aliases:        []string{"ABC123"},
 		ShortCode:      "short",
 		Summary:        "title",
 		Explanation:    "description",

@@ -28,6 +28,7 @@ type StaticMetadata struct {
 	// Deprecated: Use the ID field instead.
 	AVDID               string
 	Title               string
+	LongID              string
 	ShortCode           string
 	Aliases             []string
 	Description         string
@@ -75,6 +76,7 @@ func (sm *StaticMetadata) populate(meta map[string]any) error {
 	upd(&sm.ID, "id")
 	upd(&sm.AVDID, "avd_id")
 	upd(&sm.Title, "title")
+	upd(&sm.LongID, "long_id")
 	upd(&sm.ShortCode, "short_code")
 	upd(&sm.Description, "description")
 	upd(&sm.Service, "service")
@@ -275,7 +277,8 @@ func (sm *StaticMetadata) ToRule() scan.Rule {
 		Deprecated:          sm.Deprecated,
 		ID:                  sm.ID,
 		AVDID:               sm.AVDID,
-		Aliases:             append(sm.Aliases, sm.ID),
+		Aliases:             sm.Aliases,
+		LongID:              sm.LongID,
 		ShortCode:           sm.ShortCode,
 		Summary:             sm.Title,
 		Explanation:         sm.Description,

@@ -29,6 +29,11 @@
         {
           "Type": "Terraform Security Check",
           "ID": "AWS-0089",
+          "Aliases": [
+            "AVD-AWS-0089",
+            "enable-logging",
+            "s3-bucket-logging"
+          ],
           "Title": "S3 Bucket Logging",
           "Description": "Ensures S3 bucket logging is enabled for S3 buckets",
           "Message": "Bucket has logging disabled",
@@ -173,6 +178,10 @@
         {
           "Type": "Terraform Security Check",
           "ID": "AWS-0090",
+          "Aliases": [
+            "AVD-AWS-0090",
+            "enable-versioning"
+          ],
           "Title": "S3 Data should be versioned",
           "Description": "Versioning in Amazon S3 is a means of keeping multiple variants of an object in the same bucket.\n\nYou can use the S3 Versioning feature to preserve, retrieve, and restore every version of every object stored in your buckets.\n\nWith versioning you can recover more easily from both unintended user actions and application failures.\n\nWhen you enable versioning, also keep in mind the potential costs of storing noncurrent versions of objects. To help manage those costs, consider setting up an S3 Lifecycle configuration.\n",
           "Message": "Bucket does not have versioning enabled",
@@ -317,6 +326,10 @@
         {
           "Type": "Terraform Security Check",
           "ID": "AWS-0132",
+          "Aliases": [
+            "AVD-AWS-0132",
+            "encryption-customer-key"
+          ],
           "Title": "S3 encryption should use Customer Managed Keys",
           "Description": "Encryption using AWS keys provides protection for your S3 buckets. To gain greater control over encryption, such as key rotation, access policies, and auditability, use customer managed keys (CMKs) with SSE-KMS.\nNote that SSE-KMS is not supported for S3 server access logging destination buckets; in such cases, use SSE-S3 instead.\n",
           "Message": "Bucket does not encrypt data with a customer managed key.",

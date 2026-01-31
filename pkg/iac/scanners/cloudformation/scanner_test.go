@@ -64,7 +64,6 @@ deny[res] {
 
 	assert.Equal(t, scan.Rule{
 		ID:             "DS006",
-		Aliases:        []string{"DS006"},
 		ShortCode:      "no-self-referencing-copy-from",
 		Summary:        "COPY '--from' referring to the current image",
 		Explanation:    "COPY '--from' should not mention the current FROM alias, since it is impossible to copy from itself.",

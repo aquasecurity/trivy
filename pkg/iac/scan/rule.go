@@ -42,6 +42,7 @@ type Rule struct {
 	// Deprecated: Use the ID field instead.
 	AVDID               string                           `json:"avd_id"`
 	Aliases             []string                         `json:"aliases"`
+	LongID              string                           `json:"long_id"`
 	ShortCode           string                           `json:"short_code"`
 	Summary             string                           `json:"summary"`
 	Explanation         string                           `json:"explanation"`
@@ -66,13 +67,16 @@ func (r Rule) IsDeprecated() bool {
 }
 
 func (r Rule) HasID(id string) bool {
-	if r.ID == id || r.AVDID == id || r.LongID() == id {
+	if r.ID == id || r.AVDID == id || r.LongID == id || r.CanonicalID() == id {
 		return true
 	}
 	return slices.Contains(r.Aliases, id)
 }
 
-func (r Rule) LongID() string {
+func (r Rule) CanonicalID() string {
+	if r.LongID != "" {
+		return r.LongID
+	}
 	return strings.ToLower(fmt.Sprintf("%s-%s-%s", r.Provider, r.Service, r.ShortCode))
 }
 

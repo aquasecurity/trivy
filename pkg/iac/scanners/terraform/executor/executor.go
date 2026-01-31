@@ -85,7 +85,7 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 
 	for _, ignored := range results.GetIgnored() {
 		e.logger.Info("Ignore finding",
-			log.String("rule", ignored.Rule().LongID()),
+			log.String("rule", ignored.Rule().CanonicalID()),
 			log.String("range", ignored.Range().String()),
 		)
 	}
