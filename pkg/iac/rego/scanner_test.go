@@ -806,7 +806,7 @@ deny {
 	})
 
 	scanner := rego.NewScanner(
-		rego.WithRegoErrorLimits(0),
+		rego.WithMaxAllowedErrors(0),
 		rego.WithPolicyDirs("policies"),
 	)
 

@@ -856,7 +856,7 @@ deny[res] {
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		rego.WithRegoErrorLimits(0),
+		rego.WithMaxAllowedErrors(0),
 		ScannerWithAllDirectories(true),
 	)
 
