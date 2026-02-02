@@ -100,7 +100,7 @@
           "DataSource": {
             "ID": "photon",
             "Name": "Photon OS CVE metadata",
-            "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
+            "URL": "https://packages.broadcom.com/photon/photon_cve_metadata/"
           },
           "Fingerprint": "sha256:4e81b35fc699744ea7b1f01c4d40f4be024599b0b89bc703b5d96118537d214b",
           "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
@@ -165,7 +165,7 @@
           "DataSource": {
             "ID": "photon",
             "Name": "Photon OS CVE metadata",
-            "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
+            "URL": "https://packages.broadcom.com/photon/photon_cve_metadata/"
           },
           "Fingerprint": "sha256:12a8a4ae7fd278f8aeb8001707801d38ca7ccea68430208692a2b7d40860f590",
           "Title": "curl: double free due to subsequent call of realloc()",
@@ -238,7 +238,7 @@
           "DataSource": {
             "ID": "photon",
             "Name": "Photon OS CVE metadata",
-            "URL": "https://packages.vmware.com/photon/photon_cve_metadata/"
+            "URL": "https://packages.broadcom.com/photon/photon_cve_metadata/"
           },
           "Fingerprint": "sha256:8625bdfcbb7eeaffcef1af0571c227ca2c742411ee81cb598749dbfdc4a40d8c",
           "Title": "curl: double free due to subsequent call of realloc()",
