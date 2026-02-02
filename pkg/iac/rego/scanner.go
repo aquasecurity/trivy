@@ -25,10 +25,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-// CompileErrorLimit defines the default compile error limit.
-// We set this value explicitly instead of relying on OPA's ast.CompileErrorLimitDefault
-// to avoid dependency on potential upstream changes.
-const CompileErrorLimit = 10
+// DefaultAllowedRegoErrors defines the default number of Rego compile errors
+// that the scanner will tolerate. This value is set explicitly instead of
+// relying on OPA's ast.CompileErrorLimitDefault to avoid depending on upstream changes.
+const DefaultAllowedRegoErrors = 10
 
 var (
 	checkTypesWithSubtype = set.New(types.SourceCloud, types.SourceDefsec, types.SourceKubernetes)
@@ -48,13 +48,16 @@ func makeSupportedProviders() set.Set[string] {
 var _ options.ConfigurableScanner = (*Scanner)(nil)
 
 type Scanner struct {
-	ruleNamespaces           set.Set[string]
-	policies                 map[string]*ast.Module
-	moduleMetadata           map[string]*StaticMetadata
-	store                    storage.Store
-	runtimeValues            *ast.Term
-	compiler                 *ast.Compiler
-	regoErrorLimit           int
+	ruleNamespaces set.Set[string]
+	policies       map[string]*ast.Module
+	moduleMetadata map[string]*StaticMetadata
+	store          storage.Store
+	runtimeValues  *ast.Term
+	compiler       *ast.Compiler
+
+	// maxAllowedErrors defines how many Rego compile errors
+	// the scanner can tolerate. If more errors occur, an error is returned.
+	maxAllowedErrors         int
 	logger                   *log.Logger
 	traceWriter              io.Writer
 	tracePerResult           bool
@@ -99,12 +102,12 @@ func NewScanner(opts ...options.ScannerOption) *Scanner {
 	LoadAndRegister()
 
 	s := &Scanner{
-		regoErrorLimit: CompileErrorLimit,
-		ruleNamespaces: builtinNamespaces.Clone(),
-		runtimeValues:  addRuntimeValues(),
-		logger:         log.WithPrefix("rego"),
-		customSchemas:  make(map[string][]byte),
-		moduleMetadata: make(map[string]*StaticMetadata),
+		maxAllowedErrors: DefaultAllowedRegoErrors,
+		ruleNamespaces:   builtinNamespaces.Clone(),
+		runtimeValues:    addRuntimeValues(),
+		logger:           log.WithPrefix("rego"),
+		customSchemas:    make(map[string][]byte),
+		moduleMetadata:   make(map[string]*StaticMetadata),
 	}
 
 	for _, opt := range opts {

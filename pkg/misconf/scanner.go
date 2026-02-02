@@ -247,7 +247,7 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 	}
 
 	if opt.RegoErrorLimit >= 0 {
-		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
+		opts = append(opts, rego.WithMaxAllowedErrors(opt.RegoErrorLimit))
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)

@@ -29,7 +29,7 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			rego.WithRegoErrorLimits(0),
+			rego.WithMaxAllowedErrors(0),
 			rego.WithPolicyDirs("."),
 		)
 
@@ -42,7 +42,7 @@ func Test_RegoScanning_WithSomeInvalidPolicies(t *testing.T) {
 		var debugBuf bytes.Buffer
 		slog.SetDefault(log.New(log.NewHandler(&debugBuf, nil)))
 		scanner := rego.NewScanner(
-			rego.WithRegoErrorLimits(1),
+			rego.WithMaxAllowedErrors(1),
 			rego.WithPolicyDirs("."),
 		)
 
@@ -206,7 +206,7 @@ deny {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			scanner := rego.NewScanner(
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 				rego.WithEmbeddedPolicies(false),
 				rego.WithPolicyDirs("."),
 			)
@@ -254,7 +254,7 @@ func Test_FallbackErrorWithoutLocation(t *testing.T) {
 		},
 	}
 
-	for i := range rego.CompileErrorLimit + 1 {
+	for i := range rego.DefaultAllowedRegoErrors + 1 {
 		src := `# METADATA
 # schemas:
 # - input: schema["fooschema"]

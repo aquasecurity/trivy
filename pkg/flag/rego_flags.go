@@ -83,7 +83,7 @@ var (
 		ConfigName:    "rego.error-limit",
 		Usage:         "maximum number of compile errors allowed during Rego policy evaluation",
 		TelemetrySafe: true,
-		Default:       rego.CompileErrorLimit,
+		Default:       rego.DefaultAllowedRegoErrors,
 	}
 )
 
