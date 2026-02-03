@@ -462,12 +462,14 @@ func (p *Parser) loadRoleDependencies(r *Role) error {
 	// main.yml (or main.yaml/main) file without allowing custom filenames or overrides.
 	metaSrc := r.src.Join("meta", "main")
 
-	var roleMeta RoleMeta
-	if err := decodeYAMLFileWithExtension(metaSrc, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return xerrors.Errorf("load meta: %w", err)
+	roleMeta, err := parseRoleMeta(metaSrc, &r.metadata)
+	if err != nil {
+		return xerrors.Errorf("parse role meta: %w", err)
 	}
 
-	roleMeta.updateMetadata(metaSrc.FS, &r.metadata, metaSrc.Path)
+	if roleMeta == nil {
+		return nil
+	}
 
 	for _, dep := range roleMeta.dependencies() {
 		depRole, err := p.loadRole(&roleMeta.metadata, r.play, dep.name())
