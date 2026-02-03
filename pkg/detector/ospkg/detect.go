@@ -84,10 +84,11 @@ func Detect(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) (
 
 	eosl := !d.IsSupportedVersion(ctx, target.OS.Family, target.OS.Name)
 
-	// Package `gpg-pubkey` doesn't use the correct version.
-	// We don't need to find vulnerabilities for this package.
+	// Filter out packages that should not be scanned:
+	// - gpg-pubkey: doesn't use the correct version
+	// - Third-party packages: not covered by official OS security advisories
 	filteredPkgs := lo.Filter(target.Packages, func(pkg ftypes.Package, _ int) bool {
-		return pkg.Name != "gpg-pubkey"
+		return pkg.Name != "gpg-pubkey" && pkg.Repository.Class != ftypes.RepositoryClassThirdParty
 	})
 	vulns, err := d.Detect(ctx, target.OS.Name, target.Repository, filteredPkgs)
 	if err != nil {
