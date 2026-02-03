@@ -683,7 +683,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						ID: "CVE-2018-20623",
 						Source: &cdx.Source{
 							Name: string(vulnerability.RedHat),
-							URL:  "https://www.redhat.com/security/data/oval/v2/",
+							URL:  "https://access.redhat.com/security/cve/",
 						},
 						Ratings: &[]cdx.VulnerabilityRating{
 							{
