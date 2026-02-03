@@ -6,6 +6,7 @@ import (
 	"path"
 	"slices"
 
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/bmatcuk/doublestar/v4"
 )
 
@@ -68,13 +69,9 @@ func isAnsibleProject(fsys fs.FS, dir string) bool {
 }
 
 func isPlaybookFile(fsys fs.FS, filePath string) bool {
-	data, err := fs.ReadFile(fsys, filePath)
+	f := fsutils.NewFileSource(fsys, filePath)
+	plays, err := parsePlays(f)
 	if err != nil {
-		return false
-	}
-
-	var plays []*Play
-	if err := decodeYAML(data, &plays); err != nil {
 		return false
 	}
 

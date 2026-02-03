@@ -221,9 +221,9 @@ func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) (ResolvedTasks, er
 }
 
 func (p *Parser) loadPlaybook(f fsutils.FileSource) (*Playbook, error) {
-	var plays []*Play
-	if err := decodeYAMLFile(f, &plays); err != nil {
-		return nil, xerrors.Errorf("decode YAML file: %w", err)
+	plays, err := parsePlays(f)
+	if err != nil {
+		return nil, xerrors.Errorf("parse plays: %w", err)
 	}
 
 	p.logger.Debug("Loaded playbook",
