@@ -2,6 +2,6 @@
   pairs:
     - key: Red Hat
       value:
-        ID: "redhat-oval"
-        Name: "Red Hat OVAL v2"
-        URL: "https://www.redhat.com/security/data/oval/v2/"
+        ID: "redhat"
+        Name: "Red Hat"
+        URL: "https://access.redhat.com/security/cve/"

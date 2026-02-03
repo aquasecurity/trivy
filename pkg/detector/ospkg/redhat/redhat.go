@@ -153,11 +153,7 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			Status:           adv.Status,
 			Layer:            pkg.Layer,
 			SeveritySource:   vulnerability.RedHat,
-			DataSource: &dbTypes.DataSource{
-				ID:   vulnerability.RedHat,
-				Name: "Red Hat",
-				URL:  "https://access.redhat.com/security/cve/",
-			},
+			DataSource:       adv.DataSource,
 			Vulnerability: dbTypes.Vulnerability{
 				Severity: adv.Severity.String(),
 			},
