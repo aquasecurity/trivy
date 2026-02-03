@@ -527,10 +527,7 @@ func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string)
 
 // expandTask dispatches task expansion based on task type (block, include, role).
 func (p *Parser) expandTask(parentVars vars.Vars, t *Task) (ResolvedTasks, error) {
-
-	// TODO: pass parentVars ?
 	effectiveVars := vars.MergeVars(parentVars, t.Variables())
-
 	taskSource := t.metadata.Range().String()
 	switch {
 	case t.isBlock():
