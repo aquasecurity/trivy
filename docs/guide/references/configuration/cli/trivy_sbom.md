@@ -112,7 +112,6 @@ trivy sbom [flags] SBOM_PATH
                                        Allowed values:
                                          - nvd
                                          - redhat
-                                         - redhat-oval
                                          - debian
                                          - ubuntu
                                          - alpine
