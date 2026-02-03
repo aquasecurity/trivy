@@ -112,12 +112,12 @@
             "Digest": "sha256:7b1c937e0f6794db2535be6e4cb6d60a0b668ef78c2576611a3fb9c97a95ccdf",
             "DiffID": "sha256:4468e6d912c76d5b127f3554c3cd83b7dc07cce6107c6b916299ba76fa7d15ac"
           },
-          "SeveritySource": "redhat-oval",
+          "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-18276",
           "DataSource": {
-            "ID": "redhat-oval",
-            "Name": "Red Hat OVAL v2",
-            "URL": "https://www.redhat.com/security/data/oval/v2/"
+            "ID": "redhat",
+            "Name": "Red Hat",
+            "URL": "https://access.redhat.com/security/cve/"
           },
           "Fingerprint": "sha256:d88ec8270470584c0d7d9b5355fb694ac6896c1249c5c27ec68aaac30733a95b",
           "Title": "bash: when effective UID is not equal to its real UID the saved UID is not dropped",
@@ -132,7 +132,6 @@
             "oracle-oval": 1,
             "photon": 3,
             "redhat": 1,
-            "redhat-oval": 1,
             "ubuntu": 1
           },
           "CVSS": {

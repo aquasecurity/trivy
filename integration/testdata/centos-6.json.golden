@@ -106,12 +106,12 @@
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
-          "SeveritySource": "redhat-oval",
+          "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-29573",
           "DataSource": {
-            "ID": "redhat-oval",
-            "Name": "Red Hat OVAL v2",
-            "URL": "https://www.redhat.com/security/data/oval/v2/"
+            "ID": "redhat",
+            "Name": "Red Hat",
+            "URL": "https://access.redhat.com/security/cve/"
           },
           "Fingerprint": "sha256:62a496897de8943df9f21f55ef389d695bc52f72b4f61228527e732c6aeecf32",
           "Title": "glibc: stack-based buffer overflow if the input to any of the printf family of functions is an 80-bit long double with a non-canonical bit pattern",
@@ -126,8 +126,7 @@
             "nvd": 3,
             "oracle-oval": 2,
             "photon": 3,
-            "redhat": 2,
-            "redhat-oval": 2
+            "redhat": 2
           },
           "CVSS": {
             "nvd": {
@@ -171,12 +170,12 @@
             "Digest": "sha256:ff50d722b38227ec8f2bbf0cdbce428b66745077c173d8117d91376128fa532e",
             "DiffID": "sha256:af6bf1987c2eb07d73f33836b0d8fd825d7c785273526b077e46780e8b4b2ae9"
           },
-          "SeveritySource": "redhat-oval",
+          "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
           "DataSource": {
-            "ID": "redhat-oval",
-            "Name": "Red Hat OVAL v2",
-            "URL": "https://www.redhat.com/security/data/oval/v2/"
+            "ID": "redhat",
+            "Name": "Red Hat",
+            "URL": "https://access.redhat.com/security/cve/"
           },
           "Fingerprint": "sha256:b78bc648b47d435c3e7a2edeb44addc0e2919d0607b86c4348291c6fc5eceb4e",
           "Title": "openssl: 0-byte record padding oracle",
@@ -191,7 +190,6 @@
             "nvd": 2,
             "oracle-oval": 2,
             "redhat": 2,
-            "redhat-oval": 2,
             "ubuntu": 2
           },
           "CVSS": {

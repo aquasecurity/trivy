@@ -100,12 +100,12 @@
             "Digest": "sha256:ac9208207adaac3a48e54a4dc6b49c69e78c3072d2b3add7efdabf814db2133b",
             "DiffID": "sha256:89169d87dbe2b72ba42bfbb3579c957322baca28e03a1e558076542a1c1b2b4a"
           },
-          "SeveritySource": "redhat-oval",
+          "SeveritySource": "redhat",
           "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-1559",
           "DataSource": {
-            "ID": "redhat-oval",
-            "Name": "Red Hat OVAL v2",
-            "URL": "https://www.redhat.com/security/data/oval/v2/"
+            "ID": "redhat",
+            "Name": "Red Hat",
+            "URL": "https://access.redhat.com/security/cve/"
           },
           "Fingerprint": "sha256:638871deb7cddea2771313ab3cff2b012e60f6c4346567d35bd9ceee1d9226c3",
           "Title": "openssl: 0-byte record padding oracle",
@@ -120,7 +120,6 @@
             "nvd": 2,
             "oracle-oval": 2,
             "redhat": 2,
-            "redhat-oval": 2,
             "ubuntu": 2
           },
           "CVSS": {

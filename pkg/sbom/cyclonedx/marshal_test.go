@@ -198,12 +198,12 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:d871dadfb37b53ef1ca45be04fc527562b91989991a8f545345ae3be0b93f92a",
 								},
-								SeveritySource: vulnerability.RedHatOVAL,
+								SeveritySource: vulnerability.RedHat,
 								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2018-20623",
 								DataSource: &dtypes.DataSource{
-									ID:   vulnerability.RedHatOVAL,
-									Name: "Red Hat OVAL v2",
-									URL:  "https://www.redhat.com/security/data/oval/v2/",
+									ID:   vulnerability.RedHat,
+									Name: "Red Hat",
+									URL:  "https://access.redhat.com/security/cve/",
 								},
 								PkgIdentifier: binutilsIdentifier,
 								Vulnerability: dtypes.Vulnerability{
@@ -211,8 +211,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									Description: "In GNU Binutils 2.31.1, there is a use-after-free in the error function in elfcomm.c when called from the process_archive function in readelf.c via a crafted ELF file.",
 									Severity:    dtypes.SeverityMedium.String(),
 									VendorSeverity: dtypes.VendorSeverity{
-										vulnerability.NVD:        dtypes.SeverityMedium,
-										vulnerability.RedHatOVAL: dtypes.SeverityMedium,
+										vulnerability.NVD:    dtypes.SeverityMedium,
+										vulnerability.RedHat: dtypes.SeverityMedium,
 									},
 									CweIDs: []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
@@ -222,7 +222,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 											V2Score:  4.3,
 											V3Score:  5.5,
 										},
-										vulnerability.RedHatOVAL: dtypes.CVSS{
+										vulnerability.RedHat: dtypes.CVSS{
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
 											V3Score:  5.3,
 										},
@@ -682,7 +682,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					{
 						ID: "CVE-2018-20623",
 						Source: &cdx.Source{
-							Name: string(vulnerability.RedHatOVAL),
+							Name: string(vulnerability.RedHat),
 							URL:  "https://www.redhat.com/security/data/oval/v2/",
 						},
 						Ratings: &[]cdx.VulnerabilityRating{
@@ -708,7 +708,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							},
 							{
 								Source: &cdx.Source{
-									Name: string(vulnerability.RedHatOVAL),
+									Name: string(vulnerability.RedHat),
 									URL:  "",
 								},
 								Score:    lo.ToPtr(5.3),
