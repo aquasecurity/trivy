@@ -144,3 +144,6 @@ labels:
 - name: autoready
   color: 1d76db
   description: Automatically mark PR as ready for review when all checks pass
+- name: apidiff
+  color: ededed
+  description: Indicates Go API changes relevant to library consumers (CLI compatibility may be unaffected)

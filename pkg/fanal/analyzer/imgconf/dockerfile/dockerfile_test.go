@@ -6,12 +6,12 @@ import (
 	"time"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/moby/buildkit/frontend/dockerfile/parser"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/dockerfile/parser"
 )
 
 func Test_historyAnalyzer_Analyze(t *testing.T) {
@@ -101,8 +101,8 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY foo.txt /' command instead of 'ADD foo.txt /'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
-								AVDID:              "AVD-DS-0005",
+								ID:                 "DS-0005",
+								AVDID:              "",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -188,8 +188,8 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS005.deny",
 							Message:   "Consider using 'COPY ./foo.txt /foo.txt' command instead of 'ADD ./foo.txt /foo.txt'",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS005",
-								AVDID:              "AVD-DS-0005",
+								ID:                 "DS-0005",
+								AVDID:              "",
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -262,8 +262,8 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Query:     "data.builtin.dockerfile.DS002.deny",
 							Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 							PolicyMetadata: types.PolicyMetadata{
-								ID:                 "DS002",
-								AVDID:              "AVD-DS-0002",
+								ID:                 "DS-0002",
+								AVDID:              "",
 								Type:               "Dockerfile Security Check",
 								Title:              "Image user should not be 'root'",
 								Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
@@ -384,7 +384,7 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 					},
 				},
 			},
-			expected: "HEALTHCHECK --interval=5m0s --timeout=3s --startPeriod=1s --retries=3 CMD curl -f http://localhost/ || exit 1\n",
+			expected: "HEALTHCHECK --interval=5m0s --timeout=3s --start-period=1s --retries=3 CMD curl -f http://localhost/ || exit 1\n",
 		},
 		{
 			name: "healthcheck instruction exec arguments directly",
@@ -430,12 +430,12 @@ func Test_ImageConfigToDockerfile(t *testing.T) {
 				},
 			},
 			expected: `ARG TAG=latest
-ENV TAG=latest
+ENV TAG="latest"
 ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 `,
 		},
 		{
-			name: "buildah backend or docker legacy builder (DOCKER_BUILDKIT=0)",
+			name: "remove backend-specific metadata suffixes",
 			input: &v1.ConfigFile{
 				History: []v1.History{
 					{
@@ -445,21 +445,37 @@ ENTRYPOINT ["/bin/sh" "-c" "echo test"]
 						CreatedBy: "/bin/sh -c #(nop) ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 in readme |inheritLabels=false",
 					},
 					{
+						CreatedBy: "/bin/sh -c #(nop) HEALTHCHECK NONE|unsetLabel=true|inheritLabels=false|force-mtime=10",
+					},
+					{
 						CreatedBy: `/bin/sh -c #(nop) ENTRYPOINT ["/bin/sh"]|inheritLabels=false`,
 					},
 				},
 			},
 			expected: `COPY dir:3a024d8085bc39741a0a094a8e287a00a760975c7c2e6b5dc6c7d3174b7d1ab6 ./files
 ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
+HEALTHCHECK NONE
 ENTRYPOINT ["/bin/sh"]
 `,
+		},
+		{
+			name: "legacy env format",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "ENV TEST=foo bar",
+					},
+				},
+			},
+			expected: "ENV TEST=\"foo bar\"\n",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := imageConfigToDockerfile(tt.input)
-			_, err := parser.Parse(bytes.NewReader(got))
+			p := parser.NewParser(parser.WithStrict())
+			_, err := p.Parse(t.Context(), bytes.NewReader(got), "Dockerfile")
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.expected, string(got))

@@ -25,10 +25,11 @@ import (
 	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -130,7 +131,7 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	img := imgs[0]
 
-	f, err := os.CreateTemp("", "fanal-containerd-*")
+	f, err := xos.CreateTemp("", "containerd-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
@@ -283,10 +284,8 @@ func inspect(ctx context.Context, img client.Image, ref reference.Reference) (do
 		Architecture: imgConfig.Architecture,
 		Os:           imgConfig.OS,
 		RootFS: dockertypes.RootFS{
-			Type: imgConfig.RootFS.Type,
-			Layers: lo.Map(imgConfig.RootFS.DiffIDs, func(d digest.Digest, _ int) string {
-				return d.String()
-			}),
+			Type:   imgConfig.RootFS.Type,
+			Layers: xslices.Map(imgConfig.RootFS.DiffIDs, digest.Digest.String),
 		},
 	}, history, ref, nil
 }

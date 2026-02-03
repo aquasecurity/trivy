@@ -1,16 +1,21 @@
 package artifact
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
+	"maps"
 	"os"
 	"slices"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
+	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/operation"
@@ -35,6 +40,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/doc"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 // TargetKind represents what kind of artifact Trivy scans
@@ -47,11 +53,10 @@ const (
 	TargetRepository     TargetKind = "repo"
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
+	TargetK8s            TargetKind = "k8s"
 )
 
-var (
-	SkipScan = errors.New("skip subsequent processes")
-)
+var SkipScan = errors.New("skip subsequent processes")
 
 // InitializeScanService defines the initialize function signature of scan service
 type InitializeScanService func(context.Context, ScannerConfig) (scan.Service, func(), error)
@@ -113,21 +118,29 @@ func WithInitializeService(f InitializeScanService) RunnerOption {
 
 // NewRunner initializes Runner that provides scanning functionalities.
 // It is possible to return SkipScan and it must be handled by caller.
-func NewRunner(ctx context.Context, cliOptions flag.Options, opts ...RunnerOption) (Runner, error) {
+func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKind, opts ...RunnerOption) (_ Runner, err error) {
 	r := &runner{}
 	for _, opt := range opts {
 		opt(r)
 	}
 
+	defer func() {
+		if err != nil {
+			if cErr := r.Close(ctx); cErr != nil {
+				log.ErrorContext(ctx, "failed to close runner: %s", cErr)
+			}
+		}
+	}()
+
 	// Set the default HTTP transport
 	xhttp.SetDefaultTransport(xhttp.NewTransport(xhttp.Options{
 		Insecure:  cliOptions.Insecure,
+		CACerts:   cliOptions.CACerts,
 		Timeout:   cliOptions.Timeout,
 		TraceHTTP: cliOptions.TraceHTTP,
 	}))
-	// get the sub command that is being used or fallback to "trivy"
-	commandName := lo.NthOr(os.Args, 1, "trivy")
-	r.versionChecker = notification.NewVersionChecker(commandName, &cliOptions)
+
+	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)
 
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
@@ -169,8 +182,10 @@ func (r *runner) Close(ctx context.Context) error {
 		}
 	}
 
-	if err := r.module.Close(ctx); err != nil {
-		errs = multierror.Append(errs, err)
+	if r.module != nil {
+		if err := r.module.Close(ctx); err != nil {
+			errs = multierror.Append(errs, err)
+		}
 	}
 
 	// silently check if there is notifications
@@ -365,22 +380,6 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 	ctx, cancel := context.WithTimeout(ctx, opts.Timeout)
 	defer cancel()
 
-	defer func() {
-		if errors.Is(err, context.DeadlineExceeded) {
-			// e.g. https://trivy.dev/latest/docs/configuration/
-			log.WarnContext(ctx, fmt.Sprintf("Provide a higher timeout value, see %s", doc.URL("/docs/configuration/", "")))
-		}
-	}()
-
-	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
-		log.WarnContext(ctx,
-			fmt.Sprintf(
-				"Trivy runs in client/server mode, but misconfiguration and license scanning will be done on the client side, see %s",
-				doc.URL("/docs/references/modes/client-server", ""),
-			),
-		)
-	}
-
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
 
@@ -421,7 +420,10 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
-	r, err := NewRunner(ctx, opts)
+	// Perform validation checks
+	checkOptions(ctx, opts, targetKind)
+
+	r, err := NewRunner(ctx, opts, targetKind)
 	if err != nil {
 		if errors.Is(err, SkipScan) {
 			return types.Report{}, nil
@@ -462,6 +464,27 @@ func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.R
 	}
 
 	return report, nil
+}
+
+// checkOptions performs various checks on scan options and shows warnings
+func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind) {
+	// Check client/server mode with misconfiguration and secret scanning
+	if opts.ServerAddr != "" && opts.Scanners.AnyEnabled(types.MisconfigScanner, types.SecretScanner) {
+		log.WarnContext(ctx,
+			fmt.Sprintf(
+				"Trivy runs in client/server mode, but misconfiguration and secret scanning will be done on the client side, see %s",
+				doc.URL("guide/references/modes/client-server", ""),
+			),
+		)
+	}
+
+	// Check SBOM to SBOM scanning with package filtering flags
+	// For SBOM-to-SBOM scanning (for example, to add vulnerabilities to the SBOM file), we should not modify the scanned file.
+	// cf. https://github.com/aquasecurity/trivy/pull/9439#issuecomment-3295533665
+	if targetKind == TargetSBOM && slices.Contains(types.SupportedSBOMFormats, opts.Format) &&
+		(!slices.Equal(opts.PkgTypes, types.PkgTypes) || !slices.Equal(opts.PkgRelationships, ftypes.Relationships)) {
+		log.Warn("'--pkg-types' and '--pkg-relationships' options will be ignored when scanning SBOM and outputting SBOM format.")
+	}
 }
 
 func disabledAnalyzers(opts flag.Options) []analyzer.Type {
@@ -578,9 +601,13 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 	if opts.Scanners.Enabled(types.SecretScanner) {
 		logger := log.WithPrefix(log.PrefixSecret)
 		logger.Info("Secret scanning is enabled")
-		logger.Info("If your scanning is slow, please try '--scanners vuln' to disable secret scanning")
-		// e.g. https://trivy.dev/latest/docs/scanner/secret/#recommendation
-		logger.Info(fmt.Sprintf("Please see also %s for faster secret detection", doc.URL("/docs/scanner/secret/", "recommendation")))
+		if nonSecrets := lo.Without(opts.Scanners, types.SecretScanner, types.SBOMScanner); len(nonSecrets) > 0 {
+			logger.Info(fmt.Sprintf(
+				"If your scanning is slow, please try '--scanners %s' to disable secret scanning",
+				strings.Join(xstrings.ToStringSlice(nonSecrets), ",")))
+		}
+		// e.g. https://trivy.dev/docs/latest/scanner/secret/#recommendation
+		logger.Info(fmt.Sprintf("Please see %s for faster secret detection", doc.URL("guide/scanner/secret/", "recommendation")))
 	} else {
 		opts.SecretConfigPath = ""
 	}
@@ -711,6 +738,12 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		return misconf.ScannerOption{}, xerrors.Errorf("load schemas error: %w", err)
 	}
 
+	ansibleExtraVars, err := resolveAnsibleExtraVars(opts.AnsibleExtraVars)
+	if err != nil {
+		log.DebugContext(ctx, "Failed to resolve Ansible extra-vars", log.Err(err))
+		ansibleExtraVars = make(map[string]any)
+	}
+
 	misconfOpts := misconf.ScannerOption{
 		Trace:                    opts.RegoOptions.Trace,
 		Namespaces:               append(opts.CheckNamespaces, rego.BuiltinNamespaces()...),
@@ -728,12 +761,16 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 		DisableEmbeddedPolicies:  disableEmbedded,
 		DisableEmbeddedLibraries: disableEmbedded,
 		IncludeDeprecatedChecks:  opts.IncludeDeprecatedChecks,
+		RegoErrorLimit:           opts.RegoOptions.ErrorLimit,
 		TfExcludeDownloaded:      opts.TfExcludeDownloaded,
 		RawConfigScanners:        opts.RawConfigScanners,
 		FilePatterns:             opts.FilePatterns,
 		ConfigFileSchemas:        configSchemas,
 		SkipFiles:                opts.SkipFiles,
 		SkipDirs:                 opts.SkipDirs,
+		AnsiblePlaybooks:         opts.AnsiblePlaybooks,
+		AnsibleInventories:       opts.AnsibleInventories,
+		AnsibleExtraVars:         ansibleExtraVars,
 	}
 
 	regoScanner, err := misconf.InitRegoScanner(misconfOpts)
@@ -743,4 +780,45 @@ func initMisconfScannerOption(ctx context.Context, opts flag.Options) (misconf.S
 
 	misconfOpts.RegoScanner = regoScanner
 	return misconfOpts, nil
+}
+
+func resolveAnsibleExtraVars(inputs []string) (map[string]any, error) {
+	result := make(map[string]any)
+
+	for _, input := range inputs {
+		var vars map[string]any
+
+		switch {
+		case strings.HasPrefix(input, "@"):
+			data, err := os.ReadFile(input[1:])
+			if err != nil {
+				return nil, fmt.Errorf("read extra-vars file %s: %w", input[1:], err)
+			}
+			trimmed := bytes.TrimSpace(data)
+			if len(trimmed) > 0 && trimmed[0] == '{' {
+				// parse as JSON object
+				if err := json.Unmarshal(trimmed, &vars); err != nil {
+					return nil, fmt.Errorf("parse extra-vars JSON file %s: %w", input[1:], err)
+				}
+			} else {
+				// parse as YAML
+				if err := yaml.Unmarshal(trimmed, &vars); err != nil {
+					return nil, fmt.Errorf("parse extra-vars YAML file %s: %w", input[1:], err)
+				}
+			}
+		case strings.Contains(input, "="):
+			kv := strings.SplitN(input, "=", 2)
+			var val string
+			if len(kv) == 2 {
+				val = kv[1]
+			}
+			vars = map[string]any{kv[0]: val}
+		default:
+			return nil, fmt.Errorf("invalid extra-vars input: %s", input)
+		}
+
+		maps.Copy(result, vars)
+	}
+
+	return result, nil
 }

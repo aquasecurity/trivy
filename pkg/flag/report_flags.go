@@ -5,7 +5,6 @@ import (
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/samber/lo"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
@@ -16,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
@@ -60,6 +60,7 @@ var (
 	ListAllPkgsFlag = Flag[bool]{
 		Name:          "list-all-pkgs",
 		ConfigName:    "list-all-pkgs",
+		Default:       true,
 		Usage:         "output all packages in the JSON report regardless of vulnerability",
 		TelemetrySafe: true,
 	}
@@ -228,8 +229,9 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	}
 
 	// "--list-all-pkgs" option is unavailable with other than "--format json".
-	// If user specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
-	if listAllPkgs && format != types.FormatJSON {
+	// If user explicitly specifies "--list-all-pkgs" with "--format table" or other formats, we should warn it.
+	// We check if the flag was explicitly set by the user to avoid warning when using the default value.
+	if f.ListAllPkgs.IsSet() && listAllPkgs && format != types.FormatJSON {
 		log.Warn(`"--list-all-pkgs" is only valid for the JSON format, for other formats a list of packages is automatically included.`)
 	}
 
@@ -302,7 +304,7 @@ func toSeverity(severity []string) []dbTypes.Severity {
 	if len(severity) == 0 {
 		return nil
 	}
-	severities := lo.Map(severity, func(s string, _ int) dbTypes.Severity {
+	severities := xslices.Map(severity, func(s string) dbTypes.Severity {
 		// Note that there is no need to check the error here
 		// since the severity value is already validated in the flag parser.
 		sev, _ := dbTypes.NewSeverity(s)

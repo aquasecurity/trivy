@@ -22,8 +22,8 @@ import (
 )
 
 var (
-	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
-	reason         = "See " + doc.URL("docs/target/container_image", "disabled-checks")
+	disabledChecks = set.New("DS-0007", "DS-0016")
+	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
 const analyzerVersion = 1
@@ -103,17 +103,18 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 		case strings.HasPrefix(h.CreatedBy, "HEALTHCHECK"):
 			// HEALTHCHECK instruction
 			createdBy = buildHealthcheckInstruction(cfg.Config.Healthcheck)
+		case strings.HasPrefix(h.CreatedBy, "ENV"):
+			createdBy = restoreEnvLine(h.CreatedBy)
 		default:
-			for _, prefix := range []string{"ARG", "ENV", "ENTRYPOINT"} {
+			for _, prefix := range []string{"ARG", "ENTRYPOINT"} {
 				if strings.HasPrefix(h.CreatedBy, prefix) {
 					createdBy = h.CreatedBy
 					break
 				}
 			}
 		}
-		// Remove Buildah-specific suffix (currently only `|inherit Labels=false`)
-		// cf. https://github.com/containers/buildah/blob/5a02e74b5d0f01e4d68ea0dcdbf5f5f444baa68f/imagebuildah/stage_executor.go#L1885
-		createdBy = strings.TrimSuffix(createdBy, "|inheritLabels=false")
+
+		createdBy = stripBuildMetadata(createdBy)
 		dockerfile.WriteString(strings.TrimSpace(createdBy) + "\n")
 	}
 
@@ -124,6 +125,17 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 	}
 
 	return dockerfile.Bytes()
+}
+
+var metadataRe = regexp.MustCompile(`\|[a-zA-Z0-9_-]+=[^ \t]+`)
+
+// stripBuildMetadata removes build metadata suffixes appended by container build backends
+// (e.g., Buildah, Buildkit). Each suffix has the form "|key=value".
+// Example: "/bin/sh -c #(nop) HEALTHCHECK NONE|unsetLabel=true|inheritLabels=false|force-mtime=10"
+// c.f. Buildah source for metadata construction:
+// https://github.com/containers/buildah/blob/fb473e4d538f693f8b3ee3f8f2ed93a2abed5064/imagebuildah/stage_executor.go#L2616
+func stripBuildMetadata(line string) string {
+	return metadataRe.ReplaceAllString(line, "")
 }
 
 func buildRunInstruction(s string) string {
@@ -143,7 +155,7 @@ func buildHealthcheckInstruction(health *v1.HealthConfig) string {
 		timeout = fmt.Sprintf("--timeout=%s ", health.Timeout)
 	}
 	if health.StartPeriod != 0 {
-		startPeriod = fmt.Sprintf("--startPeriod=%s ", health.StartPeriod)
+		startPeriod = fmt.Sprintf("--start-period=%s ", health.StartPeriod)
 	}
 	if health.Retries != 0 {
 		retries = fmt.Sprintf("--retries=%d ", health.Retries)
@@ -157,6 +169,22 @@ var copyInRe = regexp.MustCompile(`\b((?:file|dir):\S+) in `)
 
 func normalizeCopyCreatedBy(input string) string {
 	return copyInRe.ReplaceAllString(input, `$1 `)
+}
+
+// restoreEnvLine normalizes a Dockerfile ENV instruction from image history.
+//
+// Legacy Dockerfiles may use ENV in the form: "ENV key val1 val2".
+// Docker stores this in image history as: "ENV key=val1 val2".
+// This can cause parsing errors, because extra tokens are treated as separate keys.
+// restoreEnvLine converts such lines into a valid `ENV <key>="<value>"` format
+// and wraps the value in quotes to preserve internal spaces and tabs.
+// e.g. `ENV tags=latest v0.0.0` -> `ENV key="latest v0.0.0"`
+func restoreEnvLine(createdBy string) string {
+	k, v, ok := strings.Cut(createdBy, "=")
+	if !ok {
+		return createdBy
+	}
+	return fmt.Sprintf("%s=%q", k, v)
 }
 
 func (a *historyAnalyzer) Required(_ types.OS) bool {
@@ -174,9 +202,9 @@ func (a *historyAnalyzer) Version() int {
 func filterDisabledChecks(results types.MisconfResults) types.MisconfResults {
 	var filtered types.MisconfResults
 	for _, r := range results {
-		if disabledChecks.Contains(r.AVDID) {
+		if disabledChecks.Contains(r.ID) {
 			log.WithPrefix("image history analyzer").Info("Skip disabled check",
-				log.String("ID", r.AVDID), log.String("reason", reason))
+				log.String("ID", r.ID), log.String("reason", reason))
 			continue
 		}
 		filtered = append(filtered, r)

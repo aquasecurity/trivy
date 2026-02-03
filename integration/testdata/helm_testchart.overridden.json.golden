@@ -1,34 +1,25 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/helm_testchart",
   "ArtifactType": "repository",
-  "Metadata": {
-    "ImageConfig": {
-      "architecture": "",
-      "created": "0001-01-01T00:00:00Z",
-      "os": "",
-      "rootfs": {
-        "type": "",
-        "diff_ids": null
-      },
-      "config": {}
-    }
-  },
   "Results": [
     {
       "Target": "templates/deployment.yaml",
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 87,
+        "Successes": 90,
         "Failures": 8
       },
       "Misconfigurations": [
         {
           "Type": "Helm Security Check",
-          "ID": "KSV001",
-          "AVDID": "AVD-KSV-0001",
+          "ID": "KSV-0001",
           "Title": "Can elevate its own privileges",
           "Description": "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
           "Message": "Container 'testchart' of Deployment 'testchart' should set 'securityContext.allowPrivilegeEscalation' to false",
@@ -36,13 +27,12 @@
           "Query": "data.builtin.kubernetes.KSV001.deny",
           "Resolution": "Set 'set containers[].securityContext.allowPrivilegeEscalation' to 'false'.",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv001",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0001",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv001"
+            "https://avd.aquasec.com/misconfig/ksv-0001"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -150,14 +140,12 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV020",
-          "AVDID": "AVD-KSV-0020",
+          "ID": "KSV-0020",
           "Title": "Runs with UID \u003c= 10000",
           "Description": "Force the container to run with user ID \u003e 10000 to avoid conflicts with the host’s user table.",
           "Message": "Container 'testchart' of Deployment 'testchart' should set 'securityContext.runAsUser' \u003e 10000",
@@ -165,13 +153,12 @@
           "Query": "data.builtin.kubernetes.KSV020.deny",
           "Resolution": "Set 'containers[].securityContext.runAsUser' to an integer \u003e 10000.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv020",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0020",
           "References": [
             "https://kubesec.io/basics/containers-securitycontext-runasuser/",
-            "https://avd.aquasec.com/misconfig/ksv020"
+            "https://avd.aquasec.com/misconfig/ksv-0020"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -279,14 +266,12 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV030",
-          "AVDID": "AVD-KSV-0030",
+          "ID": "KSV-0030",
           "Title": "Runtime/Default Seccomp profile not set",
           "Description": "According to pod security standard 'Seccomp', the RuntimeDefault seccomp profile must be required, or allow specific additional profiles.",
           "Message": "Either Pod or Container should set 'securityContext.seccompProfile.type' to 'RuntimeDefault'",
@@ -294,13 +279,12 @@
           "Query": "data.builtin.kubernetes.KSV030.deny",
           "Resolution": "Set 'spec.securityContext.seccompProfile.type', 'spec.containers[*].securityContext.seccompProfile' and 'spec.initContainers[*].securityContext.seccompProfile' to 'RuntimeDefault' or undefined.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv030",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0030",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv030"
+            "https://avd.aquasec.com/misconfig/ksv-0030"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -408,14 +392,12 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV104",
-          "AVDID": "AVD-KSV-0104",
+          "ID": "KSV-0104",
           "Title": "Seccomp policies disabled",
           "Description": "A program inside the container can bypass Seccomp protection policies.",
           "Message": "container \"testchart\" of deployment \"testchart\" in \"default\" namespace should specify a seccomp profile",
@@ -423,13 +405,12 @@
           "Query": "data.builtin.kubernetes.KSV104.deny",
           "Resolution": "Specify seccomp either by annotation or by seccomp profile type having allowed values as per pod security standards",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv104",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0104",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#baseline",
-            "https://avd.aquasec.com/misconfig/ksv104"
+            "https://avd.aquasec.com/misconfig/ksv-0104"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
@@ -537,14 +518,12 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV105",
-          "AVDID": "AVD-KSV-0105",
+          "ID": "KSV-0105",
           "Title": "Containers must not set runAsUser to 0",
           "Description": "Containers should be forbidden from running with a root UID.",
           "Message": "securityContext.runAsUser should be set to a value greater than 0",
@@ -552,20 +531,29 @@
           "Query": "data.builtin.kubernetes.KSV105.deny",
           "Resolution": "Set 'securityContext.runAsUser' to a non-zero integer or leave undefined.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv105",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0105",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/#restricted",
-            "https://avd.aquasec.com/misconfig/ksv105"
+            "https://avd.aquasec.com/misconfig/ksv-0105"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 30,
+            "StartLine": 29,
             "EndLine": 36,
             "Code": {
               "Lines": [
+                {
+                  "Number": 29,
+                  "Content": "          securityContext:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "          \u001b[38;5;33msecurityContext\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 30,
                   "Content": "            capabilities:",
@@ -573,7 +561,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "            \u001b[38;5;33mcapabilities\u001b[0m:",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -637,14 +625,12 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV110",
-          "AVDID": "AVD-KSV-0110",
+          "ID": "KSV-0110",
           "Title": "Workloads in the default namespace",
           "Description": "Checks whether a workload is running in the default namespace.",
           "Message": "deployment testchart in default namespace should set metadata.namespace to a non-default namespace",
@@ -652,20 +638,29 @@
           "Query": "data.builtin.kubernetes.KSV110.deny",
           "Resolution": "Set 'metadata.namespace' to a non-default namespace.",
           "Severity": "LOW",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv110",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0110",
           "References": [
             "https://kubernetes.io/docs/concepts/overview/working-with-objects/namespaces/",
-            "https://avd.aquasec.com/misconfig/ksv110"
+            "https://avd.aquasec.com/misconfig/ksv-0110"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 5,
+            "StartLine": 4,
             "EndLine": 11,
             "Code": {
               "Lines": [
+                {
+                  "Number": 4,
+                  "Content": "metadata:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "\u001b[38;5;33mmetadata\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 5,
                   "Content": "  name: testchart",
@@ -673,7 +668,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "  \u001b[38;5;33mname\u001b[0m: testchart",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -737,14 +732,12 @@
                   "LastCause": true
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV117",
-          "AVDID": "AVD-KSV-0117",
+          "ID": "KSV-0117",
           "Title": "Prevent binding to privileged ports",
           "Description": "The ports which are lower than 1024 receive and transmit various sensitive and privileged data. Allowing containers to use them can bring serious implications.",
           "Message": "deployment testchart in default namespace should not set spec.template.spec.containers.ports.containerPort to less than 1024",
@@ -752,27 +745,21 @@
           "Query": "data.builtin.kubernetes.KSV117.deny",
           "Resolution": "Do not map the container ports to privileged host ports when starting a container.",
           "Severity": "MEDIUM",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv117",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0117",
           "References": [
             "https://kubernetes.io/docs/concepts/security/pod-security-standards/",
             "https://www.stigviewer.com/stig/kubernetes/2022-12-02/finding/V-242414",
-            "https://avd.aquasec.com/misconfig/ksv117"
+            "https://avd.aquasec.com/misconfig/ksv-0117"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
-            "Service": "general",
-            "Code": {
-              "Lines": null
-            },
-            "RenderedCause": {}
+            "Service": "general"
           }
         },
         {
           "Type": "Helm Security Check",
-          "ID": "KSV118",
-          "AVDID": "AVD-KSV-0118",
+          "ID": "KSV-0118",
           "Title": "Default security context configured",
           "Description": "Security context controls the allocation of security parameters for the pod/container/volume, ensuring the appropriate level of protection. Relying on default security context may expose vulnerabilities to potential attacks that rely on privileged access.",
           "Message": "deployment testchart in default namespace is using the default security context, which allows root privileges",
@@ -780,20 +767,29 @@
           "Query": "data.builtin.kubernetes.KSV118.deny",
           "Resolution": "To enhance security, it is strongly recommended not to rely on the default security context. Instead, it is advisable to explicitly define the required security parameters (such as runAsNonRoot, capabilities, readOnlyRootFilesystem, etc.) within the security context.",
           "Severity": "HIGH",
-          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv118",
+          "PrimaryURL": "https://avd.aquasec.com/misconfig/ksv-0118",
           "References": [
             "https://kubernetes.io/docs/tasks/configure-pod-container/security-context/",
-            "https://avd.aquasec.com/misconfig/ksv118"
+            "https://avd.aquasec.com/misconfig/ksv-0118"
           ],
           "Status": "FAIL",
-          "Layer": {},
           "CauseMetadata": {
             "Provider": "Kubernetes",
             "Service": "general",
-            "StartLine": 24,
+            "StartLine": 23,
             "EndLine": 57,
             "Code": {
               "Lines": [
+                {
+                  "Number": 23,
+                  "Content": "    spec:",
+                  "IsCause": true,
+                  "Annotation": "",
+                  "Truncated": false,
+                  "Highlighted": "    \u001b[38;5;33mspec\u001b[0m:",
+                  "FirstCause": true,
+                  "LastCause": false
+                },
                 {
                   "Number": 24,
                   "Content": "      serviceAccountName: testchart",
@@ -801,7 +797,7 @@
                   "Annotation": "",
                   "Truncated": false,
                   "Highlighted": "      \u001b[38;5;33mserviceAccountName\u001b[0m: testchart",
-                  "FirstCause": true,
+                  "FirstCause": false,
                   "LastCause": false
                 },
                 {
@@ -872,20 +868,10 @@
                   "Truncated": false,
                   "Highlighted": "              \u001b[38;5;33mdrop\u001b[0m:",
                   "FirstCause": false,
-                  "LastCause": false
-                },
-                {
-                  "Number": 32,
-                  "Content": "              - ALL",
-                  "IsCause": true,
-                  "Annotation": "",
-                  "Truncated": false,
-                  "Highlighted": "              - ALL",
-                  "FirstCause": false,
                   "LastCause": true
                 },
                 {
-                  "Number": 33,
+                  "Number": 32,
                   "Content": "",
                   "IsCause": false,
                   "Annotation": "",
@@ -894,8 +880,7 @@
                   "LastCause": false
                 }
               ]
-            },
-            "RenderedCause": {}
+            }
           }
         }
       ]
@@ -905,7 +890,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 59,
+        "Successes": 62,
         "Failures": 0
       }
     },
@@ -914,7 +899,7 @@
       "Class": "config",
       "Type": "helm",
       "MisconfSummary": {
-        "Successes": 58,
+        "Successes": 61,
         "Failures": 0
       }
     }

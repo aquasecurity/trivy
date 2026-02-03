@@ -125,7 +125,6 @@ func loadPluginCommands() []*cobra.Command {
 		return nil
 	}
 	for _, p := range plugins {
-		p := p
 		cmd := &cobra.Command{
 			Use:     fmt.Sprintf("%s [flags]", p.Name),
 			Short:   p.Summary,
@@ -209,7 +208,6 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
-
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
@@ -541,7 +539,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		GroupID: groupUtility,
 		Short:   "Convert Trivy JSON report into a different format",
 		Example: `  # report conversion
-  $ trivy image --format json --output result.json --list-all-pkgs debian:11
+  $ trivy image --format json --output result.json debian:11
   $ trivy convert --format cyclonedx --output result.cdx result.json
 `,
 		PreRunE: func(cmd *cobra.Command, args []string) error {

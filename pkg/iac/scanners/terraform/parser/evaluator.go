@@ -31,7 +31,7 @@ type evaluator struct {
 	ctx               *tfcontext.Context
 	blocks            terraform.Blocks
 	inputVars         map[string]cty.Value
-	moduleMetadata    *modulesMetadata
+	moduleMetadata    *ModulesMetadata
 	projectRootPath   string // root of the current scan
 	modulePath        string
 	moduleName        string
@@ -50,7 +50,7 @@ func newEvaluator(
 	moduleName string,
 	blocks terraform.Blocks,
 	inputVars map[string]cty.Value,
-	moduleMetadata *modulesMetadata,
+	moduleMetadata *ModulesMetadata,
 	workspace string,
 	ignores ignore.Rules,
 	logger *log.Logger,
@@ -171,7 +171,7 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 
 	e.logger.Debug("Starting submodules evaluation...")
 
-	for i := 0; i < maxContextIterations; i++ {
+	for i := range maxContextIterations {
 		changed := false
 		for _, sm := range submodules {
 			changed = changed || e.evaluateSubmodule(ctx, sm)
@@ -196,9 +196,7 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 		}
 
 		modules = append(modules, sm.modules...)
-		for k, v := range sm.fsMap {
-			fsMap[k] = v
-		}
+		maps.Copy(fsMap, sm.fsMap)
 	}
 
 	e.logger.Debug("Finished processing submodule(s).", log.Int("count", len(modules)))
@@ -268,7 +266,7 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 
 func (e *evaluator) evaluateSteps() {
 	var lastContext hcl.EvalContext
-	for i := 0; i < maxContextIterations; i++ {
+	for i := range maxContextIterations {
 
 		e.logger.Debug("Starting iteration", log.Int("iteration", i))
 		e.evaluateStep()
@@ -281,9 +279,7 @@ func (e *evaluator) evaluateSteps() {
 		if len(e.ctx.Inner().Variables) != len(lastContext.Variables) {
 			lastContext.Variables = make(map[string]cty.Value, len(e.ctx.Inner().Variables))
 		}
-		for k, v := range e.ctx.Inner().Variables {
-			lastContext.Variables[k] = v
-		}
+		maps.Copy(lastContext.Variables, e.ctx.Inner().Variables)
 	}
 }
 

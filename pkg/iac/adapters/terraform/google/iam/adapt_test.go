@@ -75,62 +75,50 @@ resource "google_iam_workload_identity_pool_provider" "example" {
 			expected: iam.IAM{
 				Projects: []iam.Project{
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
-						AutoCreateNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						AutoCreateNetwork: iacTypes.BoolTest(true),
 					},
 				},
 				Folders: []iam.Folder{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Members: []iam.Member{
 							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("user:alice@gmail.com", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("roles/editor", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Member: iacTypes.StringTest("user:alice@gmail.com"),
+								Role:   iacTypes.StringTest("roles/editor"),
 							},
 						},
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Members: []iacTypes.StringValue{
-									iacTypes.String("user:not-alice@gmail.com", iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("user:not-alice@gmail.com"),
 								},
-								Role:                          iacTypes.String("roles/nothing", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Role: iacTypes.StringTest("roles/nothing"),
 							},
 						},
 					},
 				},
 				Organizations: []iam.Organization{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Members: []iam.Member{
 							{
-								Metadata:              iacTypes.NewTestMetadata(),
-								Member:                iacTypes.String("user:member@gmail.com", iacTypes.NewTestMetadata()),
-								Role:                  iacTypes.String("roles/whatever", iacTypes.NewTestMetadata()),
-								DefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+								Member: iacTypes.StringTest("user:member@gmail.com"),
+								Role:   iacTypes.StringTest("roles/whatever"),
 							},
 						},
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Members: []iacTypes.StringValue{
-									iacTypes.String("user:member_2@gmail.com", iacTypes.NewTestMetadata())},
-								Role:                          iacTypes.String("roles/browser", iacTypes.NewTestMetadata()),
-								IncludesDefaultServiceAccount: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+									iacTypes.StringTest("user:member_2@gmail.com")},
+								Role: iacTypes.StringTest("roles/browser"),
 							},
 						},
 					},
 				},
 				WorkloadIdentityPoolProviders: []iam.WorkloadIdentityPoolProvider{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 
-						WorkloadIdentityPoolId:         iacTypes.String("example-pool", iacTypes.NewTestMetadata()),
-						WorkloadIdentityPoolProviderId: iacTypes.String("example-provider", iacTypes.NewTestMetadata()),
-						AttributeCondition:             iacTypes.String("assertion.repository_owner=='your-github-organization'", iacTypes.NewTestMetadata()),
+						WorkloadIdentityPoolId:         iacTypes.StringTest("example-pool"),
+						WorkloadIdentityPoolProviderId: iacTypes.StringTest("example-provider"),
+						AttributeCondition:             iacTypes.StringTest("assertion.repository_owner=='your-github-organization'"),
 					},
 				},
 			},
@@ -198,11 +186,9 @@ data "google_iam_policy" "project_admin" {
 			expected: iam.IAM{
 				Folders: []iam.Folder{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Role:     iacTypes.StringTest("roles/editor"),
+								Role: iacTypes.StringTest("roles/editor"),
 								Members: []iacTypes.StringValue{
 									iacTypes.StringTest("user:jane@example.com"),
 								},
@@ -212,11 +198,9 @@ data "google_iam_policy" "project_admin" {
 				},
 				Organizations: []iam.Organization{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Role:     iacTypes.StringTest("roles/editor"),
+								Role: iacTypes.StringTest("roles/editor"),
 								Members: []iacTypes.StringValue{
 									iacTypes.StringTest("user:jane2@example.com"),
 								},
@@ -227,11 +211,9 @@ data "google_iam_policy" "project_admin" {
 				Projects: []iam.Project{
 					{
 						AutoCreateNetwork: iacTypes.BoolTest(true),
-						Metadata:          iacTypes.NewTestMetadata(),
 						Bindings: []iam.Binding{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Role:     iacTypes.StringTest("roles/editor"),
+								Role: iacTypes.StringTest("roles/editor"),
 								Members: []iacTypes.StringValue{
 									iacTypes.StringTest("user:jane3@example.com"),
 								},
@@ -260,13 +242,11 @@ resource "google_project_iam_member" "project" {
 			expected: iam.IAM{
 				Projects: []iam.Project{
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
 						AutoCreateNetwork: iacTypes.BoolTest(true),
 						Members: []iam.Member{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Role:     iacTypes.StringTest("roles/editor"),
-								Member:   iacTypes.StringTest("user:jane@example.com"),
+								Role:   iacTypes.StringTest("roles/editor"),
+								Member: iacTypes.StringTest("user:jane@example.com"),
 							},
 						},
 					},
@@ -285,13 +265,120 @@ resource "google_project_iam_member" "project" {
 			expected: iam.IAM{
 				Projects: []iam.Project{
 					{
-						Metadata:          iacTypes.NewTestMetadata(),
-						AutoCreateNetwork: iacTypes.BoolTest(false),
 						Members: []iam.Member{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Role:     iacTypes.StringTest("roles/editor"),
-								Member:   iacTypes.StringTest("user:jane@example.com"),
+								Role:   iacTypes.StringTest("roles/editor"),
+								Member: iacTypes.StringTest("user:jane@example.com"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "audit configs",
+			terraform: `
+data "google_organization" "org" {
+  domain = "example.com"
+}
+
+resource "google_project" "test" {
+  name                = "Test project"
+  project_id          = "test"
+  org_id              = data.google_organization.org.org_id
+  auto_create_network = false
+}
+
+resource "google_folder" "test" {
+  display_name = "Test folder"
+  parent       = data.google_organization.org.org_id
+}
+
+resource "google_project_iam_audit_config" "project_audit" {
+  project = google_project.test.project_id
+  service = "allServices"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+  
+  audit_log_config {
+    log_type = "DATA_WRITE"
+    exempted_members = [
+      "user:alice@example.com",
+      "serviceAccount:test@project.iam.gserviceaccount.com"
+    ]
+  }
+}
+
+resource "google_organization_iam_audit_config" "org_audit" {
+  org_id  = data.google_organization.org.org_id
+  service = "storage.googleapis.com"
+  
+  audit_log_config {
+    log_type = "DATA_READ"
+    exempted_members = ["user:bob@example.com"]
+  }
+}
+
+resource "google_folder_iam_audit_config" "folder_audit" {
+  folder  = google_folder.test.name
+  service = "compute.googleapis.com"
+  
+  audit_log_config {
+    log_type = "ADMIN_READ"
+  }
+}
+`,
+			expected: iam.IAM{
+				Projects: []iam.Project{
+					{
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Service: iacTypes.StringTest("allServices"),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										LogType: iacTypes.StringTest("ADMIN_READ"),
+									},
+									{
+										LogType: iacTypes.StringTest("DATA_WRITE"),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.StringTest("user:alice@example.com"),
+											iacTypes.StringTest("serviceAccount:test@project.iam.gserviceaccount.com"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Organizations: []iam.Organization{
+					{
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Service: iacTypes.StringTest("storage.googleapis.com"),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										LogType: iacTypes.StringTest("DATA_READ"),
+										ExemptedMembers: []iacTypes.StringValue{
+											iacTypes.StringTest("user:bob@example.com"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+				Folders: []iam.Folder{
+					{
+						AuditConfigs: []iam.AuditConfig{
+							{
+								Service: iacTypes.StringTest("compute.googleapis.com"),
+								AuditLogConfigs: []iam.AuditLogConfig{
+									{
+										LogType: iacTypes.StringTest("ADMIN_READ"),
+									},
+								},
 							},
 						},
 					},

@@ -11,20 +11,17 @@ import (
 	"path"
 	"path/filepath"
 
-	"github.com/liamg/memoryfs"
-
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var errSkipFS = errors.New("skip parse FS")
 
-func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
-	tarFS := memoryfs.CloneFS(p.workingFS)
-
-	file, err := tarFS.Open(archivePath)
+func (p *Parser) unpackArchive(srcFS fs.FS, targetFS *mapfs.FS, archivePath string) error {
+	file, err := srcFS.Open(archivePath)
 	if err != nil {
-		return nil, fmt.Errorf("failed to open tar: %w", err)
+		return fmt.Errorf("failed to open tar: %w", err)
 	}
 	defer file.Close()
 
@@ -33,7 +30,7 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 	if detection.IsZip(archivePath) {
 		zipped, err := gzip.NewReader(file)
 		if err != nil {
-			return nil, fmt.Errorf("failed to create gzip reader: %w", err)
+			return fmt.Errorf("failed to create gzip reader: %w", err)
 		}
 		defer zipped.Close()
 		tr = tar.NewReader(zipped)
@@ -50,7 +47,7 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 			if errors.Is(err, io.EOF) {
 				break
 			}
-			return nil, fmt.Errorf("failed to get next entry: %w", err)
+			return fmt.Errorf("failed to get next entry: %w", err)
 		}
 
 		name := filepath.ToSlash(header.Name)
@@ -59,28 +56,32 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 			// Do not add archive files to FS if the chart already exists
 			// This can happen when the source chart is located next to an archived chart (with the `helm package` command)
 			// The first level folder in the archive is equal to the Chart name
-			if _, err := tarFS.Stat(path.Dir(archivePath) + "/" + path.Dir(name)); err == nil {
-				return nil, errSkipFS
+			if _, err := fs.Stat(srcFS, path.Clean(path.Dir(archivePath)+"/"+path.Dir(name))); err == nil {
+				return errSkipFS
 			}
 			checkExistedChart = false
 		}
 
 		// get the individual path and extract to the current directory
-		targetPath := path.Join(path.Dir(archivePath), path.Clean(name))
-
-		link := filepath.ToSlash(header.Linkname)
+		targetPath := archiveEntryPath(archivePath, name)
 
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if err := tarFS.MkdirAll(targetPath, os.FileMode(header.Mode)); err != nil && !errors.Is(err, fs.ErrExist) {
-				return nil, err
+			if err := targetFS.MkdirAll(targetPath, os.FileMode(header.Mode)); err != nil && !errors.Is(err, fs.ErrExist) {
+				return err
 			}
 		case tar.TypeReg:
+			data, err := io.ReadAll(tr)
+			if err != nil {
+				return fmt.Errorf("read file: %w", err)
+			}
+
 			p.logger.Debug("Unpacking tar entry", log.FilePath(targetPath))
-			if err := copyFile(tarFS, tr, targetPath); err != nil {
-				return nil, err
+			if err := writeFile(targetFS, data, targetPath); err != nil {
+				return err
 			}
 		case tar.TypeSymlink:
+			link := filepath.ToSlash(header.Linkname)
 			if path.IsAbs(link) {
 				p.logger.Debug("Symlink is absolute, skipping", log.String("link", link))
 				continue
@@ -88,60 +89,49 @@ func (p *Parser) addTarToFS(archivePath string) (fs.FS, error) {
 
 			symlinks[targetPath] = path.Join(path.Dir(targetPath), link) // nolint:gosec // virtual file system is used
 		default:
-			return nil, fmt.Errorf("header type %q is not supported", header.Typeflag)
+			return fmt.Errorf("header type %q is not supported", header.Typeflag)
 		}
 	}
 
 	for target, link := range symlinks {
-		if err := copySymlink(tarFS, link, target); err != nil {
-			return nil, fmt.Errorf("copy symlink error: %w", err)
+		p.logger.Debug("Copying symlink as file/dir",
+			log.String("target", target), log.String("link", link))
+		if err := copyPath(targetFS, link, target); err != nil {
+			return fmt.Errorf("copy symlink error: %w", err)
 		}
-	}
-
-	if err := tarFS.Remove(archivePath); err != nil {
-		return nil, fmt.Errorf("remove tar from FS error: %w", err)
-	}
-
-	return tarFS, nil
-}
-
-func copySymlink(fsys *memoryfs.FS, src, dst string) error {
-	fi, err := fsys.Stat(src)
-	if err != nil {
-		return nil
-	}
-	if fi.IsDir() {
-		if err := copyDir(fsys, src, dst); err != nil {
-			return fmt.Errorf("copy dir error: %w", err)
-		}
-		return nil
-	}
-
-	if err := copyFileLazy(fsys, src, dst); err != nil {
-		return fmt.Errorf("copy file error: %w", err)
 	}
 
 	return nil
 }
 
-func copyFile(fsys *memoryfs.FS, src io.Reader, dst string) error {
+func archiveEntryPath(archivePath, name string) string {
+	return path.Join(path.Dir(archivePath), path.Clean(name))
+}
+
+func writeFile(fsys *mapfs.FS, data []byte, dst string) error {
 	if err := fsys.MkdirAll(path.Dir(dst), fs.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
 		return fmt.Errorf("mkdir error: %w", err)
 	}
-
-	b, err := io.ReadAll(src)
-	if err != nil {
-		return fmt.Errorf("read error: %w", err)
-	}
-
-	if err := fsys.WriteFile(dst, b, fs.ModePerm); err != nil {
-		return fmt.Errorf("write file error: %w", err)
-	}
-
-	return nil
+	return fsys.WriteVirtualFile(dst, data, fs.ModePerm)
 }
 
-func copyDir(fsys *memoryfs.FS, src, dst string) error {
+func copyPath(fsys *mapfs.FS, src, dst string) error {
+	fi, err := fsys.Stat(src)
+	if err != nil {
+		// the file is missing, just skip it
+		return nil
+	}
+	if fi.IsDir() {
+		return copyDir(fsys, src, dst)
+	}
+	data, err := fs.ReadFile(fsys, src)
+	if err != nil {
+		return fmt.Errorf("read file: %w", err)
+	}
+	return writeFile(fsys, data, dst)
+}
+
+func copyDir(fsys *mapfs.FS, src, dst string) error {
 	walkFn := func(filePath string, entry fs.DirEntry, err error) error {
 		if err != nil {
 			return err
@@ -151,26 +141,13 @@ func copyDir(fsys *memoryfs.FS, src, dst string) error {
 			return nil
 		}
 
-		dst := path.Join(dst, filePath[len(src):])
-
-		if err := copyFileLazy(fsys, filePath, dst); err != nil {
-			return fmt.Errorf("copy file error: %w", err)
+		target := path.Join(dst, filePath[len(src):])
+		data, err := fs.ReadFile(fsys, filePath)
+		if err != nil {
+			return fmt.Errorf("read file: %w", err)
 		}
-		return nil
+		return writeFile(fsys, data, target)
 	}
 
 	return fs.WalkDir(fsys, src, walkFn)
-}
-
-func copyFileLazy(fsys *memoryfs.FS, src, dst string) error {
-	if err := fsys.MkdirAll(path.Dir(dst), fs.ModePerm); err != nil && !errors.Is(err, fs.ErrExist) {
-		return fmt.Errorf("mkdir error: %w", err)
-	}
-	return fsys.WriteLazyFile(dst, func() (io.Reader, error) {
-		f, err := fsys.Open(src)
-		if err != nil {
-			return nil, err
-		}
-		return f, nil
-	}, fs.ModePerm)
 }

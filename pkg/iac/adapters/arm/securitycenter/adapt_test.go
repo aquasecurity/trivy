@@ -36,13 +36,18 @@ func TestAdapt(t *testing.T) {
 			},
 		},
 		{
-			name: "complete",
+			name: "complete - legacy format",
 			source: `{
   "resources": [
     {
       "type": "Microsoft.Security/securityContacts",
       "properties": {
-        "phone": "buz"
+        "emails": "security@example.com",
+        "phone": "buz",
+        "alertNotifications": true,
+        "notificationsByRole": {
+          "state": "On"
+        }
       }
     },
     {
@@ -55,10 +60,90 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: securitycenter.SecurityCenter{
 				Contacts: []securitycenter.Contact{{
-					Phone: types.StringTest("buz"),
+					Email:                    types.StringTest("security@example.com"),
+					Phone:                    types.StringTest("buz"),
+					EnableAlertNotifications: types.BoolTest(true),
+					EnableAlertsToAdmins:     types.BoolTest(true),
 				}},
 				Subscriptions: []securitycenter.SubscriptionPricing{{
 					Tier: types.StringTest("Standard"),
+				}},
+			},
+		},
+		{
+			name: "complete - new format",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Security/securityContacts",
+      "properties": {
+        "emails": "security@example.com",
+        "phone": "+1-555-555-5555",
+        "isEnabled": true,
+        "notificationsSources": [
+          {
+            "sourceType": "Alert",
+            "minimalSeverity": "High"
+          }
+        ],
+        "notificationsByRole": {
+          "state": "On"
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Security/pricings",
+      "properties": {
+        "pricingTier": "Standard"
+      }
+    }
+  ]
+}`,
+			expected: securitycenter.SecurityCenter{
+				Contacts: []securitycenter.Contact{{
+					Email:                    types.StringTest("security@example.com"),
+					Phone:                    types.StringTest("+1-555-555-5555"),
+					EnableAlertNotifications: types.BoolTest(true),
+					EnableAlertsToAdmins:     types.BoolTest(true),
+					IsEnabled:                types.BoolTest(true),
+					MinimalSeverity:          types.StringTest("High"),
+				}},
+				Subscriptions: []securitycenter.SubscriptionPricing{{
+					Tier: types.StringTest("Standard"),
+				}},
+			},
+		},
+		{
+			name: "new format - disabled",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Security/securityContacts",
+      "properties": {
+        "emails": "security@example.com",
+        "phone": "+1-555-555-5555",
+        "isEnabled": false,
+        "notificationsSources": [
+          {
+            "sourceType": "Alert", 
+            "minimalSeverity": "Medium"
+          }
+        ],
+        "notificationsByRole": {
+          "state": "Off"
+        }
+      }
+    }
+  ]
+}`,
+			expected: securitycenter.SecurityCenter{
+				Contacts: []securitycenter.Contact{{
+					Email:                    types.StringTest("security@example.com"),
+					Phone:                    types.StringTest("+1-555-555-5555"),
+					EnableAlertNotifications: types.BoolTest(false),
+					EnableAlertsToAdmins:     types.BoolTest(false),
+					IsEnabled:                types.BoolTest(false),
+					MinimalSeverity:          types.StringTest("Medium"),
 				}},
 			},
 		},

@@ -1,6 +1,7 @@
 package severity
 
 import (
+	"slices"
 	"strings"
 )
 
@@ -19,12 +20,7 @@ var ValidSeverity = []Severity{
 }
 
 func (s *Severity) IsValid() bool {
-	for _, severity := range ValidSeverity {
-		if severity == *s {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(ValidSeverity, *s)
 }
 
 func (s *Severity) Valid() []Severity {

@@ -1,6 +1,8 @@
 package types
 
 import (
+	"crypto/x509"
+
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 )
 
@@ -87,6 +89,7 @@ type RegistryOptions struct {
 
 	// SSL/TLS
 	Insecure bool
+	CACerts  *x509.CertPool
 
 	// Architecture
 	Platform Platform

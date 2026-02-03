@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func TestFindRootModules(t *testing.T) {
@@ -57,16 +58,23 @@ module "this" {
 				"code/infra2",
 			},
 		},
+		{
+			name: "unknown module source",
+			files: map[string]string{
+				"main.tf": `module "test" {
+  source = "${path.module}/modules/foo"
+}`,
+			},
+			expected: []string{"."},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			fsys := testutil.CreateFS(t, tt.files)
+			fsys := testutil.CreateFS(tt.files)
 			parser := New(fsys, "", OptionStopOnHCLError(true))
 
-			modules := lo.Map(lo.Keys(tt.files), func(p string, _ int) string {
-				return path.Dir(p)
-			})
+			modules := xslices.Map(lo.Keys(tt.files), path.Dir)
 
 			got, err := parser.FindRootModules(t.Context(), modules)
 			require.NoError(t, err)

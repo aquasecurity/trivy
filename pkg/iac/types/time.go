@@ -6,72 +6,68 @@ import (
 )
 
 type TimeValue struct {
-	BaseAttribute
-	value time.Time
+	BaseValue[RFC3339Time]
 }
 
-func (t TimeValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
-		"value":    t.value.Format(time.RFC3339),
-		"metadata": t.metadata,
-	})
+type RFC3339Time struct {
+	time.Time
 }
 
-func (t *TimeValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]any
-	if err := json.Unmarshal(data, &keys); err != nil {
+func (t RFC3339Time) MarshalJSON() ([]byte, error) {
+	return json.Marshal(t.Format(time.RFC3339))
+}
+
+func (t *RFC3339Time) UnmarshalJSON(data []byte) error {
+	if string(data) == "null" {
+		t.Time = time.Time{}
+		return nil
+	}
+
+	var s string
+	if err := json.Unmarshal(data, &s); err != nil {
 		return err
 	}
-	if keys["value"] != nil {
-		if ti, err := time.Parse(time.RFC3339, keys["value"].(string)); err == nil {
-			t.value = ti
-		}
+
+	ti, err := time.Parse(time.RFC3339, s)
+	if err != nil {
+		return err
 	}
-	if keys["metadata"] != nil {
-		raw, err := json.Marshal(keys["metadata"])
-		if err != nil {
-			return err
-		}
-		var m Metadata
-		if err := json.Unmarshal(raw, &m); err != nil {
-			return err
-		}
-		t.metadata = m
-	}
+	t.Time = ti
 	return nil
 }
 
 func Time(value time.Time, m Metadata) TimeValue {
-	return TimeValue{
-		value:         value,
-		BaseAttribute: BaseAttribute{metadata: m},
-	}
+	return TimeValue{newValue(RFC3339Time{value}, m)}
 }
 
 func TimeDefault(value time.Time, m Metadata) TimeValue {
-	b := Time(value, m)
-	b.BaseAttribute.metadata.isDefault = true
-	return b
+	return TimeValue{defaultValue(RFC3339Time{value}, m)}
 }
 
 func TimeExplicit(value time.Time, m Metadata) TimeValue {
-	b := Time(value, m)
-	b.BaseAttribute.metadata.isExplicit = true
-	return b
+	return TimeValue{explicitValue(RFC3339Time{value}, m)}
 }
 
 func TimeUnresolvable(m Metadata) TimeValue {
-	b := Time(time.Time{}, m)
-	b.BaseAttribute.metadata.isUnresolvable = true
-	return b
+	return TimeValue{unresolvableValue[RFC3339Time](m)}
+}
+
+func TimeTest(value time.Time) TimeValue {
+	return TimeValue{testValue(RFC3339Time{value})}
 }
 
 func (t TimeValue) Value() time.Time {
-	return t.value
+	return t.value.Time
 }
 
 func (t TimeValue) GetRawValue() any {
 	return t.value
+}
+
+func (t TimeValue) ToRego() any {
+	m := t.metadata.ToRego().(map[string]any)
+	m["value"] = t.value.Format(time.RFC3339)
+	return m
 }
 
 func (t TimeValue) IsNever() bool {
@@ -93,10 +89,4 @@ func (t TimeValue) After(i time.Time) bool {
 		return false
 	}
 	return t.value.After(i)
-}
-
-func (t TimeValue) ToRego() any {
-	m := t.metadata.ToRego().(map[string]any)
-	m["value"] = t.Value().Format(time.RFC3339)
-	return m
 }

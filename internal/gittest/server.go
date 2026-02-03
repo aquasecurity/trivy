@@ -15,6 +15,7 @@ import (
 	"github.com/go-git/go-git/v5/config"
 	"github.com/go-git/go-git/v5/plumbing"
 	"github.com/go-git/go-git/v5/plumbing/object"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/sosedoff/gitkit"
 	"github.com/stretchr/testify/require"
 
@@ -27,7 +28,31 @@ var signature = &object.Signature{
 	When:  time.Now(),
 }
 
-func NewServer(t *testing.T, repo, dir string) *httptest.Server {
+// Options contains configuration options for git server authentication
+type Options struct {
+	Username string
+	Password string
+}
+
+// setupGitServer creates and starts a git server with the given bare repository directory
+func setupGitServer(t *testing.T, bareDir string, opts Options) *httptest.Server {
+	hasAuth := opts.Username != "" && opts.Password != ""
+	service := gitkit.New(gitkit.Config{
+		Dir:  bareDir,
+		Auth: hasAuth,
+	})
+	if hasAuth {
+		service.AuthFunc = func(cred gitkit.Credential, _ *gitkit.Request) (bool, error) {
+			return cred.Username == opts.Username && cred.Password == opts.Password, nil
+		}
+	}
+	err := service.Setup()
+	require.NoError(t, err)
+
+	return httptest.NewServer(service)
+}
+
+func NewServer(t *testing.T, repo, dir string, opts Options) *httptest.Server {
 	wtDir := t.TempDir()
 
 	// git init
@@ -53,16 +78,10 @@ func NewServer(t *testing.T, repo, dir string) *httptest.Server {
 	_, err = git.PlainClone(gitDir, true, &git.CloneOptions{URL: wtDir})
 	require.NoError(t, err)
 
-	// Set up a git server
-	service := gitkit.New(gitkit.Config{Dir: bareDir})
-	err = service.Setup()
-	require.NoError(t, err)
-
-	return httptest.NewServer(service)
+	return setupGitServer(t, bareDir, opts)
 }
 
-// NewServerWithRepository creates a git server with an existing repository
-func NewServerWithRepository(t *testing.T, repo, dir string) *httptest.Server {
+func NewServerWithRepository(t *testing.T, repo, dir string, opts Options) *httptest.Server {
 	// Create a bare repository
 	bareDir := t.TempDir()
 	gitDir := filepath.Join(bareDir, repo+".git")
@@ -85,17 +104,12 @@ func NewServerWithRepository(t *testing.T, repo, dir string) *httptest.Server {
 		require.NoError(t, err)
 	}
 
-	// Set up a git server
-	service := gitkit.New(gitkit.Config{Dir: bareDir})
-	err = service.Setup()
-	require.NoError(t, err)
-
-	return httptest.NewServer(service)
+	return setupGitServer(t, bareDir, opts)
 }
 
 // NewTestServer creates a git server with the local copy of "github.com/aquasecurity/trivy-test-repo".
 // If the test repository doesn't exist, it suggests running 'mage test:unit'.
-func NewTestServer(t *testing.T) *httptest.Server {
+func NewTestServer(t *testing.T, opts Options) *httptest.Server {
 	_, filePath, _, _ := runtime.Caller(0)
 	dir := filepath.Join(filepath.Dir(filePath), "testdata", "test-repo")
 
@@ -103,12 +117,19 @@ func NewTestServer(t *testing.T) *httptest.Server {
 		require.Fail(t, "test-repo not found. Please run 'mage test:unit' to set up the test fixtures")
 	}
 
-	return NewServerWithRepository(t, "test-repo", dir)
+	return NewServerWithRepository(t, "test-repo", dir, opts)
 }
 
-func Clone(t *testing.T, ts *httptest.Server, repo, worktree string) *git.Repository {
+func Clone(t *testing.T, ts *httptest.Server, repo, worktree string, opts Options) *git.Repository {
 	cloneOptions := git.CloneOptions{
 		URL: ts.URL + "/" + repo + ".git",
+	}
+
+	if opts.Username != "" && opts.Password != "" {
+		cloneOptions.Auth = &http.BasicAuth{
+			Username: opts.Username,
+			Password: opts.Password,
+		}
 	}
 
 	r, err := git.PlainClone(worktree, false, &cloneOptions)

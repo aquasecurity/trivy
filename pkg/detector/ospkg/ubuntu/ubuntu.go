@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -104,8 +105,16 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
+		// Skip third-party packages as they are not covered by Ubuntu security advisories
+		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+			continue
+		}
+
 		osVer = s.versionFromEolDates(ctx, osVer)
-		advisories, err := s.vs.Get(osVer, pkg.SrcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.SrcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get Ubuntu advisories: %w", err)
 		}

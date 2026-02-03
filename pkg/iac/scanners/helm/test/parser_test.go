@@ -150,12 +150,9 @@ func Test_helm_tarball_parser(t *testing.T) {
 
 		t.Logf("Running test: %s", test.testName)
 
-		testPath := filepath.Join("testdata", test.archiveFile)
-		testFs := fsysForAcrhive(t, testPath)
-
 		helmParser, err := parser.New(test.archiveFile)
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(t.Context(), testFs, "."))
+		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS("testdata"), test.archiveFile))
 
 		manifests, err := helmParser.RenderedChartFiles()
 		require.NoError(t, err)

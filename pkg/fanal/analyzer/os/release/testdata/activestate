@@ -1,0 +1,8 @@
+ID=activestate
+ID_LIKE="buildroot busybox"
+VERSION_ID="1.0"
+IMAGE_ID="activestate-k3s"
+IMAGE_VERSION="1.34.1"
+RELEASE_TYPE=experiment
+EXPERIMENT="Trivy integration"
+ACTIVESTATE_SBOM_PATH=/opt/activestate/k3s.spdx.json

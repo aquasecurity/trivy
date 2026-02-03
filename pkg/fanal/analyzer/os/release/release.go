@@ -27,7 +27,7 @@ var requiredFiles = []string{
 type osReleaseAnalyzer struct{}
 
 func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	var id, versionID string
+	var id, osName, versionID string
 	scanner := bufio.NewScanner(input.Content)
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -39,6 +39,8 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		key, value := strings.TrimSpace(ss[0]), strings.TrimSpace(ss[1])
 
 		switch key {
+		case "NAME":
+			osName = strings.Trim(value, `"'`)
 		case "ID":
 			id = strings.Trim(value, `"'`)
 		case "VERSION_ID":
@@ -46,51 +48,89 @@ func (a osReleaseAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInp
 		default:
 			continue
 		}
-
-		var family types.OSType
-		switch id {
-		case "alpine":
-			family = types.Alpine
-		case "bottlerocket":
-			family = types.Bottlerocket
-		case "opensuse-tumbleweed":
-			family = types.OpenSUSETumbleweed
-		case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
-			family = types.OpenSUSELeap
-		case "sles":
-			family = types.SLES
-		// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
-		// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
-		// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
-		case "sle-micro", "sl-micro", "sle-micro-rancher":
-			family = types.SLEMicro
-		case "photon":
-			family = types.Photon
-		case "wolfi":
-			family = types.Wolfi
-		case "chainguard":
-			family = types.Chainguard
-		case "azurelinux":
-			family = types.Azure
-		case "mariner":
-			family = types.CBLMariner
-		case "echo":
-			family = types.Echo
-		case "minimos":
-			family = types.MinimOS
-		}
-
-		if family != "" && versionID != "" {
-			return &analyzer.AnalysisResult{
-				OS: types.OS{
-					Family: family,
-					Name:   versionID,
-				},
-			}, nil
-		}
 	}
 
-	return nil, nil
+	// Determine OS family: ID is the primary source
+	family := idToOSFamily(id)
+	if family == "" || versionID == "" {
+		return nil, nil
+	}
+	// Refine OS family based on NAME field
+	family = refineOSFamily(family, osName)
+	return &analyzer.AnalysisResult{
+		OS: types.OS{
+			Family: family,
+			Name:   versionID,
+		},
+	}, nil
+
+}
+
+//nolint:gocyclo
+func idToOSFamily(id string) types.OSType {
+	switch id {
+	case "activestate":
+		return types.ActiveState
+	case "rhel":
+		return types.RedHat
+	case "centos":
+		return types.CentOS
+	case "rocky":
+		return types.Rocky
+	case "almalinux":
+		return types.Alma
+	case "ol":
+		return types.Oracle
+	case "fedora":
+		return types.Fedora
+	case "alpine":
+		return types.Alpine
+	case "bottlerocket":
+		return types.Bottlerocket
+	case "opensuse-tumbleweed":
+		return types.OpenSUSETumbleweed
+	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
+		return types.OpenSUSELeap
+	case "sles":
+		return types.SLES
+	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
+	// for SLE Micro 6.0. which was called "SL Micro 6.0" until very short before release
+	// and there is a "SLE Micro for Rancher" rebrand, which is used by SUSEs K8S based offerings.
+	case "sle-micro", "sl-micro", "sle-micro-rancher":
+		return types.SLEMicro
+	case "photon":
+		return types.Photon
+	case "wolfi":
+		return types.Wolfi
+	case "chainguard":
+		return types.Chainguard
+	case "azurelinux":
+		return types.Azure
+	case "mariner":
+		return types.CBLMariner
+	case "echo":
+		return types.Echo
+	case "minimos":
+		return types.MinimOS
+	case "coreos":
+		return types.CoreOS
+	}
+	// This OS is not supported for this analyzer.
+	return ""
+}
+
+// refineOSFamily refines the OS family based on the NAME field.
+// This handles exceptional cases where the ID field doesn't provide enough specificity,
+// and we need to refine the detection using the NAME field.
+func refineOSFamily(family types.OSType, name string) types.OSType {
+	// CentOS: Distinguish between regular CentOS and CentOS Stream
+	// ID is "centos" for both, but NAME differs
+	if family == types.CentOS && name == "CentOS Stream" {
+		return types.CentOSStream
+	}
+
+	// Return family unchanged for normal cases
+	return family
 }
 
 func (a osReleaseAnalyzer) Required(filePath string, _ os.FileInfo) bool {

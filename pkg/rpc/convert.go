@@ -1,7 +1,8 @@
 package rpc
 
 import (
-	"encoding/json"
+	jsonv2 "encoding/json/v2"
+	"strings"
 	"time"
 
 	"github.com/package-url/packageurl-go"
@@ -14,6 +15,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	"github.com/aquasecurity/trivy/rpc/cache"
 	"github.com/aquasecurity/trivy/rpc/common"
 	"github.com/aquasecurity/trivy/rpc/scanner"
@@ -74,6 +76,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Relationship: int32(pkg.Relationship),
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
+			AnalyzedBy:   string(pkg.AnalyzedBy),
 		})
 	}
 	return rpcPkgs
@@ -166,6 +169,7 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Code:      ConvertToRPCCode(f.Code),
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
+			Offset:    int32(f.Offset),
 		})
 	}
 	return rpcFindings
@@ -228,6 +232,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Relationship: ftypes.Relationship(pkg.Relationship),
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
+			AnalyzedBy:   ftypes.AnalyzerType(pkg.AnalyzedBy),
 		})
 	}
 	return pkgs
@@ -298,14 +303,17 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			publishedDate = timestamppb.New(*vuln.PublishedDate) // nolint: errcheck
 		}
 
-		var customAdvisoryData, customVulnData []byte
+		var customAdvisoryData, customVulnData *structpb.Value
+		var builder strings.Builder
 		if vuln.Custom != nil {
-			jsonBytes, _ := json.Marshal(vuln.Custom) // nolint: errcheck
-			customAdvisoryData = jsonBytes
+			builder.Reset()
+			_ = jsonv2.MarshalWrite(&builder, vuln.Custom) // nolint: errcheck
+			customAdvisoryData = structpb.NewStringValue(builder.String())
 		}
 		if vuln.Vulnerability.Custom != nil {
-			jsonBytes, _ := json.Marshal(vuln.Vulnerability.Custom) // nolint: errcheck
-			customVulnData = jsonBytes
+			builder.Reset()
+			_ = jsonv2.MarshalWrite(&builder, vuln.Vulnerability.Custom) // nolint: errcheck
+			customVulnData = structpb.NewStringValue(builder.String())
 		}
 
 		rpcVulns = append(rpcVulns, &common.Vulnerability{
@@ -503,7 +511,7 @@ func ConvertFromRPCDetectedSecrets(rpcFindings []*common.SecretFinding) []types.
 	if len(rpcFindings) == 0 {
 		return nil
 	}
-	return lo.Map(ConvertFromRPCSecretFindings(rpcFindings), func(s ftypes.SecretFinding, _ int) types.DetectedSecret {
+	return xslices.Map(ConvertFromRPCSecretFindings(rpcFindings), func(s ftypes.SecretFinding) types.DetectedSecret {
 		return types.DetectedSecret(s)
 	})
 }
@@ -520,6 +528,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 			EndLine:   int(finding.EndLine),
 			Code:      ConvertFromRPCCode(finding.Code),
 			Match:     finding.Match,
+			Offset:    int(finding.Offset),
 			Layer: ftypes.Layer{
 				Digest:    finding.Layer.Digest,
 				DiffID:    finding.Layer.DiffId,
@@ -598,6 +607,15 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
 		}
 
+		// Handle custom data conversion from protobuf.Value
+		var customVulnData, customAdvisoryData any
+		if vuln.CustomVulnData != nil {
+			customVulnData = vuln.CustomVulnData.AsInterface()
+		}
+		if vuln.CustomAdvisoryData != nil {
+			customAdvisoryData = vuln.CustomAdvisoryData.AsInterface()
+		}
+
 		vulns = append(vulns, types.DetectedVulnerability{
 			VulnerabilityID:  vuln.VulnerabilityId,
 			VendorIDs:        vuln.VendorIds,
@@ -617,13 +635,13 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 				CweIDs:           vuln.CweIds,
 				LastModifiedDate: lastModifiedDate,
 				PublishedDate:    publishedDate,
-				Custom:           vuln.CustomVulnData,
+				Custom:           customVulnData,
 				VendorSeverity:   vendorSeverityMap,
 			},
 			Layer:          ConvertFromRPCLayer(vuln.Layer),
 			SeveritySource: dbTypes.SourceID(vuln.SeveritySource),
 			PrimaryURL:     vuln.PrimaryUrl,
-			Custom:         vuln.CustomAdvisoryData,
+			Custom:         customAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
 		})
 	}
@@ -832,6 +850,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CreatedBy:         req.BlobInfo.CreatedBy,
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
+		BuildInfo:         ConvertFromRPCBuildInfo(req.BlobInfo.BuildInfo),
 	}
 }
 
@@ -853,6 +872,18 @@ func ConvertToRPCRepository(repo *ftypes.Repository) *common.Repository {
 	return &common.Repository{
 		Family:  string(repo.Family),
 		Release: repo.Release,
+	}
+}
+
+// ConvertFromRPCBuildInfo converts *common.BuildInfo to *ftypes.BuildInfo
+func ConvertFromRPCBuildInfo(buildInfo *common.BuildInfo) *ftypes.BuildInfo {
+	if buildInfo == nil {
+		return nil
+	}
+	return &ftypes.BuildInfo{
+		ContentSets: buildInfo.ContentSets,
+		Nvr:         buildInfo.Nvr,
+		Arch:        buildInfo.Arch,
 	}
 }
 
@@ -945,7 +976,20 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			CreatedBy:         blobInfo.CreatedBy,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
+			BuildInfo:         ConvertToRPCBuildInfo(blobInfo.BuildInfo),
 		},
+	}
+}
+
+// ConvertToRPCBuildInfo converts *ftypes.BuildInfo to *common.BuildInfo
+func ConvertToRPCBuildInfo(buildInfo *ftypes.BuildInfo) *common.BuildInfo {
+	if buildInfo == nil {
+		return nil
+	}
+	return &common.BuildInfo{
+		ContentSets: buildInfo.ContentSets,
+		Nvr:         buildInfo.Nvr,
+		Arch:        buildInfo.Arch,
 	}
 }
 
@@ -975,7 +1019,7 @@ func ConvertToMissingBlobsRequest(imageID string, layerIDs []string) *cache.Miss
 func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse {
 	var rpcResults []*scanner.Result
 	for _, result := range response.Results {
-		secretFindings := lo.Map(result.Secrets, func(s types.DetectedSecret, _ int) ftypes.SecretFinding {
+		secretFindings := xslices.Map(result.Secrets, func(s types.DetectedSecret) ftypes.SecretFinding {
 			return ftypes.SecretFinding(s)
 		})
 		rpcResults = append(rpcResults, &scanner.Result{
@@ -994,9 +1038,7 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 	return &scanner.ScanResponse{
 		Os:      ConvertToRPCOS(response.OS),
 		Results: rpcResults,
-		Layers: lo.Map(response.Layers, func(layer ftypes.Layer, _ int) *common.Layer {
-			return ConvertToRPCLayer(layer)
-		}),
+		Layers:  xslices.Map(response.Layers, ConvertToRPCLayer),
 	}
 }
 

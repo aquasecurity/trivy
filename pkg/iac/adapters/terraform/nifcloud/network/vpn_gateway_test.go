@@ -23,8 +23,7 @@ func Test_adaptVpnGateways(t *testing.T) {
 			}
 `,
 			expected: []network.VpnGateway{{
-				Metadata:      iacTypes.NewTestMetadata(),
-				SecurityGroup: iacTypes.String("example-security-group", iacTypes.NewTestMetadata()),
+				SecurityGroup: iacTypes.StringTest("example-security-group"),
 			}},
 		},
 		{
@@ -34,10 +33,7 @@ func Test_adaptVpnGateways(t *testing.T) {
 			}
 `,
 
-			expected: []network.VpnGateway{{
-				Metadata:      iacTypes.NewTestMetadata(),
-				SecurityGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
-			}},
+			expected: []network.VpnGateway{{}},
 		},
 	}
 

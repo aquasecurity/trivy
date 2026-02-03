@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/google/go-containerregistry/pkg/v1/types"
+	ggcrtypes "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -19,8 +19,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/db"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/policy"
-	"github.com/aquasecurity/trivy/pkg/version"
+	"github.com/aquasecurity/trivy/pkg/types"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 )
 
@@ -36,7 +35,7 @@ func Test_dbWorker_update(t *testing.T) {
 		name           string
 		now            time.Time
 		skipUpdate     bool
-		layerMediaType types.MediaType
+		layerMediaType ggcrtypes.MediaType
 		want           metadata.Metadata
 		wantErr        string
 	}{
@@ -67,23 +66,17 @@ func Test_dbWorker_update(t *testing.T) {
 			name:           "Download returns an error",
 			now:            time.Date(2021, 10, 1, 0, 0, 0, 0, time.UTC),
 			skipUpdate:     false,
-			layerMediaType: types.MediaType("unknown"),
+			layerMediaType: ggcrtypes.MediaType("unknown"),
 			wantErr:        "failed DB hot update",
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			dbDir := db.Dir(t.TempDir())
-
-			// Initialize the cache
-			meta := metadata.NewClient(dbDir)
-			err := meta.Update(cachedMetadata)
-			require.NoError(t, err)
-
-			err = db.Init(dbDir)
-			require.NoError(t, err)
-
-			defer func() { _ = db.Close() }()
+			// Initialize DB with metadata
+			dbDir := dbtest.InitWithMetadata(t, cachedMetadata, true)
+			t.Cleanup(func() {
+				require.NoError(t, db.Close())
+			})
 
 			// Set a fake time
 			ctx := clock.With(t.Context(), tt.now)
@@ -97,7 +90,7 @@ func Test_dbWorker_update(t *testing.T) {
 			w := newDBWorker(client)
 
 			var dbUpdateWg, requestWg sync.WaitGroup
-			err = w.update(ctx, "1.2.3", dbDir,
+			err := w.update(ctx, "1.2.3", dbDir,
 				tt.skipUpdate, &dbUpdateWg, &requestWg, ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
@@ -221,20 +214,17 @@ func Test_VersionEndpoint(t *testing.T) {
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
-	var versionInfo version.VersionInfo
+	var versionInfo types.VersionInfo
 	require.NoError(t, json.NewDecoder(resp.Body).Decode(&versionInfo))
 
-	expected := version.VersionInfo{
+	// Server mode excludes JavaDB and CheckBundle as they are managed on the client side
+	expected := types.VersionInfo{
 		Version: "dev",
 		VulnerabilityDB: &metadata.Metadata{
 			Version:      2,
 			NextUpdate:   time.Date(2023, 7, 20, 18, 11, 37, 696263532, time.UTC),
 			UpdatedAt:    time.Date(2023, 7, 20, 12, 11, 37, 696263932, time.UTC),
 			DownloadedAt: time.Date(2023, 7, 25, 7, 1, 41, 239158000, time.UTC),
-		},
-		CheckBundle: &policy.Metadata{
-			Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
-			DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
 		},
 	}
 	assert.Equal(t, expected, versionInfo)

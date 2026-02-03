@@ -1,15 +1,18 @@
 package network
 
 import (
-	"strconv"
-	"strings"
-
 	"github.com/google/uuid"
 
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
+
+func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
+	return common.ParsePortRange(input, meta, common.WithWildcard())
+}
 
 func Adapt(modules terraform.Modules) network.Network {
 	return network.Network{
@@ -18,6 +21,7 @@ func Adapt(modules terraform.Modules) network.Network {
 			groups:  make(map[string]network.SecurityGroup),
 		}).adaptSecurityGroups(),
 		NetworkWatcherFlowLogs: adaptWatcherLogs(modules),
+		NetworkInterfaces:      adaptNetworkInterfaces(modules),
 	}
 }
 
@@ -35,7 +39,7 @@ func (a *adapter) adaptSecurityGroups() []network.SecurityGroup {
 	}
 
 	for _, ruleBlock := range a.modules.GetResourcesByType("azurerm_network_security_rule") {
-		rule := a.adaptSGRule(ruleBlock)
+		rule := AdaptSGRule(ruleBlock)
 
 		groupAttr := ruleBlock.GetAttribute("network_security_group_name")
 		if groupAttr.IsNotNil() {
@@ -77,7 +81,7 @@ func adaptWatcherLogs(modules terraform.Modules) []network.NetworkWatcherFlowLog
 func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 	var rules []network.SecurityGroupRule
 	for _, ruleBlock := range resource.GetBlocks("security_rule") {
-		rules = append(rules, a.adaptSGRule(ruleBlock))
+		rules = append(rules, AdaptSGRule(ruleBlock))
 	}
 	a.groups[resource.ID()] = network.SecurityGroup{
 		Metadata: resource.GetMetadata(),
@@ -85,118 +89,10 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 	}
 }
 
-func (a *adapter) adaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
-
-	rule := network.SecurityGroupRule{
-		Metadata:             ruleBlock.GetMetadata(),
-		Outbound:             iacTypes.BoolDefault(false, ruleBlock.GetMetadata()),
-		Allow:                iacTypes.BoolDefault(true, ruleBlock.GetMetadata()),
-		SourceAddresses:      nil,
-		SourcePorts:          nil,
-		DestinationAddresses: nil,
-		DestinationPorts:     nil,
-		Protocol:             ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("", ruleBlock),
-	}
-
-	accessAttr := ruleBlock.GetAttribute("access")
-	if accessAttr.Equals("Allow") {
-		rule.Allow = iacTypes.Bool(true, accessAttr.GetMetadata())
-	} else if accessAttr.Equals("Deny") {
-		rule.Allow = iacTypes.Bool(false, accessAttr.GetMetadata())
-	}
-
-	directionAttr := ruleBlock.GetAttribute("direction")
-	if directionAttr.Equals("Inbound") {
-		rule.Outbound = iacTypes.Bool(false, directionAttr.GetMetadata())
-	} else if directionAttr.Equals("Outbound") {
-		rule.Outbound = iacTypes.Bool(true, directionAttr.GetMetadata())
-	}
-
-	a.adaptSource(ruleBlock, &rule)
-	a.adaptDestination(ruleBlock, &rule)
-
-	return rule
-}
-
-func (a *adapter) adaptSource(ruleBlock *terraform.Block, rule *network.SecurityGroupRule) {
-	if sourceAddressAttr := ruleBlock.GetAttribute("source_address_prefix"); sourceAddressAttr.IsString() {
-		rule.SourceAddresses = append(rule.SourceAddresses, sourceAddressAttr.AsStringValueOrDefault("", ruleBlock))
-	} else if sourceAddressPrefixesAttr := ruleBlock.GetAttribute("source_address_prefixes"); sourceAddressPrefixesAttr.IsNotNil() {
-		rule.SourceAddresses = append(rule.SourceAddresses, sourceAddressPrefixesAttr.AsStringValues()...)
-	}
-
-	if sourcePortRangesAttr := ruleBlock.GetAttribute("source_port_ranges"); sourcePortRangesAttr.IsNotNil() {
-		ports := sourcePortRangesAttr.AsStringValues()
-		for _, value := range ports {
-			rule.SourcePorts = append(rule.SourcePorts, expandRange(value.Value(), value.GetMetadata()))
-		}
-	} else if sourcePortRangeAttr := ruleBlock.GetAttribute("source_port_range"); sourcePortRangeAttr.IsString() {
-		rule.SourcePorts = append(rule.SourcePorts, expandRange(sourcePortRangeAttr.Value().AsString(), sourcePortRangeAttr.GetMetadata()))
-	} else if sourcePortRangeAttr := ruleBlock.GetAttribute("source_port_range"); sourcePortRangeAttr.IsNumber() {
-		f := sourcePortRangeAttr.AsNumber()
-		rule.SourcePorts = append(rule.SourcePorts, network.PortRange{
-			Metadata: sourcePortRangeAttr.GetMetadata(),
-			Start:    iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
-			End:      iacTypes.Int(int(f), sourcePortRangeAttr.GetMetadata()),
-		})
-	}
-}
-
-func (a *adapter) adaptDestination(ruleBlock *terraform.Block, rule *network.SecurityGroupRule) {
-	if destAddressAttr := ruleBlock.GetAttribute("destination_address_prefix"); destAddressAttr.IsString() {
-		rule.DestinationAddresses = append(rule.DestinationAddresses, destAddressAttr.AsStringValueOrDefault("", ruleBlock))
-	} else if destAddressPrefixesAttr := ruleBlock.GetAttribute("destination_address_prefixes"); destAddressPrefixesAttr.IsNotNil() {
-		rule.DestinationAddresses = append(rule.DestinationAddresses, destAddressPrefixesAttr.AsStringValues()...)
-	}
-
-	if destPortRangesAttr := ruleBlock.GetAttribute("destination_port_ranges"); destPortRangesAttr.IsNotNil() {
-		ports := destPortRangesAttr.AsStringValues()
-		for _, value := range ports {
-			rule.DestinationPorts = append(rule.DestinationPorts, expandRange(value.Value(), destPortRangesAttr.GetMetadata()))
-		}
-	} else if destPortRangeAttr := ruleBlock.GetAttribute("destination_port_range"); destPortRangeAttr.IsString() {
-		rule.DestinationPorts = append(rule.DestinationPorts, expandRange(destPortRangeAttr.Value().AsString(), destPortRangeAttr.GetMetadata()))
-	} else if destPortRangeAttr := ruleBlock.GetAttribute("destination_port_range"); destPortRangeAttr.IsNumber() {
-		f := destPortRangeAttr.AsNumber()
-		rule.DestinationPorts = append(rule.DestinationPorts, network.PortRange{
-			Metadata: destPortRangeAttr.GetMetadata(),
-			Start:    iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
-			End:      iacTypes.Int(int(f), destPortRangeAttr.GetMetadata()),
-		})
-	}
-}
-
-func expandRange(r string, m iacTypes.Metadata) network.PortRange {
-	start := 0
-	end := 65535
-	switch {
-	case r == "*":
-	case strings.Contains(r, "-"):
-		if parts := strings.Split(r, "-"); len(parts) == 2 {
-			if p1, err := strconv.ParseInt(parts[0], 10, 32); err == nil {
-				start = int(p1)
-			}
-			if p2, err := strconv.ParseInt(parts[1], 10, 32); err == nil {
-				end = int(p2)
-			}
-		}
-	default:
-		if val, err := strconv.ParseInt(r, 10, 32); err == nil {
-			start = int(val)
-			end = int(val)
-		}
-	}
-
-	return network.PortRange{
-		Metadata: m,
-		Start:    iacTypes.Int(start, m),
-		End:      iacTypes.Int(end, m),
-	}
-}
-
 func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	flowLog := network.NetworkWatcherFlowLog{
 		Metadata: resource.GetMetadata(),
+		Enabled:  resource.GetAttribute("enabled").AsBoolValueOrDefault(false, resource),
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -205,14 +101,64 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	}
 
 	if retentionPolicyBlock := resource.GetBlock("retention_policy"); retentionPolicyBlock.IsNotNil() {
-		flowLog.RetentionPolicy.Metadata = retentionPolicyBlock.GetMetadata()
+		flowLog.RetentionPolicy = network.RetentionPolicy{
+			Metadata: retentionPolicyBlock.GetMetadata(),
+			Enabled: retentionPolicyBlock.GetAttribute("enabled").
+				AsBoolValueOrDefault(false, retentionPolicyBlock),
+			Days: retentionPolicyBlock.GetAttribute("days").
+				AsIntValueOrDefault(0, retentionPolicyBlock),
+		}
+	}
+	return flowLog
+}
 
-		enabledAttr := retentionPolicyBlock.GetAttribute("enabled")
-		flowLog.RetentionPolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, retentionPolicyBlock)
+func adaptNetworkInterfaces(modules terraform.Modules) []network.NetworkInterface {
+	var networkInterfaces []network.NetworkInterface
 
-		daysAttr := retentionPolicyBlock.GetAttribute("days")
-		flowLog.RetentionPolicy.Days = daysAttr.AsIntValueOrDefault(0, retentionPolicyBlock)
+	for _, module := range modules {
+		for _, resource := range module.GetResourcesByType("azurerm_network_interface") {
+			networkInterfaces = append(networkInterfaces, AdaptNetworkInterface(resource, modules))
+		}
 	}
 
-	return flowLog
+	return networkInterfaces
+}
+
+func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules) network.NetworkInterface {
+	ni := network.NetworkInterface{
+		Metadata: resource.GetMetadata(),
+		// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
+		EnableIPForwarding: resource.GetFirstAttributeOf("ip_forwarding_enabled", "enable_ip_forwarding").
+			AsBoolValueOrDefault(false, resource),
+		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
+		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
+		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
+	}
+
+	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
+		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
+			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
+		}
+	}
+
+	ipConfigs := resource.GetBlocks("ip_configuration")
+	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
+	for _, ipConfig := range ipConfigs {
+		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
+			Metadata:        ipConfig.GetMetadata(),
+			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValueOrDefault("", ipConfig),
+			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValueOrDefault("", ipConfig),
+			Primary:         ipConfig.GetAttribute("primary").AsBoolValueOrDefault(false, ipConfig),
+		})
+	}
+
+	ni.Setup()
+	return ni
+}
+
+func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
+	return network.SecurityGroup{
+		Metadata: resource.GetMetadata(),
+		Rules:    xslices.Map(resource.GetBlocks("security_rule"), AdaptSGRule),
+	}
 }

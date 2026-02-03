@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-apk-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
@@ -49,6 +50,7 @@ var eolDates = map[string]time.Time{
 	"3.20": time.Date(2026, 4, 1, 23, 59, 59, 0, time.UTC),
 	"3.21": time.Date(2026, 12, 5, 23, 59, 59, 0, time.UTC),
 	"3.22": time.Date(2027, 4, 30, 23, 59, 59, 0, time.UTC),
+	"3.23": time.Date(2027, 11, 1, 23, 59, 59, 0, time.UTC),
 	"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 }
 
@@ -88,7 +90,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, repo *ftypes.Reposit
 		if srcName == "" {
 			srcName = pkg.Name
 		}
-		advisories, err := s.vs.Get(stream, srcName)
+		advisories, err := s.vs.Get(db.GetParams{
+			Release: stream,
+			PkgName: srcName,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}

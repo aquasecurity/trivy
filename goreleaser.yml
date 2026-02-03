@@ -11,6 +11,7 @@ builds:
       - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
     goos:
       - linux
     goarch:
@@ -31,6 +32,7 @@ builds:
       - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
     goos:
       - freebsd
     goarch:
@@ -47,6 +49,7 @@ builds:
       - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
     goos:
       - darwin
     goarch:
@@ -63,6 +66,7 @@ builds:
       - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
     env:
       - CGO_ENABLED=0
+      - GOEXPERIMENT=jsonv2
     goos:
       - windows
     goarch:
@@ -141,6 +145,7 @@ brews:
       name: homebrew-trivy
     homepage: "https://github.com/aquasecurity/trivy"
     description: "Scanner for vulnerabilities in container images, file systems, and Git repositories, as well as for configuration issues"
+    url_template: "https://get.trivy.dev/trivy?version={{ .Version }}&os={{ tolower .Os }}&arch={{ tolower .Arch }}"
     test: |
       system "#{bin}/trivy", "--version"
 
@@ -288,13 +293,10 @@ signs:
 - cmd: cosign
   env:
   - COSIGN_EXPERIMENTAL=1
-  signature: "${artifact}.sig"
-  certificate: "${artifact}.pem"
+  signature: "${artifact}.sigstore.json"
   args:
     - "sign-blob"
-    - "--oidc-issuer=https://token.actions.githubusercontent.com"
-    - "--output-certificate=${certificate}"
-    - "--output-signature=${signature}"
+    - "--bundle=${signature}"
     - "${artifact}"
     - "--yes"
   artifacts: all

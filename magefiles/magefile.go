@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log/slog"
 	"os"
@@ -28,7 +29,8 @@ var (
 	GOBIN  = filepath.Join(GOPATH, "bin")
 
 	ENV = map[string]string{
-		"CGO_ENABLED": "0",
+		"CGO_ENABLED":  "0",
+		"GOEXPERIMENT": "jsonv2",
 	}
 )
 
@@ -73,7 +75,7 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v2.1.2"
+	const version = "v2.4.0"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
@@ -109,12 +111,6 @@ func (Tool) matchGolangciLintVersion(bin, version string) bool {
 func (Tool) Install() error {
 	log.Info("Installing tools, make sure you add $GOBIN to the $PATH")
 	return sh.Run("go", "install", "tool")
-}
-
-// Wire generates the wire_gen.go file for each package
-func Wire() error {
-	mg.Deps(Tool{}.Install) // Install wire
-	return sh.RunV("go", "tool", "wire", "gen", "./pkg/commands/...", "./pkg/rpc/...", "./pkg/k8s/...")
 }
 
 type Protoc mg.Namespace
@@ -232,7 +228,7 @@ func (t Test) Integration() error {
 // K8s runs k8s integration tests
 func (t Test) K8s() error {
 	mg.Deps(Tool{}.Install) // Install kind
-	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test")
+	err := sh.RunWithV(ENV, "kind", "create", "cluster", "--name", "kind-test", "--image", "kindest/node:v1.27.1@sha256:b7d12ed662b873bd8510879c1846e87c7e676a79fefc93e17b2a52989d3ff42b")
 	if err != nil {
 		return err
 	}
@@ -256,10 +252,20 @@ func (t Test) K8s() error {
 		return fmt.Errorf("can't create environment for limited user: %w", err)
 	}
 
+	// wait for all pods are running correctly
+	err = sh.RunWithV(ENV, "kubectl", "wait", "--for=condition=Ready", "pod", "--all", "--all-namespaces", "--timeout=300s")
+	if err != nil {
+		return fmt.Errorf("can't wait for the pods: %w", err)
+	}
+
 	// print all resources for info
 	err = sh.RunWithV(ENV, "kubectl", "get", "all", "-A")
 	if err != nil {
-		return err
+		return fmt.Errorf("can't get workloads: %w", err)
+	}
+	err = sh.RunWithV(ENV, "kubectl", "get", "cm", "-A")
+	if err != nil {
+		return fmt.Errorf("can't get configmaps: %w", err)
 	}
 
 	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=k8s_integration", "./integration/...")
@@ -327,22 +333,34 @@ func (t Test) VM() error {
 
 // UpdateVMGolden updates golden files for integration tests
 func (t Test) UpdateVMGolden() error {
-	mg.Deps(t.FixtureVMImages)
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
+	return errors.New("`mage test:updateVMGolden` is currently not supported. See TestVM function comments in integration/vm_test.go for details")
+	// mg.Deps(t.FixtureVMImages)
+	// return sh.RunWithV(ENV, "go", "test", "-v", "-tags=vm_integration", "./integration/...", "-update")
+}
+
+// E2e runs E2E tests using testscript framework
+func (t Test) E2e() error {
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
 }
 
 type Lint mg.Namespace
 
 // Run runs linters
-func (Lint) Run() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--build-tags=integration")
+func (l Lint) Run() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunWithV(ENV, "modernize", "./...")
 }
 
 // Fix auto fixes linters
-func (Lint) Fix() error {
-	mg.Deps(Tool{}.GolangciLint)
-	return sh.RunV("golangci-lint", "run", "--fix", "--build-tags=integration")
+func (l Lint) Fix() error {
+	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
+	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
+		return err
+	}
+	return sh.RunWithV(ENV, "modernize", "-fix", "./...")
 }
 
 // Fmt formats Go code
@@ -419,20 +437,6 @@ func Label() error {
 
 type Docs mg.Namespace
 
-// Prepare CSS
-func (Docs) Css() error {
-	const (
-		homepageSass = "docs/assets/css/trivy_v1_styles.scss"
-	)
-	homepageCss := strings.TrimSuffix(homepageSass, ".scss") + ".min.css"
-	if updated, err := target.Path(homepageCss, homepageSass); err != nil {
-		return err
-	} else if !updated {
-		return nil
-	}
-	return sh.Run("sass", "--no-source-map", "--style=compressed", homepageSass, homepageCss)
-}
-
 // Prepare python requirements
 func (Docs) Pip() error {
 	const (
@@ -500,7 +504,7 @@ func (Helm) UpdateVersion() error {
 
 type SPDX mg.Namespace
 
-// UpdateLicenseExceptions updates 'exception.json' with SPDX license exceptions
-func (SPDX) UpdateLicenseExceptions() error {
+// UpdateLicenseEntries updates both SPDX license IDs and exceptions
+func (SPDX) UpdateLicenseEntries() error {
 	return sh.RunWith(ENV, "go", "run", "-tags=mage_spdx", "./magefiles/spdx.go")
 }

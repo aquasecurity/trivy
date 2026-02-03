@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/google/wire"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -27,18 +26,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
-)
-
-// SuperSet binds dependencies for Local scan
-var SuperSet = wire.NewSet(
-	vulnerability.SuperSet,
-	applier.NewApplier,
-	ospkg.NewScanner,
-	langpkg.NewScanner,
-	NewService,
 )
 
 // Service implements the OspkgDetector and LibraryDetector
@@ -63,7 +54,7 @@ func NewService(a applier.Applier, osPkgScanner ospkg.Scanner, langPkgScanner la
 // Scan scans the artifact and return results.
 func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobKeys []string, options types.ScanOptions) (
 	types.ScanResponse, error) {
-	detail, err := s.applier.ApplyLayers(artifactKey, blobKeys)
+	detail, err := s.applier.ApplyLayers(ctx, artifactKey, blobKeys)
 	switch {
 	case errors.Is(err, analyzer.ErrUnknownOS):
 		log.Debug("OS is not detected.")
@@ -84,6 +75,9 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 				Name:   detail.Repository.Release,
 			}
 		}
+	case !detail.OS.Family.HasOSPackages():
+		// Some OS types like ActiveState don't have OS packages, only language-specific packages.
+		// No warning needed.
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -257,7 +251,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
+			Secrets: xslices.Map(secret.Findings, func(secret ftypes.SecretFinding) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
@@ -431,8 +425,8 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 func toDetectedLicense(scanner licensing.Scanner, license, pkgName, filePath string) types.DetectedLicense {
 	var category ftypes.LicenseCategory
 	var severity, licenseText string
-	if strings.HasPrefix(license, licensing.LicenseTextPrefix) { // License text
-		licenseText = strings.TrimPrefix(license, licensing.LicenseTextPrefix)
+	if after, ok := strings.CutPrefix(license, licensing.LicenseTextPrefix); ok { // License text
+		licenseText = after
 		category, severity = scanner.ScanTextLicense(licenseText)
 		license = licensing.CustomLicensePrefix + ": " + licensing.TrimLicenseText(licenseText) // Use `CUSTOM LICENSE: *...` format for text licenses
 	} else { // License name

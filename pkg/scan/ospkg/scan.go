@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"sort"
-	"time"
 
 	"golang.org/x/xerrors"
 
@@ -31,6 +30,12 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 	log.Info("Detected OS", log.String("family",
 		string(target.OS.Family)), log.String("version", target.OS.Name))
 
+	// Skip OS package scanning if the target is expected not to have OS packages
+	if !target.OS.Family.HasOSPackages() {
+		log.Debug("Skipping OS package scanning", log.String("family", string(target.OS.Family)))
+		return types.Result{}, false, nil
+	}
+
 	if target.OS.Extended {
 		// TODO: move the logic to each detector
 		target.OS.Name += "-ESM"
@@ -50,8 +55,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 		return result, false, nil
 	}
 
-	vulns, eosl, err := ospkgDetector.Detect(ctx, "", target.OS.Family, target.OS.Name, target.Repository, time.Time{},
-		target.Packages)
+	vulns, eosl, err := ospkgDetector.Detect(ctx, target, opts)
 	if err != nil {
 		// Return a result for those who want to override the error handling.
 		return result, false, xerrors.Errorf("failed vulnerability detection of OS packages: %w", err)

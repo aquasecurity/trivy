@@ -82,15 +82,18 @@ func DownloadVEXRepositories(ctx context.Context, opts flag.Options) error {
 func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bool, registryOpts ftypes.RegistryOptions) (string, error) {
 	mu.Lock()
 	defer mu.Unlock()
+
+	ctx = log.WithContextPrefix(ctx, "checks-client")
+
 	var err error
 
 	if skipUpdate {
-		log.Info("No downloadable checks were loaded as --skip-check-update is enabled, loading from existing cache...")
+		log.InfoContext(ctx, "No downloadable checks were loaded as --skip-check-update is enabled, loading from existing cache...")
 
-		path := client.LoadBuiltinChecks()
+		path := client.BuiltinChecksPath()
 		_, _, err := misconf.CheckPathExists(path)
 		if err != nil {
-			return "", xerrors.Errorf("Failed to load existing cache, err: %s", err.Error())
+			return "", xerrors.Errorf("failed to check cache: %w", err)
 		}
 		return path, nil
 	}
@@ -106,9 +109,14 @@ func InitBuiltinChecks(ctx context.Context, client *policy.Client, skipUpdate bo
 		if err = client.DownloadBuiltinChecks(ctx, registryOpts); err != nil {
 			return "", xerrors.Errorf("failed to download checks bundle: %w", err)
 		}
+	} else {
+		log.InfoContext(ctx,
+			"Using existing checks from cache",
+			log.String("path", client.BuiltinChecksPath()),
+		)
 	}
 
-	return client.LoadBuiltinChecks(), nil
+	return client.BuiltinChecksPath(), nil
 }
 
 func Exit(opts flag.Options, failedResults bool, m types.Metadata) error {

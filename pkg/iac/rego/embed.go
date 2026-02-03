@@ -41,6 +41,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 		WithCapabilities(nil).
 		WithUseTypeCheckAnnotations(true)
 
+	compiler.SetErrorLimit(DefaultAllowedRegoErrors)
 	compiler.Compile(modules)
 	if compiler.Failed() {
 		// we should panic as the embedded rego policies are syntactically incorrect...
@@ -56,7 +57,7 @@ func RegisterRegoRules(modules map[string]*ast.Module) {
 			continue
 		}
 
-		if metadata.AVDID == "" {
+		if metadata.ID == "" {
 			if !metadata.Library {
 				log.Warn("Check ID is empty", log.FilePath(module.Package.Location.File))
 			}

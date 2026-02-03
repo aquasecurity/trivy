@@ -206,7 +206,8 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 		if err != nil || meta == nil {
 			continue
 		}
-		if badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID {
+		if (badPolicyMeta.AVDID != "" && badPolicyMeta.AVDID == meta.AVDID) ||
+			(badPolicyMeta.ID != "" && badPolicyMeta.ID != "N/A" && badPolicyMeta.ID == meta.ID) {
 			return embeddedCheck
 		}
 	}
@@ -214,12 +215,18 @@ func (s *Scanner) findMatchedEmbeddedCheck(badPolicy *ast.Module) *ast.Module {
 }
 
 func (s *Scanner) prunePoliciesWithError(compiler *ast.Compiler) error {
-	if len(compiler.Errors) > s.regoErrorLimit {
+	// Filter out the compiler-internal "error limit reached" marker; it's not a real error.
+	errs := lo.Filter(compiler.Errors, func(e *ast.Error, _ int) bool {
+		return e.Message != "error limit reached"
+	})
+
+	// Check against the scanner's maximum allowed errors.
+	if len(errs) > s.maxAllowedErrors {
 		s.logger.Error("Error(s) occurred while loading checks")
-		return compiler.Errors
+		return errs
 	}
 
-	for _, e := range compiler.Errors {
+	for _, e := range errs {
 		if e.Location == nil {
 			continue
 		}
@@ -247,6 +254,7 @@ func (s *Scanner) compilePolicies(srcFS fs.FS, paths []string) error {
 		WithCapabilities(ast.CapabilitiesForThisVersion()).
 		WithSchemas(schemaSet)
 
+	compiler.SetErrorLimit(s.maxAllowedErrors + 1)
 	compiler.Compile(s.policies)
 	if compiler.Failed() {
 		s.fallbackChecks(compiler)
@@ -270,7 +278,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 		s.logger.Warn(
 			"Module has legacy input format - please update to use annotations",
 			log.FilePath(module.Package.Location.File),
-			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "input")),
+			log.String("details", doc.URL("guide/scanner/misconfiguration/custom", "input")),
 		)
 	}
 
@@ -278,7 +286,7 @@ func (s *Scanner) handleModulesMetadata(path string, module *ast.Module) {
 		s.logger.Warn(
 			"Module has legacy metadata format - please update to use annotations",
 			log.FilePath(module.Package.Location.File),
-			log.String("details", doc.URL("/docs/scanner/misconfiguration/custom", "metadata")),
+			log.String("details", doc.URL("guide/scanner/misconfiguration/custom", "metadata")),
 		)
 		return
 	}

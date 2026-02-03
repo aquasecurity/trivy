@@ -100,11 +100,11 @@ func TestFSCache_GetBlob(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(t.Context())
 				_ = fs.Close()
 			}()
 
-			got, err := fs.GetBlob(tt.args.layerID)
+			got, err := fs.GetBlob(t.Context(), tt.args.layerID)
 			assert.Equal(t, tt.wantErr, err != nil, err)
 			assert.Equal(t, tt.want, got)
 		})
@@ -227,9 +227,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				      "Packages": [
 				        {
 				          "Name": "musl",
-				          "Version": "1.1.22-r3",
-                          "Identifier": {},
-						  "Layer": {}
+				          "Version": "1.1.22-r3"
 				        }
 				      ]
 				    }
@@ -241,15 +239,11 @@ func TestFSCache_PutBlob(t *testing.T) {
 				      "Packages": [
                         {
                            "Name":"guzzlehttp/guzzle",
-                           "Version":"6.2.0",
-                           "Identifier": {},
-						   "Layer": {}
+                           "Version":"6.2.0"
                         },
                         {
                            "Name":"guzzlehttp/promises",
-                           "Version":"v1.3.1",
-                           "Identifier": {},
-						   "Layer": {}
+                           "Version":"v1.3.1"
                         }
 				      ]
 				    }
@@ -282,7 +276,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(t.Context())
 				_ = fs.Close()
 			}()
 
@@ -290,7 +284,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				require.NoError(t, fs.Close())
 			}
 
-			err = fs.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			err = fs.PutBlob(t.Context(), tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -347,9 +341,7 @@ func TestFSCache_PutArtifact(t *testing.T) {
 				  "HistoryPackages": [
 				    {
 				      "Name": "musl",
-				      "Version": "1.2.3",
-                      "Identifier": {},
-					  "Layer": {}
+				      "Version": "1.2.3"
 				    }
 				  ]
 				}
@@ -364,11 +356,11 @@ func TestFSCache_PutArtifact(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(t.Context())
 				_ = fs.Close()
 			}()
 
-			err = fs.PutArtifact(tt.args.imageID, tt.args.imageConfig)
+			err = fs.PutArtifact(t.Context(), tt.args.imageID, tt.args.imageConfig)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -483,11 +475,11 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 			fs, err := NewFSCache(tmpDir)
 			require.NoError(t, err)
 			defer func() {
-				_ = fs.Clear()
+				_ = fs.Clear(t.Context())
 				_ = fs.Close()
 			}()
 
-			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := fs.MissingBlobs(t.Context(), tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr, tt.name)
 				return

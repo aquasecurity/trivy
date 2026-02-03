@@ -5,7 +5,7 @@ import (
 
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy-checks/pkg/specs"
+	"github.com/aquasecurity/trivy-checks/pkg/compliance"
 	"github.com/aquasecurity/trivy/pkg/iac/framework"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	dftypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -94,21 +94,22 @@ func (r *registry) getSpecRules(spec string) []ruleTypes.RegisteredRule {
 	var specRules []ruleTypes.RegisteredRule
 
 	var complianceSpec dftypes.ComplianceSpec
-	specContent := specs.GetSpec(spec)
+	specContent := compliance.GetSpec(spec)
 	if err := yaml.Unmarshal([]byte(specContent), &complianceSpec); err != nil {
 		return nil
 	}
 
+	checkIDs := set.New[string]()
+	for _, csRule := range complianceSpec.Spec.Controls {
+		for _, c := range csRule.Checks {
+			checkIDs.Append(c.ID)
+		}
+	}
+
 	registered := r.getFrameworkRules(framework.ALL)
 	for _, rule := range registered {
-		for _, csRule := range complianceSpec.Spec.Controls {
-			if len(csRule.Checks) > 0 {
-				for _, c := range csRule.Checks {
-					if rule.GetRule().AVDID == c.ID {
-						specRules = append(specRules, rule)
-					}
-				}
-			}
+		if checkIDs.Contains(rule.AVDID) || checkIDs.Contains(rule.ID) {
+			specRules = append(specRules, rule)
 		}
 	}
 

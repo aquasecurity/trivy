@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm"
 	cfscanner "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation"
 	cfparser "github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
@@ -35,6 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "embed"
 )
@@ -50,6 +52,7 @@ var enablediacTypes = map[detection.FileType]types.ConfigType{
 	detection.FileTypeTerraformPlanSnapshot: types.TerraformPlanSnapshot,
 	detection.FileTypeJSON:                  types.JSON,
 	detection.FileTypeYAML:                  types.YAML,
+	detection.FileTypeAnsible:               types.Ansible,
 }
 
 type ScannerOption struct {
@@ -60,6 +63,7 @@ type ScannerOption struct {
 	DisableEmbeddedPolicies  bool
 	DisableEmbeddedLibraries bool
 	IncludeDeprecatedChecks  bool
+	RegoErrorLimit           int
 
 	HelmValues              []string
 	HelmValueFiles          []string
@@ -75,6 +79,10 @@ type ScannerOption struct {
 
 	FilePatterns      []string
 	ConfigFileSchemas []*ConfigFileSchema
+
+	AnsiblePlaybooks   []string
+	AnsibleInventories []string
+	AnsibleExtraVars   map[string]any
 
 	SkipFiles []string
 	SkipDirs  []string
@@ -123,6 +131,8 @@ func NewScanner(t detection.FileType, opt ScannerOption) (*Scanner, error) {
 		scanner = generic.NewYamlScanner(opts...)
 	case detection.FileTypeJSON:
 		scanner = generic.NewJsonScanner(opts...)
+	case detection.FileTypeAnsible:
+		scanner = ansible.New(opts...)
 	default:
 		return nil, xerrors.Errorf("unknown file type: %s", t)
 	}
@@ -236,6 +246,10 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 		rego.WithTrivyVersion(app.Version()),
 	}
 
+	if opt.RegoErrorLimit >= 0 {
+		opts = append(opts, rego.WithMaxAllowedErrors(opt.RegoErrorLimit))
+	}
+
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
 	if err != nil {
 		return nil, err
@@ -303,6 +317,8 @@ func scannerOptions(t detection.FileType, opt ScannerOption) ([]options.ScannerO
 		return addTFOpts(opts, opt)
 	case detection.FileTypeCloudFormation:
 		return addCFOpts(opts, opt)
+	case detection.FileTypeAnsible:
+		return addAnsibleOpts(opts, opt), nil
 	default:
 		return opts, nil
 	}
@@ -383,6 +399,14 @@ func addHelmOpts(opts []options.ScannerOption, scannerOption ScannerOption) []op
 	return opts
 }
 
+func addAnsibleOpts(opts []options.ScannerOption, scannerOpt ScannerOption) []options.ScannerOption {
+	return append(opts,
+		ansible.WithPlaybooks(scannerOpt.AnsiblePlaybooks),
+		ansible.WithInventories(scannerOpt.AnsibleInventories),
+		ansible.WithExtraVars(scannerOpt.AnsibleExtraVars),
+	)
+}
+
 func createConfigFS(paths []string) (fs.FS, error) {
 	mfs := mapfs.New()
 	for _, path := range paths {
@@ -403,7 +427,7 @@ func CheckPathExists(path string) (fs.FileInfo, string, error) {
 	}
 	fi, err := os.Stat(abs)
 	if errors.Is(err, os.ErrNotExist) {
-		return nil, "", xerrors.Errorf("check file %q not found", abs)
+		return nil, "", xerrors.Errorf("cache does not exist at %q", abs)
 	} else if err != nil {
 		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
 	}
@@ -451,7 +475,7 @@ func CreateDataFS(dataPaths []string, opts ...string) (fs.FS, []string, error) {
 		if err := fsys.MkdirAll("system", 0o700); err != nil {
 			return nil, nil, err
 		}
-		data := []byte(fmt.Sprintf(`{"k8s": {"version": %q}}`, k8sVersion))
+		data := fmt.Appendf(nil, `{"k8s": {"version": %q}}`, k8sVersion)
 		if err := fsys.WriteVirtualFile("system/k8s-version.json", data, 0o600); err != nil {
 			return nil, nil, err
 		}
@@ -477,12 +501,6 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 		flattened := result.Flatten()
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
-
-		ruleID := result.Rule().AVDID
-		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
-			ruleID = result.Rule().Aliases[0]
-		}
-
 		cause := NewCauseWithCode(result, flattened)
 
 		misconfResult := types.MisconfResult{
@@ -490,7 +508,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			Query:     query,
 			Message:   flattened.Description,
 			PolicyMetadata: types.PolicyMetadata{
-				ID:                 ruleID,
+				ID:                 result.Rule().ID,
 				AVDID:              result.Rule().AVDID,
 				Type:               fmt.Sprintf("%s Security Check", scannerName),
 				Title:              result.Rule().Summary,
@@ -558,7 +576,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
+				Lines: xslices.Map(code.Lines, func(l scan.Line) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

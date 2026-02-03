@@ -51,7 +51,7 @@ func buildGitSource(repoURL string) string { return "git::" + repoURL }
 func TestResolveModuleFromCache(t *testing.T) {
 
 	repo := "terraform-aws-s3-bucket"
-	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket", gittest.Options{})
 	defer gs.Close()
 
 	repoURL := gs.URL + "/" + repo + ".git"
@@ -73,7 +73,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws",
 				Client: &http.Client{
-					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}).Build(),
 				},
 			},
 			firstResolver:  resolvers.Registry,
@@ -85,7 +85,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 			opts: resolvers.Options{
 				Source: registryAddress + "/terraform-aws-modules/s3-bucket/aws//modules/object",
 				Client: &http.Client{
-					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}),
+					Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}).Build(),
 				},
 			},
 			firstResolver:  resolvers.Registry,
@@ -141,7 +141,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 
 func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 	repo := "terraform-aws-s3-bucket"
-	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket")
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket", gittest.Options{})
 	defer gs.Close()
 
 	repoURL := gs.URL + "/" + repo + ".git"

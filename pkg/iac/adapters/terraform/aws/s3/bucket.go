@@ -102,6 +102,7 @@ func getVersioning(block *terraform.Block, a *adapter) s3.Versioning {
 	}
 
 	if enabled, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_object_lock_configuration", func(resource *terraform.Block) *iacTypes.BoolValue {
+		// TODO: object_lock_enabled is a string
 		if block.GetAttribute("object_lock_enabled").IsTrue() {
 			return isObjeckLockEnabled(resource)
 		}
@@ -160,7 +161,7 @@ func getLogging(block *terraform.Block, a *adapter) s3.Logging {
 	}
 
 	if val, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_logging", func(resource *terraform.Block) s3.Logging {
-		targetBucket := resource.GetAttribute("target-bucket").AsStringValueOrDefault("", resource)
+		targetBucket := resource.GetAttribute("target_bucket").AsStringValueOrDefault("", resource)
 		if referencedBlock, err := a.modules.GetReferencedBlock(resource.GetAttribute("target_bucket"), resource); err == nil {
 			targetBucket = iacTypes.String(referencedBlock.FullName(), resource.GetAttribute("target_bucket").GetMetadata())
 		}
@@ -310,7 +311,7 @@ func getObject(b *terraform.Block, a *adapter) []s3.Contents {
 
 func getAccelerateStatus(b *terraform.Block, a *adapter) iacTypes.StringValue {
 	var status iacTypes.StringValue
-	for _, r := range a.modules.GetReferencingResources(b, " aws_s3_bucket_accelerate_configuration", "bucket") {
+	for _, r := range a.modules.GetReferencingResources(b, "aws_s3_bucket_accelerate_configuration", "bucket") {
 		status = r.GetAttribute("status").AsStringValueOrDefault("Enabled", r)
 	}
 	return status

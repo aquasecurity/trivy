@@ -142,4 +142,4 @@ The following checks were performed on each of these signatures:
 
 See [here][vuln-attestation] for more details.
 
-[vuln-attestation]: ../../docs/supply-chain/attestation/vuln.md
+[vuln-attestation]: ../../guide/supply-chain/attestation/vuln.md

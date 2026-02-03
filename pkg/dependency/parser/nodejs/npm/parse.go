@@ -1,6 +1,7 @@
 package npm
 
 import (
+	"context"
 	"fmt"
 	"maps"
 	"path"
@@ -12,6 +13,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -39,6 +41,7 @@ type Dependency struct {
 type Package struct {
 	Name                 string            `json:"name"`
 	Version              string            `json:"version"`
+	License              string            `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
@@ -46,7 +49,7 @@ type Package struct {
 	Resolved             string            `json:"resolved"`
 	Dev                  bool              `json:"dev"`
 	Link                 bool              `json:"link"`
-	Workspaces           []string          `json:"workspaces"`
+	Workspaces           any               `json:"workspaces"`
 	xjson.Location
 }
 
@@ -60,7 +63,7 @@ func NewParser() *Parser {
 	}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
 	if err := xjson.UnmarshalRead(r, &lockFile); err != nil {
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
@@ -137,14 +140,25 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			savedPkg.Locations = append(savedPkg.Locations, ftypes.Location(pkg.Location))
 			sort.Sort(savedPkg.Locations)
 
+			// If for some reason license is missing in savedPkg, but exists in the current pkg, add it.
+			if len(savedPkg.Licenses) == 0 && pkg.License != "" {
+				savedPkg.Licenses = []string{pkg.License}
+			}
+
 			pkgs[pkgID] = savedPkg
 			continue
+		}
+
+		var licenses []string
+		if pkg.License != "" {
+			licenses = []string{pkg.License}
 		}
 
 		newPkg := ftypes.Package{
 			ID:                 pkgID,
 			Name:               pkgName,
 			Version:            pkg.Version,
+			Licenses:           licenses,
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),
@@ -206,7 +220,7 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 		rootPkg.Dependencies = make(map[string]string)
 	}
 
-	workspaces := rootPkg.Workspaces
+	workspaces := packagejson.ParseWorkspaces(rootPkg.Workspaces)
 	// Changing the map during the map iteration causes unexpected behavior,
 	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
 	for pkgPath, pkg := range maps.Clone(packages) {
@@ -343,7 +357,15 @@ func (p *Parser) pkgNameFromPath(pkgPath string) string {
 	// node_modules/function1
 	// node_modules/nested_func/node_modules/debug
 	if index := strings.LastIndex(pkgPath, nodeModulesDir); index != -1 {
-		return pkgPath[index+len(nodeModulesDir)+1:]
+		pkgName := pkgPath[index+len(nodeModulesDir):]
+		pkgName = strings.TrimPrefix(pkgName, "/")
+
+		if pkgName == "" {
+			p.logger.Warn("Invalid package-lock.json file. Package path doesn't have package name suffix", log.String("pkg_path", pkgPath))
+			return ""
+		}
+
+		return pkgName
 	}
 	p.logger.Warn("Package path doesn't have `node_modules` prefix", log.String("pkg_path", pkgPath))
 	return pkgPath

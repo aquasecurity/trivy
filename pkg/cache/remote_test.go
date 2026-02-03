@@ -150,7 +150,7 @@ func TestRemoteCache_PutArtifact(t *testing.T) {
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
 			})
-			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			err := c.PutArtifact(t.Context(), tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -212,7 +212,7 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
 			})
-			err := c.PutBlob(tt.args.diffID, tt.args.layerInfo)
+			err := c.PutBlob(t.Context(), tt.args.diffID, tt.args.layerInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -291,7 +291,7 @@ func TestRemoteCache_MissingBlobs(t *testing.T) {
 				ServerAddr:    ts.URL,
 				CustomHeaders: tt.args.customHeaders,
 			})
-			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(tt.args.imageID, tt.args.layerIDs)
+			gotMissingImage, gotMissingLayerIDs, err := c.MissingBlobs(t.Context(), tt.args.imageID, tt.args.layerIDs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr, tt.name)
 				return
@@ -344,7 +344,7 @@ func TestRemoteCache_PutArtifactInsecure(t *testing.T) {
 				ServerAddr:    ts.URL,
 				CustomHeaders: nil,
 			})
-			err := c.PutArtifact(tt.args.imageID, tt.args.imageInfo)
+			err := c.PutArtifact(t.Context(), tt.args.imageID, tt.args.imageInfo)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

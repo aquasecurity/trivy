@@ -8,6 +8,7 @@ import (
 	version "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/amazon"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -53,7 +54,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		advisories, err := s.ac.Get(osVer, pkg.Name)
+		advisories, err := s.ac.Get(db.GetParams{
+			Release: osVer,
+			PkgName: pkg.Name,
+		})
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get amazon advisories: %w", err)
 		}

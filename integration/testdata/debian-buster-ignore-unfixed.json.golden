@@ -1,6 +1,11 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:b75d2c78a42eae6eaa44e99638ba5fa36900538fa0b7a4feba19d18dd588552d",
   "ArtifactName": "testdata/fixtures/images/debian-buster.tar.gz",
   "ArtifactType": "container_image",
   "Metadata": {
@@ -13,6 +18,10 @@
     "DiffIDs": [
       "sha256:78c1b9419976227e05be9d243b7fa583bea44a5258e52018b2af4cdfe23d148d"
     ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:debian-buster"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:debian-buster",
     "ImageConfig": {
       "architecture": "amd64",
       "container": "cbb6a20ddb7dedfeee41aeb21e9780f14afbb0f47a6b1ffa514a1822f45d0a51",
@@ -70,7 +79,7 @@
           "PkgName": "libidn2-0",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libidn2-0@2.0.5-1?arch=amd64\u0026distro=debian-10.1",
-            "UID": "24f9b08969c58720"
+            "UID": "dbc5a507d1ad704d"
           },
           "InstalledVersion": "2.0.5-1",
           "FixedVersion": "2.0.5-1+deb10u1",
@@ -86,6 +95,7 @@
             "Name": "Debian Security Tracker",
             "URL": "https://salsa.debian.org/security-tracker-team/security-tracker"
           },
+          "Fingerprint": "sha256:96ec45ab3d0cc9ab034c0ce21ce0bf7692ea49979b4844ab9e97a7e5db629fd4",
           "Title": "libidn2: heap-based buffer overflow in idn2_to_ascii_4i in lib/lookup.c",
           "Description": "idn2_to_ascii_4i in lib/lookup.c in GNU libidn2 before 2.1.1 has a heap-based buffer overflow via a long domain string.",
           "Severity": "CRITICAL",

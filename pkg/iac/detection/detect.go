@@ -5,15 +5,15 @@ import (
 	"encoding/json"
 	"io"
 	"path/filepath"
+	"slices"
 	"strings"
 
 	"github.com/xeipuuv/gojsonschema"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser/armjson"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
-	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
 type FileType string
@@ -31,6 +31,7 @@ const (
 	FileTypeJSON                  FileType = "json"
 	FileTypeHelm                  FileType = "helm"
 	FileTypeAzureARM              FileType = "azure-arm"
+	FileTypeAnsible               FileType = "ansible"
 )
 
 var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
@@ -144,10 +145,15 @@ func init() {
 			Schema     string         `json:"$schema"`
 			Handler    string         `json:"handler"`
 			Parameters map[string]any `json:"parameters"`
-			Resources  []any          `json:"resources"`
+			Resources  any            `json:"resources"`
 		}{}
-		metadata := types.NewUnmanagedMetadata()
-		if err := armjson.UnmarshalFromReader(r, &sniff, &metadata); err != nil {
+
+		data, err := io.ReadAll(r)
+		if err != nil {
+			return false
+		}
+
+		if err := json.Unmarshal(xjson.ToRFC8259(data), &sniff); err != nil {
 			return false
 		}
 
@@ -162,7 +168,17 @@ func init() {
 			return false
 		}
 
-		return len(sniff.Parameters) > 0 || len(sniff.Resources) > 0
+		hasResources := false
+		if sniff.Resources != nil {
+			switch resources := sniff.Resources.(type) {
+			case []any:
+				hasResources = len(resources) > 0
+			case map[string]any:
+				hasResources = len(resources) > 0
+			}
+		}
+
+		return len(sniff.Parameters) > 0 || hasResources
 	}
 
 	matchers[FileTypeDockerfile] = func(name string, _ io.ReadSeeker) bool {
@@ -187,7 +203,7 @@ func init() {
 				return true
 			}
 		}
-		helmFileExtensions := []string{".yaml", ".tpl"}
+		helmFileExtensions := []string{".yml", ".yaml", ".tpl"}
 		ext := filepath.Ext(filepath.Base(name))
 		for _, expected := range helmFileExtensions {
 			if strings.EqualFold(ext, expected) {
@@ -257,6 +273,12 @@ func init() {
 		}
 
 		return false
+	}
+
+	// TODO: improve detection
+	matchers[FileTypeAnsible] = func(name string, r io.ReadSeeker) bool {
+		return filepath.Base(name) == "ansible.cfg" ||
+			slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
 	}
 }
 

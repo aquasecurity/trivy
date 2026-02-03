@@ -27,7 +27,6 @@ const DS006PolicyWithDockerfileSchema = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -83,7 +82,6 @@ const DS006PolicyWithMyFancyDockerfileSchema = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -139,7 +137,6 @@ const DS006PolicyWithOldSchemaSelector = `# METADATA
 # - https://docs.docker.com/develop/develop-images/multistage-build/
 # custom:
 #   id: DS006
-#   avd_id: AVD-DS-0006
 #   severity: CRITICAL
 #   short_code: no-self-referencing-copy-from
 #   recommended_action: "Change the '--from' so that it will not refer to itself"
@@ -188,7 +185,6 @@ const DS006LegacyWithOldStyleMetadata = `package builtin.dockerfile.DS006
 
 __rego_metadata__ := {
 	"id": "DS006",
-	"avd_id": "AVD-DS-0006",
 	"title": "COPY '--from' referring to the current image",
 	"short_code": "no-self-referencing-copy-from",
 	"version": "v1.0.0",
@@ -214,7 +210,7 @@ deny[res] {
 }`
 
 func Test_BasicScanLegacyRegoMetadata(t *testing.T) {
-	fs := testutil.CreateFS(t, map[string]string{
+	fs := testutil.CreateFS(map[string]string{
 		"/code/Dockerfile": `FROM ubuntu
 USER root
 `,
@@ -237,7 +233,7 @@ USER root
 	assert.Equal(
 		t,
 		scan.Rule{
-			AVDID:          "AVD-DS-0006",
+			ID:             "DS006",
 			Aliases:        []string{"DS006"},
 			ShortCode:      "no-self-referencing-copy-from",
 			Summary:        "COPY '--from' referring to the current image",
@@ -559,7 +555,7 @@ res := true
 COPY --from=dep /binary /`
 			fsysMap["/rules/rule.rego"] = tc.inputRegoPolicy
 			fsysMap["/rules/schemas/myfancydockerfile.json"] = string(schemas.Dockerfile) // just use the same for testing
-			fsys := testutil.CreateFS(t, fsysMap)
+			fsys := testutil.CreateFS(fsysMap)
 
 			var traceBuf bytes.Buffer
 
@@ -567,7 +563,7 @@ COPY --from=dep /binary /`
 				rego.WithPolicyDirs("rules"),
 				rego.WithEmbeddedLibraries(true),
 				rego.WithTrace(&traceBuf),
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 			)
 
 			results, err := scanner.ScanFS(t.Context(), fsys, "code")
@@ -586,7 +582,7 @@ COPY --from=dep /binary /`
 				assert.Equal(
 					t,
 					scan.Rule{
-						AVDID:          "AVD-DS-0006",
+						ID:             "DS006",
 						Aliases:        []string{"DS006"},
 						ShortCode:      "no-self-referencing-copy-from",
 						Summary:        "COPY '--from' referring to the current image",
@@ -658,7 +654,7 @@ MAINTAINER moby@example.com`,
 # schemas:
 # - input: schema["dockerfile"]
 # custom:
-#   avd_id: USER-TEST-0001
+#   id: USER-TEST-0001
 #   short_code: maintainer-deprecated
 #   input:
 #     selector:
@@ -689,7 +685,7 @@ deny contains res if {
 				rego.WithPolicyReader(strings.NewReader(check)),
 				rego.WithPolicyNamespaces("user"),
 				rego.WithEmbeddedLibraries(true),
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 			)
 			results, err := scanner.ScanFS(t.Context(), fsys, ".")
 			require.NoError(t, err)

@@ -31,7 +31,7 @@ func TestMisconfigRenderer(t *testing.T) {
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
-						ID:          "some-alias-for-a-check",
+						ID:          "XYZ-0123",
 						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
@@ -51,7 +51,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -68,6 +68,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 0, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
+						ID:          "XYZ-0123",
 						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
@@ -112,7 +113,7 @@ my-file ()
 Tests: 1 (SUCCESSES: 0, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -135,6 +136,7 @@ See https://google.com/search?q=bad%20config
 				MisconfSummary: &types.MisconfSummary{Successes: 1, Failures: 1},
 				Misconfigurations: []types.DetectedMisconfiguration{
 					{
+						ID:          "XYZ-0123",
 						AVDID:       "AVD-XYZ-0123",
 						Title:       "Config file is bad",
 						Description: "Your config file is not good.",
@@ -166,6 +168,7 @@ See https://google.com/search?q=bad%20config
 						},
 					},
 					{
+						ID:          "XYZ-0456",
 						AVDID:       "AVD-XYZ-0456",
 						Title:       "Config file is bad again",
 						Description: "Your config file is still not good.",
@@ -185,7 +188,7 @@ my-file ()
 Tests: 2 (SUCCESSES: 1, FAILURES: 1)
 Failures: 1 (LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
 
-FAIL: AVD-XYZ-0123 (HIGH): Oh no, a bad config.
+FAIL: XYZ-0123 (HIGH): Oh no, a bad config.
 ════════════════════════════════════════
 Your config file is not good.
 
@@ -199,7 +202,7 @@ See https://google.com/search?q=bad%20config
 ────────────────────────────────────────
 
 
-PASS: AVD-XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
+PASS: XYZ-0456 (MEDIUM): Oh no, a bad config AGAIN.
 ════════════════════════════════════════
 Your config file is still not good.
 

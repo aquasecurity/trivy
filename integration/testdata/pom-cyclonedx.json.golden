@@ -57,7 +57,7 @@
       "properties": [
         {
           "name": "aquasecurity:trivy:PkgID",
-          "value": "com.example:log4shell:1.0-SNAPSHOT"
+          "value": "com.example:log4shell:1.0-SNAPSHOT::b21b31f8"
         },
         {
           "name": "aquasecurity:trivy:PkgType",
@@ -75,7 +75,7 @@
       "properties": [
         {
           "name": "aquasecurity:trivy:PkgID",
-          "value": "com.fasterxml.jackson.core:jackson-databind:2.9.1"
+          "value": "com.fasterxml.jackson.core:jackson-databind:2.9.1::6a9e9547"
         },
         {
           "name": "aquasecurity:trivy:PkgType",

@@ -19,12 +19,12 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
 
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@v4
+        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
@@ -35,11 +35,10 @@ jobs:
           sudo apt-get -y install rpm reprepro createrepo-c distro-info
 
       - name: Checkout trivy-repo
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
-          fetch-depth: 0
           token: ${{ secrets.ORG_REPO_TOKEN }}
 
       - name: Setup git settings
@@ -62,7 +61,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout
-        uses: actions/checkout@v4.1.6
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           fetch-depth: 0
 
@@ -72,9 +71,10 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Set up Go
-        uses: actions/setup-go@v5
+        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
           go-version-file: go.mod
+          check-latest: true # Ensure we use the latest Go patch version
           cache: false
 
       - name: Install Go tools
@@ -100,7 +100,7 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           gh workflow run update_version.yml \
-            --repo aquasecurity/trivy-telemetry \
+            --repo ${{ github.repository_owner }}/trivy-telemetry \
             --ref main \
             --field version=${{ github.ref_name }}
 
@@ -111,7 +111,18 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           gh workflow run update_version.yml \
-            --repo aquasecurity/trivy-downloads \
+            --repo ${{ github.repository_owner }}/trivy-downloads \
             --ref main \
             --field version=${{ github.ref_name }} \
             --field artifact=trivy
+
+      - name: Trigger version update and release workflow in trivy-chocolatey
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run release.yml \
+            --repo ${{ github.repository_owner }}/trivy-chocolatey \
+            --ref main \
+            --field version=${{ github.ref_name }}

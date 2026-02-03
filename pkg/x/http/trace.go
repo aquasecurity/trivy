@@ -284,7 +284,7 @@ func redactQueryParams(u *url.URL) *url.URL {
 func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	// Check if body is too large
 	if len(body) > maxBodySize {
-		return []byte(fmt.Sprintf("<body too large: %d bytes>", len(body)))
+		return fmt.Appendf(nil, "<body too large: %d bytes>", len(body))
 	}
 
 	// Check if body is binary
@@ -298,7 +298,7 @@ func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	// First, use Trivy's secret scanner for detection
 	scanResult := tt.secretScanner.Scan(secret.ScanArgs{
 		FilePath: "http-body.txt",
-		Content:  body,
+		Content:  bytes.NewReader(body),
 		Binary:   false,
 	})
 

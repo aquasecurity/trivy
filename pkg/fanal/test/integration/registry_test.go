@@ -258,7 +258,7 @@ func analyze(t *testing.T, ctx context.Context, imageRef string, opt types.Image
 	}
 	defer ar.Clean(imageInfo)
 
-	imageDetail, err := ap.ApplyLayers(imageInfo.ID, imageInfo.BlobIDs)
+	imageDetail, err := ap.ApplyLayers(ctx, imageInfo.ID, imageInfo.BlobIDs)
 	if err != nil {
 		return nil, err
 	}

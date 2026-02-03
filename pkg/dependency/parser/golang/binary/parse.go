@@ -1,28 +1,33 @@
 package binary
 
 import (
+	"context"
 	"debug/buildinfo"
 	"fmt"
 	"runtime/debug"
-	"slices"
 	"sort"
 	"strings"
 
 	"github.com/mattn/go-shellwords"
-	"github.com/samber/lo"
 	"github.com/spf13/pflag"
+	"golang.org/x/mod/module"
 	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var (
 	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
 	ErrNonGoBinary     = xerrors.New("non go binary")
+
+	// defaultVersionPrefixes contains common prefixes used in -ldflags version keys
+	defaultVersionPrefixes = set.NewCaseInsensitive("main", "common", "version", "cmd")
 )
 
 // convertError detects buildinfo.errUnrecognizedFormat and convert to
@@ -50,7 +55,7 @@ func NewParser() *Parser {
 }
 
 // Parse scans file to try to report the Go and module versions.
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := buildinfo.Read(r)
 	if err != nil {
 		return nil, nil, convertError(err)
@@ -105,10 +110,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 		version := p.checkVersion(info.Main.Path, info.Main.Version)
 		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
-
-		if version == "" || (strings.HasPrefix(version, "v0.0.0") && ldflagsVersion != "") {
-			version = ldflagsVersion
-		}
+		version = p.chooseMainVersion(version, ldflagsVersion)
 
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
@@ -117,7 +119,7 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 			Relationship: ftypes.RelationshipRoot,
 		}
 
-		depIDs := lo.Map(pkgs, func(pkg ftypes.Package, _ int) string {
+		depIDs := xslices.Map(pkgs, func(pkg ftypes.Package) string {
 			return pkg.ID
 		})
 		sort.Strings(depIDs)
@@ -141,6 +143,18 @@ func (p *Parser) checkVersion(name, version string) string {
 	if version == "(devel)" {
 		p.logger.Debug("Unable to detect main module's dependency version - `(devel)` is used", log.String("dependency", name))
 		return ""
+	}
+	return version
+}
+
+// chooseMainVersion determines which version to use for the main module.
+// It prefers the ldflags version when:
+// - The build info version is empty, OR
+// - The build info version is a pseudo-version AND ldflags version is available
+// This handles cases where actual release versions are injected via -ldflags.
+func (p *Parser) chooseMainVersion(version, ldflagsVersion string) string {
+	if version == "" || (module.IsPseudoVersion(version) && ldflagsVersion != "") {
+		return ldflagsVersion
 	}
 	return version
 }
@@ -186,15 +200,9 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	// foundVersions doesn't contain duplicates. Versions are filled into first corresponding category.
 	// Possible elements(categories):
 	//   [0]: Versions using format `github.com/<module_owner>/<module_name>/cmd/**/*.<version>=x.x.x`
-	//   [1]: Versions that use prefixes from `defaultPrefixes`
+	//   [1]: Versions that use prefixes from `defaultVersionPrefixes`
 	//   [2]: Other versions
 	var foundVersions = make([][]string, 3)
-	defaultPrefixes := []string{
-		"main",
-		"common",
-		"version",
-		"cmd",
-	}
 	for key, val := range x {
 		// It's valid to set the -X flags with quotes so we trim any that might
 		// have been provided: Ex:
@@ -211,7 +219,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 			switch {
 			case strings.HasPrefix(key, name+"/cmd/"):
 				foundVersions[0] = append(foundVersions[0], val)
-			case slices.Contains(defaultPrefixes, strings.ToLower(versionPrefix(key))):
+			case defaultVersionPrefixes.Contains(versionPrefix(key)):
 				foundVersions[1] = append(foundVersions[1], val)
 			default:
 				foundVersions[2] = append(foundVersions[2], val)

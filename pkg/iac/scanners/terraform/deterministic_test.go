@@ -11,7 +11,7 @@ import (
 )
 
 func Test_DeterministicResults(t *testing.T) {
-	fsys := testutil.CreateFS(t, map[string]string{
+	fsys := testutil.CreateFS(map[string]string{
 		"first.tf": `
 resource "aws_s3_bucket" "test" {
   for_each = other.thing
@@ -32,7 +32,7 @@ locals {
 		`,
 	})
 
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		results, err := scanFS(fsys, ".",
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
