@@ -173,7 +173,16 @@ func (m *Manager) Deregister() {
 }
 
 func (m *Manager) Close(ctx context.Context) error {
-	return m.cache.Close(ctx)
+	var errs error
+	for _, mod := range m.modules {
+		if err := mod.Close(ctx); err != nil {
+			errs = error.Join(errs, err)
+		}
+	}
+	if err := m.cache.Close(ctx); err != nil {
+		errs = error.Join(errs, err)
+	}
+	return errs
 }
 
 func splitPtrSize(u uint64) (uint32, uint32) {
@@ -261,9 +270,8 @@ func marshal(ctx context.Context, m api.Module, malloc api.Function, v any) (uin
 var _ extension.ScanHook = (*wasmModule)(nil)
 
 type wasmModule struct {
-	mod   api.Module
-	memFS *memFS
-	mux   sync.Mutex
+	pool    *sync.Pool
+	runtime wazero.Runtime
 
 	name          string
 	version       int
@@ -272,6 +280,11 @@ type wasmModule struct {
 	isAnalyzer    bool
 	isPostScanner bool
 	postScanSpec  serialize.PostScanSpec
+}
+
+type wasmInstance struct {
+	mod   api.Module
+	memFS *memFS
 
 	// Exported functions
 	analyze  api.Function
@@ -281,9 +294,6 @@ type wasmModule struct {
 }
 
 func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
-	mf := &memFS{}
-	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf).WithStartFunctions("_initialize")
-
 	// Create an empty namespace so that multiple modules will not conflict
 	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
 
@@ -315,29 +325,50 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 		return nil, xerrors.Errorf("module compile error: %w", err)
 	}
 
-	// InstantiateModule runs the "_initialize" function
-	mod, err := r.InstantiateModule(ctx, compiled, config)
-	if err != nil {
-		return nil, xerrors.Errorf("module init error: %w", err)
+	instantiate := func() (*wasmInstance, error) {
+		mf := &memFS{}
+		config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf).WithStartFunctions("_initialize")
+
+		// InstantiateModule runs the "_initialize" function
+		mod, err := r.InstantiateModule(ctx, compiled, config)
+		if err != nil {
+			return nil, xerrors.Errorf("module init error: %w", err)
+		}
+
+		return &wasmInstance{
+			mod:      mod,
+			memFS:    mf,
+			analyze:  mod.ExportedFunction("analyze"),
+			postScan: mod.ExportedFunction("post_scan"),
+			malloc:   mod.ExportedFunction("malloc"),
+			free:     mod.ExportedFunction("free"),
+		}, nil
 	}
 
-	malloc := mod.ExportedFunction("malloc")
-	free := mod.ExportedFunction("free")
+	// Validate the module with the first instance
+	inst, err := instantiate()
+	if err != nil {
+		return nil, err
+	}
+	defer func() {
+		// Close the temporary instance
+		_ = inst.mod.Close(ctx)
+	}()
 
 	// Get a module name
-	name, err := moduleName(ctx, mod, free)
+	name, err := moduleName(ctx, inst.mod, inst.free)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get a module name: %w", err)
 	}
 
 	// Get a module version
-	version, err := moduleVersion(ctx, mod)
+	version, err := moduleVersion(ctx, inst.mod)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get a module version: %w", err)
 	}
 
 	// Get a module API version
-	apiVersion, err := moduleAPIVersion(ctx, mod)
+	apiVersion, err := moduleAPIVersion(ctx, inst.mod)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get a module version: %w", err)
 	}
@@ -349,30 +380,28 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 		return nil, nil
 	}
 
-	isAnalyzer, err := moduleIsAnalyzer(ctx, mod)
+	isAnalyzer, err := moduleIsAnalyzer(ctx, inst.mod)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to check if the module is an analyzer: %w", err)
 	}
 
-	isPostScanner, err := moduleIsPostScanner(ctx, mod)
+	isPostScanner, err := moduleIsPostScanner(ctx, inst.mod)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to check if the module is a post scanner: %w", err)
 	}
 
-	// Get exported functions by WASM module
-	analyzeFunc := mod.ExportedFunction("analyze")
-	if analyzeFunc == nil {
+	// Check exported functions
+	if inst.analyze == nil {
 		return nil, xerrors.New("analyze() must be exported")
 	}
-	postScanFunc := mod.ExportedFunction("post_scan")
-	if postScanFunc == nil {
+	if inst.postScan == nil {
 		return nil, xerrors.New("post_scan() must be exported")
 	}
 
 	var requiredFiles []*regexp.Regexp
 	if isAnalyzer {
 		// Get required files
-		requiredFiles, err = moduleRequiredFiles(ctx, mod, free)
+		requiredFiles, err = moduleRequiredFiles(ctx, inst.mod, inst.free)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get required files: %w", err)
 		}
@@ -381,15 +410,26 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 	var postScanSpec serialize.PostScanSpec
 	if isPostScanner {
 		// This spec defines how the module works in post scanning like INSERT, UPDATE and DELETE.
-		postScanSpec, err = modulePostScanSpec(ctx, mod, free)
+		postScanSpec, err = modulePostScanSpec(ctx, inst.mod, inst.free)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to get a post scan spec: %w", err)
 		}
 	}
 
+	pool := &sync.Pool{
+		New: func() any {
+			// Panic on error as `New` cannot return error
+			inst, err := instantiate()
+			if err != nil {
+				panic(err)
+			}
+			return inst
+		},
+	}
+
 	return &wasmModule{
-		mod:           mod,
-		memFS:         mf,
+		pool:          pool,
+		runtime:       r,
 		name:          name,
 		version:       version,
 		requiredFiles: requiredFiles,
@@ -397,11 +437,6 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 		isAnalyzer:    isAnalyzer,
 		isPostScanner: isPostScanner,
 		postScanSpec:  postScanSpec,
-
-		analyze:  analyzeFunc,
-		postScan: postScanFunc,
-		malloc:   malloc,
-		free:     free,
 	}, nil
 }
 
@@ -419,7 +454,7 @@ func (m *wasmModule) Register() {
 }
 
 func (m *wasmModule) Close(ctx context.Context) error {
-	return m.mod.Close(ctx)
+	return m.runtime.Close(ctx)
 }
 
 func (m *wasmModule) Type() analyzer.Type {
@@ -447,24 +482,23 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	filePath := "/" + filepath.ToSlash(input.FilePath)
 	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))
 
-	// Wasm module instances are not Goroutine safe, so we take look here since Analyze might be called concurrently.
-	// TODO: This is temporary solution and we could improve the Analyze performance by having module instance pool.
-	m.mux.Lock()
-	defer m.mux.Unlock()
+	// Get an instance from the pool
+	inst := m.pool.Get().(*wasmInstance)
+	defer m.pool.Put(inst)
 
-	if err := m.memFS.initialize(filePath, input.Content); err != nil {
+	if err := inst.memFS.initialize(filePath, input.Content); err != nil {
 		return nil, err
 	}
 
 	// 1. Convert filePath -> WASM memory
-	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, m.mod, m.malloc)
+	inputPtr, inputSize, err := stringToPtrSize(ctx, filePath, inst.mod, inst.malloc)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) // nolint: errcheck
+	defer inst.free.Call(ctx, inputPtr) // nolint: errcheck
 
 	// 2. Call analyze
-	analyzeRes, err := m.analyze.Call(ctx, inputPtr, inputSize)
+	analyzeRes, err := inst.analyze.Call(ctx, inputPtr, inputSize)
 	if err != nil {
 		return nil, xerrors.Errorf("analyze error: %w", err)
 	} else if len(analyzeRes) != 1 {
@@ -473,11 +507,11 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 
 	// 3. The returned pointer/size from analyze must be freed after reading
 	resultPtrSize := analyzeRes[0]
-	defer freePtr(ctx, m.free, resultPtrSize)
+	defer freePtr(ctx, inst.free, resultPtrSize)
 
 	// 4. Unmarshal the returned data
 	var result analyzer.AnalysisResult
-	if err = unmarshal(m.mod.Memory(), resultPtrSize, &result); err != nil {
+	if err = unmarshal(inst.mod.Memory(), resultPtrSize, &result); err != nil {
 		return nil, xerrors.Errorf("invalid return value: %w", err)
 	}
 
@@ -506,14 +540,18 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 		arg = append(arg, findIDs(m.postScanSpec.IDs, results)...)
 	}
 
+	// Get an instance from the pool
+	inst := m.pool.Get().(*wasmInstance)
+	defer m.pool.Put(inst)
+
 	// Marshal the argument into WASM memory so that the WASM module can read it.
-	inputPtr, inputSize, err := marshal(ctx, m.mod, m.malloc, arg)
+	inputPtr, inputSize, err := marshal(ctx, inst.mod, inst.malloc, arg)
 	if err != nil {
 		return nil, xerrors.Errorf("post scan marshal error: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) //nolint: errcheck
+	defer inst.free.Call(ctx, inputPtr) //nolint: errcheck
 
-	analyzeRes, err := m.postScan.Call(ctx, inputPtr, inputSize)
+	analyzeRes, err := inst.postScan.Call(ctx, inputPtr, inputSize)
 	if err != nil {
 		return nil, xerrors.Errorf("post scan invocation error: %w", err)
 	} else if len(analyzeRes) != 1 {
@@ -522,11 +560,11 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 
 	// The returned pointer/size from post_scan must be freed after reading
 	postScanPtrSize := analyzeRes[0]
-	defer freePtr(ctx, m.free, postScanPtrSize)
+	defer freePtr(ctx, inst.free, postScanPtrSize)
 
 	// Unmarshal the result
 	var got types.Results
-	if err = unmarshal(m.mod.Memory(), postScanPtrSize, &got); err != nil {
+	if err = unmarshal(inst.mod.Memory(), postScanPtrSize, &got); err != nil {
 		return nil, xerrors.Errorf("post scan unmarshal error: %w", err)
 	}
 
