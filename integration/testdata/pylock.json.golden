@@ -18,7 +18,7 @@
           "Name": "click",
           "Identifier": {
             "PURL": "pkg:pypi/click@8.1.3",
-            "UID": "f6767aead12b99cf"
+            "UID": "560b673cde66d34d"
           },
           "Version": "8.1.3",
           "DependsOn": [
@@ -31,7 +31,7 @@
           "Name": "colorama",
           "Identifier": {
             "PURL": "pkg:pypi/colorama@0.4.6",
-            "UID": "a9b0f41cf3bb79cc"
+            "UID": "4e59612803cd5ba9"
           },
           "Version": "0.4.6",
           "AnalyzedBy": "pylock"
@@ -41,7 +41,7 @@
           "Name": "werkzeug",
           "Identifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "40cd870d03659073"
+            "UID": "1bc499bb697f23d0"
           },
           "Version": "0.11.1",
           "AnalyzedBy": "pylock"
@@ -54,7 +54,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "40cd870d03659073"
+            "UID": "1bc499bb697f23d0"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
@@ -66,7 +66,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
-          "Fingerprint": "sha256:aa64e889de7c75491704abe3a427c786acb12261fbffaaa93547c2e67d13c344",
+          "Fingerprint": "sha256:a83e5d20e677265c0ac1b602a9ac30710d056091e5c345dccc6e39917e7693c6",
           "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
           "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
           "Severity": "HIGH",
@@ -112,7 +112,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "40cd870d03659073"
+            "UID": "1bc499bb697f23d0"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",
@@ -124,7 +124,7 @@
             "Name": "GitHub Security Advisory Pip",
             "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
           },
-          "Fingerprint": "sha256:18bbe0c4a1942e5d43645bba04a0067358adccbaa71922ba4d269c78100cd018",
+          "Fingerprint": "sha256:bbfa56201b035c6ee537090da04c8d008d4e4b72df566f6c5d2088d016513118",
           "Title": "python-werkzeug: open redirect via double slash in the URL",
           "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
           "Severity": "MEDIUM",
