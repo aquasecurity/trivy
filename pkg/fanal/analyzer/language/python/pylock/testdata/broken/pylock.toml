@@ -1,0 +1,2 @@
+# Invalid pylock.toml file for testing error handling
+this is not valid toml content [[[

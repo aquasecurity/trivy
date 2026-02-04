@@ -1,6 +1,6 @@
 # Python
 
-Trivy supports three types of Python package managers: `pip`, `Pipenv` and `Poetry`.
+Trivy supports several Python package managers: `pip`, `Pipenv`, `Poetry`, `uv` and `pylock`.
 The following scanners are supported for package managers.
 
 | Package manager | SBOM | Vulnerability | License |
@@ -9,6 +9,7 @@ The following scanners are supported for package managers.
 | Pipenv          |  ✓   |       ✓       |    -    |
 | Poetry          |  ✓   |       ✓       |    -    |
 | uv              |  ✓   |       ✓       |    -    |
+| pylock          |  ✓   |       ✓       |    -    |
 
 In addition, Trivy supports three formats of Python packages: `egg`, `wheel` and `conda`.
 The following scanners are supported for Python packages.
@@ -27,7 +28,8 @@ The following table provides an outline of the features Trivy offers.
 | pip             | requirements.txt |            -            |     Include      |                  -                   |    ✓     |                    ✓                     |
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
 | Poetry          | poetry.lock      |            ✓            |     [Exclude](#poetry)      |                  ✓                   |    -     |                Not needed                |
-| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |          |
+| uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |
+| pylock          | pylock.toml      |            ✓            |     Include      |                  ✓                   |    -     |                Not needed                |
 
 
 | Packaging | Dependency graph |
@@ -139,6 +141,11 @@ Trivy uses `uv.lock` to identify dependencies and find vulnerabilities.
 License detection is not supported for `uv`.
 
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
+### pylock
+Trivy uses `pylock.toml` ([PEP 751](https://peps.python.org/pep-0751/)) to identify dependencies and find vulnerabilities.
+
+License detection is not supported for `pylock`.
 
 ## Packaging
 Trivy parses the manifest files of installed packages in container image scanning and so on.

@@ -124,6 +124,7 @@ const (
 	goldenPipenv                                 = "testdata/pipenv.json.golden"
 	goldenPnpm                                   = "testdata/pnpm.json.golden"
 	goldenPoetry                                 = "testdata/poetry.json.golden"
+	goldenPyLock                                 = "testdata/pylock.json.golden"
 	goldenPomCycloneDX                           = "testdata/pom-cyclonedx.json.golden"
 	goldenPubspecLock                            = "testdata/pubspec.lock.json.golden"
 	goldenSBT                                    = "testdata/sbt.json.golden"

@@ -199,6 +199,15 @@ func TestRepository(t *testing.T) {
 			golden: goldenUV,
 		},
 		{
+			name: "pylock",
+			args: repoTestArgs{
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/pylock",
+			},
+			golden: goldenPyLock,
+		},
+		{
 			name: "pom",
 			args: repoTestArgs{
 				scanner: types.VulnerabilityScanner,

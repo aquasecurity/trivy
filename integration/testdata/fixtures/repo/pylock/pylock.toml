@@ -1,0 +1,38 @@
+lock-version = "1.0"
+created-by = "pip"
+
+[[packages]]
+name = "click"
+version = "8.1.3"
+dependencies = [
+  { name = "colorama", version = "0.4.6" },
+]
+
+[[packages.wheels]]
+name = "click-8.1.3-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/c2/f1/df59e28c642d583f7dacffb1e0965d0e00b218e0186d7858ac5233dce840/click-8.1.3-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "bb4d8133cb15a609f44e8213d9b391b0809795062913b383c62be0ee95b1db48"
+
+[[packages]]
+name = "colorama"
+version = "0.4.6"
+
+[[packages.wheels]]
+name = "colorama-0.4.6-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/d1/d6/3965ed04c63042e047cb6a3e6ed1a63a35087b6a609aa3a15ed8ac56c221/colorama-0.4.6-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "4f1d9991f5acc0ca119f9d443620b77f9d6b33703e51011c16baf57afb285fc6"
+
+[[packages]]
+name = "werkzeug"
+version = "0.11.1"
+
+[[packages.wheels]]
+name = "Werkzeug-0.11.1-py2.py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/0b/37/398042f9b852c57f7e9b4e1173dcd40e7b9980d9c76a700647c458f582b1/Werkzeug-0.11.1-py2.py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "bca5d6a06e4603abd0d2c10bb5ce523039bf16a0a7b8320bd74f6458d20d4c3b"
