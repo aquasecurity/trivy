@@ -422,7 +422,7 @@ func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []b
 			// Panic on error as `New` cannot return error
 			inst, err := instantiate()
 			if err != nil {
-				panic(err)
+				panic(err) //nolint:gocritic
 			}
 			return inst
 		},
