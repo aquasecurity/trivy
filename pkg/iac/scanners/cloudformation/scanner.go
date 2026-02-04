@@ -121,7 +121,7 @@ func (s *Scanner) scanFileContext(ctx context.Context, regoScanner *rego.Scanner
 
 	for _, ignored := range results.GetIgnored() {
 		s.logger.Info("Ignore finding",
-			log.String("rule", ignored.Rule().LongID()),
+			log.String("rule", ignored.Rule().CanonicalID()),
 			log.String("range", ignored.Range().String()),
 		)
 	}
