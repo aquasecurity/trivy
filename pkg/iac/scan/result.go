@@ -271,7 +271,7 @@ func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ign
 		allIDs := []string{
 			result.Rule().ID,
 			strings.ToLower(result.Rule().ID),
-			result.Rule().LongID(),
+			result.Rule().CanonicalID(),
 			result.Rule().AVDID,
 			strings.ToLower(result.Rule().AVDID),
 			result.Rule().ShortCode,

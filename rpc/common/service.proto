@@ -122,6 +122,7 @@ message DetectedMisconfiguration {
   CauseMetadata cause_metadata = 13;
   string avd_id = 14 [deprecated = true];
   string query = 15;
+  repeated string aliases = 16;
 }
 
 message Vulnerability {
