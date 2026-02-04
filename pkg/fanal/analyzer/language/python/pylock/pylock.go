@@ -2,8 +2,6 @@ package pylock
 
 import (
 	"context"
-	"io"
-	"io/fs"
 	"os"
 	"path/filepath"
 
@@ -13,60 +11,32 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
 func init() {
-	analyzer.RegisterPostAnalyzer(analyzer.TypePyLock, NewPyLockAnalyzer)
+	analyzer.RegisterAnalyzer(&pylockAnalyzer{})
 }
 
 const version = 1
 
-type pyLockAnalyzer struct {
-	lockParser language.Parser
-}
+type pylockAnalyzer struct{}
 
-func NewPyLockAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
-	return &pyLockAnalyzer{
-		lockParser: pylock.NewParser(),
-	}, nil
-}
-
-func (a *pyLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
-	var apps []types.Application
-	required := func(_ string, _ fs.DirEntry) bool {
-		return true
-	}
-
-	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, r io.Reader) error {
-		app, err := language.Parse(ctx, types.PyLock, path, r, a.lockParser)
-		if err != nil {
-			return xerrors.Errorf("failed to parse python lock file: %w", err)
-		} else if app == nil {
-			return nil
-		}
-
-		apps = append(apps, *app)
-
-		return nil
-	})
+func (a pylockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	res, err := language.Analyze(ctx, types.PyLock, input.FilePath, input.Content, pylock.NewParser())
 	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
+		return nil, xerrors.Errorf("unable to parse pylock.toml: %w", err)
 	}
-
-	return &analyzer.AnalysisResult{
-		Applications: apps,
-	}, nil
+	return res, nil
 }
 
-func (a *pyLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+func (a pylockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return filepath.Base(filePath) == types.PyLockFile
 }
 
-func (a *pyLockAnalyzer) Type() analyzer.Type {
+func (a pylockAnalyzer) Type() analyzer.Type {
 	return analyzer.TypePyLock
 }
 
-func (a *pyLockAnalyzer) Version() int {
+func (a pylockAnalyzer) Version() int {
 	return version
 }
