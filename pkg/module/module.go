@@ -3,6 +3,7 @@ package module
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/fs"
 	"os"
@@ -176,11 +177,11 @@ func (m *Manager) Close(ctx context.Context) error {
 	var errs error
 	for _, mod := range m.modules {
 		if err := mod.Close(ctx); err != nil {
-			errs = error.Join(errs, err)
+			errs = errors.Join(errs, err)
 		}
 	}
 	if err := m.cache.Close(ctx); err != nil {
-		errs = error.Join(errs, err)
+		errs = errors.Join(errs, err)
 	}
 	return errs
 }
