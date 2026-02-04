@@ -484,10 +484,11 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	log.Debug("Module analyzing...", log.String("module", m.name), log.FilePath(filePath))
 
 	// Get an instance from the pool
-	inst, _ := m.pool.Get().(*wasmInstance)
-	if inst == nil {
+	val := m.pool.Get()
+	if val == nil {
 		return nil, xerrors.New("failed to instantiate WASM module")
 	}
+	inst := val.(*wasmInstance)
 	defer m.pool.Put(inst)
 
 	if err := inst.memFS.initialize(filePath, input.Content); err != nil {
@@ -545,10 +546,11 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	}
 
 	// Get an instance from the pool
-	inst, _ := m.pool.Get().(*wasmInstance)
-	if inst == nil {
+	val := m.pool.Get()
+	if val == nil {
 		return nil, xerrors.New("failed to instantiate WASM module")
 	}
+	inst := val.(*wasmInstance)
 	defer m.pool.Put(inst)
 
 	// Marshal the argument into WASM memory so that the WASM module can read it.
