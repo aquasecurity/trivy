@@ -65,11 +65,7 @@ jobs:
           fetch-depth: 0
 
       - name: Setup Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          cache: false # Disable cache to avoid free space issues during `Post Setup Go` step.
-          check-latest: true # Ensure we use the latest Go patch version
+        uses: ./.github/actions/setup-go
 
       - name: Generate SBOM
         uses: CycloneDX/gh-gomod-generate-sbom@efc74245d6802c8cefd925620515442756c70d8f # v2.0.0
