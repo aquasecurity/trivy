@@ -9,6 +9,9 @@ on:
     branches: [main]
   workflow_dispatch:
 
+env:
+  GO_VERSION: '1.25'
+
 jobs:
   test-images:
     name: Cache test images
@@ -20,7 +23,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
           cache: false
           check-latest: true # Ensure we use the latest Go patch version
 
@@ -54,7 +57,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
           cache: false
           check-latest: true # Ensure we use the latest Go patch version
 
@@ -88,7 +91,7 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
         with:
-          go-version-file: go.mod
+          go-version: ${{ env.GO_VERSION }}
           cache: false
           check-latest: true # Ensure we use the latest Go patch version
 
