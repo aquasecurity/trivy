@@ -8718,7 +8718,7 @@ ok
 </code></pre></div></p>
 <p>Returns the <code>200 OK</code> status if the request was successful.</p>
 <h3 id="version">Version<a class="headerlink" href="#version" title="Permanent link">&para;</a></h3>
-<p>Returns the version of the Trivy and all components (db, policy). Authentication is not required.</p>
+<p>Returns the version of the Trivy server and the vulnerability database metadata. Authentication is not required.</p>
 <p>Example request:
 <div class="highlight"><pre><span></span><code>curl<span class="w"> </span>-s<span class="w"> </span><span class="m">0</span>.0.0.0:8080/version<span class="w"> </span><span class="p">|</span><span class="w"> </span>jq
 <span class="o">{</span>
@@ -8728,16 +8728,6 @@ ok
 <span class="w">    </span><span class="s2">&quot;NextUpdate&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-25T14:15:29.876639806Z&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;UpdatedAt&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-25T08:15:29.876640206Z&quot;</span>,
 <span class="w">    </span><span class="s2">&quot;DownloadedAt&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-25T09:36:25.599004Z&quot;</span>
-<span class="w">  </span><span class="o">}</span>,
-<span class="w">  </span><span class="s2">&quot;JavaDB&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;Version&quot;</span>:<span class="w"> </span><span class="m">1</span>,
-<span class="w">    </span><span class="s2">&quot;NextUpdate&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-28T01:03:52.169192565Z&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;UpdatedAt&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-25T01:03:52.169192765Z&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;DownloadedAt&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-25T09:37:48.906152Z&quot;</span>
-<span class="w">  </span><span class="o">}</span>,
-<span class="w">  </span><span class="s2">&quot;PolicyBundle&quot;</span>:<span class="w"> </span><span class="o">{</span>
-<span class="w">    </span><span class="s2">&quot;Digest&quot;</span>:<span class="w"> </span><span class="s2">&quot;sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43&quot;</span>,
-<span class="w">    </span><span class="s2">&quot;DownloadedAt&quot;</span>:<span class="w"> </span><span class="s2">&quot;2023-07-23T11:40:33.122462Z&quot;</span>
 <span class="w">  </span><span class="o">}</span>
 <span class="o">}</span>
 </code></pre></div></p>
