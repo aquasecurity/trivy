@@ -42,8 +42,7 @@ func TestBuildComplianceReport(t *testing.T) {
 							Misconfigurations: []types.DetectedMisconfiguration{
 								{
 									Type:        "Kubernetes Security Check",
-									ID:          "KSV001",
-									AVDID:       "AVD-KSV-0001",
+									ID:          "KSV-0001",
 									Title:       "Process can elevate its own privileges",
 									Description: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
 									Message:     "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false",
@@ -60,8 +59,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								},
 								{
 									Type:   "Kubernetes Security Check",
-									ID:     "KSV002",
-									AVDID:  "AVD-KSV-9999",
+									ID:     "KSV-9999",
 									Status: types.MisconfStatusFailure,
 								},
 							},
@@ -112,7 +110,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								Description: "Check that container is not running as root",
 								Severity:    "MEDIUM",
 								Checks: []iacTypes.SpecCheck{
-									{ID: "AVD-KSV-0001"},
+									{ID: "KSV-0001"},
 								},
 							},
 							{
@@ -121,7 +119,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								Description: "Check that container root file system is immutable",
 								Severity:    "LOW",
 								Checks: []iacTypes.SpecCheck{
-									{ID: "AVD-KSV-0002"},
+									{ID: "KSV-0002"},
 								},
 							},
 							{
@@ -163,8 +161,7 @@ func TestBuildComplianceReport(t *testing.T) {
 								Misconfigurations: []types.DetectedMisconfiguration{
 									{
 										Type:        "Kubernetes Security Check",
-										ID:          "KSV001",
-										AVDID:       "AVD-KSV-0001",
+										ID:          "KSV-0001",
 										Title:       "Process can elevate its own privileges",
 										Description: "A program inside the container can elevate its own privileges and run as root, which might give the program control over the container and node.",
 										Message:     "Container 'metrics-server' of Deployment 'metrics-server' should set 'securityContext.allowPrivilegeEscalation' to false",

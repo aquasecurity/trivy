@@ -51,7 +51,7 @@ func Test_ScanFS(t *testing.T) {
 				rego.WithPolicyNamespaces("user"),
 				rego.WithEmbeddedLibraries(false),
 				rego.WithEmbeddedPolicies(false),
-				rego.WithRegoErrorLimits(0),
+				rego.WithMaxAllowedErrors(0),
 				tfscanner.ScannerWithSkipCachedModules(true),
 			)
 

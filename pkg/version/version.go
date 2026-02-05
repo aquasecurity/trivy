@@ -2,7 +2,6 @@ package version
 
 import (
 	"context"
-	"fmt"
 	"path/filepath"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
@@ -10,15 +9,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/policy"
+	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
-
-type VersionInfo struct {
-	Version         string             `json:",omitempty"`
-	VulnerabilityDB *metadata.Metadata `json:",omitempty"`
-	JavaDB          *metadata.Metadata `json:",omitempty"`
-	CheckBundle     *policy.Metadata   `json:",omitempty"`
-}
 
 // VersionOption is a functional option for NewVersionInfo
 type VersionOption func(*versionOptions)
@@ -35,30 +28,7 @@ func Server() VersionOption {
 	}
 }
 
-func formatDBMetadata(title string, meta metadata.Metadata) string {
-	return fmt.Sprintf(`%s:
-  Version: %d
-  UpdatedAt: %s
-  NextUpdate: %s
-  DownloadedAt: %s
-`, title, meta.Version, meta.UpdatedAt.UTC(), meta.NextUpdate.UTC(), meta.DownloadedAt.UTC())
-}
-
-func (v *VersionInfo) String() string {
-	output := fmt.Sprintf("Version: %s\n", v.Version)
-	if v.VulnerabilityDB != nil {
-		output += formatDBMetadata("Vulnerability DB", *v.VulnerabilityDB)
-	}
-	if v.JavaDB != nil {
-		output += formatDBMetadata("Java DB", *v.JavaDB)
-	}
-	if v.CheckBundle != nil {
-		output += v.CheckBundle.String()
-	}
-	return output
-}
-
-func NewVersionInfo(cacheDir string, opts ...VersionOption) VersionInfo {
+func NewVersionInfo(cacheDir string, opts ...VersionOption) types.VersionInfo {
 	var options versionOptions
 	for _, opt := range opts {
 		opt(&options)
@@ -66,7 +36,7 @@ func NewVersionInfo(cacheDir string, opts ...VersionOption) VersionInfo {
 
 	var dbMeta *metadata.Metadata
 	var javadbMeta *metadata.Metadata
-	var pbMeta *policy.Metadata
+	var pbMeta *types.BundleMetadata
 
 	mc := metadata.NewClient(db.Dir(cacheDir))
 	meta, err := mc.Get()
@@ -109,7 +79,7 @@ func NewVersionInfo(cacheDir string, opts ...VersionOption) VersionInfo {
 			if err != nil {
 				log.Debug("Failed to get policy metadata", log.Err(err))
 			} else {
-				pbMeta = &policy.Metadata{
+				pbMeta = &types.BundleMetadata{
 					Digest:       pbMetaRaw.Digest,
 					DownloadedAt: pbMetaRaw.DownloadedAt.UTC(),
 				}
@@ -117,7 +87,7 @@ func NewVersionInfo(cacheDir string, opts ...VersionOption) VersionInfo {
 		}
 	}
 
-	return VersionInfo{
+	return types.VersionInfo{
 		Version:         app.Version(),
 		VulnerabilityDB: dbMeta,
 		JavaDB:          javadbMeta,

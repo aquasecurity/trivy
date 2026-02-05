@@ -247,7 +247,7 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 	}
 
 	if opt.RegoErrorLimit >= 0 {
-		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
+		opts = append(opts, rego.WithMaxAllowedErrors(opt.RegoErrorLimit))
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -510,6 +510,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			PolicyMetadata: types.PolicyMetadata{
 				ID:                 result.Rule().ID,
 				AVDID:              result.Rule().AVDID,
+				Aliases:            result.Rule().Aliases,
 				Type:               fmt.Sprintf("%s Security Check", scannerName),
 				Title:              result.Rule().Summary,
 				Description:        result.Rule().Explanation,

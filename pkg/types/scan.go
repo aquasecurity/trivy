@@ -124,7 +124,8 @@ type ScanOptions struct {
 
 // ScanResponse represents the response from the scan service
 type ScanResponse struct {
-	Results Results
-	OS      types.OS
-	Layers  types.Layers
+	Results    Results
+	OS         types.OS
+	Layers     types.Layers
+	ServerInfo VersionInfo // Server info (client/server mode only)
 }
