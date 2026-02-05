@@ -26,6 +26,7 @@ misconfigurations:
   - id: ID300
     paths:
       - "docs/Dockerfile"
+  - id: AVD-ID400 # alias
 secrets:
   - id: generic-unwanted-rule
   - id: generic-unwanted-rule2
