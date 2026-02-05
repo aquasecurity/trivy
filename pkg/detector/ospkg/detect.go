@@ -31,6 +31,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// Detector detects OS package vulnerabilities.
+type Detector struct {
+	target types.ScanTarget
+	driver driver.Driver
+}
+
 var (
 	// ErrUnsupportedOS defines error for unsupported OS
 	ErrUnsupportedOS = xerrors.New("unsupported os")
@@ -68,33 +74,52 @@ var (
 	}
 )
 
-// RegisterDriver is defined for extensibility and not supposed to be used in Trivy.
-func RegisterDriver(name ftypes.OSType, drv driver.Driver) {
-	drivers[name] = drv
+// NewDetector creates a new Detector for the given scan target
+func NewDetector(target types.ScanTarget) (*Detector, error) {
+	drv, err := newDriver(target.OS.Family, target.Packages)
+	if err != nil {
+		return nil, err
+	}
+	return &Detector{
+		target: target,
+		driver: drv,
+	}, nil
 }
 
 // Detect detects the vulnerabilities
-func Detect(ctx context.Context, target types.ScanTarget, _ types.ScanOptions) ([]types.DetectedVulnerability, bool, error) {
-	ctx = log.WithContextPrefix(ctx, string(target.OS.Family))
+func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, bool, error) {
+	ctx = log.WithContextPrefix(ctx, string(d.target.OS.Family))
 
-	d, err := newDriver(target.OS.Family, target.Packages)
-	if err != nil {
-		return nil, false, ErrUnsupportedOS
-	}
+	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	eosl := !d.IsSupportedVersion(ctx, target.OS.Family, target.OS.Name)
-
-	// Package `gpg-pubkey` doesn't use the correct version.
-	// We don't need to find vulnerabilities for this package.
-	filteredPkgs := lo.Filter(target.Packages, func(pkg ftypes.Package, _ int) bool {
-		return pkg.Name != "gpg-pubkey"
-	})
-	vulns, err := d.Detect(ctx, target.OS.Name, target.Repository, filteredPkgs)
+	filteredPkgs := filterPkgs(ctx, d.target.Packages)
+	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filteredPkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
 
 	return vulns, eosl, nil
+}
+
+// filterPkgs filters out packages that should not be scanned:
+//   - gpg-pubkey: doesn't use the correct version
+//   - Third-party packages: not covered by official OS security advisories
+func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	var skipped []string
+	filtered := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
+		if pkg.Name == "gpg-pubkey" {
+			return false
+		}
+		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+			skipped = append(skipped, pkg.Name)
+			return false
+		}
+		return true
+	})
+	if len(skipped) > 0 {
+		log.DebugContext(ctx, "Skipping third-party packages", log.Any("packages", skipped))
+	}
+	return filtered
 }
 
 func newDriver(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {

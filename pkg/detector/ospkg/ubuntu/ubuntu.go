@@ -105,11 +105,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		// Skip third-party packages as they are not covered by Ubuntu security advisories
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
-			continue
-		}
-
 		osVer = s.versionFromEolDates(ctx, osVer)
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,
