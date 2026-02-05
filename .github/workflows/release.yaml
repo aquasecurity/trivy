@@ -71,11 +71,7 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Set up Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          check-latest: true # Ensure we use the latest Go patch version
-          cache: false
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
