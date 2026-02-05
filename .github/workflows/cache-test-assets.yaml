@@ -18,11 +18,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Set up Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          cache: false
-          check-latest: true # Ensure we use the latest Go patch version
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -52,11 +48,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Set up Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          cache: false
-          check-latest: true # Ensure we use the latest Go patch version
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -86,11 +78,7 @@ jobs:
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
       - name: Set up Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          cache: false
-          check-latest: true # Ensure we use the latest Go patch version
+        uses: ./.github/actions/setup-go
 
       - name: Run golangci-lint for caching
         uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0

@@ -1,0 +1,31 @@
+name: Setup Go
+description: >
+  Set up Go with the major.minor version extracted from go.mod.
+  This ensures check-latest works correctly even when go.mod contains a patch version.
+  cf. https://github.com/actions/setup-go/issues/713
+
+inputs:
+  go-version-file:
+    description: Path to the go.mod file
+    required: false
+    default: go.mod
+
+runs:
+  using: composite
+  steps:
+    - name: Extract Go version from go.mod
+      id: go-version
+      shell: bash
+      run: |
+        # Extract the major.minor version from the go directive in go.mod
+        # e.g. 1.25.5 → 1.25
+        go_version=$(grep -m1 '^go ' "${{ inputs.go-version-file }}" | awk '{print $2}')
+        major_minor=$(echo "$go_version" | cut -d. -f1,2)
+        echo "version=$major_minor" >> "$GITHUB_OUTPUT"
+
+    - name: Set up Go
+      uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+      with:
+        go-version: ${{ steps.go-version.outputs.version }}
+        cache: false
+        check-latest: true
