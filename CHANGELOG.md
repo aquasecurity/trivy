@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.69.1](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.69.1) (2026-02-05)
+
+
+### Bug Fixes
+
+* **misconf:** apply check aliases when filtering results via .trivyignore [backport: release/v0.69] ([#10143](https://github.com/aquasecurity/trivy/issues/10143)) ([3b30cc7](https://github.com/aquasecurity/trivy/commit/3b30cc7829d44b3976270155613da50f7025dec6))
+
 ## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2026-01-30)
 
 
