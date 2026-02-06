@@ -1,3 +1,5 @@
+Security scan verified for v0.69.0 on 2026-01-30
+
 <div align="center">
 <img src="docs/imgs/logo.png" width="200">
 
