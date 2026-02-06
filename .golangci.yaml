@@ -45,8 +45,9 @@ linters:
       settings:
         ruleguard:
           failOn: all
-          rules: '${base-path}/misc/lint/rules.go'
+          rules: "${base-path}/misc/lint/rules.go"
     gocyclo:
+      # Next highest complexity candidate: ApplyLayers in pkg/fanal/applier/docker.go (score: 28)
       min-complexity: 20
     gomodguard:
       blocked:
@@ -187,7 +188,7 @@ linters:
         text: "importShadow:"
       - linters:
           - goconst
-        text: "string `each` has 3 occurrences, make it a constant"  # FIXME
+        text: "string `each` has 3 occurrences, make it a constant" # FIXME
     presets:
       - comments
       - common-false-positives
@@ -196,7 +197,7 @@ linters:
     warn-unused: true
 
 run:
-  go: '1.25'
+  go: "1.25"
   timeout: 30m
 
 formatters:

@@ -423,6 +423,24 @@ rules:
 			},
 		},
 		{
+			name: "kubernetes, multi-doc with non-map doc first",
+			path: "k8s.yaml",
+			r: strings.NewReader(`---
+- this is a list, not a map
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valid-service
+`),
+			expected: []FileType{
+				FileTypeKubernetes,
+				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
+			},
+		},
+		{
 			name: "Azure ARM template with resources",
 			path: "test.json",
 			r: strings.NewReader(`
