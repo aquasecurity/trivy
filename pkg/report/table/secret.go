@@ -18,9 +18,10 @@ type secretRenderer struct {
 	severities []dbTypes.Severity
 	width      int
 	ansi       bool
+	noColor    bool
 }
 
-func NewSecretRenderer(buf *bytes.Buffer, ansi bool, severities []dbTypes.Severity) *secretRenderer {
+func NewSecretRenderer(buf *bytes.Buffer, ansi, noColor bool, severities []dbTypes.Severity) *secretRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -33,6 +34,7 @@ func NewSecretRenderer(buf *bytes.Buffer, ansi bool, severities []dbTypes.Severi
 		severities: severities,
 		width:      width,
 		ansi:       ansi,
+		noColor:    noColor,
 	}
 }
 
@@ -43,7 +45,7 @@ func (r *secretRenderer) Render(result types.Result) {
 		return
 	}
 	target := result.Target + " (secrets)"
-	RenderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi, r.noColor)
 
 	severityCount := r.countSeverities(result.Secrets)
 	total, summaries := summarize(r.severities, severityCount)

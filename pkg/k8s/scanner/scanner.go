@@ -54,12 +54,12 @@ func NewScanner(cluster string, runner cmd.Runner, opts flag.Options) *Scanner {
 
 func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact) (report.Report, error) {
 	// disable logs before scanning
-	log.InitLogger(s.opts.Debug, true)
+	log.InitLogger(s.opts.Debug, true, s.opts.NoColor)
 
 	// enable log, this is done in a defer function,
 	// to enable logs even when the function returns earlier
 	// due to an error
-	defer log.InitLogger(s.opts.Debug, false)
+	defer log.InitLogger(s.opts.Debug, false, s.opts.NoColor)
 
 	if s.opts.Format == types.FormatCycloneDX {
 		kbom, err := s.clusterInfoToReportResources(artifactsData)
