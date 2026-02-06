@@ -14,6 +14,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/internal/registrytest"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -24,7 +25,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, true)
+	log.InitLogger(false, true, config.NeverColor)
 	os.Exit(m.Run())
 }
 
@@ -141,6 +142,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 		},
 	}
 
+	log.InitLogger(false, true, config.NeverColor)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)
