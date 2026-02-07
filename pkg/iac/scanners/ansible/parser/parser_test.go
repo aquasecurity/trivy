@@ -551,6 +551,20 @@ name: mycol
 			},
 			expectedTasks: []string{"Test task"},
 		},
+		{
+			name: "with invalid play",
+			files: map[string]string{
+				"playbook.yaml": `---
+-
+- hosts: localhost
+  tasks:
+    - name: Test task
+      debug:
+        msg: Test task
+`,
+			},
+			expectedTasks: []string{"Test task"},
+		},
 	}
 
 	for _, tt := range tests {
