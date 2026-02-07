@@ -570,7 +570,6 @@ func (o *Options) ClientScannerOpts() client.ServiceOption {
 	return client.ServiceOption{
 		RemoteURL:     o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
