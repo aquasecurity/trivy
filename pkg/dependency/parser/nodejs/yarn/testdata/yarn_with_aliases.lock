@@ -1,0 +1,23 @@
+# yarn lockfile v1
+
+"braces@^2.3.1", "braces@npm:@rootio/braces@3.0.2-root.io.1", "braces@~3.0.2":
+  version "3.0.2-root.io.1"
+  resolved "https://pkg.root.io/npm/@rootio/braces/-/braces-3.0.2-root.io.1.tgz#a74cd5712414f374d0bde3eba741a8e98063aea6"
+  integrity sha512-WnnAm4Y1VcaZdioQuQCruhvn6kd52e2pntzi1b+nUHTqntS4W73oWrwZ+8HtM7MerqR5S/ZZ5r8tDbY3r53shA==
+  dependencies:
+    fill-range "^7.0.1"
+
+"fill-range@^7.0.1":
+  version "7.0.1"
+  resolved "https://registry.npmjs.org/fill-range/-/fill-range-7.0.1.tgz#1919a6a7c75fe38b2c7c77e5198535da9acdda40"
+  integrity sha512-qOo9F+dMUmC2Lcb4BbVvnKJxTPjCm+RRpe4gDuGrzkL7mEVl/djYSu2OdQ2Pa302N4oqkSg9ir6jaLWJ2USVpQ==
+
+"ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1":
+  version "2.0.0-root.io.1"
+  resolved "https://pkg.root.io/npm/@rootio/ip/-/ip-2.0.0-root.io.1.tgz#35b32364c597337787065a05c43a8f9d3335f334"
+  integrity sha512-WwztdZazH2t+ptepLOSudgFqmFmQ0b+Xa2SQ1eR8yuMTFFoPOwSnD5VvSVH1DKpxhtnmgzuEEGiOxUi92ojh2Q==
+
+"lodash@npm:lodash-es@^4.17.21":
+  version "4.17.21"
+  resolved "https://registry.npmjs.org/lodash-es/-/lodash-es-4.17.21.tgz#43e626c46e6591b7750beb2b50117390c609e3ee"
+  integrity sha512-mKnC+QJ9pWVzv+C4/U3rRsHapFfHvQFoFB92e52xeyGMcX6/OlIl78je1u8vePzYZSkkogMPJ2yjxxsb89cxyw==
