@@ -36,250 +36,249 @@ const (
 
 var matchers = make(map[FileType]func(name string, r io.ReadSeeker) bool)
 
-// TODO(nikita): refactor. If the file matches the schema, it no longer needs to be checked for other scanners.
-// nolint
 func init() {
+	matchers[FileTypeJSON] = detectJSON
+	matchers[FileTypeYAML] = detectYAML
+	matchers[FileTypeHelm] = detectHelm
+	matchers[FileTypeTOML] = detectTOML
+	matchers[FileTypeTerraform] = detectTerraform
+	matchers[FileTypeTerraformPlanJSON] = detectTerraformPlanJSON
+	matchers[FileTypeTerraformPlanSnapshot] = detectTerraformPlanSnapshot
+	matchers[FileTypeCloudFormation] = detectCloudFormation
+	matchers[FileTypeAzureARM] = detectAzureARM
+	matchers[FileTypeDockerfile] = detectDockerfile
+	matchers[FileTypeKubernetes] = detectKubernetes
+	matchers[FileTypeAnsible] = detectAnsible
+}
 
-	matchers[FileTypeJSON] = func(name string, r io.ReadSeeker) bool {
-		if !isJSON(name) {
-			return false
-		}
-		if resetReader(r) == nil {
-			return true
-		}
-
-		b, err := io.ReadAll(r)
-		return err == nil && json.Valid(b)
-	}
-
-	matchers[FileTypeYAML] = func(name string, r io.ReadSeeker) bool {
-		if !isYAML(name) {
-			return false
-		}
-		if resetReader(r) == nil {
-			return true
-		}
-
-		var content any
-		return yaml.NewDecoder(r).Decode(&content) == nil
-	}
-
-	matchers[FileTypeHelm] = func(name string, r io.ReadSeeker) bool {
-		if IsHelmChartArchive(name, r) {
-			return true
-		}
-
-		return strings.HasSuffix(name, "hart.yaml")
-	}
-
-	matchers[FileTypeTOML] = func(name string, r io.ReadSeeker) bool {
-		ext := filepath.Ext(filepath.Base(name))
-		return strings.EqualFold(ext, ".toml")
-	}
-
-	matchers[FileTypeTerraform] = func(name string, _ io.ReadSeeker) bool {
-		return IsTerraformFile(name)
-	}
-
-	matchers[FileTypeTerraformPlanJSON] = func(name string, r io.ReadSeeker) bool {
-		if IsType(name, r, FileTypeJSON) {
-			if resetReader(r) == nil {
-				return false
-			}
-
-			contents := make(map[string]any)
-			err := json.NewDecoder(r).Decode(&contents)
-			if err != nil {
-				return false
-			}
-
-			for _, k := range []string{"terraform_version", "format_version"} {
-				if _, ok := contents[k]; !ok {
-					return false
-				}
-			}
-
-			return true
-		}
+func detectJSON(name string, r io.ReadSeeker) bool {
+	if !isJSON(name) {
 		return false
 	}
-
-	matchers[FileTypeTerraformPlanSnapshot] = func(name string, r io.ReadSeeker) bool {
-		return snapshot.IsPlanSnapshot(r)
+	if resetReader(r) == nil {
+		return true
 	}
 
-	matchers[FileTypeCloudFormation] = func(name string, r io.ReadSeeker) bool {
-		sniff := struct {
-			Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
-		}{}
+	b, err := io.ReadAll(r)
+	return err == nil && json.Valid(b)
+}
 
-		switch {
-		case IsType(name, r, FileTypeYAML):
-			if resetReader(r) == nil {
-				return false
-			}
-			if err := yaml.NewDecoder(r).Decode(&sniff); err != nil {
-				return false
-			}
-		case IsType(name, r, FileTypeJSON):
-			if resetReader(r) == nil {
-				return false
-			}
-			if err := json.NewDecoder(r).Decode(&sniff); err != nil {
-				return false
-			}
-		default:
-			return false
+func detectYAML(name string, r io.ReadSeeker) bool {
+	if !isYAML(name) {
+		return false
+	}
+	if resetReader(r) == nil {
+		return true
+	}
+
+	var content any
+	return yaml.NewDecoder(r).Decode(&content) == nil
+}
+
+func detectHelm(name string, r io.ReadSeeker) bool {
+	helmFiles := []string{"Chart.yaml", ".helmignore", "values.schema.json", "NOTES.txt"}
+	for _, expected := range helmFiles {
+		if strings.HasSuffix(name, expected) {
+			return true
 		}
-
-		return sniff.Resources != nil
 	}
+	helmFileExtensions := []string{".yml", ".yaml", ".tpl"}
+	ext := filepath.Ext(filepath.Base(name))
+	for _, expected := range helmFileExtensions {
+		if strings.EqualFold(ext, expected) {
+			return true
+		}
+	}
+	return IsHelmChartArchive(name, r)
+}
 
-	matchers[FileTypeAzureARM] = func(name string, r io.ReadSeeker) bool {
+func detectTOML(name string, _ io.ReadSeeker) bool {
+	ext := filepath.Ext(filepath.Base(name))
+	return strings.EqualFold(ext, ".toml")
+}
 
+func detectTerraform(name string, _ io.ReadSeeker) bool {
+	return IsTerraformFile(name)
+}
+
+func detectTerraformPlanJSON(name string, r io.ReadSeeker) bool {
+	if IsType(name, r, FileTypeJSON) {
 		if resetReader(r) == nil {
 			return false
 		}
 
-		sniff := struct {
-			Schema     string         `json:"$schema"`
-			Handler    string         `json:"handler"`
-			Parameters map[string]any `json:"parameters"`
-			Resources  any            `json:"resources"`
-		}{}
-
-		data, err := io.ReadAll(r)
+		contents := make(map[string]any)
+		err := json.NewDecoder(r).Decode(&contents)
 		if err != nil {
 			return false
 		}
 
-		if err := json.Unmarshal(xjson.ToRFC8259(data), &sniff); err != nil {
-			return false
-		}
-
-		// schema is required https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax
-		if !strings.HasPrefix(sniff.Schema, "https://schema.management.azure.com/schemas") {
-			return false
-		}
-
-		// skip CreateUiDefinition
-		// https://learn.microsoft.com/en-us/azure/azure-resource-manager/managed-applications/create-uidefinition-overview
-		if sniff.Handler != "" {
-			return false
-		}
-
-		hasResources := false
-		if sniff.Resources != nil {
-			switch resources := sniff.Resources.(type) {
-			case []any:
-				hasResources = len(resources) > 0
-			case map[string]any:
-				hasResources = len(resources) > 0
+		for _, k := range []string{"terraform_version", "format_version"} {
+			if _, ok := contents[k]; !ok {
+				return false
 			}
 		}
 
-		return len(sniff.Parameters) > 0 || hasResources
+		return true
 	}
+	return false
+}
 
-	matchers[FileTypeDockerfile] = func(name string, _ io.ReadSeeker) bool {
-		requiredFiles := []string{"Dockerfile", "Containerfile"}
-		for _, requiredFile := range requiredFiles {
-			base := filepath.Base(name)
-			ext := filepath.Ext(base)
-			if strings.TrimSuffix(base, ext) == requiredFile {
-				return true
-			}
-			if strings.EqualFold(ext, "."+requiredFile) {
-				return true
-			}
+func detectTerraformPlanSnapshot(_ string, r io.ReadSeeker) bool {
+	return snapshot.IsPlanSnapshot(r)
+}
+
+func detectCloudFormation(name string, r io.ReadSeeker) bool {
+	sniff := struct {
+		Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
+	}{}
+
+	switch {
+	case IsType(name, r, FileTypeYAML):
+		if resetReader(r) == nil {
+			return false
 		}
+		if err := yaml.NewDecoder(r).Decode(&sniff); err != nil {
+			return false
+		}
+	case IsType(name, r, FileTypeJSON):
+		if resetReader(r) == nil {
+			return false
+		}
+		if err := json.NewDecoder(r).Decode(&sniff); err != nil {
+			return false
+		}
+	default:
 		return false
 	}
 
-	matchers[FileTypeHelm] = func(name string, r io.ReadSeeker) bool {
-		helmFiles := []string{"Chart.yaml", ".helmignore", "values.schema.json", "NOTES.txt"}
-		for _, expected := range helmFiles {
-			if strings.HasSuffix(name, expected) {
-				return true
-			}
-		}
-		helmFileExtensions := []string{".yml", ".yaml", ".tpl"}
-		ext := filepath.Ext(filepath.Base(name))
-		for _, expected := range helmFileExtensions {
-			if strings.EqualFold(ext, expected) {
-				return true
-			}
-		}
-		return IsHelmChartArchive(name, r)
+	return sniff.Resources != nil
+}
+
+func detectAzureARM(_ string, r io.ReadSeeker) bool {
+	if resetReader(r) == nil {
+		return false
 	}
 
-	matchers[FileTypeKubernetes] = func(name string, r io.ReadSeeker) bool {
+	sniff := struct {
+		Schema     string         `json:"$schema"`
+		Handler    string         `json:"handler"`
+		Parameters map[string]any `json:"parameters"`
+		Resources  any            `json:"resources"`
+	}{}
 
-		if !IsType(name, r, FileTypeYAML) && !IsType(name, r, FileTypeJSON) {
-			return false
+	data, err := io.ReadAll(r)
+	if err != nil {
+		return false
+	}
+
+	if err := json.Unmarshal(xjson.ToRFC8259(data), &sniff); err != nil {
+		return false
+	}
+
+	// schema is required https://learn.microsoft.com/en-us/azure/azure-resource-manager/templates/syntax
+	if !strings.HasPrefix(sniff.Schema, "https://schema.management.azure.com/schemas") {
+		return false
+	}
+
+	// skip CreateUiDefinition
+	// https://learn.microsoft.com/en-us/azure/azure-resource-manager/managed-applications/create-uidefinition-overview
+	if sniff.Handler != "" {
+		return false
+	}
+
+	hasResources := false
+	if sniff.Resources != nil {
+		switch resources := sniff.Resources.(type) {
+		case []any:
+			hasResources = len(resources) > 0
+		case map[string]any:
+			hasResources = len(resources) > 0
 		}
+	}
+
+	return len(sniff.Parameters) > 0 || hasResources
+}
+
+func detectDockerfile(name string, _ io.ReadSeeker) bool {
+	requiredFiles := []string{"Dockerfile", "Containerfile"}
+	for _, requiredFile := range requiredFiles {
+		base := filepath.Base(name)
+		ext := filepath.Ext(base)
+		if strings.TrimSuffix(base, ext) == requiredFile {
+			return true
+		}
+		if strings.EqualFold(ext, "."+requiredFile) {
+			return true
+		}
+	}
+	return false
+}
+
+func detectKubernetes(name string, r io.ReadSeeker) bool {
+	if !IsType(name, r, FileTypeYAML) && !IsType(name, r, FileTypeJSON) {
+		return false
+	}
+	if resetReader(r) == nil {
+		return false
+	}
+
+	expectedProperties := []string{"apiVersion", "kind", "metadata"}
+
+	if IsType(name, r, FileTypeJSON) {
 		if resetReader(r) == nil {
 			return false
 		}
 
-		expectedProperties := []string{"apiVersion", "kind", "metadata"}
-
-		if IsType(name, r, FileTypeJSON) {
-			if resetReader(r) == nil {
-				return false
-			}
-
-			var result map[string]any
-			if err := json.NewDecoder(r).Decode(&result); err != nil {
-				return false
-			}
-
-			for _, expected := range expectedProperties {
-				if _, ok := result[expected]; !ok {
-					return false
-				}
-			}
-			return true
-		}
-
-		// at this point, we need to inspect bytes
-		var buf bytes.Buffer
-		if _, err := io.Copy(&buf, r); err != nil {
+		var result map[string]any
+		if err := json.NewDecoder(r).Decode(&result); err != nil {
 			return false
 		}
-		data := buf.Bytes()
 
-		marker := []byte("\n---\n")
-		altMarker := []byte("\r\n---\r\n")
-		if bytes.Contains(data, altMarker) {
-			marker = altMarker
-		}
-
-		for partial := range bytes.SplitSeq(data, marker) {
-			var result map[string]any
-			if err := yaml.Unmarshal(partial, &result); err != nil {
-				continue
-			}
-			match := true
-			for _, expected := range expectedProperties {
-				if _, ok := result[expected]; !ok {
-					match = false
-					break
-				}
-			}
-			if match {
-				return true
+		for _, expected := range expectedProperties {
+			if _, ok := result[expected]; !ok {
+				return false
 			}
 		}
+		return true
+	}
 
+	// at this point, we need to inspect bytes
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, r); err != nil {
 		return false
 	}
+	data := buf.Bytes()
 
-	// TODO: improve detection
-	matchers[FileTypeAnsible] = func(name string, r io.ReadSeeker) bool {
-		return filepath.Base(name) == "ansible.cfg" ||
-			slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
+	marker := []byte("\n---\n")
+	altMarker := []byte("\r\n---\r\n")
+	if bytes.Contains(data, altMarker) {
+		marker = altMarker
 	}
+
+	for partial := range bytes.SplitSeq(data, marker) {
+		var result map[string]any
+		if err := yaml.Unmarshal(partial, &result); err != nil {
+			continue
+		}
+		match := true
+		for _, expected := range expectedProperties {
+			if _, ok := result[expected]; !ok {
+				match = false
+				break
+			}
+		}
+		if match {
+			return true
+		}
+	}
+
+	return false
+}
+
+func detectAnsible(name string, _ io.ReadSeeker) bool {
+	return filepath.Base(name) == "ansible.cfg" ||
+		slices.Contains([]string{"", ".yml", ".yaml", ".json", ".ini"}, filepath.Ext(name))
 }
 
 func IsTerraformFile(path string) bool {
