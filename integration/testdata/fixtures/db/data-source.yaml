@@ -149,3 +149,8 @@
         ID:   "k8s"
         Name: "Official Kubernetes CVE Feed"
         URL:  "https://kubernetes.io/docs/reference/issues-security/official-cve-feed/index.json"
+    - key: Red Hat
+      value:
+        ID:   "redhat"
+        Name: "Red Hat"
+        URL:  "https://access.redhat.com/security/cve/"
