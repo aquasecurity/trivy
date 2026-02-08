@@ -94,79 +94,13 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 }
 
 // ApplyLayers returns the merged layer
-// nolint: gocyclo
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
-	sep := "/"
 	nestedMap := nested.Nested{}
 	secretsMap := make(map[string]ftypes.Secret)
 	var mergedLayer ftypes.ArtifactDetail
 
 	for _, layer := range layers {
-		for _, opqDir := range layer.OpaqueDirs {
-			opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
-			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
-		}
-		for _, whFile := range layer.WhiteoutFiles {
-			_ = nestedMap.DeleteByString(whFile, sep) // nolint
-		}
-
-		mergedLayer.OS.Merge(layer.OS)
-
-		if layer.Repository != nil {
-			mergedLayer.Repository = layer.Repository
-		}
-
-		// Apply OS packages
-		for _, pkgInfo := range layer.PackageInfos {
-			key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
-			nestedMap.SetByString(key, sep, pkgInfo)
-		}
-
-		// Apply language-specific packages
-		for _, app := range layer.Applications {
-			key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
-			nestedMap.SetByString(key, sep, app)
-		}
-
-		// Apply misconfigurations
-		for _, config := range layer.Misconfigurations {
-			config.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
-			}
-			key := fmt.Sprintf("%s/type:config", config.FilePath)
-			nestedMap.SetByString(key, sep, config)
-		}
-
-		// Apply secrets
-		for _, secret := range layer.Secrets {
-			l := ftypes.Layer{
-				Digest:    layer.Digest,
-				DiffID:    layer.DiffID,
-				CreatedBy: layer.CreatedBy,
-			}
-			secretsMap = mergeSecrets(secretsMap, secret, l)
-		}
-
-		// Apply license files
-		for _, license := range layer.Licenses {
-			license.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
-			}
-			key := fmt.Sprintf("%s/type:license,%s", license.FilePath, license.Type)
-			nestedMap.SetByString(key, sep, license)
-		}
-
-		// Apply custom resources
-		for _, customResource := range layer.CustomResources {
-			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
-			customResource.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
-			}
-			nestedMap.SetByString(key, sep, customResource)
-		}
+		applyLayer(&nestedMap, secretsMap, layer, &mergedLayer)
 	}
 
 	// nolint
@@ -191,6 +125,104 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	}
 
 	// Extract dpkg licenses
+	dpkgLicenses := processDpkgLicenses(&mergedLayer)
+
+	// Fill package details
+	fillPackageDetails(mergedLayer.Packages, layers, mergedLayer.OS, dpkgLicenses)
+
+	// Filter OS packages with mismatched PURL namespace
+	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
+
+	// De-duplicate same debian packages from different dirs
+	// cf. https://github.com/aquasecurity/trivy/issues/8297
+	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
+		id := cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
+		// To avoid deduplicating packages with the same ID but from different locations (e.g. RPM archives), check the file path.
+		return fmt.Sprintf("%s/%s", id, pkg.FilePath)
+	}))
+
+	// Fill application details
+	fillApplicationDetails(mergedLayer.Applications, layers)
+
+	// Aggregate python/ruby/node.js packages and JAR files
+	aggregate(&mergedLayer)
+
+	mergedLayer.Sort()
+
+	return mergedLayer
+}
+
+func applyLayer(nestedMap *nested.Nested, secretsMap map[string]ftypes.Secret, layer ftypes.BlobInfo, mergedLayer *ftypes.ArtifactDetail) {
+	sep := "/"
+	for _, opqDir := range layer.OpaqueDirs {
+		opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
+		_ = nestedMap.DeleteByString(opqDir, sep) // nolint
+	}
+	for _, whFile := range layer.WhiteoutFiles {
+		_ = nestedMap.DeleteByString(whFile, sep) // nolint
+	}
+
+	mergedLayer.OS.Merge(layer.OS)
+
+	if layer.Repository != nil {
+		mergedLayer.Repository = layer.Repository
+	}
+
+	// Apply OS packages
+	for _, pkgInfo := range layer.PackageInfos {
+		key := fmt.Sprintf("%s/type:ospkg", pkgInfo.FilePath)
+		nestedMap.SetByString(key, sep, pkgInfo)
+	}
+
+	// Apply language-specific packages
+	for _, app := range layer.Applications {
+		key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
+		nestedMap.SetByString(key, sep, app)
+	}
+
+	// Apply misconfigurations
+	for _, config := range layer.Misconfigurations {
+		config.Layer = ftypes.Layer{
+			Digest: layer.Digest,
+			DiffID: layer.DiffID,
+		}
+		key := fmt.Sprintf("%s/type:config", config.FilePath)
+		nestedMap.SetByString(key, sep, config)
+	}
+
+	// Apply secrets
+	for _, secret := range layer.Secrets {
+		l := ftypes.Layer{
+			Digest:    layer.Digest,
+			DiffID:    layer.DiffID,
+			CreatedBy: layer.CreatedBy,
+		}
+		// mergedSecretsMap is updated in place
+		_ = mergeSecrets(secretsMap, secret, l)
+	}
+
+	// Apply license files
+	for _, license := range layer.Licenses {
+		license.Layer = ftypes.Layer{
+			Digest: layer.Digest,
+			DiffID: layer.DiffID,
+		}
+		key := fmt.Sprintf("%s/type:license,%s", license.FilePath, license.Type)
+		nestedMap.SetByString(key, sep, license)
+	}
+
+	// Apply custom resources
+	for _, customResource := range layer.CustomResources {
+		key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
+		customResource.Layer = ftypes.Layer{
+			Digest: layer.Digest,
+			DiffID: layer.DiffID,
+		}
+		nestedMap.SetByString(key, sep, customResource)
+	}
+}
+
+func processDpkgLicenses(mergedLayer *ftypes.ArtifactDetail) map[string][]string {
 	// The license information is not stored in the dpkg database and in a separate file,
 	// so we have to merge the license information into the package.
 	dpkgLicenses := make(map[string][]string)
@@ -210,43 +242,37 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	if len(mergedLayer.Licenses) == 0 {
 		mergedLayer.Licenses = nil
 	}
+	return dpkgLicenses
+}
 
-	for i, pkg := range mergedLayer.Packages {
+func fillPackageDetails(pkgs []ftypes.Package, layers []ftypes.BlobInfo, os ftypes.OS, dpkgLicenses map[string][]string) {
+	for i, pkg := range pkgs {
 		// Skip lookup for SBOM
 		if lo.IsEmpty(pkg.Layer) {
 			originLayerDigest, originLayerDiffID, installedFiles, buildInfo := lookupOriginLayerForPkg(pkg, layers)
-			mergedLayer.Packages[i].Layer = ftypes.Layer{
+			pkgs[i].Layer = ftypes.Layer{
 				Digest: originLayerDigest,
 				DiffID: originLayerDiffID,
 			}
-			mergedLayer.Packages[i].BuildInfo = buildInfo
+			pkgs[i].BuildInfo = buildInfo
 			// Debian/Ubuntu has the installed files only in the first layer where the package is installed.
-			mergedLayer.Packages[i].InstalledFiles = installedFiles
+			pkgs[i].InstalledFiles = installedFiles
 		}
 
-		if mergedLayer.OS.Family != "" && pkg.Identifier.PURL == nil {
-			mergedLayer.Packages[i].Identifier.PURL = newPURL(mergedLayer.OS.Family, types.Metadata{OS: &mergedLayer.OS}, pkg)
+		if os.Family != "" && pkg.Identifier.PURL == nil {
+			pkgs[i].Identifier.PURL = newPURL(os.Family, types.Metadata{OS: &os}, pkg)
 		}
-		mergedLayer.Packages[i].Identifier.UID = dependency.UID("", pkg)
+		pkgs[i].Identifier.UID = dependency.UID("", pkg)
 
 		// Only debian packages
 		if licenses, ok := dpkgLicenses[pkg.Name]; ok {
-			mergedLayer.Packages[i].Licenses = licenses
+			pkgs[i].Licenses = licenses
 		}
 	}
+}
 
-	// Filter OS packages with mismatched PURL namespace
-	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
-
-	// De-duplicate same debian packages from different dirs
-	// cf. https://github.com/aquasecurity/trivy/issues/8297
-	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
-		id := cmp.Or(pkg.ID, fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg)))
-		// To avoid deduplicating packages with the same ID but from different locations (e.g. RPM archives), check the file path.
-		return fmt.Sprintf("%s/%s", id, pkg.FilePath)
-	}))
-
-	for _, app := range mergedLayer.Applications {
+func fillApplicationDetails(apps []ftypes.Application, layers []ftypes.BlobInfo) {
+	for _, app := range apps {
 		for i, pkg := range app.Packages {
 			// Skip lookup for SBOM
 			if lo.IsEmpty(pkg.Layer) {
@@ -262,13 +288,6 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			app.Packages[i].Identifier.UID = dependency.UID(app.FilePath, pkg)
 		}
 	}
-
-	// Aggregate python/ruby/node.js packages and JAR files
-	aggregate(&mergedLayer)
-
-	mergedLayer.Sort()
-
-	return mergedLayer
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
