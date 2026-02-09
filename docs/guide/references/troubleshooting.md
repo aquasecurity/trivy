@@ -161,6 +161,16 @@ These errors occur when:
 - A previous Trivy process did not shut down cleanly
 - Trivy server is running with filesystem cache and holding a lock on the cache
 
+#### Quick fix (recommended for parallel runs / CI)
+
+If you run Trivy concurrently (e.g., CI matrix jobs, multiple background scans), avoid sharing the same filesystem scan cache.
+The simplest fix is to use a unique cache directory per job/process:
+
+```bash
+$ TRIVY_CACHE_DIR=/tmp/trivy-cache-$RANDOM trivy image debian:11 &
+$ TRIVY_CACHE_DIR=/tmp/trivy-cache-$RANDOM trivy image debian:12 &
+
+
 #### Solutions
 
 **Solution 1: Use memory cache or Redis cache** (Recommended)
