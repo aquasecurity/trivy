@@ -183,6 +183,14 @@ func Test_Adapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					{
+						EnforceHTTPS:        iacTypes.BoolTest(true),
+						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+						PublicNetworkAccess: iacTypes.BoolTest(true),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
 						NetworkRules: []storage.NetworkRule{
 							{
 								AllowByDefault: iacTypes.BoolTest(false),
