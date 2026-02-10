@@ -13,6 +13,7 @@ const (
 	//   OS
 	// ======
 	TypeOSRelease  Type = "os-release"
+	TypeAlinux     Type = "alinux"
 	TypeAlpine     Type = "alpine"
 	TypeAmazon     Type = "amazon"
 	TypeAzure      Type = "azurelinux"
@@ -157,6 +158,7 @@ var (
 	// TypeOSes has all OS-related analyzers
 	TypeOSes = []Type{
 		TypeOSRelease,
+		TypeAlinux,
 		TypeAlpine,
 		TypeAmazon,
 		TypeCBLMariner,

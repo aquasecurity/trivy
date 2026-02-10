@@ -72,6 +72,7 @@ nav:
           - Overview: guide/coverage/index.md
           - OS:
               - Overview: guide/coverage/os/index.md
+              - Alibaba Cloud Linux: guide/coverage/os/alinux.md
               - AlmaLinux: guide/coverage/os/alma.md
               - Alpine Linux: guide/coverage/os/alpine.md
               - Amazon Linux: guide/coverage/os/amazon.md
