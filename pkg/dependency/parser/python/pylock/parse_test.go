@@ -91,7 +91,7 @@ func TestParser_Parse(t *testing.T) {
 			defer f.Close()
 
 			p := pylock.NewParser()
-			gotPkgs, gotDeps, err := p.Parse(f)
+			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
 				return
 			}

@@ -1,0 +1,65 @@
+# Test pylock.toml for analyzer tests
+# Generated with: pip lock --format pylock.toml (PEP 751)
+lock-version = "1.0"
+created-by = "pip"
+
+[[packages]]
+name = "certifi"
+version = "2025.1.31"
+
+[[packages.wheels]]
+name = "certifi-2025.1.31-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/38/fc/bce832fd4fd99766c04d1ee0eead6b0ec6486fb100ae5e74c1c91c63b09b/certifi-2025.1.31-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "ca78db4565a652026a4db2bcdf68f2fb589ea80d0be70e03929ed730746b84fe"
+
+[[packages]]
+name = "charset-normalizer"
+version = "3.4.1"
+
+[[packages.wheels]]
+name = "charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+url = "https://files.pythonhosted.org/packages/28/95/0ee9f0a05c741d8e0a430c6b0ea3d7f4e4c5cb1e2f2e75e2d29f679c6e4c/charset_normalizer-3.4.1-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl"
+
+[packages.wheels.hashes]
+sha256 = "0ca564606d2caafb0abe6d1b5311c2649e8071eb241b2d64e75a0d0065107e62"
+
+[[packages]]
+name = "idna"
+version = "3.10"
+
+[[packages.wheels]]
+name = "idna-3.10-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/76/c6/c88e154df9c4e1a2a66ccf0005a88dfb2650c1dffb6f5ce603dfbd452ce3/idna-3.10-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "946d195a0d259cbba61165e88e65941f16e9b36ea6ddb97f00452bae8b1287d3"
+
+[[packages]]
+name = "requests"
+version = "2.32.3"
+dependencies = [
+  { name = "certifi", version = "2025.1.31" },
+  { name = "charset-normalizer", version = "3.4.1" },
+  { name = "idna", version = "3.10" },
+  { name = "urllib3", version = "2.3.0" },
+]
+
+[[packages.wheels]]
+name = "requests-2.32.3-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/f9/9b/335f9764261e915ed497fcdeb11df5dfd6f7bf257d4a6a2a686d80da4d54/requests-2.32.3-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "70761cfe03c773ceb22aa2f671b4757976145175cdfca038c02654d061d6dcc6"
+
+[[packages]]
+name = "urllib3"
+version = "2.3.0"
+
+[[packages.wheels]]
+name = "urllib3-2.3.0-py3-none-any.whl"
+url = "https://files.pythonhosted.org/packages/c8/19/4ec628951a74043532ca2cf5d97b7b14863931476d117c471e8f3b1c3c32/urllib3-2.3.0-py3-none-any.whl"
+
+[packages.wheels.hashes]
+sha256 = "1cee9ad369867bfdbbb48b7dd50374c0967a0bb7710050facf0dd6911440e3df"

@@ -49,7 +49,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		eco = ecosystem.NuGet
 		comparer = compare.GenericComparer{}
-	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv:
+	case ftypes.Pipenv, ftypes.Poetry, ftypes.Pip, ftypes.PythonPkg, ftypes.Uv, ftypes.PyLock:
 		eco = ecosystem.Pip
 		comparer = pep440.Comparer{}
 	case ftypes.Pub:
