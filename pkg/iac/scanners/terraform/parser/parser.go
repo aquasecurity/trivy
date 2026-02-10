@@ -388,6 +388,10 @@ func inputVariableType(b *terraform.Block) cty.Type {
 }
 
 func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules, error) {
+	if p.moduleFS == nil {
+		return nil, errors.New("module filesystem is nil, nothing to parse")
+	}
+
 	// if os.Getenv("TRIVY_EXPERIMENT_TF_GRAPH_EVAL") != "" {
 	if true {
 		vars, err := p.resolveInputVars()
