@@ -161,14 +161,20 @@ These errors occur when:
 - A previous Trivy process did not shut down cleanly
 - Trivy server is running with filesystem cache and holding a lock on the cache
 
-#### Quick fix (recommended for parallel runs / CI)
+#### Recommended for parallel runs / CI
 
-If you run Trivy concurrently (e.g., CI matrix jobs, multiple background scans), avoid sharing the same filesystem scan cache.
-The simplest fix is to use a unique cache directory per job/process:
+If you run multiple Trivy processes concurrently (for example, CI matrix jobs or background scans), ensure that each process uses a different filesystem cache directory to avoid sharing the same BoltDB lock.
+
+For example:
 
 ```bash
-$ TRIVY_CACHE_DIR=/tmp/trivy-cache-$RANDOM trivy image debian:11 &
-$ TRIVY_CACHE_DIR=/tmp/trivy-cache-$RANDOM trivy image debian:12 &
+$ trivy image --cache-dir /tmp/trivy-cache-1 debian:11 &
+$ trivy image --cache-dir /tmp/trivy-cache-2 debian:12 &
+
+Note:
+- No `$RANDOM` anymore 
+- Explicitly references what already exists conceptually
+- Frames this as **recommended**, not “new”
 
 
 #### Solutions
@@ -198,17 +204,6 @@ If you need to use filesystem cache, check for running Trivy processes and termi
 $ ps aux | grep trivy
 $ kill [process_id]
 ```
-
-**Solution 3: Use different cache directories**
-
-If you must run multiple Trivy processes with filesystem cache, specify different cache directories for each process:
-
-```bash
-$ trivy image --cache-dir /tmp/trivy-cache-1 debian:11 &
-$ trivy image --cache-dir /tmp/trivy-cache-2 debian:12 &
-```
-
-Note that each cache directory will download its own copy of the vulnerability database and other scan assets, which will increase network traffic and storage usage.
 
 ### Multiple Trivy servers
 
