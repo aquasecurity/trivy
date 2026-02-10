@@ -3,6 +3,7 @@ package eval
 import (
 	"fmt"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/dynblock"
@@ -82,6 +83,7 @@ func (n *NodeRootVariable) Execute(state *EvalState) error {
 		val := cty.DynamicVal
 		var evalErr error
 
+		// TODO: handle nullable variables
 		if v, exists := state.opts.InputVars[n.Name]; exists && !v.Type().Equals(cty.NilType) {
 			val = v
 		} else if n.Default != nil {
@@ -170,7 +172,7 @@ func applyTypeAndDefaults(
 
 	valType, defaults, err := decodeVarType(typeAttr.underlying.Expr)
 	if err != nil {
-		return cty.NilVal, fmt.Errorf(
+		return cty.DynamicVal, fmt.Errorf(
 			"failed to decode variable type at %s: %w",
 			ctx,
 			err,
@@ -181,15 +183,39 @@ func applyTypeAndDefaults(
 		val = defaults.Apply(val)
 	}
 
-	typedVal, err := convert.Convert(val, valType)
+	typedVal, err := convertValue(val, valType)
 	if err != nil {
-		return cty.NilVal, fmt.Errorf(
+		return cty.DynamicVal, fmt.Errorf(
 			"failed to convert value %s to %s at %s: %w",
 			val.GoString(),
 			valType.FriendlyName(),
 			ctx,
 			err,
 		)
+	}
+
+	return typedVal, nil
+}
+
+func convertValue(val cty.Value, typ cty.Type) (ret cty.Value, err error) {
+	// convert.Convert may cause panic if complex values such as objects or maps contain cty.NilVal.
+	defer func() {
+		if r := recover(); r != nil {
+			log.Debug(
+				"panic recovered during cty value conversion",
+				"target_type", typ.FriendlyName(),
+				"value", val,
+				"panic", r,
+			)
+
+			// fallback to the original value
+			ret = val
+		}
+	}()
+
+	typedVal, err := convert.Convert(val, typ)
+	if err != nil {
+		return cty.DynamicVal, err
 	}
 
 	return typedVal, nil
@@ -296,10 +322,14 @@ func (n *ResourceNode) Execute(state *EvalState) error {
 		if into[n.Type] == nil {
 			into[n.Type] = make(map[string]cty.Value)
 		}
+
+		var evalErr error
+
 		val, err := n.evalInstances(state, mi.scope, expansion)
 		if err != nil {
-			return err
+			evalErr = multierror.Append(evalErr, err)
 		}
+
 		into[n.Type][n.Name] = val
 		return nil
 	})
@@ -317,7 +347,7 @@ func (n *ResourceNode) evalInstances(
 	case NoKeyType:
 		instVal, err := evalResource(keys[0])
 		if err != nil {
-			return cty.NilVal, err
+			return cty.DynamicVal, err
 		}
 		return instVal, nil
 	case IntKeyType:
@@ -325,7 +355,7 @@ func (n *ResourceNode) evalInstances(
 		for _, key := range keys {
 			instVal, err := evalResource(key)
 			if err != nil {
-				return cty.NilVal, err
+				return cty.DynamicVal, err
 			}
 			elems = append(elems, instVal)
 		}
@@ -335,13 +365,13 @@ func (n *ResourceNode) evalInstances(
 		for _, key := range keys {
 			instVal, err := evalResource(key)
 			if err != nil {
-				return cty.NilVal, err
+				return cty.DynamicVal, err
 			}
 			attrs[string(key.(StringKey))] = instVal
 		}
 		return cty.ObjectVal(attrs), nil
 	default:
-		return cty.NilVal, fmt.Errorf("unexpected instance key type %d", keyType)
+		return cty.DynamicVal, fmt.Errorf("unexpected instance key type %d", keyType)
 	}
 }
 
@@ -350,7 +380,7 @@ func (n *ResourceNode) evalInstance(
 ) (cty.Value, error) {
 	val, err := state.evalBlock(scope, n.Block, data)
 	if err != nil {
-		return cty.NilVal, err
+		return cty.DynamicVal, err
 	}
 	return val, nil
 }
