@@ -77,30 +77,66 @@ func TestParsePattern(t *testing.T) {
 			expactVersion:  "//xxxx:x-oauth-basic@github.com/tomoyamachi/jquery",
 		},
 		{
+			name:           "npm alias with version",
+			target:         `"ms-alias@npm:ms@2.1.0":`,
+			expectName:     "ms",
+			expectProtocol: "npm",
+			expactVersion:  "2.1.0",
+		},
+		{
+			name:           "npm alias scoped package with version",
+			target:         `"types-alias@npm:@types/react@19.0.0":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "19.0.0",
+		},
+		{
+			name:           "npm alias scoped package without version",
+			target:         `"types-alias@npm:@types/react":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "",
+		},
+		{
+			name:           "npm protocol with version tag (not alias)",
+			target:         `"node-gyp@npm:latest":`,
+			expectName:     "node-gyp",
+			expectProtocol: "npm",
+			expactVersion:  "latest",
+		},
+		{
+			name:           "npm protocol with caret version",
+			target:         `"lodash@npm:^4.17.0":`,
+			expectName:     "lodash",
+			expectProtocol: "npm",
+			expactVersion:  "^4.17.0",
+		},
+		{
+			name:           "scoped alias to scoped package",
+			target:         `"@my/alias@npm:@types/react@19.0.0":`,
+			expectName:     "@types/react",
+			expectProtocol: "npm",
+			expactVersion:  "19.0.0",
+		},
+		{
 			target:   `normal line`,
 			occurErr: true,
 		},
 	}
 
 	for _, v := range vectors {
-		gotName, gotProtocol, gotVersion, err := parsePattern(v.target)
+		t.Run(v.name, func(t *testing.T) {
+			gotName, gotProtocol, gotVersion, err := parsePattern(v.target)
 
-		if v.occurErr != (err != nil) {
-			t.Errorf("expect error %t but err is %s", v.occurErr, err)
-			continue
-		}
+			if v.occurErr != (err != nil) {
+				t.Errorf("expect error %t but err is %s", v.occurErr, err)
+				return
+			}
 
-		if gotName != v.expectName {
-			t.Errorf("name mismatch: got %s, want %s, target :%s", gotName, v.expectName, v.target)
-		}
-
-		if gotProtocol != v.expectProtocol {
-			t.Errorf("protocol mismatch: got %s, want %s, target :%s", gotProtocol, v.expectProtocol, v.target)
-		}
-
-		if gotVersion != v.expactVersion {
-			t.Errorf("version mismatch: got %s, want %s, target :%s", gotVersion, v.expactVersion, v.target)
-		}
+			assert.Equal(t, v.expectName, gotName, "name mismatch")
+			assert.Equal(t, v.expectProtocol, gotProtocol, "protocol mismatch")
+			assert.Equal(t, v.expactVersion, gotVersion, "version mismatch")
+		})
 	}
 }
 
@@ -155,6 +191,35 @@ func TestParsePackagePatterns(t *testing.T) {
 			expactPatterns: []string{
 				"loose-envify@^1.1.0",
 				"loose-envify@^1.4.0",
+			},
+		},
+		{
+			name:           "npm alias with scoped package",
+			target:         `"braces@npm:@rootio/braces@3.0.2-root.io.1":`,
+			expectName:     "@rootio/braces",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"@rootio/braces@3.0.2-root.io.1",
+			},
+		},
+		{
+			name:           "npm alias with unscoped package",
+			target:         `"lodash@npm:lodash-es@4.17.21":`,
+			expectName:     "lodash-es",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"lodash-es@4.17.21",
+			},
+		},
+		{
+			name:           "npm alias mixed with regular patterns",
+			target:         `braces@^2.3.1, "braces@npm:@rootio/braces@3.0.2-root.io.1", braces@~3.0.2:`,
+			expectName:     "@rootio/braces",
+			expectProtocol: "npm",
+			expactPatterns: []string{
+				"braces@^2.3.1",                  // Keep original name
+				"@rootio/braces@3.0.2-root.io.1", // Real name from npm: alias
+				"braces@~3.0.2",                  // Keep original name
 			},
 		},
 		{
@@ -293,6 +358,12 @@ func TestParse(t *testing.T) {
 			name: "yarn file with bad protocol",
 			file: "testdata/yarn_with_bad_protocol.lock",
 			want: yarnBadProtocol,
+		},
+		{
+			name:     "yarn with npm aliases",
+			file:     "testdata/yarn_with_aliases.lock",
+			want:     yarnWithAliases,
+			wantDeps: yarnWithAliasesDeps,
 		},
 	}
 
