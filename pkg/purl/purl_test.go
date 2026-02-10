@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -35,6 +36,24 @@ func TestNewPackageURL(t *testing.T) {
 				Namespace: "org.springframework",
 				Name:      "spring-core",
 				Version:   "5.3.14",
+			},
+		},
+		{
+			name: "maven package with checksum",
+			typ:  ftypes.Jar,
+			pkg: ftypes.Package{
+				Name:    "org.springframework:spring-core",
+				Version: "5.3.14",
+				Digest:  digest.NewDigestFromString(digest.SHA256, "7173b809ca12ec5dee4506cd86be934c4596dd234ee82c0662eac04a8c2c71dc"),
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.3.14",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "checksum", Value: "sha256:7173b809ca12ec5dee4506cd86be934c4596dd234ee82c0662eac04a8c2c71dc"},
+				},
 			},
 		},
 		{
@@ -207,6 +226,24 @@ func TestNewPackageURL(t *testing.T) {
 				Version: "",
 			},
 			want: nil,
+		},
+		{
+			name: "golang package with checksum",
+			typ:  ftypes.GoBinary,
+			pkg: ftypes.Package{
+				Name:    "github.com/go-sql-driver/mysql",
+				Version: "v1.5.0",
+				Digest:  digest.NewDigestFromString(digest.SHA1, "ad9503c3e994a4f611a4892f2e67ac82df727086"),
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeGolang,
+				Namespace: "github.com/go-sql-driver",
+				Name:      "mysql",
+				Version:   "v1.5.0",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "checksum", Value: "sha1:ad9503c3e994a4f611a4892f2e67ac82df727086"},
+				},
+			},
 		},
 		{
 			name: "hex package",
@@ -774,6 +811,36 @@ func TestPackageURL_Package(t *testing.T) {
 			},
 		},
 		{
+			name: "maven with checksum",
+			pkgURL: &purl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "checksum", Value: "sha256:7173b809ca12ec5dee4506cd86be934c4596dd234ee82c0662eac04a8c2c71dc"},
+				},
+			},
+
+			wantPkg: &ftypes.Package{
+				ID:      "org.springframework:spring-core:5.0.4.RELEASE",
+				Name:    "org.springframework:spring-core",
+				Version: "5.0.4.RELEASE",
+				Digest:  digest.NewDigestFromString(digest.SHA256, "7173b809ca12ec5dee4506cd86be934c4596dd234ee82c0662eac04a8c2c71dc"),
+				Identifier: ftypes.PkgIdentifier{
+					PURL: &packageurl.PackageURL{
+						Type:      packageurl.TypeMaven,
+						Namespace: "org.springframework",
+						Name:      "spring-core",
+						Version:   "5.0.4.RELEASE",
+						Qualifiers: packageurl.Qualifiers{
+							{Key: "checksum", Value: "sha256:7173b809ca12ec5dee4506cd86be934c4596dd234ee82c0662eac04a8c2c71dc"},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "cocoapods with subpath",
 			pkgURL: &purl.PackageURL{
 				Type:    packageurl.TypeCocoapods,
@@ -792,6 +859,36 @@ func TestPackageURL_Package(t *testing.T) {
 						Version: "4.2.0",
 						Name:    "AppCenter",
 						Subpath: "Analytics",
+					},
+				},
+			},
+		},
+		{
+			name: "golang with checksum",
+			pkgURL: &purl.PackageURL{
+				Type:      packageurl.TypeGolang,
+				Namespace: "github.com/go-sql-driver",
+				Name:      "mysql",
+				Version:   "v1.5.0",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "checksum", Value: "sha1:ad9503c3e994a4f611a4892f2e67ac82df727086"},
+				},
+			},
+
+			wantPkg: &ftypes.Package{
+				ID:      "github.com/go-sql-driver/mysql@v1.5.0",
+				Name:    "github.com/go-sql-driver/mysql",
+				Version: "v1.5.0",
+				Digest:  digest.NewDigestFromString(digest.SHA1, "ad9503c3e994a4f611a4892f2e67ac82df727086"),
+				Identifier: ftypes.PkgIdentifier{
+					PURL: &packageurl.PackageURL{
+						Type:      packageurl.TypeGolang,
+						Namespace: "github.com/go-sql-driver",
+						Name:      "mysql",
+						Version:   "v1.5.0",
+						Qualifiers: packageurl.Qualifiers{
+							{Key: "checksum", Value: "sha1:ad9503c3e994a4f611a4892f2e67ac82df727086"},
+						},
 					},
 				},
 			},
