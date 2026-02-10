@@ -428,6 +428,13 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 	datas := make(map[string]map[string]cty.Value)
 	managed := make(map[string]map[string]cty.Value)
 
+	// TODO: If the expression refers to a non-existent object, evaluating it may return a null value,
+	// which can cause unexpected behavior or panics when working with the cty package.
+	// We should resolve the value step by step via the reference and return cty.DynamicValue
+	// if any part of the traversal is missing.
+	//
+	// The remaining traversal must be preserved in the reference to correctly determine
+	// whether the value actually exists.
 	for _, ref := range refs {
 		addr := ref.Addr
 		switch a := addr.(type) {
@@ -448,11 +455,23 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 		case CountAddr:
 			count[a.Name] = data.count
 		case LocalAddr:
-			locals[a.Name] = scope.locals[a.Name]
+			val, ok := scope.locals[a.Name]
+			if !ok {
+				val = cty.DynamicVal
+			}
+			locals[a.Name] = val
 		case VariableAddr:
-			vars[a.Name] = scope.vars[a.Name]
+			val, ok := scope.vars[a.Name]
+			if !ok {
+				val = cty.DynamicVal
+			}
+			vars[a.Name] = val
 		case OutputAddr:
-			outputs[a.Name] = scope.outputs[a.Name]
+			val, ok := scope.outputs[a.Name]
+			if !ok {
+				val = cty.DynamicVal
+			}
+			outputs[a.Name] = val
 		case ModuleCallAddr:
 			modInst, err := s.findModuleInstance(scope.addr)
 			if err != nil {
