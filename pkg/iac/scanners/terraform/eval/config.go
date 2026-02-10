@@ -165,7 +165,7 @@ func buildPostValues(typeLabel string, current map[string]cty.Value, id cty.Valu
 
 	if typeLabel == "aws_s3_bucket" {
 		var bucketName string
-		if bucket := current["bucket"]; bucket.Type() == cty.String && bucket.IsKnown() {
+		if bucket := current["bucket"]; !bucket.IsNull() && bucket.IsKnown() && bucket.Type().Equals(cty.String) {
 			bucketName = bucket.AsString()
 		}
 		vals["arn"] = cty.StringVal(fmt.Sprintf("arn:aws:s3:::%s", bucketName))
