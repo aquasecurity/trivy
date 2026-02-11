@@ -56,6 +56,13 @@ const (
 
 var ErrUnknownFormat = xerrors.New("Unknown SBOM format")
 
+var requiredSBOMsSuffixes = []string{
+	".spdx",
+	".spdx.json",
+	".cdx",
+	".cdx.json",
+}
+
 type cdxHeader struct {
 	// XML specific field
 	XMLNS string `json:"-" xml:"xmlns,attr"`
@@ -343,4 +350,13 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 	}
 
 	return sbom, nil
+}
+
+func IsSBOMFile(fileName string) bool {
+	for _, suffix := range requiredSBOMsSuffixes {
+		if strings.HasSuffix(fileName, suffix) {
+			return true
+		}
+	}
+	return false
 }
