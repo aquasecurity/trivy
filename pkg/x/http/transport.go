@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"net"
 	"net/http"
+	"net/url"
 	"sync"
 	"time"
 
@@ -64,6 +65,7 @@ type Options struct {
 	CACerts   *x509.CertPool
 	UserAgent string
 	TraceHTTP bool
+	Proxy     func(*http.Request) (*url.URL, error)
 }
 
 // SetDefaultTransport sets the default transport configuration
@@ -110,6 +112,10 @@ func NewTransport(opts Options) Transport {
 		Timeout: timeout,
 	}
 	tr.DialContext = d.DialContext
+
+	if opts.Proxy != nil {
+		tr.Proxy = opts.Proxy
+	}
 
 	// Configure TLS only when needed.
 	if opts.CACerts != nil || opts.Insecure {

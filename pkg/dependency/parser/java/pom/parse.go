@@ -78,6 +78,7 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
+	httpClient      *http.Client
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
@@ -103,6 +104,27 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
+	var proxyFunc func(*http.Request) (*url.URL, error)
+	if len(s.Proxies) > 0 {
+		proxyFunc = func(req *http.Request) (*url.URL, error) {
+			protocol := req.URL.Scheme
+			proxies := s.effectiveProxies(protocol)
+			if len(proxies) > 0 {
+				proxy := proxies[0]
+				proxyURLString := fmt.Sprintf("%s://%s:%s", proxy.Protocol, proxy.Host, proxy.Port)
+				if proxy.Username != "" && proxy.Password != "" {
+					proxyURLString = fmt.Sprintf("%s://%s:%s@%s:%s", proxy.Protocol, proxy.Username, proxy.Password, proxy.Host, proxy.Port)
+				}
+				return url.Parse(proxyURLString)
+			}
+			return http.ProxyFromEnvironment(req)
+		}
+	}
+
+	tr := xhttp.NewTransport(xhttp.Options{
+		Proxy: proxyFunc,
+	})
+
 	return &Parser{
 		logger:          log.WithPrefix("pom"),
 		rootPath:        filepath.Clean(filePath),
@@ -111,6 +133,9 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
+		httpClient: &http.Client{
+			Transport: tr.Build(),
+		},
 	}
 }
 
@@ -808,7 +833,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 		return "", nil
 	}
 
-	client := xhttp.Client()
+	client := p.httpClient
 	resp, err := client.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
@@ -847,7 +872,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 		return nil, nil
 	}
 
-	client := xhttp.Client()
+	client := p.httpClient
 	resp, err := client.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {

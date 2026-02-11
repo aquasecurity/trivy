@@ -69,6 +69,7 @@ func Test_ReadSettings(t *testing.T) {
 					},
 				},
 				ActiveProfiles: []string{},
+				Proxies:        []Proxy{},
 			},
 		},
 		{
@@ -250,6 +251,7 @@ func Test_ReadSettings(t *testing.T) {
 				ActiveProfiles: []string{
 					"mycompany-global",
 				},
+				Proxies: []Proxy{},
 			},
 		},
 		{
@@ -305,6 +307,64 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{
 					"mycompany-global",
+				},
+			},
+		},
+		{
+			name: "happy path with user settings proxy",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-proxy"),
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Proxies: []Proxy{
+					{
+						ID:            "user-proxy-http",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "user.proxy.com",
+						Port:          "8080",
+						Username:      "user-proxy-user",
+						Password:      "user-proxy-pass",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+					{
+						ID:       "user-proxy-https",
+						Active:   "true",
+						Protocol: "https",
+						Host:     "user.proxy.com",
+						Port:     "8443",
+					},
+					{
+						ID:       "user-proxy-inactive",
+						Active:   "false",
+						Protocol: "http",
+						Host:     "inactive.proxy.com",
+						Port:     "8080",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with global settings proxy",
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-proxy"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies: []Proxy{
+					{
+						ID:       "global-proxy",
+						Active:   "true",
+						Protocol: "http",
+						Host:     "global.proxy.com",
+						Port:     "8080",
+					},
 				},
 			},
 		},
@@ -472,4 +532,95 @@ func mustParseURL(t *testing.T, s string) url.URL {
 	u, err := url.Parse(s)
 	require.NoError(t, err)
 	return *u
+}
+
+func Test_effectiveProxies(t *testing.T) {
+	tests := []struct {
+		name     string
+		s        settings
+		protocol string
+		want     []Proxy
+	}{
+		{
+			name: "single active proxy",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "true",
+						Protocol: "http",
+						Host:     "proxy1",
+						Port:     "8080",
+					},
+				},
+			},
+			protocol: "http",
+			want: []Proxy{
+				{
+					ID:       "p1",
+					Active:   "true",
+					Protocol: "http",
+					Host:     "proxy1",
+					Port:     "8080",
+				},
+			},
+		},
+		{
+			name: "inactive proxy ignored",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "false",
+						Protocol: "http",
+					},
+				},
+			},
+			protocol: "http",
+			want:     nil,
+		},
+		{
+			name: "proxy with empty active field (default true)",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "",
+						Protocol: "http",
+						Host:     "proxy1",
+					},
+				},
+			},
+			protocol: "http",
+			want: []Proxy{
+				{
+					ID:       "p1",
+					Active:   "",
+					Protocol: "http",
+					Host:     "proxy1",
+				},
+			},
+		},
+		{
+			name: "protocol mismatch",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "true",
+						Protocol: "https",
+					},
+				},
+			},
+			protocol: "http",
+			want:     nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.s.effectiveProxies(tt.protocol)
+			require.Equal(t, tt.want, got)
+		})
+	}
 }
