@@ -1,0 +1,21 @@
+- bucket: alinux 2
+  pairs:
+    - bucket: postgresql
+      pairs:
+        - key: CVE-2024-10979
+          value:
+            FixedVersion: "9.2.24-9.1.al7.2"
+- bucket: alinux 3
+  pairs:
+    - bucket: glib2
+      pairs:
+        - key: CVE-2025-13601
+          value:
+            FixedVersion: "2.68.4-18.0.1.al8.1"
+- bucket: alinux 4
+  pairs:
+    - bucket: python-urllib3
+      pairs:
+        - key: CVE-2026-21441
+          value:
+            FixedVersion: "1.26.19-4.alnx4"

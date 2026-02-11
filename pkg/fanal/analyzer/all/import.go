@@ -40,6 +40,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/swift/cocoapods"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/swift/swift"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/licensing"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/alpine"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/amazonlinux"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/debian"
