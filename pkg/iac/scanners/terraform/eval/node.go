@@ -57,16 +57,14 @@ func (n *AttributeReferencer) References() []*Ref {
 	return exprReferences(n.Attr.underlying.Expr)
 }
 
-type NodeRoot struct {
-	module ModuleAddr
-}
+type NodeRoot struct{}
 
 func (n *NodeRoot) ID() string {
 	return "<root>"
 }
 
 func (n *NodeRoot) Module() ModuleAddr {
-	return n.module
+	return ModuleAddr{}
 }
 
 var _ Executable = (*NodeRootVariable)(nil)

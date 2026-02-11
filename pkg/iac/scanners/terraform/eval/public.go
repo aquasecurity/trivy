@@ -44,7 +44,7 @@ func Eval(ctx context.Context, fsys fs.FS, root string, opts *EvalOpts) (*GraphE
 	}
 
 	g := NewGraph()
-	if err := g.Populate(rootMod); err != nil {
+	if err := g.Build(rootMod); err != nil {
 		return nil, err
 	}
 

@@ -111,7 +111,6 @@ func expandForEach(forEachVal cty.Value) (map[string]cty.Value, error) {
 		// TODO: tf allows only a map, or set of strings
 		switch {
 		case forEachVal.Type().IsSetType(), forEachVal.Type().IsListType(), forEachVal.Type().IsTupleType():
-			// TODO: convert val to string
 			key = val
 		case forEachVal.Type().IsObjectType(), forEachVal.Type().IsMapType():
 		default:

@@ -4,87 +4,91 @@ import (
 	"errors"
 	"fmt"
 	"iter"
-	"maps"
 	"strconv"
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type graph struct {
-	nodes        map[string]Node
-	dependents   map[string]map[string]struct{}
-	dependencies map[string]map[string]struct{}
+	nodes           map[string]Node
+	dependentNodes  map[string]set.Set[string]
+	dependencyNodes map[string]set.Set[string]
 
-	managedResources map[string]struct{}
+	managedResources set.Set[string]
 }
 
 func NewGraph() *graph {
 	return &graph{
 		nodes:            make(map[string]Node),
-		dependents:       make(map[string]map[string]struct{}),
-		dependencies:     make(map[string]map[string]struct{}),
-		managedResources: make(map[string]struct{}),
+		dependentNodes:   make(map[string]set.Set[string]),
+		dependencyNodes:  make(map[string]set.Set[string]),
+		managedResources: set.New[string](),
 	}
 }
 
-func (g *graph) Populate(rootModule *ModuleConfig) error {
-	if err := buildRealNodes(g, rootModule); err != nil {
+func (g *graph) Build(rootModule *ModuleConfig) error {
+	if err := g.buildRealNodes(rootModule); err != nil {
 		return err
 	}
 
 	for _, mod := range rootModule.Children {
-		if err := buildModuleNodes(g, mod, nil, nil); err != nil {
+		if err := g.buildModuleBoundaries(mod, nil, nil); err != nil {
 			return err
 		}
 	}
 
-	rootNode := &NodeRoot{rootModule.AbsAddr()}
+	var rootNode = &NodeRoot{}
+
 	for _, node := range g.nodes {
 		if node.Module().IsRoot() {
-			g.AddEdge(node, rootNode)
+			g.addEdge(node, rootNode)
 		}
 	}
-	g.AddNode(rootNode)
+	g.addNode(rootNode)
 
-	if err := buildEdges(g); err != nil {
+	if err := g.linkDependencies(); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (g *graph) AddNode(n Node) {
+func (g *graph) addNode(n Node) {
 	id := n.ID()
 	if _, exists := g.nodes[id]; exists {
 		panic(fmt.Sprintf("node %s already exists", id))
 	}
 	g.nodes[id] = n
+	g.dependencyNodes[id] = set.New[string]()
+	g.dependentNodes[id] = set.New[string]()
 }
 
-func (n *graph) Dependents(node Node) iter.Seq[string] {
-	return maps.Keys(n.dependents[node.ID()])
+func (n *graph) dependents(node Node) iter.Seq[string] {
+	return n.dependentNodes[node.ID()].Iter()
 }
 
-func (n *graph) Dependencies(node Node) iter.Seq[string] {
-	return maps.Keys(n.dependencies[node.ID()])
+func (n *graph) dependencies(node Node) iter.Seq[string] {
+	return n.dependencyNodes[node.ID()].Iter()
 }
 
-func (n *graph) AddDependent(src, target Node) {
-	if n.dependents[src.ID()] == nil {
-		n.dependents[src.ID()] = make(map[string]struct{})
+func (g *graph) addEdge(dependency, dependent Node) {
+	g.addDependent(dependency, dependent)
+	g.addDependency(dependent, dependency)
+}
+
+func (n *graph) addDependent(src, target Node) {
+	if n.dependentNodes[src.ID()] == nil {
+		n.dependentNodes[src.ID()] = set.New[string]()
 	}
-	n.dependents[src.ID()][target.ID()] = struct{}{}
+	n.dependentNodes[src.ID()].Append(target.ID())
 }
 
-func (n *graph) AddDependency(src, target Node) {
-	if n.dependencies[src.ID()] == nil {
-		n.dependencies[src.ID()] = make(map[string]struct{})
+func (n *graph) addDependency(src, target Node) {
+	if n.dependencyNodes[src.ID()] == nil {
+		n.dependencyNodes[src.ID()] = set.New[string]()
 	}
-	n.dependencies[src.ID()][target.ID()] = struct{}{}
-}
-func (g *graph) AddEdge(dependency, dependent Node) {
-	g.AddDependent(dependency, dependent)
-	g.AddDependency(dependent, dependency)
+	n.dependencyNodes[src.ID()].Append(target.ID())
 }
 
 func (g *graph) TopoSort() ([]Node, error) {
@@ -94,7 +98,7 @@ func (g *graph) TopoSort() ([]Node, error) {
 	}
 
 	for _, n := range g.nodes {
-		for dep := range g.Dependents(n) {
+		for dep := range g.dependents(n) {
 			inDegree[dep]++
 		}
 	}
@@ -112,7 +116,7 @@ func (g *graph) TopoSort() ([]Node, error) {
 		n := queue[len(queue)-1]
 		queue = queue[:len(queue)-1]
 		result = append(result, n)
-		for dep := range g.Dependents(n) {
+		for dep := range g.dependents(n) {
 			inDegree[dep]--
 			if inDegree[dep] == 0 {
 				queue = append(queue, g.nodes[dep])
@@ -126,14 +130,14 @@ func (g *graph) TopoSort() ([]Node, error) {
 	return result, nil
 }
 
-func buildRealNodes(g *graph, module *ModuleConfig) error {
+func (g *graph) buildRealNodes(module *ModuleConfig) error {
 	moduleAddr := module.AbsAddr()
 	for _, block := range module.Blocks {
 		switch blockType := block.underlying.Type; blockType {
 		case "locals":
 			for _, attr := range block.attrs {
 				nodeId := moduleAddr.BlockAddr(LocalAddr{Name: attr.name})
-				g.AddNode(&NodeLocal{
+				g.addNode(&NodeLocal{
 					BaseNode:            newBaseNode(nodeId, moduleAddr),
 					AttributeReferencer: &AttributeReferencer{Attr: attr},
 					Name:                attr.name,
@@ -142,7 +146,7 @@ func buildRealNodes(g *graph, module *ModuleConfig) error {
 		case "output":
 			name := block.underlying.Labels[0]
 			nodeId := moduleAddr.BlockAddr(OutputAddr{Name: name})
-			g.AddNode(&NodeOutput{
+			g.addNode(&NodeOutput{
 				BaseNode:            newBaseNode(nodeId, moduleAddr),
 				AttributeReferencer: &AttributeReferencer{Attr: block.attrs["value"]},
 				Name:                name,
@@ -151,14 +155,14 @@ func buildRealNodes(g *graph, module *ModuleConfig) error {
 			name := block.underlying.Labels[0]
 			nodeId := moduleAddr.BlockAddr(VariableAddr{Name: name})
 			if module.IsRoot() {
-				g.AddNode(&NodeRootVariable{
+				g.addNode(&NodeRootVariable{
 					BaseNode: newBaseNode(nodeId, moduleAddr),
 					Name:     name,
 					Default:  block.attrs["default"],
 					Type:     block.attrs["type"],
 				})
 			} else {
-				g.AddNode(&NodeVariable{
+				g.addNode(&NodeVariable{
 					BaseNode:            newBaseNode(nodeId, moduleAddr),
 					AttributeReferencer: &AttributeReferencer{Attr: module.Block.attrs[name]},
 					Name:                name,
@@ -171,7 +175,7 @@ func buildRealNodes(g *graph, module *ModuleConfig) error {
 			name := block.underlying.Labels[1]
 			addr := ResourceAddr{Mode: modeByBlockType(blockType), Type: typ, Name: name}
 			absAddr := module.AbsAddr().BlockAddr(addr)
-			g.AddNode(&ResourceNode{
+			g.addNode(&ResourceNode{
 				BaseNode: newBaseNode(absAddr, module.AbsAddr()),
 				Block:    block,
 				Type:     typ,
@@ -180,13 +184,13 @@ func buildRealNodes(g *graph, module *ModuleConfig) error {
 			})
 
 			if blockType == "resource" {
-				g.managedResources[typ] = struct{}{}
+				g.managedResources.Append(typ)
 			}
 		}
 	}
 
 	for _, childModule := range module.Children {
-		if err := buildRealNodes(g, childModule); err != nil {
+		if err := g.buildRealNodes(childModule); err != nil {
 			return err
 		}
 	}
@@ -194,7 +198,7 @@ func buildRealNodes(g *graph, module *ModuleConfig) error {
 	return nil
 }
 
-func buildModuleNodes(g *graph, module *ModuleConfig, parentCall, parentExit Node) error {
+func (g *graph) buildModuleBoundaries(module *ModuleConfig, parentCall, parentExit Node) error {
 	moduleAddr := module.AbsAddr()
 	moduleCallNode := &NodeModuleCall{
 		BaseNode: newBaseNode(moduleAddr, moduleAddr.Parent()),
@@ -208,30 +212,30 @@ func buildModuleNodes(g *graph, module *ModuleConfig, parentCall, parentExit Nod
 
 	for _, node := range g.nodes {
 		if node.Module().Equal(moduleAddr) {
-			g.AddEdge(moduleCallNode, node)
-			g.AddEdge(node, moduleExitNode)
+			g.addEdge(moduleCallNode, node)
+			g.addEdge(node, moduleExitNode)
 		}
 	}
 
-	g.AddNode(moduleCallNode)
-	g.AddNode(moduleExitNode)
-	g.AddEdge(moduleCallNode, moduleExitNode)
+	g.addNode(moduleCallNode)
+	g.addNode(moduleExitNode)
+	g.addEdge(moduleCallNode, moduleExitNode)
 	if parentCall != nil {
-		g.AddEdge(parentCall, moduleCallNode)
+		g.addEdge(parentCall, moduleCallNode)
 	}
 	if parentExit != nil {
-		g.AddEdge(moduleExitNode, parentExit)
+		g.addEdge(moduleExitNode, parentExit)
 	}
 
 	for _, childModule := range module.Children {
-		if err := buildModuleNodes(g, childModule, moduleCallNode, moduleExitNode); err != nil {
+		if err := g.buildModuleBoundaries(childModule, moduleCallNode, moduleExitNode); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func buildEdges(g *graph) error {
+func (g *graph) linkDependencies() error {
 	for _, node := range g.nodes {
 		referencer, ok := node.(Referencer)
 		if !ok {
@@ -244,10 +248,9 @@ func buildEdges(g *graph) error {
 			case ForEachAddr, CountAddr:
 				continue
 			case ResourceAddr:
-				if addr.Mode == ManagedMode {
-					if _, exists := g.managedResources[addr.Type]; !exists {
-						continue
-					}
+				// reference to a non-existent resource
+				if addr.Mode == ManagedMode && !g.managedResources.Contains(addr.Type) {
+					continue
 				}
 			}
 			var depNodeAddr Address
@@ -265,7 +268,7 @@ func buildEdges(g *graph) error {
 					log.String("node", ref.Addr.Key()), log.String("dependency", node.ID()))
 				continue
 			}
-			g.AddEdge(depNode, node)
+			g.addEdge(depNode, node)
 		}
 	}
 
@@ -276,7 +279,7 @@ func (g *graph) String() string {
 	var sb strings.Builder
 	sb.WriteString("digraph G {\n")
 	for _, node := range g.nodes {
-		for dep := range g.Dependents(node) {
+		for dep := range g.dependents(node) {
 			depNode := g.nodes[dep]
 			sb.WriteString("  ")
 			sb.WriteString(strconv.Quote(depNode.ID()))
