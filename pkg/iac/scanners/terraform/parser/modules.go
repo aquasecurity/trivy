@@ -21,7 +21,7 @@ func (p *Parser) FindRootModules(ctx context.Context, dirs []string) ([]string, 
 		return !strings.Contains(dir, ".terraform/modules/")
 	})
 	for _, dir := range dirs {
-		if err := p.ParseFS(ctx, dir); err != nil {
+		if err := p.parseFS(ctx, dir); err != nil {
 			return nil, err
 		}
 	}
