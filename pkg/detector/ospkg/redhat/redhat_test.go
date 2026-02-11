@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -19,7 +20,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
+	log.InitLogger(false, false, config.NeverColor)
 	os.Exit(m.Run())
 }
 
