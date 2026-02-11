@@ -143,7 +143,7 @@ this is a title
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer([]byte{})
-			renderer := table.NewSecretRenderer(buf, false, []dbTypes.Severity{
+			renderer := table.NewSecretRenderer(buf, false, true, []dbTypes.Severity{
 				dbTypes.SeverityHigh,
 				dbTypes.SeverityMedium,
 			})

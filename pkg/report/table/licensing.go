@@ -23,15 +23,17 @@ type pkgLicenseRenderer struct {
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
+	noColor     bool
 }
 
-func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
+func NewPkgLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *pkgLicenseRenderer {
 	return &pkgLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal),
+		tableWriter: newTableWriter(buf, isTerminal, noColor),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
+		noColor:     noColor,
 	}
 }
 
@@ -48,7 +50,7 @@ func (r *pkgLicenseRenderer) Render(result types.Result) {
 	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
 	target := result.Target + " (license)"
-	RenderTarget(r.w, target, r.isTerminal)
+	RenderTarget(r.w, target, r.isTerminal, r.noColor)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
@@ -105,15 +107,17 @@ type fileLicenseRenderer struct {
 	isTerminal  bool
 	severities  []dbTypes.Severity
 	once        *sync.Once
+	noColor     bool
 }
 
-func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal bool, severities []dbTypes.Severity) *fileLicenseRenderer {
+func NewFileLicenseRenderer(buf *bytes.Buffer, isTerminal, noColor bool, severities []dbTypes.Severity) *fileLicenseRenderer {
 	return &fileLicenseRenderer{
 		w:           buf,
-		tableWriter: newTableWriter(buf, isTerminal),
+		tableWriter: newTableWriter(buf, isTerminal, noColor),
 		isTerminal:  isTerminal,
 		severities:  severities,
 		once:        new(sync.Once),
+		noColor:     noColor,
 	}
 }
 
@@ -130,7 +134,7 @@ func (r *fileLicenseRenderer) Render(result types.Result) {
 	total, summaries := summarize(r.severities, r.countSeverities(result.Licenses))
 
 	target := result.Target + " (license)"
-	RenderTarget(r.w, target, r.isTerminal)
+	RenderTarget(r.w, target, r.isTerminal, r.noColor)
 	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	r.tableWriter.Render()
