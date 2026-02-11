@@ -221,9 +221,9 @@ func (p *Parser) parsePlaybooks(sources []fsutils.FileSource) (ResolvedTasks, er
 }
 
 func (p *Parser) loadPlaybook(f fsutils.FileSource) (*Playbook, error) {
-	var plays []*Play
-	if err := decodeYAMLFile(f, &plays); err != nil {
-		return nil, xerrors.Errorf("decode YAML file: %w", err)
+	plays, err := parsePlays(f)
+	if err != nil {
+		return nil, xerrors.Errorf("parse plays: %w", err)
 	}
 
 	p.logger.Debug("Loaded playbook",
@@ -462,12 +462,14 @@ func (p *Parser) loadRoleDependencies(r *Role) error {
 	// main.yml (or main.yaml/main) file without allowing custom filenames or overrides.
 	metaSrc := r.src.Join("meta", "main")
 
-	var roleMeta RoleMeta
-	if err := decodeYAMLFileWithExtension(metaSrc, &roleMeta, yamlExtensions); err != nil && !errors.Is(err, os.ErrNotExist) {
-		return xerrors.Errorf("load meta: %w", err)
+	roleMeta, err := parseRoleMeta(metaSrc, &r.metadata)
+	if err != nil {
+		return xerrors.Errorf("parse role meta: %w", err)
 	}
 
-	roleMeta.updateMetadata(metaSrc.FS, &r.metadata, metaSrc.Path)
+	if roleMeta == nil {
+		return nil
+	}
 
 	for _, dep := range roleMeta.dependencies() {
 		depRole, err := p.loadRole(&roleMeta.metadata, r.play, dep.name())
@@ -525,10 +527,7 @@ func (p *Parser) resolveRolePath(playbookDirSrc fsutils.FileSource, name string)
 
 // expandTask dispatches task expansion based on task type (block, include, role).
 func (p *Parser) expandTask(parentVars vars.Vars, t *Task) (ResolvedTasks, error) {
-
-	// TODO: pass parentVars ?
 	effectiveVars := vars.MergeVars(parentVars, t.Variables())
-
 	taskSource := t.metadata.Range().String()
 	switch {
 	case t.isBlock():
