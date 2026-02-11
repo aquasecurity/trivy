@@ -1,0 +1,10 @@
+- bucket: "seal pip::Seal Security Database"
+  pairs:
+    - bucket: seal-django
+      pairs:
+        - key: CVE-2024-12345
+          value:
+            PatchedVersions:
+              - 4.2.8+seal.2
+            VulnerableVersions:
+              - =4.2.8+seal.1
