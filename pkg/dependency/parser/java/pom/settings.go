@@ -4,7 +4,7 @@ import (
 	"encoding/xml"
 	"os"
 	"path/filepath"
-	"regexp"
+	"path"
 	"slices"
 	"strings"
 
@@ -90,11 +90,9 @@ func (p Proxy) isNonProxyHost(host string) bool {
 		if h == "" {
 			continue
 		}
-		// Maven wildcard support: * matches any characters
-		pattern := strings.ReplaceAll(h, ".", "\\.")
-		pattern = strings.ReplaceAll(pattern, "*", ".*")
-		pattern = "^" + pattern + "$"
-		if matched, _ := regexp.MatchString(pattern, host); matched {
+
+		matched, err := path.Match(h, host)
+		if err == nil && matched {
 			return true
 		}
 	}

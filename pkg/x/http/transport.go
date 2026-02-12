@@ -65,7 +65,10 @@ type Options struct {
 	CACerts   *x509.CertPool
 	UserAgent string
 	TraceHTTP bool
-	Proxy     func(*http.Request) (*url.URL, error)
+	// Proxy specifies a custom proxy function. In most cases, standard environment variables
+	// (HTTP_PROXY, HTTPS_PROXY, NO_PROXY) are sufficient. However, some cases require a custom
+	// proxy function, e.g., when using proxy settings from Maven's settings.xml.
+	Proxy func(*http.Request) (*url.URL, error)
 }
 
 // SetDefaultTransport sets the default transport configuration

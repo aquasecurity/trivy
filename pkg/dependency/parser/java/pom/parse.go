@@ -109,19 +109,25 @@ func NewParser(filePath string, opts ...option) *Parser {
 	if len(s.Proxies) > 0 {
 		proxyFunc = func(req *http.Request) (*url.URL, error) {
 			protocol := req.URL.Scheme
-			proxies := s.effectiveProxies(protocol, req.URL.Hostname())
-			if len(proxies) > 0 {
-				proxy := proxies[0]
-				proxyURL := &url.URL{
-					Scheme: proxy.Protocol,
-					Host:   net.JoinHostPort(proxy.Host, proxy.Port),
-				}
-				if proxy.Username != "" && proxy.Password != "" {
-					proxyURL.User = url.UserPassword(proxy.Username, proxy.Password)
-				}
-				return proxyURL, nil
+			proxies := s.effectiveProxies(protocol)
+			// No Maven proxy → fallback to environment
+			if len(proxies) == 0 {
+				return http.ProxyFromEnvironment(req)
 			}
-			return http.ProxyFromEnvironment(req)
+			proxy := proxies[0]
+			// nonProxyHosts
+			if proxy.isNonProxyHost(req.URL.Hostname()) {
+				return nil, nil
+			}
+
+			proxyURL := &url.URL{
+				Scheme: proxy.Protocol,
+				Host:   net.JoinHostPort(proxy.Host, proxy.Port),
+			}
+			if proxy.Username != "" && proxy.Password != "" {
+				proxyURL.User = url.UserPassword(proxy.Username, proxy.Password)
+			}
+			return proxyURL, nil
 		}
 	}
 
