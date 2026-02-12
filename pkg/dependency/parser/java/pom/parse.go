@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -104,18 +105,21 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
-	var proxyFunc func(*http.Request) (*url.URL, error)
+	proxyFunc := http.ProxyFromEnvironment
 	if len(s.Proxies) > 0 {
 		proxyFunc = func(req *http.Request) (*url.URL, error) {
 			protocol := req.URL.Scheme
-			proxies := s.effectiveProxies(protocol)
+			proxies := s.effectiveProxies(protocol, req.URL.Hostname())
 			if len(proxies) > 0 {
 				proxy := proxies[0]
-				proxyURLString := fmt.Sprintf("%s://%s:%s", proxy.Protocol, proxy.Host, proxy.Port)
-				if proxy.Username != "" && proxy.Password != "" {
-					proxyURLString = fmt.Sprintf("%s://%s:%s@%s:%s", proxy.Protocol, proxy.Username, proxy.Password, proxy.Host, proxy.Port)
+				proxyURL := &url.URL{
+					Scheme: proxy.Protocol,
+					Host:   net.JoinHostPort(proxy.Host, proxy.Port),
 				}
-				return url.Parse(proxyURLString)
+				if proxy.Username != "" && proxy.Password != "" {
+					proxyURL.User = url.UserPassword(proxy.Username, proxy.Password)
+				}
+				return proxyURL, nil
 			}
 			return http.ProxyFromEnvironment(req)
 		}
@@ -833,8 +837,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 		return "", nil
 	}
 
-	client := p.httpClient
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return "", err
@@ -872,8 +875,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 		return nil, nil
 	}
 
-	client := p.httpClient
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return nil, err

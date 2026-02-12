@@ -4,7 +4,9 @@ import (
 	"encoding/xml"
 	"os"
 	"path/filepath"
+	"regexp"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"github.com/samber/lo/mutable"
@@ -62,16 +64,41 @@ func (s settings) effectiveRepositories() []repository {
 	return resolvePomRepos(s.Servers, pomRepos)
 }
 
-func (s settings) effectiveProxies(protocol string) []Proxy {
+func (s settings) effectiveProxies(protocol, host string) []Proxy {
 	var proxies []Proxy
 	for _, proxy := range s.Proxies {
-		if proxy.Active == "true" || proxy.Active == "" {
-			if proxy.Protocol == protocol {
+		if proxy.isActive() {
+			if proxy.Protocol == protocol && !proxy.isNonProxyHost(host) {
 				proxies = append(proxies, proxy)
 			}
 		}
 	}
 	return proxies
+}
+
+func (p Proxy) isActive() bool {
+	return p.Active == "true" || p.Active == ""
+}
+
+func (p Proxy) isNonProxyHost(host string) bool {
+	if p.NonProxyHosts == "" {
+		return false
+	}
+	hosts := strings.Split(p.NonProxyHosts, "|")
+	for _, h := range hosts {
+		h = strings.TrimSpace(h)
+		if h == "" {
+			continue
+		}
+		// Maven wildcard support: * matches any characters
+		pattern := strings.ReplaceAll(h, ".", "\\.")
+		pattern = strings.ReplaceAll(pattern, "*", ".*")
+		pattern = "^" + pattern + "$"
+		if matched, _ := regexp.MatchString(pattern, host); matched {
+			return true
+		}
+	}
+	return false
 }
 
 func readSettings() settings {
