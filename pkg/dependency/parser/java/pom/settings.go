@@ -3,8 +3,8 @@ package pom
 import (
 	"encoding/xml"
 	"os"
-	"path/filepath"
 	"path"
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -64,13 +64,11 @@ func (s settings) effectiveRepositories() []repository {
 	return resolvePomRepos(s.Servers, pomRepos)
 }
 
-func (s settings) effectiveProxies(protocol, host string) []Proxy {
+func (s settings) effectiveProxies(protocol string) []Proxy {
 	var proxies []Proxy
 	for _, proxy := range s.Proxies {
-		if proxy.isActive() {
-			if proxy.Protocol == protocol && !proxy.isNonProxyHost(host) {
-				proxies = append(proxies, proxy)
-			}
+		if proxy.isActive() && proxy.Protocol == protocol {
+			proxies = append(proxies, proxy)
 		}
 	}
 	return proxies
@@ -84,6 +82,7 @@ func (p Proxy) isNonProxyHost(host string) bool {
 	if p.NonProxyHosts == "" {
 		return false
 	}
+
 	hosts := strings.Split(p.NonProxyHosts, "|")
 	for _, h := range hosts {
 		h = strings.TrimSpace(h)
