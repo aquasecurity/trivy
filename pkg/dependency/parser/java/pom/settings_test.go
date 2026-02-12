@@ -539,6 +539,7 @@ func Test_effectiveProxies(t *testing.T) {
 		name     string
 		s        settings
 		protocol string
+		host     string
 		want     []Proxy
 	}{
 		{
@@ -555,6 +556,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			host:     "example.com",
 			want: []Proxy{
 				{
 					ID:       "p1",
@@ -577,6 +579,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			host:     "example.com",
 			want:     nil,
 		},
 		{
@@ -592,6 +595,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			host:     "example.com",
 			want: []Proxy{
 				{
 					ID:       "p1",
@@ -613,13 +617,69 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			host:     "example.com",
 			want:     nil,
+		},
+		{
+			name: "nonProxyHosts match",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:            "p1",
+						Active:        "true",
+						Protocol:      "http",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+			},
+			protocol: "http",
+			host:     "localhost",
+			want:     nil,
+		},
+		{
+			name: "nonProxyHosts wildcard match",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:            "p1",
+						Active:        "true",
+						Protocol:      "http",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+			},
+			protocol: "http",
+			host:     "test.internal.com",
+			want:     nil,
+		},
+		{
+			name: "nonProxyHosts no match",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:            "p1",
+						Active:        "true",
+						Protocol:      "http",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+			},
+			protocol: "http",
+			host:     "example.com",
+			want: []Proxy{
+				{
+					ID:            "p1",
+					Active:        "true",
+					Protocol:      "http",
+					NonProxyHosts: "localhost|*.internal.com",
+				},
+			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.s.effectiveProxies(tt.protocol)
+			got := tt.s.effectiveProxies(tt.protocol, tt.host)
 			require.Equal(t, tt.want, got)
 		})
 	}
