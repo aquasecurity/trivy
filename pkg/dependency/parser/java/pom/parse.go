@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -78,6 +79,7 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
+	httpClient      *http.Client
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
@@ -103,6 +105,36 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
+	proxyFunc := http.ProxyFromEnvironment
+	if len(s.Proxies) > 0 {
+		proxyFunc = func(req *http.Request) (*url.URL, error) {
+			protocol := req.URL.Scheme
+			proxies := s.effectiveProxies(protocol)
+			// No Maven proxy → fallback to environment
+			if len(proxies) == 0 {
+				return http.ProxyFromEnvironment(req)
+			}
+			proxy := proxies[0]
+			// nonProxyHosts
+			if proxy.isNonProxyHost(req.URL.Hostname()) {
+				return nil, nil
+			}
+
+			proxyURL := &url.URL{
+				Scheme: proxy.Protocol,
+				Host:   net.JoinHostPort(proxy.Host, proxy.Port),
+			}
+			if proxy.Username != "" && proxy.Password != "" {
+				proxyURL.User = url.UserPassword(proxy.Username, proxy.Password)
+			}
+			return proxyURL, nil
+		}
+	}
+
+	tr := xhttp.NewTransport(xhttp.Options{
+		Proxy: proxyFunc,
+	})
+
 	return &Parser{
 		logger:          log.WithPrefix("pom"),
 		rootPath:        filepath.Clean(filePath),
@@ -111,6 +143,9 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
+		httpClient: &http.Client{
+			Transport: tr.Build(),
+		},
 	}
 }
 
@@ -808,8 +843,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 		return "", nil
 	}
 
-	client := xhttp.Client()
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return "", err
@@ -847,8 +881,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 		return nil, nil
 	}
 
-	client := xhttp.Client()
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return nil, err
