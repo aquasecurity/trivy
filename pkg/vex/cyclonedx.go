@@ -113,7 +113,13 @@ func (v *CycloneDX) EnrichWithRatings(vuln *types.DetectedVulnerability, product
 		return
 	}
 
-	// Check if this vulnerability affects the product
+	// If no affects are specified, apply the rating globally to all instances of this vulnerability
+	if len(stmt.Affects) == 0 {
+		vuln.OWASPRating = stmt.OWASPRating
+		return
+	}
+
+	// Check if this vulnerability affects the product via BOM-Link
 	for _, affect := range stmt.Affects {
 		link, err := cdx.ParseBOMLink(affect)
 		if err != nil {
