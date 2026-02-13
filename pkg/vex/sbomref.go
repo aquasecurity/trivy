@@ -107,3 +107,10 @@ func (set *SBOMReferenceSet) NotAffected(vuln types.DetectedVulnerability, produ
 	}
 	return types.ModifiedFinding{}, false
 }
+
+// EnrichWithRatings enriches the vulnerability with ratings from all VEX documents in the set
+func (set *SBOMReferenceSet) EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component) {
+	for _, vex := range set.VEXes {
+		vex.EnrichWithRatings(vuln, product)
+	}
+}

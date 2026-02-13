@@ -52,6 +52,12 @@ func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, product, subComponen
 	return v.vex.Matches(vuln.VulnerabilityID, product.PkgIdentifier.PURL.String(), []string{subComponentPURL})
 }
 
+// EnrichWithRatings is a no-op for OpenVEX as it doesn't currently support ratings
+func (v *OpenVEX) EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component) {
+	// OpenVEX spec doesn't include rating information yet
+	// This is a no-op to satisfy the VEX interface
+}
+
 func findingStatus(status openvex.Status) types.FindingStatus {
 	switch status {
 	case openvex.StatusNotAffected:

@@ -141,3 +141,41 @@ func (rs *RepositorySet) logVEXFound(pkgID, repoName, repoURL, filePath string) 
 		)
 	})
 }
+
+// EnrichWithRatings enriches the vulnerability with ratings from VEX documents in the repository
+func (rs *RepositorySet) EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component) {
+	if product == nil || product.PkgIdentifier.PURL == nil {
+		return
+	}
+	p := *product.PkgIdentifier.PURL
+
+	// Exclude version, qualifiers, and subpath from the package URL except for OCI
+	p.Version = ""
+	p.Qualifiers = nil
+	p.Subpath = ""
+
+	if p.Type == packageurl.TypeOCI {
+		for _, q := range product.PkgIdentifier.PURL.Qualifiers {
+			if q.Key == "repository_url" {
+				p.Qualifiers = packageurl.Qualifiers{q}
+				break
+			}
+		}
+	}
+
+	pkgID := p.String()
+	for _, index := range rs.indexes {
+		entry, ok := index.Packages[pkgID]
+		if !ok {
+			continue
+		}
+
+		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
+		doc, err := rs.OpenDocument(source, filepath.Dir(index.Path), entry)
+		if err != nil {
+			continue
+		}
+
+		doc.EnrichWithRatings(vuln, product)
+	}
+}
