@@ -104,6 +104,7 @@ $ trivy rootfs ./your_binary
 Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefore are detected by Trivy.
 In other cases, Go uses the `(devel)` version[^2].
 In this case, Trivy will attempt to parse any `-ldflags` as it's a common practice to pass versions this way.
+If the `-ldflags` are not available (e.g., due to the Go `-trimpath` flag), Trivy will attempt to extract the version from the ELF symbol table.
 If unsuccessful, the version will be empty[^3].
 
 ### Standard Library { #go-binary-stdlib }

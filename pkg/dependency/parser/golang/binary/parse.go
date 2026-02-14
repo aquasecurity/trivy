@@ -112,6 +112,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
 		version = p.chooseMainVersion(version, ldflagsVersion)
 
+		if version == "" {
+			version = p.elfSymbolVersion(r, info.Main.Path)
+		}
+
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
 			Name:         info.Main.Path,
