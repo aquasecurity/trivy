@@ -93,7 +93,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 	}
 }
 
-func (sw *SarifWriter) addSarifResult(data *sarifData) {
+func (sw *SarifWriter) addSarifResult(data *sarifData) *sarif.Result {
 	sw.addSarifRule(data)
 
 	result := sarif.NewRuleResult(data.vulnerabilityId).
@@ -102,6 +102,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
 	sw.run.AddResult(result)
+	return result
 }
 
 func getRuleIndex(id string, indexes map[string]int) int {
