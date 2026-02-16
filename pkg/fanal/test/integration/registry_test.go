@@ -10,7 +10,6 @@ import (
 	"testing"
 
 	dockercontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/docker/client"
 	"github.com/docker/go-connections/nat"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -222,12 +221,6 @@ func analyze(t *testing.T, ctx context.Context, imageRef string, opt types.Image
 	if err != nil {
 		return nil, err
 	}
-
-	cli, err := client.NewClientWithOpts(client.FromEnv)
-	if err != nil {
-		return nil, err
-	}
-	cli.NegotiateAPIVersion(ctx)
 
 	// Configure custom transport with insecure option
 	ctx = xhttp.WithTransport(ctx, xhttp.NewTransport(xhttp.Options{

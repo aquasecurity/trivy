@@ -10,9 +10,8 @@ import (
 	"os"
 	"os/exec"
 
-	"github.com/docker/docker/api/types/image"
-	apiregistry "github.com/docker/docker/api/types/registry"
-	"github.com/docker/docker/client"
+	apiregistry "github.com/moby/moby/api/types/registry"
+	"github.com/moby/moby/client"
 )
 
 type RegistryConfig struct {
@@ -50,7 +49,7 @@ type Docker struct {
 }
 
 func New() (Docker, error) {
-	cli, err := client.NewClientWithOpts(client.FromEnv, client.WithAPIVersionNegotiation())
+	cli, err := client.New(client.FromEnv)
 	if err != nil {
 		return Docker{}, err
 	}
@@ -72,7 +71,7 @@ func (d Docker) Logout(conf RegistryConfig) error {
 // ReplicateImage tags the given imagePath and pushes it to the given dest registry.
 func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, dest RegistryConfig) error {
 	// remove existing Image if any
-	_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
+	_, _ = d.cli.ImageRemove(ctx, imageRef, client.ImageRemoveOptions{
 		Force:         true,
 		PruneChildren: true,
 	})
@@ -88,22 +87,25 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 	if err != nil {
 		return err
 	}
-	if _, err := io.Copy(io.Discard, resp.Body); err != nil {
+	if _, err := io.Copy(io.Discard, resp); err != nil {
 		return err
 	}
-	defer resp.Body.Close()
+	defer resp.Close()
 
 	targetImageRef := fmt.Sprintf("%s/%s", dest.URL.Host, imageRef)
 
-	if err = d.cli.ImageTag(ctx, imageRef, targetImageRef); err != nil {
+	if _, err = d.cli.ImageTag(ctx, client.ImageTagOptions{
+		Source: imageRef,
+		Target: targetImageRef,
+	}); err != nil {
 		return err
 	}
 	defer func() {
-		_, _ = d.cli.ImageRemove(ctx, imageRef, image.RemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, imageRef, client.ImageRemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
-		_, _ = d.cli.ImageRemove(ctx, targetImageRef, image.RemoveOptions{
+		_, _ = d.cli.ImageRemove(ctx, targetImageRef, client.ImageRemoveOptions{
 			Force:         true,
 			PruneChildren: true,
 		})
@@ -114,7 +116,7 @@ func (d Docker) ReplicateImage(ctx context.Context, imageRef, imagePath string, 
 		return err
 	}
 
-	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, image.PushOptions{
+	pushOut, err := d.cli.ImagePush(ctx, targetImageRef, client.ImagePushOptions{
 		RegistryAuth: auth,
 	})
 	if err != nil {

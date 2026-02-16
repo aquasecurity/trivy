@@ -4,15 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 
-	api "github.com/docker/docker/api/types"
-	dimage "github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
+	dimage "github.com/moby/moby/api/types/image"
+	"github.com/moby/moby/client"
 	"golang.org/x/xerrors"
 
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -55,25 +53,25 @@ type errResponse struct {
 	Message string
 }
 
-func (p podmanClient) imageInspect(ctx context.Context, imageName string) (api.ImageInspect, error) {
+func (p podmanClient) imageInspect(ctx context.Context, imageName string) (dimage.InspectResponse, error) {
 	url := fmt.Sprintf(inspectURL, imageName)
 	resp, err := p.get(ctx, url)
 	if err != nil {
-		return api.ImageInspect{}, xerrors.Errorf("http error: %w", err)
+		return dimage.InspectResponse{}, xerrors.Errorf("http error: %w", err)
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
 		var res errResponse
 		if err = json.NewDecoder(resp.Body).Decode(&res); err != nil {
-			return api.ImageInspect{}, xerrors.Errorf("unknown status code from Podman: %d", resp.StatusCode)
+			return dimage.InspectResponse{}, xerrors.Errorf("unknown status code from Podman: %d", resp.StatusCode)
 		}
-		return api.ImageInspect{}, xerrors.New(res.Message)
+		return dimage.InspectResponse{}, xerrors.New(res.Message)
 	}
 
-	var inspect api.ImageInspect
+	var inspect dimage.InspectResponse
 	if err = json.NewDecoder(resp.Body).Decode(&inspect); err != nil {
-		return api.ImageInspect{}, xerrors.Errorf("unable to decode JSON: %w", err)
+		return dimage.InspectResponse{}, xerrors.Errorf("unable to decode JSON: %w", err)
 	}
 	return inspect, nil
 }
@@ -101,13 +99,16 @@ func (p podmanClient) imageHistoryInspect(ctx context.Context, imageName string)
 	return history, nil
 }
 
-func (p podmanClient) imageSave(ctx context.Context, imageNames []string, _ ...client.ImageSaveOption) (io.ReadCloser, error) {
+func (p podmanClient) imageSave(ctx context.Context, imageNames []string, _ ...client.ImageSaveOption) (client.ImageSaveResult, error) {
 	if len(imageNames) < 1 {
 		return nil, xerrors.Errorf("no specified image")
 	}
 	url := fmt.Sprintf(saveURL, imageNames[0])
 	resp, err := p.get(ctx, url)
 	if err != nil {
+		if resp != nil {
+			resp.Body.Close()
+		}
 		return nil, xerrors.Errorf("http error: %w", err)
 	}
 	return resp.Body, nil
