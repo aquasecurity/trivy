@@ -13,6 +13,20 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+const (
+	alpine39ArtifactID = "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b"
+	alpine39ImageID    = "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f"
+
+	centos7ArtifactID = "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387"
+	centos7ImageID    = "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740"
+
+	debianBusterArtifactID = "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837"
+	debianBusterImageID    = "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6"
+
+	ubuntu1804ArtifactID = "sha256:133f1c0f30523d26ea2686df45a950b80fb957f8da83c10c01b95df3acfeedc6"
+	ubuntu1804ImageID    = "sha256:50c3ea3e170e9e02f880dd630d46f6bafd0966066b7d5ff1424e4268412c5344"
+)
+
 // TestDockerEngine tests scanning images via Docker Engine API.
 //
 // Golden files are shared with TestTar.
@@ -44,8 +58,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			golden: goldenAlpine39,
 			override: overrideValues{
-				artifactID: "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b",
-				imageID:    "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f",
+				artifactID: alpine39ArtifactID,
+				imageID:    alpine39ImageID,
 			},
 		},
 		{
@@ -54,8 +68,8 @@ func TestDockerEngine(t *testing.T) {
 			input:        "testdata/fixtures/images/alpine-39.tar.gz",
 			golden:       goldenAlpine39,
 			override: overrideValues{
-				artifactID: "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b",
-				imageID:    "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f",
+				artifactID: alpine39ArtifactID,
+				imageID:    alpine39ImageID,
 			},
 		},
 		{
@@ -67,8 +81,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			golden: goldenAlpine39HighCritical,
 			override: overrideValues{
-				artifactID: "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b",
-				imageID:    "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f",
+				artifactID: alpine39ArtifactID,
+				imageID:    alpine39ImageID,
 			},
 		},
 		{
@@ -80,8 +94,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/alpine-39.tar.gz",
 			golden: goldenAlpine39IgnoreCVEIDs,
 			override: overrideValues{
-				artifactID: "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b",
-				imageID:    "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f",
+				artifactID: alpine39ArtifactID,
+				imageID:    alpine39ImageID,
 			},
 		},
 		{
@@ -143,8 +157,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/centos-7.tar.gz",
 			golden: goldenCentOS7,
 			override: overrideValues{
-				artifactID: "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387",
-				imageID:    "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740",
+				artifactID: centos7ArtifactID,
+				imageID:    centos7ImageID,
 			},
 		},
 		{
@@ -153,8 +167,8 @@ func TestDockerEngine(t *testing.T) {
 			input:         "testdata/fixtures/images/centos-7.tar.gz",
 			golden:        goldenCentOS7IgnoreUnfixed,
 			override: overrideValues{
-				artifactID: "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387",
-				imageID:    "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740",
+				artifactID: centos7ArtifactID,
+				imageID:    centos7ImageID,
 			},
 		},
 		{
@@ -163,8 +177,8 @@ func TestDockerEngine(t *testing.T) {
 			input:        "testdata/fixtures/images/centos-7.tar.gz",
 			golden:       goldenCentOS7IgnoreUnfixed,
 			override: overrideValues{
-				artifactID: "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387",
-				imageID:    "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740",
+				artifactID: centos7ArtifactID,
+				imageID:    centos7ImageID,
 			},
 		},
 		{
@@ -174,8 +188,8 @@ func TestDockerEngine(t *testing.T) {
 			input:         "testdata/fixtures/images/centos-7.tar.gz",
 			golden:        goldenCentOS7Medium,
 			override: overrideValues{
-				artifactID: "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387",
-				imageID:    "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740",
+				artifactID: centos7ArtifactID,
+				imageID:    centos7ImageID,
 			},
 		},
 		{
@@ -192,8 +206,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/debian-buster.tar.gz",
 			golden: goldenDebianBuster,
 			override: overrideValues{
-				artifactID: "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837",
-				imageID:    "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6",
+				artifactID: debianBusterArtifactID,
+				imageID:    debianBusterImageID,
 			},
 		},
 		{
@@ -202,8 +216,8 @@ func TestDockerEngine(t *testing.T) {
 			input:         "testdata/fixtures/images/debian-buster.tar.gz",
 			golden:        goldenDebianBusterIgnoreUnfixed,
 			override: overrideValues{
-				artifactID: "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837",
-				imageID:    "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6",
+				artifactID: debianBusterArtifactID,
+				imageID:    debianBusterImageID,
 			},
 		},
 		{
@@ -212,8 +226,8 @@ func TestDockerEngine(t *testing.T) {
 			input:        "testdata/fixtures/images/debian-buster.tar.gz",
 			golden:       goldenDebianBusterIgnoreUnfixed,
 			override: overrideValues{
-				artifactID: "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837",
-				imageID:    "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6",
+				artifactID: debianBusterArtifactID,
+				imageID:    debianBusterImageID,
 			},
 		},
 		{
@@ -257,8 +271,8 @@ func TestDockerEngine(t *testing.T) {
 			input:  "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			golden: goldenUbuntu1804,
 			override: overrideValues{
-				artifactID: "sha256:133f1c0f30523d26ea2686df45a950b80fb957f8da83c10c01b95df3acfeedc6",
-				imageID:    "sha256:50c3ea3e170e9e02f880dd630d46f6bafd0966066b7d5ff1424e4268412c5344",
+				artifactID: ubuntu1804ArtifactID,
+				imageID:    ubuntu1804ImageID,
 			},
 		},
 		{
@@ -267,8 +281,8 @@ func TestDockerEngine(t *testing.T) {
 			input:         "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			golden:        goldenUbuntu1804IgnoreUnfixed,
 			override: overrideValues{
-				artifactID: "sha256:133f1c0f30523d26ea2686df45a950b80fb957f8da83c10c01b95df3acfeedc6",
-				imageID:    "sha256:50c3ea3e170e9e02f880dd630d46f6bafd0966066b7d5ff1424e4268412c5344",
+				artifactID: ubuntu1804ArtifactID,
+				imageID:    ubuntu1804ImageID,
 			},
 		},
 		{
