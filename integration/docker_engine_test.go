@@ -13,18 +13,31 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	alpine39ArtifactID = "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b"
-	alpine39ImageID    = "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f"
+type overrideValues struct {
+	artifactID string
+	imageID    string
+}
 
-	centos7ArtifactID = "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387"
-	centos7ImageID    = "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740"
+var (
+	alpineIDs = overrideValues{
+		artifactID: "sha256:243ee36277d8f2a79a980373843fe7834a484a024cd7e647d6db3d0434335e6b",
+		imageID:    "sha256:e1b6a1e6b446c39fa12f218e3050e59b47a870de1b1afca840dce65e913b196f",
+	}
 
-	debianBusterArtifactID = "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837"
-	debianBusterImageID    = "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6"
+	centOS7IDs = overrideValues{
+		artifactID: "sha256:14bd400fe6aba45977110fadb29ab402fed2356ae68d071ed8e6ffe95ec4e387",
+		imageID:    "sha256:c51c4bac51fc7a3d6b6035336eb6a3cc9d57113dd1c10b2109e14dfc3a509740",
+	}
 
-	ubuntu1804ArtifactID = "sha256:133f1c0f30523d26ea2686df45a950b80fb957f8da83c10c01b95df3acfeedc6"
-	ubuntu1804ImageID    = "sha256:50c3ea3e170e9e02f880dd630d46f6bafd0966066b7d5ff1424e4268412c5344"
+	debianBusterIDs = overrideValues{
+		artifactID: "sha256:542c2a0b2641139673b479e67ae5bd3e6c62559e3fc882dcf2679b6b0ffb9837",
+		imageID:    "sha256:c46a5c17bdd6698cc02e4dd15d033898840e1e0f8016dcc86bb1f5d3239a9cb6",
+	}
+
+	ubuntu1804IDs = overrideValues{
+		artifactID: "sha256:133f1c0f30523d26ea2686df45a950b80fb957f8da83c10c01b95df3acfeedc6",
+		imageID:    "sha256:50c3ea3e170e9e02f880dd630d46f6bafd0966066b7d5ff1424e4268412c5344",
+	}
 )
 
 // TestDockerEngine tests scanning images via Docker Engine API.
@@ -33,11 +46,6 @@ const (
 func TestDockerEngine(t *testing.T) {
 	if *update {
 		t.Skipf("Skipping TestDockerEngine when -update flag is set. Golden files should be updated via TestTar.")
-	}
-
-	type overrideValues struct {
-		artifactID string
-		imageID    string
 	}
 
 	tests := []struct {
@@ -54,23 +62,17 @@ func TestDockerEngine(t *testing.T) {
 		wantErr       string
 	}{
 		{
-			name:   "alpine:3.9",
-			input:  "testdata/fixtures/images/alpine-39.tar.gz",
-			golden: goldenAlpine39,
-			override: overrideValues{
-				artifactID: alpine39ArtifactID,
-				imageID:    alpine39ImageID,
-			},
+			name:     "alpine:3.9",
+			input:    "testdata/fixtures/images/alpine-39.tar.gz",
+			golden:   goldenAlpine39,
+			override: alpineIDs,
 		},
 		{
 			name:         "alpine:3.9, with max image size",
 			maxImageSize: "100mb",
 			input:        "testdata/fixtures/images/alpine-39.tar.gz",
 			golden:       goldenAlpine39,
-			override: overrideValues{
-				artifactID: alpine39ArtifactID,
-				imageID:    alpine39ImageID,
-			},
+			override:     alpineIDs,
 		},
 		{
 			name: "alpine:3.9, with high and critical severity",
@@ -78,12 +80,9 @@ func TestDockerEngine(t *testing.T) {
 				"HIGH",
 				"CRITICAL",
 			},
-			input:  "testdata/fixtures/images/alpine-39.tar.gz",
-			golden: goldenAlpine39HighCritical,
-			override: overrideValues{
-				artifactID: alpine39ArtifactID,
-				imageID:    alpine39ImageID,
-			},
+			input:    "testdata/fixtures/images/alpine-39.tar.gz",
+			golden:   goldenAlpine39HighCritical,
+			override: alpineIDs,
 		},
 		{
 			name: "alpine:3.9, with .trivyignore",
@@ -91,12 +90,9 @@ func TestDockerEngine(t *testing.T) {
 				"CVE-2019-1549",
 				"CVE-2019-14697",
 			},
-			input:  "testdata/fixtures/images/alpine-39.tar.gz",
-			golden: goldenAlpine39IgnoreCVEIDs,
-			override: overrideValues{
-				artifactID: alpine39ArtifactID,
-				imageID:    alpine39ImageID,
-			},
+			input:    "testdata/fixtures/images/alpine-39.tar.gz",
+			golden:   goldenAlpine39IgnoreCVEIDs,
+			override: alpineIDs,
 		},
 		{
 			name:   "alpine:3.10",
@@ -153,33 +149,24 @@ func TestDockerEngine(t *testing.T) {
 			},
 		},
 		{
-			name:   "centos 7",
-			input:  "testdata/fixtures/images/centos-7.tar.gz",
-			golden: goldenCentOS7,
-			override: overrideValues{
-				artifactID: centos7ArtifactID,
-				imageID:    centos7ImageID,
-			},
+			name:     "centos 7",
+			input:    "testdata/fixtures/images/centos-7.tar.gz",
+			golden:   goldenCentOS7,
+			override: centOS7IDs,
 		},
 		{
 			name:          "centos 7, with --ignore-unfixed option",
 			ignoreUnfixed: true,
 			input:         "testdata/fixtures/images/centos-7.tar.gz",
 			golden:        goldenCentOS7IgnoreUnfixed,
-			override: overrideValues{
-				artifactID: centos7ArtifactID,
-				imageID:    centos7ImageID,
-			},
+			override:      centOS7IDs,
 		},
 		{
 			name:         "centos 7, with --ignore-status option",
 			ignoreStatus: []string{"will_not_fix"},
 			input:        "testdata/fixtures/images/centos-7.tar.gz",
 			golden:       goldenCentOS7IgnoreUnfixed,
-			override: overrideValues{
-				artifactID: centos7ArtifactID,
-				imageID:    centos7ImageID,
-			},
+			override:     centOS7IDs,
 		},
 		{
 			name:          "centos 7, with --ignore-unfixed option, with medium severity",
@@ -187,10 +174,7 @@ func TestDockerEngine(t *testing.T) {
 			severity:      []string{"MEDIUM"},
 			input:         "testdata/fixtures/images/centos-7.tar.gz",
 			golden:        goldenCentOS7Medium,
-			override: overrideValues{
-				artifactID: centos7ArtifactID,
-				imageID:    centos7ImageID,
-			},
+			override:      centOS7IDs,
 		},
 		{
 			name:   "registry.redhat.io/ubi7",
@@ -202,33 +186,24 @@ func TestDockerEngine(t *testing.T) {
 			},
 		},
 		{
-			name:   "debian buster/10",
-			input:  "testdata/fixtures/images/debian-buster.tar.gz",
-			golden: goldenDebianBuster,
-			override: overrideValues{
-				artifactID: debianBusterArtifactID,
-				imageID:    debianBusterImageID,
-			},
+			name:     "debian buster/10",
+			input:    "testdata/fixtures/images/debian-buster.tar.gz",
+			golden:   goldenDebianBuster,
+			override: debianBusterIDs,
 		},
 		{
 			name:          "debian buster/10, with --ignore-unfixed option",
 			ignoreUnfixed: true,
 			input:         "testdata/fixtures/images/debian-buster.tar.gz",
 			golden:        goldenDebianBusterIgnoreUnfixed,
-			override: overrideValues{
-				artifactID: debianBusterArtifactID,
-				imageID:    debianBusterImageID,
-			},
+			override:      debianBusterIDs,
 		},
 		{
 			name:         "debian buster/10, with --ignore-status option",
 			ignoreStatus: []string{"affected"},
 			input:        "testdata/fixtures/images/debian-buster.tar.gz",
 			golden:       goldenDebianBusterIgnoreUnfixed,
-			override: overrideValues{
-				artifactID: debianBusterArtifactID,
-				imageID:    debianBusterImageID,
-			},
+			override:     debianBusterIDs,
 		},
 		{
 			name:   "debian stretch/9",
@@ -267,23 +242,17 @@ func TestDockerEngine(t *testing.T) {
 			},
 		},
 		{
-			name:   "ubuntu 18.04",
-			input:  "testdata/fixtures/images/ubuntu-1804.tar.gz",
-			golden: goldenUbuntu1804,
-			override: overrideValues{
-				artifactID: ubuntu1804ArtifactID,
-				imageID:    ubuntu1804ImageID,
-			},
+			name:     "ubuntu 18.04",
+			input:    "testdata/fixtures/images/ubuntu-1804.tar.gz",
+			golden:   goldenUbuntu1804,
+			override: ubuntu1804IDs,
 		},
 		{
 			name:          "ubuntu 18.04, with --ignore-unfixed option",
 			ignoreUnfixed: true,
 			input:         "testdata/fixtures/images/ubuntu-1804.tar.gz",
 			golden:        goldenUbuntu1804IgnoreUnfixed,
-			override: overrideValues{
-				artifactID: ubuntu1804ArtifactID,
-				imageID:    ubuntu1804ImageID,
-			},
+			override:      ubuntu1804IDs,
 		},
 		{
 			name:   "opensuse leap 15.1",
