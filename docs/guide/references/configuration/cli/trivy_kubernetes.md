@@ -155,7 +155,6 @@ trivy kubernetes [flags] [CONTEXT]
                                           Allowed values:
                                             - nvd
                                             - redhat
-                                            - redhat-oval
                                             - debian
                                             - ubuntu
                                             - alpine
