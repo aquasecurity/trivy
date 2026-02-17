@@ -132,7 +132,8 @@ jobs:
           # This allows triggering workflows in other repositories
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
+          version="${{ github.ref_name }}"
           gh workflow run bump-trivy.yaml \
             --repo ${{ github.repository_owner }}/trivy-action \
             --ref master \
-            --field trivy-version=${GITHUB_REF_NAME#v}
+            --field trivy-version=${version#v}
