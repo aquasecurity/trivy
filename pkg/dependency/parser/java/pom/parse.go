@@ -105,20 +105,16 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
-	proxyFunc := http.ProxyFromEnvironment
+	httpOpts := xhttp.Options{}
 	if len(s.Proxies) > 0 {
-		proxyFunc = func(req *http.Request) (*url.URL, error) {
+		httpOpts.Proxy = func(req *http.Request) (*url.URL, error) {
 			protocol := req.URL.Scheme
-			proxies := s.effectiveProxies(protocol)
-			// No Maven proxy → fallback to environment
+			proxies := s.effectiveProxies(protocol, req.URL.Hostname())
+			// No Maven proxy -> fallback to environment
 			if len(proxies) == 0 {
 				return http.ProxyFromEnvironment(req)
 			}
 			proxy := proxies[0]
-			// nonProxyHosts
-			if proxy.isNonProxyHost(req.URL.Hostname()) {
-				return nil, nil
-			}
 
 			proxyURL := &url.URL{
 				Scheme: proxy.Protocol,
@@ -131,9 +127,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		}
 	}
 
-	tr := xhttp.NewTransport(xhttp.Options{
-		Proxy: proxyFunc,
-	})
+	tr := xhttp.NewTransport(httpOpts)
 
 	return &Parser{
 		logger:          log.WithPrefix("pom"),

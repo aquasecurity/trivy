@@ -539,6 +539,7 @@ func Test_effectiveProxies(t *testing.T) {
 		name     string
 		s        settings
 		protocol string
+		hostname string
 		want     []Proxy
 	}{
 		{
@@ -555,6 +556,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			hostname: "example.com",
 			want: []Proxy{
 				{
 					ID:       "p1",
@@ -577,6 +579,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			hostname: "example.com",
 			want:     nil,
 		},
 		{
@@ -592,6 +595,7 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			hostname: "example.com",
 			want: []Proxy{
 				{
 					ID:       "p1",
@@ -613,13 +617,32 @@ func Test_effectiveProxies(t *testing.T) {
 				},
 			},
 			protocol: "http",
+			hostname: "example.com",
+			want:     nil,
+		},
+		{
+			name: "non proxy host is skipped",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:            "p1",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "proxy1",
+						Port:          "8080",
+						NonProxyHosts: "localhost|*.example.com",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "test.example.com",
 			want:     nil,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := tt.s.effectiveProxies(tt.protocol)
+			got := tt.s.effectiveProxies(tt.protocol, tt.hostname)
 			require.Equal(t, tt.want, got)
 		})
 	}

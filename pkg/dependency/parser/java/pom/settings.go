@@ -64,12 +64,16 @@ func (s settings) effectiveRepositories() []repository {
 	return resolvePomRepos(s.Servers, pomRepos)
 }
 
-func (s settings) effectiveProxies(protocol string) []Proxy {
+func (s settings) effectiveProxies(protocol, hostname string) []Proxy {
 	var proxies []Proxy
 	for _, proxy := range s.Proxies {
-		if proxy.isActive() && proxy.Protocol == protocol {
-			proxies = append(proxies, proxy)
+		if !proxy.isActive() || proxy.Protocol != protocol {
+			continue
 		}
+		if hostname != "" && proxy.isNonProxyHost(hostname) {
+			continue
+		}
+		proxies = append(proxies, proxy)
 	}
 	return proxies
 }
