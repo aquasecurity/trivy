@@ -436,7 +436,6 @@ func TestDockerEngine(t *testing.T) {
 					// Docker API v0.29.0+ calculates the imageID digest based on the manifest, rather than the config file.
 					want.ArtifactID = tt.override.artifactID
 					want.Metadata.ImageID = tt.override.imageID
-					want.Metadata.ImageConfig.DockerVersion = "" // DockerVersion has been removed start from v0.29 version.
 				}),
 			})
 		})
