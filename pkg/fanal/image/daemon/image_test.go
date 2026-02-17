@@ -162,10 +162,9 @@ func Test_image_ConfigFile(t *testing.T) {
 			name:      "one diff_id",
 			imageName: "alpine:3.11",
 			want: &v1.ConfigFile{
-				Architecture:  "amd64",
-				OS:            "linux",
-				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
-				DockerVersion: "18.09.7",
+				Architecture: "amd64",
+				OS:           "linux",
+				Created:      v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				History: []v1.History{
 					{
 						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
