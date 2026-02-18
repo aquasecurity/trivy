@@ -13,19 +13,19 @@ import (
 
 func Test_pylockAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
-		name      string
-		inputFile string
-		want      *analyzer.AnalysisResult
-		wantErr   bool
+		name    string
+		dir     string
+		want    *analyzer.AnalysisResult
+		wantErr bool
 	}{
 		{
-			name:      "happy path",
-			inputFile: "testdata/happy/pylock.toml",
+			name: "happy path",
+			dir:  "testdata/happy",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
 						Type:     types.PyLock,
-						FilePath: "testdata/happy/pylock.toml",
+						FilePath: "pylock.toml",
 						Packages: types.Packages{
 							{
 								ID:      "certifi@2025.1.31",
@@ -64,22 +64,38 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "broken file",
-			inputFile: "testdata/broken/pylock.toml",
-			wantErr:   true,
+			name: "named lock file",
+			dir:  "testdata/named",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PyLock,
+						FilePath: "pylock.linux.toml",
+						Packages: types.Packages{
+							{
+								ID:      "certifi@2025.1.31",
+								Name:    "certifi",
+								Version: "2025.1.31",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "broken file",
+			dir:  "testdata/broken",
+			want: &analyzer.AnalysisResult{},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(tt.inputFile)
+			a, err := newPylockAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
-			defer f.Close()
 
-			a := pylockAnalyzer{}
-			got, err := a.Analyze(t.Context(), analyzer.AnalysisInput{
-				FilePath: tt.inputFile,
-				Content:  f,
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
+				FS: os.DirFS(tt.dir),
 			})
 
 			if tt.wantErr {
