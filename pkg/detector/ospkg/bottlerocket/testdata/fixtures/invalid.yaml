@@ -1,0 +1,6 @@
+- bucket: bottlerocket
+  pairs:
+    - bucket: kernel-6.1
+      pairs:
+        - key: CVE-2023-5345
+          value: "invalid"
