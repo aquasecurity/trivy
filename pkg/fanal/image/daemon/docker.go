@@ -4,8 +4,8 @@ import (
 	"context"
 	"os"
 
-	"github.com/docker/docker/client"
 	"github.com/google/go-containerregistry/pkg/name"
+	"github.com/moby/moby/client"
 	"golang.org/x/xerrors"
 
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -24,12 +24,11 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 
 	opts := []client.Opt{
 		client.FromEnv,
-		client.WithAPIVersionNegotiation(),
 	}
 	if resolvedHost != "" {
 		opts = append(opts, client.WithHost(resolvedHost))
 	}
-	c, err := client.NewClientWithOpts(opts...)
+	c, err := client.New(opts...)
 
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to initialize a docker client: %w", err)
@@ -71,7 +70,7 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 
 	return &image{
 		opener:  imageOpener(ctx, imageID, f, c.ImageSave),
-		inspect: inspect,
-		history: configHistory(history),
+		inspect: inspect.InspectResponse,
+		history: configHistory(history.Items),
 	}, cleanup, nil
 }
