@@ -6,7 +6,6 @@ import (
 	"regexp"
 	"slices"
 	"sort"
-	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
@@ -60,9 +59,6 @@ var (
 		"7": time.Date(2024, 6, 30, 23, 59, 59, 0, time.UTC),
 		"8": time.Date(2021, 12, 31, 23, 59, 59, 0, time.UTC),
 	}
-	excludedVendorsSuffix = []string{
-		".remi",
-	}
 )
 
 // Scanner implements the RedHat scanner
@@ -85,11 +81,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		if !isFromSupportedVendor(pkg) {
-			log.DebugContext(ctx, "Skipping the package with unsupported vendor", log.String("package", pkg.Name))
-			continue
-		}
-
 		detectedVulns, err := s.detect(osVer, pkg)
 		if err != nil {
 			return nil, xerrors.Errorf("redhat vulnerability detection error: %w", err)
@@ -179,15 +170,6 @@ func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType
 	}
 
 	return osver.Supported(ctx, redhatEOLDates, osFamily, osVer)
-}
-
-func isFromSupportedVendor(pkg ftypes.Package) bool {
-	for _, suffix := range excludedVendorsSuffix {
-		if strings.HasSuffix(pkg.Release, suffix) {
-			return false
-		}
-	}
-	return true
 }
 
 func addModularNamespace(name, label string) string {

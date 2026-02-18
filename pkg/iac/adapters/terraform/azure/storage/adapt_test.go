@@ -154,6 +154,71 @@ func Test_Adapt(t *testing.T) {
 			},
 		},
 		{
+			name: "references via storage_account_id",
+			terraform: `
+    		resource "azurerm_resource_group" "example" {
+        	  name = "example"
+    		}
+
+    		resource "azurerm_storage_account" "example" {
+        	  name                = "storageaccountname"
+       		  resource_group_name = azurerm_resource_group.example.name
+    		}
+
+    		resource "azurerm_storage_account_network_rules" "example" {
+        	  storage_account_id = azurerm_storage_account.example.id
+        	  default_action     = "Deny"
+    		}
+
+    		resource "azurerm_storage_container" "example" {
+    	      storage_account_id     = azurerm_storage_account.example.id
+       		  container_access_type = "blob"
+    		}
+
+    		resource "azurerm_storage_queue" "example" {
+			  storage_account_id = azurerm_storage_account.example.id
+        	  name               = "queue1"
+    		}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					{
+						EnforceHTTPS:        iacTypes.BoolTest(true),
+						MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+						PublicNetworkAccess: iacTypes.BoolTest(true),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+						NetworkRules: []storage.NetworkRule{
+							{
+								AllowByDefault: iacTypes.BoolTest(false),
+							},
+						},
+						Containers: []storage.Container{
+							{
+								PublicAccess: iacTypes.StringTest("blob"),
+							},
+						},
+						Queues: []storage.Queue{
+							{
+								Name: iacTypes.StringTest("queue1"),
+							},
+						},
+					},
+					// orphan account holder
+					{
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "orphans",
 			terraform: `
 			resource "azurerm_storage_account_network_rules" "test" {

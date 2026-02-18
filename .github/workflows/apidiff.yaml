@@ -62,11 +62,7 @@ jobs:
           ref: refs/pull/${{ github.event.pull_request.number }}/merge
 
       - name: Set up Go
-        uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
-        with:
-          go-version-file: go.mod
-          check-latest: true # Ensure we use the latest Go patch version
-          cache: false
+        uses: ./.github/actions/setup-go
 
       # Ensure the base commit exists locally for go-apidiff to compare against.
       # Even though we checkout the merge commit, go-apidiff needs the base ref to exist.

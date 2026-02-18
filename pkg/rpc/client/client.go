@@ -25,7 +25,6 @@ import (
 // ServiceOption holds options for RPC client
 type ServiceOption struct {
 	RemoteURL     string
-	Insecure      bool
 	CustomHeaders http.Header
 	PathPrefix    string
 }

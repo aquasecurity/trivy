@@ -1,6 +1,6 @@
 # Python
 
-Trivy supports several Python package managers: `pip`, `Pipenv`, `Poetry`, `uv` and `pylock`.
+Trivy supports the following Python package managers: `pip`, `Pipenv`, `Poetry`, `uv` and `pylock`.
 The following scanners are supported for package managers.
 
 | Package manager | SBOM | Vulnerability | License |
@@ -11,7 +11,7 @@ The following scanners are supported for package managers.
 | uv              |  ✓   |       ✓       |    -    |
 | pylock          |  ✓   |       ✓       |    -    |
 
-In addition, Trivy supports three formats of Python packages: `egg`, `wheel` and `conda`.
+In addition, Trivy supports these formats of Python packages: `egg`, `wheel` and `conda`.
 The following scanners are supported for Python packages.
 
 | Packaging | SBOM | Vulnerability | License |
