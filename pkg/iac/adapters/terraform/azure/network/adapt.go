@@ -187,6 +187,10 @@ func resolveNetworkInterfaceSecurityGroups(resource *terraform.Block, modules te
 		addSecurityGroup(association.GetAttribute("network_security_group_id"), association)
 	}
 
+	if len(securityGroups) == 0 {
+		return nil
+	}
+
 	return securityGroups
 }
 
