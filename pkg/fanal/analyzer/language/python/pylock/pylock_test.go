@@ -28,19 +28,22 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pylock.toml",
 						Packages: types.Packages{
 							{
-								ID:      "certifi@2025.1.31",
-								Name:    "certifi",
-								Version: "2025.1.31",
+								ID:           "certifi@2025.1.31",
+								Name:         "certifi",
+								Version:      "2025.1.31",
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:      "charset-normalizer@3.4.1",
-								Name:    "charset-normalizer",
-								Version: "3.4.1",
+								ID:           "charset-normalizer@3.4.1",
+								Name:         "charset-normalizer",
+								Version:      "3.4.1",
+								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:      "idna@3.10",
-								Name:    "idna",
-								Version: "3.10",
+								ID:           "idna@3.10",
+								Name:         "idna",
+								Version:      "3.10",
+								Relationship: types.RelationshipIndirect,
 							},
 							{
 								ID:      "requests@2.32.3",
@@ -52,11 +55,13 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 									"idna@3.10",
 									"urllib3@2.3.0",
 								},
+								Relationship: types.RelationshipDirect,
 							},
 							{
-								ID:      "urllib3@2.3.0",
-								Name:    "urllib3",
-								Version: "2.3.0",
+								ID:           "urllib3@2.3.0",
+								Name:         "urllib3",
+								Version:      "2.3.0",
+								Relationship: types.RelationshipIndirect,
 							},
 						},
 					},
@@ -149,6 +154,11 @@ func Test_pylockAnalyzer_Required(t *testing.T) {
 			name:     "similar but not pylock",
 			filePath: "notpylock.toml",
 			want:     false,
+		},
+		{
+			name:     "pyproject.toml",
+			filePath: "pyproject.toml",
+			want:     true,
 		},
 	}
 	for _, tt := range tests {
