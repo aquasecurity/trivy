@@ -56,14 +56,7 @@ func (p *Parser) elfSymbolVersion(r io.ReaderAt, moduleName string) string {
 			continue
 		}
 
-		switch {
-		case strings.HasPrefix(key, moduleName+"/cmd/"):
-			foundVersions[0] = append(foundVersions[0], val)
-		case defaultVersionPrefixes.Contains(versionPrefix(key)):
-			foundVersions[1] = append(foundVersions[1], val)
-		default:
-			foundVersions[2] = append(foundVersions[2], val)
-		}
+		classifyVersion(foundVersions, key, moduleName, val)
 	}
 
 	return p.chooseVersion(moduleName, foundVersions)
