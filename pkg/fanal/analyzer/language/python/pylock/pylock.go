@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"golang.org/x/xerrors"
 
@@ -30,7 +31,9 @@ func (a pylockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInpu
 }
 
 func (a pylockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return filepath.Base(filePath) == types.PyLockFile
+	// Match pylock.toml or pylock.<identifier>.toml (PEP 751)
+	base := filepath.Base(filePath)
+	return strings.HasPrefix(base, "pylock.") && strings.HasSuffix(base, ".toml")
 }
 
 func (a pylockAnalyzer) Type() analyzer.Type {

@@ -110,8 +110,28 @@ func Test_pylockAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "named lock file",
+			filePath: "pylock.linux.toml",
+			want:     true,
+		},
+		{
+			name:     "named lock file with nested path",
+			filePath: "some/dir/pylock.prod.toml",
+			want:     true,
+		},
+		{
+			name:     "named lock file with dots in identifier",
+			filePath: "pylock.linux.arm64.toml",
+			want:     true,
+		},
+		{
 			name:     "wrong file",
 			filePath: "requirements.txt",
+			want:     false,
+		},
+		{
+			name:     "similar but not pylock",
+			filePath: "notpylock.toml",
 			want:     false,
 		},
 	}
