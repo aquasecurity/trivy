@@ -2,8 +2,8 @@
 None, Trivy uses Google Cloud SDK. You don't need to install `gcloud` command.
 
 # Privileges
-Credential file must have the `roles/storage.objectViewer` permissions.
-More information can be found in [Google's documentation](https://cloud.google.com/container-registry/docs/access-control)
+Credential file must have the `roles/artifactregistry.reader` permissions.
+More information can be found in [Google's documentation](https://cloud.google.com/artifact-registry/docs/access-control)
 
 ## JSON File Format
 The JSON file specified should have the following format provided by google's service account mechanisms:
@@ -36,5 +36,5 @@ You can test credentials in the following manner (assuming they are in `/tmp` on
 ```bash
 docker run -it --rm -v /tmp:/tmp\
   -e GOOGLE_APPLICATION_CREDENTIALS=/tmp/service_account.json\
-  aquasec/trivy image gcr.io/your_special_project/your_special_image:your_special_tag
+  aquasec/trivy image LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/IMAGE:TAG
 ```
