@@ -36,7 +36,7 @@ jobs:
           release-please release-pr --repo-url=${{ github.server_url }}/${{ github.repository }} \
             --token=${{ secrets.ORG_REPO_TOKEN }} \
             --release-as=${{ github.event.inputs.version }} \
-            --target-branch=${{ github.ref_name }}
+            --target-branch="$GITHUB_REF_NAME"
 
   release-tag:
     runs-on: ubuntu-latest
