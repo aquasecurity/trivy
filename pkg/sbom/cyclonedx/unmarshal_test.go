@@ -223,12 +223,14 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 				},
 				Applications: []ftypes.Application{
 					{
-						Type: ftypes.GoBinary,
+						Type:     ftypes.GoBinary,
+						FilePath: "docker",
 						Packages: ftypes.Packages{
 							{
-								ID:      "docker@v24.0.4",
-								Name:    "docker",
-								Version: "24.0.4",
+								ID:           "docker@v24.0.4",
+								Name:         "docker",
+								Version:      "24.0.4",
+								Relationship: ftypes.RelationshipRoot,
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeGolang,
@@ -244,71 +246,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						Type: ftypes.K8sUpstream,
 						Packages: ftypes.Packages{
 							{
-								ID:      "k8s.io/apiserver@1.27.4",
-								Name:    "k8s.io/apiserver",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/apiserver",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/controller-manager@1.27.4",
-								Name:    "k8s.io/controller-manager",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/controller-manager",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kube-proxy@1.27.4",
-								Name:    "k8s.io/kube-proxy",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kube-proxy",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kube-scheduler@1.27.4",
-								Name:    "k8s.io/kube-scheduler",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kube-scheduler",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
-								},
-							},
-							{
-								ID:      "k8s.io/kubelet@1.27.4",
-								Name:    "k8s.io/kubelet",
-								Version: "1.27.4",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:    purl.TypeK8s,
-										Name:    "k8s.io/kubelet",
-										Version: "1.27.4",
-									},
-									BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
-								},
-							},
-							{
 								ID:      "k8s.io/kubernetes@1.27.4",
 								Name:    "k8s.io/kubernetes",
 								Version: "1.27.4",
@@ -320,11 +257,105 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 									BOMRef: "pkg:k8s/k8s.io%2Fkubernetes@1.27.4",
 								},
-								DependsOn: []string{
-									"k8s.io/apiserver@1.27.4",
-									"k8s.io/controller-manager@1.27.4",
-									"k8s.io/kube-proxy@1.27.4",
-									"k8s.io/kube-scheduler@1.27.4",
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/apiserver",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/apiserver@1.27.4",
+								Name:         "k8s.io/apiserver",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/apiserver",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fapiserver@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/controller-manager",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/controller-manager@1.27.4",
+								Name:         "k8s.io/controller-manager",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/controller-manager",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fcontroller-manager@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kube-proxy",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kube-proxy@1.27.4",
+								Name:         "k8s.io/kube-proxy",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kube-proxy",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkube-proxy@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kube-scheduler",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kube-scheduler@1.27.4",
+								Name:         "k8s.io/kube-scheduler",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kube-scheduler",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkube-scheduler@1.27.4",
+								},
+							},
+						},
+					},
+					{
+						Type:     ftypes.K8sUpstream,
+						FilePath: "k8s.io/kubelet",
+						Packages: ftypes.Packages{
+							{
+								ID:           "k8s.io/kubelet@1.27.4",
+								Name:         "k8s.io/kubelet",
+								Version:      "1.27.4",
+								Relationship: ftypes.RelationshipRoot,
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    purl.TypeK8s,
+										Name:    "k8s.io/kubelet",
+										Version: "1.27.4",
+									},
+									BOMRef: "pkg:k8s/k8s.io%2Fkubelet@1.27.4",
 								},
 							},
 						},
@@ -703,24 +734,6 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 						FilePath: "foo/bar/test.elf",
 						Packages: ftypes.Packages{
 							{
-								ID:   "github.com/aquasecurity/test",
-								Name: "github.com/aquasecurity/test",
-								Identifier: ftypes.PkgIdentifier{
-									PURL: &packageurl.PackageURL{
-										Type:      packageurl.TypeGolang,
-										Namespace: "github.com/aquasecurity",
-										Name:      "test",
-									},
-									BOMRef: "pkg:golang/github.com/aquasecurity/test",
-								},
-								DependsOn: []string{
-									"github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
-									"github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
-									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
-									"stdlib@v1.15.2",
-								},
-							},
-							{
 								ID:      "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
 								Name:    "github.com/aquasecurity/go-pep440-version",
 								Version: "v0.0.0-20210121094942-22b2f8951d46",
@@ -746,6 +759,24 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Version:   "v0.0.0-20210121072130-637058cfe492",
 									},
 									BOMRef: "pkg:golang/github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+								},
+							},
+							{
+								ID:   "github.com/aquasecurity/test",
+								Name: "github.com/aquasecurity/test",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/aquasecurity",
+										Name:      "test",
+									},
+									BOMRef: "pkg:golang/github.com/aquasecurity/test",
+								},
+								DependsOn: []string{
+									"github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
+									"github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
+									"golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
+									"stdlib@v1.15.2",
 								},
 							},
 							{
