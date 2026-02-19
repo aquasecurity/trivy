@@ -162,7 +162,7 @@ nav:
                   - Overview: guide/advanced/private-registries/index.md
                   - Docker Hub: guide/advanced/private-registries/docker-hub.md
                   - AWS ECR (Elastic Container Registry): guide/advanced/private-registries/ecr.md
-                  - GCR (Google Container Registry): guide/advanced/private-registries/gcr.md
+                  - GAR (Google Artifact Registry): guide/advanced/private-registries/gar.md
                   - ACR (Azure Container Registry): guide/advanced/private-registries/acr.md
                   - Self-Hosted: guide/advanced/private-registries/self.md
           - Usage Telemetry: guide/advanced/telemetry.md
