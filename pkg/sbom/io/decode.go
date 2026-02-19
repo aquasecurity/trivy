@@ -211,6 +211,7 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	}
 
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
+	pkg.Identifier.BOMID = c.ID()
 	pkg.Licenses = c.Licenses
 
 	for _, f := range c.Files {
