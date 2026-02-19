@@ -145,7 +145,7 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-java-db-update               skip updating Java index database
       --skip-version-check                suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
-  -t, --template string                   output template
+  -t, --template string                   output template (file path must have .tpl extension)
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)
       --trace-rego                        enable more verbose trace output for custom queries
