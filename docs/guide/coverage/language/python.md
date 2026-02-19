@@ -29,7 +29,7 @@ The following table provides an outline of the features Trivy offers.
 | Pipenv          | Pipfile.lock     |            ✓            |     Include      |                  -                   |    ✓     |                Not needed                |
 | Poetry          | poetry.lock      |            ✓            |     [Exclude](#poetry)      |                  ✓                   |    -     |                Not needed                |
 | uv              | uv.lock          |            ✓            |     [Exclude](#uv)      |                  ✓                   |    -     |                Not needed                |
-| pylock          | pylock.toml      |            ✓            |     Include      |                  ✓                   |    -     |                Not needed                |
+| pylock          | pylock.toml[^2]  |            ✓            |     [Exclude](#pylock)      |                  ✓                   |    -     |                Not needed                |
 
 
 | Packaging | Dependency graph |
@@ -143,9 +143,15 @@ License detection is not supported for `uv`.
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
 ### pylock
-Trivy uses `pylock.toml` ([PEP 751](https://peps.python.org/pep-0751/)) to identify dependencies and find vulnerabilities.
+Trivy uses `pylock.toml`[^2] to identify dependencies and find vulnerabilities.
+
+To identify direct dependencies and mark dev dependencies, `pyproject.toml` needs to be present next to `pylock.toml`.
 
 License detection is not supported for `pylock`.
+
+By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
+
+[pep-751]: https://peps.python.org/pep-0751/
 
 ## Packaging
 Trivy parses the manifest files of installed packages in container image scanning and so on.
@@ -158,6 +164,7 @@ Trivy looks for `*.egg-info`, `*.egg-info/METADATA`, `*.egg-info/PKG-INFO`, `*.e
 Trivy looks for `.dist-info/METADATA` to identify Python packages.
 
 [^1]: Trivy checks `python`, `python3`, `python2` and `python.exe` file names.
+[^2]: Also `pylock.<identifier>.toml` per [PEP 751][pep-751].
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority

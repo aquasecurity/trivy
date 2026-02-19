@@ -81,10 +81,25 @@ func (a pylockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 	return a.matchLockFile(filePath) || fileName == types.PyProject
 }
 
+// matchLockFile checks if the filename complies with the PEP 751 pylock specification.
 func (a pylockAnalyzer) matchLockFile(filePath string) bool {
-	// Match pylock.toml or pylock.<identifier>.toml (PEP 751)
 	base := filepath.Base(filePath)
-	return strings.HasPrefix(base, "pylock.") && strings.HasSuffix(base, ".toml")
+
+	// Detect default lock file name.
+	if base == types.PyLockFile {
+		return true
+	}
+
+	// Check PEP 751 compliant lock file name (^pylock\.([^.]+)\.toml$)
+	identifier, ok := strings.CutPrefix(base, "pylock.")
+	if !ok {
+		return false
+	}
+	identifier, ok = strings.CutSuffix(identifier, ".toml")
+	if !ok {
+		return false
+	}
+	return identifier != "" && !strings.Contains(identifier, ".")
 }
 
 func (a pylockAnalyzer) Type() analyzer.Type {

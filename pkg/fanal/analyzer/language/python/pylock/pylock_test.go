@@ -177,9 +177,14 @@ func Test_pylockAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "named lock file with dots in identifier",
+			name:     "invalid - multiple dots in identifier",
 			filePath: "pylock.linux.arm64.toml",
-			want:     true,
+			want:     false,
+		},
+		{
+			name:     "invalid - empty identifier",
+			filePath: "pylock..toml",
+			want:     false,
 		},
 		{
 			name:     "wrong file",
