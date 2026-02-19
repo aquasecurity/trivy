@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pylock"
@@ -17,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -104,10 +106,12 @@ func (a pylockAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 	}
 
 	directDeps := p.MainDeps()
+	prodDeps := prodPackages(app, directDeps)
 
-	// Mark direct/indirect dependencies
+	// Mark direct/indirect and dev dependencies
 	for i, pkg := range app.Packages {
 		app.Packages[i].Relationship = types.RelationshipIndirect
+		app.Packages[i].Dev = !prodDeps.Contains(pkg.ID)
 		if directDeps.Contains(pkg.Name) {
 			app.Packages[i].Relationship = types.RelationshipDirect
 		}
@@ -129,4 +133,33 @@ func (a pylockAnalyzer) parsePyProject(fsys fs.FS, path string) (pyproject.PyPro
 	}
 
 	return p, nil
+}
+
+// prodPackages traverses the dependency graph starting from production root dependencies
+// and returns the set of all packages reachable from them.
+func prodPackages(app *types.Application, prodRootDeps set.Set[string]) set.Set[string] {
+	packages := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
+		return pkg.ID, pkg
+	})
+
+	visited := set.New[string]()
+
+	for _, pkg := range packages {
+		if !prodRootDeps.Contains(pkg.Name) {
+			continue
+		}
+		walkPackageDeps(pkg.ID, packages, visited)
+	}
+
+	return visited
+}
+
+func walkPackageDeps(pkgID string, packages map[string]types.Package, visited set.Set[string]) {
+	if visited.Contains(pkgID) {
+		return
+	}
+	visited.Append(pkgID)
+	for _, dep := range packages[pkgID].DependsOn {
+		walkPackageDeps(dep, packages, visited)
+	}
 }

@@ -1,0 +1,17 @@
+lock-version = "1.0"
+created-by = "test"
+
+[[packages]]
+name = "requests"
+version = "2.32.3"
+dependencies = [
+  { name = "urllib3", version = "2.3.0" },
+]
+
+[[packages]]
+name = "urllib3"
+version = "2.3.0"
+
+[[packages]]
+name = "pytest"
+version = "8.0.0"

@@ -88,6 +88,42 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "with dev dependencies",
+			dir:  "testdata/with-dev",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.PyLock,
+						FilePath: "pylock.toml",
+						Packages: types.Packages{
+							{
+								ID:           "pytest@8.0.0",
+								Name:         "pytest",
+								Version:      "8.0.0",
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+							},
+							{
+								ID:      "requests@2.32.3",
+								Name:    "requests",
+								Version: "2.32.3",
+								DependsOn: []string{
+									"urllib3@2.3.0",
+								},
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "urllib3@2.3.0",
+								Name:         "urllib3",
+								Version:      "2.3.0",
+								Relationship: types.RelationshipIndirect,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "broken file",
 			dir:  "testdata/broken",
 			want: &analyzer.AnalysisResult{},
