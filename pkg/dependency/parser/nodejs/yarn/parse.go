@@ -9,6 +9,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -18,8 +19,19 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
+const npmProtocol = "npm"
+
 var (
-	yarnPatternRegexp    = regexp.MustCompile(`^\s?\\?"?(?P<package>\S+?)@(?:(?P<protocol>\S+?):)?(?P<version>.+?)\\?"?:?$`)
+	// yarnPatternRegexp parses the top-level package pattern in yarn.lock
+	// e.g., "lodash@^4.17.0" or "my-alias@npm:lodash@^4.17.0"
+	yarnPatternRegexp = regexp.MustCompile(`^\s?\\?"?(?P<package>\S+?)@(?:(?P<protocol>\S+?):)?(?P<range>.+?)\\?"?:?$`)
+
+	// yarnDescriptorRegexp parses a package descriptor (ident@range).
+	// Based on yarn's DESCRIPTOR_REGEX_LOOSE from Berry:
+	// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/structUtils.ts
+	// DESCRIPTOR_REGEX_LOOSE = /^(?:@([^/]+?)\/)?([^@/]+?)(?:@(.+))?$/
+	yarnDescriptorRegexp = regexp.MustCompile(`^(?:@([^/]+?)/)?([^@/]+?)(?:@(.+))?$`)
+
 	yarnVersionRegexp    = regexp.MustCompile(`^"?version:?"?\s+"?(?P<version>[^"]+)"?`)
 	yarnDependencyRegexp = regexp.MustCompile(`\s{4,}"?(?P<package>.+?)"?:?\s"?(?:(?P<protocol>\S+?):)?(?P<version>[^"]+)"?`)
 )
@@ -62,35 +74,132 @@ func (s *LineScanner) LineNum(prevNum int) int {
 	return prevNum + s.lineCount - 1
 }
 
-func parsePattern(target string) (packagename, protocol, version string, err error) {
+func parsePattern(target string) (pkgName, protocol, version string, err error) {
+	// Step 1: Parse the top-level pattern to extract package/alias, protocol, and range
 	capture := yarnPatternRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
 		return "", "", "", xerrors.New("not package format")
 	}
+
+	var pkg, rng string
 	for i, group := range yarnPatternRegexp.SubexpNames() {
 		switch group {
 		case "package":
-			packagename = capture[i]
+			pkg = capture[i]
 		case "protocol":
 			protocol = capture[i]
-		case "version":
-			version = capture[i]
+		case "range":
+			rng = capture[i]
 		}
 	}
-	return
+
+	// Step 2: If protocol is "npm", check if the range is an alias (contains a package descriptor)
+	// Based on yarn's alias detection:
+	// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/LegacyMigrationResolver.ts
+	// "If the range is a valid descriptor we're dealing with an alias"
+	if protocol == npmProtocol {
+		if realPkg, realVersion, ok := tryParseDescriptor(rng); ok {
+			return realPkg, protocol, realVersion, nil
+		}
+	}
+
+	// Not an alias - use the original package name and range as version
+	return pkg, protocol, rng, nil
 }
 
-func parsePackagePatterns(target string) (packagename, protocol string, patterns []string, err error) {
-	patternsSplit := strings.Split(target, ", ")
-	packagename, protocol, _, err = parsePattern(patternsSplit[0])
-	if err != nil {
-		return "", "", nil, err
+// tryParseDescriptor attempts to parse a string as a package descriptor (ident@range).
+// Based on yarn's tryParseDescriptor:
+// https://github.com/yarnpkg/berry/blob/master/packages/yarnpkg-core/sources/structUtils.ts
+// Uses DESCRIPTOR_REGEX_LOOSE = /^(?:@([^/]+?)\/)?([^@/]+?)(?:@(.+))?$/
+// Returns the package name and version if parsing succeeds.
+// Examples:
+//   - "ms@2.1.0" → ("ms", "2.1.0", true)
+//   - "@types/react" → ("@types/react", "", true)
+//   - "@types/react@19.0.0" → ("@types/react", "19.0.0", true)
+//   - "^1.0.0" → ("", "", false) - not a valid descriptor
+//   - "latest" → ("", "", false) - not a valid descriptor
+func tryParseDescriptor(descriptor string) (string, string, bool) {
+	capture := yarnDescriptorRegexp.FindStringSubmatch(descriptor)
+	if capture == nil {
+		return "", "", false
 	}
-	patterns = xslices.Map(patternsSplit, func(pattern string) string {
-		_, _, version, _ := parsePattern(pattern)
-		return packageID(packagename, version)
+
+	scope, pkgName, rng := capture[1], capture[2], capture[3]
+
+	// If the "pkgName" part looks like a version constraint, it's not a valid package descriptor.
+	// This distinguishes "ms@2.1.0" (alias) from "latest" or "^1.0.0" (version constraint).
+	// Example: "@my/alias@npm:@types/react@19.0.0" → descriptor="@types/react@19.0.0" → pkgName="react" (valid)
+	// Example: "lodash@npm:^4.17.0" → descriptor="^4.17.0" → pkgName="^4.17.0" (invalid, starts with ^)
+	if looksLikeVersionConstraint(pkgName) {
+		return "", "", false
+	}
+
+	// Build full package name with scope if present
+	if scope != "" {
+		pkgName = "@" + scope + "/" + pkgName
+	}
+
+	return pkgName, rng, true
+}
+
+// looksLikeVersionConstraint returns true if s looks like a version constraint
+// rather than a valid npm package name.
+// npm package names: https://docs.npmjs.com/cli/v10/configuring-npm/package-json#name
+func looksLikeVersionConstraint(s string) bool {
+	if s == "" {
+		return true
+	}
+	// Version constraints start with: digits, ^, ~, >, <, =, *
+	switch s[0] {
+	case '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+		'^', '~', '>', '<', '=', '*':
+		return true
+	}
+	// npm dist-tags (https://docs.npmjs.com/cli/v10/commands/npm-dist-tag)
+	switch s {
+	case "latest", "next", "canary", "beta", "alpha", "rc", "stable", "dev", "experimental":
+		return true
+	}
+	return false
+}
+
+func parsePackagePatterns(target string) (pkgName, protocol string, patterns []string, err error) {
+	patternsSplit := strings.Split(target, ", ")
+
+	// Step 1: detect correct package name and protocol from multiple patterns
+	for _, pattern := range patternsSplit {
+		name, proto, _, parseErr := parsePattern(pattern)
+		if parseErr != nil {
+			continue
+		}
+
+		// Save the first valid package name and protocol
+		if pkgName == "" {
+			pkgName = name
+			protocol = proto
+		}
+
+		// Alias pattern has priority — use the real package name.
+		// Example: "ip@^2.0.0", "ip@npm:@rootio/ip@2.0.0-root.io.1"
+		// Here "ip" is the alias, "@rootio/ip" is the real package.
+		// parsePattern returns the real name for npm: protocol aliases.
+		if proto == npmProtocol {
+			pkgName = name
+			protocol = proto
+			break
+		}
+	}
+	if pkgName == "" {
+		return "", "", nil, xerrors.New("not package format")
+	}
+
+	// Step 2: build patterns with correct package ID.
+	// Use original name from each pattern for correct dependency mapping
+	patterns = lo.Map(patternsSplit, func(pattern string, _ int) string {
+		name, _, version, _ := parsePattern(pattern)
+		return packageID(name, version)
 	})
-	return
+	return pkgName, protocol, patterns, nil
 }
 
 func getVersion(target string) (version string, err error) {
@@ -115,7 +224,7 @@ func getDependency(target string) (name, version string, err error) {
 func validProtocol(protocol string) bool {
 	switch protocol {
 	// only scan npm packages
-	case "npm", "":
+	case npmProtocol, "":
 		return true
 	}
 	return false
