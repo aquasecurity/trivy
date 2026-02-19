@@ -10,7 +10,7 @@
       
       
       
-        <link rel="canonical" href="https://trivy.dev/dev/guide/advanced/private-registries/gcr/">
+        <link rel="canonical" href="https://trivy.dev/dev/guide/advanced/private-registries/gar/">
       
       
         <link rel="prev" href="../ecr/">
@@ -27,7 +27,7 @@
     
     
       
-        <title>GCR (Google Container Registry) - Trivy</title>
+        <title>GAR (Google Artifact Registry) - Trivy</title>
       
     
     
@@ -75,9 +75,9 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - GCR (Google Container Registry)" />
+<meta property="og:title" content="Trivy - GAR (Google Artifact Registry)" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://trivy.dev/dev/guide/advanced/private-registries/gcr/" />
+<meta property="og:url" content="https://trivy.dev/dev/guide/advanced/private-registries/gar/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              GCR (Google Container Registry)
+              GAR (Google Artifact Registry)
             
           </span>
         </div>
@@ -5477,7 +5477,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    GCR (Google Container Registry)
+    GAR (Google Artifact Registry)
   
 
     
@@ -8102,7 +8102,7 @@ You're not viewing the latest version of the documentation.
 
 
   
-    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/advanced/private-registries/gcr.md" title="Edit this page" class="md-content__button md-icon">
+    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/advanced/private-registries/gar.md" title="Edit this page" class="md-content__button md-icon">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -8113,8 +8113,8 @@ You're not viewing the latest version of the documentation.
 <h1 id="requirements">Requirements<a class="headerlink" href="#requirements" title="Permanent link">&para;</a></h1>
 <p>None, Trivy uses Google Cloud SDK. You don't need to install <code>gcloud</code> command.</p>
 <h1 id="privileges">Privileges<a class="headerlink" href="#privileges" title="Permanent link">&para;</a></h1>
-<p>Credential file must have the <code>roles/storage.objectViewer</code> permissions.
-More information can be found in <a href="https://cloud.google.com/container-registry/docs/access-control">Google's documentation</a></p>
+<p>Credential file must have the <code>roles/artifactregistry.reader</code> permissions.
+More information can be found in <a href="https://cloud.google.com/artifact-registry/docs/access-control">Google's documentation</a></p>
 <h2 id="json-file-format">JSON File Format<a class="headerlink" href="#json-file-format" title="Permanent link">&para;</a></h2>
 <p>The JSON file specified should have the following format provided by google's service account mechanisms:</p>
 <div class="highlight"><pre><span></span><code><span class="p">{</span>
@@ -8139,7 +8139,7 @@ More information can be found in <a href="https://cloud.google.com/container-reg
 <p>You can test credentials in the following manner (assuming they are in <code>/tmp</code> on host machine).</p>
 <div class="highlight"><pre><span></span><code>docker<span class="w"> </span>run<span class="w"> </span>-it<span class="w"> </span>--rm<span class="w"> </span>-v<span class="w"> </span>/tmp:/tmp<span class="se">\</span>
 <span class="w">  </span>-e<span class="w"> </span><span class="nv">GOOGLE_APPLICATION_CREDENTIALS</span><span class="o">=</span>/tmp/service_account.json<span class="se">\</span>
-<span class="w">  </span>aquasec/trivy<span class="w"> </span>image<span class="w"> </span>gcr.io/your_special_project/your_special_image:your_special_tag
+<span class="w">  </span>aquasec/trivy<span class="w"> </span>image<span class="w"> </span>LOCATION-docker.pkg.dev/PROJECT_ID/REPOSITORY_NAME/IMAGE:TAG
 </code></pre></div>
 
 

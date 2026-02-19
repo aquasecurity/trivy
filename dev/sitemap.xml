@@ -2,766 +2,766 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://trivy.dev/dev/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/commercial/compare/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/commercial/contact/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/principles/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/discussion/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/issue/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/pr/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/checks/overview/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/checks/service-support/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/vulnerability-database/add-vulnerability-source/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/contribute/vulnerability-database/overview/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/maintainer/backporting/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/maintainer/help-wanted/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/maintainer/pr-review/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/maintainer/release-flow/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/community/maintainer/triage/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/ecosystem/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/ecosystem/cicd/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/ecosystem/ide/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/ecosystem/prod/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/ecosystem/reporting/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/getting-started/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/getting-started/faq/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/getting-started/installation/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/getting-started/signature-verification/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/air-gap/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/modules/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/self-hosting/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/telemetry-flags/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/telemetry/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/container/embed-in-dockerfile/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/container/unpacked-filesystem/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/private-registries/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/private-registries/acr/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/private-registries/docker-hub/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/private-registries/ecr/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
-         <loc>https://trivy.dev/dev/guide/advanced/private-registries/gcr/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <loc>https://trivy.dev/dev/guide/advanced/private-registries/gar/</loc>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/advanced/private-registries/self/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/compliance/compliance/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/compliance/contrib-compliance/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/cache/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/db/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/filtering/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/others/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/reporting/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/configuration/skipping/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/kubernetes/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/ansible/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/azure-arm/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/cloudformation/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/docker/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/helm/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/kubernetes/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/iac/terraform/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/c/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/dart/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/dotnet/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/elixir/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/golang/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/java/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/julia/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/nodejs/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/php/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/python/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/ruby/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/rust/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/language/swift/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/alma/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/alpine/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/amazon/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/azure/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/bottlerocket/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/centos/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/chainguard/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/coreos/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/debian/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/echo/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/google-distroless/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/minimos/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/oracle/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/photon/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/rhel/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/rocky/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/suse/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/ubuntu/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/os/wolfi/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/activestate/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/bitnami/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/conda/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/rootio/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/rpm/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/coverage/others/seal/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/plugin/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/plugin/developer-guide/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/plugin/user-guide/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/abbreviations/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/terminology/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/troubleshooting/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/config-file/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_clean/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_config/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_convert/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_filesystem/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_image/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_kubernetes/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_module/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_module_install/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_module_uninstall/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_info/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_install/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_list/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_run/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_search/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_uninstall/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_update/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_plugin_upgrade/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_registry/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_registry_login/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_registry_logout/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_repository/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_rootfs/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_sbom/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_server/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_version/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vex/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vex_repo/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vex_repo_download/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vex_repo_init/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vex_repo_list/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/configuration/cli/trivy_vm/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/modes/client-server/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/references/modes/standalone/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/license/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/secret/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/vulnerability/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/check/builtin/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/config/config/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/combine/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/contribute-checks/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/data/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/debug/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/schema/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/selectors/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/scanner/misconfiguration/custom/testing/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/sbom/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/attestation/rekor/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/attestation/sbom/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/attestation/vuln/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/vex/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/vex/file/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/vex/oci/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/vex/repo/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/supply-chain/vex/sbom-ref/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/container_image/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/filesystem/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/kubernetes/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/repository/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/rootfs/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/sbom/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/guide/target/vm/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/overview/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/additional-resources/cks/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/additional-resources/community/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/additional-resources/references/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/aws-codepipeline/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/aws-security-hub/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/azure-devops/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/bitbucket/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/circleci/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/github-actions/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/gitlab-ci/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/integrations/travis-ci/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/kubernetes/cluster-scanning/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/kubernetes/gitops/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/kubernetes/kyverno/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/misconfiguration/custom-checks/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/misconfiguration/terraform/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/shell/shell-completion/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
     <url>
          <loc>https://trivy.dev/dev/tutorials/signing/vuln-attestation/</loc>
-         <lastmod>2026-02-10</lastmod>
+         <lastmod>2026-02-19</lastmod>
     </url>
 </urlset>
