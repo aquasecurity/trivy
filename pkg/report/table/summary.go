@@ -120,9 +120,10 @@ type summaryRenderer struct {
 	isTerminal bool
 	scanners   []Scanner
 	logger     *log.Logger
+	noColor    bool
 }
 
-func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scanners) *summaryRenderer {
+func NewSummaryRenderer(buf *bytes.Buffer, isTerminal, noColor bool, scanners types.Scanners) *summaryRenderer {
 	if !isTerminal {
 		tml.DisableFormatting()
 	}
@@ -141,6 +142,7 @@ func NewSummaryRenderer(buf *bytes.Buffer, isTerminal bool, scanners types.Scann
 		isTerminal: isTerminal,
 		scanners:   ss,
 		logger:     log.WithPrefix("report"),
+		noColor:    noColor,
 	}
 }
 
@@ -150,9 +152,13 @@ func (r *summaryRenderer) Render(report types.Report) {
 		return
 	}
 
-	r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
+	if r.noColor {
+		r.printf("\nReport Summary\n\n")
+	} else {
+		r.printf("\n<underline><bold>Report Summary</bold></underline>\n\n")
+	}
 
-	t := newTableWriter(r.w, r.isTerminal)
+	t := newTableWriter(r.w, r.isTerminal, r.noColor)
 	t.SetAutoMerge(false)
 	t.SetColumnMaxWidth(80)
 
