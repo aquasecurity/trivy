@@ -1,9 +1,10 @@
 package eval
 
 import (
-	"errors"
 	"fmt"
 	"iter"
+	"slices"
+	"sort"
 	"strconv"
 	"strings"
 
@@ -12,23 +13,22 @@ import (
 )
 
 type graph struct {
-	nodes           map[string]Node
-	dependentNodes  map[string]set.Set[string]
-	dependencyNodes map[string]set.Set[string]
+	logger         *log.Logger
+	nodes          map[string]Node
+	dependentNodes map[string]set.Set[string]
 
 	managedResources set.Set[string]
 }
 
-func NewGraph() *graph {
+func newGraph() *graph {
 	return &graph{
 		nodes:            make(map[string]Node),
 		dependentNodes:   make(map[string]set.Set[string]),
-		dependencyNodes:  make(map[string]set.Set[string]),
 		managedResources: set.New[string](),
 	}
 }
 
-func (g *graph) Build(rootModule *ModuleConfig) error {
+func (g *graph) build(rootModule *ModuleConfig) error {
 	if err := g.buildRealNodes(rootModule); err != nil {
 		return err
 	}
@@ -60,7 +60,6 @@ func (g *graph) addNode(n Node) {
 		panic(fmt.Sprintf("node %s already exists", id))
 	}
 	g.nodes[id] = n
-	g.dependencyNodes[id] = set.New[string]()
 	g.dependentNodes[id] = set.New[string]()
 }
 
@@ -68,13 +67,8 @@ func (n *graph) dependents(node Node) iter.Seq[string] {
 	return n.dependentNodes[node.ID()].Iter()
 }
 
-func (n *graph) dependencies(node Node) iter.Seq[string] {
-	return n.dependencyNodes[node.ID()].Iter()
-}
-
 func (g *graph) addEdge(dependency, dependent Node) {
 	g.addDependent(dependency, dependent)
-	g.addDependency(dependent, dependency)
 }
 
 func (n *graph) addDependent(src, target Node) {
@@ -84,28 +78,99 @@ func (n *graph) addDependent(src, target Node) {
 	n.dependentNodes[src.ID()].Append(target.ID())
 }
 
-func (n *graph) addDependency(src, target Node) {
-	if n.dependencyNodes[src.ID()] == nil {
-		n.dependencyNodes[src.ID()] = set.New[string]()
+// findCycle detects a dependency cycle in the graph.
+// Returns a slice of node IDs forming the cycle, or nil if none exists.
+//
+// The result is deterministic: nodes and their dependencies are
+// traversed in sorted order, so repeated calls will produce the same cycle.
+func (g *graph) findCycle() []string {
+	const (
+		white = 0
+		gray  = 1
+		black = 2
+	)
+
+	color := map[string]int{}
+	parent := map[string]string{}
+
+	var dfs func(string) []string
+	dfs = func(v string) []string {
+		color[v] = gray
+
+		n := g.nodes[v]
+		deps := make([]string, 0, g.dependentNodes[v].Size())
+		for dep := range g.dependents(n) {
+			deps = append(deps, dep)
+		}
+		sort.Strings(deps)
+
+		for _, dep := range deps {
+			switch color[dep] {
+			case white:
+				parent[dep] = v
+				if c := dfs(dep); c != nil {
+					return c
+				}
+			case gray:
+				cycle := []string{dep}
+				for x := v; x != dep; x = parent[x] {
+					cycle = append(cycle, x)
+				}
+				cycle = append(cycle, dep)
+				slices.Reverse(cycle)
+				return cycle
+			}
+		}
+
+		color[v] = black
+		return nil
 	}
-	n.dependencyNodes[src.ID()].Append(target.ID())
+
+	keys := make([]string, 0, len(g.nodes))
+	for id := range g.nodes {
+		keys = append(keys, id)
+	}
+	sort.Strings(keys)
+
+	for _, id := range keys {
+		if color[id] == white {
+			if c := dfs(id); c != nil {
+				return c
+			}
+		}
+	}
+	return nil
 }
 
+// TopoSort performs a topological sort of the graph nodes.
+// Returns the sorted nodes, or an error if a dependency cycle is detected.
 func (g *graph) TopoSort() ([]Node, error) {
-	inDegree := make(map[string]int)
-	for id := range g.nodes {
-		inDegree[id] = 0
+	if cycle := g.findCycle(); len(cycle) > 0 {
+		return nil, fmt.Errorf(
+			"dependency cycle detected: %s",
+			strings.Join(cycle, " -> "),
+		)
 	}
 
-	for _, n := range g.nodes {
+	inDegree := make(map[string]int)
+	keys := make([]string, 0, len(g.nodes))
+	for id := range g.nodes {
+		inDegree[id] = 0
+		keys = append(keys, id)
+	}
+
+	sort.Strings(keys)
+
+	for _, id := range keys {
+		n := g.nodes[id]
 		for dep := range g.dependents(n) {
 			inDegree[dep]++
 		}
 	}
 
-	queue := make([]Node, 0)
-	for id, deg := range inDegree {
-		if deg == 0 {
+	queue := make([]Node, 0, len(g.nodes))
+	for _, id := range keys {
+		if inDegree[id] == 0 {
 			queue = append(queue, g.nodes[id])
 		}
 	}
@@ -113,21 +178,32 @@ func (g *graph) TopoSort() ([]Node, error) {
 	result := make([]Node, 0, len(g.nodes))
 
 	for len(queue) > 0 {
-		n := queue[len(queue)-1]
-		queue = queue[:len(queue)-1]
+		n := queue[0]
+		queue = queue[1:]
 		result = append(result, n)
+
+		depKeys := make([]string, 0, g.dependentNodes[n.ID()].Size())
 		for dep := range g.dependents(n) {
+			depKeys = append(depKeys, dep)
+		}
+		sort.Strings(depKeys)
+
+		for _, dep := range depKeys {
 			inDegree[dep]--
 			if inDegree[dep] == 0 {
 				queue = append(queue, g.nodes[dep])
 			}
 		}
 	}
-
-	if len(result) != len(g.nodes) {
-		return nil, errors.New("cycle detected in graph")
-	}
 	return result, nil
+}
+
+func nodeIDs(nodes []Node) []string {
+	ids := make([]string, len(nodes))
+	for i, n := range nodes {
+		ids[i] = n.ID()
+	}
+	return ids
 }
 
 func (g *graph) buildRealNodes(module *ModuleConfig) error {
@@ -139,7 +215,7 @@ func (g *graph) buildRealNodes(module *ModuleConfig) error {
 				nodeId := moduleAddr.BlockAddr(LocalAddr{Name: attr.name})
 				g.addNode(&NodeLocal{
 					BaseNode:            newBaseNode(nodeId, moduleAddr),
-					AttributeReferencer: &AttributeReferencer{Attr: attr},
+					AttributeReferencer: AttributeReferencer{Attr: attr},
 					Name:                attr.name,
 				})
 			}
@@ -148,7 +224,7 @@ func (g *graph) buildRealNodes(module *ModuleConfig) error {
 			nodeId := moduleAddr.BlockAddr(OutputAddr{Name: name})
 			g.addNode(&NodeOutput{
 				BaseNode:            newBaseNode(nodeId, moduleAddr),
-				AttributeReferencer: &AttributeReferencer{Attr: block.attrs["value"]},
+				AttributeReferencer: AttributeReferencer{Attr: block.attrs["value"]},
 				Name:                name,
 			})
 		case "variable":
@@ -164,7 +240,7 @@ func (g *graph) buildRealNodes(module *ModuleConfig) error {
 			} else {
 				g.addNode(&NodeVariable{
 					BaseNode:            newBaseNode(nodeId, moduleAddr),
-					AttributeReferencer: &AttributeReferencer{Attr: module.Block.attrs[name]},
+					AttributeReferencer: AttributeReferencer{Attr: module.Config.attrs[name]},
 					Name:                name,
 					Default:             block.attrs["default"],
 					Type:                block.attrs["type"],
@@ -202,13 +278,16 @@ func (g *graph) buildModuleBoundaries(module *ModuleConfig, parentCall, parentEx
 	moduleAddr := module.AbsAddr()
 	moduleCallNode := &NodeModuleCall{
 		BaseNode: newBaseNode(moduleAddr, moduleAddr.Parent()),
-		Block:    module.Block,
+		Block:    module.Config,
 		Name:     module.Name,
 		Call:     module.ModuleCalls[module.Name],
 	}
 	moduleExitNode := &NodeModuleExit{
 		BaseNode: newBaseNode(moduleAddr, moduleAddr.Parent()),
 	}
+
+	g.addNode(moduleCallNode)
+	g.addNode(moduleExitNode)
 
 	for _, node := range g.nodes {
 		if node.Module().Equal(moduleAddr) {
@@ -217,8 +296,6 @@ func (g *graph) buildModuleBoundaries(module *ModuleConfig, parentCall, parentEx
 		}
 	}
 
-	g.addNode(moduleCallNode)
-	g.addNode(moduleExitNode)
 	g.addEdge(moduleCallNode, moduleExitNode)
 	if parentCall != nil {
 		g.addEdge(parentCall, moduleCallNode)
@@ -236,6 +313,7 @@ func (g *graph) buildModuleBoundaries(module *ModuleConfig, parentCall, parentEx
 }
 
 func (g *graph) linkDependencies() error {
+	logger := log.WithPrefix("graph")
 	for _, node := range g.nodes {
 		referencer, ok := node.(Referencer)
 		if !ok {
@@ -264,8 +342,8 @@ func (g *graph) linkDependencies() error {
 
 			depNode, exists := g.nodes[depNodeAddr.Key()]
 			if !exists {
-				log.Debug("dependency node not found for node",
-					log.String("node", ref.Addr.Key()), log.String("dependency", node.ID()))
+				logger.Debug("Dependency node not found for node",
+					log.String("dependency", ref.Addr.Key()), log.String("dependent", node.ID()))
 				continue
 			}
 			g.addEdge(depNode, node)

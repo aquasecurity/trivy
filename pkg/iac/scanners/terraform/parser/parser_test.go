@@ -2097,17 +2097,11 @@ output "test_out" {
 `,
 	}
 
-	modules := parse(t, files)
-	require.Len(t, modules, 3)
+	fsys := testutil.CreateFS(files)
 
-	resources := modules.GetResourcesByType("test_resource")
-	require.Len(t, resources, 2)
-
-	for _, res := range resources {
-		attr, _ := res.GetNestedAttribute("dynamic_block.some_attr")
-		require.NotNil(t, attr, res.FullName())
-		assert.Equal(t, "test_value", attr.GetRawValue())
-	}
+	p := parser.New(fsys, "", parser.OptionStopOnHCLError(true))
+	_, err := p.EvaluateAll(t.Context(), "code")
+	assert.ErrorContains(t, err, "sort graph: dependency cycle detected:")
 }
 
 func TestExtractSetValue(t *testing.T) {
@@ -2312,7 +2306,7 @@ resource "something" "blah" {
 
 func TestLogAboutMissingVariableValues(t *testing.T) {
 	var buf bytes.Buffer
-	slog.SetDefault(slog.New(log.NewHandler(&buf, nil)))
+	logger := slog.New(log.NewHandler(&buf, &log.Options{Level: log.LevelDebug}))
 
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{
@@ -2333,6 +2327,7 @@ variable "baz" {}
 
 	p := parser.New(
 		fsys, "",
+		parser.OptionWithLogger(logger),
 		parser.OptionStopOnHCLError(true),
 		parser.OptionWithTFVarsPaths("main.tfvars"),
 	)

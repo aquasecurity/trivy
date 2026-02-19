@@ -174,6 +174,7 @@ func (p *Parser) parseFS(ctx context.Context, dir string) error {
 		if info.IsDir() {
 			continue
 		}
+
 		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
 			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
 			continue
@@ -396,7 +397,7 @@ func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules
 	if true {
 		vars, err := p.resolveInputVars()
 		if err != nil {
-			return nil, fmt.Errorf("resolve input variables")
+			return nil, fmt.Errorf("resolve input variables: %w", err)
 		}
 
 		e, err := eval.Eval(ctx, p.moduleFS, dir, &eval.EvalOpts{
@@ -405,6 +406,8 @@ func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules
 			WorkDir:           p.cwd,
 			AllowDownloads:    p.allowDownloads,
 			SkipCachedModules: p.skipCachedModules,
+			StopOnHCLError:    p.stopOnHCLError,
+			SkipPaths:         p.skipPaths,
 			InputVars:         vars,
 		})
 		if err != nil {
@@ -451,7 +454,7 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules,
 			&ignore.StringMatchParser{
 				SectionKey: "ws",
 			},
-			&paramParser{},
+			&ignore.ParamParser{},
 		)
 		ignores = append(ignores, fileIgnores...)
 	}
@@ -469,37 +472,4 @@ func loadBlocksFromFile(file sourceFile) (hcl.Blocks, error) {
 		return nil, nil
 	}
 	return contents.Blocks, nil
-}
-
-type paramParser struct {
-	params map[string]string
-}
-
-func (s *paramParser) Key() string {
-	return "ignore"
-}
-
-func (s *paramParser) Parse(str string) bool {
-	s.params = make(map[string]string)
-
-	idx := strings.Index(str, "[")
-	if idx == -1 {
-		return false
-	}
-
-	str = str[idx+1:]
-
-	paramStr := strings.TrimSuffix(str, "]")
-	for pair := range strings.SplitSeq(paramStr, ",") {
-		parts := strings.Split(pair, "=")
-		if len(parts) != 2 {
-			continue
-		}
-		s.params[parts[0]] = parts[1]
-	}
-	return true
-}
-
-func (s *paramParser) Param() any {
-	return s.params
 }

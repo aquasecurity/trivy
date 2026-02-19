@@ -1,14 +1,13 @@
 package eval
 
 import (
-	"fmt"
 	"io/fs"
-	"maps"
-	"math/rand/v2"
+	"reflect"
+	"slices"
 	"strings"
 
-	"github.com/google/uuid"
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/ext/customdecode"
 	"github.com/hashicorp/hcl/v2/hcldec"
 	"github.com/zclconf/go-cty/cty"
 )
@@ -32,32 +31,56 @@ func (a *AttrConfig) ToValue(evalCtx *hcl.EvalContext) (cty.Value, error) {
 
 type BlockConfig struct {
 	underlying *hcl.Block
-	module     *ModuleConfig
-	children   []*BlockConfig
-	dynBlocks  []*DynBlockConfig
 	attrs      map[string]*AttrConfig
+	children   []*BlockConfig
+
+	dynBlocks []*DynBlockConfig
+
+	specCache hcldec.Spec
 }
 
-// func (b *BlockConfig) References() []*Ref {
-// 	var refs []*Ref
-// 	for _, attr := range b.attrs {
-// 		refs = append(refs, attr.References()...)
-// 	}
+// dynamicType is a special cty capsule type named "dynamic".
+// It is used to attach a custom decoder for HCL expressions when decoding blocks into cty.Value.
+// The custom decoder ensures that if the expression evaluates to null or returns errors,
+// the value is replaced with cty.DynamicVal instead of propagating a null or failing.
+//
+// This allows handling dynamic or unknown values safely during evaluation.
+var dynamicType = cty.CapsuleWithOps("dynamic", reflect.TypeFor[cty.Type](), &cty.CapsuleOps{
+	ExtensionData: func(key any) any {
+		switch key {
+		case customdecode.CustomExpressionDecoder:
+			return customdecode.CustomExpressionDecoderFunc(func(expr hcl.Expression, ctx *hcl.EvalContext) (cty.Value, hcl.Diagnostics) {
+				val, diags := expr.Value(ctx)
+				if val.IsNull() || diags.HasErrors() {
+					return cty.DynamicVal, nil
+				}
+				return val, nil
+			})
+		default:
+			return nil
+		}
+	},
+})
 
-// 	for _, childBlock := range b.children {
-// 		if childBlock.underlying.Type == "dynamic" {
-// 			panic("unexpected dynamic block")
-// 		}
-// 		refs = append(refs, childBlock.References()...)
-// 	}
-// 	return refs
-// }
-
+// Spec returns the HCL specification of this block configuration.
+//
+// The specification is necessary for processing the HCL body using functions
+// from the hcl package, for example to extract used variables or decode
+// the block into cty.Value.
+//
+// In Terraform, specifications are usually provided by providers. In this
+// static analysis context, we treat the current configuration as authoritative
+// and use it to reconstruct the block specification.
 func (b *BlockConfig) Spec() hcldec.Spec {
+	if b.specCache != nil {
+		return b.specCache
+	}
+
 	spec := hcldec.ObjectSpec{}
 	for _, attr := range b.attrs {
 		// Conversion to DynamicPseudoType always just passes through verbatim.
-		spec[attr.name] = &hcldec.AttrSpec{Name: attr.name, Type: cty.DynamicPseudoType}
+		// spec[attr.name] = &hcldec.AttrSpec{Name: attr.name, Type: cty.DynamicPseudoType}
+		spec[attr.name] = &hcldec.AttrSpec{Name: attr.name, Type: dynamicType}
 	}
 
 	specsByType := make(map[string][]hcldec.Spec)
@@ -90,122 +113,9 @@ func (b *BlockConfig) Spec() hcldec.Spec {
 			}
 		}
 	}
+
+	b.specCache = spec
 	return spec
-}
-
-var resourceRandomAttributes = map[string][]string{
-	// If the user leaves the name blank, Terraform will automatically generate a unique name
-	"aws_launch_template": {"name"},
-	"random_id":           {"hex", "dec", "b64_url", "b64_std"},
-	"random_password":     {"result", "bcrypt_hash"},
-	"random_string":       {"result"},
-	"random_bytes":        {"base64", "hex"},
-	"random_uuid":         {"result"},
-}
-
-func (b *BlockConfig) ToValue(evalCtx *hcl.EvalContext) map[string]cty.Value {
-	vals := b.toValue(evalCtx)
-
-	// TODO: move into hooks ?
-	if len(b.underlying.Labels) > 0 {
-		typeLabel := b.underlying.Labels[0]
-		presets := buildPresetValues(typeLabel)
-		for name, presetValue := range presets {
-			if _, exists := vals[name]; !exists {
-				vals[name] = presetValue
-			}
-		}
-
-		postValues := buildPostValues(typeLabel, vals, presets["id"])
-		maps.Copy(vals, postValues)
-
-	}
-	return vals
-}
-
-func buildPresetValues(typeLabel string) map[string]cty.Value {
-	vals := make(map[string]cty.Value)
-
-	id := uuid.NewString()
-	vals["id"] = cty.StringVal(id)
-
-	if strings.HasPrefix(typeLabel, "aws_") {
-		vals["arn"] = cty.StringVal(id)
-	}
-
-	switch typeLabel {
-	// workaround for weird iam feature
-	case "aws_iam_policy_document":
-		vals["json"] = cty.StringVal(id)
-	// allow referencing the current region name
-	case "aws_region":
-		vals["name"] = cty.StringVal("current-region")
-	case "random_integer":
-		//nolint:gosec
-		vals["result"] = cty.NumberIntVal(rand.Int64())
-	}
-
-	if attrs, exists := resourceRandomAttributes[typeLabel]; exists {
-		for _, attr := range attrs {
-			vals[attr] = cty.StringVal(uuid.New().String())
-		}
-	}
-	return vals
-}
-
-func buildPostValues(typeLabel string, current map[string]cty.Value, id cty.Value) map[string]cty.Value {
-	vals := make(map[string]cty.Value)
-	if strings.HasPrefix(typeLabel, "aws_s3_bucket") {
-		if bucket, ok := current["bucket"]; ok {
-			vals["id"] = bucket
-		} else {
-			vals["bucket"] = id
-		}
-	}
-
-	if typeLabel == "aws_s3_bucket" {
-		var bucketName string
-		if bucket := current["bucket"]; !bucket.IsNull() && bucket.IsKnown() && bucket.Type().Equals(cty.String) {
-			bucketName = bucket.AsString()
-		}
-		vals["arn"] = cty.StringVal(fmt.Sprintf("arn:aws:s3:::%s", bucketName))
-	}
-	return vals
-}
-
-func (b *BlockConfig) toValue(evalCtx *hcl.EvalContext) map[string]cty.Value {
-	vals := make(map[string]cty.Value)
-
-	for _, attr := range b.attrs {
-		if attr.name == "count" || attr.name == "for_each" {
-			continue
-		}
-		val, err := attr.ToValue(evalCtx)
-		if err != nil {
-			val = cty.DynamicVal
-		}
-		vals[attr.name] = val
-	}
-
-	blocksByType := make(map[string][]*BlockConfig)
-	for _, childBlock := range b.children {
-		typ := childBlock.underlying.Type
-		blocksByType[typ] = append(blocksByType[typ], childBlock)
-	}
-
-	for typ, childBlocks := range blocksByType {
-		elems := make([]cty.Value, 0, len(childBlocks))
-		for _, childBlock := range childBlocks {
-			val := childBlock.toValue(evalCtx)
-			elems = append(elems, cty.ObjectVal(val))
-		}
-		if len(childBlocks) == 1 {
-			vals[typ] = elems[0]
-		} else {
-			vals[typ] = cty.TupleVal(elems)
-		}
-	}
-	return vals
 }
 
 type DynBlockConfig struct {
@@ -215,73 +125,82 @@ type DynBlockConfig struct {
 	content      *BlockConfig
 }
 
-// func (d *DynBlockConfig) Expand(evalCtx *hcl.EvalContext) ([]*BlockConfig, error) {
-// 	val, err := d.forEach.ToValue(evalCtx)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// SourceChain represents the chain of module sources from the root to this module.
+// Each source can be a remote path, Git URL, or registry reference.
+// Local paths (starting with "." or "..") are not included in the chain,
+// since their provenance is determined by the filesystem.
+//
+// Example:
+//
+//	root := SourceChain("github.com/org/root-module")
+//	child := root.Extend("github.com/org/submodule")
+//	fmt.Println(child) // github.com/org/root-module/github.com/org/submodule
+type SourceChain string
 
-// 	iter, err := expandForEach(val)
-// 	if err != nil {
-// 		return nil, err
-// 	}
+// NewSourceChain returns a SourceChain for the given module source.
+// For remote or registry sources, it creates a chain by extending the parentChain.
+// For local paths (starting with "." or ".."), it returns an empty chain because
+// local modules are identified by filesystem paths.
+func NewSourceChain(source string) SourceChain {
+	if strings.HasPrefix(source, ".") || strings.HasPrefix(source, "..") {
+		return "" // local modules: chain not needed
+	}
+	return SourceChain(source)
+}
 
-// 	var blocks []*BlockConfig
-
-// 	for eachKey, eachVal := range iter {
-// 		contentCtx := evalCtx.NewChild()
-// 		contentCtx.Variables["each"] = cty.ObjectVal(map[string]cty.Value{
-// 			"key":   cty.StringVal(eachKey),
-// 			"value": eachVal,
-// 		})
-// 		expanded := d.Content.Expand(contentCtx)
-// 		blocks = append(blocks, expanded...)
-// 	}
-// 	return blocks, nil
-// }
+// Extend returns a new SourceChain with the given source appended.
+// If the chain is empty, it returns a chain containing only the new source.
+func (s SourceChain) Extend(source string) SourceChain {
+	if s == "" {
+		return SourceChain(source)
+	}
+	return SourceChain(string(s) + "/" + source)
+}
 
 type ModuleConfig struct {
-	Name string
-	FS   fs.FS
-	Dir  string
+	Name        string
+	FS          fs.FS
+	Path        string
+	SourceChain SourceChain
+
 	// empty for root module
-	Block  *BlockConfig
+	Config *BlockConfig
 	Blocks []*BlockConfig
 	// empty for root module
-	Parent   *ModuleConfig
-	Children []*ModuleConfig
-
+	Parent      *ModuleConfig
+	Children    []*ModuleConfig
 	ModuleCalls map[string]*ModuleCall
 
-	LogicalSource string
+	Unresolvable bool
 }
 
 func (c *ModuleConfig) Descendant(addr ModuleAddr) *ModuleConfig {
 	curr := c
 	for _, step := range addr {
-		for _, child := range c.Children {
+		var next *ModuleConfig
+		for _, child := range curr.Children {
 			if child.Name == step {
-				curr = child
-			}
-			if curr == nil {
-				return nil
+				next = child
+				break
 			}
 		}
+		if next == nil {
+			return nil
+		}
+		curr = next
 	}
-
 	return curr
 }
 
 type ModuleCall struct {
 	Name string
+	FS   fs.FS
+	Path string
 
 	Source  string
 	Version string
 
 	Config *BlockConfig
-
-	FS   fs.FS
-	Path string
 }
 
 func (m *ModuleConfig) IsRoot() bool {
@@ -290,9 +209,8 @@ func (m *ModuleConfig) IsRoot() bool {
 
 func (m *ModuleConfig) AbsAddr() ModuleAddr {
 	if m.IsRoot() {
-		return ModuleAddr{}
+		return RootModule
 	}
-
-	path := ModuleAddr{m.Name}
-	return append(m.Parent.AbsAddr(), path...)
+	parent := m.Parent.AbsAddr()
+	return append(slices.Clone(parent), m.Name)
 }

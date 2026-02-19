@@ -2,21 +2,27 @@ package eval
 
 import (
 	"fmt"
+	"maps"
+	"math/rand/v2"
+	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/dynblock"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type Referencer interface {
+	// TODO: return an iter.Seq
 	References() []*Ref
 }
 
 type Executable interface {
-	Execute(state *EvalState) error
+	Execute(state *evalState) error
 }
 
 type Node interface {
@@ -29,8 +35,8 @@ type BaseNode struct {
 	moduleAddr ModuleAddr
 }
 
-func newBaseNode(addr Address, moduleAddr ModuleAddr) *BaseNode {
-	return &BaseNode{
+func newBaseNode(addr Address, moduleAddr ModuleAddr) BaseNode {
+	return BaseNode{
 		id:         addr.Key(),
 		moduleAddr: moduleAddr,
 	}
@@ -70,13 +76,13 @@ func (n *NodeRoot) Module() ModuleAddr {
 var _ Executable = (*NodeRootVariable)(nil)
 
 type NodeRootVariable struct {
-	*BaseNode
+	BaseNode
 	Name    string
 	Default *AttrConfig
 	Type    *AttrConfig
 }
 
-func (n *NodeRootVariable) Execute(state *EvalState) error {
+func (n *NodeRootVariable) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		val := cty.DynamicVal
 		var evalErr error
@@ -92,10 +98,9 @@ func (n *NodeRootVariable) Execute(state *EvalState) error {
 				val = v
 			}
 		} else {
-			evalErr = fmt.Errorf(
-				"input variable at %q is required but was not provided and has no default value",
-				mi.scope.addr.Key(),
-			)
+			// Root variable value is missing. We already log missing variables before evaluation,
+			// so here we just treat the variable as unknown.
+			val = cty.DynamicVal
 		}
 
 		val, err := applyTypeAndDefaults(
@@ -116,14 +121,14 @@ var _ Referencer = (*NodeVariable)(nil)
 var _ Executable = (*NodeVariable)(nil)
 
 type NodeVariable struct {
-	*BaseNode
-	*AttributeReferencer
+	BaseNode
+	AttributeReferencer
 	Name    string
 	Default *AttrConfig
 	Type    *AttrConfig
 }
 
-func (n *NodeVariable) Execute(state *EvalState) error {
+func (n *NodeVariable) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		val := cty.DynamicVal
 		var evalErr error
@@ -148,6 +153,9 @@ func (n *NodeVariable) Execute(state *EvalState) error {
 				val = v
 			}
 		}
+
+		// TODO: investigate. if the type of the variable is known, it is better to use an
+		// unknown value with this type instead of a dynamic value.
 
 		val, err := applyTypeAndDefaults(val, n.Type, mi.scope.addr.Key())
 		if err != nil {
@@ -223,12 +231,12 @@ var _ Referencer = (*NodeLocal)(nil)
 var _ Executable = (*NodeLocal)(nil)
 
 type NodeLocal struct {
-	*BaseNode
-	*AttributeReferencer
+	BaseNode
+	AttributeReferencer
 	Name string
 }
 
-func (n *NodeLocal) Execute(state *EvalState) error {
+func (n *NodeLocal) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		val, err := state.evalExpr(mi.scope, n.Attr.underlying.Expr, NoInstanceData)
 		if err != nil {
@@ -243,7 +251,7 @@ var _ Referencer = (*NodeProvider)(nil)
 var _ Executable = (*NodeProvider)(nil)
 
 type NodeProvider struct {
-	*BaseNode
+	BaseNode
 	Name   string
 	Config *BlockConfig
 }
@@ -253,9 +261,10 @@ func (n *NodeProvider) References() []*Ref {
 	return travReferences(traversals)
 }
 
-func (n *NodeProvider) Execute(state *EvalState) error {
+func (n *NodeProvider) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
-		val, err := state.evalBlock(mi.scope, n.Config, NoInstanceData)
+		// TODO: if an error occurs, set a dynamic value or unknown value
+		val, err := state.evalBlock(mi.scope, n.Config.underlying.Body, n.Config.Spec(), NoInstanceData)
 		if err != nil {
 			return err
 		}
@@ -268,12 +277,12 @@ var _ Referencer = (*NodeOutput)(nil)
 var _ Executable = (*NodeOutput)(nil)
 
 type NodeOutput struct {
-	*BaseNode
-	*AttributeReferencer
+	BaseNode
+	AttributeReferencer
 	Name string
 }
 
-func (n *NodeOutput) Execute(state *EvalState) error {
+func (n *NodeOutput) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		val, err := state.evalExpr(mi.scope, n.Attr.underlying.Expr, NoInstanceData)
 		if err != nil {
@@ -287,9 +296,9 @@ func (n *NodeOutput) Execute(state *EvalState) error {
 var _ Referencer = (*ResourceNode)(nil)
 var _ Executable = (*ResourceNode)(nil)
 
-// Resource or Data block
+// ResourceNode represents a resource or block of data in the configuration
 type ResourceNode struct {
-	*BaseNode
+	BaseNode
 	Block *BlockConfig
 	Type  string
 	Name  string
@@ -301,7 +310,7 @@ func (n *ResourceNode) References() []*Ref {
 	return travReferences(traversals)
 }
 
-func (n *ResourceNode) Execute(state *EvalState) error {
+func (n *ResourceNode) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		expansion, err := expandBlock(state, mi.scope, n.Block)
 		if err != nil {
@@ -334,10 +343,10 @@ func (n *ResourceNode) Execute(state *EvalState) error {
 }
 
 func (n *ResourceNode) evalInstances(
-	state *EvalState, scope *Scope, exp nodeExpansion,
+	state *evalState, scope *Scope, exp nodeExpansion,
 ) (cty.Value, error) {
 	evalResource := func(key InstanceKey) (cty.Value, error) {
-		return n.evalInstance(state, scope, exp.Data(key))
+		return n.evalInstance(state, scope, key, exp.Data(key))
 	}
 
 	keyType, keys := exp.Keys()
@@ -374,20 +383,111 @@ func (n *ResourceNode) evalInstances(
 }
 
 func (n *ResourceNode) evalInstance(
-	state *EvalState, scope *Scope, data InstanceData,
+	state *evalState, scope *Scope, key InstanceKey, data InstanceData,
 ) (cty.Value, error) {
-	val, err := state.evalBlock(scope, n.Block, data)
+	spec := n.Block.Spec()
+	dynBody := state.expandBlock(scope, n.Block, spec, data)
+
+	refinedSpec := refineBlockSpec(dynBody, spec)
+	val, err := state.evalBlock(scope, dynBody, refinedSpec, data)
 	if err != nil {
 		return cty.DynamicVal, err
 	}
-	return val, nil
+
+	instance := &instanceConfig{
+		id:   uuid.NewString(),
+		body: dynBody,
+		spec: spec,
+	}
+
+	scope.resourceInstances[n.Addr.Instance(key)] = instance
+
+	if !val.Type().IsObjectType() {
+		return val, nil
+	}
+
+	unmarkedVal, _ := val.Unmark()
+	valueMap := unmarkedVal.AsValueMap()
+	if valueMap == nil {
+		valueMap = make(map[string]cty.Value)
+	}
+	typeLabel := n.Block.underlying.Labels[0]
+	presets := buildPresetValues(typeLabel, instance.id)
+	for name, presetValue := range presets {
+		if _, exists := valueMap[name]; !exists {
+			valueMap[name] = presetValue
+		}
+	}
+
+	postValues := buildPostValues(typeLabel, valueMap, instance.id)
+	maps.Copy(valueMap, postValues)
+	return cty.ObjectVal(valueMap), nil
+}
+
+var resourceRandomAttributes = map[string][]string{
+	// If the user leaves the name blank, Terraform will automatically generate a unique name
+	"aws_launch_template": {"name"},
+	"random_id":           {"hex", "dec", "b64_url", "b64_std"},
+	"random_password":     {"result", "bcrypt_hash"},
+	"random_string":       {"result"},
+	"random_bytes":        {"base64", "hex"},
+	"random_uuid":         {"result"},
+}
+
+func buildPresetValues(typeLabel string, id string) map[string]cty.Value {
+	vals := make(map[string]cty.Value)
+
+	vals["id"] = cty.StringVal(id)
+
+	if strings.HasPrefix(typeLabel, "aws_") {
+		vals["arn"] = cty.StringVal(id)
+	}
+
+	switch typeLabel {
+	// workaround for weird iam feature
+	case "aws_iam_policy_document":
+		vals["json"] = cty.StringVal(id)
+	// allow referencing the current region name
+	case "aws_region":
+		vals["name"] = cty.StringVal("current-region")
+	case "random_integer":
+		//nolint:gosec
+		vals["result"] = cty.NumberIntVal(rand.Int64())
+	}
+
+	if attrs, exists := resourceRandomAttributes[typeLabel]; exists {
+		for _, attr := range attrs {
+			vals[attr] = cty.StringVal(uuid.New().String())
+		}
+	}
+	return vals
+}
+
+func buildPostValues(typeLabel string, current map[string]cty.Value, id string) map[string]cty.Value {
+	vals := make(map[string]cty.Value)
+	if strings.HasPrefix(typeLabel, "aws_s3_bucket") {
+		if bucket, ok := current["bucket"]; ok {
+			vals["id"] = bucket
+		} else {
+			vals["bucket"] = cty.StringVal(id)
+		}
+	}
+
+	if typeLabel == "aws_s3_bucket" {
+		var bucketName string
+		if bucket := current["bucket"]; !bucket.IsNull() && bucket.IsKnown() && bucket.Type().Equals(cty.String) {
+			bucketName = bucket.AsString()
+		}
+		vals["arn"] = cty.StringVal(fmt.Sprintf("arn:aws:s3:::%s", bucketName))
+	}
+	return vals
 }
 
 var _ Referencer = (*NodeModuleCall)(nil)
 var _ Executable = (*NodeModuleCall)(nil)
 
 type NodeModuleCall struct {
-	*BaseNode
+	BaseNode
 	Block *BlockConfig
 	Name  string
 	Call  *ModuleCall
@@ -408,7 +508,7 @@ func (n *NodeModuleCall) References() []*Ref {
 	return refs
 }
 
-func (n *NodeModuleCall) Execute(state *EvalState) error {
+func (n *NodeModuleCall) Execute(state *evalState) error {
 	return state.forEachModule(n.Module(), func(mi *ModuleInstance) error {
 		exp, err := expandBlock(state, mi.scope, n.Block)
 		if err != nil {
@@ -420,14 +520,27 @@ func (n *NodeModuleCall) Execute(state *EvalState) error {
 }
 
 type NodeModuleExit struct {
-	*BaseNode
+	BaseNode
 }
 
 func (n *NodeModuleExit) ID() string {
 	return n.id + ":exit"
 }
 
-func expandBlock(state *EvalState, scope *Scope, block *BlockConfig) (nodeExpansion, error) {
+// TODO: Introduce value marks for unexpanded blocks
+//
+// When a block cannot be fully expanded (e.g., count or for_each is unknown),
+// wrap its resulting cty.Value with a mark/capsule indicating:
+//   - the block is unexpanded
+//   - the source block that caused the unknown value
+//   - the reason (e.g., "count unknown", "for_each unknown")
+//
+// This allows:
+//   - tracing which values are affected by unexpanded blocks
+//   - propagating unknowns during evaluation
+//   - optionally filtering or special-handling results that depend on
+//     values originating from unexpanded blocks, to reduce noise
+func expandBlock(state *evalState, scope *Scope, block *BlockConfig) (nodeExpansion, error) {
 	if attr, exists := block.attrs["count"]; exists {
 		countVal, err := state.evalExpr(scope, attr.underlying.Expr, NoInstanceData)
 		if err != nil {

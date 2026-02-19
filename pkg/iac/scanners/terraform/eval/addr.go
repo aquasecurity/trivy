@@ -50,7 +50,7 @@ type ModuleCallOutputAddr struct {
 	Name string
 }
 
-func (r ModuleCallOutputAddr) Key() string { return r.Call.Key() + ".output." + r.Name }
+func (a ModuleCallOutputAddr) Key() string { return a.Call.Key() + ".output." + a.Name }
 
 type ResourceMode int
 
@@ -76,15 +76,35 @@ type ResourceAddr struct {
 	Type, Name string
 }
 
-func (r ResourceAddr) Key() string {
-	switch r.Mode {
+func (a ResourceAddr) Key() string {
+	switch a.Mode {
 	case ManagedMode:
-		return "resource." + r.Type + "." + r.Name
+		return "resource." + a.Type + "." + a.Name
 	case DataMode:
-		return "data." + r.Type + "." + r.Name
+		return "data." + a.Type + "." + a.Name
 	default:
-		panic(fmt.Sprintf("unexpected resource mode: %d", r.Mode))
+		panic(fmt.Sprintf("unexpected resource mode: %d", a.Mode))
 	}
+}
+
+func (a ResourceAddr) Instance(key InstanceKey) ResourceInstanceAddr {
+	return ResourceInstanceAddr{
+		Resource: a,
+		Index:    key,
+	}
+}
+
+type ResourceInstanceAddr struct {
+	Resource ResourceAddr
+	Index    InstanceKey
+}
+
+func (r ResourceInstanceAddr) Key() string {
+	k := r.Resource.Key()
+	if r.Index != NoKey {
+		k += r.Key()
+	}
+	return k
 }
 
 var RootModule ModuleAddr
@@ -94,16 +114,7 @@ type ModuleAddr []string
 func (a ModuleAddr) IsRoot() bool { return len(a) == 0 }
 
 func (a ModuleAddr) Equal(other ModuleAddr) bool {
-	if len(a) != len(other) {
-		return false
-	}
-
-	for i := range len(a) - 1 {
-		if a[i] != other[i] {
-			return false
-		}
-	}
-	return true
+	return slices.Equal(a, other)
 }
 
 func (a ModuleAddr) Key() string {
@@ -121,7 +132,7 @@ func (a ModuleAddr) Parent() ModuleAddr {
 	if a.IsRoot() {
 		panic("module is root")
 	}
-	return a[:len(a)-1]
+	return slices.Clone(a[:len(a)-1])
 }
 
 func (a ModuleAddr) Call(name string) ModuleAddr {

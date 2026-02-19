@@ -29,25 +29,27 @@ func parseReference(trav hcl.Traversal) Address {
 
 	switch root {
 	case "local":
-		if len(trav) < 2 {
+		name, _, ok := parseSingleAttrReference(trav)
+		if !ok {
 			return nil
 		}
-		attr := trav[1].(hcl.TraverseAttr).Name
-		return LocalAddr{Name: attr}
+		return LocalAddr{Name: name}
 	case "var":
-		if len(trav) < 2 {
+		name, _, ok := parseSingleAttrReference(trav)
+		if !ok {
 			return nil
 		}
-		name := trav[1].(hcl.TraverseAttr).Name
 		return VariableAddr{Name: name}
 	case "module":
-		if len(trav) < 2 {
+		name, remain, ok := parseSingleAttrReference(trav)
+		if !ok {
 			return nil
 		}
+
 		moduleCall := ModuleCallAddr{
-			Name: trav[1].(hcl.TraverseAttr).Name,
+			Name: name,
 		}
-		remain := trav[2:]
+
 		if len(remain) == 0 {
 			return moduleCall
 		}
@@ -67,19 +69,45 @@ func parseReference(trav hcl.Traversal) Address {
 		if len(trav) < 3 {
 			return nil
 		}
-		typ := trav[1].(hcl.TraverseAttr).Name
-		name := trav[2].(hcl.TraverseAttr).Name
-		return ResourceAddr{Mode: DataMode, Type: typ, Name: name}
-	case "each":
-		return ForEachAddr{Name: trav[1].(hcl.TraverseAttr).Name}
-	case "count":
-		return CountAddr{Name: trav[1].(hcl.TraverseAttr).Name}
-	default:
-		if len(trav) < 2 {
+		typ, remain, ok := parseSingleAttrReference(trav)
+		if !ok {
 			return nil
 		}
-		typ := root
-		name := trav[1].(hcl.TraverseAttr).Name
-		return ResourceAddr{Mode: ManagedMode, Type: typ, Name: name}
+		name := remain[0].(hcl.TraverseAttr).Name
+		return ResourceAddr{Mode: DataMode, Type: typ, Name: name}
+	case "each":
+		name, _, ok := parseSingleAttrReference(trav)
+		if !ok {
+			return nil
+		}
+		return ForEachAddr{Name: name}
+	case "count":
+		name, _, ok := parseSingleAttrReference(trav)
+		if !ok {
+			return nil
+		}
+		return CountAddr{Name: name}
+	default:
+		name, _, ok := parseSingleAttrReference(trav)
+		if !ok {
+			return nil
+		}
+		return ResourceAddr{Mode: ManagedMode, Type: root, Name: name}
 	}
+}
+
+func parseSingleAttrReference(trav hcl.Traversal) (string, hcl.Traversal, bool) {
+	if len(trav) < 2 {
+		return "", nil, false
+	}
+
+	if _, ok := trav[0].(hcl.TraverseRoot); !ok {
+		return "", nil, false
+	}
+
+	attr, ok := trav[1].(hcl.TraverseAttr)
+	if !ok {
+		return "", nil, false
+	}
+	return attr.Name, trav[2:], true
 }

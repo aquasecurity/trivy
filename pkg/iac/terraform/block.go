@@ -11,6 +11,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/hcldec"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/gocty"
@@ -36,24 +37,67 @@ type Block struct {
 	reference    Reference
 }
 
+type newBlockOpts struct {
+	id            string
+	index         cty.Value
+	spec          hcldec.Spec
+	rangeResolver RangeResolver
+}
+
+type RangeResolver func(pos hcl.Pos) hcl.Range
+
+type NewBlockOption func(*newBlockOpts)
+
+func WithID(id string) NewBlockOption {
+	return func(nbo *newBlockOpts) {
+		nbo.id = id
+	}
+}
+
+func WithIndex(index cty.Value) NewBlockOption {
+	return func(nbo *newBlockOpts) {
+		nbo.index = index
+	}
+}
+
+func WithRangeResolver(r RangeResolver) NewBlockOption {
+	return func(nbo *newBlockOpts) {
+		nbo.rangeResolver = r
+	}
+}
+
+func WithSpec(spec hcldec.Spec) NewBlockOption {
+	return func(nbo *newBlockOpts) {
+		nbo.spec = spec
+	}
+}
+
 func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, parentBlock *Block, moduleSource string,
-	moduleFS fs.FS, index ...cty.Value,
+	moduleFS fs.FS, opts ...NewBlockOption,
 ) *Block {
+
 	if ctx == nil {
 		ctx = context.NewContext(&hcl.EvalContext{}, nil)
 	}
 
-	// shallow copy
-	blockCopy := *hclBlock
+	nbo := &newBlockOpts{}
+	for _, opt := range opts {
+		opt(nbo)
+	}
 
 	var r hcl.Range
-	switch body := blockCopy.Body.(type) {
-	case *hclsyntax.Body:
-		r = body.SrcRange
-	default:
-		r = blockCopy.DefRange
-		r.End = blockCopy.Body.MissingItemRange().End
+	if nbo.rangeResolver != nil {
+		r = nbo.rangeResolver(hclBlock.DefRange.Start)
+	} else {
+		switch body := hclBlock.Body.(type) {
+		case *hclsyntax.Body:
+			r = body.SrcRange
+		default:
+			r = hclBlock.DefRange
+			r.End = hclBlock.Body.MissingItemRange().End
+		}
 	}
+
 	moduleName := "root"
 	if moduleBlock != nil {
 		moduleName = moduleBlock.FullName()
@@ -70,24 +114,24 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 	// if there are no labels then use the block type
 	// this is for the case where "special" keywords like "resource" are used
 	// as normal block names in top level blocks - see issue tfsec#1528 for an example
-	if blockCopy.Type != "resource" || len(blockCopy.Labels) == 0 {
-		parts = append(parts, blockCopy.Type)
+	if hclBlock.Type != "resource" || len(hclBlock.Labels) == 0 {
+		parts = append(parts, hclBlock.Type)
 	}
-	parts = append(parts, blockCopy.Labels...)
+	parts = append(parts, hclBlock.Labels...)
 
 	var parent string
 	if moduleBlock != nil {
 		parent = moduleBlock.FullName()
 	}
 	ref, _ := newReference(parts, parent)
-	if len(index) > 0 {
-		key := index[0]
+	if nbo.index != cty.NilVal {
+		key := nbo.index
 		if !key.IsNull() && key.IsKnown() {
-			if n := len(blockCopy.Labels); n > 0 {
-				name := instanceName(blockCopy.Labels[n-1], key)
-				labels := slices.Clone(blockCopy.Labels)
+			if n := len(hclBlock.Labels); n > 0 {
+				name := instanceName(hclBlock.Labels[n-1], key)
+				labels := slices.Clone(hclBlock.Labels)
 				labels[n-1] = name
-				blockCopy.Labels = labels
+				hclBlock.Labels = labels
 			}
 			ref.SetKey(key)
 		}
@@ -101,10 +145,15 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 		metadata = metadata.WithParent(moduleBlock.GetMetadata())
 	}
 
+	id := nbo.id
+	if id == "" {
+		id = uuid.NewString()
+	}
+
 	b := Block{
-		id:           uuid.NewString(),
+		id:           id,
 		context:      ctx,
-		hclBlock:     &blockCopy,
+		hclBlock:     hclBlock,
 		moduleBlock:  moduleBlock,
 		moduleSource: moduleSource,
 		moduleFS:     moduleFS,
@@ -113,25 +162,41 @@ func NewBlock(hclBlock *hcl.Block, ctx *context.Context, moduleBlock *Block, par
 		reference:    *ref,
 	}
 
-	var children Blocks
-	switch body := blockCopy.Body.(type) {
+	switch body := hclBlock.Body.(type) {
 	case *hclsyntax.Body:
 		for _, b2 := range body.Blocks {
-			children = append(children, NewBlock(b2.AsHCLBlock(), ctx, moduleBlock, &b, moduleSource, moduleFS))
+			b.childBlocks = append(b.childBlocks, NewBlock(b2.AsHCLBlock(), ctx, moduleBlock, &b, moduleSource, moduleFS))
+		}
+		for _, attr := range body.Attributes {
+			b.attributes = append(b.attributes,
+				NewAttribute(attr.AsHCLAttribute(), ctx, moduleName, metadata, *ref, moduleSource, moduleFS),
+			)
 		}
 	default:
-		content, _, diag := blockCopy.Body.PartialContent(Schema)
-		if diag == nil {
-			for _, hb := range content.Blocks {
-				children = append(children, NewBlock(hb, ctx, moduleBlock, &b, moduleSource, moduleFS))
+		if nbo.spec != nil {
+			schema := hcldec.ImpliedSchema(nbo.spec)
+			content, _, diags := hclBlock.Body.PartialContent(schema)
+			if !diags.HasErrors() {
+				childSpecs := hcldec.ChildBlockTypes(nbo.spec)
+				for _, hb := range content.Blocks {
+					if childSpec, exists := childSpecs[hb.Type]; exists {
+						b.childBlocks = append(b.childBlocks,
+							NewBlock(hb, ctx, moduleBlock, &b, moduleSource, moduleFS,
+								WithSpec(childSpec), WithRangeResolver(nbo.rangeResolver),
+							),
+						)
+					} else {
+						panic("TODO")
+					}
+				}
+
+				for _, attr := range content.Attributes {
+					b.attributes = append(b.attributes,
+						NewAttribute(attr, ctx, moduleName, metadata, *ref, moduleSource, moduleFS),
+					)
+				}
 			}
 		}
-	}
-
-	b.childBlocks = children
-
-	for _, attr := range b.createAttributes() {
-		b.attributes = append(b.attributes, NewAttribute(attr, ctx, moduleName, metadata, *ref, moduleSource, moduleFS))
 	}
 
 	return &b
@@ -173,8 +238,8 @@ func (b *Block) IsExpanded() bool {
 	return b.expanded
 }
 
-func (b *Block) inherit(ctx *context.Context, index ...cty.Value) *Block {
-	return NewBlock(b.copyBlock(), ctx, b.moduleBlock, b.parentBlock, b.moduleSource, b.moduleFS, index...)
+func (b *Block) inherit(ctx *context.Context, opts ...NewBlockOption) *Block {
+	return NewBlock(b.copyBlock(), ctx, b.moduleBlock, b.parentBlock, b.moduleSource, b.moduleFS, opts...)
 }
 
 func (b *Block) copyBlock() *hcl.Block {
@@ -191,7 +256,7 @@ func (b *Block) childContext() *context.Context {
 
 func (b *Block) Clone(index cty.Value) *Block {
 	childCtx := b.childContext()
-	clone := b.inherit(childCtx, index)
+	clone := b.inherit(childCtx, WithIndex(index))
 
 	if len(clone.hclBlock.Labels) > 0 {
 		labels := slices.Clone(clone.hclBlock.Labels)
@@ -253,27 +318,6 @@ func (b *Block) GetFirstMatchingBlock(names ...string) *Block {
 		}
 	}
 	return returnBlock
-}
-
-func (b *Block) createAttributes() hcl.Attributes {
-	switch body := b.hclBlock.Body.(type) {
-	case *hclsyntax.Body:
-		attributes := make(hcl.Attributes)
-		for _, a := range body.Attributes {
-			attributes[a.Name] = a.AsHCLAttribute()
-		}
-		return attributes
-	default:
-		_, body, diag := b.hclBlock.Body.PartialContent(Schema)
-		if diag != nil {
-			return nil
-		}
-		attrs, diag := body.JustAttributes()
-		if diag != nil {
-			return nil
-		}
-		return attrs
-	}
 }
 
 func (b *Block) GetBlock(name string) *Block {

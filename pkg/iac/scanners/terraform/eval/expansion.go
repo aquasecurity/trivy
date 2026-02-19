@@ -81,7 +81,20 @@ func (e expansionForEach) Data(key InstanceKey) InstanceData {
 }
 
 func expandCount(countVal cty.Value) (int, error) {
-	if countVal.IsNull() || !countVal.IsKnown() || countVal.Type() != cty.Number {
+	// If count is unknown, mark the block as unexpanded.
+	// Assume a single instance for evaluation purposes and treat
+	// contextual values (e.g. count.index) as unknown.
+	//
+	// A unexpanded block may or may not exist at runtime; this uncertainty is
+	// handled during evaluation.
+	//
+	// In the future, we may add an option to skip scanning unexpanded blocks
+	// to reduce noise at the cost of analysis coverage.
+	if !countVal.IsKnown() {
+		return 1, nil
+	}
+
+	if countVal.IsNull() || countVal.Type() != cty.Number {
 		return -1, fmt.Errorf("count is null, unkown or not a number")
 	}
 	count, _ := countVal.AsBigFloat().Int64()
@@ -90,6 +103,9 @@ func expandCount(countVal cty.Value) (int, error) {
 
 func expandForEach(forEachVal cty.Value) (map[string]cty.Value, error) {
 	if forEachVal.IsNull() || !forEachVal.IsKnown() {
+		// TODO: mark the block as unexpanded (similar to count unknown)
+		// Assume a single instance for evaluation purposes and treat
+		// contextual values (e.g. each.key, each.value) as unknown.
 		return nil, fmt.Errorf("for-each is null or unkown")
 	}
 	if !forEachVal.CanIterateElements() {

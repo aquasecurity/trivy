@@ -9,7 +9,7 @@ import (
 	"github.com/zclconf/go-cty/cty"
 )
 
-func Eval(ctx context.Context, fsys fs.FS, root string, opts *EvalOpts) (*GraphEvaluator, error) {
+func Eval(ctx context.Context, fsys fs.FS, root string, opts *EvalOpts) (*graphEvaluator, error) {
 	if opts == nil {
 		opts = &EvalOpts{
 			Workspace: "default",
@@ -32,24 +32,26 @@ func Eval(ctx context.Context, fsys fs.FS, root string, opts *EvalOpts) (*GraphE
 		opts.Logger = log.WithPrefix("tf-eval")
 	}
 
-	modResolver := NewModuleResolver(
-		opts.Logger.With(log.Prefix("mod-resolver")),
+	modResolver := newModuleResolver(
+		opts.Logger.With(log.Prefix("module-resolver")),
 		WithAllowDownloads(opts.AllowDownloads),
 		WithSkipCachedModules(opts.SkipCachedModules),
+		WithStopOnHCLError(opts.StopOnHCLError),
+		WithSkipPaths(opts.SkipPaths),
 	)
 
-	rootMod, err := modResolver.Resolve(ctx, fsys, root)
+	rootMod, err := modResolver.resolve(ctx, fsys, root)
 	if err != nil {
 		return nil, err
 	}
 
-	g := NewGraph()
-	if err := g.Build(rootMod); err != nil {
+	g := newGraph()
+	if err := g.build(rootMod); err != nil {
 		return nil, err
 	}
 
-	e := NewEvaluator(g, rootMod, opts)
-	if err := e.EvalGraph(g); err != nil {
+	e := newEvaluator(g, rootMod, opts)
+	if err := e.evalGraph(); err != nil {
 		return nil, err
 	}
 	return e, nil

@@ -2,42 +2,52 @@ package eval
 
 import (
 	"fmt"
+	"io/fs"
 	"log/slog"
 	"maps"
+	"path"
 	"path/filepath"
+	"slices"
+	"sort"
+	"strings"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/dynblock"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/hashicorp/hcl/v2/hcldec"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
+	"github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/funcs"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type GraphEvaluator struct {
+type graphEvaluator struct {
 	graph  *graph
-	state  *EvalState
+	state  *evalState
 	logger *log.Logger
 }
 
 type EvalOpts struct {
 	Logger *log.Logger
 
-	Workspace         string
-	WorkDir           string
 	AllowDownloads    bool
 	SkipCachedModules bool
+	StopOnHCLError    bool
+	SkipPaths         []string
+	Workspace         string
+	WorkDir           string
 
 	InputVars map[string]cty.Value
 }
 
-func NewEvaluator(graph *graph, rootModule *ModuleConfig, opts *EvalOpts) *GraphEvaluator {
-	e := &GraphEvaluator{
+func newEvaluator(graph *graph, rootModule *ModuleConfig, opts *EvalOpts) *graphEvaluator {
+	e := &graphEvaluator{
 		graph:  graph,
 		state:  newEvalState(graph, rootModule, opts),
 		logger: opts.Logger.With(log.Prefix("evaluator")),
@@ -45,31 +55,50 @@ func NewEvaluator(graph *graph, rootModule *ModuleConfig, opts *EvalOpts) *Graph
 	return e
 }
 
-func (e *GraphEvaluator) EvalGraph(g *graph) error {
-	order, err := g.TopoSort()
+func (e *graphEvaluator) evalGraph() error {
+	order, err := e.graph.TopoSort()
 	if err != nil {
-		return err
+		return fmt.Errorf("sort graph: %w", err)
 	}
 
-	orderStr := make([]string, len(order))
-	for i, n := range order {
-		orderStr[i] = n.ID()
+	missingVars := collectMissingRootVariables(e.graph.nodes, e.state.opts.InputVars)
+	if len(missingVars) > 0 {
+		sort.Strings(missingVars)
+		e.logger.Warn(
+			"Variable values were not found in the environment or variable files. Evaluating may not work correctly.",
+			log.String("variables", strings.Join(missingVars, ", ")),
+		)
 	}
-	e.logger.Debug("Start eval", slog.Any("order", orderStr))
+
+	e.logger.Debug("Start eval", slog.Any("order", nodeIDs(order)))
 	if err := e.eval(order); err != nil {
 		return err
 	}
 	return nil
 }
 
-func (e *GraphEvaluator) eval(order []Node) error {
+// collectMissingRootVariables returns the names of root variables
+// that are missing from input vars and have no default value.
+func collectMissingRootVariables(nodes map[string]Node, inputVars map[string]cty.Value) []string {
+	var missing []string
+	for _, node := range nodes {
+		if n, ok := node.(*NodeRootVariable); ok {
+			if _, exists := inputVars[n.Name]; !exists && n.Default == nil {
+				missing = append(missing, n.Name)
+			}
+		}
+	}
+	return missing
+}
+
+func (e *graphEvaluator) eval(order []Node) error {
 	for _, node := range order {
 		evaluatable, ok := node.(Executable)
 		if !ok {
 			continue
 		}
-		id := node.ID()
-		e.logger.Debug("Execute node", slog.String("id", id))
+
+		e.logger.Debug("Execute node", slog.String("id", node.ID()))
 		if err := evaluatable.Execute(e.state); err != nil {
 			e.logger.Debug("Failed to execute node", log.String("node", node.ID()), log.Err(err))
 			continue
@@ -78,12 +107,16 @@ func (e *GraphEvaluator) eval(order []Node) error {
 	return nil
 }
 
-func (e *GraphEvaluator) BuildTerraformModels() terraform.Modules {
+func (e *graphEvaluator) BuildTerraformModels() terraform.Modules {
 	return e.buildModules(nil, e.state.root, NoKeyType, NoInstanceData)
 }
 
-func (e *GraphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstance, keyType KeyInstanceType, data InstanceData) terraform.Modules {
+func (e *graphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstance, keyType KeyInstanceType, data InstanceData) terraform.Modules {
 	modConfig := e.state.config.Descendant(mi.scope.addr.Module())
+	// TODO: is it safe to just skip unresolved modules?
+	if modConfig.Unresolvable {
+		return nil
+	}
 	ret := make(terraform.Modules, 0, len(mi.childInstances)+1)
 
 	scopeCtx := e.buildModuleScopeContext(mi)
@@ -97,11 +130,12 @@ func (e *GraphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstan
 			modBlockIndex = key.Value()
 		}
 		modBlock = terraform.NewBlock(
-			modConfig.Block.underlying,
+			modConfig.Config.underlying,
 			context.NewContext(modInstCtx, nil),
 			nil, nil,
-			modConfig.LogicalSource,
-			modConfig.FS, modBlockIndex,
+			string(modConfig.SourceChain),
+			modConfig.FS,
+			terraform.WithIndex(modBlockIndex),
 		)
 		blocks = append(blocks, modBlock)
 	}
@@ -114,30 +148,46 @@ func (e *GraphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstan
 			resName := block.underlying.Labels[1]
 			addr := ResourceAddr{Mode: modeByBlockType(blockType), Type: resType, Name: resName}
 			mi.forEachResource(addr, func(keyType KeyInstanceType, key InstanceKey, data InstanceData) error {
+				instAddr := addr.Instance(key)
+				instance := mi.scope.resourceInstances[instAddr]
 				blockCtx := e.buildInstanceScopeContext(scopeCtx, keyType, data)
 				var index cty.Value
 				if key != NoKey {
 					index = key.Value()
 				}
 
-				block := terraform.NewBlock(
-					block.underlying, context.NewContext(blockCtx, nil),
-					modBlock, nil, modConfig.LogicalSource, modConfig.FS, index,
+				// Shallow copy
+				copied := *block.underlying
+				copied.Labels = slices.Clone(block.underlying.Labels)
+				copied.Body = instance.body
+
+				tfBlock := terraform.NewBlock(
+					&copied, context.NewContext(blockCtx, nil),
+					modBlock, nil, string(modConfig.SourceChain), modConfig.FS,
+					terraform.WithIndex(index),
+					terraform.WithID(instance.id),
+					terraform.WithSpec(instance.spec),
+					terraform.WithRangeResolver(func(pos hcl.Pos) hcl.Range {
+						rng, _ := innermostBodyRangeAtPos(block.underlying, pos)
+						return rng
+					}),
 				)
-				blocks = append(blocks, block)
+				blocks = append(blocks, tfBlock)
 				return nil
 			})
-		case "variable", "provider", "module", "output":
+		case "variable", "locals", "provider", "module", "output":
 			blockCtx := e.buildInstanceScopeContext(scopeCtx, NoKeyType, NoInstanceData)
 			block := terraform.NewBlock(
 				block.underlying, context.NewContext(blockCtx, nil),
-				modBlock, nil, modConfig.LogicalSource, modConfig.FS,
+				modBlock, nil, string(modConfig.SourceChain), modConfig.FS,
 			)
 			blocks = append(blocks, block)
 		}
 	}
 
-	module := terraform.NewModule(e.state.config.Dir, modConfig.FS, modConfig.Dir, blocks, nil)
+	// TODO: move rule parsing to the scanner
+	rules := parseIgnoreRules(modConfig)
+	module := terraform.NewModule(e.state.config.Path, modConfig.FS, modConfig.Path, blocks, rules)
 	module.SetParent(parent)
 
 	ret = append(ret, module)
@@ -151,7 +201,68 @@ func (e *GraphEvaluator) buildModules(parent *terraform.Module, mi *ModuleInstan
 	return ret
 }
 
-func (e *GraphEvaluator) buildModuleScopeContext(mi *ModuleInstance) *hcl.EvalContext {
+func parseIgnoreRules(config *ModuleConfig) ignore.Rules {
+	var rules ignore.Rules
+	entries, err := fs.ReadDir(config.FS, config.Path)
+	if err != nil {
+		return nil
+	}
+
+	for _, entry := range entries {
+		name := entry.Name()
+		if !(strings.HasSuffix(name, ".tf") || strings.HasSuffix(name, ".tofu")) {
+			continue
+		}
+		filePath := path.Join(config.Path, entry.Name())
+		data, err := fs.ReadFile(config.FS, filePath)
+		if err != nil {
+			continue
+		}
+
+		fileRules := ignore.Parse(
+			string(data),
+			filePath,
+			string(config.SourceChain),
+			&ignore.StringMatchParser{
+				SectionKey: "ws",
+			},
+			&ignore.ParamParser{},
+		)
+
+		rules = append(rules, fileRules...)
+	}
+	return rules
+}
+
+// TODO: add tests with dynamic blocks and json
+func innermostBodyRangeAtPos(block *hcl.Block, pos hcl.Pos) (hcl.Range, bool) {
+	if json.IsJSONBody(block.Body) {
+		return hcl.Range{
+			Filename: block.DefRange.Filename,
+			Start:    block.DefRange.Start,
+			End:      block.Body.MissingItemRange().End,
+		}, false
+	}
+
+	body, ok := block.Body.(*hclsyntax.Body)
+	if !ok {
+		return hcl.Range{}, false
+	}
+
+	if inner := body.InnermostBlockAtPos(pos); inner != nil {
+		if innerBody, ok := inner.Body.(*hclsyntax.Body); ok {
+			return innerBody.Range(), true
+		}
+	}
+
+	if block.DefRange.ContainsPos(pos) {
+		return body.Range(), true
+	}
+
+	return hcl.Range{}, false
+}
+
+func (e *graphEvaluator) buildModuleScopeContext(mi *ModuleInstance) *hcl.EvalContext {
 	scope := mi.scope
 	vals := map[string]cty.Value{}
 	maps.Copy(vals, buildResourceObjects(scope.resources))
@@ -172,9 +283,9 @@ func (e *GraphEvaluator) buildModuleScopeContext(mi *ModuleInstance) *hcl.EvalCo
 	vals["module"] = cty.ObjectVal(modules)
 
 	vals["path"] = cty.ObjectVal(map[string]cty.Value{
-		"root":   cty.StringVal(filepath.ToSlash(e.state.config.Dir)),
+		"root":   cty.StringVal(filepath.ToSlash(e.state.config.Path)),
 		"cwd":    cty.StringVal(filepath.ToSlash(e.state.opts.WorkDir)),
-		"module": cty.StringVal(filepath.ToSlash(mod.Dir)),
+		"module": cty.StringVal(filepath.ToSlash(mod.Path)),
 	})
 
 	vals["terraform"] = cty.ObjectVal(map[string]cty.Value{
@@ -182,12 +293,12 @@ func (e *GraphEvaluator) buildModuleScopeContext(mi *ModuleInstance) *hcl.EvalCo
 	})
 
 	return &hcl.EvalContext{
-		Functions: funcs.Functions(mod.FS, mod.Dir),
+		Functions: funcs.Functions(mod.FS, mod.Path),
 		Variables: vals,
 	}
 }
 
-func (e *GraphEvaluator) buildInstanceScopeContext(parent *hcl.EvalContext, keyType KeyInstanceType, data InstanceData) *hcl.EvalContext {
+func (e *graphEvaluator) buildInstanceScopeContext(parent *hcl.EvalContext, keyType KeyInstanceType, data InstanceData) *hcl.EvalContext {
 	childCtx := parent.NewChild()
 
 	vars := make(map[string]cty.Value)
@@ -222,6 +333,12 @@ func decodeVarType(expr hcl.Expression) (cty.Type, *typeexpr.Defaults, error) {
 	return t, def, nil
 }
 
+type instanceConfig struct {
+	id   string
+	body hcl.Body
+	spec hcldec.Spec
+}
+
 type Scope struct {
 	addr    ModuleInstanceAddr
 	locals  map[string]cty.Value
@@ -232,6 +349,8 @@ type Scope struct {
 
 	resources map[string]map[string]cty.Value
 	datas     map[string]map[string]cty.Value
+
+	resourceInstances map[ResourceInstanceAddr]*instanceConfig
 }
 
 func newScope(addr ModuleInstanceAddr) *Scope {
@@ -243,6 +362,8 @@ func newScope(addr ModuleInstanceAddr) *Scope {
 		providers: make(map[string]cty.Value),
 		resources: make(map[string]map[string]cty.Value),
 		datas:     make(map[string]map[string]cty.Value),
+
+		resourceInstances: make(map[ResourceInstanceAddr]*instanceConfig),
 	}
 }
 
@@ -326,7 +447,7 @@ func (m *ModuleInstance) instanceData() (InstanceData, error) {
 	return expansion.Data(lastStep.Key), nil
 }
 
-type EvalState struct {
+type evalState struct {
 	opts *EvalOpts
 
 	graph  *graph
@@ -334,8 +455,8 @@ type EvalState struct {
 	config *ModuleConfig
 }
 
-func newEvalState(g *graph, config *ModuleConfig, opts *EvalOpts) *EvalState {
-	return &EvalState{
+func newEvalState(g *graph, config *ModuleConfig, opts *EvalOpts) *evalState {
+	return &evalState{
 		opts:   opts,
 		graph:  g,
 		root:   newModuleInstance(RootModuleInstanceAddr, nil),
@@ -343,7 +464,7 @@ func newEvalState(g *graph, config *ModuleConfig, opts *EvalOpts) *EvalState {
 	}
 }
 
-func (s *EvalState) findModuleInstance(addr ModuleInstanceAddr) (*ModuleInstance, error) {
+func (s *evalState) findModuleInstance(addr ModuleInstanceAddr) (*ModuleInstance, error) {
 	mod := s.root
 	for i, step := range addr {
 		next, ok := mod.childInstances[step]
@@ -355,7 +476,7 @@ func (s *EvalState) findModuleInstance(addr ModuleInstanceAddr) (*ModuleInstance
 	return mod, nil
 }
 
-func (s *EvalState) forEachModule(addr ModuleAddr, fn func(*ModuleInstance) error) error {
+func (s *evalState) forEachModule(addr ModuleAddr, fn func(*ModuleInstance) error) error {
 	if addr.IsRoot() {
 		return fn(s.root)
 	}
@@ -367,6 +488,78 @@ func (s *EvalState) forEachModule(addr ModuleAddr, fn func(*ModuleInstance) erro
 		}
 	}
 	return errs
+}
+
+func (s *evalState) expandBlock(scope *Scope, config *BlockConfig, spec hcldec.Spec, data InstanceData) hcl.Body {
+	dynTraversals := dynblock.ExpandVariablesHCLDec(config.underlying.Body, spec)
+	dynRefs := travReferences(dynTraversals)
+	dynCtx := s.evalCtx(scope, dynRefs, data)
+	dynBody := dynblock.Expand(config.underlying.Body, dynCtx)
+	return dynBody
+}
+
+func (s *evalState) evalBlock(scope *Scope, body hcl.Body, spec hcldec.Spec, data InstanceData) (cty.Value, error) {
+	decTraversals := hcldec.Variables(body, spec)
+	decRefs := travReferences(decTraversals)
+	decCtx := s.evalCtx(scope, decRefs, data)
+	val, _, diags := hcldec.PartialDecode(body, spec, decCtx)
+	if diags.HasErrors() {
+		// TODO: log it?
+		// return cty.DynamicVal, diags
+	}
+	return val, nil
+}
+
+func refineBlockSpec(body hcl.Body, spec hcldec.Spec) hcldec.Spec {
+	refinedSpec := hcldec.ObjectSpec{}
+	objSpec := spec.(hcldec.ObjectSpec)
+	for name, val := range objSpec {
+		if attrSpec, ok := val.(*hcldec.AttrSpec); ok {
+			refinedSpec[name] = attrSpec
+		}
+	}
+
+	schema := hcldec.ImpliedSchema(spec)
+
+	content, _, diags := body.PartialContent(schema)
+	if diags.HasErrors() {
+		// TODO: log diags
+	}
+
+	if len(content.Blocks) > 0 {
+		childSpecs := hcldec.ChildBlockTypes(spec)
+		specsByType := make(map[string][]hcldec.Spec)
+
+		for _, child := range content.Blocks {
+			if childSpec, exists := childSpecs[child.Type]; exists {
+				childRefinedSpec := refineBlockSpec(child.Body, childSpec)
+				specsByType[child.Type] = append(specsByType[child.Type], childRefinedSpec)
+			}
+		}
+
+		buildEffectiveSpecs(refinedSpec, specsByType)
+	}
+	return refinedSpec
+}
+
+func buildEffectiveSpecs(dst hcldec.ObjectSpec, specsByType map[string][]hcldec.Spec) {
+	for typ, childSpecs := range specsByType {
+		if len(childSpecs) == 1 {
+			dst[typ] = &hcldec.BlockSpec{
+				TypeName: typ,
+				Nested:   childSpecs[0],
+			}
+		} else {
+			effectiveSpec := childSpecs[0]
+			for _, childSpec := range childSpecs[1:] {
+				effectiveSpec = mergeSpec(effectiveSpec, childSpec)
+			}
+			dst[typ] = &hcldec.BlockTupleSpec{
+				TypeName: typ,
+				Nested:   effectiveSpec,
+			}
+		}
+	}
 }
 
 func mergeSpec(a, b hcldec.Spec) hcldec.Spec {
@@ -385,31 +578,8 @@ func mergeSpec(a, b hcldec.Spec) hcldec.Spec {
 	}
 }
 
-func (s *EvalState) expandBlock(scope *Scope, block *BlockConfig, data InstanceData) (hcl.Body, error) {
-	// collect refs only for for_each
-	// TODO: expand dyn block
-	spec := block.Spec()
-	traversals := dynblock.ExpandVariablesHCLDec(block.underlying.Body, spec)
-	refs := travReferences(traversals)
-	evalCtx := s.evalCtx(scope, refs, data)
-	expanded := dynblock.Expand(block.underlying.Body, evalCtx)
-	return expanded, nil
-}
-
-func (s *EvalState) evalBlock(scope *Scope, config *BlockConfig, data InstanceData) (cty.Value, error) {
-	body, err := s.expandBlock(scope, config, data)
-	if err != nil {
-		// TODO: log
-		return cty.NilVal, err
-	}
-
-	traversals := dynblock.VariablesHCLDec(body, config.Spec())
-	refs := travReferences(traversals)
-	evalCtx := s.evalCtx(scope, refs, data)
-	return cty.ObjectVal(config.ToValue(evalCtx)), nil
-}
-
-func (s *EvalState) evalExpr(scope *Scope, expr hcl.Expression, data InstanceData) (cty.Value, error) {
+// TODO: return only cty.Value
+func (s *evalState) evalExpr(scope *Scope, expr hcl.Expression, data InstanceData) (cty.Value, error) {
 	evalCtx := s.evalCtx(scope, exprReferences(expr), data)
 	val, diags := expr.Value(evalCtx)
 	if diags.HasErrors() {
@@ -418,7 +588,7 @@ func (s *EvalState) evalExpr(scope *Scope, expr hcl.Expression, data InstanceDat
 	return val, nil
 }
 
-func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.EvalContext {
+func (s *evalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.EvalContext {
 	locals := make(map[string]cty.Value)
 	vars := make(map[string]cty.Value)
 	outputs := make(map[string]cty.Value)
@@ -497,7 +667,8 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 			}
 			into[a.Type][a.Name] = from[a.Type][a.Name]
 		default:
-			log.Debug("unsupported addr type", log.Any("type", fmt.Sprintf("%T", addr)))
+			s.opts.Logger.Debug("Unsupported address type, skipping",
+				log.Any("type", fmt.Sprintf("%T", addr)))
 		}
 	}
 
@@ -512,14 +683,15 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 	vals["count"] = cty.ObjectVal(count)
 
 	mod := s.config.Descendant(scope.addr.Module())
+	// TODO: handle this case
 	if mod == nil {
 		panic(fmt.Sprintf("module config %s not found", scope.addr.Module().Key()))
 	}
 
 	vals["path"] = cty.ObjectVal(map[string]cty.Value{
-		"root":   cty.StringVal(filepath.ToSlash(s.config.Dir)),
+		"root":   cty.StringVal(filepath.ToSlash(s.config.Path)),
 		"cwd":    cty.StringVal(filepath.ToSlash(s.opts.WorkDir)),
-		"module": cty.StringVal(filepath.ToSlash(mod.Dir)),
+		"module": cty.StringVal(filepath.ToSlash(mod.Path)),
 	})
 
 	vals["terraform"] = cty.ObjectVal(map[string]cty.Value{
@@ -527,12 +699,12 @@ func (s *EvalState) evalCtx(scope *Scope, refs []*Ref, data InstanceData) *hcl.E
 	})
 
 	return &hcl.EvalContext{
-		Functions: funcs.Functions(mod.FS, mod.Dir),
+		Functions: funcs.Functions(mod.FS, mod.Path),
 		Variables: vals,
 	}
 }
 
-func (s *EvalState) prepareModules(modInst *ModuleInstance, name string) cty.Value {
+func (s *evalState) prepareModules(modInst *ModuleInstance, name string) cty.Value {
 	evalModule := func(key InstanceKey) cty.Value {
 		step := ModuleAddrStep{
 			Name: name,

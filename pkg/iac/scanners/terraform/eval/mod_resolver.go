@@ -17,33 +17,47 @@ import (
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
 
-type ModuleResolver struct {
+type moduleResolver struct {
 	logger *log.Logger
 	client *http.Client
 
 	allowDownloads    bool
 	skipCachedModules bool
+	stopOnHCLError    bool
+	skipPaths         []string
 
 	modMetadata *ModulesMetadata
 	rootPath    string
 }
 
-type ModResolverOption func(r *ModuleResolver)
+type ModResolverOption func(r *moduleResolver)
 
 func WithAllowDownloads(allow bool) ModResolverOption {
-	return func(r *ModuleResolver) {
+	return func(r *moduleResolver) {
 		r.allowDownloads = allow
 	}
 }
 
 func WithSkipCachedModules(skip bool) ModResolverOption {
-	return func(r *ModuleResolver) {
+	return func(r *moduleResolver) {
 		r.skipCachedModules = skip
 	}
 }
 
-func NewModuleResolver(logger *log.Logger, opts ...ModResolverOption) *ModuleResolver {
-	r := &ModuleResolver{
+func WithStopOnHCLError(stop bool) ModResolverOption {
+	return func(r *moduleResolver) {
+		r.stopOnHCLError = stop
+	}
+}
+
+func WithSkipPaths(dirs []string) ModResolverOption {
+	return func(r *moduleResolver) {
+		r.skipPaths = dirs
+	}
+}
+
+func newModuleResolver(logger *log.Logger, opts ...ModResolverOption) *moduleResolver {
+	r := &moduleResolver{
 		logger: logger,
 		client: xhttp.Client(xhttp.WithTimeout(5 * time.Second)),
 	}
@@ -54,7 +68,7 @@ func NewModuleResolver(logger *log.Logger, opts ...ModResolverOption) *ModuleRes
 	return r
 }
 
-func (r *ModuleResolver) Resolve(ctx context.Context, fsys fs.FS, root string) (*ModuleConfig, error) {
+func (r *moduleResolver) resolve(ctx context.Context, fsys fs.FS, root string) (*ModuleConfig, error) {
 	r.rootPath = root
 
 	fakeCall := ModuleCall{
@@ -81,51 +95,68 @@ func (r *ModuleResolver) Resolve(ctx context.Context, fsys fs.FS, root string) (
 	}
 	rootCfg.Name = "root"
 	rootCfg.FS = fsys
-	rootCfg.Dir = root
+	rootCfg.Path = root
 
 	return rootCfg, nil
 }
 
-func (r *ModuleResolver) resolveChildren(ctx context.Context, mc *ModuleCall, addr ModuleAddr, parentLogicalSource string) (*ModuleConfig, error) {
-	mod, err := r.loadModule(ctx, addr, mc, parentLogicalSource)
+func (r *moduleResolver) resolveChildren(ctx context.Context, mc *ModuleCall, addr ModuleAddr, sourceChain SourceChain) (*ModuleConfig, error) {
+	mod, err := r.loadModule(ctx, addr, mc, sourceChain)
 	if err != nil {
-		return nil, err
+		r.logger.Error("Failed to load module",
+			log.String("addr", addr.Key()),
+			log.String("source", mc.Source),
+			log.Err(err))
+
+		// If the module fails to load, we return the module configuration without any blocks or module calls.
+		// We do not return an error message, which allows us to partially evaluate the configuration of the module
+		// that called this one. All output variables of such a module will be considered dynamic.
+		// We also mark the configuration as unresolvable.
+		// This flag is only used when building Terraform models for scanning and is ignored during evaluation.
+		return &ModuleConfig{
+			ModuleCalls:  make(map[string]*ModuleCall),
+			Unresolvable: true,
+		}, nil
 	}
 
 	for _, childMc := range mod.ModuleCalls {
-		child, err := r.resolveChildren(ctx, childMc, addr.Call(childMc.Name), mod.LogicalSource)
+		child, err := r.resolveChildren(ctx, childMc, addr.Call(childMc.Name), mod.SourceChain)
 		if err != nil {
 			return nil, err
 		}
 		child.Parent = mod
 		child.Name = childMc.Name
-		child.FS = childMc.FS
-		child.Dir = childMc.Path
-		child.Block = childMc.Config
+		child.Config = childMc.Config
 		mod.Children = append(mod.Children, child)
 	}
 	return mod, nil
 }
 
-func (r *ModuleResolver) loadModule(ctx context.Context, addr ModuleAddr, mc *ModuleCall, parentLogicalSource string) (*ModuleConfig, error) {
+func (r *moduleResolver) loadModule(ctx context.Context, addr ModuleAddr, mc *ModuleCall, sourceChain SourceChain) (*ModuleConfig, error) {
 	if r.modMetadata != nil {
-		mod, err := r.loadModuleFromTerraformCache(ctx, addr, mc)
-		if err == nil {
+		mod, ok := r.loadModuleFromTerraformCache(ctx, addr, mc)
+		// if for some reason it was not possible to load the module from the cache,
+		// then ignore the error and try to load it in the usual way.
+		if ok {
 			r.logger.Debug("Using module from Terraform cache .terraform/modules",
 				log.String("source", mc.Source))
 			return mod, nil
 		}
 	}
 
-	mod, err := r.loadExternalModule(ctx, addr, mc, parentLogicalSource)
+	mod, err := r.loadModuleFromSource(ctx, addr, mc, sourceChain)
 	if err != nil {
 		return nil, err
 	}
 	return mod, nil
 }
 
-func (r *ModuleResolver) loadExternalModule(ctx context.Context, addr ModuleAddr, mc *ModuleCall, parentLogicalSource string) (*ModuleConfig, error) {
-	r.logger.Debug("Resolve module", log.String("source", mc.Source))
+func (r *moduleResolver) loadModuleFromSource(ctx context.Context, addr ModuleAddr, mc *ModuleCall, sourceChain SourceChain) (*ModuleConfig, error) {
+	logger := r.logger.With(
+		log.String("addr", addr.Key()),
+		log.String("source", mc.Source),
+	)
+	logger.Debug("Start resolving module")
 
 	opt := resolvers.Options{
 		Source:          mc.Source,
@@ -145,53 +176,52 @@ func (r *ModuleResolver) loadExternalModule(ctx context.Context, addr ModuleAddr
 		return nil, err
 	}
 
-	logicalSource := path.Join(parentLogicalSource, source)
-	r.logger.Debug("Remote module resolved",
-		log.String("addr", addr.Key()),
-		log.String("source", mc.Source),
-		log.String("logicalSource", logicalSource),
+	sourceChain = sourceChain.Extend(source)
+	logger.Debug("Module resolved",
+		log.String("sourceChain", string(sourceChain)),
 		log.FilePath(downloadPath),
 	)
-
-	return r.resolveLocal(ctx, fsys, downloadPath, logicalSource)
+	return r.loadModuleFromFS(ctx, fsys, downloadPath, sourceChain)
 }
 
-func (r *ModuleResolver) loadModuleFromTerraformCache(ctx context.Context, addr ModuleAddr, mc *ModuleCall) (*ModuleConfig, error) {
+func (r *moduleResolver) loadModuleFromTerraformCache(ctx context.Context, addr ModuleAddr, mc *ModuleCall) (*ModuleConfig, bool) {
 	moduleKey := strings.Join(addr, ".")
-	var modulePath string
-	for _, module := range r.modMetadata.Modules {
-		if module.Key == moduleKey {
-			modulePath = path.Clean(path.Join(r.rootPath, module.Dir))
-			break
-		}
-	}
+	modulePath := r.modMetadata.ModulePath(r.rootPath, moduleKey)
+
 	if modulePath == "" {
-		return nil, fmt.Errorf("resolve module with key %q from .terraform/modules", moduleKey)
+		return nil, false
 	}
 
-	logicalSource := mc.Source
-	if strings.HasPrefix(mc.Source, ".") {
-		logicalSource = ""
-	}
-
-	r.logger.Debug("Module resolved using modules.json",
-		log.String("addr", addr.Key()),
+	r.logger.Debug("Module loaded from Terraform cache",
+		log.String("address", addr.Key()),
 		log.String("source", mc.Source),
-		log.String("modulePath", modulePath),
+		log.String("key", moduleKey),
+		log.FilePath(modulePath),
 	)
 
-	return r.resolveLocal(ctx, mc.FS, modulePath, logicalSource)
+	mod, err := r.loadModuleFromFS(ctx, mc.FS, modulePath, NewSourceChain(mc.Source))
+	return mod, err == nil
 }
 
-func (r *ModuleResolver) resolveLocal(_ context.Context, fsys fs.FS, dir string, logicalSource string) (*ModuleConfig, error) {
-	p := NewParser()
-	cfg, err := p.ParseDir(fsys, dir)
-	if err != nil {
-		return nil, err
-	}
+func (r *moduleResolver) loadModuleFromFS(_ context.Context, fsys fs.FS, dir string, sourceChain SourceChain) (*ModuleConfig, error) {
+	moduleLogger := r.logger.With(
+		log.Prefix("module-parser"),
+		log.String("sourceChain", string(sourceChain)),
+		log.FilePath(dir),
+	)
 
-	cfg.LogicalSource = logicalSource
-	r.logger.Debug("Module loaded", log.Any("fsys", fsys), log.FilePath(dir))
+	moduleLogger.Debug("Start parsing module")
+	p := newModuleParser(moduleLogger, parserOpts{
+		StopOnHCLError: r.stopOnHCLError,
+		SkipPaths:      r.skipPaths,
+	})
+	cfg, err := p.parseDir(fsys, dir)
+	if err != nil {
+		return nil, fmt.Errorf("parse module dir: %w", err)
+	}
+	moduleLogger.Debug("Module loaded")
+
+	cfg.SourceChain = sourceChain
 	return cfg, nil
 }
 
@@ -199,6 +229,15 @@ const ManifestSnapshotFile = ".terraform/modules/modules.json"
 
 type ModulesMetadata struct {
 	Modules []ModuleMetadata `json:"Modules"`
+}
+
+func (m *ModulesMetadata) ModulePath(rootDir string, key string) string {
+	for _, module := range m.Modules {
+		if module.Key == key {
+			return path.Clean(path.Join(rootDir, module.Dir))
+		}
+	}
+	return ""
 }
 
 type ModuleMetadata struct {

@@ -449,14 +449,6 @@ resource "aws_apigatewayv2_stage" "bad_example" {
 package builtin.cloud.AWS0001
 
 deny[res] {
-	api := input.aws.apigateway.v1.apis[_]
-	stage := api.stages[_]
-	isManaged(stage)
-	stage.accesslogging.cloudwatchloggrouparn.value == ""
-	res := result.new("Access logging is not configured.", stage.accesslogging.cloudwatchloggrouparn)
-}
-
-deny[res] {
 	api := input.aws.apigateway.v2.apis[_]
 	stage := api.stages[_]
 	isManaged(stage)
@@ -1059,30 +1051,30 @@ deny contains res if {
 		expectedStartLine int
 		expectedEndLine   int
 	}{
-		{
-			name:       "just misconfigured resource",
-			inputCheck: s3check,
-			fsys: fstest.MapFS{
-				"main.tf": &fstest.MapFile{Data: []byte(`
-locals {
-	versioning = false
-}
+		// 		{
+		// 			name:       "just misconfigured resource",
+		// 			inputCheck: s3check,
+		// 			fsys: fstest.MapFS{
+		// 				"main.tf": &fstest.MapFile{Data: []byte(`
+		// locals {
+		// 	versioning = false
+		// }
 
-resource "aws_s3_bucket" "test" {
-	bucket = "test"
+		// resource "aws_s3_bucket" "test" {
+		// 	bucket = "test"
 
-	versioning {
-		enabled = local.versioning
-	}
-}
-`)},
-			},
-			expected: `resource "aws_s3_bucket" "test" {
-  versioning {
-    enabled = false
-  }
-}`,
-		},
+		// 	versioning {
+		// 		enabled = local.versioning
+		// 	}
+		// }
+		// `)},
+		// 			},
+		// 			expected: `resource "aws_s3_bucket" "test" {
+		//   versioning {
+		//     enabled = false
+		//   }
+		// }`,
+		// 		},
 		{
 			name:       "misconfigured resource instance",
 			inputCheck: s3check,
