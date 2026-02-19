@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/commands"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -34,7 +35,7 @@ func main() {
 func run() error {
 	// Trivy behaves as the specified plugin.
 	if runAsPlugin := os.Getenv("TRIVY_RUN_AS_PLUGIN"); runAsPlugin != "" {
-		log.InitLogger(false, false)
+		log.InitLogger(false, false, config.AutoColor)
 		if err := plugin.Run(context.Background(), runAsPlugin, plugin.Options{Args: os.Args[1:]}); err != nil {
 			return xerrors.Errorf("plugin error: %w", err)
 		}

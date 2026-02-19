@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -459,7 +460,8 @@ resource "aws_s3_bucket" "this" {
 				dbTypes.SeverityCritical,
 			}
 			buf := bytes.NewBuffer([]byte{})
-			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false, tt.args.renderCause)
+			renderer := table.NewMisconfigRenderer(buf, severities, false, tt.args.includeNonFailures, false,
+				config.NeverColor, tt.args.renderCause)
 			renderer.Render(tt.input)
 			assert.Equal(t, tt.want, strings.ReplaceAll(buf.String(), "\r\n", "\n"))
 		})

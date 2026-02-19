@@ -12,6 +12,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -31,9 +32,11 @@ type misconfigRenderer struct {
 	width              int
 	ansi               bool
 	renderCause        []ftypes.ConfigType
+	colorMode          config.ColorMode
 }
 
-func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool, renderCause []ftypes.ConfigType) *misconfigRenderer {
+func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trace, includeNonFailures, ansi bool,
+	colorMode config.ColorMode, renderCause []ftypes.ConfigType) *misconfigRenderer {
 	width, _, err := term.GetSize(0)
 	if err != nil || width == 0 {
 		width = 40
@@ -50,6 +53,7 @@ func NewMisconfigRenderer(buf *bytes.Buffer, severities []dbTypes.Severity, trac
 		width:              width,
 		ansi:               ansi,
 		renderCause:        renderCause,
+		colorMode:          colorMode,
 	}
 }
 
@@ -60,7 +64,7 @@ func (r *misconfigRenderer) Render(result types.Result) {
 		return
 	}
 	target := fmt.Sprintf("%s (%s)", result.Target, result.Type)
-	RenderTarget(r.w, target, r.ansi)
+	RenderTarget(r.w, target, r.ansi, r.colorMode)
 
 	total, summaries := summarize(r.severities, r.countSeverities(result.Misconfigurations))
 

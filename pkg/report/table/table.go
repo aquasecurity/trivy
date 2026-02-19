@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/table"
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -66,6 +67,8 @@ type Options struct {
 	// For licenses
 	LicenseRiskThreshold int
 	IgnoredLicenses      []string
+
+	ColorMode config.ColorMode
 }
 
 func NewWriter(options Options) *Writer {
@@ -74,12 +77,12 @@ func NewWriter(options Options) *Writer {
 	return &Writer{
 		buf: buf,
 
-		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.Scanners),
-		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.Severities),
-		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.RenderCause),
-		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.Severities),
-		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.Severities),
-		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.Severities),
+		summaryRenderer:       NewSummaryRenderer(buf, isTerminal, options.ColorMode, options.Scanners),
+		vulnerabilityRenderer: NewVulnerabilityRenderer(buf, isTerminal, options.Tree, options.ShowSuppressed, options.ColorMode, options.Severities),
+		misconfigRenderer:     NewMisconfigRenderer(buf, options.Severities, options.Trace, options.IncludeNonFailures, isTerminal, options.ColorMode, options.RenderCause),
+		secretRenderer:        NewSecretRenderer(buf, isTerminal, options.ColorMode, options.Severities),
+		pkgLicenseRenderer:    NewPkgLicenseRenderer(buf, isTerminal, options.ColorMode, options.Severities),
+		fileLicenseRenderer:   NewFileLicenseRenderer(buf, isTerminal, options.ColorMode, options.Severities),
 		options:               options,
 	}
 }
@@ -139,15 +142,19 @@ func (tw *Writer) render(result types.Result) {
 	}
 }
 
-func newTableWriter(output io.Writer, isTerminal bool) *table.Table {
+func newTableWriter(output io.Writer, isTerminal bool, colorMode config.ColorMode) *table.Table {
 	tableWriter := table.New(output)
-	if isTerminal { // use ansi output if we're not piping elsewhere
+
+	// use ansi output if we're not piping elsewhere
+	if isTerminal && colorMode != config.NeverColor {
 		tableWriter.SetHeaderStyle(table.StyleBold)
 		tableWriter.SetLineStyle(table.StyleDim)
 	}
+
 	tableWriter.SetBorders(true)
 	tableWriter.SetAutoMerge(true)
 	tableWriter.SetRowLines(true)
+	color.NoColor = colorMode == config.NeverColor
 
 	return tableWriter
 }
@@ -189,8 +196,8 @@ func IsOutputToTerminal(output io.Writer) bool {
 	return (o.Mode() & os.ModeCharDevice) == os.ModeCharDevice
 }
 
-func RenderTarget(w io.Writer, target string, isTerminal bool) {
-	if isTerminal {
+func RenderTarget(w io.Writer, target string, isTerminal bool, color config.ColorMode) {
+	if isTerminal && color != config.NeverColor {
 		// nolint
 		_ = tml.Fprintf(w, "\n<underline><bold>%s</bold></underline>\n\n", target)
 	} else {

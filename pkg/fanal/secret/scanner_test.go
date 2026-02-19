@@ -10,13 +10,14 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/fanal/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, true)
+	log.InitLogger(false, true, config.NeverColor)
 	os.Exit(m.Run())
 }
 

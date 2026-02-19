@@ -15,6 +15,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/go-version/pkg/semver"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/version/app"
@@ -139,7 +140,13 @@ func (v *VersionChecker) PrintNotices(ctx context.Context, output io.Writer) {
 
 	if len(notices) > 0 {
 		logger.Debug("Printing notices")
-		fmt.Fprintf(output, "\n📣 \x1b[34mNotices:\x1b[0m\n")
+
+		if v.cliOptions.ColorMode == config.NeverColor {
+			fmt.Printf("\n  Notices:\n")
+		} else {
+			fmt.Fprintf(output, "\n📣 \x1b[34mNotices:\x1b[0m\n")
+		}
+
 		for _, notice := range notices {
 			fmt.Fprintf(output, "  - %s\n", notice)
 		}

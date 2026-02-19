@@ -59,6 +59,10 @@
       },
       "type": "object"
     },
+    "color": {
+      "type": "string",
+      "description": "Set color mode for terminal output. Accepted values: true, always, false, never, auto."
+    },
     "clean": {
       "properties": {
         "all": {

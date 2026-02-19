@@ -31,6 +31,7 @@ trivy [global flags] command [flags] target
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
+      --color string              Set color mode for terminal output. Accepted values: true, always, false, never, auto. (default "auto")
   -c, --config string             config path (default "trivy.yaml")
   -d, --debug                     debug mode
   -f, --format string             version format (json)

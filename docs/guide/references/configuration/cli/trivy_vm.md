@@ -169,6 +169,7 @@ trivy vm [flags] VM_IMAGE
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
+      --color string              Set color mode for terminal output. Accepted values: true, always, false, never, auto. (default "auto")
   -c, --config string             config path (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
