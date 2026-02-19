@@ -1,5 +1,27 @@
 # Changelog
 
+## [0.70.0](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.70.0) (2026-02-19)
+
+
+### Features
+
+* **go:** detect version from ELF symbol table for binaries built with -trimpath ([#10197](https://github.com/aquasecurity/trivy/issues/10197)) ([7acb5f6](https://github.com/aquasecurity/trivy/commit/7acb5f6f095a11cb9911af5a0bc03aecc7c88f8f))
+* **misconf:** adapt ARM k8s clusters ([#9696](https://github.com/aquasecurity/trivy/issues/9696)) ([#10125](https://github.com/aquasecurity/trivy/issues/10125)) ([66bdec4](https://github.com/aquasecurity/trivy/commit/66bdec4f6af6100b6ab991ca417b0c801cb5cd80))
+* **misconf:** resolve Azure resources via resource_id ([#10173](https://github.com/aquasecurity/trivy/issues/10173)) ([823f363](https://github.com/aquasecurity/trivy/commit/823f3634ae8f41a17be8695ceabcb8ca52f82a63))
+* **python:** add pylock.toml (PEP 751) parser ([#9632](https://github.com/aquasecurity/trivy/issues/9632)) ([1a72b32](https://github.com/aquasecurity/trivy/commit/1a72b326bba9e0959d5f3b63367bb311f064d795))
+* **server:** include server version info in JSON output for client/server mode ([#10075](https://github.com/aquasecurity/trivy/issues/10075)) ([4c46d41](https://github.com/aquasecurity/trivy/commit/4c46d418c58c9a070a87b9d3c88966d40e435329))
+* **ubuntu:** add eol data for 25.10 ([#10181](https://github.com/aquasecurity/trivy/issues/10181)) ([2c1f65b](https://github.com/aquasecurity/trivy/commit/2c1f65bdeec62baef45e93f58cc8e5eca7d84d26))
+* **vuln:** skip third-party packages in common Detect function ([#10129](https://github.com/aquasecurity/trivy/issues/10129)) ([d6e6331](https://github.com/aquasecurity/trivy/commit/d6e6331abba28fe22f6d8d3bc36f7821601ff8ad))
+
+
+### Bug Fixes
+
+* **java:** Disable overwriting exclusions ([#10088](https://github.com/aquasecurity/trivy/issues/10088)) ([9a3e0a8](https://github.com/aquasecurity/trivy/commit/9a3e0a845db68a79f4fd0e71f5cb7d8ca3976bbe))
+* **misconf:** apply check aliases when filtering results via .trivyignore ([#10112](https://github.com/aquasecurity/trivy/issues/10112)) ([b775a1b](https://github.com/aquasecurity/trivy/commit/b775a1b63cd7afeda8dec2c1c8b8b6d422418bc6))
+* **misconf:** initialize custom annotation field if empty ([#10123](https://github.com/aquasecurity/trivy/issues/10123)) ([0f0d6db](https://github.com/aquasecurity/trivy/commit/0f0d6dbff4825f7b0ea7744b2229e0157af52972))
+* **server:** exclude JavaDB and CheckBundle from /version endpoint ([#10100](https://github.com/aquasecurity/trivy/issues/10100)) ([b9a8d2d](https://github.com/aquasecurity/trivy/commit/b9a8d2d80adc47bf9f48e13c2738b099c907518b))
+* update PhotonOS feed URL ([#10122](https://github.com/aquasecurity/trivy/issues/10122)) ([fa195b4](https://github.com/aquasecurity/trivy/commit/fa195b4d11d946b0212900b2a153a1abf381e8a2))
+
 ## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2026-01-30)
 
 
