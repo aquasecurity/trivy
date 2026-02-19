@@ -2,9 +2,11 @@ package pom
 
 import (
 	"encoding/xml"
+	"net/url"
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"github.com/samber/lo/mutable"
@@ -16,7 +18,11 @@ type Server struct {
 	Username string `xml:"username"`
 	Password string `xml:"password"`
 }
-
+type Mirror struct {
+	ID       string `xml:"id"`
+	URL      string `xml:"url"`
+	MirrorOf string `xml:"mirrorOf"`
+}
 type Profile struct {
 	ID              string          `xml:"id"`
 	Repositories    []pomRepository `xml:"repositories>repository"`
@@ -26,6 +32,7 @@ type Profile struct {
 type settings struct {
 	LocalRepository string    `xml:"localRepository"`
 	Servers         []Server  `xml:"servers>server"`
+	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
 }
@@ -40,6 +47,9 @@ func (s settings) effectiveRepositories() []repository {
 	pomRepos = lo.UniqBy(pomRepos, func(r pomRepository) string {
 		return r.ID
 	})
+	for i := range pomRepos {
+		pomRepos[i].URL = s.ResolveMirror(pomRepos[i].ID, pomRepos[i].URL)
+	}
 
 	// mvn takes repositories from settings in reverse order
 	// cf. https://github.com/aquasecurity/trivy/issues/7807#issuecomment-2541485152
@@ -70,7 +80,7 @@ func readSettings() settings {
 		if s.LocalRepository == "" {
 			s.LocalRepository = globalSettings.LocalRepository
 		}
-
+		s.Mirrors = append(s.Mirrors, globalSettings.Mirrors...)
 		// Maven servers
 		s.Servers = lo.UniqBy(append(s.Servers, globalSettings.Servers...), func(server Server) string {
 			return server.ID
@@ -125,4 +135,53 @@ func expandAllEnvPlaceholders(s *settings) {
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
 	}
+}
+func (s settings) ResolveMirror(repoID, repoURL string) string {
+	for _, mirror := range s.Mirrors {
+		if s.isMirrorMatch(mirror, repoID, repoURL) {
+			return mirror.URL
+		}
+	}
+	return repoURL
+}
+func (s settings) isMirrorMatch(mirror Mirror, repoID, repoURL string) bool {
+	patterns := strings.Split(mirror.MirrorOf, ",")
+	matched := false
+	for _, pattern := range patterns {
+		pattern = strings.TrimSpace(pattern)
+		if pattern == "" {
+			continue
+		}
+
+		// Check for exclusions first (e.g., !repoId)
+		// If the repoID is explicitly excluded, this mirror CANNOT match.
+		if p, ok := strings.CutPrefix(pattern, "!"); ok {
+			if p == repoID {
+				return false
+			}
+			continue
+		}
+
+		// 2. Wildcards
+		if pattern == "*" || pattern == repoID {
+			matched = true
+		} else if pattern == "external:*" {
+			if s.isExternalRepo(repoURL) {
+				matched = true
+			}
+		}
+	}
+	return matched
+}
+
+func (s settings) isExternalRepo(rawURL string) bool {
+	u, err := url.Parse(rawURL)
+	if err != nil {
+		return true
+	}
+	if u.Scheme == "file" {
+		return false
+	}
+	hostname := u.Hostname()
+	return hostname != "localhost" && hostname != "127.0.0.1" && hostname != "::1"
 }

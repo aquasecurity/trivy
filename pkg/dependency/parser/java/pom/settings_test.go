@@ -473,3 +473,115 @@ func mustParseURL(t *testing.T, s string) url.URL {
 	require.NoError(t, err)
 	return *u
 }
+func TestSettings_ResolveMirror(t *testing.T) {
+	tests := []struct {
+		name    string
+		mirrors []Mirror
+		repoID  string
+		repoURL string
+		wantURL string
+	}{
+		{
+			name: "exact match",
+			mirrors: []Mirror{
+				{ID: "m1", MirrorOf: "central", URL: "https://mirror.com/maven2"},
+			},
+			repoID:  "central",
+			repoURL: "https://repo1.maven.org/maven2",
+			wantURL: "https://mirror.com/maven2",
+		},
+		{
+			name: "wildcard match (*)",
+			mirrors: []Mirror{
+				{ID: "m2", MirrorOf: "*", URL: "https://mirror.com/all"},
+			},
+			repoID:  "any-repo",
+			repoURL: "https://original.com/repo",
+			wantURL: "https://mirror.com/all",
+		},
+		{
+			name: "exclusion rule (!repo)",
+			mirrors: []Mirror{
+				{ID: "m3", MirrorOf: "*,!internal", URL: "https://mirror.com/all"},
+			},
+			repoID:  "internal",
+			repoURL: "https://internal.com/repo",
+			wantURL: "https://internal.com/repo", // Should NOT be mirrored
+		},
+		{
+			name: "external:* match",
+			mirrors: []Mirror{
+				{ID: "m4", MirrorOf: "external:*", URL: "https://mirror.com/ext"},
+			},
+			repoID:  "some-repo",
+			repoURL: "https://github.com/foo/bar",
+			wantURL: "https://mirror.com/ext",
+		},
+		{
+			name: "external:* no match (localhost)",
+			mirrors: []Mirror{
+				{ID: "m5", MirrorOf: "external:*", URL: "https://mirror.com/ext"},
+			},
+			repoID:  "local-repo",
+			repoURL: "http://localhost:8081/repo",
+			wantURL: "http://localhost:8081/repo", // Should NOT be mirrored
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := settings{
+				Mirrors: tt.mirrors,
+			}
+			got := s.ResolveMirror(tt.repoID, tt.repoURL)
+			require.Equal(t, tt.wantURL, got)
+		})
+	}
+}
+func TestSettings_ReadSettings_MirrorPrecedence(t *testing.T) {
+	// This test assumes you have setup testdata with mirrors in both user and global settings.xml
+	// If you are using the existing testdata/settings/global and user directories:
+
+	t.Run("user mirrors take precedence over global mirrors", func(t *testing.T) {
+		t.Setenv("HOME", filepath.Join("testdata", "settings", "user"))
+		t.Setenv("MAVEN_HOME", filepath.Join("testdata", "settings", "global"))
+
+		gotSettings := readSettings()
+
+		// Based on the code logic: s.Mirrors = append(s.Mirrors, globalSettings.Mirrors...)
+		// ResolveMirror picks the FIRST match.
+		// Let's simulate a case where both have a mirror for 'central'
+		gotSettings.Mirrors = []Mirror{
+			{ID: "user-mirror", MirrorOf: "central", URL: "https://user.mirror"},
+			{ID: "global-mirror", MirrorOf: "central", URL: "https://global.mirror"},
+		}
+
+		gotURL := gotSettings.ResolveMirror("central", "https://repo.maven.apache.org/maven2")
+		require.Equal(t, "https://user.mirror", gotURL)
+	})
+}
+func Test_effectiveRepositories_WithMirrors(t *testing.T) {
+	s := settings{
+		Mirrors: []Mirror{
+			{ID: "my-mirror", MirrorOf: "*", URL: "https://proxy.mycompany.com/maven2"},
+		},
+		Profiles: []Profile{
+			{
+				ID: "p1",
+				Repositories: []pomRepository{
+					{
+						ID:  "central",
+						URL: "https://repo.maven.apache.org/maven2",
+					},
+				},
+				ActiveByDefault: true,
+			},
+		},
+	}
+
+	got := s.effectiveRepositories()
+
+	require.Len(t, got, 1)
+	// The URL should be changed to the mirror URL
+	require.Equal(t, "https://proxy.mycompany.com/maven2", got[0].url.String())
+}
