@@ -1,0 +1,6 @@
+lock-version = "1.0"
+created-by = "test"
+
+[[packages]]
+name = "certifi"
+version = "2025.1.31"

@@ -105,6 +105,7 @@ const (
 	Pipenv         LangType = "pipenv"
 	Poetry         LangType = "poetry"
 	Uv             LangType = "uv"
+	PyLock         LangType = "pylock"
 	CondaPkg       LangType = "conda-pkg"
 	CondaEnv       LangType = "conda-environment"
 	PythonPkg      LangType = "python-pkg"
@@ -214,7 +215,7 @@ const (
 	PipfileLock     = "Pipfile.lock"
 	PoetryLock      = "poetry.lock"
 	UvLock          = "uv.lock"
-	PyLock          = "pylock.toml"
+	PyLockFile      = "pylock.toml"
 
 	GemfileLock = "Gemfile.lock"
 
