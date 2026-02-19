@@ -239,6 +239,31 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "seal security package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "seal-django",
+				pkgVer:  "4.2.8+seal.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-12345",
+					PkgName:          "seal-django",
+					InstalledVersion: "4.2.8+seal.1",
+					FixedVersion:     "4.2.8+seal.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
