@@ -8622,6 +8622,7 @@ When scanning binaries built by Go, Trivy finds dependencies and Go version info
 <p>Go binaries installed using the <code>go install</code> command contains correct (semver) version for the main module and therefore are detected by Trivy.
 In other cases, Go uses the <code>(devel)</code> version<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.
 In this case, Trivy will attempt to parse any <code>-ldflags</code> as it's a common practice to pass versions this way.
+If the <code>-ldflags</code> are not available (e.g., due to the Go <code>-trimpath</code> flag), Trivy will attempt to extract the version from the ELF symbol table.
 If unsuccessful, the version will be empty<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</p>
 <h3 id="go-binary-stdlib">Standard Library<a class="headerlink" href="#go-binary-stdlib" title="Permanent link">&para;</a></h3>
 <p>Trivy detects the Go version used to compile the binary and detects its vulnerabilities in the standard libraries.
