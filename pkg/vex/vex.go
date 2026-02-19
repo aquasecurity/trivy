@@ -27,6 +27,8 @@ const (
 // The implementation may change significantly.
 type VEX interface {
 	NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
+	// EnrichWithRatings enriches a vulnerability with contextual ratings from VEX (e.g., OWASP scores)
+	EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component)
 }
 
 type Client struct {
@@ -86,6 +88,8 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 			continue
 		}
 		filterVulnerabilities(&report.Results[i], bom, client.NotAffected)
+		// Enrich remaining vulnerabilities with VEX ratings (e.g., OWASP scores)
+		enrichVulnerabilitiesWithRatings(&report.Results[i], bom, client.VEXes)
 	}
 	return nil
 }
@@ -172,6 +176,25 @@ func filterVulnerabilities(result *types.Result, bom *core.BOM, fn NotAffected) 
 		}
 		return true
 	})
+}
+
+// enrichVulnerabilitiesWithRatings enriches vulnerabilities with VEX ratings (e.g., OWASP scores)
+func enrichVulnerabilitiesWithRatings(result *types.Result, bom *core.BOM, vexes []VEX) {
+	components := lo.MapEntries(bom.Components(), func(_ uuid.UUID, component *core.Component) (string, *core.Component) {
+		return component.PkgIdentifier.UID, component
+	})
+
+	for i := range result.Vulnerabilities {
+		c, ok := components[result.Vulnerabilities[i].PkgIdentifier.UID]
+		if !ok {
+			continue
+		}
+
+		// Enrich with ratings from all VEX sources
+		for _, v := range vexes {
+			v.EnrichWithRatings(&result.Vulnerabilities[i], c)
+		}
+	}
 }
 
 // reachRoot traverses the component tree from the leaf to the root and returns true if the leaf reaches the root.
