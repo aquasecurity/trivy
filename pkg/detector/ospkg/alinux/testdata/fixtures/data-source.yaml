@@ -1,0 +1,17 @@
+- bucket: data-source
+  pairs:
+    - key: alinux 2
+      value:
+        ID: "alinux"
+        Name: "Alibaba Cloud Linux Security Center"
+        URL: "https://alas.aliyuncs.com/"
+    - key: alinux 3
+      value:
+        ID: "alinux"
+        Name: "Alibaba Cloud Linux Security Center"
+        URL: "https://alas.aliyuncs.com/"
+    - key: alinux 4
+      value:
+        ID: "alinux"
+        Name: "Alibaba Cloud Linux Security Center"
+        URL: "https://alas.aliyuncs.com/"
