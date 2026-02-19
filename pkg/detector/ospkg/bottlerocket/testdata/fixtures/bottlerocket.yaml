@@ -1,0 +1,17 @@
+- bucket: bottlerocket
+  pairs:
+    - bucket: kernel-6.1
+      pairs:
+        - key: CVE-2023-5345
+          value:
+            FixedVersion: "6.1.61-1.1700513487.br1"
+    - bucket: amazon-ssm-agent
+      pairs:
+        - key: CVE-2025-22870
+          value:
+            FixedVersion: "3.3.2746.0-1.1754950980.06e00082.br1"
+    - bucket: glibc
+      pairs:
+        - key: CVE-2024-99999
+          value:
+            FixedVersion: "1:2.41-1.1760000000.aaaaaaaa.br1"
