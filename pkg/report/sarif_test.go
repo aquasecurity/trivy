@@ -744,6 +744,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
+
+			// Verify that SARIF includes invocation timing metadata.
+			require.Len(t, result.Runs, 1)
+			require.NotNil(t, result.Runs[0].Invocations)
+			require.Len(t, result.Runs[0].Invocations, 1)
+			require.NotNil(t, result.Runs[0].Invocations[0].StartTimeUTC)
+			require.NotNil(t, result.Runs[0].Invocations[0].EndTimeUTC)
+			assert.True(t, result.Runs[0].Invocations[0].EndTimeUTC.After(*result.Runs[0].Invocations[0].StartTimeUTC) || result.Runs[0].Invocations[0].EndTimeUTC.Equal(*result.Runs[0].Invocations[0].StartTimeUTC))
+
+			// Clear invocations to keep the rest of the golden struct assertions stable.
+			result.Runs[0].Invocations = nil
+
 			assert.Equal(t, tt.want, result)
 		})
 	}
