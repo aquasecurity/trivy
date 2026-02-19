@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
@@ -117,6 +118,8 @@ func getRuleIndex(id string, indexes map[string]int) int {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
+	startTime := time.Now()
+
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -257,6 +260,12 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
 		"ROOTPATH": {URI: &rootPath},
 	}
+
+	// Add invocation timing metadata to SARIF output.
+	inv := sw.run.AddInvocation(true)
+	inv.WithStartTimeUTC(startTime)
+	inv.WithEndTimeUTC(time.Now())
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }
