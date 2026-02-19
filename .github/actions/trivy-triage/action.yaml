@@ -10,7 +10,7 @@ runs:
     - name: Conditionally label discussions based on category and content
       env:
         GH_TOKEN: ${{ github.token }}
-      uses: actions/github-script@v6
+      uses: actions/github-script@v8
       with:
         script: |
           const {detectDiscussionLabels, fetchDiscussion, labelDiscussion } = require('${{ github.action_path }}/helpers.js');
