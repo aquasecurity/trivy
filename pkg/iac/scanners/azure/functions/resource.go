@@ -2,34 +2,29 @@ package functions
 
 import (
 	"fmt"
+	"strings"
 )
 
 func ResourceID(args ...any) any {
-	if len(args) < 2 {
-		return nil
-	}
-
-	var resourceID string
-
-	for _, arg := range args {
-		resourceID += "/" + fmt.Sprintf("%v", arg)
-	}
-
-	return resourceID
+	return buildResourceID(2, args...)
 }
 
 func ExtensionResourceID(args ...any) any {
-	if len(args) < 3 {
+	return buildResourceID(3, args...)
+}
+
+func buildResourceID(minArgs int, args ...any) any {
+	if len(args) < minArgs {
 		return nil
 	}
 
-	var resourceID string
+	var resourceID strings.Builder
 
 	for _, arg := range args {
-		resourceID += "/" + fmt.Sprintf("%v", arg)
+		fmt.Fprintf(&resourceID, "/%v", arg)
 	}
 
-	return resourceID
+	return resourceID.String()
 }
 
 func ResourceGroup(_ ...any) any {

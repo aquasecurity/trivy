@@ -37,7 +37,7 @@ jobs:
         id: lint
         uses: golangci/golangci-lint-action@1e7e51e771db61008b38414a730f564565cf7c20 # v9.2.0
         with:
-          version: v2.4
+          version: v2.10
           args: --verbose
           skip-save-cache: true  # Restore cache from main branch but don't save new cache
         env:
