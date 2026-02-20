@@ -542,8 +542,8 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	}
 	hasPlus := false
 	for _, s := range plusSuffixes {
-		if strings.HasSuffix(name, s) {
-			name = strings.TrimSuffix(name, s)
+		if before, ok := strings.CutSuffix(name, s); ok {
+			name = before
 			hasPlus = true
 		}
 	}

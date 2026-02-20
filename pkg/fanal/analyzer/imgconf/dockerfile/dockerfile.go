@@ -139,11 +139,11 @@ func stripBuildMetadata(line string) string {
 }
 
 func buildRunInstruction(s string) string {
-	pos := strings.Index(s, "/bin/sh -c")
-	if pos == -1 {
+	_, after, ok := strings.Cut(s, "/bin/sh -c")
+	if !ok {
 		return s
 	}
-	return "RUN" + s[pos+len("/bin/sh -c"):]
+	return "RUN" + after
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
