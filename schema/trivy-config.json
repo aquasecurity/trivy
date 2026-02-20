@@ -673,7 +673,7 @@
     },
     "template": {
       "type": "string",
-      "description": "output template"
+      "description": "output template (file path must have .tpl extension)"
     },
     "dependency-tree": {
       "type": "boolean",

@@ -122,7 +122,7 @@ trivy vm [flags] VM_IMAGE
       --skip-version-check                suppress notices about version updates and Trivy announcements
       --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
       --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
-  -t, --template string                   output template
+  -t, --template string                   output template (file path must have .tpl extension)
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --token string                      for authentication in client/server mode
       --token-header string               specify a header name for token in client/server mode (default "Trivy-Token")
