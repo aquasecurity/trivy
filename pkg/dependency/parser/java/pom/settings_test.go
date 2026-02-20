@@ -368,6 +368,30 @@ func Test_ReadSettings(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "happy path with duplicate proxy ID - user proxy takes precedence",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-duplicate-proxy-id"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-duplicate-proxy-id"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies: []Proxy{
+					{
+						ID:       "shared-proxy-id",
+						Active:   "true",
+						Protocol: "http",
+						Host:     "user.proxy.com",
+						Port:     "8080",
+						Username: "user-proxy-user",
+						Password: "user-proxy-pass",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

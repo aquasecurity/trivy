@@ -105,7 +105,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
-	httpOpts := xhttp.Options{}
+	var httpOpts xhttp.Options
 	if len(s.Proxies) > 0 {
 		httpOpts.Proxy = func(req *http.Request) (*url.URL, error) {
 			protocol := req.URL.Scheme
@@ -114,6 +114,9 @@ func NewParser(filePath string, opts ...option) *Parser {
 			if len(proxies) == 0 {
 				return http.ProxyFromEnvironment(req)
 			}
+			// proxy retrieves the first active proxy matching the requested protocol.
+			// Maven evaluates proxies in order and uses the first one that matches,
+			// allowing for protocol-specific proxy configuration (e.g., http, https).
 			proxy := proxies[0]
 
 			proxyURL := &url.URL{

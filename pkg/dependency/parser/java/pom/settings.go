@@ -67,7 +67,7 @@ func (s settings) effectiveRepositories() []repository {
 func (s settings) effectiveProxies(protocol, hostname string) []Proxy {
 	var proxies []Proxy
 	for _, proxy := range s.Proxies {
-		if !proxy.isActive() || proxy.Protocol != protocol {
+		if !proxy.isActive() || !strings.EqualFold(proxy.Protocol, protocol) {
 			continue
 		}
 		if hostname != "" && proxy.isNonProxyHost(hostname) {
@@ -79,7 +79,7 @@ func (s settings) effectiveProxies(protocol, hostname string) []Proxy {
 }
 
 func (p Proxy) isActive() bool {
-	return p.Active == "true" || p.Active == ""
+	return p.Active == trueString || p.Active == ""
 }
 
 func (p Proxy) isNonProxyHost(host string) bool {
@@ -87,14 +87,14 @@ func (p Proxy) isNonProxyHost(host string) bool {
 		return false
 	}
 
-	hosts := strings.Split(p.NonProxyHosts, "|")
-	for _, h := range hosts {
+	hosts := strings.SplitSeq(p.NonProxyHosts, "|")
+	for h := range hosts {
 		h = strings.TrimSpace(h)
 		if h == "" {
 			continue
 		}
 
-		matched, err := path.Match(h, host)
+		matched, err := path.Match(strings.ToLower(h), strings.ToLower(host))
 		if err == nil && matched {
 			return true
 		}
