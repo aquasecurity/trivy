@@ -220,7 +220,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	if template != "" {
 		switch format {
 		case "":
-			log.Warn("'--template' is ignored because '--format' is not specified. Use '--template' option with '--format template' option.")
+			log.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
 		case "template":
 			// Validate template file extension for security
 			if path, ok := strings.CutPrefix(template, "@"); ok {
