@@ -515,9 +515,13 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 3: Relationship: known , DependsOn: unknown (e.g., go.mod without $GOPATH)
 	//         All packages are included in the parent
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
-	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
-	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
-	if pkg.Relationship == ftypes.RelationshipDirect {
+	//         All packages are included in the parent even if they have parents
+
+	// We can't determine the relationship with the parent using DependsOn only.
+	// - A package with parents can also be a direct dependency.
+	// - There are packages with cyclic dependencies. (see https://github.com/aquasecurity/trivy/issues/9011)
+	// Therefore, all packages without a `root` component must be included in the parent.
+	if pkg.Relationship == ftypes.RelationshipUnknown || pkg.Relationship == ftypes.RelationshipDirect {
 		return !hasRoot
 	}
 
