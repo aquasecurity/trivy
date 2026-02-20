@@ -75,7 +75,7 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v2.4.0"
+	const version = "v2.10.0"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
@@ -348,19 +348,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (l Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
-	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration"); err != nil {
-		return err
-	}
-	return sh.RunWithV(ENV, "modernize", "./...")
+	return sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration")
 }
 
 // Fix auto fixes linters
 func (l Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
-	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
-		return err
-	}
-	return sh.RunWithV(ENV, "modernize", "-fix", "./...")
+	return sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration")
 }
 
 // Fmt formats Go code

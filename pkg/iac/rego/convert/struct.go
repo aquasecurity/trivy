@@ -11,7 +11,7 @@ type metadataProvider interface {
 	GetMetadata() types.Metadata
 }
 
-var metadataInterface = reflect.TypeOf((*metadataProvider)(nil)).Elem()
+var metadataInterface = reflect.TypeFor[metadataProvider]()
 
 func StructToRego(inputValue reflect.Value) map[string]any {
 

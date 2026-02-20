@@ -164,7 +164,7 @@ func (b *builder) readProperty(name string, parent, inputType reflect.Type, inde
 	return nil, nil
 }
 
-var converterInterface = reflect.TypeOf((*convert.Converter)(nil)).Elem()
+var converterInterface = reflect.TypeFor[convert.Converter]()
 
 func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
 
@@ -257,7 +257,7 @@ func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type,
 			child := &Property{
 				Properties: make(map[string]Property),
 			}
-			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeOf(v), v, indent+1); err != nil {
+			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeFor[string](), v, indent+1); err != nil {
 				return err
 			}
 			def.Properties[k] = *child
