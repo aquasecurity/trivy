@@ -196,8 +196,9 @@ const (
 	GoMod = "go.mod"
 	GoSum = "go.sum"
 
-	MavenPom = "pom.xml"
-	SbtLock  = "build.sbt.lock"
+	MavenPom                   = "pom.xml"
+	SbtLock                    = "build.sbt.lock"
+	GradleVerificationMetadata = "verification-metadata.xml"
 
 	NpmPkg     = "package.json"
 	NpmPkgLock = "package-lock.json"

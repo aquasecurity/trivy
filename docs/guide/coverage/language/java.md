@@ -1,23 +1,25 @@
 # Java
-Trivy supports four types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml`, `*gradle.lockfile` and `*.sbt.lock` files.
+Trivy supports four types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml`, `*gradle.lockfile`, `verification-metadata.xml` and `*.sbt.lock` files.
 
 Each artifact supports the following scanners:
 
-| Artifact         | SBOM | Vulnerability | License |
-|------------------|:----:|:-------------:|:-------:|
-| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    -    |
-| pom.xml          |  ✓   |       ✓       |    ✓    |
-| *gradle.lockfile |  ✓   |       ✓       |    ✓    |
-| *.sbt.lock       |  ✓   |       ✓       |    -    |
+| Artifact                         | SBOM | Vulnerability | License |
+|----------------------------------|:----:|:-------------:|:-------:|
+| JAR/WAR/PAR/EAR                  |  ✓   |       ✓       |    -    |
+| pom.xml                          |  ✓   |       ✓       |    ✓    |
+| *gradle.lockfile                 |  ✓   |       ✓       |    ✓    |
+| *.sbt.lock                       |  ✓   |       ✓       |    -    |
+| gradle/verification-metadata.xml |  ✓   |       ✓       |    -    |
 
 The following table provides an outline of the features Trivy offers.
 
-| Artifact         |    Internet access    |    Dev dependencies    | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
-|------------------|:---------------------:|:----------------------:|:------------------------------------:|:--------:|:----------------------------------------:|
-| JAR/WAR/PAR/EAR  |     Trivy Java DB     |        Include         |                  -                   |    -     |                Not needed                |
-| pom.xml          | Maven repository [^1] |        Exclude         |                  ✓                   |  ✓[^7]   |                    -                     |
-| *gradle.lockfile |           -           | [Exclude](#gradlelock) |                  ✓                   |    ✓     |                Not needed                |
-| *.sbt.lock       |           -           |        Exclude         |                  -                   |    ✓     |                Not needed                |
+| Artifact                         |    Internet access    |    Dev dependencies    | [Dependency graph][dependency-graph] | Position | [Detection Priority][detection-priority] |
+|----------------------------------|:---------------------:|:----------------------:|:------------------------------------:|:--------:|:----------------------------------------:|
+| JAR/WAR/PAR/EAR                  |     Trivy Java DB     |        Include         |                  -                   |    -     |                Not needed                |
+| pom.xml                          | Maven repository [^1] |        Exclude         |                  ✓                   |  ✓[^7]   |                    -                     |
+| *gradle.lockfile                 |           -           | [Exclude](#gradlelock) |                  ✓                   |    ✓     |                Not needed                |
+| *.sbt.lock                       |           -           |        Exclude         |                  -                   |    ✓     |                Not needed                |
+| gradle/verification-metadata.xml |           -           |        Exclude         |                  -                   |    ✓     |                Not needed                |
 
 These may be enabled or disabled depending on the target.
 See [here](./index.md) for the detail.
@@ -98,6 +100,12 @@ If you need to show them, use the `--include-dev-deps` flag.
 
 By default, Trivy doesn't report development dependencies. 
 Use the `--include-dev-deps` flag to include them in the results.
+
+## Gradle verification metadata
+Gradle verification metadata files `gradle/verification-metadata.xml` only contain information about used dependencies.
+
+!!!note
+    All necessary files are checked locally. SBT file scanning doesn't require internet access.
 
 ### Dependency-tree
 !!! warning "EXPERIMENTAL"

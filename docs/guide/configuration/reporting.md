@@ -199,22 +199,23 @@ The following OS package managers are currently supported:
 
 The following languages are currently supported:
 
-| Language | File                                       |
-|----------|--------------------------------------------|
-| Node.js  | [package-lock.json][nodejs-package-lock]   |
-|          | [pnpm-lock.yaml][pnpm-lock]                |
-|          | [yarn.lock][yarn-lock]                     |
-| .NET     | [packages.lock.json][dotnet-packages-lock] |
-| Python   | [poetry.lock][poetry-lock]                 |
-|          | [uv.lock][uv-lock]                         |
-| Ruby     | [Gemfile.lock][gemfile-lock]               |
-| Rust     | [cargo-auditable binaries][cargo-binaries] |
-| Go       | [go.mod][go-mod]                           |
-| PHP      | [composer.lock][composer-lock]             |
-| Java     | [pom.xml][pom-xml]                         |
-|          | [*gradle.lockfile][gradle-lockfile]        |
-|          | [*.sbt.lock][sbt-lockfile]                 |
-| Dart     | [pubspec.lock][pubspec-lock]               |
+| Language | File                                                             |
+|----------|------------------------------------------------------------------|
+| Node.js  | [package-lock.json][nodejs-package-lock]                         |
+|          | [pnpm-lock.yaml][pnpm-lock]                                      |
+|          | [yarn.lock][yarn-lock]                                           |
+| .NET     | [packages.lock.json][dotnet-packages-lock]                       |
+| Python   | [poetry.lock][poetry-lock]                                       |
+|          | [uv.lock][uv-lock]                                               |
+| Ruby     | [Gemfile.lock][gemfile-lock]                                     |
+| Rust     | [cargo-auditable binaries][cargo-binaries]                       |
+| Go       | [go.mod][go-mod]                                                 |
+| PHP      | [composer.lock][composer-lock]                                   |
+| Java     | [pom.xml][pom-xml]                                               |
+|          | [*gradle.lockfile][gradle-lockfile]                              |
+|          | [*.sbt.lock][sbt-lockfile]                                       |
+|          | [gradle/verification-metadata.xml][gradle-verification-metadata] |
+| Dart     | [pubspec.lock][pubspec-lock]                                     |
 
 This tree is the reverse of the dependency graph.
 However, if you want to resolve a vulnerability in a particular indirect dependency, the reversed tree is useful to know where that dependency comes from and identify which package you actually need to update.
@@ -659,6 +660,7 @@ $ trivy convert --format table --severity CRITICAL result.json
 [composer-lock]: ../coverage/language/php.md#composerlock
 [pom-xml]: ../coverage/language/java.md#pomxml
 [gradle-lockfile]: ../coverage/language/java.md#gradlelock
+[gradle-verification-metadata]: ../coverage/language/java.md#gradle-verification-metadata
 [sbt-lockfile]: ../coverage/language/java.md#sbt
 [pubspec-lock]: ../coverage/language/dart.md#dart
 [cargo-binaries]: ../coverage/language/rust.md#binaries

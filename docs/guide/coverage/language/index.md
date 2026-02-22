@@ -41,6 +41,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
 |                      | *gradle.lockfile                                                                           |     -     |     -      |       ✅        |       ✅        |
 |                      | *.sbt.lock                                                                                 |     -     |     -      |       ✅        |       ✅        |
+|                      | gradle/verification-metadata.xml                                                           |     -     |     -      |       ✅        |       ✅        |
 | [Go](golang.md)      | Binaries built by Go                                                                       |     ✅     |     ✅      |       -        |       -        |
 |                      | go.mod                                                                                     |     -     |     -      |       ✅        |       ✅        |
 | [Rust](rust.md)      | Cargo.lock                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |

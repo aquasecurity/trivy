@@ -59,10 +59,11 @@ const (
 	TypeComposerVendor Type = "composer-vendor"
 
 	// Java
-	TypeJar        Type = "jar"
-	TypePom        Type = "pom"
-	TypeGradleLock Type = "gradle-lockfile"
-	TypeSbtLock    Type = "sbt-lockfile"
+	TypeJar                        Type = "jar"
+	TypePom                        Type = "pom"
+	TypeGradleLock                 Type = "gradle-lockfile"
+	TypeSbtLock                    Type = "sbt-lockfile"
+	TypeGradleVerificationMetadata      = "gradle-verification-metadata"
 
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
