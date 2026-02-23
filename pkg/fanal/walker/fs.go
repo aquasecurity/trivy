@@ -44,6 +44,17 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 			return err
 		}
 
+		// Skip absolute system directories (/dev, /proc, /sys) but not relative project directories
+		if filepath.IsAbs(filePath) {
+			relToRoot, err := filepath.Rel("/", filePath)
+			if err == nil && isSystemDir(relToRoot) {
+				if d.IsDir() {
+					return filepath.SkipDir
+				}
+				return nil
+			}
+		}
+
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
 		relPath, err := filepath.Rel(root, filePath)
 		if err != nil {
@@ -151,6 +162,17 @@ func (w *FS) BuildSkipPaths(base string, paths []string) []string {
 
 	relativePaths = utils.CleanSkipPaths(relativePaths)
 	return relativePaths
+}
+
+var systemDirs = map[string]bool{
+	"dev":  true,
+	"proc": true,
+	"sys":  true,
+}
+
+func isSystemDir(path string) bool {
+	dir := strings.Split(path, "/")[0]
+	return systemDirs[dir]
 }
 
 // fileOpener returns a function opening a file.
