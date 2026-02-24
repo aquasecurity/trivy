@@ -79,7 +79,7 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 								ID:           "pytest@9.0.2",
 								Name:         "pytest",
 								Version:      "9.0.2",
-								Relationship: types.RelationshipIndirect,
+								Relationship: types.RelationshipDirect,
 							},
 							{
 								ID:           "requests@2.32.5",

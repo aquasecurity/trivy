@@ -72,6 +72,26 @@ func TestParser_Parse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name: "with optional dependencies",
+			file: "testdata/happy_with_optional.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("click", "requests"),
+					},
+					OptionalDependencies: map[string]pyproject.Dependencies{
+						"dev": {
+							Set: set.New[string]("pytest"),
+						},
+						"lint": {
+							Set: set.New[string]("ruff"),
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,

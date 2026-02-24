@@ -18,7 +18,8 @@ type PyProject struct {
 }
 
 type Project struct {
-	Dependencies Dependencies `toml:"dependencies"`
+	Dependencies         Dependencies            `toml:"dependencies"`
+	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
 }
 
 type Tool struct {
@@ -43,8 +44,13 @@ type Dependencies struct {
 // `project.dependencies` (first priority) or `tool.poetry.dependencies` (if `project.dependencies` is missing)
 func (p PyProject) MainDeps() set.Set[string] {
 	deps := set.New[string]()
-	if p.Project.Dependencies.Set != nil {
+	if p.Project.Dependencies.Set != nil || p.Project.OptionalDependencies != nil {
 		deps.Append(p.Project.Dependencies.Items()...)
+		// Add dependencies installed to extras
+		// cf. https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#dependencies-optional-dependencies
+		for _, extraDeps := range p.Project.OptionalDependencies {
+			deps.Append(extraDeps.Items()...)
+		}
 	} else if p.Tool.Poetry.Dependencies.Set != nil {
 		deps.Append(p.Tool.Poetry.Dependencies.Items()...)
 	}
