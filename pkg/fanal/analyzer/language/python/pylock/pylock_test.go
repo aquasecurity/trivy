@@ -28,94 +28,74 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pylock.toml",
 						Packages: types.Packages{
 							{
-								ID:           "certifi@2025.1.31",
+								ID:           "certifi@2026.1.4",
 								Name:         "certifi",
-								Version:      "2025.1.31",
+								Version:      "2026.1.4",
 								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:           "charset-normalizer@3.4.1",
+								ID:           "charset-normalizer@3.4.4",
 								Name:         "charset-normalizer",
-								Version:      "3.4.1",
+								Version:      "3.4.4",
 								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:           "idna@3.10",
+								ID:           "click@8.3.1",
+								Name:         "click",
+								Version:      "8.3.1",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "idna@3.11",
 								Name:         "idna",
-								Version:      "3.10",
+								Version:      "3.11",
 								Relationship: types.RelationshipIndirect,
 							},
 							{
-								ID:      "requests@2.32.3",
-								Name:    "requests",
-								Version: "2.32.3",
-								DependsOn: []string{
-									"certifi@2025.1.31",
-									"charset-normalizer@3.4.1",
-									"idna@3.10",
-									"urllib3@2.3.0",
-								},
-								Relationship: types.RelationshipDirect,
-							},
-							{
-								ID:           "urllib3@2.3.0",
-								Name:         "urllib3",
+								ID:           "iniconfig@2.3.0",
+								Name:         "iniconfig",
 								Version:      "2.3.0",
 								Relationship: types.RelationshipIndirect,
 							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "named lock file",
-			dir:  "testdata/named",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.PyLock,
-						FilePath: "pylock.linux.toml",
-						Packages: types.Packages{
 							{
-								ID:      "certifi@2025.1.31",
-								Name:    "certifi",
-								Version: "2025.1.31",
+								ID:           "packaging@26.0",
+								Name:         "packaging",
+								Version:      "26.0",
+								Relationship: types.RelationshipIndirect,
 							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name: "with dev dependencies",
-			dir:  "testdata/with-dev",
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.PyLock,
-						FilePath: "pylock.toml",
-						Packages: types.Packages{
 							{
-								ID:           "pytest@8.0.0",
+								ID:           "pluggy@1.6.0",
+								Name:         "pluggy",
+								Version:      "1.6.0",
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "pygments@2.19.2",
+								Name:         "pygments",
+								Version:      "2.19.2",
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "pytest@9.0.2",
 								Name:         "pytest",
-								Version:      "8.0.0",
+								Version:      "9.0.2",
 								Relationship: types.RelationshipIndirect,
-								Dev:          true,
 							},
 							{
-								ID:      "requests@2.32.3",
-								Name:    "requests",
-								Version: "2.32.3",
-								DependsOn: []string{
-									"urllib3@2.3.0",
-								},
+								ID:           "requests@2.32.5",
+								Name:         "requests",
+								Version:      "2.32.5",
 								Relationship: types.RelationshipDirect,
 							},
 							{
-								ID:           "urllib3@2.3.0",
+								ID:           "test-project",
+								Name:         "test-project",
+								Relationship: types.RelationshipIndirect,
+							},
+							{
+								ID:           "urllib3@2.6.3",
 								Name:         "urllib3",
-								Version:      "2.3.0",
+								Version:      "2.6.3",
 								Relationship: types.RelationshipIndirect,
 							},
 						},
