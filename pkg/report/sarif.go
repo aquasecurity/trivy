@@ -118,8 +118,6 @@ func getRuleIndex(id string, indexes map[string]int) int {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
-	startTime := time.Now()
-
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -262,8 +260,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	}
 
 	// Add invocation timing metadata to SARIF output.
+	// startTimeUtc reflects when the tool's execution began (report.CreatedAt),
+	// per the SARIF v2.1.0 spec (§3.20.7).
 	inv := sw.run.AddInvocation(true)
-	inv.WithStartTimeUTC(startTime)
+	inv.WithStartTimeUTC(report.CreatedAt)
 	inv.WithEndTimeUTC(time.Now())
 
 	sarifReport.AddRun(sw.run)
