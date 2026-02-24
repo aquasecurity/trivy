@@ -7,6 +7,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"sort"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -62,6 +63,7 @@ func (a pylockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 				log.FilePath(filepath.Join(filepath.Dir(path), types.PyProject)), log.Err(err))
 		}
 
+		sort.Sort(app.Packages)
 		apps = append(apps, *app)
 		return nil
 	})
@@ -120,12 +122,25 @@ func (a pylockAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 
 	directDeps := p.MainDeps()
 
-	// Mark direct/indirect dependencies based on pyproject.toml.
+	// Major tools don't save dependencies for packages in pylock.toml file,
+	// But if we detect root package - we should add dependencies got from pyproject.toml to it.
+	rootPkgIndex := -1
+	var rootPkgDependsOn []string
+
 	for i, pkg := range app.Packages {
+		if pkg.Relationship == types.RelationshipRoot {
+			rootPkgIndex = i
+			continue
+		}
 		app.Packages[i].Relationship = types.RelationshipIndirect
 		if directDeps.Contains(pkg.Name) {
 			app.Packages[i].Relationship = types.RelationshipDirect
+			rootPkgDependsOn = append(rootPkgDependsOn, pkg.ID)
 		}
+	}
+
+	if rootPkgIndex != -1 {
+		app.Packages[rootPkgIndex].DependsOn = rootPkgDependsOn
 	}
 
 	return nil

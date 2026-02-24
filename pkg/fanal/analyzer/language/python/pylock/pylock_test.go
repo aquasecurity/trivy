@@ -28,6 +28,34 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 						FilePath: "pylock.toml",
 						Packages: types.Packages{
 							{
+								ID:   "test-project",
+								Name: "test-project",
+								DependsOn: []string{
+									"click@8.3.1",
+									"pytest@9.0.2",
+									"requests@2.32.5",
+								},
+								Relationship: types.RelationshipRoot,
+							},
+							{
+								ID:           "click@8.3.1",
+								Name:         "click",
+								Version:      "8.3.1",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "pytest@9.0.2",
+								Name:         "pytest",
+								Version:      "9.0.2",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "requests@2.32.5",
+								Name:         "requests",
+								Version:      "2.32.5",
+								Relationship: types.RelationshipDirect,
+							},
+							{
 								ID:           "certifi@2026.1.4",
 								Name:         "certifi",
 								Version:      "2026.1.4",
@@ -38,12 +66,6 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 								Name:         "charset-normalizer",
 								Version:      "3.4.4",
 								Relationship: types.RelationshipIndirect,
-							},
-							{
-								ID:           "click@8.3.1",
-								Name:         "click",
-								Version:      "8.3.1",
-								Relationship: types.RelationshipDirect,
 							},
 							{
 								ID:           "idna@3.11",
@@ -73,23 +95,6 @@ func Test_pylockAnalyzer_Analyze(t *testing.T) {
 								ID:           "pygments@2.19.2",
 								Name:         "pygments",
 								Version:      "2.19.2",
-								Relationship: types.RelationshipIndirect,
-							},
-							{
-								ID:           "pytest@9.0.2",
-								Name:         "pytest",
-								Version:      "9.0.2",
-								Relationship: types.RelationshipDirect,
-							},
-							{
-								ID:           "requests@2.32.5",
-								Name:         "requests",
-								Version:      "2.32.5",
-								Relationship: types.RelationshipDirect,
-							},
-							{
-								ID:           "test-project",
-								Name:         "test-project",
 								Relationship: types.RelationshipIndirect,
 							},
 							{
