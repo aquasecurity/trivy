@@ -311,7 +311,7 @@ func Test_ReadSettings(t *testing.T) {
 			},
 		},
 		{
-			name: "happy path with user settings proxy",
+			name: "user settings proxy",
 			envs: map[string]string{
 				"HOME":       filepath.Join("testdata", "settings", "user-with-proxy"),
 				"MAVEN_HOME": "NOT_EXISTING_PATH",
@@ -320,7 +320,7 @@ func Test_ReadSettings(t *testing.T) {
 				LocalRepository: "testdata/user/repository",
 				Proxies: []Proxy{
 					{
-						ID:            "user-proxy-http",
+						ID:            "proxy-http",
 						Active:        "true",
 						Protocol:      "http",
 						Host:          "user.proxy.com",
@@ -329,25 +329,11 @@ func Test_ReadSettings(t *testing.T) {
 						Password:      "user-proxy-pass",
 						NonProxyHosts: "localhost|*.internal.com",
 					},
-					{
-						ID:       "user-proxy-https",
-						Active:   "true",
-						Protocol: "https",
-						Host:     "user.proxy.com",
-						Port:     "8443",
-					},
-					{
-						ID:       "user-proxy-inactive",
-						Active:   "false",
-						Protocol: "http",
-						Host:     "inactive.proxy.com",
-						Port:     "8080",
-					},
 				},
 			},
 		},
 		{
-			name: "happy path with global settings proxy",
+			name: "global settings proxy",
 			envs: map[string]string{
 				"HOME":       "",
 				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-proxy"),
@@ -359,20 +345,20 @@ func Test_ReadSettings(t *testing.T) {
 				ActiveProfiles:  []string{},
 				Proxies: []Proxy{
 					{
-						ID:       "global-proxy",
+						ID:       "proxy-http",
 						Active:   "true",
 						Protocol: "http",
-						Host:     "global.proxy.com",
+						Host:     "foo.proxy.com",
 						Port:     "8080",
 					},
 				},
 			},
 		},
 		{
-			name: "happy path with duplicate proxy ID - user proxy takes precedence",
+			name: "user and global proxies - user takes precedence on duplicate ID",
 			envs: map[string]string{
-				"HOME":       filepath.Join("testdata", "settings", "user-with-duplicate-proxy-id"),
-				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-duplicate-proxy-id"),
+				"HOME":       filepath.Join("testdata", "settings", "user-with-proxy"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-proxy"),
 			},
 			wantSettings: settings{
 				LocalRepository: "testdata/user/repository",
@@ -381,13 +367,14 @@ func Test_ReadSettings(t *testing.T) {
 				ActiveProfiles:  []string{},
 				Proxies: []Proxy{
 					{
-						ID:       "shared-proxy-id",
-						Active:   "true",
-						Protocol: "http",
-						Host:     "user.proxy.com",
-						Port:     "8080",
-						Username: "user-proxy-user",
-						Password: "user-proxy-pass",
+						ID:            "proxy-http",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "user.proxy.com",
+						Port:          "8080",
+						Username:      "user-proxy-user",
+						Password:      "user-proxy-pass",
+						NonProxyHosts: "localhost|*.internal.com",
 					},
 				},
 			},

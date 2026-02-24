@@ -5,10 +5,10 @@
     <localRepository>testdata/repository</localRepository>
     <proxies>
         <proxy>
-            <id>global-proxy</id>
+            <id>proxy-http</id>
             <active>true</active>
             <protocol>http</protocol>
-            <host>global.proxy.com</host>
+            <host>foo.proxy.com</host>
             <port>8080</port>
         </proxy>
     </proxies>
