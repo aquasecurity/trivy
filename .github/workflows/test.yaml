@@ -75,6 +75,8 @@ jobs:
       # GitHub runners were rolled back to Docker Engine v28, while tests rely on Docker Engine v29.
       # This version mismatch leads to differences in image IDs and causes integration tests to fail.
       # We explicitly install Docker Engine v29 to ensure consistent behavior.
+      # Remove this temporary solution when the issue is resolved.
+      # https://github.com/actions/runner-images/issues/13474
       - name: Set up Docker
         uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4.7.0
         with:
