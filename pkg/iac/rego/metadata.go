@@ -202,11 +202,15 @@ func (sm *StaticMetadata) FromAnnotations(annotations *ast.Annotations) error {
 		}
 		sm.References = append(sm.References, resource.Ref.String())
 	}
-	if custom := annotations.Custom; custom != nil {
-		if err := sm.populate(custom); err != nil {
-			return err
-		}
+
+	if annotations.Custom == nil {
+		annotations.Custom = make(map[string]any)
 	}
+
+	if err := sm.populate(annotations.Custom); err != nil {
+		return err
+	}
+
 	if len(annotations.RelatedResources) > 0 {
 		sm.PrimaryURL = annotations.RelatedResources[0].Ref.String()
 	}

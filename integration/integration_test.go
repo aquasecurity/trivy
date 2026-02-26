@@ -518,7 +518,7 @@ func overrideFingerprint(t *testing.T, want, got *types.Report) {
 }
 
 // overrideDockerRemovedFields clears image config fields that were removed from Docker API
-// cf. https://github.com/moby/moby/blob/d0ad1357a141c795e1e0490e3fed00ddabcb91b9/docs/api/version-history.md
+// cf. https://github.com/moby/moby/blob/1f71f2217d2196239ca52685ce6b3c4f93a1cc07/api/docs/CHANGELOG.md
 func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	// Clear Container field (removed in Docker API v1.45)
 	got.Metadata.ImageConfig.Container = ""
@@ -531,6 +531,9 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	// Clear Hostname field (removed in Docker API v1.50)
 	got.Metadata.ImageConfig.Config.Hostname = ""
 	want.Metadata.ImageConfig.Config.Hostname = ""
+
+	// Clear DockerVersion field (omitted in Docker API v1.52)
+	want.Metadata.ImageConfig.DockerVersion = ""
 }
 
 // overrideServerInfo verifies that Server info exists and then clears it.

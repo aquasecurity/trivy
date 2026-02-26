@@ -7,9 +7,9 @@ import (
 	"runtime"
 	"testing"
 
-	dockerimage "github.com/docker/docker/api/types/image"
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	dockerimage "github.com/moby/moby/api/types/image"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 

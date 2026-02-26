@@ -72,10 +72,9 @@ func TestNewDockerImage(t *testing.T) {
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
-				Architecture:  "amd64",
-				OS:            "linux",
-				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
-				DockerVersion: "18.09.7",
+				Architecture: "amd64",
+				OS:           "linux",
+				Created:      v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				History: []v1.History{
 					{
 						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
@@ -114,10 +113,9 @@ func TestNewDockerImage(t *testing.T) {
 			wantID:       "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
 			wantRepoTags: []string{"alpine:3.11"},
 			wantConfigFile: &v1.ConfigFile{
-				Architecture:  "amd64",
-				OS:            "linux",
-				Created:       v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
-				DockerVersion: "18.09.7",
+				Architecture: "amd64",
+				OS:           "linux",
+				Created:      v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 196162891, time.UTC)},
 				History: []v1.History{
 					{
 						Created:    v1.Time{Time: time.Date(2020, 3, 23, 21, 19, 34, 0, time.UTC)},
