@@ -133,11 +133,9 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 [docs]: https://trivy.dev/docs/latest/
 [pronunciation]: #how-to-pronounce-the-name-trivy
 [code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
-
 [Installation]:https://trivy.dev/docs/latest/getting-started/installation/
 [Ecosystem]: https://trivy.dev/docs/latest/ecosystem/
 [Scanning Coverage]: https://trivy.dev/docs/latest/coverage/
-
 [alpine]: https://ariadne.space/2021/06/08/the-vulnerability-remediation-lifecycle-of-alpine-containers/
 [rego]: https://www.openpolicyagent.org/docs/latest/#rego
 [sigstore]: https://www.sigstore.dev/
