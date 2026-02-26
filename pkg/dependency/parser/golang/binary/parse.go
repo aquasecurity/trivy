@@ -110,7 +110,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
 		version := p.checkVersion(info.Main.Path, info.Main.Version)
 		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
-		version = p.chooseMainVersion(version, ldflagsVersion)
+		elfVersion := p.elfSymbolVersion(r, info.Main.Path)
+		version = p.chooseMainVersion(version, ldflagsVersion, elfVersion)
 
 		root := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
@@ -148,15 +149,29 @@ func (p *Parser) checkVersion(name, version string) string {
 }
 
 // chooseMainVersion determines which version to use for the main module.
-// It prefers the ldflags version when:
-// - The build info version is empty, OR
-// - The build info version is a pseudo-version AND ldflags version is available
-// This handles cases where actual release versions are injected via -ldflags.
-func (p *Parser) chooseMainVersion(version, ldflagsVersion string) string {
-	if version == "" || (module.IsPseudoVersion(version) && ldflagsVersion != "") {
+// The priority order is:
+//  1. Build info version (if it is a real semver, e.g. "v1.2.3" from `go install`)
+//  2. ldflags version (e.g. `-ldflags "-X main.version=v1.0.0"`)
+//  3. ELF symbol table version (fallback when `-trimpath` hides `-ldflags`)
+//  4. Original version as-is (may be empty or a pseudo-version)
+//
+// Examples:
+//
+//	chooseMainVersion("v1.2.3", "v1.0.0", "v1.0.0") => "v1.2.3"  (real semver wins)
+//	chooseMainVersion("v0.0.0-2024...", "v1.0.0", "") => "v1.0.0" (ldflags over pseudo)
+//	chooseMainVersion("v0.0.0-2024...", "", "v2.0.0") => "v2.0.0" (ELF over pseudo)
+//	chooseMainVersion("", "", "")                     => ""        (nothing available)
+func (p *Parser) chooseMainVersion(version, ldflagsVersion, elfVersion string) string {
+	switch {
+	case version != "" && !module.IsPseudoVersion(version):
+		return version
+	case ldflagsVersion != "":
 		return ldflagsVersion
+	case elfVersion != "":
+		return elfVersion
+	default:
+		return version
 	}
-	return version
 }
 
 func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
@@ -216,14 +231,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		key = strings.TrimLeft(key, `'`)
 		val = strings.TrimRight(val, `'`)
 		if isVersionXKey(key) && isValidSemVer(val) {
-			switch {
-			case strings.HasPrefix(key, name+"/cmd/"):
-				foundVersions[0] = append(foundVersions[0], val)
-			case defaultVersionPrefixes.Contains(versionPrefix(key)):
-				foundVersions[1] = append(foundVersions[1], val)
-			default:
-				foundVersions[2] = append(foundVersions[2], val)
-			}
+			classifyVersion(foundVersions, key, name, val)
 		}
 	}
 
@@ -265,6 +273,23 @@ func isValidSemVer(ver string) bool {
 	// here and checking validity again increases the chances that we
 	// parse a valid semver version.
 	return semver.IsValid(ver) || semver.IsValid("v"+ver)
+}
+
+// classifyVersion categorizes a version value into one of three priority tiers
+// based on its key:
+//
+//	[0]: <module_path>/cmd/**/*.version
+//	[1]: defaultVersionPrefixes (main, common, version, cmd)
+//	[2]: other
+func classifyVersion(foundVersions [][]string, key, moduleName, val string) {
+	switch {
+	case strings.HasPrefix(key, moduleName+"/cmd/"):
+		foundVersions[0] = append(foundVersions[0], val)
+	case defaultVersionPrefixes.Contains(versionPrefix(key)):
+		foundVersions[1] = append(foundVersions[1], val)
+	default:
+		foundVersions[2] = append(foundVersions[2], val)
+	}
 }
 
 // versionPrefix returns version prefix from `-ldflags` flag key

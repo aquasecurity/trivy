@@ -16,13 +16,10 @@ import (
 	"github.com/containerd/containerd/v2/pkg/namespaces"
 	"github.com/containerd/platforms"
 	"github.com/distribution/reference"
-	dockertypes "github.com/docker/docker/api/types"
-	"github.com/docker/docker/api/types/container"
-	dockerimage "github.com/docker/docker/api/types/image"
-	dockerClient "github.com/docker/docker/client"
-	"github.com/docker/go-connections/nat"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
+	dockerimage "github.com/moby/moby/api/types/image"
+	dockerClient "github.com/moby/moby/client"
 	"github.com/opencontainers/go-digest"
 	ocispec "github.com/opencontainers/image-spec/specs-go/v1"
 	"golang.org/x/xerrors"
@@ -57,7 +54,7 @@ func (n familiarNamed) String() string {
 }
 
 func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
-	return func(ctx context.Context, ref []string, _ ...dockerClient.ImageSaveOption) (io.ReadCloser, error) {
+	return func(ctx context.Context, ref []string, _ ...dockerClient.ImageSaveOption) (dockerClient.ImageSaveResult, error) {
 		if len(ref) < 1 {
 			return nil, xerrors.New("no image reference")
 		}
@@ -251,11 +248,6 @@ func inspect(ctx context.Context, img client.Image, ref reference.Reference) (do
 		})
 	}
 
-	portSet := make(nat.PortSet)
-	for k := range imgConfig.Config.ExposedPorts {
-		portSet[nat.Port(k)] = struct{}{}
-	}
-
 	created := ""
 	if lastHistory.Created != nil {
 		created = lastHistory.Created.Format(time.RFC3339Nano)
@@ -271,19 +263,9 @@ func inspect(ctx context.Context, img client.Image, ref reference.Reference) (do
 		Config: &dockerspec.DockerOCIImageConfig{
 			ImageConfig: imgConfig.Config,
 		},
-		ContainerConfig: &container.Config{
-			User:         imgConfig.Config.User,
-			ExposedPorts: portSet,
-			Env:          imgConfig.Config.Env,
-			Cmd:          imgConfig.Config.Cmd,
-			Volumes:      imgConfig.Config.Volumes,
-			WorkingDir:   imgConfig.Config.WorkingDir,
-			Entrypoint:   imgConfig.Config.Entrypoint,
-			Labels:       imgConfig.Config.Labels,
-		},
 		Architecture: imgConfig.Architecture,
 		Os:           imgConfig.OS,
-		RootFS: dockertypes.RootFS{
+		RootFS: dockerimage.RootFS{
 			Type:   imgConfig.RootFS.Type,
 			Layers: xslices.Map(imgConfig.RootFS.DiffIDs, digest.Digest.String),
 		},
