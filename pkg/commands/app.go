@@ -100,6 +100,7 @@ func NewApp() *cobra.Command {
 		NewSBOMCommand(globalFlags),
 		NewVersionCommand(globalFlags),
 		NewVMCommand(globalFlags),
+		NewAppImageCommand(globalFlags),
 		NewCleanCommand(globalFlags),
 		NewRegistryCommand(globalFlags),
 		NewVEXCommand(globalFlags),
@@ -1142,6 +1143,77 @@ func NewVMCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	cmd.SetFlagErrorFunc(flagErrorFunc)
 	vmFlags.AddFlags(cmd)
 	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, vmFlags.Usages(cmd)))
+
+	return cmd
+}
+
+// NewAppImageCommand returns a cobra command for scanning an AppImage file.
+// AppImage is a universal Linux format embedding a SquashFS filesystem in an ELF binary.
+func NewAppImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
+	reportFlagGroup := flag.NewReportFlagGroup()
+	reportFlagGroup.ReportFormat = nil // disable '--report'
+
+	packageFlagGroup := flag.NewPackageFlagGroup()
+	packageFlagGroup.IncludeDevDeps = nil // disable '--include-dev-deps'
+
+	misconfFlagGroup := flag.NewMisconfFlagGroup()
+	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
+	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
+
+	appimageFlags := &flag.Flags{
+		globalFlags,
+		flag.NewCacheFlagGroup(),
+		flag.NewDBFlagGroup(),
+		misconfFlagGroup,
+		flag.NewModuleFlagGroup(),
+		packageFlagGroup,
+		flag.NewClientFlags(), // for client/server mode
+		reportFlagGroup,
+		flag.NewScanFlagGroup(),
+		flag.NewSecretFlagGroup(),
+		flag.NewVulnerabilityFlagGroup(),
+	}
+
+	cmd := &cobra.Command{
+		Use:     "appimage [flags] APPIMAGE_FILE",
+		Aliases: []string{},
+		GroupID: groupScanning,
+		Short:   "[EXPERIMENTAL] Scan an AppImage file",
+		Example: `  # Scan an AppImage for vulnerabilities
+  $ trivy appimage /path/to/app.AppImage
+
+  # Output as JSON
+  $ trivy appimage --format json /path/to/app.AppImage
+
+  # Scan only for OS packages
+  $ trivy appimage --pkg-types os /path/to/app.AppImage
+`,
+		PreRunE: func(cmd *cobra.Command, args []string) error {
+			if err := appimageFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			return validateArgs(cmd, args)
+		},
+		RunE: func(cmd *cobra.Command, args []string) error {
+			if err := appimageFlags.Bind(cmd); err != nil {
+				return xerrors.Errorf("flag bind error: %w", err)
+			}
+			options, err := appimageFlags.ToOptions(args)
+			if err != nil {
+				return xerrors.Errorf("flag error: %w", err)
+			}
+			if options.Timeout < time.Minute*30 {
+				options.Timeout = time.Minute * 30
+				log.Info("Timeout is set to less than 30 min - upgrading to 30 min for this command.")
+			}
+			return artifact.Run(cmd.Context(), options, artifact.TargetAppImage)
+		},
+		SilenceErrors: true,
+		SilenceUsage:  true,
+	}
+	cmd.SetFlagErrorFunc(flagErrorFunc)
+	appimageFlags.AddFlags(cmd)
+	cmd.SetUsageTemplate(fmt.Sprintf(usageTemplate, appimageFlags.Usages(cmd)))
 
 	return cmd
 }
