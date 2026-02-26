@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Check out code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set up Go
         uses: ./.github/actions/setup-go
@@ -28,7 +28,7 @@ jobs:
           fi
 
       - name: Microsoft Teams Notification
-        uses: Skitionek/notify-microsoft-teams@e7a2493ac87dad8aa7a62f079f295e54ff511d88 # main
+        uses: Skitionek/notify-microsoft-teams@b65dda7f5e6fd0960b97f923629b911890dc60b1 # main
         if: steps.exceptions_check.outputs.send_notify == 'true'
         with:
           webhook_url: ${{ secrets.TRIVY_MSTEAMS_WEBHOOK }}

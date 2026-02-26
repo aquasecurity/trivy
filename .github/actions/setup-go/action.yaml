@@ -24,7 +24,7 @@ runs:
         echo "version=$major_minor" >> "$GITHUB_OUTPUT"
 
     - name: Set up Go
-      uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
+      uses: actions/setup-go@4b73464bb391d4059bd26b0524d20df3927bd417 # v6.3.0
       with:
         go-version: ${{ steps.go-version.outputs.version }}
         cache: false
