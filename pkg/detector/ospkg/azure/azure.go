@@ -65,6 +65,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				Layer:            pkg.Layer,
 				DataSource:       adv.DataSource,
 			}
+			
 
 			// Unpatched vulnerabilities
 			if adv.FixedVersion == "" {
