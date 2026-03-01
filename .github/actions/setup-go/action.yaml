@@ -22,6 +22,7 @@ runs:
         go_version=$(grep -m1 '^go ' "${{ inputs.go-version-file }}" | awk '{print $2}')
         major_minor=$(echo "$go_version" | cut -d. -f1,2)
         echo "version=$major_minor" >> "$GITHUB_OUTPUT"
+        echo "get private token!!!!!!!!!!!"
 
     - name: Set up Go
       uses: actions/setup-go@4dc6199c7b1a012772edbd06daecab0f50c9053c # v6.1.0
