@@ -32,28 +32,28 @@ jobs:
 
         # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_Linux-64bit
           path: dist/trivy_*_Linux-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_Linux-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_Linux-ARM64
           path: dist/trivy_*_Linux-ARM64.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_macOS-64bit
           path: dist/trivy_*_macOS-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_macOS-ARM64
           path: dist/trivy_*_macOS-ARM64.tar.gz
