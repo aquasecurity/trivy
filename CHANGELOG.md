@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.69.2](https://github.com/aquasecurity/private-trivy/compare/v0.69.1...v0.69.2) (2026-03-01)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/cloudflare/circl from 1.6.1 to 1.6.3 [backport: release/v0.69] ([#10264](https://github.com/aquasecurity/private-trivy/issues/10264)) ([cf3d4cd](https://github.com/aquasecurity/private-trivy/commit/cf3d4cd6a8bdf5b5b1d701f591bd8aaabd2c7c27))
+* **deps:** bump go.opentelemetry.io/otel/sdk from 1.39.0 to 1.40.0 [backport: release/v0.69] ([#10267](https://github.com/aquasecurity/private-trivy/issues/10267)) ([86debce](https://github.com/aquasecurity/private-trivy/commit/86debce0f4897e9501368fe0611c5ae472a141eb))
+
 ## [0.69.1](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.69.1) (2026-02-05)
 
 
