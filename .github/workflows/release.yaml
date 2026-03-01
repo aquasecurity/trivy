@@ -83,13 +83,13 @@ jobs:
           # This allows the created PR to trigger tests and other workflows
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
 
-  # `trigger-version-update` triggers the `update_version` workflow in the `trivy-telemetry` repository
-  # and the trivy-downloads repository.
+  # `trigger-version-update` triggers workflows in the `aqua` repositories to update the Trivy version.
   trigger-version-update:
     needs: deploy-packages
     runs-on: ubuntu-22.04
     steps:
       - name: Trigger update_version workflow in trivy-telemetry
+        if: always()
         env:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows triggering workflows in other repositories
@@ -98,9 +98,10 @@ jobs:
           gh workflow run update_version.yml \
             --repo ${{ github.repository_owner }}/trivy-telemetry \
             --ref main \
-            --field version=${{ github.ref_name }}
+            --field version="$GITHUB_REF_NAME"
 
       - name: Trigger update_version workflow in trivy-downloads
+        if: always()
         env:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows triggering workflows in other repositories
@@ -109,10 +110,11 @@ jobs:
           gh workflow run update_version.yml \
             --repo ${{ github.repository_owner }}/trivy-downloads \
             --ref main \
-            --field version=${{ github.ref_name }} \
+            --field version="$GITHUB_REF_NAME" \
             --field artifact=trivy
 
       - name: Trigger version update and release workflow in trivy-chocolatey
+        if: always()
         env:
           # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows triggering workflows in other repositories
@@ -121,4 +123,16 @@ jobs:
           gh workflow run release.yml \
             --repo ${{ github.repository_owner }}/trivy-chocolatey \
             --ref main \
-            --field version=${{ github.ref_name }}
+            --field version="$GITHUB_REF_NAME"
+
+      - name: Run version bump in trivy-action
+        if: always()
+        env:
+          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # This allows triggering workflows in other repositories
+          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+        run: |
+          gh workflow run bump-trivy.yaml \
+            --repo ${{ github.repository_owner }}/trivy-action \
+            --ref master \
+            --field trivy-version="${GITHUB_REF_NAME#v}"
