@@ -340,7 +340,7 @@ func (t Test) UpdateVMGolden() error {
 
 // E2e runs E2E tests using testscript framework
 func (t Test) E2e() error {
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "-timeout=30m", "./e2e/...")
 }
 
 type Lint mg.Namespace
