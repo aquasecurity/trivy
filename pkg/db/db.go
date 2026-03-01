@@ -74,6 +74,8 @@ type Client struct {
 	dbDir    string
 	metadata metadata.Client
 	quiet    bool
+
+	test string
 }
 
 func Dir(cacheDir string) string {
