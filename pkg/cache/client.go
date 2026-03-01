@@ -26,6 +26,7 @@ type Options struct {
 	RedisKey    string
 	RedisTLS    bool
 	TTL         time.Duration
+	Test        string
 }
 
 func NewType(backend string) Type {
