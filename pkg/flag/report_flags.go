@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"path/filepath"
 	"slices"
 	"strings"
 
@@ -49,7 +50,7 @@ var (
 		Name:       "template",
 		ConfigName: "template",
 		Shorthand:  "t",
-		Usage:      "output template",
+		Usage:      "output template (file path must have .tpl extension)",
 	}
 	DependencyTreeFlag = Flag[bool]{
 		Name:          "dependency-tree",
@@ -217,15 +218,21 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	tableModes := f.TableMode.Value()
 
 	if template != "" {
-		if format == "" {
+		switch format {
+		case "":
 			log.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
-		} else if format != "template" {
+		case "template":
+			// Validate template file extension for security
+			if path, ok := strings.CutPrefix(template, "@"); ok {
+				if filepath.Ext(path) != ".tpl" {
+					return xerrors.Errorf("template file must have .tpl extension: %s", path)
+				}
+			}
+		default:
 			log.Warnf("'--template' is ignored because '--format %s' is specified. Use '--template' option with '--format template' option.", format)
 		}
-	} else {
-		if format == types.FormatTemplate {
-			log.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
-		}
+	} else if format == types.FormatTemplate {
+		log.Warn("'--format template' is ignored because '--template' is not specified. Specify '--template' option when you use '--format template'.")
 	}
 
 	// "--list-all-pkgs" option is unavailable with other than "--format json".
