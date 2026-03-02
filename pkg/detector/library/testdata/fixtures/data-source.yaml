@@ -35,3 +35,8 @@
         ID: "julia"
         Name: "Julia Ecosystem Security Advisories"
         URL: "https://github.com/JuliaLang/SecurityAdvisories.jl"
+    - key: "seal pip::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
