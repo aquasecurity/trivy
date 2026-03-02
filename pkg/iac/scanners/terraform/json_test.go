@@ -9,7 +9,6 @@ import (
 )
 
 func TestScanningJSON(t *testing.T) {
-
 	var tests = []struct {
 		name     string
 		source   string

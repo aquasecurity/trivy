@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -20,6 +21,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/eval"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -49,7 +51,6 @@ type Parser struct {
 	logger            *log.Logger
 	allowDownloads    bool
 	skipCachedModules bool
-	fsMap             map[string]fs.FS
 	configsFS         fs.FS
 	skipPaths         []string
 	// cwd is optional, if left to empty string, 'os.Getwd'
@@ -77,7 +78,7 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	}
 
 	// Scope the logger to the parser
-	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
+	p.logger = p.logger.With(log.Prefix("terraform parser"))
 
 	return p
 }
@@ -102,12 +103,7 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	return mp
 }
 
-func (p *Parser) Files() map[string]*hcl.File {
-	return p.underlying.Files()
-}
-
-func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-
+func (p *Parser) parseFile(_ context.Context, fullPath string) error {
 	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
 	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
 	if !isJSON && !isHCL {
@@ -153,7 +149,7 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 }
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
-func (p *Parser) ParseFS(ctx context.Context, dir string) error {
+func (p *Parser) parseFS(ctx context.Context, dir string) error {
 	if p.moduleFS == nil {
 		return errors.New("module filesystem is nil, nothing to parse")
 	}
@@ -178,6 +174,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		if info.IsDir() {
 			continue
 		}
+
 		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
 			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
 			continue
@@ -187,7 +184,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	sort.Strings(paths)
 	for _, path := range paths {
 		var err error
-		if err = p.ParseFile(ctx, path); err == nil {
+		if err = p.parseFile(ctx, path); err == nil {
 			continue
 		}
 
@@ -251,7 +248,7 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(_ context.Context) (*evaluator, error) {
+func (p *Parser) load(_ context.Context) (*evaluator, error) {
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
@@ -325,6 +322,22 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	), nil
 }
 
+func (p *Parser) resolveInputVars() (map[string]cty.Value, error) {
+	vars := maps.Clone(p.tfvars)
+
+	tfvars, err := loadTFVars(p.configsFS, p.tfvarsPaths)
+	if err != nil {
+		return nil, fmt.Errorf("failed to load tfvars: %w", err)
+	}
+
+	maps.Copy(vars, tfvars)
+
+	p.logger.Debug(
+		"Resolved input variables", log.Int("count", len(vars)),
+	)
+	return vars, nil
+}
+
 func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
 	var missing []*terraform.Block
 	for _, varBlock := range blocks.OfType("variable") {
@@ -375,25 +388,47 @@ func inputVariableType(b *terraform.Block) cty.Type {
 	return ty
 }
 
-func (p *Parser) EvaluateAll(ctx context.Context) (terraform.Modules, error) {
-	e, err := p.Load(ctx)
+func (p *Parser) EvaluateAll(ctx context.Context, dir string) (terraform.Modules, error) {
+	if p.moduleFS == nil {
+		return nil, errors.New("module filesystem is nil, nothing to parse")
+	}
+
+	// if os.Getenv("TRIVY_EXPERIMENT_TF_GRAPH_EVAL") != "" {
+	if true {
+		vars, err := p.resolveInputVars()
+		if err != nil {
+			return nil, fmt.Errorf("resolve input variables: %w", err)
+		}
+
+		e, err := eval.Eval(ctx, p.moduleFS, dir, &eval.EvalOpts{
+			Logger:            p.logger,
+			Workspace:         p.workspaceName,
+			WorkDir:           p.cwd,
+			AllowDownloads:    p.allowDownloads,
+			SkipCachedModules: p.skipCachedModules,
+			StopOnHCLError:    p.stopOnHCLError,
+			SkipPaths:         p.skipPaths,
+			InputVars:         vars,
+		})
+		if err != nil {
+			return nil, err
+		}
+		return e.BuildTerraformModels(), nil
+	}
+
+	if err := p.parseFS(ctx, dir); err != nil {
+		return nil, err
+	}
+	e, err := p.load(ctx)
 	if errors.Is(err, ErrNoFiles) {
 		return nil, nil
 	} else if err != nil {
 		return nil, err
 	}
 
-	modules, fsMap := e.EvaluateAll(ctx)
+	modules := e.EvaluateAll(ctx)
 	p.logger.Debug("Finished parsing module")
-	p.fsMap = fsMap
 	return modules, nil
-}
-
-func (p *Parser) GetFilesystemMap() map[string]fs.FS {
-	if p.fsMap == nil {
-		return make(map[string]fs.FS)
-	}
-	return p.fsMap
 }
 
 func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules, error) {
@@ -419,7 +454,7 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules,
 			&ignore.StringMatchParser{
 				SectionKey: "ws",
 			},
-			&paramParser{},
+			&ignore.ParamParser{},
 		)
 		ignores = append(ignores, fileIgnores...)
 	}
@@ -437,37 +472,4 @@ func loadBlocksFromFile(file sourceFile) (hcl.Blocks, error) {
 		return nil, nil
 	}
 	return contents.Blocks, nil
-}
-
-type paramParser struct {
-	params map[string]string
-}
-
-func (s *paramParser) Key() string {
-	return "ignore"
-}
-
-func (s *paramParser) Parse(str string) bool {
-	s.params = make(map[string]string)
-
-	idx := strings.Index(str, "[")
-	if idx == -1 {
-		return false
-	}
-
-	str = str[idx+1:]
-
-	paramStr := strings.TrimSuffix(str, "]")
-	for pair := range strings.SplitSeq(paramStr, ",") {
-		parts := strings.Split(pair, "=")
-		if len(parts) != 2 {
-			continue
-		}
-		s.params[parts[0]] = parts[1]
-	}
-	return true
-}
-
-func (s *paramParser) Param() any {
-	return s.params
 }

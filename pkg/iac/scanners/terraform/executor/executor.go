@@ -129,14 +129,11 @@ func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) 
 // normalizeBlockLables removes indexes and keys from labels.
 func normalizeBlockLables(block *terraform.Block) []string {
 	labels := block.Labels()
-	if block.IsExpanded() {
-		nameLabel := labels[len(labels)-1]
-		idx := strings.LastIndex(nameLabel, "[")
-		if idx != -1 {
-			labels[len(labels)-1] = nameLabel[:idx]
-		}
+	nameLabel := labels[len(labels)-1]
+	idx := strings.LastIndex(nameLabel, "[")
+	if idx != -1 {
+		labels[len(labels)-1] = nameLabel[:idx]
 	}
-
 	return labels
 }
 
