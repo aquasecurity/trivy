@@ -488,6 +488,9 @@ func (m *Marshaler) ratings(vuln core.Vulnerability) *[]cdx.VulnerabilityRating 
 			if cvss.V3Score != 0 || cvss.V3Vector != "" {
 				rates = append(rates, m.ratingV3(sourceID, severity, cvss))
 			}
+			if cvss.V40Score != 0 || cvss.V40Vector != "" {
+				rates = append(rates, m.ratingV4(sourceID, severity, cvss))
+			}
 		} else { // When the vendor provides only severity
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
