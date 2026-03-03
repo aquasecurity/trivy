@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.69.3](https://github.com/aquasecurity/trivy/compare/v0.69.2...v0.69.3) (2026-03-03)
+
+
+### Bug Fixes
+
+* **deps:** bump github.com/go-git/go-git/v5 from 5.16.4 to 5.16.5 [backport: release/v0.69] ([#10291](https://github.com/aquasecurity/trivy/issues/10291)) ([dabefec](https://github.com/aquasecurity/trivy/commit/dabefec57d099184bc8bd268dea23cd5d502f9cc))
+
 ## [0.69.2](https://github.com/aquasecurity/private-trivy/compare/v0.69.1...v0.69.2) (2026-03-01)
 
 
