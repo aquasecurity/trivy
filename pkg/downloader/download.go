@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -56,8 +57,16 @@ func DownloadToTempDir(ctx context.Context, src string, opts Options) (string, e
 
 // Download downloads the configured source to the destination.
 func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, error) {
-	// go-getter doesn't allow the dst directory already exists if the src is directory.
-	_ = os.RemoveAll(dst)
+	dst = filepath.Clean(dst)
+
+	// go-getter won't create dst if it already exists, so we always rename it aside.
+	// We restore it only on a 304 (ErrSkipDownload).
+	// On any other outcome the backup is dropped,
+	// so a genuine failure never resurrects stale files.
+	restore, err := backupDst(dst)
+	if err != nil {
+		return "", xerrors.Errorf("failed to back up dst: %w", err)
+	}
 
 	var clientOpts []getter.ClientOption
 	if opts.Insecure {
@@ -98,9 +107,15 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 	}
 
 	if err := client.Get(); err != nil {
+		if errors.Is(err, ErrSkipDownload) {
+			restore()
+		} else {
+			_ = os.RemoveAll(dst + ".backup")
+		}
 		return "", xerrors.Errorf("failed to download %s: %w", src, err)
 	}
 
+	_ = os.RemoveAll(dst + ".backup")
 	return transport.newETag, nil
 }
 
