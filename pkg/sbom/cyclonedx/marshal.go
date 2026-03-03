@@ -553,6 +553,18 @@ func (m *Marshaler) ratingV3(sourceID dtypes.SourceID, severity dtypes.Severity,
 	return rate
 }
 
+func (m *Marshaler) ratingV4(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+	return cdx.VulnerabilityRating{
+		Source: &cdx.Source{
+			Name: string(sourceID),
+		},
+		Score:    &cvss.V40Score,
+		Method:   cdx.ScoringMethodCVSSv4,
+		Severity: m.severity(severity),
+		Vector:   cvss.V40Vector,
+	}
+}
+
 // severity converts the Trivy severity to the CycloneDX severity
 func (*Marshaler) severity(s dtypes.Severity) cdx.Severity {
 	switch s {
