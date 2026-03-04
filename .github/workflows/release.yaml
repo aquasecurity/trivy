@@ -24,7 +24,7 @@ jobs:
           fetch-depth: 0
 
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
@@ -96,9 +96,9 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           gh workflow run update_version.yml \
-            --repo ${{ github.repository_owner }}/trivy-telemetry \
+            --repo "$GITHUB_REPOSITORY_OWNER/trivy-telemetry" \
             --ref main \
-            --field version=${{ github.ref_name }}
+            --field "version=$GITHUB_REF_NAME"
 
       - name: Trigger update_version workflow in trivy-downloads
         env:
@@ -107,9 +107,9 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           gh workflow run update_version.yml \
-            --repo ${{ github.repository_owner }}/trivy-downloads \
+            --repo "$GITHUB_REPOSITORY_OWNER/trivy-downloads" \
             --ref main \
-            --field version=${{ github.ref_name }} \
+            --field "version=$GITHUB_REF_NAME" \
             --field artifact=trivy
 
       - name: Trigger version update and release workflow in trivy-chocolatey
@@ -119,6 +119,6 @@ jobs:
           GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           gh workflow run release.yml \
-            --repo ${{ github.repository_owner }}/trivy-chocolatey \
+            --repo "$GITHUB_REPOSITORY_OWNER/trivy-chocolatey" \
             --ref main \
-            --field version=${{ github.ref_name }}
+            --field "version=$GITHUB_REF_NAME"

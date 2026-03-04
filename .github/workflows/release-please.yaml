@@ -32,11 +32,14 @@ jobs:
         run: npm install release-please -g
 
       - name: Release Please
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.version }}
+          TARGET_BRANCH: ${{ github.ref_name }}
         run: |
-          release-please release-pr --repo-url=${{ github.server_url }}/${{ github.repository }} \
-            --token=${{ secrets.ORG_REPO_TOKEN }} \
-            --release-as=${{ github.event.inputs.version }} \
-            --target-branch=${{ github.ref_name }}
+          release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --token="${{ secrets.ORG_REPO_TOKEN }}" \
+            --release-as="$RELEASE_VERSION" \
+            --target-branch="$TARGET_BRANCH"
 
   release-tag:
     runs-on: ubuntu-latest

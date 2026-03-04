@@ -116,7 +116,7 @@ jobs:
             public.ecr.aws/aquasecurity/trivy:canary
 
       - name: Cache Trivy binaries
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
