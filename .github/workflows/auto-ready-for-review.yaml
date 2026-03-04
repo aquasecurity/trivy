@@ -1,6 +1,9 @@
 name: Auto Ready for Review
 
 on:
+  # workflow_run runs in the context of the base repo with full permissions, but this workflow
+  # does not check out any PR code — it only reads PR metadata via the GitHub API and marks
+  # the PR as ready for review. No code execution from forks occurs.
   workflow_run: # zizmor: ignore[dangerous-triggers]
     workflows: ["Test", "Validate PR Title"]
     types: [completed]
