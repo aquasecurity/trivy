@@ -41,6 +41,7 @@ jobs:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
           token: ${{ secrets.ORG_REPO_TOKEN }}
+          persist-credentials: true # deploy-rpm.sh and deploy-deb.sh run git push
 
       - name: Setup git settings
         run: |
@@ -65,7 +66,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
-          persist-credentials: false
+          persist-credentials: true # mage helm:updateVersion runs git push
 
       - name: Set up Git user
         run: |
