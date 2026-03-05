@@ -2243,6 +2243,101 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 	}
 }
 
+func TestMarshaler_MarshalReport_CVSSv4Only(t *testing.T) {
+	inputReport := types.Report{
+		SchemaVersion: report.SchemaVersion,
+		ArtifactName:  "./report.cdx.json",
+		ArtifactType:  ftypes.TypeCycloneDX,
+		Results: types.Results{
+			{
+				Target: "Java",
+				Class:  types.ClassLangPkg,
+				Type:   ftypes.Jar,
+				Packages: []ftypes.Package{
+					{
+						Name:    "com.fasterxml.jackson.core:jackson-databind",
+						Version: "2.13.4.1",
+						Identifier: ftypes.PkgIdentifier{
+							BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							UID:    "9A5066570222D04C",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "com.fasterxml.jackson.core",
+								Name:      "jackson-databind",
+								Version:   "2.13.4.1",
+							},
+						},
+						FilePath: "jackson-databind-2.13.4.1.jar",
+					},
+				},
+				Vulnerabilities: []types.DetectedVulnerability{
+					{
+						VulnerabilityID: "GHSA-72hv-8253-57qq",
+						PkgName:         "com.fasterxml.jackson.core:jackson-databind",
+						PkgPath:         "jackson-databind-2.13.4.1.jar",
+						PkgIdentifier: ftypes.PkgIdentifier{
+							BOMRef: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							UID:    "9A5066570222D04C",
+							PURL: &packageurl.PackageURL{
+								Type:      packageurl.TypeMaven,
+								Namespace: "com.fasterxml.jackson.core",
+								Name:      "jackson-databind",
+								Version:   "2.13.4.1",
+							},
+						},
+						InstalledVersion: "2.13.4.1",
+						SeveritySource:   vulnerability.GHSA,
+						PrimaryURL:       "https://github.com/advisories/GHSA-72hv-8253-57qq",
+						DataSource: &dtypes.DataSource{
+							ID:   vulnerability.GHSA,
+							Name: "GitHub Security Advisory Maven",
+							URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
+						},
+						Vulnerability: dtypes.Vulnerability{
+							Title:       "jackson-core: denial of service in deeply nested structures",
+							Description: "Synthetic test vulnerability for CVSS v4 rating marshaling.",
+							Severity:    dtypes.SeverityHigh.String(),
+							VendorSeverity: dtypes.VendorSeverity{
+								vulnerability.GHSA: dtypes.SeverityHigh,
+							},
+							CVSS: dtypes.VendorCVSS{
+								vulnerability.GHSA: dtypes.CVSS{
+									V40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+									V40Score:  8.7,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		BOM: testSBOM(),
+	}
+
+	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	got, err := marshaler.MarshalReport(ctx, inputReport)
+	require.NoError(t, err)
+	require.NotNil(t, got)
+	require.NotNil(t, got.Vulnerabilities)
+	require.Len(t, *got.Vulnerabilities, 1)
+
+	ratings := (*got.Vulnerabilities)[0].Ratings
+	require.NotNil(t, ratings)
+	require.Len(t, *ratings, 1)
+
+	rate := (*ratings)[0]
+	require.NotNil(t, rate.Source)
+	assert.Equal(t, string(vulnerability.GHSA), rate.Source.Name)
+	assert.Equal(t, cdx.ScoringMethodCVSSv4, rate.Method)
+	assert.Equal(t, cdx.SeverityHigh, rate.Severity)
+	assert.Equal(t, "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N", rate.Vector)
+	require.NotNil(t, rate.Score)
+	assert.InDelta(t, 8.7, *rate.Score, 0.001)
+}
+
 func TestMarshaler_Licenses(t *testing.T) {
 	tests := []struct {
 		name     string
