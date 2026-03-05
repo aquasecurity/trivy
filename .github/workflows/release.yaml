@@ -22,6 +22,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Restore Trivy binaries from cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
@@ -40,6 +41,7 @@ jobs:
           repository: ${{ github.repository_owner }}/trivy-repo
           path: trivy-repo
           token: ${{ secrets.ORG_REPO_TOKEN }}
+          persist-credentials: true # deploy-rpm.sh and deploy-deb.sh run git push
 
       - name: Setup git settings
         run: |
@@ -64,6 +66,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: true # mage helm:updateVersion runs git push
 
       - name: Set up Git user
         run: |
