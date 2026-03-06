@@ -111,9 +111,6 @@ nfpms:
       signature:
          key_file: '{{ .Env.GPG_FILE }}'
 
-checksum:
-  name_template: checksums.txt
-
 archives:
   - id: archive
     format: tar.gz
