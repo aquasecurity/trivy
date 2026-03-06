@@ -134,7 +134,7 @@ Please ensure to abide by our [Code of Conduct][code-of-conduct] during all inte
 [pronunciation]: #how-to-pronounce-the-name-trivy
 [code-of-conduct]: https://github.com/aquasecurity/community/blob/main/CODE_OF_CONDUCT.md
 
-[Installation]:https://trivy.dev/docs/latest/getting-started/installation/
+[Installation]: https://trivy.dev/docs/latest/getting-started/installation/
 [Ecosystem]: https://trivy.dev/docs/latest/ecosystem/
 [Scanning Coverage]: https://trivy.dev/docs/latest/coverage/
 
