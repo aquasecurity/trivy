@@ -217,10 +217,12 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									CweIDs: []string{"CWE-416"},
 									CVSS: dtypes.VendorCVSS{
 										vulnerability.NVD: dtypes.CVSS{
-											V2Vector: "AV:N/AC:M/Au:N/C:N/I:N/A:P",
-											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
-											V2Score:  4.3,
-											V3Score:  5.5,
+											V2Vector:  "AV:N/AC:M/Au:N/C:N/I:N/A:P",
+											V3Vector:  "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+											V40Vector: "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
+											V2Score:   4.3,
+											V3Score:   5.5,
+											V40Score:  8.7,
 										},
 										vulnerability.RedHatOVAL: dtypes.CVSS{
 											V3Vector: "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -705,6 +707,16 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv3,
 								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
+							},
+							{
+								Source: &cdx.Source{
+									Name: string(vulnerability.NVD),
+									URL:  "",
+								},
+								Score:    lo.ToPtr(8.7),
+								Severity: cdx.SeverityMedium,
+								Method:   cdx.ScoringMethodCVSSv4,
+								Vector:   "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
 							},
 							{
 								Source: &cdx.Source{
