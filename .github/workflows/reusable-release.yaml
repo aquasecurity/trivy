@@ -52,7 +52,9 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
+        env:
+          PLATFORMS: ${{ steps.buildx.outputs.platforms }}
+        run: echo "${PLATFORMS}"
 
       - name: Login to docker.io registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0

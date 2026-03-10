@@ -60,13 +60,15 @@ jobs:
       - name: Tag release
         if: ${{ steps.extract_info.outputs.version }}
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          VERSION: ${{ steps.extract_info.outputs.version }}
         with:
           github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
           script: |
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
-              ref: `refs/tags/v${{ steps.extract_info.outputs.version }}`,
+              ref: `refs/tags/v${process.env.VERSION}`,
               sha: context.sha
             });
 
@@ -74,10 +76,12 @@ jobs:
       - name: Create release branch for patch versions
         if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
           script: |
-            const releaseBranch = '${{ steps.extract_info.outputs.release_branch }}';
+            const releaseBranch = process.env.RELEASE_BRANCH;
             await github.rest.git.createRef({
               owner: context.repo.owner,
               repo: context.repo.repo,
@@ -91,10 +95,12 @@ jobs:
         if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         shell: bash
         run: |
-          RULESET_ID=$(gh api /repos/${{ github.repository }}/rulesets --jq '.[] | select(.name=="release") | .id')
-          gh api /repos/${{ github.repository }}/rulesets/$RULESET_ID | jq '{conditions}' | jq '.conditions.ref_name.include += ["refs/heads/${{ steps.extract_info.outputs.release_branch }}"]' | gh api --method put --input - /repos/${{ github.repository }}/rulesets/$RULESET_ID
+          RULESET_ID=$(gh api /repos/${GH_REPO}/rulesets --jq '.[] | select(.name=="release") | .id')
+          gh api /repos/${GH_REPO}/rulesets/$RULESET_ID | jq '{conditions}' | jq ".conditions.ref_name.include += [\"refs/heads/${RELEASE_BRANCH}\"]" | gh api --method put --input - /repos/${GH_REPO}/rulesets/$RULESET_ID
 
       # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
       # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
@@ -102,10 +108,12 @@ jobs:
       - name: Remove the label from PR
         if: ${{ steps.extract_info.outputs.pr_number }}
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          PR_NUMBER: ${{ steps.extract_info.outputs.pr_number }}
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const prNumber = parseInt('${{ steps.extract_info.outputs.pr_number }}', 10);
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
             github.rest.issues.removeLabel({
               owner: context.repo.owner,
               repo: context.repo.repo,
