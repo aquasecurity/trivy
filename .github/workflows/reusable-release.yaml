@@ -133,8 +133,10 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
-      # Cache is keyed by github.sha and scoped to tag-push events triggered by maintainers only.
-      # External contributors cannot influence the cache key or contents here.
+      # This workflow is only triggered by tag pushes (release.yaml: on.push.tags), which require
+      # maintainer access. Fork PRs cannot reach this code path, so the cache cannot be poisoned
+      # by external contributors. The key is scoped to github.sha, making cross-run collisions
+      # impossible. Cache is written here and read only by the deploy-packages job in release.yaml.
       - name: Cache Trivy binaries
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
