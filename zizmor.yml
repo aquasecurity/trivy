@@ -4,3 +4,8 @@ rules:
   # See: https://docs.zizmor.sh/audits/#excessive-permissions
   excessive-permissions:
     disable: true
+
+  # GitHub environments are not currently used, so secrets are accessed outside of them.
+  # See: https://docs.zizmor.sh/audits/#secrets-outside-env
+  secrets-outside-env:
+    disable: true

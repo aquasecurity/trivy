@@ -8,10 +8,9 @@ runs:
   using: "composite"
   steps:
     - name: Conditionally label discussions based on category and content
-      env:
-        GH_TOKEN: ${{ github.token }}
       uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
       env:
+        GH_TOKEN: ${{ github.token }}
         DISCUSSION_NUM: ${{ inputs.discussion_num }}
       with:
         script: |
