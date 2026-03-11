@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,6 +10,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/hooktest"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -178,3 +180,63 @@ func TestWrite(t *testing.T) {
 		})
 	}
 }
+
+func TestWrite_Sarif(t *testing.T) {
+	tests := []struct {
+		name         string
+		artifactType ftypes.ArtifactType
+		target       string
+		wantRootPath string
+	}{
+		{
+			name:         "TypeFilesystem sets ROOTPATH to target path",
+			artifactType: ftypes.TypeFilesystem,
+			target:       "/tmp/foo",
+			wantRootPath: "file:///tmp/foo/",
+		},
+		{
+			name:         "TypeRepository sets ROOTPATH to target path",
+			artifactType: ftypes.TypeRepository,
+			target:       "/tmp/foo",
+			wantRootPath: "file:///tmp/foo/",
+		},
+		{
+			name:         "TypeContainerImage does not set ROOTPATH",
+			artifactType: ftypes.TypeContainerImage,
+			target:       "/tmp/foo",
+			wantRootPath: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			output := new(bytes.Buffer)
+			opts := flag.Options{
+				ScanOptions: flag.ScanOptions{
+					Target: tt.target,
+				},
+				ReportOptions: flag.ReportOptions{
+					Format: types.FormatSarif,
+				},
+			}
+			opts.SetOutputWriter(output)
+
+			err := report.Write(t.Context(), types.Report{ArtifactType: tt.artifactType}, opts)
+			require.NoError(t, err)
+
+			var result struct {
+				Runs []struct {
+					OriginalUriBaseIDs map[string]struct {
+						URI string `json:"uri"`
+					} `json:"originalUriBaseIds"`
+				} `json:"runs"`
+			}
+			err = json.Unmarshal(output.Bytes(), &result)
+			require.NoError(t, err)
+			require.Len(t, result.Runs, 1)
+
+			assert.Equal(t, tt.wantRootPath, result.Runs[0].OriginalUriBaseIDs["ROOTPATH"].URI)
+		})
+	}
+}
+

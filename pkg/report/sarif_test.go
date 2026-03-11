@@ -19,12 +19,16 @@ import (
 
 func TestReportWriter_Sarif(t *testing.T) {
 	tests := []struct {
-		name  string
-		input types.Report
-		want  *sarif.Report
+		name   string
+		target string
+		input  types.Report
+		want   *sarif.Report
 	}{
 		{
 			name: "report with vulnerabilities",
+			// Container images don't have a local filesystem path, so target is empty
+			// and OriginalUriBaseIDs is omitted from the SARIF output.
+			target: "",
 			input: types.Report{
 				ArtifactName: "debian:9",
 				ArtifactType: ftypes.TypeContainerImage,
@@ -170,11 +174,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 						PropertyBag: sarif.PropertyBag{
 							Properties: map[string]any{
 								"imageName":   "debian:9",
@@ -189,6 +188,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 		},
 		{
 			name: "report with misconfigurations",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -327,17 +327,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
+				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+					"ROOTPATH": {
+						URI: lo.ToPtr("file:///tmp/scan/"),
+					},
+				},
 					},
 				},
 			},
 		},
 		{
 			name: "report with secrets",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -421,17 +422,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
+				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+					"ROOTPATH": {
+						URI: lo.ToPtr("file:///tmp/scan/"),
+					},
+				},
 					},
 				},
 			},
 		},
 		{
 			name: "report with licenses",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -510,17 +512,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
+				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+					"ROOTPATH": {
+						URI: lo.ToPtr("file:///tmp/scan/"),
+					},
+				},
 					},
 				},
 			},
 		},
 		{
 			name: "no vulns",
+			target: "/tmp/scan",
 			want: &sarif.Report{
 				Version: "2.1.0",
 				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
@@ -537,11 +540,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results:    []*sarif.Result{},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
+				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+					"ROOTPATH": {
+						URI: lo.ToPtr("file:///tmp/scan/"),
+					},
+				},
 					},
 				},
 			},
@@ -721,11 +724,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 					},
 				},
 			},
@@ -736,7 +734,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
-				Output: sarifWritten,
+				Output:  sarifWritten,
+				Target: tt.target,
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)

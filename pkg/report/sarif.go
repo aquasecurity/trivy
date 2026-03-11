@@ -37,8 +37,6 @@ const (
 )
 
 var (
-	rootPath = "file:///"
-
 	// pathRegex to extract file path in case string includes (distro:version)
 	pathRegex = regexp.MustCompile(`(?P<path>.+?)(?:\s*\((?:.*?)\).*?)?$`)
 )
@@ -132,10 +130,6 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			"repoDigests": report.Metadata.RepoDigests,
 			"imageID":     report.Metadata.ImageID,
 		}
-	}
-	if sw.Target != "" {
-		absPath, _ := filepath.Abs(sw.Target)
-		rootPath = fmt.Sprintf("file://%s/", absPath)
 	}
 
 	ruleIndexes := make(map[string]int)
@@ -254,8 +248,15 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 
 	}
 	sw.run.ColumnKind = columnKind
-	sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
-		"ROOTPATH": {URI: &rootPath},
+
+	if sw.Target != "" {
+		absPath, _ := filepath.Abs(sw.Target)
+		rootPath := fmt.Sprintf("file://%s/", absPath)
+		sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
+			"ROOTPATH": {
+				URI: &rootPath,
+			},
+		}
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
