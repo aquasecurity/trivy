@@ -23,21 +23,18 @@ jobs:
         uses: ./.github/actions/setup-go
 
       - name: GoReleaser
+        id: goreleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: v2.1.0
-          args: release -f=goreleaser-test.yml --clean --timeout 90m --skip=sign,docker,publish,sbom,nfpm,homebrew
+          args: release -f=goreleaser-test.yml --clean --timeout 90m --skip=sign,docker,sbom,nfpm,homebrew
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: List dist directory
         run: ls -la dist/ | grep -i checksum
 
-      - name: Extract version
-        id: extract-version
-        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
-
       - name: Generate build provenance attestations
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
-          subject-checksums: dist/trivy_${{ steps.extract-version.outputs.version }}_checksums.txt
+          subject-checksums: dist/trivy_${{ fromJSON(steps.goreleaser.outputs.metadata).version }}_checksums.txt
