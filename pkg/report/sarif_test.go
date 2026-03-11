@@ -187,7 +187,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with misconfigurations",
+			name:   "report with misconfigurations",
 			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
@@ -327,17 +327,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-					"ROOTPATH": {
-						URI: lo.ToPtr("file:///tmp/scan/"),
-					},
-				},
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///tmp/scan/"),
+							},
+						},
 					},
 				},
 			},
 		},
 		{
-			name: "report with secrets",
+			name:   "report with secrets",
 			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
@@ -422,17 +422,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-					"ROOTPATH": {
-						URI: lo.ToPtr("file:///tmp/scan/"),
-					},
-				},
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///tmp/scan/"),
+							},
+						},
 					},
 				},
 			},
 		},
 		{
-			name: "report with licenses",
+			name:   "report with licenses",
 			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
@@ -512,17 +512,17 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-					"ROOTPATH": {
-						URI: lo.ToPtr("file:///tmp/scan/"),
-					},
-				},
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///tmp/scan/"),
+							},
+						},
 					},
 				},
 			},
 		},
 		{
-			name: "no vulns",
+			name:   "no vulns",
 			target: "/tmp/scan",
 			want: &sarif.Report{
 				Version: "2.1.0",
@@ -540,11 +540,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results:    []*sarif.Result{},
 						ColumnKind: "utf16CodeUnits",
-				OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-					"ROOTPATH": {
-						URI: lo.ToPtr("file:///tmp/scan/"),
-					},
-				},
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///tmp/scan/"),
+							},
+						},
 					},
 				},
 			},
@@ -734,7 +734,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
-				Output:  sarifWritten,
+				Output: sarifWritten,
 				Target: tt.target,
 			}
 			err := w.Write(t.Context(), tt.input)

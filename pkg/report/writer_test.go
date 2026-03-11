@@ -239,4 +239,3 @@ func TestWrite_Sarif(t *testing.T) {
 		})
 	}
 }
-
