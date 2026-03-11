@@ -116,11 +116,16 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
+      - name: Extract version
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        id: extract-version
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
       - name: Generate build provenance attestations
         if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
         uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
         with:
-          subject-checksums: dist/trivy_${{ github.ref_name }}_checksums.txt
+          subject-checksums: dist/trivy_${{ steps.extract-version.outputs.version }}_checksums.txt
 
       - name: Cache Trivy binaries
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
