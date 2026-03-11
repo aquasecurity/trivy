@@ -211,6 +211,33 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// Go 1.26 changed GOEXPERIMENT separator from space to dash:
+			// "go1.26.0-X:loopvar" instead of "go1.26.0 X:loopvar"
+			// See: https://github.com/golang/go/commit/9daaab305c4d1dede9e4f6efdc5e1268a69327e6
+			name:      "goexperiment-1.26",
+			inputFile: "testdata/goexperiment-1.26",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:           "testbin",
+					Name:         "testbin",
+					Version:      "",
+					Relationship: ftypes.RelationshipRoot,
+				},
+				{
+					ID:           "stdlib@v1.26.0",
+					Name:         "stdlib",
+					Version:      "v1.26.0",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "testbin",
+					DependsOn: []string{"stdlib@v1.26.0"},
+				},
+			},
+		},
+		{
 			name:      "sad path",
 			inputFile: "testdata/dummy",
 			wantErr:   "unrecognized executable format",
