@@ -405,7 +405,7 @@ func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.An
 func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense) {
 	// Only library components contain licenses
 	if c.Type != core.TypeLibrary {
-		return "", nil
+		return noAssertionField, nil
 	}
 	if len(c.Licenses) == 0 {
 		return noAssertionField, nil
