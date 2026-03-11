@@ -87,7 +87,7 @@ nfpms:
       - rpm
     vendor: "aquasecurity"
     homepage: "https://github.com/aquasecurity"
-    maintainer: "Teppei Fukuda <knqyf263@gmail.com>"
+    maintainer: "Aqua Security <oss@aquasec.com>"
     description: "A Fast Vulnerability Scanner for Containers"
     license: "Apache-2.0"
     file_name_template: >-
