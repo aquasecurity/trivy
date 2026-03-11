@@ -34,10 +34,8 @@ jobs:
           git config user.email "knqyf263@gmail.com"
       - name: Deploy the latest documents from new tag push
         if: ${{ github.event.inputs.version == '' }}
-        env:
-          GIT_REF: ${{ github.ref }}
         run: |
-          VERSION=$(echo "$GIT_REF" | sed -e "s#refs/tags/##g")
+          VERSION=$(echo "$GITHUB_REF" | sed -e "s#refs/tags/##g")
           mike deploy --push --update-aliases ${VERSION%.*} latest
       - name: Deploy the latest documents from manual trigger
         if: ${{ github.event.inputs.version != '' }}

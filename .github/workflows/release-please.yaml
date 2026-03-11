@@ -34,12 +34,11 @@ jobs:
       - name: Release Please
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
-          TARGET_BRANCH: ${{ github.ref_name }}
         run: |
           release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
             --token="${{ secrets.ORG_REPO_TOKEN }}" \
             --release-as="$RELEASE_VERSION" \
-            --target-branch="$TARGET_BRANCH"
+            --target-branch="$GITHUB_REF_NAME"
 
   release-tag:
     runs-on: ubuntu-latest
@@ -95,12 +94,11 @@ jobs:
         if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
         env:
           GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
-          GH_REPO: ${{ github.repository }}
           RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         shell: bash
         run: |
-          RULESET_ID=$(gh api /repos/${GH_REPO}/rulesets --jq '.[] | select(.name=="release") | .id')
-          gh api /repos/${GH_REPO}/rulesets/$RULESET_ID | jq '{conditions}' | jq ".conditions.ref_name.include += [\"refs/heads/${RELEASE_BRANCH}\"]" | gh api --method put --input - /repos/${GH_REPO}/rulesets/$RULESET_ID
+          RULESET_ID=$(gh api /repos/${GITHUB_REPOSITORY}/rulesets --jq '.[] | select(.name=="release") | .id')
+          gh api /repos/${GITHUB_REPOSITORY}/rulesets/$RULESET_ID | jq '{conditions}' | jq ".conditions.ref_name.include += [\"refs/heads/${RELEASE_BRANCH}\"]" | gh api --method put --input - /repos/${GITHUB_REPOSITORY}/rulesets/$RULESET_ID
 
       # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
       # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
