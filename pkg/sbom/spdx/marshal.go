@@ -277,9 +277,12 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 	}
 
 	return &spdx.Package{
-		PackageName:               root.Name,
-		PackageSPDXIdentifier:     elementID(camelCase(string(root.Type)), pkgID),
-		PackageDownloadLocation:   pkgDownloadLocation,
+		PackageName:             root.Name,
+		PackageSPDXIdentifier:   elementID(camelCase(string(root.Type)), pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
+		// Licenses are only available for library packages, not for root packages.
+		PackageLicenseConcluded:   noAssertionField,
+		PackageLicenseDeclared:    noAssertionField,
 		Annotations:               m.spdxAnnotations(root, timeNow),
 		PackageExternalReferences: externalReferences,
 		PrimaryPackagePurpose:     pkgPurpose,
