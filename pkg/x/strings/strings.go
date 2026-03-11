@@ -21,6 +21,9 @@ func ToStringSlice[T any](ss []T) []string {
 		case fmt.Stringer:
 			return v.String()
 		default:
+			if stringer, ok := any(&s).(fmt.Stringer); ok {
+				return stringer.String()
+			}
 			return fmt.Sprint(v)
 		}
 	})
