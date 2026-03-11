@@ -10,3 +10,6 @@ var ToProperties = toProperties
 
 // ToUri exports toUri for testing.
 var ToUri = toUri
+
+// ToSarifErrorLevel exports toSarifErrorLevel for testing.
+var ToSarifErrorLevel = toSarifErrorLevel

@@ -748,6 +748,25 @@ func TestReportWriter_Sarif(t *testing.T) {
 	}
 }
 
+func TestReportWriter_toSarifErrorLevel(t *testing.T) {
+	tests := []struct {
+		severity        string
+		sarifErrorLevel string
+	}{
+		{severity: "CRITICAL", sarifErrorLevel: "error"},
+		{severity: "HIGH", sarifErrorLevel: "error"},
+		{severity: "MEDIUM", sarifErrorLevel: "warning"},
+		{severity: "LOW", sarifErrorLevel: "note"},
+		{severity: "UNKNOWN", sarifErrorLevel: "note"},
+		{severity: "OTHER", sarifErrorLevel: "none"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.severity, func(t *testing.T) {
+			assert.Equal(t, tc.sarifErrorLevel, report.ToSarifErrorLevel(tc.severity), tc.severity)
+		})
+	}
+}
+
 func TestToPathUri(t *testing.T) {
 	tests := []struct {
 		input       string
