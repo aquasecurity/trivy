@@ -114,6 +114,17 @@ func getRuleIndex(id string, indexes map[string]int) int {
 	return l
 }
 
+// pathToFileURI converts a filesystem path to a file URI.
+// On Windows, backslashes are converted to forward slashes and a leading slash is prepended.
+func pathToFileURI(path string) string {
+	absPath, _ := filepath.Abs(path)
+	slashPath := filepath.ToSlash(absPath)
+	if !strings.HasPrefix(slashPath, "/") {
+		slashPath = "/" + slashPath
+	}
+	return fmt.Sprintf("file://%s/", slashPath)
+}
+
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
@@ -250,8 +261,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sw.run.ColumnKind = columnKind
 
 	if sw.Target != "" {
-		absPath, _ := filepath.Abs(sw.Target)
-		rootPath := fmt.Sprintf("file://%s/", absPath)
+		rootPath := pathToFileURI(sw.Target)
 		sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
 			"ROOTPATH": {
 				URI: &rootPath,

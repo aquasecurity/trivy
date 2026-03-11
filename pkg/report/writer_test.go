@@ -3,6 +3,7 @@ package report_test
 import (
 	"bytes"
 	"encoding/json"
+	"regexp"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -182,29 +183,32 @@ func TestWrite(t *testing.T) {
 }
 
 func TestWrite_Sarif(t *testing.T) {
+	// On Unix: file:///tmp/foo/, on Windows: file:///D:/tmp/foo/
+	tmpFooRootPath := regexp.MustCompile(`^file:///([A-Z]:/)?tmp/foo/$`)
+
 	tests := []struct {
 		name         string
 		artifactType ftypes.ArtifactType
 		target       string
-		wantRootPath string
+		wantRootPath *regexp.Regexp
 	}{
 		{
 			name:         "TypeFilesystem sets ROOTPATH to target path",
 			artifactType: ftypes.TypeFilesystem,
 			target:       "/tmp/foo",
-			wantRootPath: "file:///tmp/foo/",
+			wantRootPath: tmpFooRootPath,
 		},
 		{
 			name:         "TypeRepository sets ROOTPATH to target path",
 			artifactType: ftypes.TypeRepository,
 			target:       "/tmp/foo",
-			wantRootPath: "file:///tmp/foo/",
+			wantRootPath: tmpFooRootPath,
 		},
 		{
 			name:         "TypeContainerImage does not set ROOTPATH",
 			artifactType: ftypes.TypeContainerImage,
 			target:       "/tmp/foo",
-			wantRootPath: "",
+			wantRootPath: nil,
 		},
 	}
 
@@ -235,7 +239,11 @@ func TestWrite_Sarif(t *testing.T) {
 			require.NoError(t, err)
 			require.Len(t, result.Runs, 1)
 
-			assert.Equal(t, tt.wantRootPath, result.Runs[0].OriginalUriBaseIDs["ROOTPATH"].URI)
+			if tt.wantRootPath != nil {
+				assert.Regexp(t, tt.wantRootPath, result.Runs[0].OriginalUriBaseIDs["ROOTPATH"].URI)
+			} else {
+				assert.Empty(t, result.Runs[0].OriginalUriBaseIDs["ROOTPATH"].URI)
+			}
 		})
 	}
 }

@@ -17,7 +17,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestReportWriter_Sarif reuses report.PathToFileURI to compute expected URIs.
+// The correctness of PathToFileURI itself (including Windows path handling) is verified in TestWrite_Sarif.
 func TestReportWriter_Sarif(t *testing.T) {
+	tmpScanURI := report.PathToFileURI("/tmp/scan")
+
 	tests := []struct {
 		name   string
 		target string
@@ -329,7 +333,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///tmp/scan/"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -424,7 +428,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///tmp/scan/"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -514,7 +518,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///tmp/scan/"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -542,7 +546,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///tmp/scan/"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},

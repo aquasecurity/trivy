@@ -13,3 +13,6 @@ var ToUri = toUri
 
 // ToSarifErrorLevel exports toSarifErrorLevel for testing.
 var ToSarifErrorLevel = toSarifErrorLevel
+
+// PathToFileURI exports pathToFileURI for testing.
+var PathToFileURI = pathToFileURI
