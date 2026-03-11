@@ -1,0 +1,39 @@
+name: Test Provenance
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  release:
+    name: Release
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      packages: write
+      contents: write
+      attestations: write
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Go
+        uses: ./.github/actions/setup-go
+
+      - name: GoReleaser
+        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
+        with:
+          version: v2.1.0
+          args: release -f=goreleaser.yml --clean --timeout 90m --skip=sign,docker,publish,sbom,nfpm,homebrew
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: List dist directory
+        run: ls -la dist/ | grep -i checksum
+
+      - name: Generate build provenance attestations
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: dist/trivy_${{ github.ref_name }}_checksums.txt
