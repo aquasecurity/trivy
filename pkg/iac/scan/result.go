@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
-	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -22,17 +21,16 @@ const (
 )
 
 type Result struct {
-	rule             Rule
-	description      string
-	annotation       string
-	status           Status
-	metadata         iacTypes.Metadata
-	severityOverride *severity.Severity
-	regoNamespace    string
-	regoRule         string
-	traces           []string
-	fsPath           string
-	renderedCause    RenderedCause
+	rule          Rule
+	description   string
+	annotation    string
+	status        Status
+	metadata      iacTypes.Metadata
+	regoNamespace string
+	regoRule      string
+	traces        []string
+	fsPath        string
+	renderedCause RenderedCause
 }
 
 func (r Result) RegoNamespace() string {
@@ -43,35 +41,12 @@ func (r Result) RegoRule() string {
 	return r.regoRule
 }
 
-func (r Result) Severity() severity.Severity {
-	if r.severityOverride != nil {
-		return *r.severityOverride
-	}
-	return r.Rule().Severity
-}
-
-func (r *Result) OverrideSeverity(s severity.Severity) {
-	r.severityOverride = &s
-}
-
-func (r *Result) OverrideDescription(description string) {
-	r.description = description
-}
-
 func (r *Result) OverrideMetadata(metadata iacTypes.Metadata) {
 	r.metadata = metadata
 }
 
 func (r *Result) OverrideStatus(status Status) {
 	r.status = status
-}
-
-func (r *Result) OverrideAnnotation(annotation string) {
-	r.annotation = annotation
-}
-
-func (r *Result) SetRule(ru Rule) {
-	r.rule = ru
 }
 
 func (r Result) Status() Status {
@@ -158,18 +133,18 @@ type MetadataProvider interface {
 }
 
 func (r *Results) GetPassed() Results {
-	return r.filterStatus(StatusPassed)
+	return r.byStatus(StatusPassed)
 }
 
 func (r *Results) GetIgnored() Results {
-	return r.filterStatus(StatusIgnored)
+	return r.byStatus(StatusIgnored)
 }
 
 func (r *Results) GetFailed() Results {
-	return r.filterStatus(StatusFailed)
+	return r.byStatus(StatusFailed)
 }
 
-func (r *Results) filterStatus(status Status) Results {
+func (r *Results) byStatus(status Status) Results {
 	var filtered Results
 	if r == nil {
 		return filtered
@@ -180,19 +155,6 @@ func (r *Results) filterStatus(status Status) Results {
 		}
 	}
 	return filtered
-}
-
-func (r *Results) Add(description string, source any) {
-	result := Result{
-		description: description,
-	}
-	result.metadata = getMetadataFromSource(source)
-	if result.metadata.IsExplicit() {
-		result.annotation = getAnnotation(source)
-	}
-	rnge := result.metadata.Range()
-	result.fsPath = rnge.GetLocalFilename()
-	*r = append(*r, result)
 }
 
 func (r *Results) AddRego(description, namespace, rule string, traces []string, source MetadataProvider) {
@@ -209,17 +171,6 @@ func (r *Results) AddRego(description, namespace, rule string, traces []string, 
 	rnge := result.metadata.Range()
 	result.fsPath = rnge.GetLocalFilename()
 	*r = append(*r, result)
-}
-
-func (r *Results) AddPassed(source any, descriptions ...string) {
-	res := Result{
-		description: strings.Join(descriptions, " "),
-		status:      StatusPassed,
-	}
-	res.metadata = getMetadataFromSource(source)
-	rnge := res.metadata.Range()
-	res.fsPath = rnge.GetLocalFilename()
-	*r = append(*r, res)
 }
 
 func getMetadataFromSource(source any) iacTypes.Metadata {
@@ -255,17 +206,6 @@ func (r *Results) AddPassedRego(namespace, rule string, traces []string, source 
 	*r = append(*r, res)
 }
 
-func (r *Results) AddIgnored(source any, descriptions ...string) {
-	res := Result{
-		description: strings.Join(descriptions, " "),
-		status:      StatusIgnored,
-	}
-	res.metadata = getMetadataFromSource(source)
-	rnge := res.metadata.Range()
-	res.fsPath = rnge.GetLocalFilename()
-	*r = append(*r, res)
-}
-
 func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ignorer) {
 	for i, result := range *r {
 		allIDs := []string{
@@ -286,22 +226,25 @@ func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ign
 
 func (r *Results) SetRule(rule Rule) {
 	for i := range *r {
-		(*r)[i].rule = rule
+		res := &(*r)[i]
+		res.rule = rule
 	}
 }
 
 func (r *Results) SetSourceAndFilesystem(source string, f fs.FS, logicalSource bool) {
 	for i := range *r {
-		m := (*r)[i].Metadata()
+		res := &(*r)[i]
+		m := res.Metadata()
+
 		if m.IsUnmanaged() {
 			continue
 		}
 		rng := m.Range()
-
-		newrng := iacTypes.NewRange(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(), source, f)
+		var newrng iacTypes.Range
 		if logicalSource {
-			newrng = iacTypes.NewRangeWithLogicalSource(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(),
-				source, f)
+			newrng = iacTypes.NewRangeWithLogicalSource(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(), source, f)
+		} else {
+			newrng = iacTypes.NewRange(rng.GetLocalFilename(), rng.GetStartLine(), rng.GetEndLine(), source, f)
 		}
 		parent := m.Parent()
 		switch {
@@ -313,7 +256,7 @@ func (r *Results) SetSourceAndFilesystem(source string, f fs.FS, logicalSource b
 		if parent != nil {
 			m.SetParentPtr(parent)
 		}
-		(*r)[i].OverrideMetadata(m)
+		res.OverrideMetadata(m)
 	}
 }
 
@@ -376,12 +319,12 @@ func (r *Result) Occurrences() []Occurrence {
 		if mod == nil {
 			break
 		}
-		parentRange := mod.Range()
+		rng := mod.Range()
 		occurrences = append(occurrences, Occurrence{
 			Resource:  mod.Reference(),
-			Filename:  parentRange.GetFilename(),
-			StartLine: parentRange.GetStartLine(),
-			EndLine:   parentRange.GetEndLine(),
+			Filename:  rng.GetFilename(),
+			StartLine: rng.GetStartLine(),
+			EndLine:   rng.GetEndLine(),
 		})
 	}
 	return occurrences

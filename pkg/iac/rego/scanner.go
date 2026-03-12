@@ -247,7 +247,8 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 					)
 					continue
 				}
-				results = append(results, s.embellishResultsWithRuleMetadata(ruleResults, *staticMeta)...)
+				ruleResults.SetRule(staticMeta.ToRule())
+				results = append(results, ruleResults...)
 			}
 		}
 
