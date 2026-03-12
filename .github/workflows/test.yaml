@@ -260,7 +260,7 @@ jobs:
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
 
   zizmor:
-    name: Zizmor
+    name: Lint GitHub Actions
     runs-on: ubuntu-latest
     permissions:
       contents: read
