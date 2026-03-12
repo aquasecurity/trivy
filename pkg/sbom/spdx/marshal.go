@@ -78,7 +78,8 @@ var duplicateProperties = []string{
 	core.PropertySrcRelease,
 	core.PropertySrcEpoch,
 	core.PropertySrcVersion,
-	// `File` contains filePath.
+	// `File` contains filePath. FilePath is now output via CycloneDX evidence.occurrences
+	// but may still appear in properties from older SBOMs.
 	core.PropertyFilePath,
 }
 
