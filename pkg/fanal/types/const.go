@@ -56,6 +56,7 @@ const (
 	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
+	CleanStart         OSType = "cleanstart"
 )
 
 // HasOSPackages returns true if the OS type has OS-level packages managed by a package manager.
@@ -173,6 +174,7 @@ var (
 		SLES,
 		Ubuntu,
 		Wolfi,
+		CleanStart,
 	}
 	AggregatingTypes = []LangType{
 		PythonPkg,
