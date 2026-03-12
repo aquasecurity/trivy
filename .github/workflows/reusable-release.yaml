@@ -40,6 +40,7 @@ jobs:
       id-token: write # For cosign
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
+      attestations: write # For build provenance attestations
     steps:
       - name: Cosign install
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
@@ -103,6 +104,7 @@ jobs:
           mkdir tmp    
 
       - name: GoReleaser
+        id: goreleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: v2.1.0
@@ -132,6 +134,12 @@ jobs:
             aquasec/trivy:canary
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
+
+      - name: Generate build provenance attestations
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: dist/trivy_${{ fromJSON(steps.goreleaser.outputs.metadata).version }}_checksums.txt
 
       # This workflow is only triggered by tag pushes (release.yaml: on.push.tags), which require
       # maintainer access. Fork PRs cannot reach this code path, so the cache cannot be poisoned
