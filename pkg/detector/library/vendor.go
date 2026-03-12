@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/vendors/seal"
 )
 
@@ -25,6 +26,10 @@ type Vendor interface {
 	// Vendors may use different identification methods such as package name prefixes,
 	// suffixes, or version patterns.
 	Match(eco ecosystem.Type, pkgName, pkgVer string) bool
+
+	// Comparer returns a custom version comparer for the given ecosystem,
+	// or nil to use the default comparer for that ecosystem.
+	Comparer(eco ecosystem.Type) compare.Comparer
 }
 
 // vendors is the list of registered vendors. The first matching vendor wins.
@@ -33,14 +38,18 @@ var vendors = []Vendor{
 	seal.SealSecurity{},
 }
 
-// resolveAdvisoryPrefix determines the advisory bucket prefix based on package info.
-// For vendor packages, it returns a vendor-specific prefix (e.g., "seal pip::").
-// For regular packages, it returns the standard ecosystem prefix (e.g., "pip::").
-func resolveAdvisoryPrefix(eco ecosystem.Type, pkgName, pkgVer string) string {
+// lookupVendor finds the matching vendor for the given package and returns
+// the advisory bucket prefix and an optional custom comparer.
+// If no vendor matches, it returns the standard ecosystem prefix and nil comparer.
+func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string, defaultComparer compare.Comparer) (string, compare.Comparer) {
 	for _, v := range vendors {
 		if v.Match(eco, pkgName, pkgVer) {
-			return fmt.Sprintf("%s %s::", v.Name(), eco)
+			prefix := fmt.Sprintf("%s %s::", v.Name(), eco)
+			if c := v.Comparer(eco); c != nil {
+				return prefix, c
+			}
+			return prefix, defaultComparer
 		}
 	}
-	return fmt.Sprintf("%s::", eco)
+	return fmt.Sprintf("%s::", eco), defaultComparer
 }

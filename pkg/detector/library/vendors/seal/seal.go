@@ -6,6 +6,8 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
 // sealVersionSuffixRegex matches Seal Security version suffixes: +spX or -spX
@@ -40,6 +42,16 @@ func (SealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) bool {
 	}
 
 	return false
+}
+
+// Comparer returns a custom version comparer for the given ecosystem.
+// For pip (Python), it enables local version specifiers (e.g. "4.2.8+seal.1").
+// For other ecosystems, it returns nil to use the default comparer.
+func (SealSecurity) Comparer(eco ecosystem.Type) compare.Comparer {
+	if eco == ecosystem.Pip {
+		return pep440.NewComparer(pep440.AllowLocalSpecifier())
+	}
+	return nil
 }
 
 // hasSealVersionSuffix checks if the version has a Seal Security suffix (+spX or -spX)

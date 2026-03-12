@@ -5,6 +5,6 @@
         - key: CVE-2024-12345
           value:
             PatchedVersions:
-              - 4.2.8+seal.2
+              - 4.2.8+sp2
             VulnerableVersions:
-              - =4.2.8+seal.1
+              - =4.2.8+sp1

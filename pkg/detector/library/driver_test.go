@@ -248,14 +248,14 @@ func TestDriver_Detect(t *testing.T) {
 			libType: ftypes.PythonPkg,
 			args: args{
 				pkgName: "seal-django",
-				pkgVer:  "4.2.8+seal.1",
+				pkgVer:  "4.2.8+sp1",
 			},
 			want: []types.DetectedVulnerability{
 				{
 					VulnerabilityID:  "CVE-2024-12345",
 					PkgName:          "seal-django",
-					InstalledVersion: "4.2.8+seal.1",
-					FixedVersion:     "4.2.8+seal.2",
+					InstalledVersion: "4.2.8+sp1",
+					FixedVersion:     "4.2.8+sp2",
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.Seal,
 						Name: "Seal Security Database",
