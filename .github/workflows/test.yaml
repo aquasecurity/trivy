@@ -259,6 +259,8 @@ jobs:
         version: v2.1.0
         args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
 
+  # This job intentionally runs on all PRs (not scoped to .github/ path changes)
+  # to keep all checks in one place. The scan itself is scoped to .github/ via the action input.
   zizmor:
     name: Lint GitHub Actions
     runs-on: ubuntu-latest
