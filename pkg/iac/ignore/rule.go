@@ -117,21 +117,7 @@ func defaultIgnorers(ids []string) map[string]Ignorer {
 // MatchPattern checks if the pattern string matches the input pattern.
 // The wildcard '*' in the pattern matches any sequence of characters.
 func MatchPattern(input, pattern string) bool {
-	matched, err := regexp.MatchString(regexpFromPattern(pattern), input)
+	re := "(?i)^" + strings.ReplaceAll(regexp.QuoteMeta(pattern), "\\*", ".*") + "$"
+	matched, err := regexp.MatchString(re, input)
 	return err == nil && matched
-}
-
-func regexpFromPattern(pattern string) string {
-	parts := strings.Split(pattern, "*")
-	if len(parts) == 1 {
-		return "^" + pattern + "$"
-	}
-	var sb strings.Builder
-	for i, literal := range parts {
-		if i > 0 {
-			sb.WriteString(".*")
-		}
-		sb.WriteString(regexp.QuoteMeta(literal))
-	}
-	return "^" + sb.String() + "$"
 }

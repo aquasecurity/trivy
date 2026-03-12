@@ -350,6 +350,24 @@ func TestMatchPattern(t *testing.T) {
 		{"example", "test", false},
 		{"example-test", "*-test*", true},
 		{"example-test", "*example-*", true},
+
+		{"HelloWorld", "hello*", true},
+		{"HELLOworld", "hello*", true},
+		{"HELLOworld", "HELLO*", true},
+		{"helloworld", "HELLO*", true},
+
+		{"abc", "abc", true},
+		{"AbC", "abc", true},
+		{"abc", "def", false},
+
+		{"foobar", "*bar", true},
+		{"foobar", "foo*", true},
+		{"foobar", "*oo*", true},
+		{"foobar", "*baz*", false},
+
+		{"", "*", true},
+		{"", "", true},
+		{"nonempty", "", false},
 	}
 
 	for _, tc := range tests {
