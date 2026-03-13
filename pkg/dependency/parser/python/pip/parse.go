@@ -144,9 +144,6 @@ func isNameChar(r rune) bool {
 }
 
 func isValidName(name string) bool {
-	if name == "" {
-		return false
-	}
 	for _, r := range name {
 		if !isNameChar(r) {
 			return false
