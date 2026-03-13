@@ -235,6 +235,61 @@ func TestParse(t *testing.T) {
 	}
 }
 
+func TestParseStdlibVersion(t *testing.T) {
+	tests := []struct {
+		name      string
+		goVersion string
+		want      string
+	}{
+		{
+			name:      "plain version",
+			goVersion: "go1.22.3",
+			want:      "v1.22.3",
+		},
+		{
+			name:      "GOEXPERIMENT with space separator (Go <=1.25)",
+			goVersion: "go1.22.3 X:boringcrypto",
+			want:      "v1.22.3",
+		},
+		{
+			name:      "GOEXPERIMENT with dash separator (Go >=1.26)",
+			goVersion: "go1.26.0-X:nodwarf5",
+			want:      "v1.26.0",
+		},
+		{
+			name:      "multiple GOEXPERIMENT flags with space separator",
+			goVersion: "go1.24.0 X:boringcrypto,nodwarf5",
+			want:      "v1.24.0",
+		},
+		{
+			name:      "multiple GOEXPERIMENT flags with dash separator",
+			goVersion: "go1.26.0-X:boringcrypto,nodwarf5",
+			want:      "v1.26.0",
+		},
+		{
+			name:      "release candidate version",
+			goVersion: "go1.26rc1",
+			want:      "v1.26rc1",
+		},
+		{
+			name:      "version without patch",
+			goVersion: "go1.26",
+			want:      "v1.26",
+		},
+		{
+			name:      "plain version with patch",
+			goVersion: "go1.26.0",
+			want:      "v1.26.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := binary.ParseStdlibVersion(tt.goVersion)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestParser_ChooseMainVersion(t *testing.T) {
 	tests := []struct {
 		name           string

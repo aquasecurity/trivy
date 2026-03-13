@@ -13,3 +13,8 @@ func (p *Parser) ChooseMainVersion(version, ldflagsVersion, elfVersion string) s
 func (p *Parser) ELFSymbolVersion(r io.ReaderAt, name string) string {
 	return p.elfSymbolVersion(r, name)
 }
+
+// ParseStdlibVersion exports parseStdlibVersion for testing.
+func ParseStdlibVersion(goVersion string) string {
+	return parseStdlibVersion(goVersion)
+}
