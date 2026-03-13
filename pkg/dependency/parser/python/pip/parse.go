@@ -60,6 +60,7 @@ func (p *Parser) splitLine(line string) []string {
 
 // splitNameAndSpecs splits a line at the first character that is not part of
 // a valid PEP 508 package name (i.e. not [a-zA-Z0-9._-]).
+// Note: PEP 508 disallows leading/trailing [._-], but we accept them for simplicity.
 // e.g. "eventlet!=0.18.3,!=0.20.1,>=0.18.2" -> ("eventlet", "!=0.18.3,!=0.20.1,>=0.18.2")
 func splitNameAndSpecs(line string) (string, string) {
 	for i, r := range line {
