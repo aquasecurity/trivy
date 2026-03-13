@@ -16,6 +16,9 @@ cache:
   # Same as '--cache-dir'
   dir: "/path/to/cache"
 
+# Same as '--color'
+color: "auto"
+
 # Same as '--debug'
 debug: false
 
