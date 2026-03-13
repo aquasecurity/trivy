@@ -11,6 +11,21 @@ on:
         default: ''
         required: false
         type: string
+    secrets:
+      DOCKERHUB_USER:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      ECR_ACCESS_KEY_ID:
+        required: true
+      ECR_SECRET_ACCESS_KEY:
+        required: true
+      GPG_KEY:
+        required: true
+      ORG_REPO_TOKEN:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
 
 env:
   GH_USER: "aqua-bot"
@@ -25,6 +40,7 @@ jobs:
       id-token: write # For cosign
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
+      attestations: write # For build provenance attestations
     steps:
       - name: Cosign install
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
@@ -37,7 +53,9 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
+        env:
+          PLATFORMS: ${{ steps.buildx.outputs.platforms }}
+        run: echo "${PLATFORMS}"
 
       - name: Login to docker.io registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
@@ -63,6 +81,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -85,6 +104,7 @@ jobs:
           mkdir tmp    
 
       - name: GoReleaser
+        id: goreleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: v2.1.0
@@ -115,8 +135,18 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
+      - name: Generate build provenance attestations
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: dist/trivy_${{ fromJSON(steps.goreleaser.outputs.metadata).version }}_checksums.txt
+
+      # This workflow is only triggered by tag pushes (release.yaml: on.push.tags), which require
+      # maintainer access. Fork PRs cannot reach this code path, so the cache cannot be poisoned
+      # by external contributors. The key is scoped to github.sha, making cross-run collisions
+      # impossible. Cache is written here and read only by the deploy-packages job in release.yaml.
       - name: Cache Trivy binaries
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

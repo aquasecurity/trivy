@@ -189,6 +189,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -199,6 +201,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/subproject/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -224,7 +228,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-b8d4663e6d412e7"),
@@ -325,6 +331,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -516,7 +524,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-40c4059fe08523bf"),
@@ -601,6 +611,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -744,6 +756,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -754,6 +768,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -809,7 +825,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -903,6 +921,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -937,7 +957,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1072,7 +1094,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1174,7 +1198,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Files: []*spdx.File{
@@ -1244,7 +1270,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1306,7 +1334,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1376,6 +1406,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "/usr/local/bin/test",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: gobinary"),
@@ -1422,7 +1454,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{

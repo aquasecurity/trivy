@@ -17,14 +17,22 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestReportWriter_Sarif reuses report.PathToFileURI to compute expected URIs.
+// The correctness of PathToFileURI itself (including Windows path handling) is verified in TestWrite_Sarif.
 func TestReportWriter_Sarif(t *testing.T) {
+	tmpScanURI := report.PathToFileURI("/tmp/scan")
+
 	tests := []struct {
-		name  string
-		input types.Report
-		want  *sarif.Report
+		name   string
+		target string
+		input  types.Report
+		want   *sarif.Report
 	}{
 		{
 			name: "report with vulnerabilities",
+			// Container images don't have a local filesystem path, so target is empty
+			// and OriginalUriBaseIDs is omitted from the SARIF output.
+			target: "",
 			input: types.Report{
 				ArtifactName: "debian:9",
 				ArtifactType: ftypes.TypeContainerImage,
@@ -170,11 +178,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 						PropertyBag: sarif.PropertyBag{
 							Properties: map[string]any{
 								"imageName":   "debian:9",
@@ -188,7 +191,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with misconfigurations",
+			name:   "report with misconfigurations",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -329,7 +333,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -337,7 +341,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with secrets",
+			name:   "report with secrets",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -423,7 +428,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -431,7 +436,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with licenses",
+			name:   "report with licenses",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -512,7 +518,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -520,7 +526,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "no vulns",
+			name:   "no vulns",
+			target: "/tmp/scan",
 			want: &sarif.Report{
 				Version: "2.1.0",
 				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
@@ -539,7 +546,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -721,11 +728,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 					},
 				},
 			},
@@ -737,6 +739,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
 				Output: sarifWritten,
+				Target: tt.target,
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
@@ -745,6 +748,25 @@ func TestReportWriter_Sarif(t *testing.T) {
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestReportWriter_toSarifErrorLevel(t *testing.T) {
+	tests := []struct {
+		severity        string
+		sarifErrorLevel string
+	}{
+		{severity: "CRITICAL", sarifErrorLevel: "error"},
+		{severity: "HIGH", sarifErrorLevel: "error"},
+		{severity: "MEDIUM", sarifErrorLevel: "warning"},
+		{severity: "LOW", sarifErrorLevel: "note"},
+		{severity: "UNKNOWN", sarifErrorLevel: "note"},
+		{severity: "OTHER", sarifErrorLevel: "none"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.severity, func(t *testing.T) {
+			assert.Equal(t, tc.sarifErrorLevel, report.ToSarifErrorLevel(tc.severity), tc.severity)
 		})
 	}
 }

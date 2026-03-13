@@ -75,6 +75,8 @@
       "SPDXID": "SPDXRef-Filesystem-2e2426fd0f2580ef",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "primaryPackagePurpose": "SOURCE",
       "annotations": [
         {
