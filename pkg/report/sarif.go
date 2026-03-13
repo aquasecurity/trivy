@@ -268,6 +268,15 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+
+	// Add invocation with timestamps so consumers can monitor report freshness.
+	// cf. https://github.com/aquasecurity/trivy/issues/3226
+	if !report.CreatedAt.IsZero() {
+		sw.run.AddInvocation(true).
+			WithStartTimeUTC(report.CreatedAt).
+			WithEndTimeUTC(report.CreatedAt)
+	}
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }
