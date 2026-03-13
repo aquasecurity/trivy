@@ -20,6 +20,7 @@ type Statement struct {
 	Affects       []string
 	Status        types.FindingStatus
 	Justification string
+	OWASPRating   *types.OWASPRating
 }
 
 func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
@@ -30,10 +31,14 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 		})
 
 		analysis := lo.FromPtr(vuln.Analysis)
+
+		owaspRating := parseOWASPRating(vuln.Ratings)
+
 		statements[vuln.ID] = Statement{
 			Affects:       affects,
 			Status:        cdxStatus(analysis.State),
 			Justification: string(analysis.Justification),
+			OWASPRating:   owaspRating,
 		}
 	}
 	return &CycloneDX{
@@ -41,6 +46,34 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 		statements: statements,
 		logger:     log.WithPrefix("vex").With(log.String("format", "CycloneDX")),
 	}
+}
+
+// parseOWASPRating extracts the OWASP Risk Rating from CycloneDX VulnerabilityRatings
+func parseOWASPRating(cdxRatings *[]cdx.VulnerabilityRating) *types.OWASPRating {
+	if cdxRatings == nil || len(*cdxRatings) == 0 {
+		return nil
+	}
+
+	// Look for OWASP rating specifically
+	for _, r := range *cdxRatings {
+		method := string(r.Method)
+		if method != "OWASP" {
+			continue
+		}
+
+		rating := &types.OWASPRating{
+			Vector:   r.Vector,
+			Severity: string(r.Severity),
+		}
+
+		if r.Score != nil {
+			rating.Score = *r.Score
+		}
+
+		return rating
+	}
+
+	return nil
 }
 
 func (v *CycloneDX) NotAffected(vuln types.DetectedVulnerability, product, _ *core.Component) (types.ModifiedFinding, bool) {
@@ -71,6 +104,36 @@ func (v *CycloneDX) NotAffected(vuln types.DetectedVulnerability, product, _ *co
 		}
 	}
 	return types.ModifiedFinding{}, false
+}
+
+// EnrichWithRatings enriches the vulnerability with OWASP Risk Rating from VEX if available
+func (v *CycloneDX) EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component) {
+	stmt, ok := v.statements[vuln.VulnerabilityID]
+	if !ok || stmt.OWASPRating == nil {
+		return
+	}
+
+	// If no affects are specified, apply the rating globally to all instances of this vulnerability
+	if len(stmt.Affects) == 0 {
+		vuln.OWASPRating = stmt.OWASPRating
+		return
+	}
+
+	// Check if this vulnerability affects the product via BOM-Link
+	for _, affect := range stmt.Affects {
+		link, err := cdx.ParseBOMLink(affect)
+		if err != nil {
+			continue
+		}
+		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
+			continue
+		}
+		if product.PkgIdentifier.Match(link.Reference()) {
+			// Apply OWASP rating from VEX to this vulnerability
+			vuln.OWASPRating = stmt.OWASPRating
+			return
+		}
+	}
 }
 
 func cdxStatus(s cdx.ImpactAnalysisState) types.FindingStatus {
