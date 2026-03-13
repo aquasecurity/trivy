@@ -56,8 +56,8 @@ jobs:
 
       - name: Setup git settings
         run: |
-          git config --global user.email "knqyf263@gmail.com"
-          git config --global user.name "Teppei Fukuda"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name "github-actions[bot]"
 
       - name: Create rpm repository
         run: ci/deploy-rpm.sh
