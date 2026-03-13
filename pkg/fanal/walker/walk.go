@@ -9,7 +9,12 @@ import (
 const defaultSizeThreshold = int64(100) << 20 // 200MB
 
 var defaultSkipDirs = []string{
-	"**/.git",
+	"**/.git/objects",
+	"**/.git/refs",
+	"**/.git/logs",
+	"**/.git/hooks",
+	"**/.git/info",
+	"**/.git/branches",
 	"proc",
 	"sys",
 	"dev",
