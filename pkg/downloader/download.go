@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"path/filepath"
 	"strings"
 	"time"
 
@@ -56,8 +57,27 @@ func DownloadToTempDir(ctx context.Context, src string, opts Options) (string, e
 
 // Download downloads the configured source to the destination.
 func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, error) {
-	// go-getter doesn't allow the dst directory already exists if the src is directory.
-	_ = os.RemoveAll(dst)
+	// When an ETag is provided, the server may respond with 304 Not Modified,
+	// meaning the existing content at dst is still valid. In that case we must
+	// NOT destroy dst. We move it aside as a backup and restore it on 304.
+	var backup string
+	parentDir := filepath.Dir(dst)
+	backupDir := filepath.Join(parentDir, ".download-backup")
+	if opts.ETag != "" {
+		if info, err := os.Stat(dst); err == nil && info.IsDir() {
+			// Rename dst to backup so go-getter won't complain about existing dir
+			if err := renameDir(dst, backupDir); err != nil {
+				_ = os.RemoveAll(backupDir)
+				return "", xerrors.Errorf("failed to back up dst: %w", err)
+			}
+			backup = backupDir
+		}
+	}
+	if backup == "" {
+		// No ETag or dst didn't exist, then remove dst for go-getter.
+		// go-getter doesn't allow the dst directory already exists if the src is directory.
+		_ = os.RemoveAll(dst)
+	}
 
 	var clientOpts []getter.ClientOption
 	if opts.Insecure {
@@ -98,8 +118,19 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 	}
 
 	if err := client.Get(); err != nil {
+		// If the error wraps ErrSkipDownload (304 Not Modified), restore the
+		// original dst so the caller still has the cached content intact.
+		if errors.Is(err, ErrSkipDownload) {
+			restoreBackup(backup, dst)
+			return "", ErrSkipDownload
+		}
+		// Download failed for another reason, restore backup so we don't lose
+		// the previously cached data.
+		restoreBackup(backup, dst)
 		return "", xerrors.Errorf("failed to download %s: %w", src, err)
 	}
+	// Download succeeded with new content — discard the backup.
+	removeBackup(backup)
 
 	return transport.newETag, nil
 }
