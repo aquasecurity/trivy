@@ -461,7 +461,7 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) // nolint: errcheck
+	defer m.free.Call(ctx, inputPtr, inputSize) // nolint: errcheck
 
 	// 2. Call analyze
 	analyzeRes, err := m.analyze.Call(ctx, inputPtr, inputSize)
@@ -511,7 +511,7 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	if err != nil {
 		return nil, xerrors.Errorf("post scan marshal error: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) //nolint: errcheck
+	defer m.free.Call(ctx, inputPtr, inputSize) //nolint: errcheck
 
 	analyzeRes, err := m.postScan.Call(ctx, inputPtr, inputSize)
 	if err != nil {
