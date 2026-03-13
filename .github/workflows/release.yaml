@@ -150,4 +150,4 @@ jobs:
           gh workflow run bump-trivy.yaml \
             --repo "$GITHUB_REPOSITORY_OWNER/trivy-action" \
             --ref master \
-            --field "trivy-version=$VERSION"
+            --field "trivy_version=$VERSION"
