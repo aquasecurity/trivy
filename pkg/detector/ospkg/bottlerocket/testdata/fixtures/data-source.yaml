@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: bottlerocket
+      value:
+        ID: "bottlerocket"
+        Name: "Bottlerocket Security Advisories"
+        URL: "https://advisories.bottlerocket.aws/"

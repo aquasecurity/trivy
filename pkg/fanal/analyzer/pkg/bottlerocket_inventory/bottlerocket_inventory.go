@@ -80,10 +80,18 @@ func (a bottlerocketInventoryAnalyzer) parseApplicationInventory(_ context.Conte
 			Epoch:   epoch,
 			Name:    app.Name,
 			Version: app.Version,
+			Release: app.Release,
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
-			pkg.ID = fmt.Sprintf("%s@%s", pkg.Name, pkg.Version)
+			ver := pkg.Version
+			if pkg.Release != "" {
+				ver = fmt.Sprintf("%s-%s", ver, pkg.Release)
+			}
+			if pkg.Epoch != 0 {
+				ver = fmt.Sprintf("%d:%s", pkg.Epoch, ver)
+			}
+			pkg.ID = fmt.Sprintf("%s@%s", pkg.Name, ver)
 		}
 
 		pkgs = append(pkgs, pkg)
