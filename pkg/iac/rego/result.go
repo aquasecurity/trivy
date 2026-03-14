@@ -160,8 +160,3 @@ func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespac
 	}
 	return results
 }
-
-func (s *Scanner) embellishResultsWithRuleMetadata(results scan.Results, metadata StaticMetadata) scan.Results {
-	results.SetRule(metadata.ToRule())
-	return results
-}
