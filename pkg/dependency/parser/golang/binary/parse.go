@@ -54,6 +54,18 @@ func NewParser() *Parser {
 	}
 }
 
+// parseStdlibVersion extracts the Go stdlib version from info.GoVersion.
+// It strips GOEXPERIMENT suffixes in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26).
+func parseStdlibVersion(goVersion string) string {
+	// Ex: "go1.22.3 X:boringcrypto" (Go <=1.25) or "go1.26.0-X:nodwarf5" (Go >=1.26)
+	stdlibVersion := strings.TrimPrefix(goVersion, "go")
+	// Strip GOEXPERIMENT suffix: " X:foo" (Go <=1.25) or "-X:foo" (Go >=1.26)
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " X:")
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
+	// Add the `v` prefix to be consistent with module and dependency versions.
+	return fmt.Sprintf("v%s", stdlibVersion)
+}
+
 // Parse scans file to try to report the Go and module versions.
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	info, err := buildinfo.Read(r)
@@ -61,11 +73,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, convertError(err)
 	}
 
-	// Ex: "go1.22.3 X:boringcrypto"
-	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
-	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
-	// Add the `v` prefix to be consistent with module and dependency versions.
-	stdlibVersion = fmt.Sprintf("v%s", stdlibVersion)
+	stdlibVersion := parseStdlibVersion(info.GoVersion)
 
 	ldflags := p.ldFlags(info.Settings)
 	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
