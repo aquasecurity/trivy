@@ -5,6 +5,7 @@ import (
 	"io"
 	"testing"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -344,6 +345,94 @@ func TestFlags(t *testing.T) {
 			rootCmd.SetArgs(tt.arguments)
 
 			err := rootCmd.Execute()
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestApplyColorSetting(t *testing.T) {
+	tests := []struct {
+		name         string
+		colorSetting string
+		wantNoColor  bool
+	}{
+		{
+			name:         "never disables color",
+			colorSetting: "never",
+			wantNoColor:  true,
+		},
+		{
+			name:         "always enables color",
+			colorSetting: "always",
+			wantNoColor:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Save and restore original value
+			original := color.NoColor
+			t.Cleanup(func() { color.NoColor = original })
+
+			applyColorSetting(tt.colorSetting)
+			assert.Equal(t, tt.wantNoColor, color.NoColor)
+		})
+	}
+}
+
+func TestColorFlag(t *testing.T) {
+	tests := []struct {
+		name      string
+		arguments []string
+		wantErr   string
+	}{
+		{
+			name: "valid color flag: never",
+			arguments: []string{
+				"--color", "never",
+				"--cache-dir", "testdata",
+				"-v",
+			},
+		},
+		{
+			name: "valid color flag: always",
+			arguments: []string{
+				"--color", "always",
+				"--cache-dir", "testdata",
+				"-v",
+			},
+		},
+		{
+			name: "valid color flag: auto",
+			arguments: []string{
+				"--color", "auto",
+				"--cache-dir", "testdata",
+				"-v",
+			},
+		},
+		{
+			name: "invalid color flag",
+			arguments: []string{
+				"--color", "invalid",
+				"--cache-dir", "testdata",
+				"-v",
+			},
+			wantErr: `invalid argument "invalid" for "--color" flag`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			app := NewApp()
+			app.SetOut(io.Discard)
+			app.SetErr(io.Discard)
+			app.SetArgs(tt.arguments)
+
+			err := app.Execute()
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return

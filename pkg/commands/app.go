@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -207,6 +208,9 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			if err != nil {
 				return err
 			}
+			// Apply color settings
+			applyColorSetting(opts.Color)
+
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
 			return nil
@@ -1479,6 +1483,20 @@ func validateArgs(cmd *cobra.Command, args []string) error {
 	}
 
 	return nil
+}
+
+// applyColorSetting configures the global color output based on the --color flag value.
+// "auto" preserves the default behavior (colors when outputting to a terminal),
+// "never" disables colors unconditionally, and "always" forces colors on.
+func applyColorSetting(colorSetting string) {
+	switch colorSetting {
+	case "never":
+		color.NoColor = true
+	case "always":
+		color.NoColor = false
+	default:
+		// "auto" - keep the default behavior from the color package
+	}
 }
 
 // show help on using the command when an invalid flag is encountered
