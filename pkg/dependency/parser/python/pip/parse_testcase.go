@@ -34,6 +34,16 @@ var (
 				},
 			},
 		},
+		{
+			Name:    "eventlet",
+			Version: "0.18.2",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 6,
+					EndLine:   6,
+				},
+			},
+		},
 	}
 	requirementsFlask = []ftypes.Package{
 		{
