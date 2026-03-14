@@ -14,6 +14,7 @@ import (
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
@@ -183,15 +184,15 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 		component.SrcName, component.SrcVersion, _ = strings.Cut(srcPkgName, " ")
 	}
 
-	// Files
-	// TODO: handle checksums as well
+	// Files and checksums
+	digests := parseChecksums(spdxPkg.PackageChecksums)
 	if path, ok := s.pkgFilePaths[spdxPkg.PackageSPDXIdentifier]; ok {
 		component.Files = []core.File{
-			{Path: path},
+			{Path: path, Digests: digests},
 		}
 	} else if len(spdxPkg.Files) > 0 {
 		component.Files = []core.File{
-			{Path: spdxPkg.Files[0].FileName}, // Take the first file name
+			{Path: spdxPkg.Files[0].FileName, Digests: digests},
 		}
 	}
 
@@ -290,4 +291,25 @@ func (s *SPDX) isTrivySBOM(spdxDocument *spdx.Document) bool {
 
 func isFile(elementID spdx.ElementID) bool {
 	return strings.HasPrefix(string(elementID), ElementFile)
+}
+
+func parseChecksums(checksums []common.Checksum) []digest.Digest {
+	var digests []digest.Digest
+	for _, c := range checksums {
+		var alg digest.Algorithm
+		switch c.Algorithm {
+		case spdx.SHA1:
+			alg = digest.SHA1
+		case spdx.SHA256:
+			alg = digest.SHA256
+		case spdx.SHA512:
+			alg = digest.SHA512
+		case spdx.MD5:
+			alg = digest.MD5
+		default:
+			continue
+		}
+		digests = append(digests, digest.NewDigestFromString(alg, c.Value))
+	}
+	return digests
 }

@@ -10,9 +10,6 @@ const defaultSizeThreshold = int64(100) << 20 // 200MB
 
 var defaultSkipDirs = []string{
 	"**/.git",
-	"proc",
-	"sys",
-	"dev",
 }
 
 type Option struct {
