@@ -204,6 +204,16 @@ func (b *BOM) parseComponent(c cdx.Component) (*core.Component, error) {
 		Properties:    b.unmarshalProperties(c.Properties),
 	}
 
+	if c.Evidence != nil && c.Evidence.Occurrences != nil {
+		for _, occ := range *c.Evidence.Occurrences {
+			if occ.Location != "" {
+				component.Files = append(component.Files, core.File{
+					Path: occ.Location,
+				})
+			}
+		}
+	}
+
 	return component, nil
 }
 

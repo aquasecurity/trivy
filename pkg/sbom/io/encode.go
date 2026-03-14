@@ -397,10 +397,6 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			Value: string(result.Type),
 		},
 		{
-			Name:  core.PropertyFilePath,
-			Value: pkg.FilePath,
-		},
-		{
 			Name:  core.PropertySrcName,
 			Value: pkg.SrcName,
 		},

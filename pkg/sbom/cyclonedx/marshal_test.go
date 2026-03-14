@@ -98,9 +98,10 @@ var (
 				Name:  core.PropertyPkgType,
 				Value: "jar",
 			},
+		},
+		Files: []core.File{
 			{
-				Name:  core.PropertyFilePath,
-				Value: "jackson-databind-2.13.4.1.jar",
+				Path: "jackson-databind-2.13.4.1.jar",
 			},
 		},
 	}
@@ -1037,10 +1038,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:gem/actionpack@7.0.0",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "tools/project-john/specifications/actionpack.gemspec",
-							},
-							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 							},
@@ -1053,6 +1050,13 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Value: "gemspec",
 							},
 						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "tools/project-john/specifications/actionpack.gemspec",
+								},
+							},
+						},
 					},
 					{
 						BOMRef:     "pkg:gem/actionpack@7.0.1",
@@ -1061,10 +1065,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Version:    "7.0.1",
 						PackageURL: "pkg:gem/actionpack@7.0.1",
 						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "tools/project-doe/specifications/actionpack.gemspec",
-							},
 							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
@@ -1076,6 +1076,13 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "gemspec",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "tools/project-doe/specifications/actionpack.gemspec",
+								},
 							},
 						},
 					},
@@ -1440,12 +1447,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:maven/org.springframework/spring-web@5.3.22",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "spring-web-5.3.22.jar",
-							},
-							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "jar",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "spring-web-5.3.22.jar",
+								},
 							},
 						},
 					},
@@ -1629,12 +1639,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "jackson-databind-2.13.4.1.jar",
-							},
-							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "jar",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "jackson-databind-2.13.4.1.jar",
+								},
 							},
 						},
 					},
@@ -1897,12 +1910,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "nifi-dbcp-base-1.20.0.jar",
-							},
-							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "jar",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "nifi-dbcp-base-1.20.0.jar",
+								},
 							},
 						},
 					},
@@ -1915,12 +1931,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "nifi-hikari-dbcp-service-1.20.0.jar",
-							},
-							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "jar",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "nifi-hikari-dbcp-service-1.20.0.jar",
+								},
 							},
 						},
 					},
@@ -2093,10 +2112,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						},
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
-							},
-							{
 								Name:  "aquasecurity:trivy:LayerDiffID",
 								Value: "sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e",
 							},
@@ -2107,6 +2122,13 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "node-pkg",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "usr/local/lib/ruby/gems/3.1.0/gems/typeprof-0.21.1/vscode/package.json",
+								},
 							},
 						},
 					},
@@ -2220,12 +2242,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						PackageURL: "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
 						Properties: &[]cdx.Property{
 							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "jackson-databind-2.13.4.1.jar",
-							},
-							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "jar",
+							},
+						},
+						Evidence: &cdx.Evidence{
+							Occurrences: &[]cdx.EvidenceOccurrence{
+								{
+									Location: "jackson-databind-2.13.4.1.jar",
+								},
 							},
 						},
 					},
