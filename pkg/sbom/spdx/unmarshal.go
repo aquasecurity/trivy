@@ -14,6 +14,8 @@ import (
 	"github.com/spdx/tools-golang/tagvalue"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
@@ -184,14 +186,25 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// Files
-	// TODO: handle checksums as well
 	if path, ok := s.pkgFilePaths[spdxPkg.PackageSPDXIdentifier]; ok {
 		component.Files = []core.File{
 			{Path: path},
 		}
 	} else if len(spdxPkg.Files) > 0 {
+		file := spdxPkg.Files[0]
 		component.Files = []core.File{
-			{Path: spdxPkg.Files[0].FileName}, // Take the first file name
+			{
+				Path:    file.FileName,
+				Digests: s.unmarshalChecksums(file.Checksums),
+			},
+		}
+	}
+
+	if len(component.Files) == 0 && len(spdxPkg.PackageChecksums) > 0 {
+		component.Files = []core.File{
+			{
+				Digests: s.unmarshalChecksums(spdxPkg.PackageChecksums),
+			},
 		}
 	}
 
@@ -273,6 +286,28 @@ func (s *SPDX) parseExternalReferences(refs []*spdx.PackageExternalReference) (*
 		return &packageURL, nil
 	}
 	return nil, nil
+}
+
+func (s *SPDX) unmarshalChecksums(checksums []spdx.Checksum) []digest.Digest {
+	var digests []digest.Digest
+	for _, h := range checksums {
+		var alg digest.Algorithm
+		switch h.Algorithm {
+		case common.SHA1:
+			alg = digest.SHA1
+		case common.SHA256:
+			alg = digest.SHA256
+		case common.SHA512:
+			alg = digest.SHA512
+		case common.MD5:
+			alg = digest.MD5
+		default:
+			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
+			continue
+		}
+		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
+	}
+	return digests
 }
 
 func (s *SPDX) isTrivySBOM(spdxDocument *spdx.Document) bool {
