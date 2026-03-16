@@ -121,10 +121,10 @@ func TestPep440Comparer_AllowLocalSpecifier(t *testing.T) {
 		advisory       dbTypes.Advisory
 	}
 	tests := []struct {
-		name             string
-		allowLocalSpec   bool
-		args             args
-		want             bool
+		name           string
+		allowLocalSpec bool
+		args           args
+		want           bool
 	}{
 		{
 			// Without AllowLocalSpecifier, the local segment is stripped from the candidate version,
