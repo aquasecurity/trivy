@@ -3,7 +3,7 @@ package strings
 import (
 	"fmt"
 
-	"github.com/samber/lo"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type String interface {
@@ -14,13 +14,16 @@ func ToStringSlice[T any](ss []T) []string {
 	if len(ss) == 0 {
 		return nil
 	}
-	return lo.Map(ss, func(s T, _ int) string {
+	return xslices.Map(ss, func(s T) string {
 		switch v := any(s).(type) {
 		case string:
 			return v
 		case fmt.Stringer:
 			return v.String()
 		default:
+			if stringer, ok := any(&s).(fmt.Stringer); ok {
+				return stringer.String()
+			}
 			return fmt.Sprint(v)
 		}
 	})
@@ -30,7 +33,7 @@ func ToTSlice[T String](ss []string) []T {
 	if ss == nil {
 		return nil
 	}
-	return lo.Map(ss, func(s string, _ int) T {
+	return xslices.Map(ss, func(s string) T {
 		return T(s)
 	})
 }

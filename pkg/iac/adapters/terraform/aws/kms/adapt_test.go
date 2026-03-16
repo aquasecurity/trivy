@@ -27,8 +27,8 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: kms.Key{
-				Usage:           iacTypes.String(kms.KeyUsageSignAndVerify, iacTypes.NewTestMetadata()),
-				RotationEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				Usage:           iacTypes.StringTest(kms.KeyUsageSignAndVerify),
+				RotationEnabled: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -38,8 +38,7 @@ func Test_adaptKey(t *testing.T) {
 			}
 `,
 			expected: kms.Key{
-				Usage:           iacTypes.String("ENCRYPT_DECRYPT", iacTypes.NewTestMetadata()),
-				RotationEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				Usage: iacTypes.StringTest("ENCRYPT_DECRYPT"),
 			},
 		},
 	}

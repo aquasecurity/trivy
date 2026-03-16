@@ -16,10 +16,10 @@ func TestParseIgnoreFile(t *testing.T) {
 
 		// IDs in .trivyignore are treated as IDs for all scanners
 		// as it is unclear which type of security issue they are
-		assert.Len(t, got.Vulnerabilities, 7)
-		assert.Len(t, got.Misconfigurations, 7)
-		assert.Len(t, got.Secrets, 7)
-		assert.Len(t, got.Licenses, 7)
+		assert.Len(t, got.Vulnerabilities, 8)
+		assert.Len(t, got.Misconfigurations, 8)
+		assert.Len(t, got.Secrets, 8)
+		assert.Len(t, got.Licenses, 8)
 	})
 
 	t.Run("happy path valid YAML config file", func(t *testing.T) {
@@ -27,7 +27,7 @@ func TestParseIgnoreFile(t *testing.T) {
 		require.NoError(t, err)
 		assert.Equal(t, "testdata/.trivyignore.yaml", got.FilePath)
 		assert.Len(t, got.Vulnerabilities, 5)
-		assert.Len(t, got.Misconfigurations, 3)
+		assert.Len(t, got.Misconfigurations, 4)
 		assert.Len(t, got.Secrets, 3)
 		assert.Len(t, got.Licenses, 5)
 	})

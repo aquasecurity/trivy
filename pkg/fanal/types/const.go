@@ -21,6 +21,7 @@ const (
 
 // Operating systems
 const (
+	ActiveState        OSType = "activestate"
 	Alma               OSType = "alma"
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
@@ -28,6 +29,7 @@ const (
 	Bottlerocket       OSType = "bottlerocket"
 	CBLMariner         OSType = "cbl-mariner"
 	CentOS             OSType = "centos"
+	CentOSStream       OSType = "centos-stream"
 	Chainguard         OSType = "chainguard"
 	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
@@ -46,6 +48,33 @@ const (
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
 )
+
+// HasOSPackages returns true if the OS type has OS-level packages managed by a package manager.
+// Some OS types like ActiveState only contain language-specific packages.
+func (o OSType) HasOSPackages() bool {
+	switch o {
+	case ActiveState:
+		return false
+	default:
+		return true
+	}
+}
+
+// PurlNamespace returns the normalized namespace for Package URL (PURL) representation.
+// For SUSE-based distributions (SLES, SLE Micro), it returns "suse".
+// For openSUSE variants (Tumbleweed, Leap), it returns "opensuse".
+// For all other OSTypes, it returns the string representation of the OSType.
+func (o OSType) PurlNamespace() string {
+	// SLES string has whitespace, also highlevel family is not the same as distro
+	if o == SLES || o == SLEMicro {
+		return "suse"
+	}
+	if o == OpenSUSETumbleweed || o == OpenSUSELeap {
+		return "opensuse"
+	}
+
+	return string(o)
+}
 
 // OSTypeAliases is a map of aliases for operating systems.
 var OSTypeAliases = map[OSType]OSType{
@@ -76,6 +105,7 @@ const (
 	Pipenv         LangType = "pipenv"
 	Poetry         LangType = "poetry"
 	Uv             LangType = "uv"
+	PyLock         LangType = "pylock"
 	CondaPkg       LangType = "conda-pkg"
 	CondaEnv       LangType = "conda-environment"
 	PythonPkg      LangType = "python-pkg"
@@ -108,12 +138,14 @@ const (
 
 var (
 	OSTypes = []OSType{
+		ActiveState,
 		Alma,
 		Alpine,
 		Amazon,
 		Azure,
 		CBLMariner,
 		CentOS,
+		CentOSStream,
 		Chainguard,
 		CoreOS,
 		Debian,
@@ -183,6 +215,7 @@ const (
 	PipfileLock     = "Pipfile.lock"
 	PoetryLock      = "poetry.lock"
 	UvLock          = "uv.lock"
+	PyLockFile      = "pylock.toml"
 
 	GemfileLock = "Gemfile.lock"
 

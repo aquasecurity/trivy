@@ -1,12 +1,12 @@
 package cargo
 
 import (
-	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -15,12 +15,12 @@ import (
 func Test_cargoAnalyzer_Analyze(t *testing.T) {
 	tests := []struct {
 		name string
-		dir  string
+		file string
 		want *analyzer.AnalysisResult
 	}{
 		{
 			name: "happy path",
-			dir:  "testdata/happy",
+			file: "testdata/happy.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -163,7 +163,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "Cargo.toml doesn't include `Dependencies` field",
-			dir:  "testdata/toml-only-workspace-deps",
+			file: "testdata/toml-only-workspace-deps.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -205,7 +205,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "no Cargo.toml",
-			dir:  "testdata/no-cargo-toml",
+			file: "testdata/no-cargo-toml.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -392,7 +392,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "wrong Cargo.toml",
-			dir:  "testdata/wrong-cargo-toml",
+			file: "testdata/wrong-cargo-toml.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -433,12 +433,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 		},
 		{
 			name: "broken Cargo.lock",
-			dir:  "testdata/sad",
+			file: "testdata/sad.txtar",
 			want: &analyzer.AnalysisResult{},
 		},
 		{
-			name: "workspace members",
-			dir:  "testdata/toml-workspace-members",
+			name: "version.workspace = true inherits from workspace.package.version",
+			file: "testdata/version-workspace-inherit.txtar",
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -446,7 +446,56 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
-								ID:           "d0e1231acd612a0f",
+								ID:           "afc012b7e68b6638",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"myapp@2.0.0",
+								},
+							},
+							{
+								ID:           "myapp@2.0.0",
+								Name:         "myapp",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+								DependsOn: []string{
+									"serde@1.0.195",
+								},
+							},
+							{
+								ID:           "serde@1.0.195",
+								Name:         "serde",
+								Version:      "1.0.195",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 12,
+										EndLine:   16,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "workspace members",
+			file: "testdata/toml-workspace-members.txtar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "eeae9dc40f83d7dd",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"member@0.1.0",
@@ -608,6 +657,178 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "workspace members",
+			file: "testdata/toml-workspace-glob.txtar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "fbcbfc8e1114c435",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"member1@0.1.0",
+									"member2@0.1.0",
+								},
+							},
+							{
+								ID:           "member1@0.1.0",
+								Name:         "member1",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   35,
+									},
+								},
+								DependsOn: []string{
+									"gdb-command@0.7.6",
+								},
+							},
+							{
+								ID:           "member2@0.1.0",
+								Name:         "member2",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 37,
+										EndLine:   42,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+								},
+							},
+							{
+								ID:           "gdb-command@0.7.6",
+								Name:         "gdb-command",
+								Version:      "0.7.6",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 14,
+										EndLine:   22,
+									},
+								},
+								DependsOn: []string{
+									"regex@1.10.2",
+									"wait-timeout@0.2.0",
+								},
+							},
+							{
+								ID:           "regex@1.10.2",
+								Name:         "regex",
+								Version:      "1.10.2",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 50,
+										EndLine:   60,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-automata@0.4.3",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:           "aho-corasick@1.1.2",
+								Name:         "aho-corasick",
+								Version:      "1.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   12,
+									},
+								},
+								DependsOn: []string{"memchr@2.6.4"},
+							},
+							{
+								ID:           "libc@0.2.150",
+								Name:         "libc",
+								Version:      "0.2.150",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 24,
+										EndLine:   28,
+									},
+								},
+							},
+							{
+								ID:           "memchr@2.6.4",
+								Name:         "memchr",
+								Version:      "2.6.4",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 44,
+										EndLine:   48,
+									},
+								},
+							},
+							{
+								ID:           "regex-automata@0.4.3",
+								Name:         "regex-automata",
+								Version:      "0.4.3",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 62,
+										EndLine:   71,
+									},
+								},
+								DependsOn: []string{
+									"aho-corasick@1.1.2",
+									"memchr@2.6.4",
+									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:           "regex-syntax@0.8.2",
+								Name:         "regex-syntax",
+								Version:      "0.8.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 73,
+										EndLine:   77,
+									},
+								},
+							},
+							{
+								ID:           "wait-timeout@0.2.0",
+								Name:         "wait-timeout",
+								Version:      "0.2.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 79,
+										EndLine:   86,
+									},
+								},
+								DependsOn: []string{"libc@0.2.150"},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -616,7 +837,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
-				FS: os.DirFS(tt.dir),
+				FS: testutil.TxtarToFS(t, tt.file),
 			})
 
 			require.NoError(t, err)

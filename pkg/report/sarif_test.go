@@ -17,14 +17,22 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+// TestReportWriter_Sarif reuses report.PathToFileURI to compute expected URIs.
+// The correctness of PathToFileURI itself (including Windows path handling) is verified in TestWrite_Sarif.
 func TestReportWriter_Sarif(t *testing.T) {
+	tmpScanURI := report.PathToFileURI("/tmp/scan")
+
 	tests := []struct {
-		name  string
-		input types.Report
-		want  *sarif.Report
+		name   string
+		target string
+		input  types.Report
+		want   *sarif.Report
 	}{
 		{
 			name: "report with vulnerabilities",
+			// Container images don't have a local filesystem path, so target is empty
+			// and OriginalUriBaseIDs is omitted from the SARIF output.
+			target: "",
 			input: types.Report{
 				ArtifactName: "debian:9",
 				ArtifactType: ftypes.TypeContainerImage,
@@ -170,11 +178,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 						PropertyBag: sarif.PropertyBag{
 							Properties: map[string]any{
 								"imageName":   "debian:9",
@@ -188,7 +191,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with misconfigurations",
+			name:   "report with misconfigurations",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -329,7 +333,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -337,7 +341,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with secrets",
+			name:   "report with secrets",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -423,7 +428,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -431,7 +436,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "report with licenses",
+			name:   "report with licenses",
+			target: "/tmp/scan",
 			input: types.Report{
 				Results: types.Results{
 					{
@@ -512,7 +518,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -520,7 +526,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
-			name: "no vulns",
+			name:   "no vulns",
+			target: "/tmp/scan",
 			want: &sarif.Report{
 				Version: "2.1.0",
 				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
@@ -539,7 +546,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						ColumnKind: "utf16CodeUnits",
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
+								URI: lo.ToPtr(tmpScanURI),
 							},
 						},
 					},
@@ -721,11 +728,6 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
-						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
-							"ROOTPATH": {
-								URI: lo.ToPtr("file:///"),
-							},
-						},
 					},
 				},
 			},
@@ -737,6 +739,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
 				Output: sarifWritten,
+				Target: tt.target,
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
@@ -745,6 +748,25 @@ func TestReportWriter_Sarif(t *testing.T) {
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestReportWriter_toSarifErrorLevel(t *testing.T) {
+	tests := []struct {
+		severity        string
+		sarifErrorLevel string
+	}{
+		{severity: "CRITICAL", sarifErrorLevel: "error"},
+		{severity: "HIGH", sarifErrorLevel: "error"},
+		{severity: "MEDIUM", sarifErrorLevel: "warning"},
+		{severity: "LOW", sarifErrorLevel: "note"},
+		{severity: "UNKNOWN", sarifErrorLevel: "note"},
+		{severity: "OTHER", sarifErrorLevel: "none"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.severity, func(t *testing.T) {
+			assert.Equal(t, tc.sarifErrorLevel, report.ToSarifErrorLevel(tc.severity), tc.severity)
 		})
 	}
 }
@@ -787,5 +809,171 @@ func TestToPathUri(t *testing.T) {
 		if got != test.output {
 			t.Errorf("toPathUri(%q) got %q, wanted %q", test.input, got, test.output)
 		}
+	}
+}
+
+func Test_clearURI(t *testing.T) {
+	test := []struct {
+		name string
+		uri  string
+		want string
+	}{
+		{
+			name: "https",
+			uri:  "bitbucket.org/hashicorp/terraform-consul-aws",
+			want: "bitbucket.org/hashicorp/terraform-consul-aws",
+		},
+		{
+			name: "github",
+			uri:  "git@github.com:terraform-aws-modules/terraform-aws-s3-bucket.git?ref=v4.2.0/main.tf",
+			want: "github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf",
+		},
+		{
+			name: "git",
+			uri:  "git::https://example.com/storage.git?ref=51d462976d84fdea54b47d80dcabbf680badcdb8",
+			want: "https://example.com/storage?ref=51d462976d84fdea54b47d80dcabbf680badcdb8",
+		},
+		{
+			name: "git ssh",
+			uri:  "git::ssh://username@example.com/storage.git",
+			want: "example.com/storage",
+		},
+		{
+			name: "hg",
+			uri:  "hg::http://example.com/vpc.hg?ref=v1.2.0",
+			want: "http://example.com/vpc?ref=v1.2.0",
+		},
+		{
+			name: "s3",
+			uri:  "s3::https://s3-eu-west-1.amazonaws.com/examplecorp-terraform-modules/vpc.zip",
+			want: "https://s3-eu-west-1.amazonaws.com/examplecorp-terraform-modules/vpc.zip",
+		},
+		{
+			name: "gcs",
+			uri:  "gcs::https://www.googleapis.com/storage/v1/modules/foomodule.zip",
+			want: "https://www.googleapis.com/storage/v1/modules/foomodule.zip",
+		},
+	}
+
+	for _, tt := range test {
+		t.Run(tt.name, func(t *testing.T) {
+			got := report.ClearURI(tt.uri)
+			require.Equal(t, tt.want, got)
+			require.NotNil(t, report.ToUri(got))
+		})
+	}
+}
+
+func TestMakePropertiesMarshal(t *testing.T) {
+	tests := []struct {
+		name      string
+		title     string
+		severity  string
+		cvssScore string
+		cvssData  map[string]any
+		expected  string
+	}{
+		{
+			name:      "no CVSS data",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "5.0",
+			cvssData:  make(map[string]any),
+			expected: `{
+				"precision": "very-high",
+				"security-severity": "5.0",
+				"tags": ["test", "security", "HIGH"]
+			}`,
+		},
+		{
+			name:      "only CVSS v2",
+			title:     "test",
+			severity:  "CRITICAL",
+			cvssScore: "4.0",
+			cvssData: map[string]any{
+				"cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+				"cvssv2_score":  5.0,
+			},
+			expected: `{
+				"cvssv2_score": 5,
+				"cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+				"precision": "very-high",
+				"security-severity": "4.0",
+				"tags": ["test", "security", "CRITICAL"]
+			}`,
+		},
+		{
+			name:      "only CVSS v3",
+			title:     "test",
+			severity:  "CRITICAL",
+			cvssScore: "9.8",
+			cvssData: map[string]any{
+				"cvssv3_vector":    "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"cvssv3_baseScore": 9.8,
+			},
+			expected: `{
+				"cvssv3_baseScore": 9.8,
+				"cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"precision": "very-high",
+				"security-severity": "9.8",
+				"tags": ["test", "security", "CRITICAL"]
+			}`,
+		},
+		{
+			name:      "only CVSS v4",
+			title:     "test",
+			severity:  "LOW",
+			cvssScore: "3.5",
+			cvssData: map[string]any{
+				"cvssv40_vector":    "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"cvssv40_baseScore": 3.5,
+			},
+			expected: `{
+				"cvssv40_baseScore": 3.5,
+				"cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"precision": "very-high",
+				"security-severity": "3.5",
+				"tags": ["test", "security", "LOW"]
+			}`,
+		},
+		{
+			name:      "all CVSS versions",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "8.1",
+			cvssData: map[string]any{
+				"cvssv2_vector":     "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+				"cvssv2_score":      7.5,
+				"cvssv3_vector":     "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"cvssv3_baseScore":  9.8,
+				"cvssv40_vector":    "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"cvssv40_baseScore": 9.3,
+			},
+			expected: `{
+				"cvssv2_score": 7.5,
+				"cvssv2_vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+				"cvssv3_baseScore": 9.8,
+				"cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+				"cvssv40_baseScore": 9.3,
+				"cvssv40_vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:H/VI:H/VA:H/SC:N/SI:N/SA:N",
+				"precision": "very-high",
+				"security-severity": "8.1",
+				"tags": ["test", "security", "HIGH"]
+			}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			result := report.ToProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
+
+			actualJSON, err := json.Marshal(result)
+			require.NoError(t, err)
+
+			var expectedJSON bytes.Buffer
+			err = json.Compact(&expectedJSON, []byte(tt.expected))
+			require.NoError(t, err)
+			assert.JSONEq(t, expectedJSON.String(), string(actualJSON))
+		})
 	}
 }

@@ -47,6 +47,10 @@ var Schema = &hcl.BodySchema{
 			LabelNames: []string{"type", "name"},
 		},
 		{
+			Type:       "action",
+			LabelNames: []string{"type", "name"},
+		},
+		{
 			Type: "moved",
 		},
 		{

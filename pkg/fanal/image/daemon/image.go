@@ -8,11 +8,11 @@ import (
 	"sync"
 	"time"
 
-	dimage "github.com/docker/docker/api/types/image"
-	"github.com/docker/docker/client"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	dockerspec "github.com/moby/docker-image-spec/specs-go/v1"
+	dimage "github.com/moby/moby/api/types/image"
+	"github.com/moby/moby/client"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -29,7 +29,7 @@ var mu sync.Mutex
 
 type opener func() (v1.Image, error)
 
-type imageSave func(context.Context, []string, ...client.ImageSaveOption) (io.ReadCloser, error)
+type imageSave func(context.Context, []string, ...client.ImageSaveOption) (client.ImageSaveResult, error)
 
 func imageOpener(ctx context.Context, ref string, f *os.File, imageSave imageSave) opener {
 	return func() (v1.Image, error) {
@@ -125,14 +125,12 @@ func (img *image) ConfigFile() (*v1.ConfigFile, error) {
 	}
 
 	return &v1.ConfigFile{
-		Architecture:  img.inspect.Architecture,
-		Author:        img.inspect.Author,
-		Container:     img.inspect.Container,
-		Created:       created,
-		DockerVersion: img.inspect.DockerVersion,
-		Config:        img.imageConfig(lo.FromPtr(img.inspect.Config)),
-		History:       img.history,
-		OS:            img.inspect.Os,
+		Architecture: img.inspect.Architecture,
+		Author:       img.inspect.Author,
+		Created:      created,
+		Config:       img.imageConfig(lo.FromPtr(img.inspect.Config)),
+		History:      img.history,
+		OS:           img.inspect.Os,
 		RootFS: v1.RootFS{
 			Type:    img.inspect.RootFS.Type,
 			DiffIDs: diffIDs,

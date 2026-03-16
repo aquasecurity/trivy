@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/npm",
@@ -15,7 +18,7 @@
           "Name": "asap",
           "Identifier": {
             "PURL": "pkg:npm/asap@2.0.6",
-            "UID": "199d95f873330bd3"
+            "UID": "a9ed9c990b55c97e"
           },
           "Version": "2.0.6",
           "Locations": [
@@ -23,14 +26,15 @@
               "StartLine": 6,
               "EndLine": 10
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "jquery@3.3.9",
           "Name": "jquery",
           "Identifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "e19e84d31f72b60c"
+            "UID": "5624abe72853740"
           },
           "Version": "3.3.9",
           "Licenses": [
@@ -41,14 +45,15 @@
               "StartLine": 11,
               "EndLine": 15
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "js-tokens@4.0.0",
           "Name": "js-tokens",
           "Identifier": {
             "PURL": "pkg:npm/js-tokens@4.0.0",
-            "UID": "605df7770562762"
+            "UID": "64fc20ee370178b3"
           },
           "Version": "4.0.0",
           "Locations": [
@@ -56,14 +61,15 @@
               "StartLine": 16,
               "EndLine": 20
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "loose-envify@1.4.0",
           "Name": "loose-envify",
           "Identifier": {
             "PURL": "pkg:npm/loose-envify@1.4.0",
-            "UID": "a40682339e264167"
+            "UID": "880231ec08096120"
           },
           "Version": "1.4.0",
           "DependsOn": [
@@ -74,14 +80,15 @@
               "StartLine": 21,
               "EndLine": 28
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "object-assign@4.1.1",
           "Name": "object-assign",
           "Identifier": {
             "PURL": "pkg:npm/object-assign@4.1.1",
-            "UID": "ec3b70276c206ac2"
+            "UID": "48119107a22d86bc"
           },
           "Version": "4.1.1",
           "Locations": [
@@ -89,14 +96,15 @@
               "StartLine": 29,
               "EndLine": 33
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "promise@8.0.3",
           "Name": "promise",
           "Identifier": {
             "PURL": "pkg:npm/promise@8.0.3",
-            "UID": "b60f9aaa4e3cba8f"
+            "UID": "755f2bbb480f470d"
           },
           "Version": "8.0.3",
           "Licenses": [
@@ -110,14 +118,15 @@
               "StartLine": 34,
               "EndLine": 41
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "prop-types@15.7.2",
           "Name": "prop-types",
           "Identifier": {
             "PURL": "pkg:npm/prop-types@15.7.2",
-            "UID": "5a0c427e953b2a24"
+            "UID": "2826a59f397d6438"
           },
           "Version": "15.7.2",
           "DependsOn": [
@@ -130,14 +139,15 @@
               "StartLine": 42,
               "EndLine": 51
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "react@16.8.6",
           "Name": "react",
           "Identifier": {
             "PURL": "pkg:npm/react@16.8.6",
-            "UID": "da9140320b70dc57"
+            "UID": "82d9f16b21d9e2c2"
           },
           "Version": "16.8.6",
           "Licenses": [
@@ -154,14 +164,15 @@
               "StartLine": 52,
               "EndLine": 62
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "react-is@16.8.6",
           "Name": "react-is",
           "Identifier": {
             "PURL": "pkg:npm/react-is@16.8.6",
-            "UID": "f50b67a44460b362"
+            "UID": "847264915e79444a"
           },
           "Version": "16.8.6",
           "Licenses": [
@@ -172,14 +183,15 @@
               "StartLine": 63,
               "EndLine": 67
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "redux@4.0.1",
           "Name": "redux",
           "Identifier": {
             "PURL": "pkg:npm/redux@4.0.1",
-            "UID": "fbb7d7c45dbba492"
+            "UID": "c38443b568b7d5b9"
           },
           "Version": "4.0.1",
           "Licenses": [
@@ -194,14 +206,15 @@
               "StartLine": 68,
               "EndLine": 76
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "scheduler@0.13.6",
           "Name": "scheduler",
           "Identifier": {
             "PURL": "pkg:npm/scheduler@0.13.6",
-            "UID": "9738f8ac302a0bb"
+            "UID": "92cfb6b69c6b19ce"
           },
           "Version": "0.13.6",
           "DependsOn": [
@@ -213,14 +226,15 @@
               "StartLine": 77,
               "EndLine": 85
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "symbol-observable@1.2.0",
           "Name": "symbol-observable",
           "Identifier": {
             "PURL": "pkg:npm/symbol-observable@1.2.0",
-            "UID": "b14a083f8b9e59bc"
+            "UID": "2d38df676788a02f"
           },
           "Version": "1.2.0",
           "Locations": [
@@ -228,14 +242,15 @@
               "StartLine": 86,
               "EndLine": 90
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         },
         {
           "ID": "z-lock@1.0.0",
           "Name": "z-lock",
           "Identifier": {
             "PURL": "pkg:npm/z-lock@1.0.0",
-            "UID": "f6ba8a4be50ce713"
+            "UID": "4802db92de545cc3"
           },
           "Version": "1.0.0",
           "Dev": true,
@@ -247,7 +262,8 @@
               "StartLine": 91,
               "EndLine": 96
             }
-          ]
+          ],
+          "AnalyzedBy": "npm"
         }
       ],
       "Vulnerabilities": [
@@ -257,7 +273,7 @@
           "PkgName": "jquery",
           "PkgIdentifier": {
             "PURL": "pkg:npm/jquery@3.3.9",
-            "UID": "e19e84d31f72b60c"
+            "UID": "5624abe72853740"
           },
           "InstalledVersion": "3.3.9",
           "FixedVersion": "3.4.0",

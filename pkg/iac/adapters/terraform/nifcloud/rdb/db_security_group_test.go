@@ -27,10 +27,9 @@ func Test_adaptDBSecurityGroups(t *testing.T) {
 			}
 `,
 			expected: []rdb.DBSecurityGroup{{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
+				Description: iacTypes.StringTest("memo"),
 				CIDRs: []iacTypes.StringValue{
-					iacTypes.String("0.0.0.0/0", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("0.0.0.0/0"),
 				},
 			}},
 		},
@@ -44,10 +43,8 @@ func Test_adaptDBSecurityGroups(t *testing.T) {
 `,
 
 			expected: []rdb.DBSecurityGroup{{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 				CIDRs: []iacTypes.StringValue{
-					iacTypes.String("", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest(""),
 				},
 			}},
 		},

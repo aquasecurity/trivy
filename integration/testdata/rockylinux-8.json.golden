@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:ed11998b28b0bcd0488c4d2fda300f80d71ac058ce7eb12a43a4deb312ce429c",
@@ -72,7 +75,7 @@
           "PkgName": "openssl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/rocky/openssl-libs@1.1.1k-4.el8?arch=x86_64\u0026distro=rocky-8.5\u0026epoch=1",
-            "UID": "cb8148bafbe15690"
+            "UID": "5eab5fb49fb02b60"
           },
           "InstalledVersion": "1:1.1.1k-4.el8",
           "FixedVersion": "1:1.1.1k-5.el8_5",

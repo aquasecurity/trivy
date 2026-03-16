@@ -40,23 +40,19 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				Logging: eks.Logging{
-					Metadata:          iacTypes.NewTestMetadata(),
-					API:               iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Authenticator:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Audit:             iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Scheduler:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					ControllerManager: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					API:               iacTypes.BoolTest(true),
+					Authenticator:     iacTypes.BoolTest(true),
+					Audit:             iacTypes.BoolTest(true),
+					Scheduler:         iacTypes.BoolTest(true),
+					ControllerManager: iacTypes.BoolTest(true),
 				},
 				Encryption: eks.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Secrets:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("key-arn", iacTypes.NewTestMetadata()),
+					Secrets:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest("key-arn"),
 				},
-				PublicAccessEnabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 				PublicAccessCIDRs: []iacTypes.StringValue{
-					iacTypes.String("10.2.0.0/8", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("10.2.0.0/8"),
 				},
 			},
 		},
@@ -67,22 +63,9 @@ func Test_adaptCluster(t *testing.T) {
 			}
 `,
 			expected: eks.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
-				Logging: eks.Logging{
-					Metadata:          iacTypes.NewTestMetadata(),
-					API:               iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Authenticator:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Audit:             iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Scheduler:         iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					ControllerManager: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				},
-				Encryption: eks.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Secrets:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				PublicAccessEnabled: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				PublicAccessCIDRs:   nil,
+				Logging:             eks.Logging{},
+				Encryption:          eks.Encryption{},
+				PublicAccessEnabled: iacTypes.BoolTest(true),
 			},
 		},
 	}

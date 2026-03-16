@@ -6,13 +6,13 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/module"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func TestManager_Register(t *testing.T) {
@@ -50,7 +50,7 @@ func TestManager_Register(t *testing.T) {
 				},
 				PostAnalyzers: make(map[string]int),
 			},
-			wantExtentions: []string{},
+			wantExtentions: nil,
 		},
 		{
 			name:      "only post scanner",
@@ -70,7 +70,7 @@ func TestManager_Register(t *testing.T) {
 				Analyzers:     make(map[string]int),
 				PostAnalyzers: make(map[string]int),
 			},
-			wantExtentions: []string{},
+			wantExtentions: nil,
 		},
 		{
 			name:      "pass enabled modules",
@@ -125,7 +125,7 @@ func TestManager_Register(t *testing.T) {
 			got := a.AnalyzerVersions()
 			assert.Equal(t, tt.wantAnalyzerVersions, got)
 
-			hookNames := lo.Map(extension.Hooks(), func(hook extension.Hook, _ int) string {
+			hookNames := xslices.Map(extension.Hooks(), func(hook extension.Hook) string {
 				return hook.Name()
 			})
 			assert.Equal(t, tt.wantExtentions, hookNames)

@@ -26,10 +26,9 @@ func Test_adaptSSLPolicies(t *testing.T) {
 `,
 			expected: []compute.SSLPolicy{
 				{
-					Metadata:          iacTypes.NewTestMetadata(),
-					Name:              iacTypes.String("production-ssl-policy", iacTypes.NewTestMetadata()),
-					Profile:           iacTypes.String("MODERN", iacTypes.NewTestMetadata()),
-					MinimumTLSVersion: iacTypes.String("TLS_1_2", iacTypes.NewTestMetadata()),
+					Name:              iacTypes.StringTest("production-ssl-policy"),
+					Profile:           iacTypes.StringTest("MODERN"),
+					MinimumTLSVersion: iacTypes.StringTest("TLS_1_2"),
 				},
 			},
 		},
@@ -41,10 +40,7 @@ func Test_adaptSSLPolicies(t *testing.T) {
 `,
 			expected: []compute.SSLPolicy{
 				{
-					Metadata:          iacTypes.NewTestMetadata(),
-					Name:              iacTypes.String("", iacTypes.NewTestMetadata()),
-					Profile:           iacTypes.String("", iacTypes.NewTestMetadata()),
-					MinimumTLSVersion: iacTypes.String("TLS_1_0", iacTypes.NewTestMetadata()),
+					MinimumTLSVersion: iacTypes.StringTest("TLS_1_0"),
 				},
 			},
 		},

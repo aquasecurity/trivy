@@ -1,15 +1,14 @@
 package dynamodb
 
 import (
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/dynamodb"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func getTables(fctx parser.FileContext) []dynamodb.Table {
-	return lo.Map(fctx.GetResourcesByType("AWS::DynamoDB::Table"), func(
-		resource *parser.Resource, _ int,
+	return xslices.Map(fctx.GetResourcesByType("AWS::DynamoDB::Table"), func(
+		resource *parser.Resource,
 	) dynamodb.Table {
 		sseSpec := resource.GetProperty("SSESpecification")
 		return dynamodb.Table{

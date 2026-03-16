@@ -431,3 +431,70 @@ func TestCaseInsensitiveSet_Difference(t *testing.T) {
 		})
 	}
 }
+
+func TestCaseInsensitiveSet_Find(t *testing.T) {
+	tests := []struct {
+		name      string
+		set       set.Set[string]
+		lookup    string
+		wantValue string
+		wantFound bool
+	}{
+		{
+			name:      "exact match",
+			set:       set.NewCaseInsensitive("Hello", "World"),
+			lookup:    "Hello",
+			wantValue: "Hello",
+			wantFound: true,
+		},
+		{
+			name:      "lowercase lookup",
+			set:       set.NewCaseInsensitive("Hello", "World"),
+			lookup:    "hello",
+			wantValue: "Hello",
+			wantFound: true,
+		},
+		{
+			name:      "uppercase lookup",
+			set:       set.NewCaseInsensitive("Hello", "World"),
+			lookup:    "HELLO",
+			wantValue: "Hello",
+			wantFound: true,
+		},
+		{
+			name:      "mixed case lookup",
+			set:       set.NewCaseInsensitive("Hello", "World"),
+			lookup:    "hElLo",
+			wantValue: "Hello",
+			wantFound: true,
+		},
+		{
+			name:      "not found",
+			set:       set.NewCaseInsensitive("Hello", "World"),
+			lookup:    "Foo",
+			wantValue: "",
+			wantFound: false,
+		},
+		{
+			name:      "preserves first casing",
+			set:       set.NewCaseInsensitive("TCL", "Tcl"),
+			lookup:    "tcl",
+			wantValue: "TCL",
+			wantFound: true,
+		},
+		{
+			name:      "empty set",
+			set:       set.NewCaseInsensitive(),
+			lookup:    "test",
+			wantValue: "",
+			wantFound: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotValue, gotFound := tt.set.Find(tt.lookup)
+			assert.Equal(t, tt.wantValue, gotValue)
+			assert.Equal(t, tt.wantFound, gotFound)
+		})
+	}
+}

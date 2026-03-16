@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -18,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const configFile = "plugin.yaml"
@@ -224,7 +224,7 @@ func (m *Manager) Upgrade(ctx context.Context, names []string) error {
 			m.logger.InfoContext(ctx, "No installed plugins")
 			return nil
 		}
-		names = lo.Map(plugins, func(p Plugin, _ int) string { return p.Name })
+		names = xslices.Map(plugins, func(p Plugin) string { return p.Name })
 	}
 	for _, name := range names {
 		if err := m.upgrade(ctx, name); err != nil {

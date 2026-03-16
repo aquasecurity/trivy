@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:8ac64b751688d0e2577befd47be60baea54f7294bee6deeb0288b580daf6ca52",
@@ -254,7 +257,7 @@
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
           "PkgIdentifier": {
             "PURL": "pkg:maven/org.springframework/spring-beans@5.3.15",
-            "UID": "9d9e0a303e263760"
+            "UID": "382ba53322e3ac2a"
           },
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",
@@ -311,15 +314,6 @@
       "Class": "custom",
       "CustomResources": [
         {
-          "Type": "spring4shell/tomcat-version",
-          "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
-          "Layer": {
-            "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
-            "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
-          },
-          "Data": "8.5.77"
-        },
-        {
           "Type": "spring4shell/java-major-version",
           "FilePath": "/usr/local/openjdk-8/release",
           "Layer": {
@@ -327,6 +321,15 @@
             "DiffID": "sha256:ba40706eccba610401e4942e29f50bdf36807f8638942ce20805b359ae3ac1c1"
           },
           "Data": "1.8.0_322"
+        },
+        {
+          "Type": "spring4shell/tomcat-version",
+          "FilePath": "/usr/local/tomcat/RELEASE-NOTES",
+          "Layer": {
+            "Digest": "sha256:59c0978ccb117247fd40d936973c40df89195f60466118c5acc6a55f8ba29f06",
+            "DiffID": "sha256:85595543df2b1115a18284a8ef62d0b235c4bc29e3d33b55f89b54ee1eadf4c6"
+          },
+          "Data": "8.5.77"
         }
       ]
     }

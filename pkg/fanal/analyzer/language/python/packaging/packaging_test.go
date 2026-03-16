@@ -32,7 +32,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
-								Licenses: []string{"Python-2.0"},
+								Licenses: []string{"Python license"},
 								FilePath: "distlib-0.3.1.egg-info/PKG-INFO",
 								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
 							},
@@ -53,7 +53,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
-								Licenses: []string{"MIT"},
+								Licenses: []string{"MIT License"},
 								FilePath: "setuptools-51.3.3.egg-info/PKG-INFO",
 							},
 						},
@@ -73,7 +73,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "setuptools",
 								Version:  "51.3.3",
-								Licenses: []string{"MIT"},
+								Licenses: []string{"MIT License"},
 								FilePath: "setuptools-51.3.3.dist-info/METADATA",
 							},
 						},
@@ -93,7 +93,7 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 							{
 								Name:     "distlib",
 								Version:  "0.3.1",
-								Licenses: []string{"Python-2.0"},
+								Licenses: []string{"Python license"},
 								FilePath: "distlib-0.3.1.dist-info/METADATA",
 							},
 						},

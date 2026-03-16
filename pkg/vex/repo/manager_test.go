@@ -154,9 +154,10 @@ func TestManager_DownloadRepositories(t *testing.T) {
 			config: repo.Config{
 				Repositories: []repo.Repository{
 					{
-						Name:    "test-repo",
-						URL:     ts.URL,
-						Enabled: true,
+						Name:     "test-repo",
+						URL:      ts.URL,
+						Enabled:  true,
+						Insecure: true,
 					},
 				},
 			},
@@ -187,9 +188,10 @@ func TestManager_DownloadRepositories(t *testing.T) {
 						Enabled: true,
 					},
 					{
-						Name:    "test-repo",
-						URL:     ts.URL,
-						Enabled: true,
+						Name:     "test-repo",
+						URL:      ts.URL,
+						Enabled:  true,
+						Insecure: true,
 					},
 				},
 			},
@@ -209,6 +211,22 @@ func TestManager_DownloadRepositories(t *testing.T) {
 				},
 			},
 			location:     ts.URL + "/error",
+			wantErr:      "failed to download the repository",
+			wantDownload: false,
+		},
+		{
+			name: "download error insecure flag false",
+			config: repo.Config{
+				Repositories: []repo.Repository{
+					{
+						Name:     "test-repo",
+						URL:      ts.URL,
+						Enabled:  true,
+						Insecure: false,
+					},
+				},
+			},
+			location:     ts.URL + "/archive.zip",
 			wantErr:      "failed to download the repository",
 			wantDownload: false,
 		},
@@ -262,9 +280,10 @@ func TestManager_List(t *testing.T) {
 						Enabled: true,
 					},
 					{
-						Name:    "custom",
-						URL:     "https://example.com/custom-vex-repo",
-						Enabled: false,
+						Name:     "custom",
+						URL:      "https://example.com/custom-vex-repo",
+						Enabled:  false,
+						Insecure: true,
 					},
 				},
 			},
@@ -277,6 +296,7 @@ func TestManager_List(t *testing.T) {
 - Name: custom
   URL: https://example.com/custom-vex-repo
   Status: Disabled
+  TLS Verify: No
 
 `,
 		},

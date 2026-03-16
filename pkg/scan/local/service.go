@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/handler/all"
@@ -74,6 +75,9 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 				Name:   detail.Repository.Release,
 			}
 		}
+	case !detail.OS.Family.HasOSPackages():
+		// Some OS types like ActiveState don't have OS packages, only language-specific packages.
+		// No warning needed.
 	case errors.Is(err, analyzer.ErrNoPkgsDetected):
 		log.Warn("No OS package is detected. Make sure you haven't deleted any files that contain information about the installed packages.")
 		log.Warn(`e.g. files under "/lib/apk/db/", "/var/lib/dpkg/" and "/var/lib/rpm"`)
@@ -247,7 +251,7 @@ func (s Service) secretsToResults(secrets []ftypes.Secret, options types.ScanOpt
 		results = append(results, types.Result{
 			Target: secret.FilePath,
 			Class:  types.ClassSecret,
-			Secrets: lo.Map(secret.Findings, func(secret ftypes.SecretFinding, _ int) types.DetectedSecret {
+			Secrets: xslices.Map(secret.Findings, func(secret ftypes.SecretFinding) types.DetectedSecret {
 				return types.DetectedSecret(secret)
 			}),
 		})
@@ -392,6 +396,7 @@ func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbType
 	return types.DetectedMisconfiguration{
 		ID:          res.ID,
 		AVDID:       res.AVDID,
+		Aliases:     res.Aliases,
 		Type:        res.Type,
 		Title:       res.Title,
 		Description: res.Description,

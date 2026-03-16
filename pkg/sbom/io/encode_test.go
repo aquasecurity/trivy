@@ -244,7 +244,7 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 							},
 						},
-						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
+						BOMRef: "pkg:oci/debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
 					},
 					Properties: []core.Property{
 						{
@@ -676,7 +676,7 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 							},
 						},
-						BOMRef: "pkg:oci/ubi9-minimal@sha256%3Ae1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c?repository_url=index.docker.io%2Fredhat%2Fubi9-minimal",
+						BOMRef: "pkg:oci/ubi9-minimal@sha256:e1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c?repository_url=index.docker.io%2Fredhat%2Fubi9-minimal",
 					},
 					Properties: []core.Property{
 						{
@@ -1247,7 +1247,7 @@ func TestEncoder_Encode(t *testing.T) {
 						Class:  types.ClassLangPkg,
 						Packages: []ftypes.Package{
 							{
-								ID:      "com.example:root:1.0.0",
+								ID:      "com.example:root:1.0.0::abcdef1234567001",
 								Name:    "com.example:root",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -1261,12 +1261,12 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipRoot,
 								DependsOn: []string{
-									"com.example:module1:1.0.0",
-									"com.example:module2:2.0.0",
+									"com.example:module1:1.0.0::abcdef1234567002",
+									"com.example:module2:2.0.0::abcdef1234567003",
 								},
 							},
 							{
-								ID:      "com.example:module1:1.0.0",
+								ID:      "com.example:module1:1.0.0::abcdef1234567002",
 								Name:    "com.example:module1",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -1280,11 +1280,11 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipWorkspace,
 								DependsOn: []string{
-									"org.example:example-api:1.1.1",
+									"org.example:example-api:1.1.1::abcdef1234567003",
 								},
 							},
 							{
-								ID:      "com.example:module2:2.0.0",
+								ID:      "com.example:module2:2.0.0::abcdef1234567003",
 								Name:    "com.example:module2",
 								Version: "2.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -1298,11 +1298,11 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipWorkspace,
 								DependsOn: []string{
-									"org.example:example-dependency:1.2.3",
+									"org.example:example-dependency:1.2.3::abcdef1234567005",
 								},
 							},
 							{
-								ID:      "org.example:example-api:1.1.1",
+								ID:      "org.example:example-api:1.1.1::abcdef1234567003",
 								Name:    "org.example:example-api",
 								Version: "1.1.1",
 								Identifier: ftypes.PkgIdentifier{
@@ -1317,7 +1317,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Relationship: ftypes.RelationshipDirect,
 							},
 							{
-								ID:      "org.example:example-dependency:1.2.3",
+								ID:      "org.example:example-dependency:1.2.3::abcdef1234567005",
 								Name:    "org.example:example-dependency",
 								Version: "1.2.3",
 								Identifier: ftypes.PkgIdentifier{
@@ -1331,11 +1331,11 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 								Relationship: ftypes.RelationshipDirect,
 								DependsOn: []string{
-									"org.example:example-api:2.0.0",
+									"org.example:example-api:2.0.0::abcdef1234567006",
 								},
 							},
 							{
-								ID:      "org.example:example-api:2.0.0",
+								ID:      "org.example:example-api:2.0.0::abcdef1234567006",
 								Name:    "org.example:example-api",
 								Version: "2.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -1394,7 +1394,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:root:1.0.0",
+							Value: "com.example:root:1.0.0::abcdef1234567001",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1421,7 +1421,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:module1:1.0.0",
+							Value: "com.example:module1:1.0.0::abcdef1234567002",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1448,7 +1448,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "com.example:module2:2.0.0",
+							Value: "com.example:module2:2.0.0::abcdef1234567003",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1475,7 +1475,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-api:1.1.1",
+							Value: "org.example:example-api:1.1.1::abcdef1234567003",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1502,7 +1502,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-dependency:1.2.3",
+							Value: "org.example:example-dependency:1.2.3::abcdef1234567005",
 						},
 						{
 							Name:  core.PropertyPkgType,
@@ -1529,7 +1529,7 @@ func TestEncoder_Encode(t *testing.T) {
 					Properties: []core.Property{
 						{
 							Name:  core.PropertyPkgID,
-							Value: "org.example:example-api:2.0.0",
+							Value: "org.example:example-api:2.0.0::abcdef1234567006",
 						},
 						{
 							Name:  core.PropertyPkgType,

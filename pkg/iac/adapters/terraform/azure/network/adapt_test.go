@@ -63,8 +63,7 @@ func Test_Adapt(t *testing.T) {
 								},
 								SourcePorts: []common.PortRange{
 									{
-										Start: iacTypes.IntTest(0),
-										End:   iacTypes.IntTest(65535),
+										End: iacTypes.IntTest(65535),
 									},
 								},
 								DestinationPorts: []common.PortRange{
@@ -131,26 +130,20 @@ func Test_Adapt(t *testing.T) {
 			expected: network.Network{
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						// legacy fields filled from primary
-						SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
-						HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-						PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+						SubnetID:        iacTypes.StringTest("subnet-primary-id"),
+						HasPublicIP:     iacTypes.BoolTest(true),
+						PublicIPAddress: iacTypes.StringTest("public-ip-primary-id"),
 
 						IPConfigurations: []network.IPConfiguration{
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								SubnetID:        iacTypes.String("subnet-primary-id", iacTypes.NewTestMetadata()),
-								Primary:         iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								HasPublicIP:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-								PublicIPAddress: iacTypes.String("public-ip-primary-id", iacTypes.NewTestMetadata()),
+								SubnetID:        iacTypes.StringTest("subnet-primary-id"),
+								Primary:         iacTypes.BoolTest(true),
+								HasPublicIP:     iacTypes.BoolTest(true),
+								PublicIPAddress: iacTypes.StringTest("public-ip-primary-id"),
 							},
 							{
-								Metadata:        iacTypes.NewTestMetadata(),
-								SubnetID:        iacTypes.String("subnet-secondary-id", iacTypes.NewTestMetadata()),
-								Primary:         iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								HasPublicIP:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-								PublicIPAddress: iacTypes.String("", iacTypes.NewTestMetadata()),
+								SubnetID: iacTypes.StringTest("subnet-secondary-id"),
 							},
 						},
 					},
@@ -202,11 +195,7 @@ func Test_adaptWatcherLog(t *testing.T) {
 			}
 `,
 			expected: network.NetworkWatcherFlowLog{
-				Enabled: iacTypes.BoolTest(false),
-				RetentionPolicy: network.RetentionPolicy{
-					Enabled: iacTypes.BoolTest(false),
-					Days:    iacTypes.IntTest(0),
-				},
+				RetentionPolicy: network.RetentionPolicy{},
 			},
 		},
 	}
@@ -216,6 +205,79 @@ func Test_adaptWatcherLog(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
 			adapted := adaptWatcherLog(modules.GetBlocks()[0])
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
+		})
+	}
+}
+
+func Test_AdaptNetworkInterface_AssociationSecurityGroup(t *testing.T) {
+	tests := []struct {
+		name      string
+		terraform string
+		expected  int
+	}{
+		{
+			name: "security group via association resource",
+			terraform: `
+resource "azurerm_network_security_group" "example" {
+	name = "example-nsg"
+}
+
+resource "azurerm_network_interface" "example" {
+	name                = "example-nic"
+	location            = "eastus"
+	resource_group_name = "example-rg"
+
+	ip_configuration {
+		name                          = "primary"
+		subnet_id                     = "subnet-primary-id"
+		private_ip_address_allocation = "Dynamic"
+	}
+}
+
+resource "azurerm_network_interface_security_group_association" "example" {
+	network_interface_id      = azurerm_network_interface.example.id
+	network_security_group_id = azurerm_network_security_group.example.id
+}
+`,
+			expected: 1,
+		},
+		{
+			name: "security group deduplicated when legacy and association both set",
+			terraform: `
+resource "azurerm_network_security_group" "example" {
+	name = "example-nsg"
+}
+
+resource "azurerm_network_interface" "example" {
+	name                      = "example-nic"
+	location                  = "eastus"
+	resource_group_name       = "example-rg"
+	network_security_group_id = azurerm_network_security_group.example.id
+
+	ip_configuration {
+		name                          = "primary"
+		subnet_id                     = "subnet-primary-id"
+		private_ip_address_allocation = "Dynamic"
+	}
+}
+
+resource "azurerm_network_interface_security_group_association" "example" {
+	network_interface_id      = azurerm_network_interface.example.id
+	network_security_group_id = azurerm_network_security_group.example.id
+}
+`,
+			expected: 1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			nics := modules.GetResourcesByType("azurerm_network_interface")
+			require.Len(t, nics, 1)
+
+			adapted := AdaptNetworkInterface(nics[0], modules)
+			require.Len(t, adapted.SecurityGroups, test.expected)
 		})
 	}
 }

@@ -7,6 +7,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type CycloneDX struct {
@@ -24,7 +25,7 @@ type Statement struct {
 func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 	statements := make(map[string]Statement)
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
-		affects := lo.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects, _ int) string {
+		affects := xslices.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects) string {
 			return item.Ref
 		})
 

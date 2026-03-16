@@ -423,6 +423,24 @@ rules:
 			},
 		},
 		{
+			name: "kubernetes, multi-doc with non-map doc first",
+			path: "k8s.yaml",
+			r: strings.NewReader(`---
+- this is a list, not a map
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: valid-service
+`),
+			expected: []FileType{
+				FileTypeKubernetes,
+				FileTypeYAML,
+				FileTypeHelm,
+				FileTypeAnsible,
+			},
+		},
+		{
 			name: "Azure ARM template with resources",
 			path: "test.json",
 			r: strings.NewReader(`
@@ -448,6 +466,30 @@ rules:
 `),
 			expected: []FileType{
 				FileTypeJSON,
+				FileTypeAzureARM,
+				FileTypeAnsible,
+			},
+		},
+		{
+			name: "Azure ARM resources defined as an object",
+			path: "test.json",
+			r: strings.NewReader(`{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "languageVersion": "2.0",
+  "contentVersion": "1.0.0.0",
+  "resources": {
+    "myacc": {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2025-06-01",
+      "name": "my-acc-test",
+      "location": "location",
+			"kind": "Storage"
+    }
+  }
+}`),
+			expected: []FileType{
+				FileTypeJSON,
+				FileTypeCloudFormation,
 				FileTypeAzureARM,
 				FileTypeAnsible,
 			},

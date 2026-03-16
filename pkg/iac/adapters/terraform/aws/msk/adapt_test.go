@@ -52,31 +52,23 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     iacTypes.NewTestMetadata(),
-					ClientBroker: iacTypes.String("TLS", iacTypes.NewTestMetadata()),
+					ClientBroker: iacTypes.StringTest("TLS"),
 				},
 				EncryptionAtRest: msk.EncryptionAtRest{
-					Metadata:  iacTypes.NewTestMetadata(),
-					KMSKeyARN: iacTypes.String("foo-bar-key", iacTypes.NewTestMetadata()),
-					Enabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					KMSKeyARN: iacTypes.StringTest("foo-bar-key"),
+					Enabled:   iacTypes.BoolTest(true),
 				},
 				Logging: msk.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: iacTypes.NewTestMetadata(),
 						S3: msk.S3Logging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 						Firehose: msk.FirehoseLogging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled: iacTypes.BoolTest(true),
 						},
 					},
 				},
@@ -89,27 +81,14 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: msk.Cluster{
-				Metadata: iacTypes.NewTestMetadata(),
 				EncryptionInTransit: msk.EncryptionInTransit{
-					Metadata:     iacTypes.NewTestMetadata(),
-					ClientBroker: iacTypes.String("TLS_PLAINTEXT", iacTypes.NewTestMetadata()),
+					ClientBroker: iacTypes.StringTest("TLS_PLAINTEXT"),
 				},
 				Logging: msk.Logging{
-					Metadata: iacTypes.NewTestMetadata(),
 					Broker: msk.BrokerLogging{
-						Metadata: iacTypes.NewTestMetadata(),
-						S3: msk.S3Logging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						Cloudwatch: msk.CloudwatchLogging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						Firehose: msk.FirehoseLogging{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
+						S3:         msk.S3Logging{},
+						Cloudwatch: msk.CloudwatchLogging{},
+						Firehose:   msk.FirehoseLogging{},
 					},
 				},
 			},

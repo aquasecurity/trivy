@@ -16,7 +16,7 @@ func Test_adaptService(t *testing.T) {
 	tests := []struct {
 		name      string
 		terraform string
-		expected  appservice.Service
+		expected  appservice.AppService
 	}{
 		{
 			name: "configured",
@@ -39,18 +39,21 @@ func Test_adaptService(t *testing.T) {
 				  }
 			}
 `,
-			expected: appservice.Service{
-				EnableClientCert: iacTypes.BoolTest(true),
-				Identity: appservice.Identity{
-					Type: iacTypes.StringTest("UserAssigned"),
-				},
-				Authentication: appservice.Authentication{
-					Enabled: iacTypes.BoolTest(true),
-				},
-				Site: appservice.Site{
-					EnableHTTP2:       iacTypes.BoolTest(true),
-					MinimumTLSVersion: iacTypes.StringTest("1.0"),
-				},
+			expected: appservice.AppService{
+				Services: []appservice.Service{{
+					Resource:         iacTypes.StringTest("azurerm_app_service"),
+					EnableClientCert: iacTypes.BoolTest(true),
+					Identity: appservice.Identity{
+						Type: iacTypes.StringTest("UserAssigned"),
+					},
+					Authentication: appservice.Authentication{
+						Enabled: iacTypes.BoolTest(true),
+					},
+					Site: appservice.Site{
+						EnableHTTP2:       iacTypes.BoolTest(true),
+						MinimumTLSVersion: iacTypes.StringTest("1.0"),
+					},
+				}},
 			},
 		},
 		{
@@ -59,10 +62,73 @@ func Test_adaptService(t *testing.T) {
 			resource "azurerm_app_service" "my_example" {
 			}
 `,
-			expected: appservice.Service{
-				Site: appservice.Site{
-					MinimumTLSVersion: iacTypes.StringTest("1.2"),
-				},
+			expected: appservice.AppService{
+				Services: []appservice.Service{{
+					Resource: iacTypes.StringTest("azurerm_app_service"),
+					Site: appservice.Site{
+						MinimumTLSVersion: iacTypes.StringTest("1.2"),
+					},
+				}},
+			},
+		},
+		{
+			name: "empty azurerm_windows_web_app",
+			terraform: `resource "azurerm_windows_web_app" "example" {
+  name                = "example"
+}`,
+			expected: appservice.AppService{
+				Services: []appservice.Service{{
+					Resource: iacTypes.StringTest("azurerm_windows_web_app"),
+					Site: appservice.Site{
+						MinimumTLSVersion: iacTypes.StringTest("1.2"),
+						FTPSState:         iacTypes.StringTest("Disabled"),
+					},
+				}},
+			},
+		},
+		{
+			name: "complete azurerm_windows_web_app",
+			terraform: `resource "azurerm_windows_web_app" "example" {
+  https_only                 = true
+  client_certificate_enabled = true
+
+  identity {
+    type = "SystemAssigned"
+  }
+
+  auth_settings {
+    enabled = true
+  }
+
+  site_config {
+    http2_enabled       = true
+    minimum_tls_version = "1.3"
+    ftps_state          = "FtpsOnly"
+
+    application_stack {
+      php_version = "7.4"
+    }
+  }
+}
+`,
+			expected: appservice.AppService{
+				Services: []appservice.Service{{
+					Resource:         iacTypes.StringTest("azurerm_windows_web_app"),
+					HTTPSOnly:        iacTypes.BoolTest(true),
+					EnableClientCert: iacTypes.BoolTest(true),
+					Identity: appservice.Identity{
+						Type: iacTypes.StringTest("SystemAssigned"),
+					},
+					Authentication: appservice.Authentication{
+						Enabled: iacTypes.BoolTest(true),
+					},
+					Site: appservice.Site{
+						EnableHTTP2:       iacTypes.BoolTest(true),
+						MinimumTLSVersion: iacTypes.StringTest("1.3"),
+						FTPSState:         iacTypes.StringTest("FtpsOnly"),
+						PHPVersion:        iacTypes.StringTest("7.4"),
+					},
+				}},
 			},
 		},
 	}
@@ -70,7 +136,7 @@ func Test_adaptService(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
-			adapted := adaptService(modules.GetBlocks()[0])
+			adapted := Adapt(modules)
 			testutil.AssertDefsecEqual(t, test.expected, adapted)
 		})
 	}
@@ -100,8 +166,18 @@ func Test_adaptFunctionApp(t *testing.T) {
 			resource "azurerm_function_app" "my_example" {		
 			}
 `,
+			expected: appservice.FunctionApp{},
+		},
+		{
+			name: "os-specific resource",
+			terraform: `
+			resource "azurerm_windows_function_app" "my_example" {
+				name                       = "test-azure-functions"
+				https_only                 = true
+			}
+`,
 			expected: appservice.FunctionApp{
-				HTTPSOnly: iacTypes.BoolTest(false),
+				HTTPSOnly: iacTypes.BoolTest(true),
 			},
 		},
 	}

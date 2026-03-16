@@ -1,0 +1,12 @@
+[project]
+name = "test-project"
+version = "0.1.0"
+dependencies = [
+    "requests>=2.32.0",
+    "click>=8.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+]

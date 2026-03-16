@@ -21,7 +21,7 @@ func Client(opts ...ClientOption) *http.Client {
 // ClientWithContext returns an HTTP client with the specified context and options.
 func ClientWithContext(ctx context.Context, opts ...ClientOption) *http.Client {
 	c := &http.Client{
-		Transport: Transport(ctx),
+		Transport: RoundTripper(ctx),
 	}
 	for _, opt := range opts {
 		opt(c)

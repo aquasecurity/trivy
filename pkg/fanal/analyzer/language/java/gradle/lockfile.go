@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -74,7 +75,7 @@ func (a gradleLockAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 
 			// Fill licenses from pom file
 			if len(pom.Licenses.License) > 0 {
-				app.Packages[i].Licenses = lo.Map(pom.Licenses.License, func(license License, _ int) string {
+				app.Packages[i].Licenses = xslices.Map(pom.Licenses.License, func(license License) string {
 					return license.Name
 				})
 			}

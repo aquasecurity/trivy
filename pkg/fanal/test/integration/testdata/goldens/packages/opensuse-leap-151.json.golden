@@ -14,7 +14,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "bash@4.4-lp151.10.3.1.x86_64",
@@ -31,7 +32,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "boost-license1_66_0@1.66.0-lp151.4.5.noarch",
@@ -48,7 +50,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ca-certificates@2+git20170807.10b2785-lp151.7.1.noarch",
@@ -65,7 +68,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ca-certificates-mozilla@2.34-lp151.2.3.1.noarch",
@@ -82,7 +86,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "coreutils@8.29-lp151.3.3.x86_64",
@@ -99,7 +104,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "cpio@2.12-lp151.2.68.x86_64",
@@ -116,7 +122,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "cracklib@2.9.6-lp151.3.69.x86_64",
@@ -133,7 +140,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "cracklib-dict-small@2.9.6-lp151.3.69.x86_64",
@@ -150,7 +158,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "diffutils@3.6-lp151.3.3.x86_64",
@@ -167,7 +176,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "file-magic@5.32-lp151.7.22.noarch",
@@ -184,7 +194,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "filesystem@15.0-lp151.9.2.x86_64",
@@ -201,7 +212,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "fillup@1.42-lp151.3.2.x86_64",
@@ -218,7 +230,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "findutils@4.6.0-lp151.3.71.x86_64",
@@ -235,7 +248,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gawk@4.2.1-lp151.2.70.x86_64",
@@ -252,7 +266,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "glibc@2.26-lp151.18.7.x86_64",
@@ -269,7 +284,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg-pubkey@307e3d54-5aaa90a5.",
@@ -282,7 +298,8 @@
     ],
     "Repository": {
       "Class": "third-party"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg-pubkey@39db7c82-5847eb1f.",
@@ -295,7 +312,8 @@
     ],
     "Repository": {
       "Class": "third-party"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg-pubkey@3dbdc284-53674dd4.",
@@ -308,7 +326,8 @@
     ],
     "Repository": {
       "Class": "third-party"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "gpg2@2.2.5-lp151.6.3.1.x86_64",
@@ -325,7 +344,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "grep@3.1-lp151.3.29.x86_64",
@@ -342,7 +362,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "info@6.5-lp151.5.69.x86_64",
@@ -359,7 +380,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "krb5@1.16.3-lp151.2.6.1.x86_64",
@@ -376,7 +398,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "kubic-locale-archive@2.26-lp151.4.1.noarch",
@@ -393,7 +416,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libacl1@2.2.52-lp151.4.29.x86_64",
@@ -410,7 +434,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libassuan0@2.5.1-lp151.3.3.x86_64",
@@ -427,7 +452,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libattr1@2.4.47-lp151.3.70.x86_64",
@@ -444,7 +470,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libaudit1@2.8.1-lp151.4.66.x86_64",
@@ -461,7 +488,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libaugeas0@1.10.1-lp151.2.3.x86_64",
@@ -478,7 +506,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libblkid1@2.33.1-lp151.3.3.2.x86_64",
@@ -495,7 +524,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libboost_system1_66_0@1.66.0-lp151.4.5.x86_64",
@@ -512,7 +542,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libboost_thread1_66_0@1.66.0-lp151.4.5.x86_64",
@@ -529,7 +560,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libbz2-1@1.0.6-lp151.5.9.1.x86_64",
@@ -546,7 +578,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcap-ng0@0.7.9-lp151.3.39.x86_64",
@@ -563,7 +596,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcap2@2.25-lp151.3.70.x86_64",
@@ -580,7 +614,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcom_err2@1.43.8-lp151.5.6.1.x86_64",
@@ -597,7 +632,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcrack2@2.9.6-lp151.3.69.x86_64",
@@ -614,7 +650,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libcurl4@7.60.0-lp151.5.6.1.x86_64",
@@ -631,7 +668,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libdw1@0.168-lp151.4.3.1.x86_64",
@@ -648,7 +686,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libebl-plugins@0.168-lp151.4.3.1.x86_64",
@@ -665,7 +704,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libelf1@0.168-lp151.4.3.1.x86_64",
@@ -682,7 +722,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libfdisk1@2.33.1-lp151.3.3.2.x86_64",
@@ -699,7 +740,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libffi7@3.2.1.git259-lp151.5.2.x86_64",
@@ -716,7 +758,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgcc_s1@8.2.1+r264010-lp151.1.33.x86_64",
@@ -733,7 +776,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgcrypt20@1.8.2-lp151.9.4.1.x86_64",
@@ -750,7 +794,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgmp10@6.1.2-lp151.3.70.x86_64",
@@ -767,7 +812,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgnutls30@3.6.7-lp151.2.3.1.x86_64",
@@ -784,7 +830,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgpg-error0@1.29-lp151.2.4.x86_64",
@@ -801,7 +848,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libgpgme11@1.10.0-lp151.4.1.x86_64",
@@ -818,7 +866,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libhogweed4@3.4.1-lp151.1.1.x86_64",
@@ -835,7 +884,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libidn2-0@2.0.4-lp151.2.3.x86_64",
@@ -852,7 +902,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libkeyutils1@1.5.10-lp151.4.70.x86_64",
@@ -869,7 +920,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libksba8@1.3.5-lp151.3.3.x86_64",
@@ -886,7 +938,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libldap-2_4-2@2.4.46-lp151.10.3.1.x86_64",
@@ -903,7 +956,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "liblua5_3-5@5.3.4-lp151.3.25.x86_64",
@@ -920,7 +974,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "liblz4-1@1.8.0-lp151.3.3.1.x86_64",
@@ -937,7 +992,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "liblzma5@5.2.3-lp151.4.3.1.x86_64",
@@ -954,7 +1010,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libmagic1@5.32-lp151.7.22.x86_64",
@@ -971,7 +1028,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libmodman1@2.0.1-lp151.2.3.x86_64",
@@ -988,7 +1046,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libmount1@2.33.1-lp151.3.3.2.x86_64",
@@ -1005,7 +1064,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libncurses6@6.1-lp151.5.41.x86_64",
@@ -1022,7 +1082,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libnettle6@3.4.1-lp151.1.1.x86_64",
@@ -1039,7 +1100,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libnghttp2-14@1.39.2-lp151.3.3.1.x86_64",
@@ -1056,7 +1118,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libnpth0@1.5-lp151.3.2.x86_64",
@@ -1073,7 +1136,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libnsl2@1.2.0-lp151.3.67.x86_64",
@@ -1090,7 +1154,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
@@ -1107,7 +1172,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libp11-kit0@0.23.2-lp151.3.3.x86_64",
@@ -1124,7 +1190,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libpcre1@8.41-lp151.5.67.x86_64",
@@ -1141,7 +1208,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libpopt0@1.16-lp151.3.67.x86_64",
@@ -1158,7 +1226,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libprocps7@3.3.15-lp151.6.3.1.x86_64",
@@ -1175,7 +1244,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libproxy1@0.4.15-lp151.3.3.x86_64",
@@ -1192,7 +1262,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libpsl5@0.20.1-lp151.2.43.x86_64",
@@ -1209,7 +1280,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libreadline7@7.0-lp151.10.3.1.x86_64",
@@ -1226,7 +1298,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsasl2-3@2.1.26-lp151.5.1.x86_64",
@@ -1243,7 +1316,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libselinux1@2.8-lp151.1.30.x86_64",
@@ -1260,7 +1334,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsemanage1@2.8-lp151.1.32.x86_64",
@@ -1277,7 +1352,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsepol1@2.8-lp151.1.36.x86_64",
@@ -1294,7 +1370,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsmartcols1@2.33.1-lp151.3.3.2.x86_64",
@@ -1311,7 +1388,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsolv-tools@0.7.6-lp151.2.3.2.x86_64",
@@ -1328,7 +1406,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsqlite3-0@3.28.0-lp151.2.3.1.x86_64",
@@ -1345,7 +1424,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libssh4@0.8.7-lp151.2.3.1.x86_64",
@@ -1362,7 +1442,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libstdc++6@8.2.1+r264010-lp151.1.33.x86_64",
@@ -1379,7 +1460,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libsystemd0@234-lp151.26.4.1.x86_64",
@@ -1396,7 +1478,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libtasn1@4.13-lp151.4.3.1.x86_64",
@@ -1413,7 +1496,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libtasn1-6@4.13-lp151.4.3.1.x86_64",
@@ -1430,7 +1514,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libtirpc-netconfig@1.0.2-lp151.4.8.x86_64",
@@ -1447,7 +1532,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libtirpc3@1.0.2-lp151.4.8.x86_64",
@@ -1464,7 +1550,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libudev1@234-lp151.26.4.1.x86_64",
@@ -1481,7 +1568,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libunistring2@0.9.9-lp151.2.3.x86_64",
@@ -1498,7 +1586,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libusb-1_0-0@1.0.21-lp151.2.3.x86_64",
@@ -1515,7 +1604,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libutempter0@1.1.6-lp151.4.70.x86_64",
@@ -1532,7 +1622,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libuuid1@2.33.1-lp151.3.3.2.x86_64",
@@ -1549,7 +1640,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libverto1@0.2.6-lp151.4.70.x86_64",
@@ -1566,7 +1658,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libxml2-2@2.9.7-lp151.5.3.1.x86_64",
@@ -1583,7 +1676,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libz1@1.2.11-lp151.5.3.1.x86_64",
@@ -1600,7 +1694,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libzio1@1.06-lp151.3.71.x86_64",
@@ -1617,7 +1712,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libzstd1@1.4.2-lp151.3.3.1.x86_64",
@@ -1634,7 +1730,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "libzypp@17.15.0-lp151.2.3.2.x86_64",
@@ -1651,7 +1748,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "ncurses-utils@6.1-lp151.5.41.x86_64",
@@ -1668,7 +1766,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "netcfg@11.6-lp151.2.2.noarch",
@@ -1685,7 +1784,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openSUSE-build-key@1.0-lp151.3.1.noarch",
@@ -1702,7 +1802,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openSUSE-release@15.1-lp151.301.1.x86_64",
@@ -1719,7 +1820,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openSUSE-release-appliance-docker@15.1-lp151.301.1.x86_64",
@@ -1736,7 +1838,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openssl@1.1.0i-lp151.1.1.noarch",
@@ -1753,7 +1856,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
@@ -1770,7 +1874,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "p11-kit@0.23.2-lp151.3.3.x86_64",
@@ -1787,7 +1892,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "p11-kit-tools@0.23.2-lp151.3.3.x86_64",
@@ -1804,7 +1910,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pam@1.3.0-lp151.7.38.x86_64",
@@ -1821,7 +1928,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "perl-base@5.26.1-lp151.8.37.x86_64",
@@ -1838,7 +1946,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "permissions@20181116-lp151.4.6.1.x86_64",
@@ -1855,7 +1964,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "pinentry@1.1.0-lp151.4.3.1.x86_64",
@@ -1872,7 +1982,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "procps@3.3.15-lp151.6.3.1.x86_64",
@@ -1889,7 +2000,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "rpm@4.14.1-lp151.13.10.x86_64",
@@ -1906,7 +2018,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "sed@4.4-lp151.3.4.x86_64",
@@ -1923,7 +2036,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "shadow@4.6-lp151.2.3.2.x86_64",
@@ -1940,7 +2054,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "system-group-hardware@20170617-lp151.4.70.noarch",
@@ -1957,7 +2072,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "system-user-root@20190513-lp151.3.3.1.noarch",
@@ -1974,7 +2090,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "sysuser-shadow@2.0-lp151.3.70.noarch",
@@ -1991,7 +2108,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "terminfo-base@6.1-lp151.5.41.x86_64",
@@ -2008,7 +2126,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "update-alternatives@1.19.0.4-lp151.3.67.x86_64",
@@ -2025,7 +2144,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "util-linux@2.33.1-lp151.3.3.2.x86_64",
@@ -2042,7 +2162,8 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   },
   {
     "ID": "zypper@1.14.30-lp151.2.3.1.x86_64",
@@ -2059,6 +2180,7 @@
     "Maintainer": "openSUSE",
     "Repository": {
       "Class": "official"
-    }
+    },
+    "AnalyzedBy": "rpm"
   }
 ]

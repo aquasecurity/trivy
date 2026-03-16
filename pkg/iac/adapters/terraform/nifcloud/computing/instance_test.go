@@ -26,12 +26,10 @@ func Test_adaptInstances(t *testing.T) {
 			}
 `,
 			expected: []computing.Instance{{
-				Metadata:      iacTypes.NewTestMetadata(),
-				SecurityGroup: iacTypes.String("example-security-group", iacTypes.NewTestMetadata()),
+				SecurityGroup: iacTypes.StringTest("example-security-group"),
 				NetworkInterfaces: []computing.NetworkInterface{
 					{
-						Metadata:  iacTypes.NewTestMetadata(),
-						NetworkID: iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
+						NetworkID: iacTypes.StringTest("net-COMMON_PRIVATE"),
 					},
 				},
 			}},
@@ -46,13 +44,8 @@ func Test_adaptInstances(t *testing.T) {
 `,
 
 			expected: []computing.Instance{{
-				Metadata:      iacTypes.NewTestMetadata(),
-				SecurityGroup: iacTypes.String("", iacTypes.NewTestMetadata()),
 				NetworkInterfaces: []computing.NetworkInterface{
-					{
-						Metadata:  iacTypes.NewTestMetadata(),
-						NetworkID: iacTypes.String("", iacTypes.NewTestMetadata()),
-					},
+					{},
 				},
 			}},
 		},

@@ -45,8 +45,9 @@ linters:
       settings:
         ruleguard:
           failOn: all
-          rules: '${base-path}/misc/lint/rules.go'
+          rules: "${base-path}/misc/lint/rules.go"
     gocyclo:
+      # Next highest complexity candidate: ApplyLayers in pkg/fanal/applier/docker.go (score: 28)
       min-complexity: 20
     gomodguard:
       blocked:
@@ -67,9 +68,13 @@ linters:
         - G101
         - G114
         - G115
+        - G117 # Potential exposure of secrets in values marshaled by JSON/YAML/XML/TOML
         - G204
         - G304
         - G402
+        - G703 # Path traversal via taint analysis
+        - G704 # SSRF via taint analysis
+        - G705 # XSS via taint analysis
     govet:
       disable:
         - shadow
@@ -91,6 +96,8 @@ linters:
       sprintf1: false
       # Optimizes into strings concatenation.
       strconcat: false
+      # Optimizes string concatenation in a loop.
+      concat-loop: false
     revive:
       max-open-files: 2048
       # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
@@ -158,6 +165,7 @@ linters:
     - unused
     - usestdlibvars
     - usetesting
+    - modernize
 
   exclusions:
     generated: lax
@@ -187,7 +195,7 @@ linters:
         text: "importShadow:"
       - linters:
           - goconst
-        text: "string `each` has 3 occurrences, make it a constant"  # FIXME
+        text: "string `each` has 3 occurrences, make it a constant" # FIXME
     presets:
       - comments
       - common-false-positives
@@ -196,7 +204,7 @@ linters:
     warn-unused: true
 
 run:
-  go: '1.25'
+  go: "1.25"
   timeout: 30m
 
 formatters:

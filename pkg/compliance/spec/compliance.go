@@ -9,7 +9,7 @@ import (
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
-	"github.com/aquasecurity/trivy-checks/pkg/specs"
+	"github.com/aquasecurity/trivy-checks/pkg/compliance"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -61,15 +61,29 @@ func scannerByCheckID(checkID string) types.Scanner {
 	switch {
 	case strings.HasPrefix(checkID, "cve-") || strings.HasPrefix(checkID, "dla-"):
 		return types.VulnerabilityScanner
-	case strings.HasPrefix(checkID, "avd-"):
-		return types.MisconfigScanner
 	case strings.HasPrefix(checkID, "vuln-"): // custom id for filtering vulnerabilities by severity
 		return types.VulnerabilityScanner
 	case strings.HasPrefix(checkID, "secret-"): // custom id for filtering secrets by severity
 		return types.SecretScanner
+		// check the "avd-" prefix for backward compatibility
+	case strings.HasPrefix(checkID, "avd-") || isMisconfCheck(checkID):
+		return types.MisconfigScanner
 	default:
 		return types.UnknownScanner
 	}
+}
+
+var misconfPrefixes = set.New(
+	"aws", "azu", "nif", "dig", "oci", "cldstk", "git",
+	"gcp", "ksv", "kcv", "ds", "kube", "opnstk",
+)
+
+func isMisconfCheck(checkID string) bool {
+	prefix, _, ok := strings.Cut(checkID, "-")
+	if !ok {
+		return false
+	}
+	return misconfPrefixes.Contains(prefix)
 }
 
 func checksDir(cacheDir string) string {
@@ -97,7 +111,7 @@ func GetComplianceSpec(specNameOrPath, cacheDir string) (ComplianceSpec, error) 
 	} else {
 		_, err := os.Stat(filepath.Join(checksDir(cacheDir), "metadata.json"))
 		if err != nil { // cache corrupt or bundle does not exist, load embedded version
-			b = []byte(specs.GetSpec(specNameOrPath))
+			b = []byte(compliance.GetSpec(specNameOrPath))
 			log.Debug("Compliance spec loaded from embedded library", log.String("spec", specNameOrPath))
 		} else {
 			// load from bundle on disk

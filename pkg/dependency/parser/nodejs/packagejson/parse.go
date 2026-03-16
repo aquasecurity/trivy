@@ -5,11 +5,11 @@ import (
 	"io"
 	"regexp"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
@@ -99,14 +99,14 @@ func ParseWorkspaces(val any) []string {
 		// Take only workspaces for `packages`:
 		// cf . https://github.com/npm/map-workspaces#usage
 		if pkgsWorkspaces, ok := ws["packages"]; ok {
-			return lo.Map(pkgsWorkspaces.([]any), func(workspace any, _ int) string {
+			return xslices.Map(pkgsWorkspaces.([]any), func(workspace any) string {
 				return workspace.(string)
 			})
 		}
 	// Workspace as string array
 	// e.g.   "workspaces": ["packages/*", "backend"],
 	case []any:
-		return lo.Map(ws, func(workspace any, _ int) string {
+		return xslices.Map(ws, func(workspace any) string {
 			return workspace.(string)
 		})
 	}

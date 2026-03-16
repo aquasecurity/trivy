@@ -26,8 +26,7 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableEncryption: iacTypes.BoolTest(true),
 			},
 		},
 		{
@@ -37,10 +36,7 @@ func Test_adaptStore(t *testing.T) {
 				encryption_state = "Disabled"
 			}
 `,
-			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-			},
+			expected: datalake.Store{},
 		},
 		{
 			name: "enabled by default",
@@ -49,8 +45,7 @@ func Test_adaptStore(t *testing.T) {
 			}
 `,
 			expected: datalake.Store{
-				Metadata:         iacTypes.NewTestMetadata(),
-				EnableEncryption: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+				EnableEncryption: iacTypes.BoolTest(true),
 			},
 		},
 	}

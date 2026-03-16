@@ -5,12 +5,12 @@ import (
 	"errors"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type WantArtifact struct {
@@ -94,7 +94,7 @@ func AssertArtifact(t *testing.T, c cache.Cache, wantArtifact WantArtifact) {
 func AssertBlobs(t *testing.T, c cache.Cache, wantBlobs []WantBlob) {
 	if m, ok := c.(*cache.MemoryCache); ok {
 		blobIDs := m.BlobIDs()
-		wantBlobIDs := lo.Map(wantBlobs, func(want WantBlob, _ int) string {
+		wantBlobIDs := xslices.Map(wantBlobs, func(want WantBlob) string {
 			return want.ID
 		})
 		require.ElementsMatch(t, wantBlobIDs, blobIDs, "blob IDs mismatch")

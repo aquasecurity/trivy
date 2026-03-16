@@ -38,6 +38,12 @@ func (s unsafeSet[T]) Contains(item T) bool {
 	return exists
 }
 
+// Find returns the stored value for the given item if it exists
+func (s unsafeSet[T]) Find(item T) (T, bool) {
+	_, exists := s[item]
+	return item, exists
+}
+
 // Size returns the number of items in the set
 func (s unsafeSet[T]) Size() int {
 	return len(s)

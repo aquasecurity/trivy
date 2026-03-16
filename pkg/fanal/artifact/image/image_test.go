@@ -87,6 +87,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"var/spool/mail",
 				"var/spool/cron/crontabs",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "alpine-keys@2.1-r2",
@@ -118,6 +119,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
 				"usr/share/apk/keys/x86_64/alpine-devel@lists.alpinelinux.org-4a6a0840.rsa.pub",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "apk-tools@2.10.4-r3",
@@ -138,6 +140,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			InstalledFiles: []string{
 				"sbin/apk",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "busybox@1.31.1-r9",
@@ -161,6 +164,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"etc/network/if-up.d/dad",
 				"usr/share/udhcpc/default.script",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "ca-certificates-cacert@20191127-r1",
@@ -178,6 +182,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			InstalledFiles: []string{
 				"etc/ssl/cert.pem",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "libc-utils@0.7.2-r0",
@@ -191,7 +196,8 @@ func TestArtifact_Inspect(t *testing.T) {
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
-			Arch: "x86_64",
+			Arch:       "x86_64",
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "libcrypto1.1@1.1.1d-r3",
@@ -220,6 +226,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/lib/engines-1.1/padlock.so",
 				"usr/lib/engines-1.1/afalg.so",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "libssl1.1@1.1.1d-r3",
@@ -239,6 +246,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libssl.so.1.1",
 				"usr/lib/libssl.so.1.1",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "libtls-standalone@2.9.1-r0",
@@ -259,6 +267,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/lib/libtls-standalone.so.1.0.0",
 				"usr/lib/libtls-standalone.so.1",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "musl@1.1.24-r2",
@@ -274,6 +283,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libc.musl-x86_64.so.1",
 				"lib/ld-musl-x86_64.so.1",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "musl-utils@1.1.24-r2",
@@ -300,6 +310,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"usr/bin/getconf",
 				"usr/bin/getent",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "scanelf@1.2.4-r0",
@@ -317,6 +328,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			InstalledFiles: []string{
 				"usr/bin/scanelf",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "ssl_client@1.31.1-r9",
@@ -335,6 +347,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			InstalledFiles: []string{
 				"usr/bin/ssl_client",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 		{
 			ID:         "zlib@1.2.11-r3",
@@ -353,6 +366,7 @@ func TestArtifact_Inspect(t *testing.T) {
 				"lib/libz.so.1.2.11",
 				"lib/libz.so.1",
 			},
+			AnalyzedBy: analyzer.TypeApk,
 		},
 	}
 
@@ -534,6 +548,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "Santiago Vila <sanvila@debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -549,6 +564,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "Marco d'Itri <md@linux.it>",
 										Arch:       "all",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -566,6 +582,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "all",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -623,6 +640,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -640,6 +658,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -657,6 +676,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+										AnalyzedBy: analyzer.TypeDpkg,
 									},
 								},
 							},
@@ -727,6 +747,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   73,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "guzzlehttp/promises@v1.3.1",
@@ -739,6 +760,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   124,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "guzzlehttp/psr7@1.5.2",
@@ -755,6 +777,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   191,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "laravel/installer@v2.0.1",
@@ -773,6 +796,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   237,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:        "pear/log@1.13.1",
@@ -786,6 +810,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   290,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "pear/pear_exception@v1.0.0",
@@ -798,6 +823,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   345,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "psr/http-message@1.0.1",
@@ -810,6 +836,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   395,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "ralouphie/getallheaders@2.0.5",
@@ -822,6 +849,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   435,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "symfony/console@v4.2.7",
@@ -838,6 +866,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   507,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "symfony/contracts@v1.0.2",
@@ -850,6 +879,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   575,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:        "symfony/filesystem@v4.2.7",
@@ -863,6 +893,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   625,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "symfony/polyfill-ctype@v1.11.0",
@@ -875,6 +906,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   683,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "symfony/polyfill-mbstring@v1.11.0",
@@ -887,6 +919,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   742,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 									{
 										ID:       "symfony/process@v4.2.7",
@@ -899,6 +932,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   791,
 											},
 										},
+										AnalyzedBy: analyzer.TypeComposer,
 									},
 								},
 							},
@@ -934,6 +968,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   51,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "faker@1.9.3",
@@ -948,6 +983,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   53,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "json@2.2.0",
@@ -962,6 +998,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   60,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "pry@0.12.2",
@@ -979,6 +1016,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   79,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rails@5.2.0",
@@ -1005,6 +1043,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   86,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rubocop@0.67.2",
@@ -1027,6 +1066,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   112,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "actioncable@5.2.3",
@@ -1045,6 +1085,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   4,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "actionmailer@5.2.3",
@@ -1065,6 +1106,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   8,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "actionpack@5.2.3",
@@ -1086,6 +1128,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   14,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "actionview@5.2.3",
@@ -1106,6 +1149,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   21,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "activejob@5.2.3",
@@ -1123,6 +1167,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   27,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "activemodel@5.2.3",
@@ -1137,6 +1182,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   30,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "activerecord@5.2.3",
@@ -1155,6 +1201,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   32,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "activestorage@5.2.3",
@@ -1173,6 +1220,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   36,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "activesupport@5.2.3",
@@ -1192,6 +1240,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   40,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "arel@9.0.0",
@@ -1206,6 +1255,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   45,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "ast@2.4.0",
@@ -1220,6 +1270,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   46,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "builder@3.2.3",
@@ -1234,6 +1285,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   47,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "coderay@1.1.2",
@@ -1248,6 +1300,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   48,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "concurrent-ruby@1.1.5",
@@ -1262,6 +1315,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   49,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "crass@1.0.4",
@@ -1276,6 +1330,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   50,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "erubi@1.8.0",
@@ -1290,6 +1345,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   52,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "globalid@0.4.2",
@@ -1304,6 +1360,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   55,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "i18n@1.6.0",
@@ -1318,6 +1375,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   57,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "jaro_winkler@1.5.2",
@@ -1332,6 +1390,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   59,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "loofah@2.2.3",
@@ -1349,6 +1408,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   61,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "mail@2.7.1",
@@ -1363,6 +1423,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   64,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "marcel@0.3.3",
@@ -1377,6 +1438,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   66,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "method_source@0.9.2",
@@ -1391,6 +1453,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   68,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "mimemagic@0.3.3",
@@ -1405,6 +1468,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   69,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "mini_mime@1.0.1",
@@ -1419,6 +1483,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   70,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "mini_portile2@2.4.0",
@@ -1433,6 +1498,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   71,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "minitest@5.11.3",
@@ -1447,6 +1513,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   72,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "nio4r@2.3.1",
@@ -1461,6 +1528,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   73,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "nokogiri@1.10.3",
@@ -1475,6 +1543,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   74,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "parallel@1.17.0",
@@ -1489,6 +1558,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   76,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "parser@2.6.3.0",
@@ -1503,6 +1573,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   77,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "psych@3.1.0",
@@ -1517,6 +1588,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   82,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rack@2.0.7",
@@ -1531,6 +1603,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   83,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rack-test@1.1.0",
@@ -1545,6 +1618,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   84,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rails-dom-testing@2.0.3",
@@ -1562,6 +1636,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   99,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rails-html-sanitizer@1.0.3",
@@ -1576,6 +1651,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   102,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "railties@5.2.3",
@@ -1596,6 +1672,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   104,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rainbow@3.0.0",
@@ -1610,6 +1687,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   110,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "rake@12.3.2",
@@ -1624,6 +1702,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   111,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "ruby-progressbar@1.10.0",
@@ -1638,6 +1717,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   120,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "sprockets@3.7.2",
@@ -1655,6 +1735,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   121,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "sprockets-rails@3.2.1",
@@ -1673,6 +1754,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   124,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "thor@0.20.3",
@@ -1687,6 +1769,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   128,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "thread_safe@0.3.6",
@@ -1701,6 +1784,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   129,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "tzinfo@1.2.5",
@@ -1715,6 +1799,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   130,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "unicode-display_width@1.5.0",
@@ -1729,6 +1814,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   132,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "websocket-driver@0.7.0",
@@ -1743,6 +1829,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   133,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 									{
 										ID:           "websocket-extensions@0.1.3",
@@ -1757,6 +1844,7 @@ func TestArtifact_Inspect(t *testing.T) {
 												EndLine:   135,
 											},
 										},
+										AnalyzedBy: analyzer.TypeBundler,
 									},
 								},
 							},

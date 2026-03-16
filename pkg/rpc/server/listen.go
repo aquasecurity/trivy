@@ -146,7 +146,7 @@ func (s Server) NewServeMux(ctx context.Context, serverCache cache.Cache, dbUpda
 	mux.HandleFunc("/version", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Add("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(s.cacheDir)); err != nil {
+		if err := json.NewEncoder(w).Encode(version.NewVersionInfo(s.cacheDir, version.Server())); err != nil {
 			log.Error("Version error", log.Err(err))
 		}
 	})

@@ -90,6 +90,10 @@ func MustCompileWithoutWordPrefix(str string) *Regexp {
 	return MustCompile(fmt.Sprintf("%s(%s)", startWord, str))
 }
 
+func MustCompileWithBoundaries(str string) *Regexp {
+	return MustCompile(fmt.Sprintf("%s(%s)%s", startWord, str, endWord))
+}
+
 func MustCompile(str string) *Regexp {
 	return &Regexp{regexp.MustCompile(str)}
 }

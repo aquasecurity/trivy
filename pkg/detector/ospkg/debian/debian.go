@@ -63,11 +63,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		// Skip third-party packages as they are not covered by Debian security advisories
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
-			continue
-		}
-
 		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
 		if err != nil {
 			log.DebugContext(ctx, "Installed package version error", log.Err(err))

@@ -33,22 +33,17 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
             }
 `,
 			expected: []network.ElasticLoadBalancer{{
-				Metadata: iacTypes.NewTestMetadata(),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:     iacTypes.NewTestMetadata(),
-						NetworkID:    iacTypes.String("net-COMMON_PRIVATE", iacTypes.NewTestMetadata()),
-						IsVipNetwork: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+						NetworkID: iacTypes.StringTest("net-COMMON_PRIVATE"),
 					},
 				},
 				Listeners: []network.ElasticLoadBalancerListener{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Protocol: iacTypes.String("HTTP", iacTypes.NewTestMetadata()),
+						Protocol: iacTypes.StringTest("HTTP"),
 					},
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Protocol: iacTypes.String("HTTPS", iacTypes.NewTestMetadata()),
+						Protocol: iacTypes.StringTest("HTTPS"),
 					},
 				},
 			}},
@@ -63,17 +58,12 @@ func Test_adaptElasticLoadBalancers(t *testing.T) {
 `,
 
 			expected: []network.ElasticLoadBalancer{{
-				Metadata: iacTypes.NewTestMetadata(),
 				NetworkInterfaces: []network.NetworkInterface{
 					{
-						Metadata:     iacTypes.NewTestMetadata(),
-						NetworkID:    iacTypes.String("", iacTypes.NewTestMetadata()),
-						IsVipNetwork: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						IsVipNetwork: iacTypes.BoolTest(true),
 					},
 				},
-				Listeners: []network.ElasticLoadBalancerListener{{
-					Metadata: iacTypes.NewTestMetadata(),
-				}},
+				Listeners: []network.ElasticLoadBalancerListener{{}},
 			}},
 		},
 	}

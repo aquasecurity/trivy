@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pubspec",
@@ -15,21 +18,23 @@
           "Name": "http",
           "Identifier": {
             "PURL": "pkg:pub/http@0.13.2",
-            "UID": "fe8339221b1b26b8"
+            "UID": "2907d8123351fdba"
           },
           "Version": "0.13.2",
-          "Relationship": "direct"
+          "Relationship": "direct",
+          "AnalyzedBy": "pubspec-lock"
         },
         {
           "ID": "shelf@1.3.1",
           "Name": "shelf",
           "Identifier": {
             "PURL": "pkg:pub/shelf@1.3.1",
-            "UID": "6d23c3a1f807b8ab"
+            "UID": "3e0921fc3c061e4"
           },
           "Version": "1.3.1",
           "Indirect": true,
-          "Relationship": "indirect"
+          "Relationship": "indirect",
+          "AnalyzedBy": "pubspec-lock"
         }
       ],
       "Vulnerabilities": [
@@ -39,7 +44,7 @@
           "PkgName": "http",
           "PkgIdentifier": {
             "PURL": "pkg:pub/http@0.13.2",
-            "UID": "fe8339221b1b26b8"
+            "UID": "2907d8123351fdba"
           },
           "InstalledVersion": "0.13.2",
           "FixedVersion": "0.13.3",

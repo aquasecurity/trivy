@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/uv",
@@ -15,48 +18,52 @@
           "Name": "uv-test",
           "Identifier": {
             "PURL": "pkg:pypi/uv-test@0.1.0",
-            "UID": "d8b4e0c0129124ef"
+            "UID": "228f4e2a887863ad"
           },
           "Version": "0.1.0",
           "Relationship": "root",
           "DependsOn": [
             "click@8.1.3",
             "werkzeug@0.11.1"
-          ]
+          ],
+          "AnalyzedBy": "uv"
         },
         {
           "ID": "click@8.1.3",
           "Name": "click",
           "Identifier": {
             "PURL": "pkg:pypi/click@8.1.3",
-            "UID": "76baa5f52f0c32da"
+            "UID": "f6767aead12b99cf"
           },
           "Version": "8.1.3",
           "Relationship": "direct",
           "DependsOn": [
             "colorama@0.4.6"
-          ]
+          ],
+          "AnalyzedBy": "uv"
         },
         {
           "ID": "werkzeug@0.11.1",
           "Name": "werkzeug",
           "Identifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "de1411a7bb678535"
+            "UID": "40cd870d03659073"
           },
           "Version": "0.11.1",
-          "Relationship": "direct"
+          "Relationship": "direct",
+          "AnalyzedBy": "uv"
         },
         {
           "ID": "colorama@0.4.6",
           "Name": "colorama",
           "Identifier": {
             "PURL": "pkg:pypi/colorama@0.4.6",
-            "UID": "49acc401742db23d"
+            "UID": "a9b0f41cf3bb79cc"
           },
           "Version": "0.4.6",
           "Indirect": true,
-          "Relationship": "indirect"
+          "Relationship": "indirect",
+          "AnalyzedBy": "uv"
         }
       ],
       "Vulnerabilities": [
@@ -66,7 +73,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "de1411a7bb678535"
+            "UID": "40cd870d03659073"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
@@ -124,7 +131,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "de1411a7bb678535"
+            "UID": "40cd870d03659073"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",

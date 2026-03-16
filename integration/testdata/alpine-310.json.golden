@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:39549bf49d696f172a6513103cdc8f53717024ad1fbce62d680a8e7ddde1a612",
@@ -74,7 +77,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "2fdf6d39693d0b83"
+            "UID": "c3465bd7087640a7"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -148,7 +151,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "2fdf6d39693d0b83"
+            "UID": "c3465bd7087640a7"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",
@@ -232,7 +235,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "d57bb696f7371159"
+            "UID": "5743e53dcec3d29c"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r0",
@@ -306,7 +309,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
-            "UID": "d57bb696f7371159"
+            "UID": "5743e53dcec3d29c"
           },
           "InstalledVersion": "1.1.1c-r0",
           "FixedVersion": "1.1.1d-r2",

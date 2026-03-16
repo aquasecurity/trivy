@@ -114,15 +114,15 @@ Resources:
 				Instances: []ec2.Instance{
 					{
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: types.StringDefault("enabled", types.NewTestMetadata()),
-							HttpTokens:   types.StringDefault("optional", types.NewTestMetadata()),
+							HttpEndpoint: types.StringTest("enabled"),
+							HttpTokens:   types.StringTest("optional"),
 						},
 						RootBlockDevice: &ec2.BlockDevice{
-							Encrypted: types.BoolDefault(true, types.NewTestMetadata()),
+							Encrypted: types.BoolTest(true),
 						},
 						EBSBlockDevices: []*ec2.BlockDevice{
 							{
-								Encrypted: types.BoolDefault(false, types.NewTestMetadata()),
+								Encrypted: types.BoolTest(false),
 							},
 						},
 					},
@@ -253,7 +253,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -298,7 +298,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -354,7 +354,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{
@@ -383,7 +383,7 @@ Resources:
 						},
 					},
 				},
-				VPCs: []ec2.VPC{},
+				VPCs: nil,
 			},
 		},
 		{

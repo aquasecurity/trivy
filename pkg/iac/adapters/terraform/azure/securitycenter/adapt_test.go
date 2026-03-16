@@ -29,11 +29,10 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				EnableAlertsToAdmins:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				Email:                    iacTypes.String("contact@example.com", iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("+1-555-555-5555", iacTypes.NewTestMetadata()),
+				EnableAlertNotifications: iacTypes.BoolTest(true),
+				EnableAlertsToAdmins:     iacTypes.BoolTest(true),
+				Email:                    iacTypes.StringTest("contact@example.com"),
+				Phone:                    iacTypes.StringTest("+1-555-555-5555"),
 				IsEnabled:                iacTypes.BoolValue{},
 				MinimalSeverity:          iacTypes.StringValue{},
 			},
@@ -45,13 +44,8 @@ func Test_adaptContact(t *testing.T) {
 			}
 `,
 			expected: securitycenter.Contact{
-				Metadata:                 iacTypes.NewTestMetadata(),
-				EnableAlertNotifications: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				EnableAlertsToAdmins:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Email:                    iacTypes.String("", iacTypes.NewTestMetadata()),
-				Phone:                    iacTypes.String("", iacTypes.NewTestMetadata()),
-				IsEnabled:                iacTypes.BoolValue{},
-				MinimalSeverity:          iacTypes.StringValue{},
+				IsEnabled:       iacTypes.BoolValue{},
+				MinimalSeverity: iacTypes.StringValue{},
 			},
 		},
 	}
@@ -78,8 +72,7 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Free"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Free"),
 			},
 		},
 		{
@@ -88,8 +81,7 @@ func Test_adaptSubscription(t *testing.T) {
 			resource "azurerm_security_center_subscription_pricing" "example" {
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Free", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Free"),
 			},
 		},
 		{
@@ -99,8 +91,7 @@ func Test_adaptSubscription(t *testing.T) {
 				tier          = "Standard"
 			}`,
 			expected: securitycenter.SubscriptionPricing{
-				Metadata: iacTypes.NewTestMetadata(),
-				Tier:     iacTypes.String("Standard", iacTypes.NewTestMetadata()),
+				Tier: iacTypes.StringTest("Standard"),
 			},
 		},
 	}

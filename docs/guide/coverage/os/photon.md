@@ -50,6 +50,6 @@ Trivy identifies licenses by examining the metadata of RPM packages.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 
-[metadata]: https://packages.vmware.com/photon/photon_cve_metadata/
+[metadata]: https://packages.broadcom.com/photon/photon_cve_metadata/
 
 [vulnerability statuses]: ../../configuration/filtering.md#by-status

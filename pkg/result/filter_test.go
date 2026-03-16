@@ -146,6 +146,15 @@ func TestFilter(t *testing.T) {
 			Severity: dbTypes.SeverityLow.String(),
 			Status:   types.MisconfStatusFailure,
 		}
+		misconf4 = types.DetectedMisconfiguration{
+			Type:     "Kubernetes Security Check",
+			ID:       "ID400",
+			Aliases:  []string{"AVD-ID400"},
+			Title:    "Bad Job",
+			Message:  "something bad",
+			Severity: dbTypes.SeverityLow.String(),
+			Status:   types.MisconfStatusFailure,
+		}
 		secret1 = types.DetectedSecret{
 			RuleID:    "generic-wanted-rule",
 			Severity:  dbTypes.SeverityHigh.String(),
@@ -371,7 +380,8 @@ func TestFilter(t *testing.T) {
 							Misconfigurations: []types.DetectedMisconfiguration{
 								misconf1,
 								misconf2,
-								misconf3,
+								misconf3, // ignored
+								misconf4, // ignored
 							},
 						},
 						{
@@ -443,6 +453,12 @@ func TestFilter(t *testing.T) {
 								Source:  "testdata/.trivyignore",
 								Finding: misconf3,
 							},
+							{
+								Type:    types.FindingTypeMisconfiguration,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore",
+								Finding: misconf4,
+							},
 						},
 					},
 					{
@@ -499,6 +515,7 @@ func TestFilter(t *testing.T) {
 								misconf1, // ignored
 								misconf2, // ignored
 								misconf3,
+								misconf4, // ignored
 							},
 						},
 						{
@@ -583,6 +600,12 @@ func TestFilter(t *testing.T) {
 								Status:  types.FindingStatusIgnored,
 								Source:  "testdata/.trivyignore.yaml",
 								Finding: misconf2,
+							},
+							{
+								Type:    types.FindingTypeMisconfiguration,
+								Status:  types.FindingStatusIgnored,
+								Source:  "testdata/.trivyignore.yaml",
+								Finding: misconf4,
 							},
 						},
 					},
@@ -1112,6 +1135,102 @@ func TestFilter(t *testing.T) {
 								Source:    "testdata/ignore-by-type.rego",
 								Statement: "Filtered by Rego",
 								Finding:   license1,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with duplicates and different package IDs",
+			args: args{
+				report: types.Report{
+					Results: types.Results{
+						{
+							Vulnerabilities: []types.DetectedVulnerability{
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgID:            "foo:1.2.3::abcdef1234567001",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0001",
+									PkgID:            "foo:1.2.3::abcdef1234567002",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0002",
+									PkgID:            "bar@1.2.3",
+									PkgName:          "bar",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+								{
+									VulnerabilityID:  "CVE-2019-0002",
+									PkgID:            "bar@1.2.3",
+									PkgName:          "bar",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									Vulnerability: dbTypes.Vulnerability{
+										Severity: dbTypes.SeverityCritical.String(),
+									},
+								},
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityUnknown,
+				},
+			},
+			want: types.Report{
+				Results: types.Results{
+					{
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-0002",
+								PkgID:            "bar@1.2.3",
+								PkgName:          "bar",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2019-0001",
+								PkgID:            "foo:1.2.3::abcdef1234567001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2019-0001",
+								PkgID:            "foo:1.2.3::abcdef1234567002",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "1.2.4",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityCritical.String(),
+								},
 							},
 						},
 					},

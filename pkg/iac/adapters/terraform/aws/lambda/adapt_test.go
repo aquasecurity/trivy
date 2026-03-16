@@ -43,16 +43,13 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Tracing: lambda.Tracing{
-							Metadata: iacTypes.NewTestMetadata(),
-							Mode:     iacTypes.String("Passthrough", iacTypes.NewTestMetadata()),
+							Mode: iacTypes.StringTest("Passthrough"),
 						},
 						Permissions: []lambda.Permission{
 							{
-								Metadata:  iacTypes.NewTestMetadata(),
-								Principal: iacTypes.String("sns.amazonaws.com", iacTypes.NewTestMetadata()),
-								SourceARN: iacTypes.String("default", iacTypes.NewTestMetadata()),
+								Principal: iacTypes.StringTest("sns.amazonaws.com"),
+								SourceARN: iacTypes.StringTest("default"),
 							},
 						},
 					},
@@ -73,24 +70,12 @@ func Test_Adapt(t *testing.T) {
 			expected: lambda.Lambda{
 				Functions: []lambda.Function{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Tracing: lambda.Tracing{
-							Metadata: iacTypes.NewTestMetadata(),
-							Mode:     iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
+						Tracing: lambda.Tracing{},
 					},
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Tracing: lambda.Tracing{
-							Metadata: iacTypes.NewTestMetadata(),
-							Mode:     iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
+						Tracing: lambda.Tracing{},
 						Permissions: []lambda.Permission{
-							{
-								Metadata:  iacTypes.NewTestMetadata(),
-								Principal: iacTypes.String("", iacTypes.NewTestMetadata()),
-								SourceARN: iacTypes.String("", iacTypes.NewTestMetadata()),
-							},
+							{},
 						},
 					},
 				},

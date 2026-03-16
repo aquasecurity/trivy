@@ -2,6 +2,7 @@ package spdx_test
 
 import (
 	"hash/fnv"
+	"sort"
 	"testing"
 	"time"
 
@@ -188,6 +189,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -198,6 +201,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/subproject/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -211,7 +216,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
+								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 							},
 						},
 						Annotations: []spdx.Annotation{
@@ -223,7 +228,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-b8d4663e6d412e7"),
@@ -324,6 +331,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -515,7 +524,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-40c4059fe08523bf"),
@@ -600,6 +611,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -702,7 +715,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Pom,
 						Packages: []ftypes.Package{
 							{
-								ID:      "com.example:example:1.0.0",
+								ID:      "com.example:example:1.0.0::abcdef1234567001",
 								Name:    "com.example:example",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -743,6 +756,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -753,6 +768,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -797,7 +814,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						PackageSourceInfo:     "package found in: pom.xml",
 						Annotations: []spdx.Annotation{
-							annotation(t, "PkgID: com.example:example:1.0.0"),
+							annotation(t, "PkgID: com.example:example:1.0.0::abcdef1234567001"),
 							annotation(t, "PkgType: pom"),
 						},
 					},
@@ -808,7 +825,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -853,7 +872,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Type:   ftypes.Pom,
 						Packages: []ftypes.Package{
 							{
-								ID:      "com.example:example:1.0.0",
+								ID:      "com.example:example:1.0.0::abcdef1234567001",
 								Name:    "com.example:example",
 								Version: "1.0.0",
 								Identifier: ftypes.PkgIdentifier{
@@ -902,6 +921,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -925,7 +946,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						PackageSourceInfo:     "package found in: pom.xml",
 						Annotations: []spdx.Annotation{
-							annotation(t, "PkgID: com.example:example:1.0.0"),
+							annotation(t, "PkgID: com.example:example:1.0.0::abcdef1234567001"),
 							annotation(t, "PkgType: pom"),
 						},
 					},
@@ -936,7 +957,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1071,7 +1094,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1173,7 +1198,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Files: []*spdx.File{
@@ -1243,7 +1270,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1305,7 +1334,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1375,6 +1406,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "/usr/local/bin/test",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: gobinary"),
@@ -1421,7 +1454,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1488,6 +1523,147 @@ func TestMarshaler_Marshal(t *testing.T) {
 
 			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
 			assert.Equal(t, tc.wantSBOM, spdxDoc)
+		})
+	}
+}
+
+func TestMarshaler_normalizeLicenses(t *testing.T) {
+	tests := []struct {
+		name              string
+		input             []string
+		wantLicenseName   string
+		wantOtherLicenses []*spdx.OtherLicense
+	}{
+		{
+			name: "happy path",
+			input: []string{
+				"GPLv2+",
+			},
+			wantLicenseName: "GPL-2.0-or-later",
+		},
+		{
+			name: "happy path with multi license",
+			input: []string{
+				"GPLv2+",
+				"GPLv3+",
+				"BSD-4-Clause",
+			},
+			wantLicenseName: "GPL-2.0-or-later AND GPL-3.0-or-later AND BSD-4-Clause",
+		},
+		{
+			name: "happy path with OR operator",
+			input: []string{
+				"GPLv2+",
+				"LGPL 2.0 or GNU LESSER",
+			},
+			wantLicenseName: "GPL-2.0-or-later AND (LGPL-2.0-only OR LGPL-2.1-only)",
+		},
+		{
+			name: "happy path with OR operator with non-SPDX license",
+			input: []string{
+				"GPLv2+",
+				"wrong-license or unknown-license",
+			},
+			wantLicenseName: "GPL-2.0-or-later AND (LicenseRef-c581e42fe705aa48 OR LicenseRef-a0bb0951a6dfbdbe)",
+			wantOtherLicenses: []*spdx.OtherLicense{
+				{
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
+					LicenseName:       "unknown-license",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
+				},
+				{
+					LicenseIdentifier: "LicenseRef-c581e42fe705aa48",
+					LicenseName:       "wrong-license",
+					ExtractedText:     `This component is licensed under "wrong-license"`,
+				},
+			},
+		},
+		{
+			name: "happy path with AND operator",
+			input: []string{
+				"GPLv2+",
+				"LGPL 2.0 and GNU LESSER",
+			},
+			wantLicenseName: "GPL-2.0-or-later AND LGPL-2.0-only AND LGPL-2.1-only",
+		},
+		{
+			name: "happy path with WITH operator",
+			input: []string{
+				"GPLv2",
+				"AFL 3.0 with wrong-exceptions",
+				"LGPL 2.0 and unknown-license and GNU LESSER",
+				"AFL 3.0 with Autoconf-exception-3.0",
+			},
+			wantLicenseName: "GPL-2.0-only AND LicenseRef-51373b28fab165e9 AND LGPL-2.0-only AND LicenseRef-a0bb0951a6dfbdbe AND LGPL-2.1-only AND AFL-3.0 WITH Autoconf-exception-3.0",
+			wantOtherLicenses: []*spdx.OtherLicense{
+				{
+					LicenseIdentifier: "LicenseRef-51373b28fab165e9",
+					LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+					ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
+				},
+				{
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
+					LicenseName:       "unknown-license",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
+				},
+			},
+		},
+		{
+			name: "happy path with non-SPDX exception",
+			input: []string{
+				"AFL 2.0",
+				"AFL 3.0 with wrong-exceptions",
+			},
+			wantLicenseName: "AFL-2.0 AND LicenseRef-51373b28fab165e9",
+			wantOtherLicenses: []*spdx.OtherLicense{
+				{
+					LicenseIdentifier: "LicenseRef-51373b28fab165e9",
+					LicenseName:       "AFL-3.0 WITH wrong-exceptions",
+					ExtractedText:     `This component is licensed under "AFL-3.0 WITH wrong-exceptions"`,
+				},
+			},
+		},
+		{
+			name: "happy path with incorrect cases for license and exception",
+			input: []string{
+				"afl 3.0 with autoCONF-exception-3.0",
+			},
+			wantLicenseName: "AFL-3.0 WITH Autoconf-exception-3.0",
+		},
+		{
+			name: "happy path with text of license",
+			input: []string{
+				"text://Redistribution and use in source and binary forms, with or without",
+				"AFL 2.0",
+				"unknown-license",
+			},
+			wantLicenseName: "LicenseRef-b5b4cc09bc5f0e16 AND AFL-2.0 AND LicenseRef-a0bb0951a6dfbdbe",
+			wantOtherLicenses: []*spdx.OtherLicense{
+				{
+					LicenseIdentifier: "LicenseRef-a0bb0951a6dfbdbe",
+					LicenseName:       "unknown-license",
+					ExtractedText:     `This component is licensed under "unknown-license"`,
+				},
+				{
+					LicenseIdentifier: "LicenseRef-b5b4cc09bc5f0e16",
+					LicenseName:       "NOASSERTION",
+					ExtractedText:     "Redistribution and use in source and binary forms, with or without",
+					LicenseComment:    "The license text represents text found in package metadata and may not represent the full text of the license",
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m := tspdx.NewMarshaler("")
+			gotLicenseName, gotOtherLicenses := m.NormalizeLicenses(tt.input)
+			// We will sort all OtherLicenses for SPDX document
+			// So we need to sort OtherLicenses for this test
+			sort.Slice(gotOtherLicenses, func(i, j int) bool {
+				return gotOtherLicenses[i].LicenseIdentifier < gotOtherLicenses[j].LicenseIdentifier
+			})
+			assert.Equal(t, tt.wantLicenseName, gotLicenseName)
+			assert.Equal(t, tt.wantOtherLicenses, gotOtherLicenses)
 		})
 	}
 }

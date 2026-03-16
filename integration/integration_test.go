@@ -17,7 +17,6 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
-	"github.com/samber/lo"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdxlib"
@@ -35,6 +34,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "modernc.org/sqlite"
 )
@@ -124,6 +124,7 @@ const (
 	goldenPipenv                                 = "testdata/pipenv.json.golden"
 	goldenPnpm                                   = "testdata/pnpm.json.golden"
 	goldenPoetry                                 = "testdata/poetry.json.golden"
+	goldenPyLock                                 = "testdata/pylock.json.golden"
 	goldenPomCycloneDX                           = "testdata/pom-cyclonedx.json.golden"
 	goldenPubspecLock                            = "testdata/pubspec.lock.json.golden"
 	goldenSBT                                    = "testdata/sbt.json.golden"
@@ -461,7 +462,7 @@ func validateReport(t *testing.T, schema string, report any) {
 	require.NoError(t, err)
 
 	if valid := result.Valid(); !valid {
-		errs := lo.Map(result.Errors(), func(err gojsonschema.ResultError, _ int) string {
+		errs := xslices.Map(result.Errors(), func(err gojsonschema.ResultError) string {
 			return err.String()
 		})
 		assert.True(t, valid, strings.Join(errs, "\n"))
@@ -518,7 +519,7 @@ func overrideFingerprint(t *testing.T, want, got *types.Report) {
 }
 
 // overrideDockerRemovedFields clears image config fields that were removed from Docker API
-// cf. https://github.com/moby/moby/blob/d0ad1357a141c795e1e0490e3fed00ddabcb91b9/docs/api/version-history.md
+// cf. https://github.com/moby/moby/blob/1f71f2217d2196239ca52685ce6b3c4f93a1cc07/api/docs/CHANGELOG.md
 func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	// Clear Container field (removed in Docker API v1.45)
 	got.Metadata.ImageConfig.Container = ""
@@ -531,4 +532,20 @@ func overrideDockerRemovedFields(_ *testing.T, want, got *types.Report) {
 	// Clear Hostname field (removed in Docker API v1.50)
 	got.Metadata.ImageConfig.Config.Hostname = ""
 	want.Metadata.ImageConfig.Config.Hostname = ""
+
+	// Clear DockerVersion field (omitted in Docker API v1.52)
+	want.Metadata.ImageConfig.DockerVersion = ""
+}
+
+// overrideServerInfo verifies that Server info exists and then clears it.
+// Server info is only populated in client/server mode (empty in standalone mode).
+// When golden files are shared with standalone tests, this override is needed
+// because standalone tests don't produce server info.
+func overrideServerInfo(t *testing.T, want, got *types.Report) {
+	// Verify that server info was actually fetched
+	assert.NotEmpty(t, got.Trivy.Server.Version, "Server version should be set in client/server mode")
+
+	// Clear server info for comparison with shared golden files
+	got.Trivy.Server = types.VersionInfo{}
+	want.Trivy.Server = types.VersionInfo{}
 }

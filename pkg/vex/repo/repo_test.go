@@ -301,7 +301,9 @@ func TestRepository_Update(t *testing.T) {
 			tt.setup(t, tempDir, &r)
 
 			ctx := clock.With(t.Context(), tt.clockTime)
-			err = r.Update(ctx, repo.Options{})
+			err = r.Update(ctx, repo.Options{
+				Insecure: true,
+			})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
 				return
@@ -344,7 +346,7 @@ func setUpManifest(t *testing.T, dir, url string) {
 }
 
 func setUpRepository(t *testing.T) *httptest.Server {
-	return httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	return httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/archive.zip":
 			if r.Header.Get("If-None-Match") == "current-etag" {

@@ -41,21 +41,19 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: iacTypes.NewTestMetadata(),
 				Categories: []iacTypes.StringValue{
-					iacTypes.String("Action", iacTypes.NewTestMetadata()),
-					iacTypes.String("Delete", iacTypes.NewTestMetadata()),
-					iacTypes.String("Write", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("Action"),
+					iacTypes.StringTest("Delete"),
+					iacTypes.StringTest("Write"),
 				},
 				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					Days:     iacTypes.Int(365, iacTypes.NewTestMetadata()),
+					Enabled: iacTypes.BoolTest(true),
+					Days:    iacTypes.IntTest(365),
 				},
 				Locations: []iacTypes.StringValue{
-					iacTypes.String("eastus", iacTypes.NewTestMetadata()),
-					iacTypes.String("eastus2", iacTypes.NewTestMetadata()),
-					iacTypes.String("southcentralus", iacTypes.NewTestMetadata()),
+					iacTypes.StringTest("eastus"),
+					iacTypes.StringTest("eastus2"),
+					iacTypes.StringTest("southcentralus"),
 				},
 			},
 		},
@@ -66,12 +64,7 @@ func Test_adaptLogProfile(t *testing.T) {
 			  }
 `,
 			expected: monitor.LogProfile{
-				Metadata: iacTypes.NewTestMetadata(),
-				RetentionPolicy: monitor.RetentionPolicy{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Days:     iacTypes.Int(0, iacTypes.NewTestMetadata()),
-				},
+				RetentionPolicy: monitor.RetentionPolicy{},
 			},
 		},
 	}

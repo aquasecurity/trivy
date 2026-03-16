@@ -41,6 +41,7 @@ type Dependency struct {
 type Package struct {
 	Name                 string            `json:"name"`
 	Version              string            `json:"version"`
+	License              string            `json:"license"`
 	Dependencies         map[string]string `json:"dependencies"`
 	OptionalDependencies map[string]string `json:"optionalDependencies"`
 	DevDependencies      map[string]string `json:"devDependencies"`
@@ -139,14 +140,25 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			savedPkg.Locations = append(savedPkg.Locations, ftypes.Location(pkg.Location))
 			sort.Sort(savedPkg.Locations)
 
+			// If for some reason license is missing in savedPkg, but exists in the current pkg, add it.
+			if len(savedPkg.Licenses) == 0 && pkg.License != "" {
+				savedPkg.Licenses = []string{pkg.License}
+			}
+
 			pkgs[pkgID] = savedPkg
 			continue
+		}
+
+		var licenses []string
+		if pkg.License != "" {
+			licenses = []string{pkg.License}
 		}
 
 		newPkg := ftypes.Package{
 			ID:                 pkgID,
 			Name:               pkgName,
 			Version:            pkg.Version,
+			Licenses:           licenses,
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
 			Dev:                pkg.Dev,
 			ExternalReferences: lo.Ternary(ref.URL != "", []ftypes.ExternalRef{ref}, nil),

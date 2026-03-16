@@ -1,68 +1,23 @@
 package types
 
-import (
-	"encoding/json"
-)
-
 type MapValue struct {
-	BaseAttribute
-	value map[string]string
-}
-
-func (b MapValue) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
-		"value":    b.value,
-		"metadata": b.metadata,
-	})
-}
-
-func (b *MapValue) UnmarshalJSON(data []byte) error {
-	var keys map[string]any
-	if err := json.Unmarshal(data, &keys); err != nil {
-		return err
-	}
-	if keys["value"] != nil {
-		var target map[string]string
-		raw, err := json.Marshal(keys["value"])
-		if err != nil {
-			return err
-		}
-		if err := json.Unmarshal(raw, &target); err != nil {
-			return err
-		}
-		b.value = target
-	}
-	if keys["metadata"] != nil {
-		raw, err := json.Marshal(keys["metadata"])
-		if err != nil {
-			return err
-		}
-		var m Metadata
-		if err := json.Unmarshal(raw, &m); err != nil {
-			return err
-		}
-		b.metadata = m
-	}
-	return nil
+	BaseValue[map[string]string]
 }
 
 func Map(value map[string]string, m Metadata) MapValue {
-	return MapValue{
-		value:         value,
-		BaseAttribute: BaseAttribute{metadata: m},
-	}
+	return MapValue{newValue(value, m)}
 }
 
 func MapDefault(value map[string]string, m Metadata) MapValue {
-	b := Map(value, m)
-	b.BaseAttribute.metadata.isDefault = true
-	return b
+	return MapValue{defaultValue(value, m)}
 }
 
 func MapExplicit(value map[string]string, m Metadata) MapValue {
-	b := Map(value, m)
-	b.BaseAttribute.metadata.isExplicit = true
-	return b
+	return MapValue{explicitValue(value, m)}
+}
+
+func MapTest(value map[string]string) MapValue {
+	return MapValue{testValue(value)}
 }
 
 func (b MapValue) Value() map[string]string {
@@ -83,10 +38,4 @@ func (b MapValue) HasKey(key string) bool {
 	}
 	_, ok := b.value[key]
 	return ok
-}
-
-func (b MapValue) ToRego() any {
-	m := b.metadata.ToRego().(map[string]any)
-	m["value"] = b.Value()
-	return m
 }

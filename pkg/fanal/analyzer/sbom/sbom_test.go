@@ -384,6 +384,26 @@ func Test_packagingAnalyzer_Required(t *testing.T) {
 			filePath: "/test/result.json",
 			want:     false,
 		},
+		{
+			name:     "pep770 cdx.json in dist-info/sboms",
+			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.cdx.json",
+			want:     false,
+		},
+		{
+			name:     "pep770 spdx.json in dist-info/sboms",
+			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.spdx.json",
+			want:     false,
+		},
+		{
+			name:     "pep770 cdx in dist-info/sboms",
+			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.cdx",
+			want:     false,
+		},
+		{
+			name:     "pep770 spdx in dist-info/sboms",
+			filePath: "python3.8/site-packages/xgboost-3.1.2.dist-info/sboms/auditwheel.spdx",
+			want:     false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -22,7 +22,7 @@ import (
 )
 
 var (
-	disabledChecks = set.New("AVD-DS-0007", "AVD-DS-0016")
+	disabledChecks = set.New("DS-0007", "DS-0016")
 	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
@@ -139,11 +139,11 @@ func stripBuildMetadata(line string) string {
 }
 
 func buildRunInstruction(s string) string {
-	pos := strings.Index(s, "/bin/sh -c")
-	if pos == -1 {
+	_, after, ok := strings.Cut(s, "/bin/sh -c")
+	if !ok {
 		return s
 	}
-	return "RUN" + s[pos+len("/bin/sh -c"):]
+	return "RUN" + after
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
@@ -202,9 +202,9 @@ func (a *historyAnalyzer) Version() int {
 func filterDisabledChecks(results types.MisconfResults) types.MisconfResults {
 	var filtered types.MisconfResults
 	for _, r := range results {
-		if disabledChecks.Contains(r.AVDID) {
+		if disabledChecks.Contains(r.ID) {
 			log.WithPrefix("image history analyzer").Info("Skip disabled check",
-				log.String("ID", r.AVDID), log.String("reason", reason))
+				log.String("ID", r.ID), log.String("reason", reason))
 			continue
 		}
 		filtered = append(filtered, r)

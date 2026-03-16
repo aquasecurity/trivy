@@ -9,11 +9,11 @@ import (
 	"path/filepath"
 	"sort"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -55,7 +55,7 @@ func updateExceptions() error {
 		if err := json.Unmarshal(b, &exceptions); err != nil {
 			return nil, xerrors.Errorf("unable to unmarshal exceptions.json file: %w", err)
 		}
-		exs := lo.Map(exceptions.Exceptions, func(ex Exception, _ int) string { return ex.ID })
+		exs := xslices.Map(exceptions.Exceptions, func(ex Exception) string { return ex.ID })
 		return exs, nil
 	})
 }
@@ -74,7 +74,7 @@ func updateLicenses() error {
 		if err := json.Unmarshal(b, &licenses); err != nil {
 			return nil, xerrors.Errorf("unable to unmarshal licenses.json file: %w", err)
 		}
-		ids := lo.Map(licenses.Licenses, func(l License, _ int) string { return l.ID })
+		ids := xslices.Map(licenses.Licenses, func(l License) string { return l.ID })
 		return ids, nil
 	})
 }

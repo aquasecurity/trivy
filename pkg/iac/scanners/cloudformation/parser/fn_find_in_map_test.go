@@ -3,9 +3,10 @@ package parser
 import (
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func Test_FindInMap(t *testing.T) {
@@ -64,7 +65,7 @@ Resources:
 	clusterList := ctx.GetResourceByLogicalID("ElasticacheClusterList")
 	require.NotNil(t, clusterList)
 	sgNamesProp := clusterList.GetProperty("CacheSecurityGroupNames").AsList()
-	groupNames := lo.Map(sgNamesProp, func(prop *Property, _ int) any {
+	groupNames := xslices.Map(sgNamesProp, func(prop *Property) any {
 		return prop.AsString()
 	})
 	assert.ElementsMatch(t, []any{"sg-1", "sg-2"}, groupNames)

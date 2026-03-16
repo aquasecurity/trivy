@@ -8,12 +8,12 @@ import (
 	"runtime"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/parser"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func TestParseProject(t *testing.T) {
@@ -563,7 +563,7 @@ name: mycol
 
 			tasks := project.ListTasks()
 
-			taskNames := lo.Map(tasks, func(task *parser.ResolvedTask, _ int) string {
+			taskNames := xslices.Map(tasks, func(task *parser.ResolvedTask) string {
 				return task.Name
 			})
 
@@ -606,7 +606,7 @@ func TestParser_AbsolutePath(t *testing.T) {
 	project, err := parser.New(os.DirFS(tmpDir), ".").Parse()
 	require.NoError(t, err)
 	tasks := project.ListTasks()
-	taskNames := lo.Map(tasks, func(task *parser.ResolvedTask, _ int) string {
+	taskNames := xslices.Map(tasks, func(task *parser.ResolvedTask) string {
 		return task.Name
 	})
 

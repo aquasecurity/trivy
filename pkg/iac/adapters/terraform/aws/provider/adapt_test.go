@@ -48,32 +48,31 @@ provider "aws" {
 }`,
 			expected: []aws.TerraformProvider{
 				{
-					Version: types.String("~> 5.0", types.NewTestMetadata()),
-					Region:  types.String("us-east-1", types.NewTestMetadata()),
+					Version: types.StringTest("~> 5.0"),
+					Region:  types.StringTest("us-east-1"),
 					DefaultTags: aws.DefaultTags{
-						Metadata: types.NewTestMetadata(),
-						Tags: types.Map(map[string]string{
+						Tags: types.MapTest(map[string]string{
 							"Environment": "Local",
 							"Name":        "LocalStack",
-						}, types.NewTestMetadata()),
+						}),
 					},
-					Endpoints: types.Map(map[string]string{
+					Endpoints: types.MapTest(map[string]string{
 						"dynamodb": "http://localhost:4566",
 						"s3":       "http://localhost:4566",
-					}, types.NewTestMetadata()),
-					Profile:                   types.String("localstack", types.NewTestMetadata()),
-					AccessKey:                 types.String("fake", types.NewTestMetadata()),
-					SecretKey:                 types.String("fake", types.NewTestMetadata()),
-					SkipCredentialsValidation: types.Bool(true, types.NewTestMetadata()),
-					SkipMetadataAPICheck:      types.Bool(true, types.NewTestMetadata()),
-					SkipRequestingAccountID:   types.Bool(true, types.NewTestMetadata()),
-					S3UsePathStyle:            types.Bool(true, types.NewTestMetadata()),
-					MaxRetries:                types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					}),
+					Profile:                   types.StringTest("localstack"),
+					AccessKey:                 types.StringTest("fake"),
+					SecretKey:                 types.StringTest("fake"),
+					SkipCredentialsValidation: types.BoolTest(true),
+					SkipMetadataAPICheck:      types.BoolTest(true),
+					SkipRequestingAccountID:   types.BoolTest(true),
+					S3UsePathStyle:            types.BoolTest(true),
+					MaxRetries:                types.IntTest(defaultMaxRetires),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedConfigFile),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedCredentialsFile),
 					},
 				},
 			},
@@ -93,26 +92,26 @@ provider "aws" {
 `,
 			expected: []aws.TerraformProvider{
 				{
-					Region:     types.String("us-east-1", types.NewTestMetadata()),
-					Endpoints:  types.Map(make(map[string]string), types.NewTestMetadata()),
-					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					Region:     types.StringTest("us-east-1"),
+					Endpoints:  types.MapTest(make(map[string]string)),
+					MaxRetries: types.IntTest(defaultMaxRetires),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedConfigFile),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedCredentialsFile),
 					},
 				},
 				{
-					Alias:      types.String("west", types.NewTestMetadata()),
-					Region:     types.String("us-west-2", types.NewTestMetadata()),
-					Endpoints:  types.Map(make(map[string]string), types.NewTestMetadata()),
-					MaxRetries: types.IntDefault(defaultMaxRetires, types.NewTestMetadata()),
+					Alias:      types.StringTest("west"),
+					Region:     types.StringTest("us-west-2"),
+					Endpoints:  types.MapTest(make(map[string]string)),
+					MaxRetries: types.IntTest(defaultMaxRetires),
 					SharedConfigFiles: types.StringValueList{
-						types.StringDefault(defaultSharedConfigFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedConfigFile),
 					},
 					SharedCredentialsFiles: types.StringValueList{
-						types.StringDefault(defaultSharedCredentialsFile, types.NewTestMetadata()),
+						types.StringTest(defaultSharedCredentialsFile),
 					},
 				},
 			},

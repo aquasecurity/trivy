@@ -9,7 +9,8 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "alpine-keys@2.1-r2",
@@ -21,7 +22,8 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "apk-tools@2.10.4-r2",
@@ -33,7 +35,8 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "busybox@1.30.1-r2",
@@ -45,7 +48,8 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "ca-certificates-cacert@20190108-r0",
@@ -58,7 +62,8 @@
       "MPL-2.0",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "libc-utils@0.7.1-r0",
@@ -70,7 +75,8 @@
     "Licenses": [
       "BSD-3-Clause"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "libcrypto1.1@1.1.1c-r0",
@@ -82,7 +88,8 @@
     "Licenses": [
       "OpenSSL"
     ],
-    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e"
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "libssl1.1@1.1.1c-r0",
@@ -94,7 +101,8 @@
     "Licenses": [
       "OpenSSL"
     ],
-    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e"
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "libtls-standalone@2.9.1-r0",
@@ -105,7 +113,8 @@
     "SrcVersion": "2.9.1-r0",
     "Licenses": [
       "ISC"
-    ]
+    ],
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "musl@1.1.22-r3",
@@ -117,7 +126,8 @@
     "Licenses": [
       "MIT"
     ],
-    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e"
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "musl-utils@1.1.22-r3",
@@ -131,7 +141,8 @@
       "BSD-3-Clause",
       "GPL-2.0-or-later"
     ],
-    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e"
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "scanelf@1.2.3-r0",
@@ -143,7 +154,8 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "ssl_client@1.30.1-r2",
@@ -155,7 +167,8 @@
     "Licenses": [
       "GPL-2.0-only"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   },
   {
     "ID": "zlib@1.2.11-r1",
@@ -167,6 +180,7 @@
     "Licenses": [
       "Zlib"
     ],
-    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e"
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
   }
 ]

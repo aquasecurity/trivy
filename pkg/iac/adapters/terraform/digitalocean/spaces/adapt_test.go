@@ -40,19 +40,16 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata: iacTypes.NewTestMetadata(),
-					Name:     iacTypes.String("public_space", iacTypes.NewTestMetadata()),
+					Name: iacTypes.StringTest("public_space"),
 					Objects: []spaces.Object{
 						{
-							Metadata: iacTypes.NewTestMetadata(),
-							ACL:      iacTypes.String("private", iacTypes.NewTestMetadata()),
+							ACL: iacTypes.StringTest("private"),
 						},
 					},
-					ACL:          iacTypes.String("private", iacTypes.NewTestMetadata()),
-					ForceDestroy: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+					ACL:          iacTypes.StringTest("private"),
+					ForceDestroy: iacTypes.BoolTest(true),
 					Versioning: spaces.Versioning{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Enabled: iacTypes.BoolTest(true),
 					},
 				},
 			},
@@ -66,15 +63,8 @@ func Test_adaptBuckets(t *testing.T) {
 `,
 			expected: []spaces.Bucket{
 				{
-					Metadata:     iacTypes.NewTestMetadata(),
-					Name:         iacTypes.String("", iacTypes.NewTestMetadata()),
-					Objects:      nil,
-					ACL:          iacTypes.String("private", iacTypes.NewTestMetadata()),
-					ForceDestroy: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					Versioning: spaces.Versioning{
-						Metadata: iacTypes.NewTestMetadata(),
-						Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					},
+					ACL:        iacTypes.StringTest("private"),
+					Versioning: spaces.Versioning{},
 				},
 			},
 		},

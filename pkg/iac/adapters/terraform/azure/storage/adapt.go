@@ -88,17 +88,35 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_storage_account") {
 			account := adaptAccount(resource)
-			containerResource := module.GetReferencingResources(resource, "azurerm_storage_container", "storage_account_name")
+			containerResource := module.GetReferencingResources(resource, "azurerm_storage_container", "storage_account_id")
+
+			if len(containerResource) == 0 {
+				// If no referencing container resources are found, check for any containers that reference the account by Name instead of ID (older versions of the provider did this)
+				containerResource = module.GetReferencingResources(resource, "azurerm_storage_container", "storage_account_name")
+			}
 			for _, containerBlock := range containerResource {
 				accountedForContainers = append(accountedForContainers, containerBlock.ID())
 				account.Containers = append(account.Containers, adaptContainer(containerBlock))
 			}
-			networkRulesResource := module.GetReferencingResources(resource, "azurerm_storage_account_network_rules", "storage_account_name")
+			networkRulesResource := module.GetReferencingResources(resource, "azurerm_storage_account_network_rules", "storage_account_id")
+
+			if len(networkRulesResource) == 0 {
+				// If no referencing network rules resources are found, check for any that reference the account by Name instead of ID (older versions of the provider did this)
+				networkRulesResource = module.GetReferencingResources(resource, "azurerm_storage_account_network_rules", "storage_account_name")
+			}
 			for _, networkRuleBlock := range networkRulesResource {
 				accountedForNetworkRules = append(accountedForNetworkRules, networkRuleBlock.ID())
 				account.NetworkRules = append(account.NetworkRules, adaptNetworkRule(networkRuleBlock))
 			}
-			for _, queueBlock := range module.GetReferencingResources(resource, "azurerm_storage_queue", "storage_account_name") {
+
+			queueResource := module.GetReferencingResources(resource, "azurerm_storage_queue", "storage_account_id")
+
+			if len(queueResource) == 0 {
+				// If no referencing queue resources are found, check for any that reference the account by Name instead of ID (older versions of the provider did this)
+				queueResource = module.GetReferencingResources(resource, "azurerm_storage_queue", "storage_account_name")
+			}
+
+			for _, queueBlock := range queueResource {
 				queue := storage.Queue{
 					Metadata: queueBlock.GetMetadata(),
 					Name:     queueBlock.GetAttribute("name").AsStringValueOrDefault("", queueBlock),

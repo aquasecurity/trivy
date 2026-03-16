@@ -233,6 +233,14 @@ func (f *Flag[T]) GetAliases() []Alias {
 	return f.Aliases
 }
 
+func (f *Flag[T]) GetUsage() string {
+	return f.Usage
+}
+
+func (f *Flag[T]) GetValues() []string {
+	return f.Values
+}
+
 func (f *Flag[T]) IsTelemetrySafe() bool {
 	return f.TelemetrySafe
 }
@@ -270,41 +278,43 @@ func (f *Flag[T]) Add(cmd *cobra.Command) {
 	case int:
 		flags.IntP(f.Name, f.Shorthand, v, f.Usage)
 	case string:
-		usage := f.Usage
+		var usage strings.Builder
+		usage.WriteString(f.Usage)
 		if len(f.Values) > 0 {
 			if len(f.Values) <= 4 {
 				// Display inline for a small number of choices
-				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+				fmt.Fprintf(&usage, " (allowed values: %s)", strings.Join(f.Values, ","))
 			} else {
 				// Display as a bullet list for many choices
-				usage += "\nAllowed values:"
+				usage.WriteString("\nAllowed values:")
 				for _, val := range f.Values {
-					usage += fmt.Sprintf("\n  - %s", val)
+					fmt.Fprintf(&usage, "\n  - %s", val)
 				}
 				if v != "" {
-					usage += "\n"
+					usage.WriteString("\n")
 				}
 			}
 		}
-		flags.StringP(f.Name, f.Shorthand, v, usage)
+		flags.StringP(f.Name, f.Shorthand, v, usage.String())
 	case []string:
-		usage := f.Usage
+		var usage strings.Builder
+		usage.WriteString(f.Usage)
 		if len(f.Values) > 0 {
 			if len(f.Values) <= 4 {
 				// Display inline for a small number of choices
-				usage += fmt.Sprintf(" (allowed values: %s)", strings.Join(f.Values, ","))
+				fmt.Fprintf(&usage, " (allowed values: %s)", strings.Join(f.Values, ","))
 			} else {
 				// Display as a bullet list for many choices
-				usage += "\nAllowed values:"
+				usage.WriteString("\nAllowed values:")
 				for _, val := range f.Values {
-					usage += fmt.Sprintf("\n  - %s", val)
+					fmt.Fprintf(&usage, "\n  - %s", val)
 				}
 				if len(v) != 0 {
-					usage += "\n"
+					usage.WriteString("\n")
 				}
 			}
 		}
-		flags.StringSliceP(f.Name, f.Shorthand, v, usage)
+		flags.StringSliceP(f.Name, f.Shorthand, v, usage.String())
 	case bool:
 		flags.BoolP(f.Name, f.Shorthand, v, f.Usage)
 	case time.Duration:
@@ -377,6 +387,8 @@ type Flagger interface {
 	GetConfigName() string
 	GetDefaultValue() any
 	GetAliases() []Alias
+	GetUsage() string
+	GetValues() []string
 	Hidden() bool
 	IsTelemetrySafe() bool
 	IsSet() bool
@@ -560,7 +572,6 @@ func (o *Options) ClientScannerOpts() client.ServiceOption {
 	return client.ServiceOption{
 		RemoteURL:     o.ServerAddr,
 		CustomHeaders: o.CustomHeaders,
-		Insecure:      o.Insecure,
 		PathPrefix:    o.PathPrefix,
 	}
 }
@@ -658,7 +669,7 @@ func (f *Flags) AddFlags(cmd *cobra.Command) {
 }
 
 func (f *Flags) Usages(cmd *cobra.Command) string {
-	var usages string
+	var usages strings.Builder
 	for _, group := range f.groups() {
 		flags := pflag.NewFlagSet(cmd.Name(), pflag.ContinueOnError)
 		lflags := cmd.LocalFlags()
@@ -672,10 +683,10 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 			continue
 		}
 
-		usages += fmt.Sprintf("%s Flags\n", group.Name())
-		usages += flags.FlagUsages() + "\n"
+		fmt.Fprintf(&usages, "%s Flags\n", group.Name())
+		usages.WriteString(flags.FlagUsages() + "\n")
 	}
-	return strings.TrimSpace(usages)
+	return strings.TrimSpace(usages.String())
 }
 
 func (f *Flags) Bind(cmd *cobra.Command) error {

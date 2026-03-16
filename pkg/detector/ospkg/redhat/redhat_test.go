@@ -381,24 +381,6 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "packages from remi repository are skipped",
-			args: args{
-				osVer: "7.6",
-				pkgs: []ftypes.Package{
-					{
-						Name:    "php",
-						Version: "7.3.23",
-						Release: "1.el7.remi",
-						Arch:    "x86_64",
-						BuildInfo: &ftypes.BuildInfo{
-							ContentSets: []string{"rhel-7-server-rpms"},
-						},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability(nil),
-		},
-		{
 			name: "broken value",
 			fixtures: []string{
 				"testdata/fixtures/invalid-type.yaml",

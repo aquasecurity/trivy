@@ -90,10 +90,10 @@ func WithDataFilesystem(fsys fs.FS) options.ScannerOption {
 	}
 }
 
-func WithRegoErrorLimits(limit int) options.ScannerOption {
+func WithMaxAllowedErrors(limit int) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if ss, ok := s.(*Scanner); ok {
-			ss.regoErrorLimit = limit
+			ss.maxAllowedErrors = limit
 		}
 	}
 }

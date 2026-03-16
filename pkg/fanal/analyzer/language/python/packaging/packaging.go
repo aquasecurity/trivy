@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -153,7 +154,7 @@ func classifyLicenses(opener fileOpener, licPath string, licenseClassifierConfid
 	}
 
 	// License found
-	return lo.Map(l.Findings, func(finding types.LicenseFinding, _ int) string {
+	return xslices.Map(l.Findings, func(finding types.LicenseFinding) string {
 		return finding.Name
 	}), nil
 }

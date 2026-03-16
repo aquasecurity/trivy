@@ -2,12 +2,13 @@ package network
 
 import (
 	"github.com/google/uuid"
-	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
@@ -135,11 +136,7 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
 	}
 
-	if nsgAttr := resource.GetAttribute("network_security_group_id"); nsgAttr.IsNotNil() {
-		if referencedNSG, err := modules.GetReferencedBlock(nsgAttr, resource); err == nil {
-			ni.SecurityGroups = []network.SecurityGroup{adaptSecurityGroupFromBlock(referencedNSG)}
-		}
-	}
+	ni.SecurityGroups = resolveNetworkInterfaceSecurityGroups(resource, modules)
 
 	ipConfigs := resource.GetBlocks("ip_configuration")
 	ni.IPConfigurations = make([]network.IPConfiguration, 0, len(ipConfigs))
@@ -156,13 +153,50 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 	return ni
 }
 
+func resolveNetworkInterfaceSecurityGroups(resource *terraform.Block, modules terraform.Modules) []network.SecurityGroup {
+	associations := modules.GetReferencingResources(
+		resource,
+		"azurerm_network_interface_security_group_association",
+		"network_interface_id",
+	)
+	seen := set.New[string]()
+	securityGroups := make([]network.SecurityGroup, 0, len(associations)+1)
+
+	addSecurityGroup := func(attr *terraform.Attribute, parent *terraform.Block) {
+		if attr == nil || attr.IsNil() {
+			return
+		}
+
+		referencedNSG, err := modules.GetReferencedBlock(attr, parent)
+		if err != nil || referencedNSG == nil {
+			return
+		}
+
+		if seen.Contains(referencedNSG.ID()) {
+			return
+		}
+		seen.Append(referencedNSG.ID())
+		securityGroups = append(securityGroups, adaptSecurityGroupFromBlock(referencedNSG))
+	}
+
+	// Backward compatibility for deprecated inline NIC NSG association.
+	addSecurityGroup(resource.GetAttribute("network_security_group_id"), resource)
+
+	// Current provider behavior uses explicit association resources.
+	for _, association := range associations {
+		addSecurityGroup(association.GetAttribute("network_security_group_id"), association)
+	}
+
+	if len(securityGroups) == 0 {
+		return nil
+	}
+
+	return securityGroups
+}
+
 func adaptSecurityGroupFromBlock(resource *terraform.Block) network.SecurityGroup {
 	return network.SecurityGroup{
 		Metadata: resource.GetMetadata(),
-		Rules: lo.Map(resource.GetBlocks("security_rule"),
-			func(b *terraform.Block, _ int) network.SecurityGroupRule {
-				return AdaptSGRule(b)
-			},
-		),
+		Rules:    xslices.Map(resource.GetBlocks("security_rule"), AdaptSGRule),
 	}
 }

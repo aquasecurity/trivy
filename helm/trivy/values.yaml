@@ -77,7 +77,7 @@ trivy:
   gitHubToken: ""
 
   # Docker registry credentials
-  # See also: https://trivy.dev/dev/advanced/private-registries/docker-hub/
+  # See also: https://trivy.dev/docs/latest/advanced/private-registries/docker-hub/
   #
   # Either
   # Directly in this file

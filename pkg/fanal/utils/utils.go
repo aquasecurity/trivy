@@ -13,11 +13,11 @@ import (
 	"unicode"
 
 	"github.com/bmatcuk/doublestar/v4"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var PathSeparator = fmt.Sprintf("%c", os.PathSeparator)
@@ -84,7 +84,7 @@ func IsBinary(content xio.ReadSeekerAt, fileSize int64) (bool, error) {
 }
 
 func CleanSkipPaths(skipPaths []string) []string {
-	return lo.Map(skipPaths, func(skipPath string, _ int) string {
+	return xslices.Map(skipPaths, func(skipPath string) string {
 		skipPath = filepath.ToSlash(filepath.Clean(skipPath))
 		return strings.TrimLeft(skipPath, "/")
 	})

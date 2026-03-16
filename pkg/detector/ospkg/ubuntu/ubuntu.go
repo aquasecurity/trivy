@@ -67,6 +67,7 @@ var (
 		"24.04":     time.Date(2034, 3, 31, 23, 59, 59, 0, time.UTC),
 		"24.10":     time.Date(2025, 7, 9, 23, 59, 59, 0, time.UTC),
 		"25.04":     time.Date(2026, 1, 16, 23, 59, 59, 0, time.UTC),
+		"25.10":     time.Date(2026, 7, 1, 23, 59, 59, 0, time.UTC),
 	}
 )
 
@@ -105,11 +106,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		// Skip third-party packages as they are not covered by Ubuntu security advisories
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
-			continue
-		}
-
 		osVer = s.versionFromEolDates(ctx, osVer)
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,

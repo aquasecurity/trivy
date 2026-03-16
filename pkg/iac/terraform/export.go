@@ -8,13 +8,12 @@ import (
 	ctyjson "github.com/zclconf/go-cty/cty/json"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func ExportModules(modules Modules) TerraformConfigExport {
 	return TerraformConfigExport{
-		Modules: lo.Map(modules, func(m *Module, _ int) ModuleExport {
-			return m.ToModuleExport()
-		}),
+		Modules: xslices.Map(modules, (*Module).ToModuleExport),
 	}
 }
 
@@ -54,9 +53,7 @@ func (c *Module) ToModuleExport() ModuleExport {
 		RootPath:   c.RootPath(),
 		ModulePath: c.ModulePath(),
 		ParentPath: parentPath,
-		Blocks: lo.Map(c.blocks, func(b *Block, _ int) BlockExport {
-			return b.ToBlockExport()
-		}),
+		Blocks:     xslices.Map(c.blocks, (*Block).ToBlockExport),
 	}
 }
 

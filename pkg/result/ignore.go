@@ -162,11 +162,7 @@ func (c *IgnoreConfig) MatchVulnerability(vulnID, filePath, pkgPath string, pkg 
 	return nil
 }
 
-func (c *IgnoreConfig) MatchMisconfiguration(misconfID, avdID, filePath string) *IgnoreFinding {
-	ids := []string{
-		misconfID,
-		avdID,
-	}
+func (c *IgnoreConfig) MatchMisconfiguration(ids []string, filePath string) *IgnoreFinding {
 	for _, id := range ids {
 		if f := c.Misconfigurations.Match(id, filePath, nil); f != nil {
 			return f
@@ -202,7 +198,7 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 		return expr
 	}
 
-	_, err := expression.Normalize(licenseID, licensing.NormalizeLicense, matchLicenses)
+	_, err := expression.Normalize(licenseID, licensing.NormalizeLicenseExpression, matchLicenses)
 	if err != nil {
 		log.WithPrefix("ignore").Debug("Unable to normalize license expression", log.String("license", licenseID), log.Err(err))
 		return nil

@@ -1,0 +1,11 @@
+Test case: Broken/malformed Cargo.lock file.
+
+This test verifies that the analyzer gracefully handles a corrupted Cargo.lock file.
+The file contains only "[" which is invalid TOML.
+
+Expected behavior:
+- Return empty AnalysisResult (no error, just empty result)
+- Do not crash or panic
+
+-- Cargo.lock --
+[

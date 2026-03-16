@@ -31,11 +31,9 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: ec2.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("aws_kms_key.ebs_encryption", iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest("aws_kms_key.ebs_encryption"),
 				},
 			},
 		},
@@ -48,11 +46,9 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: iacTypes.NewTestMetadata(),
 				Encryption: ec2.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("string-key", iacTypes.NewTestMetadata()),
+					Enabled:  iacTypes.BoolTest(true),
+					KMSKeyID: iacTypes.StringTest("string-key"),
 				},
 			},
 		},
@@ -63,12 +59,7 @@ func Test_adaptVolume(t *testing.T) {
 			}
 `,
 			expected: ec2.Volume{
-				Metadata: iacTypes.NewTestMetadata(),
-				Encryption: ec2.Encryption{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
+				Encryption: ec2.Encryption{},
 			},
 		},
 	}

@@ -20,6 +20,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vulnerability"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
@@ -77,7 +78,7 @@ func (s *ScanServer) ToOptions(in *rpcScanner.ScanOptions) types.ScanOptions {
 		pkgRelationships = ftypes.Relationships // For backward compatibility
 	}
 
-	scanners := lo.Map(in.Scanners, func(s string, _ int) types.Scanner {
+	scanners := xslices.Map(in.Scanners, func(s string) types.Scanner {
 		return types.Scanner(s)
 	})
 

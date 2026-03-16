@@ -34,13 +34,11 @@ func Test_adaptSecurityGroups(t *testing.T) {
 			}
 `,
 			expected: []computing.SecurityGroup{{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
+				Description: iacTypes.StringTest("memo"),
 				IngressRules: []computing.SecurityGroupRule{
 					{
-						Metadata:    iacTypes.NewTestMetadata(),
-						CIDR:        iacTypes.String("1.2.3.4/32", iacTypes.NewTestMetadata()),
-						Description: iacTypes.String("memo", iacTypes.NewTestMetadata()),
+						CIDR:        iacTypes.StringTest("1.2.3.4/32"),
+						Description: iacTypes.StringTest("memo"),
 					},
 				},
 			}},
@@ -59,14 +57,8 @@ func Test_adaptSecurityGroups(t *testing.T) {
 `,
 
 			expected: []computing.SecurityGroup{{
-				Metadata:    iacTypes.NewTestMetadata(),
-				Description: iacTypes.String("", iacTypes.NewTestMetadata()),
 				IngressRules: []computing.SecurityGroupRule{
-					{
-						Metadata:    iacTypes.NewTestMetadata(),
-						CIDR:        iacTypes.String("", iacTypes.NewTestMetadata()),
-						Description: iacTypes.String("", iacTypes.NewTestMetadata()),
-					},
+					{},
 				},
 			}},
 		},

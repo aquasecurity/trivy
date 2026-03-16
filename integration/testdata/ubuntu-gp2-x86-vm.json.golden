@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "disk.img",
   "ArtifactType": "vm",

@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:d5fbfb11da0ffb72f8bdeae29420a8101a04534c281854fe5ace22ec13d133bb",
@@ -254,7 +257,7 @@
           "PkgPath": "usr/local/tomcat/webapps/helloworld.war/WEB-INF/lib/spring-beans-5.3.15.jar",
           "PkgIdentifier": {
             "PURL": "pkg:maven/org.springframework/spring-beans@5.3.15",
-            "UID": "9d9e0a303e263760"
+            "UID": "382ba53322e3ac2a"
           },
           "InstalledVersion": "5.3.15",
           "FixedVersion": "5.3.18",

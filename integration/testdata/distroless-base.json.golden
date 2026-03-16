@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactID": "sha256:6c3688715cb42ea1466b96eb45b39d8afc9f8cdcf723df8464fb26391711a7db",
@@ -76,7 +79,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "4115f1455e5bd09d"
+            "UID": "3e39945fa102851d"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -162,7 +165,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libssl1.1@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "4115f1455e5bd09d"
+            "UID": "3e39945fa102851d"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",
@@ -254,7 +257,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "c007f47f4b22b5a9"
+            "UID": "464eae002f08322"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "Status": "affected",
@@ -340,7 +343,7 @@
           "PkgName": "openssl",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/openssl@1.1.0k-1~deb9u1?arch=amd64\u0026distro=debian-9.9",
-            "UID": "c007f47f4b22b5a9"
+            "UID": "464eae002f08322"
           },
           "InstalledVersion": "1.1.0k-1~deb9u1",
           "FixedVersion": "1.1.0l-1~deb9u1",

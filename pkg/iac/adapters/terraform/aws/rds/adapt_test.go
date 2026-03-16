@@ -58,77 +58,57 @@ func Test_Adapt(t *testing.T) {
 			expected: rds.RDS{
 				Instances: []rds.Instance{
 					{
-						Metadata:                  iacTypes.NewTestMetadata(),
-						BackupRetentionPeriodDays: iacTypes.Int(5, iacTypes.NewTestMetadata()),
-						ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
+						BackupRetentionPeriodDays: iacTypes.IntTest(5),
 						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							KMSKeyID: iacTypes.String("performance_key_1", iacTypes.NewTestMetadata()),
+							Enabled:  iacTypes.BoolTest(true),
+							KMSKeyID: iacTypes.StringTest("performance_key_1"),
 						},
 						Encryption: rds.Encryption{
-							Metadata:       iacTypes.NewTestMetadata(),
-							EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							KMSKeyID:       iacTypes.String("kms_key_2", iacTypes.NewTestMetadata()),
+							EncryptStorage: iacTypes.BoolTest(true),
+							KMSKeyID:       iacTypes.StringTest("kms_key_2"),
 						},
-						PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
-						StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						Engine:           iacTypes.StringTest(rds.EngineAurora),
+						StorageEncrypted: iacTypes.BoolTest(true),
 					},
 				},
 				Clusters: []rds.Cluster{
 					{
-						Metadata:                  iacTypes.NewTestMetadata(),
-						BackupRetentionPeriodDays: iacTypes.Int(7, iacTypes.NewTestMetadata()),
-						ReplicationSourceARN:      iacTypes.String("arn-of-a-source-db-cluster", iacTypes.NewTestMetadata()),
-						PerformanceInsights: rds.PerformanceInsights{
-							Metadata: iacTypes.NewTestMetadata(),
-							Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-							KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
+						BackupRetentionPeriodDays: iacTypes.IntTest(7),
+						ReplicationSourceARN:      iacTypes.StringTest("arn-of-a-source-db-cluster"),
+						PerformanceInsights:       rds.PerformanceInsights{},
 						Encryption: rds.Encryption{
-							Metadata:       iacTypes.NewTestMetadata(),
-							EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							KMSKeyID:       iacTypes.String("kms_key_1", iacTypes.NewTestMetadata()),
+							EncryptStorage: iacTypes.BoolTest(true),
+							KMSKeyID:       iacTypes.StringTest("kms_key_1"),
 						},
 						Instances: []rds.ClusterInstance{
 							{
 								Instance: rds.Instance{
-									Metadata:                  iacTypes.NewTestMetadata(),
-									BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
-									ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
 									PerformanceInsights: rds.PerformanceInsights{
-										Metadata: iacTypes.NewTestMetadata(),
-										Enabled:  iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-										KMSKeyID: iacTypes.String("performance_key_0", iacTypes.NewTestMetadata()),
+										Enabled:  iacTypes.BoolTest(true),
+										KMSKeyID: iacTypes.StringTest("performance_key_0"),
 									},
 									Encryption: rds.Encryption{
-										Metadata:       iacTypes.NewTestMetadata(),
-										EncryptStorage: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-										KMSKeyID:       iacTypes.String("kms_key_0", iacTypes.NewTestMetadata()),
+										EncryptStorage: iacTypes.BoolTest(true),
+										KMSKeyID:       iacTypes.StringTest("kms_key_0"),
 									},
-									PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-									Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
-									StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+									Engine:           iacTypes.StringTest(rds.EngineAurora),
+									StorageEncrypted: iacTypes.BoolTest(true),
 								},
-								ClusterIdentifier: iacTypes.String("aws_rds_cluster.example", iacTypes.NewTestMetadata()),
+								ClusterIdentifier: iacTypes.StringTest("aws_rds_cluster.example"),
 							},
 						},
-						PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						Engine:       iacTypes.String(rds.EngineAuroraMysql, iacTypes.NewTestMetadata()),
+						Engine: iacTypes.StringTest(rds.EngineAuroraMysql),
 						AvailabilityZones: iacTypes.StringValueList{
-							iacTypes.String("us-west-2a", iacTypes.NewTestMetadata()),
-							iacTypes.String("us-west-2b", iacTypes.NewTestMetadata()),
-							iacTypes.String("us-west-2c", iacTypes.NewTestMetadata()),
+							iacTypes.StringTest("us-west-2a"),
+							iacTypes.StringTest("us-west-2b"),
+							iacTypes.StringTest("us-west-2c"),
 						},
-						DeletionProtection: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+						DeletionProtection: iacTypes.BoolTest(true),
 					},
 				},
 				Classic: rds.Classic{
 					DBSecurityGroups: []rds.DBSecurityGroup{
-						{
-							Metadata: iacTypes.NewTestMetadata(),
-						},
+						{},
 					},
 				},
 			},
@@ -157,23 +137,10 @@ func Test_adaptInstance(t *testing.T) {
 			}
 `,
 			expected: rds.Instance{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: iacTypes.Int(0, iacTypes.NewTestMetadata()),
-				ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
-				PerformanceInsights: rds.PerformanceInsights{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				Encryption: rds.Encryption{
-					Metadata:       iacTypes.NewTestMetadata(),
-					EncryptStorage: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID:       iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				PublicAccess:     iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Engine:           iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
-				StorageEncrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-				IAMAuthEnabled:   iacTypes.Bool(false, iacTypes.NewTestMetadata()),
+				PerformanceInsights: rds.PerformanceInsights{},
+				Encryption:          rds.Encryption{},
+				Engine:              iacTypes.StringTest(rds.EngineAurora),
+				StorageEncrypted:    iacTypes.BoolTest(true),
 			},
 		},
 	}
@@ -200,21 +167,10 @@ func Test_adaptCluster(t *testing.T) {
 			  }
 `,
 			expected: rds.Cluster{
-				Metadata:                  iacTypes.NewTestMetadata(),
-				BackupRetentionPeriodDays: iacTypes.Int(1, iacTypes.NewTestMetadata()),
-				ReplicationSourceARN:      iacTypes.String("", iacTypes.NewTestMetadata()),
-				PerformanceInsights: rds.PerformanceInsights{
-					Metadata: iacTypes.NewTestMetadata(),
-					Enabled:  iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID: iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				Encryption: rds.Encryption{
-					Metadata:       iacTypes.NewTestMetadata(),
-					EncryptStorage: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-					KMSKeyID:       iacTypes.String("", iacTypes.NewTestMetadata()),
-				},
-				PublicAccess: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-				Engine:       iacTypes.String(rds.EngineAurora, iacTypes.NewTestMetadata()),
+				BackupRetentionPeriodDays: iacTypes.IntTest(1),
+				PerformanceInsights:       rds.PerformanceInsights{},
+				Encryption:                rds.Encryption{},
+				Engine:                    iacTypes.StringTest(rds.EngineAurora),
 			},
 		},
 	}

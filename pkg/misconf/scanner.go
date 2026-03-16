@@ -36,6 +36,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/version/app"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "embed"
 )
@@ -246,7 +247,7 @@ func initRegoOptions(opt ScannerOption) ([]options.ScannerOption, error) {
 	}
 
 	if opt.RegoErrorLimit >= 0 {
-		opts = append(opts, rego.WithRegoErrorLimits(opt.RegoErrorLimit))
+		opts = append(opts, rego.WithMaxAllowedErrors(opt.RegoErrorLimit))
 	}
 
 	policyFS, policyPaths, err := CreatePolicyFS(opt.PolicyPaths)
@@ -426,7 +427,7 @@ func CheckPathExists(path string) (fs.FileInfo, string, error) {
 	}
 	fi, err := os.Stat(abs)
 	if errors.Is(err, os.ErrNotExist) {
-		return nil, "", xerrors.Errorf("check file %q not found", abs)
+		return nil, "", xerrors.Errorf("cache does not exist at %q", abs)
 	} else if err != nil {
 		return nil, "", xerrors.Errorf("file %q stat error: %w", abs, err)
 	}
@@ -500,13 +501,6 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 		flattened := result.Flatten()
 
 		query := fmt.Sprintf("data.%s.%s", result.RegoNamespace(), result.RegoRule())
-
-		// TODO: use the ID field
-		ruleID := result.Rule().AVDID
-		if result.RegoNamespace() != "" && len(result.Rule().Aliases) > 0 {
-			ruleID = result.Rule().Aliases[0]
-		}
-
 		cause := NewCauseWithCode(result, flattened)
 
 		misconfResult := types.MisconfResult{
@@ -514,8 +508,9 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 			Query:     query,
 			Message:   flattened.Description,
 			PolicyMetadata: types.PolicyMetadata{
-				ID:                 ruleID,
+				ID:                 result.Rule().ID,
 				AVDID:              result.Rule().AVDID,
+				Aliases:            result.Rule().Aliases,
 				Type:               fmt.Sprintf("%s Security Check", scannerName),
 				Title:              result.Rule().Summary,
 				Description:        result.Rule().Explanation,
@@ -582,7 +577,7 @@ func NewCauseWithCode(underlying scan.Result, flat scan.FlatResult) types.CauseM
 
 		if code, err := underlying.GetCode(); err == nil {
 			cause.Code = types.Code{
-				Lines: lo.Map(code.Lines, func(l scan.Line, _ int) types.Line {
+				Lines: xslices.Map(code.Lines, func(l scan.Line) types.Line {
 					return types.Line{
 						Number:      l.Number,
 						Content:     l.Content,

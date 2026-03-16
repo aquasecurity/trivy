@@ -235,6 +235,10 @@ type Package struct {
 
 	// Files installed by the package
 	InstalledFiles []string `json:",omitempty"`
+
+	// AnalyzedBy indicates which analyzer detected this package.
+	// This is not a property of the package itself, but metadata about the detection process.
+	AnalyzedBy AnalyzerType `json:",omitempty"`
 }
 
 func (pkg *Package) Empty() bool {

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -14,6 +15,7 @@ import (
 	fakei "github.com/google/go-containerregistry/pkg/v1/fake"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
 	"github.com/google/go-containerregistry/pkg/v1/types"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"k8s.io/utils/clock"
@@ -74,6 +76,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			metadata: policy.Metadata{
 				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+				MajorVersion: lo.ToPtr(policy.BundleVersion),
 			},
 			skipUpdate: false,
 		},
@@ -81,7 +84,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			name:       "skip update flag set with no existing cache to fallback to",
 			skipUpdate: true,
 			checkDir:   "policy",
-			wantErr:    "Failed to load existing cache",
+			wantErr:    "cache does not exist at",
 		},
 		{
 			name:       "skip update flag set with existing cache to fallback to",
@@ -101,6 +104,7 @@ func TestInitBuiltinChecks(t *testing.T) {
 			metadata: policy.Metadata{
 				Digest:       `sha256:922e50f14ab484f11ae65540c3d2d76009020213f1027d4331d31141575e5414`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
+				MajorVersion: lo.ToPtr(policy.BundleVersion),
 			},
 			checkDir: "policy",
 			clock:    fake.NewFakeClock(time.Date(3000, 1, 1, 1, 0, 0, 0, time.UTC)),
@@ -161,6 +165,9 @@ func TestInitBuiltinChecks(t *testing.T) {
 							"org.opencontainers.image.title": "bundle.tar.gz",
 						},
 					},
+				},
+				Annotations: map[string]string{
+					policy.VersionAnnotationKey: fmt.Sprintf("%d.0.0", policy.BundleVersion),
 				},
 			}, nil)
 

@@ -1,6 +1,6 @@
 package types
 
-import "github.com/samber/lo"
+import xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 type LicenseType string
 
@@ -45,7 +45,7 @@ func (findings LicenseFindings) Less(i, j int) bool {
 }
 
 func (findings LicenseFindings) Names() []string {
-	return lo.Map(findings, func(finding LicenseFinding, _ int) string {
+	return xslices.Map(findings, func(finding LicenseFinding) string {
 		return finding.Name
 	})
 }

@@ -54,7 +54,7 @@ Like any other flag, this is available as Trivy YAML configuration.
 For example:
 
 ```yaml
-image:
+scan:
   skip-files:
     - foo
     - "testdata/*/bar"

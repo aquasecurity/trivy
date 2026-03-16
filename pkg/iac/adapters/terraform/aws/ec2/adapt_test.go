@@ -46,24 +46,19 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     iacTypes.NewTestMetadata(),
-							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
-							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
+							HttpTokens:   iacTypes.StringTest("required"),
+							HttpEndpoint: iacTypes.StringTest("disabled"),
 						},
-						UserData: iacTypes.String(
+						UserData: iacTypes.StringTest(
 							`export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
-`,
-							iacTypes.NewTestMetadata()),
+`),
 						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Encrypted: iacTypes.BoolTest(true),
 						},
 						EBSBlockDevices: []*ec2.BlockDevice{
 							{
-								Metadata:  iacTypes.NewTestMetadata(),
-								Encrypted: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+								Encrypted: iacTypes.BoolTest(true),
 							},
 						},
 					},
@@ -79,17 +74,8 @@ export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE
 			expected: ec2.EC2{
 				Instances: []ec2.Instance{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						MetadataOptions: ec2.MetadataOptions{
-							Metadata:     iacTypes.NewTestMetadata(),
-							HttpTokens:   iacTypes.String("", iacTypes.NewTestMetadata()),
-							HttpEndpoint: iacTypes.String("", iacTypes.NewTestMetadata()),
-						},
-						UserData: iacTypes.String("", iacTypes.NewTestMetadata()),
-						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
+						MetadataOptions: ec2.MetadataOptions{},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},
@@ -113,27 +99,21 @@ resource "aws_instance" "this" {
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Instance: ec2.Instance{
-							Metadata: iacTypes.NewTestMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
-								HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
+								HttpEndpoint: iacTypes.StringTest("disabled"),
+								HttpTokens:   iacTypes.StringTest("required"),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
-							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.StringTest("disabled"),
+							HttpTokens:   iacTypes.StringTest("required"),
 						},
-						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},
@@ -158,27 +138,21 @@ resource "aws_instance" "this" {
 			expected: ec2.EC2{
 				LaunchTemplates: []ec2.LaunchTemplate{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						Instance: ec2.Instance{
-							Metadata: iacTypes.NewTestMetadata(),
 							MetadataOptions: ec2.MetadataOptions{
-								HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
-								HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
+								HttpEndpoint: iacTypes.StringTest("disabled"),
+								HttpTokens:   iacTypes.StringTest("required"),
 							},
 						},
 					},
 				},
 				Instances: []ec2.Instance{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
 						MetadataOptions: ec2.MetadataOptions{
-							HttpEndpoint: iacTypes.String("disabled", iacTypes.NewTestMetadata()),
-							HttpTokens:   iacTypes.String("required", iacTypes.NewTestMetadata()),
+							HttpEndpoint: iacTypes.StringTest("disabled"),
+							HttpTokens:   iacTypes.StringTest("required"),
 						},
-						RootBlockDevice: &ec2.BlockDevice{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Encrypted: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
+						RootBlockDevice: &ec2.BlockDevice{},
 					},
 				},
 			},

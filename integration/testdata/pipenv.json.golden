@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/pipenv",
@@ -14,7 +17,7 @@
           "Name": "werkzeug",
           "Identifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "390fc5ac777dc4e0"
+            "UID": "c69cfa509e6106cb"
           },
           "Version": "0.11.1",
           "Locations": [
@@ -22,7 +25,8 @@
               "StartLine": 19,
               "EndLine": 26
             }
-          ]
+          ],
+          "AnalyzedBy": "pipenv"
         }
       ],
       "Vulnerabilities": [
@@ -31,7 +35,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "390fc5ac777dc4e0"
+            "UID": "c69cfa509e6106cb"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.15.3",
@@ -88,7 +92,7 @@
           "PkgName": "werkzeug",
           "PkgIdentifier": {
             "PURL": "pkg:pypi/werkzeug@0.11.1",
-            "UID": "390fc5ac777dc4e0"
+            "UID": "c69cfa509e6106cb"
           },
           "InstalledVersion": "0.11.1",
           "FixedVersion": "0.11.6",

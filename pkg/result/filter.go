@@ -16,6 +16,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -61,9 +62,7 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 // FilterResult filters out the result
 func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreConfig, opt FilterOptions) error {
 	// Convert dbTypes.Severity to string
-	severities := lo.Map(opt.Severities, func(s dbTypes.Severity, _ int) string {
-		return s.String()
-	})
+	severities := xslices.Map(opt.Severities, dbTypes.Severity.String)
 
 	filterVulnerabilities(result, severities, opt.IgnoreStatuses, ignoreConf)
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
@@ -105,7 +104,7 @@ func filterVulnerabilities(result *types.Result, severities []string, ignoreStat
 		}
 
 		// Check if there is a duplicate vulnerability
-		key := fmt.Sprintf("%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
+		key := fmt.Sprintf("%s/%s/%s/%s/%s", vuln.VulnerabilityID, vuln.PkgID, vuln.PkgName, vuln.InstalledVersion, vuln.PkgPath)
 		if old, ok := uniqVulns[key]; ok && !shouldOverwrite(old, vuln) {
 			continue
 		}
@@ -131,7 +130,11 @@ func filterMisconfigurations(result *types.Result, severities []string, includeN
 		}
 
 		// Filter by ignore file
-		if f := ignoreConfig.MatchMisconfiguration(misconf.ID, misconf.AVDID, result.Target); f != nil {
+		ids := append([]string{
+			misconf.ID,
+			misconf.AVDID,
+		}, misconf.Aliases...)
+		if f := ignoreConfig.MatchMisconfiguration(ids, result.Target); f != nil {
 			result.ModifiedFindings = append(result.ModifiedFindings,
 				types.NewModifiedFinding(misconf, types.FindingStatusIgnored, f.Statement, ignoreConfig.FilePath))
 			continue

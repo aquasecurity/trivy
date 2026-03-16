@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/conan",
@@ -15,7 +18,7 @@
           "Name": "poco",
           "Identifier": {
             "PURL": "pkg:conan/poco@1.9.4",
-            "UID": "1c5e3b385e0d9c68"
+            "UID": "da7062258611d4cc"
           },
           "Version": "1.9.4",
           "Relationship": "direct",
@@ -31,14 +34,15 @@
               "StartLine": 12,
               "EndLine": 25
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "bzip2/1.0.8",
           "Name": "bzip2",
           "Identifier": {
             "PURL": "pkg:conan/bzip2@1.0.8",
-            "UID": "fcee910413ab7575"
+            "UID": "b510b604433d1be0"
           },
           "Version": "1.0.8",
           "Indirect": true,
@@ -48,14 +52,15 @@
               "StartLine": 37,
               "EndLine": 43
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "expat/2.4.8",
           "Name": "expat",
           "Identifier": {
             "PURL": "pkg:conan/expat@2.4.8",
-            "UID": "1a3fe92a43620875"
+            "UID": "f293d4bbe4291e24"
           },
           "Version": "2.4.8",
           "Indirect": true,
@@ -65,14 +70,15 @@
               "StartLine": 51,
               "EndLine": 57
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "openssl/1.1.1q",
           "Name": "openssl",
           "Identifier": {
             "PURL": "pkg:conan/openssl@1.1.1q",
-            "UID": "d009c32d2d560ed1"
+            "UID": "13e4c291040aa3da"
           },
           "Version": "1.1.1q",
           "Indirect": true,
@@ -82,14 +88,15 @@
               "StartLine": 65,
               "EndLine": 71
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "pcre/8.43",
           "Name": "pcre",
           "Identifier": {
             "PURL": "pkg:conan/pcre@8.43",
-            "UID": "452827dd216c920e"
+            "UID": "adc7cb44f77b9bfc"
           },
           "Version": "8.43",
           "Indirect": true,
@@ -103,14 +110,15 @@
               "StartLine": 26,
               "EndLine": 36
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "sqlite3/3.39.2",
           "Name": "sqlite3",
           "Identifier": {
             "PURL": "pkg:conan/sqlite3@3.39.2",
-            "UID": "8e926335e2fce900"
+            "UID": "99b2c7dc64d6c85b"
           },
           "Version": "3.39.2",
           "Indirect": true,
@@ -120,14 +128,15 @@
               "StartLine": 58,
               "EndLine": 64
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         },
         {
           "ID": "zlib/1.2.12",
           "Name": "zlib",
           "Identifier": {
             "PURL": "pkg:conan/zlib@1.2.12",
-            "UID": "dfef9b967a82df9f"
+            "UID": "322af4309791cb84"
           },
           "Version": "1.2.12",
           "Indirect": true,
@@ -137,7 +146,8 @@
               "StartLine": 44,
               "EndLine": 50
             }
-          ]
+          ],
+          "AnalyzedBy": "conan-lock"
         }
       ],
       "Vulnerabilities": [
@@ -147,7 +157,7 @@
           "PkgName": "pcre",
           "PkgIdentifier": {
             "PURL": "pkg:conan/pcre@8.43",
-            "UID": "452827dd216c920e"
+            "UID": "adc7cb44f77b9bfc"
           },
           "InstalledVersion": "8.43",
           "FixedVersion": "8.45",

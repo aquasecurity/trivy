@@ -26,6 +26,7 @@ import (
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const (
@@ -276,9 +277,12 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 	}
 
 	return &spdx.Package{
-		PackageName:               root.Name,
-		PackageSPDXIdentifier:     elementID(camelCase(string(root.Type)), pkgID),
-		PackageDownloadLocation:   pkgDownloadLocation,
+		PackageName:             root.Name,
+		PackageSPDXIdentifier:   elementID(camelCase(string(root.Type)), pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
+		// Licenses are only available for library packages, not for root packages.
+		PackageLicenseConcluded:   noAssertionField,
+		PackageLicenseDeclared:    noAssertionField,
 		Annotations:               m.spdxAnnotations(root, timeNow),
 		PackageExternalReferences: externalReferences,
 		PrimaryPackagePurpose:     pkgPurpose,
@@ -404,7 +408,7 @@ func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.An
 func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense) {
 	// Only library components contain licenses
 	if c.Type != core.TypeLibrary {
-		return "", nil
+		return noAssertionField, nil
 	}
 	if len(c.Licenses) == 0 {
 		return noAssertionField, nil
@@ -415,7 +419,7 @@ func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense
 func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
 	var otherLicenses = make(map[string]*spdx.OtherLicense) // licenseID -> OtherLicense
 
-	license := strings.Join(lo.Map(licenses, func(license string, _ int) string {
+	license := strings.Join(xslices.Map(licenses, func(license string) string {
 		// We need to save text licenses before normalization,
 		// because it is impossible to handle all cases possible in the text.
 		// as an example, parse a license with 2 consecutive tokens (see https://github.com/aquasecurity/trivy/issues/8465)
@@ -462,7 +466,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) (string, []*spdx.OtherL
 		return expression.SimpleExpr{License: l.LicenseIdentifier}
 	}
 
-	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicense, expression.NormalizeForSPDX, replaceOtherLicenses)
+	normalizedLicense, err := expression.Normalize(license, licensing.NormalizeLicenseExpression, expression.NormalizeForSPDX, replaceOtherLicenses)
 	if err != nil {
 		// Not fail on the invalid license
 		m.logger.Warn("Unable to marshal SPDX licenses", log.String("license", license))

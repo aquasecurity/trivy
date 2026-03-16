@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io"
 	"reflect"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -13,7 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/x/slices"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 type pom struct {
@@ -96,6 +97,16 @@ func (p *pom) listProperties(val reflect.Value) map[string]string {
 			m := val.Field(i)
 			for _, e := range m.MapKeys() {
 				v := m.MapIndex(e)
+
+				// <properties> element may contain:
+				// - properties from <properties> element of current POM
+				// - properties from parent POMs (we added these properties early)
+				//    - properties from <properties> element of parent POMs
+				//    - properties got from fields of parent POMs (`project.groupId`, `parent.project.version`, etc.)
+				// Properties from field has higher priority than properties from <properties> element.
+				if tag == "properties" && props[e.String()] != "" {
+					continue
+				}
 				props[e.String()] = v.String()
 			}
 		case reflect.Struct:
@@ -116,7 +127,7 @@ func (p *pom) artifact() artifact {
 }
 
 func (p *pom) licenses() []string {
-	return slices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
+	return xslices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
 		return lic.Name, lic.Name != ""
 	}))
 }
@@ -246,9 +257,9 @@ func (d pomDependency) Resolve(props map[string]string, depManagement, rootDepMa
 		if managed.Optional {
 			dep.Optional = managed.Optional
 		}
-		if len(managed.Exclusions.Exclusion) != 0 {
-			dep.Exclusions = managed.Exclusions
-		}
+
+		// 'mvn' always merges exceptions for pom and root POM
+		dep.Exclusions.Exclusion = append(dep.Exclusions.Exclusion, managed.Exclusions.Exclusion...)
 		return dep
 	}
 	return dep
@@ -285,6 +296,8 @@ func (d pomDependency) ToArtifact(opts analysisOptions) artifact {
 		Exclusions:   exclusions,
 		Locations:    locations,
 		Relationship: ftypes.RelationshipIndirect, // default
+		RootFilePath: opts.rootFilePath,
+		Repositories: slices.Clone(opts.repositories), // avoid sharing
 	}
 }
 

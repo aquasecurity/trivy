@@ -93,6 +93,7 @@ type Repository struct {
 	Username string
 	Password string
 	Token    string // For Bearer
+	Insecure bool
 
 	dir string // Root directory for this VEX repository, $CACHE_DIR/vex/repositories/$REPO_NAME/
 }
@@ -164,7 +165,9 @@ func (r *Repository) downloadManifest(ctx context.Context, opts Options) error {
 
 	log.DebugContext(ctx, "Downloading the repository metadata...", log.String("url", u.String()), log.String("dst", r.dir))
 	_, err = downloader.Download(ctx, u.String(), filepath.Join(r.dir, manifestFile), ".", downloader.Options{
-		Insecure: opts.Insecure,
+		// if one between global and per-repo insecure option is set,
+		// we set it to true accordingly
+		Insecure: opts.Insecure || r.Insecure,
 		Auth: downloader.Auth{
 			Username: r.Username,
 			Password: r.Password,
@@ -239,8 +242,11 @@ func (r *Repository) download(ctx context.Context, ver Version, dst string, opts
 		logger := log.With(log.String("repo", r.Name))
 		logger.DebugContext(ctx, "Downloading repository to cache dir...", log.String("url", loc.URL),
 			log.String("dir", dst), log.String("etag", etags[loc.URL]))
+
 		etag, err := downloader.Download(ctx, loc.URL, dst, ".", downloader.Options{
-			Insecure: opts.Insecure,
+			// if one between global and per-repo insecure option is set,
+			// we set it to true accordingly
+			Insecure: opts.Insecure || r.Insecure,
 			Auth: downloader.Auth{
 				Username: r.Username,
 				Password: r.Password,

@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-var converterInterface = reflect.TypeOf((*Converter)(nil)).Elem()
+var converterInterface = reflect.TypeFor[Converter]()
 
 func anonymousToRego(inputValue reflect.Value) any {
 

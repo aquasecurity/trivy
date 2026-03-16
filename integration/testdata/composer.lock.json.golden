@@ -1,5 +1,8 @@
 {
   "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
   "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
   "CreatedAt": "2021-08-25T12:20:30.000000005Z",
   "ArtifactName": "testdata/fixtures/repo/composer",
@@ -15,7 +18,7 @@
           "Name": "guzzlehttp/guzzle",
           "Identifier": {
             "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4",
-            "UID": "b08c57e1706dce2d"
+            "UID": "bc13d175ea3245db"
           },
           "Version": "7.4.4",
           "Licenses": [
@@ -30,14 +33,15 @@
               "StartLine": 9,
               "EndLine": 129
             }
-          ]
+          ],
+          "AnalyzedBy": "composer"
         },
         {
           "ID": "guzzlehttp/psr7@1.8.3",
           "Name": "guzzlehttp/psr7",
           "Identifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "75a904f2b589910f"
+            "UID": "57beb2412ee42604"
           },
           "Version": "1.8.3",
           "Licenses": [
@@ -50,7 +54,8 @@
               "StartLine": 130,
               "EndLine": 245
             }
-          ]
+          ],
+          "AnalyzedBy": "composer"
         }
       ],
       "Vulnerabilities": [
@@ -60,7 +65,7 @@
           "PkgName": "guzzlehttp/psr7",
           "PkgIdentifier": {
             "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
-            "UID": "75a904f2b589910f"
+            "UID": "57beb2412ee42604"
           },
           "InstalledVersion": "1.8.3",
           "FixedVersion": "1.8.4",

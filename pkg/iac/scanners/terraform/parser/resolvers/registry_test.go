@@ -3,9 +3,10 @@ package resolvers
 import (
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func Test_getPrivateRegistryTokenFromEnvVars_ErrorsWithNoEnvVarSet(t *testing.T) {
@@ -61,7 +62,7 @@ func Test_resolveVersion(t *testing.T) {
 	makeModuleVersions := func(versions ...string) moduleVersions {
 		return moduleVersions{
 			Modules: []moduleProviderVersions{
-				{Versions: lo.Map(versions, func(v string, _ int) moduleVersion {
+				{Versions: xslices.Map(versions, func(v string) moduleVersion {
 					return moduleVersion{Version: v}
 				})},
 			},

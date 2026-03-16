@@ -208,19 +208,15 @@ func Test_Adapt(t *testing.T) {
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Metadata: iacTypes.NewTestMetadata(),
-						Name:     iacTypes.String("bucket", iacTypes.NewTestMetadata()),
+						Name: iacTypes.StringTest("bucket"),
 						PublicAccessBlock: &s3.PublicAccessBlock{
-							Metadata:              iacTypes.NewTestMetadata(),
-							BlockPublicACLs:       iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							BlockPublicPolicy:     iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							IgnorePublicACLs:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							RestrictPublicBuckets: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							BlockPublicACLs:       iacTypes.BoolTest(true),
+							BlockPublicPolicy:     iacTypes.BoolTest(true),
+							IgnorePublicACLs:      iacTypes.BoolTest(true),
+							RestrictPublicBuckets: iacTypes.BoolTest(true),
 						},
 						BucketPolicies: []iam.Policy{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
-								Name:     iacTypes.String("", iacTypes.NewTestMetadata()),
 								Document: func() iam.Document {
 
 									builder := iamgo.NewPolicyBuilder()
@@ -234,34 +230,28 @@ func Test_Adapt(t *testing.T) {
 
 									return iam.Document{
 										Parsed:   builder.Build(),
-										Metadata: iacTypes.NewTestMetadata(),
 										IsOffset: true,
 										HasRefs:  false,
 									}
 								}(),
-								Builtin: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
 							},
 						},
 						Encryption: s3.Encryption{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Enabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							Algorithm: iacTypes.String("aws:kms", iacTypes.NewTestMetadata()),
-							KMSKeyId:  iacTypes.String("string-key", iacTypes.NewTestMetadata()),
+							Enabled:   iacTypes.BoolTest(true),
+							Algorithm: iacTypes.StringTest("aws:kms"),
+							KMSKeyId:  iacTypes.StringTest("string-key"),
 						},
 						Versioning: s3.Versioning{
-							Metadata:  iacTypes.NewTestMetadata(),
-							Enabled:   iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							MFADelete: iacTypes.Bool(true, iacTypes.NewTestMetadata()),
+							Enabled:   iacTypes.BoolTest(true),
+							MFADelete: iacTypes.BoolTest(true),
 						},
 						Logging: s3.Logging{
-							Metadata:     iacTypes.NewTestMetadata(),
-							Enabled:      iacTypes.Bool(true, iacTypes.NewTestMetadata()),
-							TargetBucket: iacTypes.String("aws_s3_bucket.example", iacTypes.NewTestMetadata()),
+							Enabled:      iacTypes.BoolTest(true),
+							TargetBucket: iacTypes.StringTest("aws_s3_bucket.example"),
 						},
-						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
+						ACL: iacTypes.StringTest("private"),
 						Grants: []s3.Grant{
 							{
-								Metadata: iacTypes.NewTestMetadata(),
 								Grantee: s3.Grantee{
 									Type: iacTypes.StringTest("Group"),
 									URI:  iacTypes.StringTest("http://acs.amazonaws.com/groups/s3/LogDelivery"),
@@ -326,11 +316,9 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
 			expected: s3.S3{
 				Buckets: []s3.Bucket{
 					{
-						Name: iacTypes.String("test", iacTypes.NewTestMetadata()),
-						Encryption: s3.Encryption{
-							Enabled: iacTypes.Bool(false, iacTypes.NewTestMetadata()),
-						},
-						ACL: iacTypes.String("private", iacTypes.NewTestMetadata()),
+						Name:       iacTypes.StringTest("test"),
+						Encryption: s3.Encryption{},
+						ACL:        iacTypes.StringTest("private"),
 					},
 				},
 			},
