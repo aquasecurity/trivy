@@ -11,8 +11,11 @@ import (
 // Option is a functional option for Comparer.
 type Option func(*Comparer)
 
-// AllowLocalSpecifier enables strict local version matching in specifiers.
-// e.g. "4.2.8+sp1" will not match "== 4.2.8" when this option is enabled.
+// AllowLocalSpecifier allows local version labels in specifiers (constraints) and enables
+// strict local segment matching. Without this option, local labels in specifiers cause a
+// parse error, and local segments of the candidate version are ignored in comparisons
+// (e.g. "4.2.8+sp1" matches "== 4.2.8"). With this option, specifiers like
+// ">= 4.2.8+sp1, < 4.2.8+sp999" are valid and "4.2.8+sp1" does not match "== 4.2.8".
 func AllowLocalSpecifier() Option {
 	return func(c *Comparer) {
 		c.allowLocalSpecifier = true

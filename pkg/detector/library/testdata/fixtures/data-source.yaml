@@ -40,3 +40,18 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal npm::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal go::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal maven::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"

@@ -39,7 +39,7 @@ var vendors = []Vendor{
 
 // lookupVendor finds the matching vendor for the given package and returns
 // the advisory bucket prefix and an optional custom comparer.
-// If no vendor matches, it returns the standard ecosystem prefix and nil comparer.
+// If no vendor matches, it returns the standard ecosystem prefix and the default comparer.
 func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string, defaultComparer compare.Comparer) (string, compare.Comparer) {
 	for _, v := range vendors {
 		if v.Match(eco, pkgName, pkgVer) {

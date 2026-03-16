@@ -13,7 +13,7 @@ import (
 // Seal Security provides patched versions of open source packages with their own
 // vulnerability advisories. Their packages are identified by ecosystem-specific
 // naming patterns:
-//   - Maven:  seal.sp$X.$groupId:$artifactId
+//   - Maven:  seal.sp*.$groupId:$artifactId (e.g. seal.sp1, seal.sp2)
 //   - npm:    @seal-security/$name
 //   - Python: seal-$name
 //   - Go:     sealsecurity.io/$name
