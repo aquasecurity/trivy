@@ -372,6 +372,46 @@ func TestParser_ELFSymbolVersion(t *testing.T) {
 	}
 }
 
+func TestStripGoExperiment(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "Go 1.26+ dash separator",
+			input: "1.26.0-X:nodwarf5",
+			want:  "1.26.0",
+		},
+		{
+			name:  "Go <=1.25 space separator (boringcrypto)",
+			input: "1.25.3 X:boringcrypto",
+			want:  "1.25.3",
+		},
+		{
+			name:  "Go <=1.25 space separator (loopvar)",
+			input: "1.22.1 X:loopvar",
+			want:  "1.22.1",
+		},
+		{
+			name:  "No GOEXPERIMENT suffix",
+			input: "1.26.0",
+			want:  "1.26.0",
+		},
+		{
+			name:  "Regular version without experiment",
+			input: "1.22.3",
+			want:  "1.22.3",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := binary.StripGoExperiment(tt.input)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestParser_ParseLDFlags(t *testing.T) {
 	type args struct {
 		name  string

@@ -61,9 +61,13 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, convertError(err)
 	}
 
-	// Ex: "go1.22.3 X:boringcrypto"
+	// Strip GOEXPERIMENT suffix:
+	// Go <=1.25: "go1.25.3 X:boringcrypto" (space separator)
+	// Go >=1.26: "go1.26.0-X:nodwarf5" (dash separator)
+	// Ref: https://github.com/golang/go/commit/9daaab305c4d1dede9e4f6efdc5e1268a69327e6
 	stdlibVersion := strings.TrimPrefix(info.GoVersion, "go")
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
 	// Add the `v` prefix to be consistent with module and dependency versions.
 	stdlibVersion = fmt.Sprintf("v%s", stdlibVersion)
 
