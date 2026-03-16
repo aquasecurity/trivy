@@ -12,7 +12,7 @@ import (
 type Option func(*Comparer)
 
 // AllowLocalSpecifier enables strict local version matching in specifiers.
-// e.g. "4.2.8+seal.1" will not match "== 4.2.8" when this option is enabled.
+// e.g. "4.2.8+sp1" will not match "== 4.2.8" when this option is enabled.
 func AllowLocalSpecifier() Option {
 	return func(c *Comparer) {
 		c.allowLocalSpecifier = true
