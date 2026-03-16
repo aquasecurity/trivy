@@ -31,6 +31,9 @@ For details on supported scanners, features, and behavior for each base OS, refe
 
 ## Application Dependencies
 
+!!! warning "EXPERIMENTAL"
+    Scanning results may be inaccurate.
+
 Seal also provides patched versions of application dependencies with their own vulnerability advisories. Trivy automatically detects Seal-patched packages based on special naming patterns specific to each ecosystem.
 
 ### Supported Ecosystems
