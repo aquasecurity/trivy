@@ -41,6 +41,7 @@ Seal also provides patched versions of application dependencies with their own v
 | Node.js (npm) | `@seal-security/*` | `@seal-security/ejs` |
 | Go | `sealsecurity.io/*` | `sealsecurity.io/github.com/Masterminds/goutils` |
 | Java (Maven) | `seal.sp*` | `seal.sp1.org.eclipse.jetty:jetty-http` |
+| Ruby (RubyGems) | `seal-*` | `seal-rack` |
 
 When Trivy detects packages matching these patterns, it automatically uses Seal Security advisories for vulnerability scanning.
 

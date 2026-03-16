@@ -88,12 +88,27 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "v1.1.1-sp1",
 			want:    false,
 		},
+		// Ruby - name prefix seal-
+		{
+			name:    "ruby seal package",
+			eco:     ecosystem.RubyGems,
+			pkgName: "seal-rack",
+			pkgVer:  "2.0.7.0.1.sp1",
+			want:    true,
+		},
+		{
+			name:    "ruby non-seal package",
+			eco:     ecosystem.RubyGems,
+			pkgName: "rack",
+			pkgVer:  "2.0.7",
+			want:    false,
+		},
 		// Unsupported ecosystem
 		{
-			name:    "rubygems package is not supported",
-			eco:     ecosystem.RubyGems,
-			pkgName: "activesupport",
-			pkgVer:  "7.0.0",
+			name:    "erlang package is not supported",
+			eco:     ecosystem.Erlang,
+			pkgName: "seal-cowboy",
+			pkgVer:  "2.9.0",
 			want:    false,
 		},
 		// Edge cases

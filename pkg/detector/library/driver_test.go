@@ -265,6 +265,31 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "seal security rubygems package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Bundler,
+			args: args{
+				pkgName: "seal-rack",
+				pkgVer:  "2.0.7.0.1.sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-61780",
+					PkgName:          "seal-rack",
+					InstalledVersion: "2.0.7.0.1.sp1",
+					FixedVersion:     "2.0.7.0.1.sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
 			name: "seal security npm package",
 			fixtures: []string{
 				"testdata/fixtures/seal.yaml",

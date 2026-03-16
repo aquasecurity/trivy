@@ -40,6 +40,11 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal rubygems::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
     - key: "seal npm::Seal Security Database"
       value:
         ID: "seal"

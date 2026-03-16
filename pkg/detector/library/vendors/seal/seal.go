@@ -13,10 +13,11 @@ import (
 // Seal Security provides patched versions of open source packages with their own
 // vulnerability advisories. Their packages are identified by ecosystem-specific
 // naming patterns:
-//   - Maven:  seal.sp*.$groupId:$artifactId (e.g. seal.sp1, seal.sp2)
-//   - npm:    @seal-security/$name
-//   - Python: seal-$name
-//   - Go:     sealsecurity.io/$name
+//   - Maven:   seal.sp*.$groupId:$artifactId (e.g. seal.sp1, seal.sp2)
+//   - npm:     @seal-security/$name
+//   - Python:  seal-$name
+//   - Go:      sealsecurity.io/$name
+//   - Ruby:    seal-$name
 //
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
 type SealSecurity struct{}
@@ -35,8 +36,8 @@ func (SealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 	case ecosystem.Npm:
 		// e.g. @seal-security/ejs, @seal-security/seal-ejs
 		return strings.HasPrefix(normalized, "@seal-security/")
-	case ecosystem.Pip:
-		// e.g. seal-django
+	case ecosystem.Pip, ecosystem.RubyGems:
+		// e.g. seal-django (pip), seal-rack (rubygems)
 		return strings.HasPrefix(normalized, "seal-")
 	case ecosystem.Go:
 		// e.g. sealsecurity.io/github.com/Masterminds/goutils

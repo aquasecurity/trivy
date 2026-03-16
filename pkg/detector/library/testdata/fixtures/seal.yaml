@@ -31,6 +31,17 @@
             VulnerableVersions:
               - ">= 0.26.0-sp1, < 0.26.0-sp2"
 
+- bucket: "seal rubygems::Seal Security Database"
+  pairs:
+    - bucket: "seal-rack"
+      pairs:
+        - key: "CVE-2025-61780"
+          value:
+            PatchedVersions:
+              - "2.0.7.0.1.sp999"
+            VulnerableVersions:
+              - ">= 2.0.7.0.1.sp1, < 2.0.7.0.1.sp999"
+
 - bucket: "seal maven::Seal Security Database"
   pairs:
     - bucket: "seal.sp1.org.apache.logging.log4j:log4j-core"
