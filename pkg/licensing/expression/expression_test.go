@@ -35,6 +35,24 @@ func TestNormalize(t *testing.T) {
 			want:    "LGPL-2.1-only OR MIT OR BSD-3-Clause",
 		},
 		{
+			name:    "SPDX, exception with plus sign",
+			license: "GPL-3.0-only WITH Autoconf-exception-3.0+",
+			fn:      NormalizeForSPDX,
+			want:    "GPL-3.0-only WITH Autoconf-exception-3.0",
+		},
+		{
+			name:    "SPDX, exception with plus sign (Bison)",
+			license: "GPL-2.0-or-later WITH Bison-exception-2.2+",
+			fn:      NormalizeForSPDX,
+			want:    "GPL-2.0-or-later WITH Bison-exception-2.2",
+		},
+		{
+			name:    "SPDX, exception without plus sign unchanged",
+			license: "GPL-3.0-only WITH Autoconf-exception-3.0",
+			fn:      NormalizeForSPDX,
+			want:    "GPL-3.0-only WITH Autoconf-exception-3.0",
+		},
+		{
 			name:    "upper",
 			license: "LGPL-2.1-only OR MIT",
 			fn:      func(license Expression) Expression { return SimpleExpr{strings.ToUpper(license.String()), false} },

@@ -79,10 +79,19 @@ func NormalizeForSPDX(expr Expression) Expression {
 	case CompoundExpr:
 		if e.Conjunction() == TokenWith {
 			initSpdxExceptions()
+			// The '+' (or-later) operator is only valid for license identifiers,
+			// not for exception identifiers per the SPDX spec.
+			// ref: https://github.com/aquasecurity/trivy/issues/7838
+			right := e.Right()
+			if r, ok := right.(SimpleExpr); ok && r.HasPlus {
+				r.HasPlus = false
+				right = r
+			}
 			// Use correct SPDX exceptionID
-			if exc, ok := spdxExceptions[strings.ToUpper(e.Right().String())]; ok {
+			if exc, ok := spdxExceptions[strings.ToUpper(right.String())]; ok {
 				return NewCompoundExpr(e.Left(), e.Conjunction(), exc)
 			}
+			return NewCompoundExpr(e.Left(), e.Conjunction(), right)
 		}
 	}
 	return expr
