@@ -60,6 +60,7 @@ func parseStdlibVersion(goVersion string) string {
 	// Ex: "go1.22.3 X:boringcrypto" (Go <=1.25) or "go1.26.0-X:nodwarf5" (Go >=1.26)
 	stdlibVersion := strings.TrimPrefix(goVersion, "go")
 	// Strip GOEXPERIMENT suffix: " X:foo" (Go <=1.25) or "-X:foo" (Go >=1.26)
+	// cf. https://github.com/golang/go/blob/9daaab305c4d1dede9e4f6efdc5e1268a69327e6/src/cmd/go/internal/cache/hash.go#L48-L58
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " X:")
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
 	// Add the `v` prefix to be consistent with module and dependency versions.

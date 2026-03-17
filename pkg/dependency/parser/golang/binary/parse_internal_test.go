@@ -1,9 +1,11 @@
-package binary
+package binary_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/binary"
 )
 
 func TestParseStdlibVersion(t *testing.T) {
@@ -40,7 +42,7 @@ func TestParseStdlibVersion(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := parseStdlibVersion(tt.goVersion)
+			got := binary.ParseStdlibVersion(tt.goVersion)
 			assert.Equal(t, tt.want, got)
 		})
 	}
