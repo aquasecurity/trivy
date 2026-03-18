@@ -64,7 +64,7 @@ Now that you are up and ready, here are some resources to help you deepen your k
 - Explore community questions under [GitHub Discussions](https://github.com/aquasecurity/trivy/discussions).
 - Stay up to date by watching for [New Releases & Announcements](https://github.com/aquasecurity/trivy/discussions/categories/announcements).
 - Follow Trivy on Twitter/X: [@aquatrivy](https://x.com/aquatrivy)
-- Explore and subscribe to our YouTube channel [@AquaSecOSS](http://youtube.com/@aquasecoss)
+- Explore and subscribe to our YouTube channel [@AquaSecOSS](https://www.youtube.com/@AquaSecOSS)
 
 # Want more? Check out Aqua
 

@@ -17,6 +17,8 @@
       "SPDXID": "SPDXRef-Application-c39d15beb6bdf085",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "primaryPackagePurpose": "APPLICATION",
       "annotations": [
         {
@@ -137,6 +139,8 @@
       "SPDXID": "SPDXRef-Filesystem-1be792dd0077c431",
       "downloadLocation": "NONE",
       "filesAnalyzed": false,
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
       "primaryPackagePurpose": "SOURCE",
       "annotations": [
         {

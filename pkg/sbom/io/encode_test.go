@@ -244,7 +244,7 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 							},
 						},
-						BOMRef: "pkg:oci/debian@sha256%3A4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
+						BOMRef: "pkg:oci/debian@sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90?repository_url=index.docker.io%2Flibrary%2Fdebian",
 					},
 					Properties: []core.Property{
 						{
@@ -676,7 +676,7 @@ func TestEncoder_Encode(t *testing.T) {
 								},
 							},
 						},
-						BOMRef: "pkg:oci/ubi9-minimal@sha256%3Ae1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c?repository_url=index.docker.io%2Fredhat%2Fubi9-minimal",
+						BOMRef: "pkg:oci/ubi9-minimal@sha256:e1c4703364c5cb58f5462575dc90345bcd934ddc45e6c32f9c162f2b5617681c?repository_url=index.docker.io%2Fredhat%2Fubi9-minimal",
 					},
 					Properties: []core.Property{
 						{

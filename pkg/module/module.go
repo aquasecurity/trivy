@@ -117,10 +117,10 @@ func (m *Manager) loadModules(ctx context.Context) error {
 	}
 	log.Debug("Module dir", log.String("dir", m.dir))
 
-	err = filepath.Walk(m.dir, func(path string, info fs.FileInfo, err error) error {
+	err = filepath.WalkDir(m.dir, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
-		} else if info.IsDir() || filepath.Ext(info.Name()) != ".wasm" {
+		} else if d.IsDir() || filepath.Ext(d.Name()) != ".wasm" {
 			return nil
 		}
 

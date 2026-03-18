@@ -1,6 +1,7 @@
 package pylock
 
 import (
+	"context"
 	"sort"
 
 	"github.com/BurntSushi/toml"
@@ -21,6 +22,19 @@ type Package struct {
 	Name         string       `toml:"name"`
 	Version      string       `toml:"version"`
 	Dependencies []Dependency `toml:"dependencies"`
+	Directory    Directory    `toml:"directory"`
+}
+
+// root returns true if the package represents the project itself.
+// `pip` includes the project as a package with non-empty [packages.directory.path]
+// e.g. for `pip lock ./app` pylock.toml will contain a package with [packages.directory.path] = "app" which is the root package of the project.
+// `poetry-plugin-export` doesn't currently include the project in pylock.toml.
+func (p Package) root() bool {
+	return p.Directory.Path != ""
+}
+
+type Directory struct {
+	Path string `toml:"path"`
 }
 
 type Dependency struct {
@@ -36,7 +50,7 @@ func NewParser() *Parser {
 	return &Parser{}
 }
 
-func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lock Pylock
 	if _, err := toml.NewDecoder(r).Decode(&lock); err != nil {
 		return nil, nil, xerrors.Errorf("failed to decode pylock.toml: %w", err)
@@ -50,9 +64,10 @@ func (p *Parser) Parse(r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependenc
 		pkgID := packageID(normalizedPkgName, pkg.Version)
 
 		pkgs[pkgID] = ftypes.Package{
-			ID:      pkgID,
-			Name:    normalizedPkgName,
-			Version: pkg.Version,
+			ID:           pkgID,
+			Name:         normalizedPkgName,
+			Version:      pkg.Version,
+			Relationship: lo.Ternary(pkg.root(), ftypes.RelationshipRoot, ftypes.RelationshipUnknown),
 		}
 
 		var dependsOn []string

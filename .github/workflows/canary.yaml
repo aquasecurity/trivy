@@ -17,7 +17,14 @@ jobs:
     with:
       goreleaser_config: goreleaser-canary.yml
       goreleaser_options: '--snapshot --clean --timeout 60m' # will not release
-    secrets: inherit
+    secrets:
+      DOCKERHUB_USER: ${{ secrets.DOCKERHUB_USER }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      ECR_ACCESS_KEY_ID: ${{ secrets.ECR_ACCESS_KEY_ID }}
+      ECR_SECRET_ACCESS_KEY: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
+      GPG_KEY: ${{ secrets.GPG_KEY }}
+      ORG_REPO_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   upload-binaries:
     name: Upload binaries
@@ -25,7 +32,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}

@@ -240,6 +240,7 @@ func TestParser_ChooseMainVersion(t *testing.T) {
 		name           string
 		version        string
 		ldflagsVersion string
+		elfVersion     string
 		want           string
 	}{
 		{
@@ -278,11 +279,94 @@ func TestParser_ChooseMainVersion(t *testing.T) {
 			ldflagsVersion: "",
 			want:           "v2.0.0-20251210145848-560ea94fc7d6",
 		},
+		{
+			name:       "pseudo-version with ELF version",
+			version:    "v0.0.0-20210121094942-22b2f8951d46",
+			elfVersion: "v1.0.0",
+			want:       "v1.0.0",
+		},
+		{
+			name:           "pseudo-version with both ldflags and ELF prefers ldflags",
+			version:        "v0.0.0-20210121094942-22b2f8951d46",
+			ldflagsVersion: "v1.2.3",
+			elfVersion:     "v1.0.0",
+			want:           "v1.2.3",
+		},
+		{
+			name:       "empty version with ELF version",
+			version:    "",
+			elfVersion: "v2.0.0",
+			want:       "v2.0.0",
+		},
+		{
+			name:           "empty version with both ldflags and ELF prefers ldflags",
+			version:        "",
+			ldflagsVersion: "v1.2.3",
+			elfVersion:     "v2.0.0",
+			want:           "v1.2.3",
+		},
+		{
+			name:       "regular semver version with ELF version keeps original",
+			version:    "v1.2.3",
+			elfVersion: "v1.2.4",
+			want:       "v1.2.3",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p := binary.NewParser()
-			got := p.ChooseMainVersion(tt.version, tt.ldflagsVersion)
+			got := p.ChooseMainVersion(tt.version, tt.ldflagsVersion, tt.elfVersion)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestParser_ELFSymbolVersion(t *testing.T) {
+	tests := []struct {
+		name       string
+		inputFile  string
+		moduleName string
+		want       string
+	}{
+		{
+			name:       "ELF with version symbol",
+			inputFile:  "testdata/main-version-via-ldflags.elf",
+			moduleName: "github.com/aquasecurity/test",
+			want:       "v1.0.0",
+		},
+		{
+			name:       "ELF without version symbols",
+			inputFile:  "testdata/test.elf",
+			moduleName: "github.com/aquasecurity/test",
+			want:       "",
+		},
+		{
+			name:       "PE binary (not ELF)",
+			inputFile:  "testdata/test.exe",
+			moduleName: "github.com/aquasecurity/test",
+			want:       "",
+		},
+		{
+			name:       "Mach-O binary (not ELF)",
+			inputFile:  "testdata/test.macho",
+			moduleName: "github.com/aquasecurity/test",
+			want:       "",
+		},
+		{
+			name:       "dummy file",
+			inputFile:  "testdata/dummy",
+			moduleName: "test",
+			want:       "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.inputFile)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := binary.NewParser()
+			got := p.ELFSymbolVersion(f, tt.moduleName)
 			assert.Equal(t, tt.want, got)
 		})
 	}

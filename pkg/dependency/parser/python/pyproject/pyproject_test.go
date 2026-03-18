@@ -12,6 +12,33 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
+func TestPyProject_MainDeps(t *testing.T) {
+	tests := []struct {
+		name string
+		file string
+		want set.Set[string]
+	}{
+		{
+			name: "with optional dependencies only",
+			file: "testdata/happy_with_optional_only.toml",
+			want: set.New[string]("pytest", "ruff"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := &pyproject.Parser{}
+			got, err := p.Parse(f)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.want, got.MainDeps())
+		})
+	}
+}
+
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name    string
@@ -65,6 +92,26 @@ func TestParser_Parse(t *testing.T) {
 									Set: set.New[string]("pytest"),
 								},
 							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "with optional dependencies",
+			file: "testdata/happy_with_optional.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("click", "requests"),
+					},
+					OptionalDependencies: map[string]pyproject.Dependencies{
+						"dev": {
+							Set: set.New[string]("pytest"),
+						},
+						"lint": {
+							Set: set.New[string]("ruff"),
 						},
 					},
 				},

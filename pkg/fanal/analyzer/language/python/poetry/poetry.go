@@ -123,7 +123,9 @@ func (a poetryAnalyzer) mergePyProject(fsys fs.FS, dir string, app *types.Applic
 func directDeps(project pyproject.PyProject) set.Set[string] {
 	deps := project.MainDeps()
 	for _, groupDeps := range project.Tool.Poetry.Groups {
-		deps.Append(groupDeps.Dependencies.Items()...)
+		if groupDeps.Dependencies.Set != nil {
+			deps.Append(groupDeps.Dependencies.Items()...)
+		}
 	}
 	return deps
 }

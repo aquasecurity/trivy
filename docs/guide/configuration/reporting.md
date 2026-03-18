@@ -532,10 +532,11 @@ Critical: 0, High: 2
 For other features of sprig, see the official [sprig][sprig] documentation.
 
 #### Load templates from a file
-You can load templates from a file prefixing the template path with an @.
+You can load templates from a file prefixing the template path with an `@`.
+The template file must have a `.tpl` extension.
 
 ```
-$ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
+$ trivy image --format template --template "@/path/to/template.tpl" golang:1.12-alpine
 ```
 
 #### Default Templates
@@ -641,7 +642,7 @@ $ trivy convert --format table --severity CRITICAL result.json
 [sarif-spec]: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
 [sarif-github]: https://docs.github.com/en/code-security/code-scanning/integrating-with-code-scanning
 [sarif-sonar]: https://docs.sonarsource.com/sonarqube/latest/analyzing-source-code/importing-external-issues/importing-issues-from-sarif-reports/
-[sprig]: http://masterminds.github.io/sprig/
+[sprig]: https://masterminds.github.io/sprig/
 [github-sbom]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#about-dependency-submissions
 [github-sbom-submit]: https://docs.github.com/en/rest/dependency-graph/dependency-submission?apiVersion=2022-11-28#create-a-snapshot-of-dependencies-for-a-repository
 

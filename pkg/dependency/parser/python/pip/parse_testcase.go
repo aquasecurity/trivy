@@ -34,6 +34,26 @@ var (
 				},
 			},
 		},
+		{
+			Name:    "pyjwt",
+			Version: "1.2",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 6,
+					EndLine:   6,
+				},
+			},
+		},
+		{
+			Name:    "eventlet",
+			Version: "0.18.2",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 7,
+					EndLine:   7,
+				},
+			},
+		},
 	}
 	requirementsFlask = []ftypes.Package{
 		{

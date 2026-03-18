@@ -2,8 +2,6 @@ package functions
 
 import (
 	"time"
-
-	smithyTime "github.com/aws/smithy-go/time"
 )
 
 func DateTimeFromEpoch(args ...any) any {
@@ -16,7 +14,7 @@ func DateTimeFromEpoch(args ...any) any {
 		return nil
 	}
 
-	return smithyTime.ParseEpochSeconds(float64(epoch)).Format(time.RFC3339)
+	return time.Unix(int64(epoch), 0).UTC().Format(time.RFC3339)
 }
 
 func DateTimeToEpoch(args ...any) any {

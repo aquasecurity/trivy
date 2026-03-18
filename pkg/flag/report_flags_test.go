@@ -171,6 +171,48 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			},
 			wantErr: `"--table-mode" can be used only with "--format table".`,
 		},
+		{
+			name: "happy path with template file (.tpl extension)",
+			fields: fields{
+				format:     "template",
+				template:   "@contrib/gitlab.tpl",
+				severities: "HIGH",
+			},
+			want: flag.ReportOptions{
+				Format:     "template",
+				Template:   "@contrib/gitlab.tpl",
+				Severities: []dbTypes.Severity{dbTypes.SeverityHigh},
+			},
+		},
+		{
+			name: "error: template file without .tpl extension",
+			fields: fields{
+				format:   "template",
+				template: "@/etc/passwd",
+			},
+			wantErr: "template file must have .tpl extension: /etc/passwd",
+		},
+		{
+			name: "error: template file with wrong extension",
+			fields: fields{
+				format:   "template",
+				template: "@report.txt",
+			},
+			wantErr: "template file must have .tpl extension: report.txt",
+		},
+		{
+			name: "inline template (no @ prefix) is allowed",
+			fields: fields{
+				format:     "template",
+				template:   "{{ .Results }}",
+				severities: "MEDIUM",
+			},
+			want: flag.ReportOptions{
+				Format:     "template",
+				Template:   "{{ .Results }}",
+				Severities: []dbTypes.Severity{dbTypes.SeverityMedium},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -3,6 +3,7 @@ package pom
 import (
 	"encoding/xml"
 	"os"
+	"path"
 	"path/filepath"
 
 	"github.com/samber/lo"
@@ -11,6 +12,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/set"
 )
+
+const trueString = "true"
 
 type Server struct {
 	ID       string `xml:"id"`
@@ -22,6 +25,17 @@ type Profile struct {
 	ID              string          `xml:"id"`
 	Repositories    []pomRepository `xml:"repositories>repository"`
 	ActiveByDefault bool            `xml:"activation>activeByDefault"`
+}
+
+type Proxy struct {
+	ID            string `xml:"id"`
+	Active        string `xml:"active"`
+	Protocol      string `xml:"protocol"`
+	Host          string `xml:"host"`
+	Port          string `xml:"port"`
+	Username      string `xml:"username"`
+	Password      string `xml:"password"`
+	NonProxyHosts string `xml:"nonProxyHosts"`
 }
 
 type settings struct {
@@ -169,6 +183,17 @@ func expandAllEnvPlaceholders(s *settings) {
 
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
+	}
+
+	for i, proxy := range s.Proxies {
+		s.Proxies[i].ID = evaluateVariable(proxy.ID, nil, nil)
+		s.Proxies[i].Active = evaluateVariable(proxy.Active, nil, nil)
+		s.Proxies[i].Protocol = evaluateVariable(proxy.Protocol, nil, nil)
+		s.Proxies[i].Host = evaluateVariable(proxy.Host, nil, nil)
+		s.Proxies[i].Port = evaluateVariable(proxy.Port, nil, nil)
+		s.Proxies[i].Username = evaluateVariable(proxy.Username, nil, nil)
+		s.Proxies[i].Password = evaluateVariable(proxy.Password, nil, nil)
+		s.Proxies[i].NonProxyHosts = evaluateVariable(proxy.NonProxyHosts, nil, nil)
 	}
 }
 

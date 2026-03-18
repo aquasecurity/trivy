@@ -32,8 +32,8 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 		r := repository{
 			// "<enabled>: true or false for whether this repository is enabled for the respective type (releases or snapshots). By default, this is true."
 			// cf. https://maven.apache.org/pom.html#Repositories
-			releaseEnabled:  rep.ReleasesEnabled == "true" || rep.ReleasesEnabled == "",
-			snapshotEnabled: rep.SnapshotsEnabled == "true" || rep.SnapshotsEnabled == "",
+			releaseEnabled:  rep.ReleasesEnabled == trueString || rep.ReleasesEnabled == "",
+			snapshotEnabled: rep.SnapshotsEnabled == trueString || rep.SnapshotsEnabled == "",
 		}
 
 		// Add only enabled repositories

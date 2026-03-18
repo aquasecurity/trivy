@@ -11,6 +11,21 @@ on:
         default: ''
         required: false
         type: string
+    secrets:
+      DOCKERHUB_USER:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      ECR_ACCESS_KEY_ID:
+        required: true
+      ECR_SECRET_ACCESS_KEY:
+        required: true
+      GPG_KEY:
+        required: true
+      ORG_REPO_TOKEN:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
 
 env:
   GH_USER: "aqua-bot"
@@ -25,6 +40,7 @@ jobs:
       id-token: write # For cosign
       packages: write # For GHCR
       contents: read  # Not required for public repositories, but for clarity
+      attestations: write # For build provenance attestations
     steps:
       - name: Cosign install
         uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
@@ -37,32 +53,35 @@ jobs:
         uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
 
       - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
+        env:
+          PLATFORMS: ${{ steps.buildx.outputs.platforms }}
+        run: echo "${PLATFORMS}"
 
       - name: Login to docker.io registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to ghcr.io registry
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ghcr.io
           username: ${{ env.GH_USER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to ECR
-        uses: docker/login-action@5e57cd118135c172c3672efd75eb46360885c0ef # v3.6.0
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: public.ecr.aws
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
           password: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
 
       - name: Checkout code
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -85,7 +104,8 @@ jobs:
           mkdir tmp    
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@e435ccd777264be153ace6237001ef4d979d3a7a # v6.4.0
+        id: goreleaser
+        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
@@ -104,7 +124,7 @@ jobs:
       # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile
@@ -115,8 +135,18 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
+      - name: Generate build provenance attestations
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: dist/trivy_${{ fromJSON(steps.goreleaser.outputs.metadata).version }}_checksums.txt
+
+      # This workflow is only triggered by tag pushes (release.yaml: on.push.tags), which require
+      # maintainer access. Fork PRs cannot reach this code path, so the cache cannot be poisoned
+      # by external contributors. The key is scoped to github.sha, making cross-run collisions
+      # impossible. Cache is written here and read only by the deploy-packages job in release.yaml.
       - name: Cache Trivy binaries
-        uses: actions/cache@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.

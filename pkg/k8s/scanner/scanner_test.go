@@ -170,7 +170,7 @@ func TestScanner_Scan(t *testing.T) {
 								},
 							},
 						},
-						BOMRef: "pkg:oci/kube-apiserver@sha256%3A18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver",
+						BOMRef: "pkg:oci/kube-apiserver@sha256:18e61c783b41758dd391ab901366ec3546b26fae00eef7e223d1f94da808e02f?repository_url=k8s.gcr.io%2Fkube-apiserver",
 					},
 					Properties: []core.Property{
 						{
