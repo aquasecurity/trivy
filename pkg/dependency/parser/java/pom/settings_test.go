@@ -11,6 +11,7 @@ import (
 func Test_ReadSettings(t *testing.T) {
 	tests := []struct {
 		name         string
+		rootFilePath string
 		envs         map[string]string
 		wantSettings settings
 	}{
@@ -68,6 +69,7 @@ func Test_ReadSettings(t *testing.T) {
 						ActiveByDefault: true,
 					},
 				},
+				Repositories:   []pomRepository{},
 				ActiveProfiles: []string{},
 			},
 		},
@@ -113,6 +115,7 @@ func Test_ReadSettings(t *testing.T) {
 						ActiveByDefault: true,
 					},
 				},
+				Repositories: []pomRepository{},
 				ActiveProfiles: []string{
 					"mycompany-global",
 				},
@@ -247,8 +250,96 @@ func Test_ReadSettings(t *testing.T) {
 						ActiveByDefault: true,
 					},
 				},
+				Repositories: []pomRepository{},
 				ActiveProfiles: []string{
 					"mycompany-global",
+				},
+			},
+		},
+		{
+			name:         "happy path with global, user and project settings",
+			rootFilePath: filepath.Join("testdata", "settings", "project", "module", "pom.xml"),
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers: []Server{
+					{
+						ID: "user-server",
+					},
+					{
+						ID:       "server-with-credentials",
+						Username: "test-user",
+						Password: "test-password",
+					},
+					{
+						ID:       "server-with-name-only",
+						Username: "test-user-only",
+					},
+					{
+						ID: "project-server",
+					},
+					{
+						ID: "global-server",
+					},
+				},
+				Repositories: []pomRepository{
+					{
+						ID:               "project-root-releases",
+						URL:              "https://mycompany.example.com/repository/project-root-releases",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-releases",
+								URL:              "https://mycompany.example.com/repository/user-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+							{
+								ID:               "mycompany-user-snapshots",
+								URL:              "https://mycompany.example.com/repository/user-snapshots",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
+							},
+						},
+						ActiveByDefault: true,
+					},
+					{
+						ID: "mycompany-project",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-project-snapshots",
+								URL:              "https://mycompany.example.com/repository/project-snapshots",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
+							},
+						},
+						ActiveByDefault: true,
+					},
+					{
+						ID: "default",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-default-releases",
+								URL:              "https://mycompany.example.com/repository/default-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{
+					"mycompany-global",
+					"mycompany-project",
 				},
 			},
 		},
@@ -303,6 +394,7 @@ func Test_ReadSettings(t *testing.T) {
 						},
 					},
 				},
+				Repositories: []pomRepository{},
 				ActiveProfiles: []string{
 					"mycompany-global",
 				},
@@ -315,7 +407,7 @@ func Test_ReadSettings(t *testing.T) {
 				t.Setenv(env, settingsDir)
 			}
 
-			gotSettings := readSettings()
+			gotSettings := readSettings(tt.rootFilePath)
 			require.Equal(t, tt.wantSettings, gotSettings)
 		})
 	}
@@ -421,6 +513,56 @@ func Test_effectiveRepositories(t *testing.T) {
 					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
+				},
+			},
+		},
+		{
+			name: "root repositories are included",
+			s: settings{
+				Repositories: []pomRepository{
+					{
+						ID:               "root-1",
+						URL:              "https://root.example.com/repo1",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+					{
+						ID:               "root-2",
+						URL:              "https://root.example.com/repo2",
+						ReleasesEnabled:  "false",
+						SnapshotsEnabled: "true",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID:              "p1",
+						ActiveByDefault: true,
+						Repositories: []pomRepository{
+							{
+								ID:               "profile-1",
+								URL:              "https://profile.example.com/repo1",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "true",
+							},
+						},
+					},
+				},
+			},
+			want: []repository{
+				{
+					url:             mustParseURL(t, "https://root.example.com/repo2"),
+					releaseEnabled:  false,
+					snapshotEnabled: true,
+				},
+				{
+					url:             mustParseURL(t, "https://root.example.com/repo1"),
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+				{
+					url:             mustParseURL(t, "https://profile.example.com/repo1"),
+					releaseEnabled:  true,
+					snapshotEnabled: true,
 				},
 			},
 		},

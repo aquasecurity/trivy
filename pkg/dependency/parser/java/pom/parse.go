@@ -81,12 +81,13 @@ type Parser struct {
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
+	rootPath := filepath.Clean(filePath)
 	o := &options{
 		offline:     false,
 		defaultRepo: mavenCentralRepo,
 	}
 
-	s := readSettings()
+	s := readSettings(rootPath)
 	o.settingsRepos = s.effectiveRepositories()
 	localRepository := s.LocalRepository
 	if localRepository == "" {
@@ -105,7 +106,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 
 	return &Parser{
 		logger:          log.WithPrefix("pom"),
-		rootPath:        filepath.Clean(filePath),
+		rootPath:        rootPath,
 		cache:           newPOMCache(),
 		localRepository: localRepository,
 		remoteRepos:     remoteRepos,

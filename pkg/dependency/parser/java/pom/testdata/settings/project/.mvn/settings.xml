@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>testdata/project/repository</localRepository>
+
+    <servers>
+        <server>
+            <id>project-server</id>
+        </server>
+        <server>
+            <id>server-with-credentials</id>
+            <username>project-user</username>
+            <password>project-password</password>
+        </server>
+    </servers>
+
+    <repositories>
+        <repository>
+            <id>project-root-releases</id>
+            <url>https://mycompany.example.com/repository/project-root-releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <profiles>
+        <profile>
+            <id>mycompany-global</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-project-releases</id>
+                    <url>https://mycompany.example.com/repository/project-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+        <profile>
+            <id>mycompany-project</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-project-snapshots</id>
+                    <url>https://mycompany.example.com/repository/project-snapshots</url>
+                    <releases>
+                        <enabled>false</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>true</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+
+    <activeProfiles>
+        <activeProfile>mycompany-project</activeProfile>
+    </activeProfiles>
+</settings>

@@ -4,11 +4,12 @@ import (
 	"encoding/xml"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/samber/lo"
 	"github.com/samber/lo/mutable"
 	"golang.org/x/net/html/charset"
+
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type Server struct {
@@ -24,19 +25,26 @@ type Profile struct {
 }
 
 type settings struct {
-	LocalRepository string    `xml:"localRepository"`
-	Servers         []Server  `xml:"servers>server"`
-	Profiles        []Profile `xml:"profiles>profile"`
-	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
+	LocalRepository string          `xml:"localRepository"`
+	Servers         []Server        `xml:"servers>server"`
+	Repositories    []pomRepository `xml:"repositories>repository"`
+	Profiles        []Profile       `xml:"profiles>profile"`
+	ActiveProfiles  []string        `xml:"activeProfiles>activeProfile"`
 }
 
 func (s settings) effectiveRepositories() []repository {
+	activeProfiles := set.New[string]()
+	for _, profileID := range s.ActiveProfiles {
+		activeProfiles.Append(profileID)
+	}
+
 	var pomRepos []pomRepository
 	for _, profile := range s.Profiles {
-		if slices.Contains(s.ActiveProfiles, profile.ID) || profile.ActiveByDefault {
+		if isActiveProfile(profile, activeProfiles) {
 			pomRepos = append(pomRepos, profile.Repositories...)
 		}
 	}
+	pomRepos = append(pomRepos, s.Repositories...)
 	pomRepos = lo.UniqBy(pomRepos, func(r pomRepository) string {
 		return r.ID
 	})
@@ -48,43 +56,86 @@ func (s settings) effectiveRepositories() []repository {
 	return resolvePomRepos(s.Servers, pomRepos)
 }
 
-func readSettings() settings {
+func readSettings(rootFilePath string) settings {
 	s := settings{}
 
-	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".m2", "settings.xml")
-	userSettings, err := openSettings(userSettingsPath)
-	if err == nil {
-		s = userSettings
+	// Maven 4 applies settings in the following order:
+	// global < project < user
+	// https://github.com/apache/maven/blob/e6303aae3281e5e87151489bac9db9236dd7eb97/maven-embedder/src/main/java/org/apache/maven/cli/configuration/SettingsXmlConfigurationProcessor.java#L141-L143
+	// https://maven.apache.org/settings.html#quick-overview
+	for _, path := range []string{
+		globalSettingsPath(),
+		findProjectSettingsPath(rootFilePath),
+		userSettingsPath(),
+	} {
+		loaded, err := openSettings(path)
+		if err == nil {
+			s = mergeSettings(loaded, s)
+		}
 	}
 
-	// Some package managers use this path by default
+	return s
+}
+
+func mergeSettings(high, low settings) settings {
+	out := high
+	if out.LocalRepository == "" {
+		out.LocalRepository = low.LocalRepository
+	}
+
+	// Maven servers
+	out.Servers = lo.UniqBy(append(out.Servers, low.Servers...), func(server Server) string {
+		return server.ID
+	})
+
+	// Maven repositories
+	out.Repositories = lo.UniqBy(append(out.Repositories, low.Repositories...), func(repo pomRepository) string {
+		return repo.ID
+	})
+
+	// Maven profiles
+	out.Profiles = lo.UniqBy(append(out.Profiles, low.Profiles...), func(p Profile) string {
+		return p.ID
+	})
+
+	//	Maven active profiles
+	out.ActiveProfiles = lo.Uniq(append(out.ActiveProfiles, low.ActiveProfiles...))
+
+	return out
+}
+
+func findProjectSettingsPath(rootFilePath string) string {
+	if rootFilePath == "" {
+		return ""
+	}
+
+	dir := filepath.Dir(rootFilePath)
+	for {
+		projectSettingsPath := filepath.Join(dir, ".mvn", "settings.xml")
+		if _, err := os.Stat(projectSettingsPath); err == nil {
+			return projectSettingsPath
+		}
+
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			break
+		}
+		dir = parent
+	}
+
+	return ""
+}
+
+func globalSettingsPath() string {
 	mavenHome := "/usr/share/maven"
 	if mHome := os.Getenv("MAVEN_HOME"); mHome != "" {
 		mavenHome = mHome
 	}
-	globalSettingsPath := filepath.Join(mavenHome, "conf", "settings.xml")
-	globalSettings, err := openSettings(globalSettingsPath)
-	if err == nil {
-		// We need to merge global and user settings. User settings being dominant.
-		// https://maven.apache.org/settings.html#quick-overview
-		if s.LocalRepository == "" {
-			s.LocalRepository = globalSettings.LocalRepository
-		}
+	return filepath.Join(mavenHome, "conf", "settings.xml")
+}
 
-		// Maven servers
-		s.Servers = lo.UniqBy(append(s.Servers, globalSettings.Servers...), func(server Server) string {
-			return server.ID
-		})
-
-		// Merge profiles
-		s.Profiles = lo.UniqBy(append(s.Profiles, globalSettings.Profiles...), func(p Profile) string {
-			return p.ID
-		})
-		// Merge active profiles
-		s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, globalSettings.ActiveProfiles...))
-	}
-
-	return s
+func userSettingsPath() string {
+	return filepath.Join(os.Getenv("HOME"), ".m2", "settings.xml")
 }
 
 func openSettings(filePath string) (settings, error) {
@@ -108,21 +159,38 @@ func openSettings(filePath string) (settings, error) {
 
 func expandAllEnvPlaceholders(s *settings) {
 	s.LocalRepository = evaluateVariable(s.LocalRepository, nil, nil)
-	for i, server := range s.Servers {
-		s.Servers[i].ID = evaluateVariable(server.ID, nil, nil)
-		s.Servers[i].Username = evaluateVariable(server.Username, nil, nil)
-		s.Servers[i].Password = evaluateVariable(server.Password, nil, nil)
-	}
+	expandServers(s.Servers)
 
 	for i, profile := range s.Profiles {
 		s.Profiles[i].ID = evaluateVariable(profile.ID, nil, nil)
-		for j, repo := range profile.Repositories {
-			s.Profiles[i].Repositories[j].ID = evaluateVariable(repo.ID, nil, nil)
-			s.Profiles[i].Repositories[j].Name = evaluateVariable(repo.Name, nil, nil)
-			s.Profiles[i].Repositories[j].URL = evaluateVariable(repo.URL, nil, nil)
-		}
+		expandRepositories(s.Profiles[i].Repositories)
 	}
+	expandRepositories(s.Repositories)
+
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
+	}
+}
+
+func isActiveProfile(profile Profile, activeProfiles set.Set[string]) bool {
+	if profile.ActiveByDefault {
+		return true
+	}
+	return activeProfiles.Contains(profile.ID)
+}
+
+func expandServers(servers []Server) {
+	for i, server := range servers {
+		servers[i].ID = evaluateVariable(server.ID, nil, nil)
+		servers[i].Username = evaluateVariable(server.Username, nil, nil)
+		servers[i].Password = evaluateVariable(server.Password, nil, nil)
+	}
+}
+
+func expandRepositories(repos []pomRepository) {
+	for i, repo := range repos {
+		repos[i].ID = evaluateVariable(repo.ID, nil, nil)
+		repos[i].Name = evaluateVariable(repo.Name, nil, nil)
+		repos[i].URL = evaluateVariable(repo.URL, nil, nil)
 	}
 }
