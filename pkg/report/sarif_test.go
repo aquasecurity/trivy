@@ -853,6 +853,31 @@ func Test_clearURI(t *testing.T) {
 			uri:  "gcs::https://www.googleapis.com/storage/v1/modules/foomodule.zip",
 			want: "https://www.googleapis.com/storage/v1/modules/foomodule.zip",
 		},
+		{
+			name: "bitbucket ssh",
+			uri:  "git@bitbucket.org:org/repo.git/terraform?ref=1.8.4/terraform/.terraform/modules/aws_ecs_app/terraform/sg.tf",
+			want: "bitbucket.org/org/repo/terraform/src/1.8.4/terraform/.terraform/modules/aws_ecs_app/terraform/sg.tf",
+		},
+		{
+			name: "bitbucket ssh without ref",
+			uri:  "git@bitbucket.org:myteam/myrepo.git/main.tf",
+			want: "bitbucket.org/myteam/myrepo/main.tf",
+		},
+		{
+			name: "generic git ssh",
+			uri:  "git@gitlab.com:org/repo.git?ref=v1.0.0/main.tf",
+			want: "gitlab.com/org/repo/main.tf",
+		},
+		{
+			name: "generic git ssh with ref only",
+			uri:  "git@gitlab.com:org/repo.git?ref=v1.0.0",
+			want: "gitlab.com/org/repo",
+		},
+		{
+			name: "generic git ssh without ref",
+			uri:  "git@gitlab.com:org/repo.git",
+			want: "gitlab.com/org/repo",
+		},
 	}
 
 	for _, tt := range test {
@@ -862,6 +887,12 @@ func Test_clearURI(t *testing.T) {
 			require.NotNil(t, report.ToUri(got))
 		})
 	}
+}
+
+func Test_toUri_unparseable(t *testing.T) {
+	got := report.ToUri("://")
+	require.NotNil(t, got)
+	assert.Equal(t, "", got.String())
 }
 
 func TestMakePropertiesMarshal(t *testing.T) {
