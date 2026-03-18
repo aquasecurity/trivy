@@ -31,8 +31,6 @@ function merge_repo_with_new_packages () {
                 mergerepo_c -v --all -r "$rpm_old" -r "$rpm_tmp" -o "$rpm_path"
         else
                 # No existing repo: initialize from the new metadata
-                rm -rf "$rpm_path/repodata"
-                mkdir -p "$rpm_path"
                 cp -r "$rpm_tmp/repodata" "$rpm_path"/
         fi
 
