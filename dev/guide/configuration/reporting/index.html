@@ -9340,8 +9340,9 @@ As an example you can summarize the different classes of issues:</p>
 
 <p>For other features of sprig, see the official <a href="https://masterminds.github.io/sprig/">sprig</a> documentation.</p>
 <h4 id="load-templates-from-a-file">Load templates from a file<a class="headerlink" href="#load-templates-from-a-file" title="Permanent link">&para;</a></h4>
-<p>You can load templates from a file prefixing the template path with an @.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/path/to/template&quot; golang:1.12-alpine
+<p>You can load templates from a file prefixing the template path with an <code>@</code>.
+The template file must have a <code>.tpl</code> extension.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/path/to/template.tpl&quot; golang:1.12-alpine
 </code></pre></div>
 <h4 id="default-templates">Default Templates<a class="headerlink" href="#default-templates" title="Permanent link">&para;</a></h4>
 <p>If Trivy is installed using rpm then default templates can be found at <code>/usr/local/share/trivy/templates</code>.</p>
