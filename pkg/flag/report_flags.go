@@ -222,7 +222,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		case "":
 			log.Warn("'--template' is ignored because '--format template' is not specified. Use '--template' option with '--format template' option.")
 		case "template":
-			// Validate template file extension for security
+			// Validate template file extension
 			if path, ok := strings.CutPrefix(template, "@"); ok {
 				if filepath.Ext(path) != ".tpl" {
 					return xerrors.Errorf("template file must have .tpl extension: %s", path)
