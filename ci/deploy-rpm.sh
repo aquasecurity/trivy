@@ -63,8 +63,6 @@ function create_rpm_repo () {
         version=$1
         rpm_path=rpm/releases/${version}/x86_64
 
-        mkdir -p "$rpm_path"
-
         merge_repo_with_new_packages "*64bit.rpm" "$rpm_path"
 }
 
