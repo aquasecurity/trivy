@@ -13,6 +13,9 @@ on:
       - main
     paths:
       - 'helm/trivy/**'
+permissions:
+  contents: read
+
 env:
   HELM_REP: helm-charts
   GH_OWNER: aquasecurity
@@ -80,8 +83,10 @@ jobs:
       - name: Upload helm chart
         # Failed with upload the same version: https://github.com/helm/chart-releaser/issues/101
         continue-on-error: true
+        env:
+          CR_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
-          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }} -p .cr-release-packages
+          ./cr upload -o "$GH_OWNER" -r "$HELM_REP" --token "$CR_TOKEN" -p .cr-release-packages
       - name: Index helm chart
         run: |
           ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml

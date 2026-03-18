@@ -18,6 +18,9 @@ on:
       - 'LICENSE'
       - '.release-please-manifest.json'
       - 'helm/trivy/Chart.yaml'
+
+permissions: {}
+
 jobs:
   test:
     name: Test

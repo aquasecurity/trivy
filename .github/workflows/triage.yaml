@@ -6,6 +6,11 @@ on:
     inputs:
       discussion_num:
         required: true
+
+permissions:
+  contents: read
+  discussions: write
+
 jobs:
   label:
     runs-on: ubuntu-latest

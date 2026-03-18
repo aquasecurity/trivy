@@ -5,6 +5,9 @@ on:
     branches:
       - 'release/v*'
 
+permissions:
+  contents: read
+
 jobs:
   check-pr-author:
     runs-on: ubuntu-latest

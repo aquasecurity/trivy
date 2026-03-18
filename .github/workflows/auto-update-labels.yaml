@@ -5,6 +5,11 @@ on:
       - 'misc/triage/labels.yaml'
     branches:
       - main
+
+permissions:
+  contents: read
+  issues: write
+
 jobs:
   deploy:
     name: Auto-update labels

@@ -10,6 +10,13 @@ on:
       - '.github/workflows/canary.yaml'
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: write
+  id-token: write
+  actions: write # Required for cache operations
+  attestations: write # Required for build provenance
+
 jobs:
   build-binaries:
     name: Build binaries

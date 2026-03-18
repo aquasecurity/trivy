@@ -11,6 +11,9 @@ on:
   merge_group:
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   test:
     name: Test
@@ -244,10 +247,12 @@ jobs:
     - name: Determine GoReleaser ID
       id: goreleaser_id
       shell: bash
+      env:
+        OPERATING_SYSTEM: ${{ matrix.operating-system }}
       run: |
-        if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
+        if [ "$OPERATING_SYSTEM" == "windows-latest" ]; then
           echo "id=--id build-windows" >> $GITHUB_OUTPUT
-        elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
+        elif [ "$OPERATING_SYSTEM" == "macos-latest" ]; then
           echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
         else
           echo "id=--id build-linux" >> $GITHUB_OUTPUT

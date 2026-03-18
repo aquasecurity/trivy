@@ -12,6 +12,10 @@ on:
         description: 'Release version without the "v" prefix (e.g., 0.51.0)'
         type: string
 
+permissions:
+  contents: write
+  pull-requests: write
+
 jobs:
   release-please:
     runs-on: ubuntu-latest
@@ -34,9 +38,10 @@ jobs:
       - name: Release Please
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
+          RP_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
         run: |
           release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-            --token="${{ secrets.ORG_REPO_TOKEN }}" \
+            --token="$RP_TOKEN" \
             --release-as="$RELEASE_VERSION" \
             --target-branch="$GITHUB_REF_NAME"
 
