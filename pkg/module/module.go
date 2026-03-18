@@ -282,7 +282,7 @@ type wasmModule struct {
 
 func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
 	mf := &memFS{}
-	config := wazero.NewModuleConfig().WithStdout(os.Stdout).WithFS(mf).WithStartFunctions("_initialize")
+	config := wazero.NewModuleConfig().WithFS(mf).WithStartFunctions("_initialize")
 
 	// Create an empty namespace so that multiple modules will not conflict
 	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
