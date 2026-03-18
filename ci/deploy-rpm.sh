@@ -28,21 +28,30 @@ function create_rpm_repo () {
         mkdir -p $rpm_path
 
         rpm_tmp=rpm/releases/${version}/tmp
+
         mkdir -p $rpm_tmp
-        cp "dist/"*64bit.rpm ${rpm_tmp}/
+        cp ../dist/*64bit.rpm ${rpm_tmp}/
 
         rpm_old=rpm/releases/${version}/old
         mkdir -p $rpm_old
-        cp -r $rpm_path/repodata $rpm_old/
 
         createrepo_c -u https://get.trivy.dev/rpm/ --location-prefix="v"$TRIVY_VERSION --update $rpm_tmp
 
-        mergerepo_c -v --all -r $rpm_old -r $rpm_tmp -o $rpm_path
+        if [ -d "$rpm_path/repodata" ]; then
+                # Preserve existing metadata by merging with new repo metadata
+                cp -r $rpm_path/repodata $rpm_old/
+                mergerepo_c -v --all -r $rpm_old -r $rpm_tmp -o $rpm_path
+        else
+                # No existing repo: initialize from the new metadata
+                rm -rf $rpm_path/repodata
+                mkdir -p $rpm_path
+                cp -r $rpm_tmp/repodata $rpm_path/
+        fi
 
         rm -rf $rpm_tmp
         rm -rf $rpm_old
 
-        rm ${rpm_path}/*64bit.rpm
+        rm -f ${rpm_path}/*64bit.rpm
 }
 
 echo "Create RPM releases for Trivy v$TRIVY_VERSION"
