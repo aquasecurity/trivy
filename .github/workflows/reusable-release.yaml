@@ -115,6 +115,17 @@ jobs:
           GPG_FILE: "gpg.key"
           TMPDIR: "tmp"
 
+      - name: Generate build provenance attestations
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        uses: actions/attest-build-provenance@ef244123eb79f2f7a7e75d99086184180e6d0018 # v2.1.0
+        with:
+          subject-path: |
+            dist/*.tar.gz
+            dist/*.zip
+            dist/*.deb
+            dist/*.rpm
+            dist/*_checksums.txt
+
       - name: "remove gpg key"
         run: |
           rm gpg.key
