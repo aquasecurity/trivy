@@ -288,11 +288,12 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 			continue
 		}
 
-		// Handle aliases
+		// Extract version constraint from npm: protocol if present
+		// Since the parser now resolves aliases, pkg.Name is already correct.
+		// We just need to extract the version constraint from patterns like "npm:package@version".
 		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
 		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
-			pkg.Name = m[2] // original name
-			constraint = m[4]
+			constraint = m[4] // Extract just the version constraint
 		}
 
 		// Try to find an exact match to the pattern.
