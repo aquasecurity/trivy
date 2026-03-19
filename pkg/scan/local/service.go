@@ -10,6 +10,7 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
+	lom "github.com/samber/lo/mutable"
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
@@ -21,6 +22,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -89,6 +91,20 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		log.Info("Overriding detected OS with provided distro", log.String("detected", detail.OS.String()),
 			log.String("provided", options.Distro.String()))
 		detail.OS = options.Distro
+
+		// Override OS packages PURL to update the distro,
+		// preserving the correlation between the OS and package PURLs.
+		lom.Map(detail.Packages, func(pkg ftypes.Package) ftypes.Package {
+			p, pErr := purl.New(detail.OS.Family, types.Metadata{OS: &detail.OS}, pkg)
+			if pErr != nil {
+				log.Error("Failed to create PackageURL", log.Err(err))
+				return pkg
+			}
+
+			pkg.Identifier.PURL = p.Unwrap()
+			return pkg
+		})
+
 	}
 
 	target := types.ScanTarget{
