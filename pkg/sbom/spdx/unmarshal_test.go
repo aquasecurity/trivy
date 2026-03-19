@@ -10,7 +10,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -266,6 +268,26 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 										Name:      "pear_exception",
 										Version:   "v1.0.0",
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:      "happy path package with SHA512 checksum",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Components: []core.Component{
+					{
+						Type:    core.TypeLibrary,
+						Name:    "lodash",
+						Version: "4.17.21",
+						Files: []core.File{
+							{
+								Digests: []digest.Digest{
+									digest.NewDigestFromString(digest.SHA512, "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"),
 								},
 							},
 						},
