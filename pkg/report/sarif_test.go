@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
@@ -547,6 +548,44 @@ func TestReportWriter_Sarif(t *testing.T) {
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
 								URI: lo.ToPtr(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "report with invocation timestamps",
+			input: types.Report{
+				CreatedAt: time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC),
+				Results:   types.Results{},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       lo.ToPtr("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        lo.ToPtr(""),
+								InformationURI: lo.ToPtr("https://github.com/aquasecurity/trivy"),
+								Rules:          []*sarif.ReportingDescriptor{},
+							},
+						},
+						Invocations: []*sarif.Invocation{
+							{
+								ExecutionSuccessful: lo.ToPtr(true),
+								StartTimeUTC:        lo.ToPtr(time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC)),
+								EndTimeUTC:          lo.ToPtr(time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC)),
+							},
+						},
+						Results:    []*sarif.Result{},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: lo.ToPtr("file:///"),
 							},
 						},
 					},
