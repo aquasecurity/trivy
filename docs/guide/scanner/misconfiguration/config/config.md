@@ -159,7 +159,7 @@ In cases where Trivy can detect comments of a specific format immediately adjace
     Use a [.trivyignore.yaml](../../../configuration/filtering.md#trivyignoreyaml) file to ignore such checks.
 
 
-The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The `id` from the metadata is not case-sensitive, so you can specify, for example, `AVD-AWS-0089` or `avd-aws-0089`.
+The ignore rule must contain one of the possible check identifiers that can be found in its metadata: ID, long id, or aliases. All of these identifiers are case-insensitive, so you can specify, for example, `AWS-0089`, `aws-0089`, or any combination of upper/lowercase letters.
 
 For example, to ignore a misconfiguration ID `AVD-GCP-0051` in a Terraform HCL file:
 
