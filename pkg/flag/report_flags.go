@@ -217,6 +217,10 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	listAllPkgs := f.ListAllPkgs.Value()
 	tableModes := f.TableMode.Value()
 
+	if f.ReportFormat.Value() == "summary" {
+		tableModes = []string{types.Summary.String()}
+	}
+
 	if template != "" {
 		switch format {
 		case "":
