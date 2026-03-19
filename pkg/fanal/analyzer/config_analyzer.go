@@ -114,7 +114,7 @@ func (ag *ConfigAnalyzerGroup) AnalyzeImageConfig(ctx context.Context, targetOS 
 
 		r, err := a.Analyze(ctx, input)
 		if err != nil {
-			log.Debug("Image config analysis error", log.Err(err))
+			log.Warn("Image config analysis error", log.Err(err))
 			continue
 		}
 

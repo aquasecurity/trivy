@@ -1,6 +1,7 @@
 package fsutils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -12,6 +13,12 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+// WarnError is implemented by errors that should be logged at Warn level
+// in WalkDir instead of the default Debug level.
+type WarnError interface {
+	WarnError()
+}
 
 const (
 	xdgDataHome = "XDG_DATA_HOME"
@@ -86,7 +93,12 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		defer f.Close()
 
 		if err = fn(path, d, f); err != nil {
-			log.Debug("Walk error", log.FilePath(path), log.Err(err))
+			var we WarnError
+			if errors.As(err, &we) {
+				log.Warn("Walk error", log.FilePath(path), log.Err(err))
+			} else {
+				log.Debug("Walk error", log.FilePath(path), log.Err(err))
+			}
 		}
 		return nil
 	})

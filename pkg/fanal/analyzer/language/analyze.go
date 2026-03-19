@@ -18,11 +18,19 @@ type Parser interface {
 	Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error)
 }
 
+// parseError represents a file parsing failure.
+// It implements fsutils.WarnError so that WalkDir logs it at Warn level
+// instead of the default Debug level.
+type parseError struct{ error }
+
+func (parseError) WarnError()      {}
+func (e parseError) Unwrap() error { return e.error }
+
 // Analyze returns an analysis result of the lock file
 func Analyze(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser) (*analyzer.AnalysisResult, error) {
 	app, err := Parse(ctx, fileType, filePath, r, parser)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, err
 	}
 
 	if app == nil {
@@ -36,7 +44,7 @@ func Analyze(ctx context.Context, fileType types.LangType, filePath string, r xi
 func AnalyzePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*analyzer.AnalysisResult, error) {
 	app, err := ParsePackage(ctx, fileType, filePath, r, parser, checksum)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, err
 	}
 
 	if app == nil {
@@ -54,7 +62,7 @@ func Parse(ctx context.Context, fileType types.LangType, filePath string, r io.R
 	}
 	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, rr)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, parseError{xerrors.Errorf("failed to parse %s: %w", filePath, err)}
 	}
 
 	// The file path of each library should be empty in case of dependency list such as lock file
@@ -66,7 +74,7 @@ func Parse(ctx context.Context, fileType types.LangType, filePath string, r io.R
 func ParsePackage(ctx context.Context, fileType types.LangType, filePath string, r xio.ReadSeekerAt, parser Parser, checksum bool) (*types.Application, error) {
 	parsedPkgs, parsedDependencies, err := parser.Parse(ctx, r)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to parse %s: %w", filePath, err)
+		return nil, parseError{xerrors.Errorf("failed to parse %s: %w", filePath, err)}
 	}
 
 	// The reader is not passed if the checksum is not necessarily calculated.

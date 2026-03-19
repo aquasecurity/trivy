@@ -510,7 +510,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 				case errors.Is(analyzeErr, context.DeadlineExceeded):
 					return xerrors.Errorf("analyzer timed out: %w", analyzeErr)
 				default:
-					ag.logger.Debug("Analysis error", log.Err(err))
+					ag.logger.Warn("Analysis error", log.Err(analyzeErr))
 					return nil
 				}
 			}

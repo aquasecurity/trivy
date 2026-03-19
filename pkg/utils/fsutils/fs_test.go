@@ -1,13 +1,66 @@
 package fsutils
 
 import (
+	"bytes"
+	"errors"
+	"io"
+	"io/fs"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+type warnError struct{ error }
+
+func (warnError) WarnError() {}
+
+func TestWalkDir_LogLevel(t *testing.T) {
+	tests := []struct {
+		name      string
+		err       error
+		wantLevel string
+	}{
+		{
+			name:      "regular error is logged as debug",
+			err:       errors.New("some error"),
+			wantLevel: "DEBUG",
+		},
+		{
+			name:      "WarnError is logged as warn",
+			err:       warnError{errors.New("parse error")},
+			wantLevel: "WARN",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var buf bytes.Buffer
+			original := slog.Default()
+			t.Cleanup(func() { slog.SetDefault(original) })
+			log.SetDefault(slog.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelDebug})))
+
+			fsys := fstest.MapFS{
+				"test.txt": &fstest.MapFile{Data: []byte("content")},
+			}
+
+			err := WalkDir(fsys, ".", func(_ string, d fs.DirEntry) bool {
+				return d.Type().IsRegular()
+			}, func(_ string, _ fs.DirEntry, _ io.Reader) error {
+				return tt.err
+			})
+			require.NoError(t, err)
+
+			assert.Contains(t, buf.String(), tt.wantLevel)
+		})
+	}
+}
 
 func TestCopyFile(t *testing.T) {
 	type args struct {
