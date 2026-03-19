@@ -82,7 +82,7 @@ jobs:
       # Remove this temporary solution when the issue is resolved.
       # https://github.com/actions/runner-images/issues/13474
       - name: Set up Docker
-        uses: docker/setup-docker-action@e43656e248c0bd0647d3f5c195d116aacf6fcaf4 # v4.7.0
+        uses: docker/setup-docker-action@1a6edb0ba9ac496f6850236981f15d8f9a82254d # v5.0.0
         with:
           version: v29.2.1
           set-host: true
