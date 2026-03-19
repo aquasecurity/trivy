@@ -4,6 +4,10 @@ on:
     paths:
       - 'docs/**'
       - 'mkdocs.yml'
+
+permissions:
+  contents: read
+
 jobs:
   build-documents:
     name: Documentation Test

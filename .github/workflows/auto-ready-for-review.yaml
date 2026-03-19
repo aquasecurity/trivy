@@ -8,6 +8,10 @@ on:
     workflows: ["Test", "Validate PR Title"]
     types: [completed]
 
+permissions:
+  actions: read
+  pull-requests: write
+
 jobs:
   auto-ready-for-review:
     runs-on: ubuntu-24.04

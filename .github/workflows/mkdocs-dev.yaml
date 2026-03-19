@@ -6,6 +6,10 @@ on:
       - mkdocs.yml
     branches:
       - main
+
+permissions:
+  contents: write # Required for mike deploy --push
+
 jobs:
   deploy:
     name: Deploy the dev documentation

@@ -4,6 +4,8 @@ name: CLA
 on:
   merge_group:
 
+permissions: {}
+
 jobs:
   cla:
     name: license/cla
