@@ -144,10 +144,13 @@ func (r *hclRenderer) renderSlice(vals []any) {
 	r.incIndent()
 	defer r.decIndent()
 
-	for _, v := range vals {
+	for i, v := range vals {
 		r.write(r.indent + "  ")
-		renderPrimitive(r.w, v)
-		r.writeln(",")
+		r.renderAttributeValue(v)
+		r.writeln("")
+		if i != len(vals)-1 {
+			r.writeln(",")
+		}
 	}
 	r.write(r.indent + "]")
 }
