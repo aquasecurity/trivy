@@ -239,6 +239,131 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "seal security pip package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "seal-requests",
+				pkgVer:  "2.14.2+sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-32681",
+					PkgName:          "seal-requests",
+					InstalledVersion: "2.14.2+sp1",
+					FixedVersion:     "2.14.2+sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "seal security rubygems package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Bundler,
+			args: args{
+				pkgName: "seal-rack",
+				pkgVer:  "2.0.7.0.1.sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-61780",
+					PkgName:          "seal-rack",
+					InstalledVersion: "2.0.7.0.1.sp1",
+					FixedVersion:     "2.0.7.0.1.sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "seal security npm package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Npm,
+			args: args{
+				pkgName: "@seal-security/ajv",
+				pkgVer:  "5.5.2-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-69873",
+					PkgName:          "@seal-security/ajv",
+					InstalledVersion: "5.5.2-sp1",
+					FixedVersion:     "5.5.2-sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "seal security go package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "sealsecurity.io/golang.org/x/crypto",
+				pkgVer:  "0.26.0-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-22869",
+					PkgName:          "sealsecurity.io/golang.org/x/crypto",
+					InstalledVersion: "0.26.0-sp1",
+					FixedVersion:     "0.26.0-sp2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "seal security maven package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Pom,
+			args: args{
+				pkgName: "seal.sp1.org.apache.logging.log4j:log4j-core",
+				pkgVer:  "2.13.3",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-68161",
+					PkgName:          "seal.sp1.org.apache.logging.log4j:log4j-core",
+					InstalledVersion: "2.13.3",
+					FixedVersion:     "2.13.3+sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

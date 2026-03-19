@@ -1,0 +1,54 @@
+- bucket: "seal pip::Seal Security Database"
+  pairs:
+    - bucket: "seal-requests"
+      pairs:
+        - key: "CVE-2023-32681"
+          value:
+            PatchedVersions:
+              - "2.14.2+sp999"
+            VulnerableVersions:
+              - ">= 2.14.2+sp1, < 2.14.2+sp999"
+
+- bucket: "seal npm::Seal Security Database"
+  pairs:
+    - bucket: "@seal-security/ajv"
+      pairs:
+        - key: "CVE-2025-69873"
+          value:
+            PatchedVersions:
+              - "5.5.2-sp999"
+            VulnerableVersions:
+              - ">=5.5.2-sp1 <5.5.2-sp999"
+
+- bucket: "seal go::Seal Security Database"
+  pairs:
+    - bucket: "sealsecurity.io/golang.org/x/crypto"
+      pairs:
+        - key: "CVE-2025-22869"
+          value:
+            PatchedVersions:
+              - "0.26.0-sp2"
+            VulnerableVersions:
+              - ">= 0.26.0-sp1, < 0.26.0-sp2"
+
+- bucket: "seal rubygems::Seal Security Database"
+  pairs:
+    - bucket: "seal-rack"
+      pairs:
+        - key: "CVE-2025-61780"
+          value:
+            PatchedVersions:
+              - "2.0.7.0.1.sp999"
+            VulnerableVersions:
+              - ">= 2.0.7.0.1.sp1, < 2.0.7.0.1.sp999"
+
+- bucket: "seal maven::Seal Security Database"
+  pairs:
+    - bucket: "seal.sp1.org.apache.logging.log4j:log4j-core"
+      pairs:
+        - key: "CVE-2025-68161"
+          value:
+            PatchedVersions:
+              - "2.13.3+sp999"
+            VulnerableVersions:
+              - ">= 2.13.3, < 2.13.3+sp999"
