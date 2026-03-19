@@ -5771,13 +5771,13 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../advanced/private-registries/gcr/" class="md-nav__link">
+      <a href="../../advanced/private-registries/gar/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
     
   
-    GCR (Google Container Registry)
+    GAR (Google Artifact Registry)
   
 
     
@@ -9327,7 +9327,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </code></pre></div>
 </details>
 
-<p>You can compute different figures within the template using <a href="http://masterminds.github.io/sprig/">sprig</a> functions.
+<p>You can compute different figures within the template using <a href="https://masterminds.github.io/sprig/">sprig</a> functions.
 As an example you can summarize the different classes of issues:</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &#39;{{- $critical := 0 }}{{- $high := 0 }}{{- range . }}{{- range .Vulnerabilities }}{{- if  eq .Severity &quot;CRITICAL&quot; }}{{- $critical = add $critical 1 }}{{- end }}{{- if  eq .Severity &quot;HIGH&quot; }}{{- $high = add $high 1 }}{{- end }}{{- end }}{{- end }}Critical: {{ $critical }}, High: {{ $high }}&#39; golang:1.12-alpine
 </code></pre></div>
@@ -9338,10 +9338,11 @@ As an example you can summarize the different classes of issues:</p>
 </code></pre></div>
 </details>
 
-<p>For other features of sprig, see the official <a href="http://masterminds.github.io/sprig/">sprig</a> documentation.</p>
+<p>For other features of sprig, see the official <a href="https://masterminds.github.io/sprig/">sprig</a> documentation.</p>
 <h4 id="load-templates-from-a-file">Load templates from a file<a class="headerlink" href="#load-templates-from-a-file" title="Permanent link">&para;</a></h4>
-<p>You can load templates from a file prefixing the template path with an @.</p>
-<div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/path/to/template&quot; golang:1.12-alpine
+<p>You can load templates from a file prefixing the template path with an <code>@</code>.
+The template file must have a <code>.tpl</code> extension.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;@/path/to/template.tpl&quot; golang:1.12-alpine
 </code></pre></div>
 <h4 id="default-templates">Default Templates<a class="headerlink" href="#default-templates" title="Permanent link">&para;</a></h4>
 <p>If Trivy is installed using rpm then default templates can be found at <code>/usr/local/share/trivy/templates</code>.</p>
