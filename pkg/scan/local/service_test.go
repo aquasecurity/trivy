@@ -226,11 +226,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2020-9999",
+								SeveritySource: "alpine",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "dos",
 									Description: "dos vulnerability",
 									Severity:    "HIGH",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"alpine": 3,
+									},
 								},
 							},
 						},
@@ -253,11 +257,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -340,11 +348,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2020-9999",
+								SeveritySource: "alpine",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "dos",
 									Description: "dos vulnerability",
 									Severity:    "HIGH",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"alpine": 3,
+									},
 								},
 							},
 						},
@@ -644,11 +656,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -731,11 +747,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -840,11 +860,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -924,11 +948,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -1049,11 +1077,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2014-0081",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2014-0081",
+								SeveritySource: "ghsa",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "xss",
 									Description: "xss vulnerability",
 									Severity:    "MEDIUM",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"ghsa": 2,
+									},
 									References: []string{
 										"http://example.com",
 									},
@@ -1135,11 +1167,15 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 								},
-								PrimaryURL: "https://avd.aquasec.com/nvd/cve-2020-9999",
+								PrimaryURL:     "https://avd.aquasec.com/nvd/cve-2020-9999",
+								SeveritySource: "alpine",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "dos",
 									Description: "dos vulnerability",
 									Severity:    "HIGH",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"alpine": 3,
+									},
 									References: []string{
 										"https://example.com/post-scan", // modified by post-scan hook
 									},
