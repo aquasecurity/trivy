@@ -175,3 +175,9 @@ func (v *CSAF) statement(vuln *csaf.Vulnerability) string {
 	}
 	return lo.FromPtr(threat.Details)
 }
+
+// EnrichWithRatings is a no-op for CSAF as it doesn't currently support ratings
+func (v *CSAF) EnrichWithRatings(vuln *types.DetectedVulnerability, product *core.Component) {
+	// CSAF spec doesn't include rating information yet
+	// This is a no-op to satisfy the VEX interface
+}
