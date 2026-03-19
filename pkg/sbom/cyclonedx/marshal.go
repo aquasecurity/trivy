@@ -133,6 +133,7 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 		Hashes:     m.Hashes(component.Files),
 		Licenses:   m.Licenses(component.Licenses),
 		Properties: m.Properties(component.Properties),
+		Evidence:   m.Evidence(component.Files),
 	}
 	m.componentIDs[component.ID()] = cdxComponent.BOMRef
 
@@ -295,6 +296,23 @@ func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 		})
 	}
 	return &cdxHashes
+}
+
+func (m *Marshaler) Evidence(files []core.File) *cdx.Evidence {
+	var occurrences []cdx.EvidenceOccurrence
+	for _, f := range files {
+		if f.Path != "" {
+			occurrences = append(occurrences, cdx.EvidenceOccurrence{
+				Location: f.Path,
+			})
+		}
+	}
+	if len(occurrences) == 0 {
+		return nil
+	}
+	return &cdx.Evidence{
+		Occurrences: &occurrences,
+	}
 }
 
 func (m *Marshaler) Licenses(licenses []string) *cdx.Licenses {

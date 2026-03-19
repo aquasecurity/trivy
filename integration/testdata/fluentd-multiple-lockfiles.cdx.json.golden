@@ -4737,7 +4737,7 @@
       "bom-ref": "pkg:deb/debian/libunistring2@0.9.10-1?arch=amd64&distro=debian-10.2",
       "type": "library",
       "supplier": {
-        "name": "Jörg Frings-Fürst <debian@jff.email>"
+        "name": "J\u00c3\u00b6rg Frings-F\u00c3\u00bcrst <debian@jff.email>"
       },
       "name": "libunistring2",
       "version": "0.9.10-1",
@@ -6515,10 +6515,6 @@
       "purl": "pkg:gem/activesupport@6.0.2.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6530,7 +6526,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/activesupport-6.0.2.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/addressable@2.7.0",
@@ -6553,10 +6556,6 @@
       "purl": "pkg:gem/addressable@2.7.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/addressable-2.7.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6568,7 +6567,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/addressable-2.7.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/concurrent-ruby@1.1.6",
@@ -6591,10 +6597,6 @@
       "purl": "pkg:gem/concurrent-ruby@1.1.6",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/concurrent-ruby-1.1.6.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6606,7 +6608,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/concurrent-ruby-1.1.6.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/cool.io@1.6.0",
@@ -6622,10 +6631,6 @@
       "purl": "pkg:gem/cool.io@1.6.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/cool.io-1.6.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6637,7 +6642,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/cool.io-1.6.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/dig_rb@1.0.1",
@@ -6660,10 +6672,6 @@
       "purl": "pkg:gem/dig_rb@1.0.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/dig_rb-1.0.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6675,7 +6683,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/dig_rb-1.0.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/domain_name@0.5.20190701",
@@ -6708,10 +6723,6 @@
       "purl": "pkg:gem/domain_name@0.5.20190701",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/domain_name-0.5.20190701.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6723,7 +6734,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/domain_name-0.5.20190701.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/elasticsearch-api@7.5.0",
@@ -6746,10 +6764,6 @@
       "purl": "pkg:gem/elasticsearch-api@7.5.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/elasticsearch-api-7.5.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6761,7 +6775,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/elasticsearch-api-7.5.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/elasticsearch-transport@7.5.0",
@@ -6784,10 +6805,6 @@
       "purl": "pkg:gem/elasticsearch-transport@7.5.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/elasticsearch-transport-7.5.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6799,7 +6816,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/elasticsearch-transport-7.5.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/elasticsearch@7.5.0",
@@ -6822,10 +6846,6 @@
       "purl": "pkg:gem/elasticsearch@7.5.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/elasticsearch-7.5.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6837,7 +6857,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/elasticsearch-7.5.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/excon@0.72.0",
@@ -6860,10 +6887,6 @@
       "purl": "pkg:gem/excon@0.72.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/excon-0.72.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6875,7 +6898,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/excon-0.72.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/faraday@0.17.3",
@@ -6898,10 +6928,6 @@
       "purl": "pkg:gem/faraday@0.17.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/faraday-0.17.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6913,7 +6939,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/faraday-0.17.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/ffi-compiler@1.0.1",
@@ -6936,10 +6969,6 @@
       "purl": "pkg:gem/ffi-compiler@1.0.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/ffi-compiler-1.0.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6951,7 +6980,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/ffi-compiler-1.0.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/ffi@1.12.2",
@@ -6974,10 +7010,6 @@
       "purl": "pkg:gem/ffi@1.12.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/ffi-1.12.2.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -6989,7 +7021,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/ffi-1.12.2.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-concat@2.4.0",
@@ -7012,10 +7051,6 @@
       "purl": "pkg:gem/fluent-plugin-concat@2.4.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-concat-2.4.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7027,7 +7062,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-concat-2.4.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
@@ -7050,10 +7092,6 @@
       "purl": "pkg:gem/fluent-plugin-detect-exceptions@0.0.13",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-detect-exceptions-0.0.13.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7065,7 +7103,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-detect-exceptions-0.0.13.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
@@ -7088,10 +7133,6 @@
       "purl": "pkg:gem/fluent-plugin-elasticsearch@3.8.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-elasticsearch-3.8.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7103,7 +7144,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-elasticsearch-3.8.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
@@ -7126,10 +7174,6 @@
       "purl": "pkg:gem/fluent-plugin-kubernetes_metadata_filter@2.4.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-kubernetes_metadata_filter-2.4.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7141,7 +7185,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-kubernetes_metadata_filter-2.4.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
@@ -7164,10 +7215,6 @@
       "purl": "pkg:gem/fluent-plugin-multi-format-parser@1.0.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-multi-format-parser-1.0.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7179,7 +7226,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-multi-format-parser-1.0.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-prometheus@1.7.0",
@@ -7202,10 +7256,6 @@
       "purl": "pkg:gem/fluent-plugin-prometheus@1.7.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-prometheus-1.7.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7217,7 +7267,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-prometheus-1.7.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluent-plugin-systemd@1.0.2",
@@ -7240,10 +7297,6 @@
       "purl": "pkg:gem/fluent-plugin-systemd@1.0.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluent-plugin-systemd-1.0.2.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7255,7 +7308,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluent-plugin-systemd-1.0.2.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/fluentd@1.8.0",
@@ -7278,10 +7338,6 @@
       "purl": "pkg:gem/fluentd@1.8.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/fluentd-1.8.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7293,7 +7349,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/fluentd-1.8.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http-accept@1.7.0",
@@ -7309,10 +7372,6 @@
       "purl": "pkg:gem/http-accept@1.7.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http-accept-1.7.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7324,7 +7383,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http-accept-1.7.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http-cookie@1.0.3",
@@ -7347,10 +7413,6 @@
       "purl": "pkg:gem/http-cookie@1.0.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http-cookie-1.0.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7362,7 +7424,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http-cookie-1.0.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http-form_data@2.2.0",
@@ -7385,10 +7454,6 @@
       "purl": "pkg:gem/http-form_data@2.2.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http-form_data-2.2.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7400,7 +7465,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http-form_data-2.2.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http-parser@1.2.1",
@@ -7423,10 +7495,6 @@
       "purl": "pkg:gem/http-parser@1.2.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http-parser-1.2.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7438,7 +7506,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http-parser-1.2.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http@4.3.0",
@@ -7461,10 +7536,6 @@
       "purl": "pkg:gem/http@4.3.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http-4.3.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7476,7 +7547,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http-4.3.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/http_parser.rb@0.6.0",
@@ -7499,10 +7577,6 @@
       "purl": "pkg:gem/http_parser.rb@0.6.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/http_parser.rb-0.6.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7514,7 +7588,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/http_parser.rb-0.6.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/i18n@1.8.2",
@@ -7537,10 +7618,6 @@
       "purl": "pkg:gem/i18n@1.8.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/i18n-1.8.2.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7552,7 +7629,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/i18n-1.8.2.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/kubeclient@4.6.0",
@@ -7575,10 +7659,6 @@
       "purl": "pkg:gem/kubeclient@4.6.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/kubeclient-4.6.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7590,7 +7670,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/kubeclient-4.6.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/lru_redux@1.1.0",
@@ -7613,10 +7700,6 @@
       "purl": "pkg:gem/lru_redux@1.1.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/lru_redux-1.1.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7628,7 +7711,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/lru_redux-1.1.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/mime-types-data@3.2019.1009",
@@ -7651,10 +7741,6 @@
       "purl": "pkg:gem/mime-types-data@3.2019.1009",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/mime-types-data-3.2019.1009.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7666,7 +7752,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/mime-types-data-3.2019.1009.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/mime-types@3.3.1",
@@ -7689,10 +7782,6 @@
       "purl": "pkg:gem/mime-types@3.3.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/mime-types-3.3.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7704,7 +7793,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/mime-types-3.3.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/minitest@5.14.0",
@@ -7727,10 +7823,6 @@
       "purl": "pkg:gem/minitest@5.14.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/minitest-5.14.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7742,7 +7834,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/minitest-5.14.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/msgpack@1.3.3",
@@ -7765,10 +7864,6 @@
       "purl": "pkg:gem/msgpack@1.3.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/msgpack-1.3.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7780,7 +7875,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/msgpack-1.3.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/multi_json@1.14.1",
@@ -7803,10 +7905,6 @@
       "purl": "pkg:gem/multi_json@1.14.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/multi_json-1.14.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7818,7 +7916,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/multi_json-1.14.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/multipart-post@2.1.1",
@@ -7841,10 +7946,6 @@
       "purl": "pkg:gem/multipart-post@2.1.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/multipart-post-2.1.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7856,7 +7957,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/multipart-post-2.1.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/netrc@0.11.0",
@@ -7879,10 +7987,6 @@
       "purl": "pkg:gem/netrc@0.11.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/netrc-0.11.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7894,7 +7998,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/netrc-0.11.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/oj@3.10.0",
@@ -7917,10 +8028,6 @@
       "purl": "pkg:gem/oj@3.10.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/oj-3.10.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7932,7 +8039,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/oj-3.10.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/prometheus-client@0.9.0",
@@ -7955,10 +8069,6 @@
       "purl": "pkg:gem/prometheus-client@0.9.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/prometheus-client-0.9.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -7970,7 +8080,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/prometheus-client-0.9.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/public_suffix@4.0.3",
@@ -7993,10 +8110,6 @@
       "purl": "pkg:gem/public_suffix@4.0.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/public_suffix-4.0.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8008,7 +8121,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/public_suffix-4.0.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/quantile@0.2.1",
@@ -8031,10 +8151,6 @@
       "purl": "pkg:gem/quantile@0.2.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/quantile-0.2.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8046,7 +8162,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/quantile-0.2.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/rake@13.0.1",
@@ -8069,10 +8192,6 @@
       "purl": "pkg:gem/rake@13.0.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/rake-13.0.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8084,7 +8203,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/rake-13.0.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/recursive-open-struct@1.1.0",
@@ -8107,10 +8233,6 @@
       "purl": "pkg:gem/recursive-open-struct@1.1.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/recursive-open-struct-1.1.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8122,7 +8244,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/recursive-open-struct-1.1.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/rest-client@2.1.0",
@@ -8145,10 +8274,6 @@
       "purl": "pkg:gem/rest-client@2.1.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/rest-client-2.1.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8160,7 +8285,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/rest-client-2.1.0.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/serverengine@2.2.1",
@@ -8183,10 +8315,6 @@
       "purl": "pkg:gem/serverengine@2.2.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/serverengine-2.2.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8198,7 +8326,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/serverengine-2.2.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/sigdump@0.2.4",
@@ -8221,10 +8356,6 @@
       "purl": "pkg:gem/sigdump@0.2.4",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/sigdump-0.2.4.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8236,7 +8367,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/sigdump-0.2.4.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/strptime@0.2.3",
@@ -8259,10 +8397,6 @@
       "purl": "pkg:gem/strptime@0.2.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/strptime-0.2.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8274,7 +8408,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/strptime-0.2.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/systemd-journal@1.3.3",
@@ -8297,10 +8438,6 @@
       "purl": "pkg:gem/systemd-journal@1.3.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/systemd-journal-1.3.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8312,7 +8449,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/systemd-journal-1.3.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/thread_safe@0.3.6",
@@ -8335,10 +8479,6 @@
       "purl": "pkg:gem/thread_safe@0.3.6",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/thread_safe-0.3.6.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8350,7 +8490,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/thread_safe-0.3.6.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/tzinfo-data@1.2019.3",
@@ -8373,10 +8520,6 @@
       "purl": "pkg:gem/tzinfo-data@1.2019.3",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/tzinfo-data-1.2019.3.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8388,7 +8531,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/tzinfo-data-1.2019.3.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/tzinfo@1.2.6",
@@ -8411,10 +8561,6 @@
       "purl": "pkg:gem/tzinfo@1.2.6",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/tzinfo-1.2.6.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8426,7 +8572,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/tzinfo-1.2.6.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/unf@0.1.4",
@@ -8449,10 +8602,6 @@
       "purl": "pkg:gem/unf@0.1.4",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/unf-0.1.4.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8464,7 +8613,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/unf-0.1.4.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/unf_ext@0.0.7.6",
@@ -8487,10 +8643,6 @@
       "purl": "pkg:gem/unf_ext@0.0.7.6",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/unf_ext-0.0.7.6.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8502,7 +8654,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/unf_ext-0.0.7.6.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/yajl-ruby@1.4.1",
@@ -8525,10 +8684,6 @@
       "purl": "pkg:gem/yajl-ruby@1.4.1",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/yajl-ruby-1.4.1.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8540,7 +8695,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/yajl-ruby-1.4.1.gemspec"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:gem/zeitwerk@2.3.0",
@@ -8563,10 +8725,6 @@
       "purl": "pkg:gem/zeitwerk@2.3.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "var/lib/gems/2.5.0/specifications/zeitwerk-2.3.0.gemspec"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:75e43d55939745950bc3f8fad56c5834617c4339f0f54755e69a0dd5372624e9"
         },
@@ -8578,7 +8736,14 @@
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "var/lib/gems/2.5.0/specifications/zeitwerk-2.3.0.gemspec"
+          }
+        ]
+      }
     }
   ],
   "dependencies": [

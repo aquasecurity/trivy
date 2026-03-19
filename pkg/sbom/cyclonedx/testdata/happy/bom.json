@@ -97,10 +97,6 @@
       "purl": "pkg:maven/org.codehaus.mojo/child-project@1.0",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "app/maven/target/child-project-1.0.jar"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
         },
@@ -108,7 +104,14 @@
           "name": "aquasecurity:trivy:Type",
           "value": "jar"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "app/maven/target/child-project-1.0.jar"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:maven/com.example/example@0.0.1",
@@ -139,10 +142,6 @@
       "purl": "pkg:npm/@example/bootstrap@5.0.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "app/app/package.json"
-        },
-        {
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:3c79e832b1b4891a1cb4a326ef8524e0bd14a2537150ac0e203a5677176c1ca1"
         },
@@ -150,7 +149,14 @@
           "name": "aquasecurity:trivy:Type",
           "value": "node-pkg"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "app/app/package.json"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:composer/pear/log@1.13.1",

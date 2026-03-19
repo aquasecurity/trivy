@@ -36,14 +36,17 @@
       "purl": "pkg:maven/org.springframework/spring-web@5.3.22",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "spring-web-5.3.22.jar"
-        },
-        {
           "name": "aquasecurity:trivy:PkgType",
           "value": "jar"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "spring-web-5.3.22.jar"
+          }
+        ]
+      }
     }
   ],
   "dependencies": [
