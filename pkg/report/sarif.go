@@ -362,6 +362,29 @@ func clearURI(s string) string {
 		s = strings.ReplaceAll(s, "git@github.com:", "github.com/")
 		s = strings.ReplaceAll(s, ".git", "")
 		s = strings.ReplaceAll(s, "?ref=", "/tree/")
+	case strings.HasPrefix(s, "git@bitbucket.org:"):
+		// build Bitbucket url format
+		// e.g. `git@bitbucket.org:org/repo.git?ref=1.8.4/file.tf` -> `bitbucket.org/org/repo/src/1.8.4/file.tf`
+		// cf. https://github.com/aquasecurity/trivy/issues/8154
+		s = strings.ReplaceAll(s, "git@bitbucket.org:", "bitbucket.org/")
+		s = strings.ReplaceAll(s, ".git", "")
+		s = strings.ReplaceAll(s, "?ref=", "/src/")
+	case strings.HasPrefix(s, "git@"):
+		// generic git SSH format for other hosts (GitLab, Gitea, etc.)
+		// e.g. `git@gitlab.com:org/repo.git?ref=v1.0.0/main.tf` -> `gitlab.com/org/repo/main.tf`
+		s = strings.TrimPrefix(s, "git@")
+		s = strings.Replace(s, ":", "/", 1)
+		s = strings.ReplaceAll(s, ".git", "")
+		// Strip `?ref=<tag>` for generic hosts since the path format varies
+		if idx := strings.Index(s, "?ref="); idx != -1 {
+			rest := s[idx+5:] // content after `?ref=`
+			// If the ref contains a path separator, keep the file path after the ref
+			if slashIdx := strings.Index(rest, "/"); slashIdx != -1 {
+				s = s[:idx] + rest[slashIdx:]
+			} else {
+				s = s[:idx]
+			}
+		}
 	case strings.HasPrefix(s, "git::https:/") && !strings.HasPrefix(s, "git::https://"):
 		s = strings.TrimPrefix(s, "git::https:/")
 		s = strings.ReplaceAll(s, ".git", "")
@@ -395,6 +418,7 @@ func toUri(str string) *url.URL {
 	if err != nil {
 		logger := log.WithPrefix("sarif")
 		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
+		return &url.URL{}
 	}
 	return uri
 }
