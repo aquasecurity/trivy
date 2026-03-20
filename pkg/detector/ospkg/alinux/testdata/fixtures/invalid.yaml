@@ -1,0 +1,9 @@
+- bucket: alinux 2
+  pairs:
+    - bucket: postgresql
+      pairs:
+        - key: CVE-2024-10979
+          value:
+            FixedVersion:
+              - foo
+              - bar
