@@ -101,6 +101,7 @@ adjust_os() {
     arm64) OS=ARM64 ;;
     ppc64le) OS=Linux ;;
     s390x) OS=Linux ;;
+    riscv64) OS=Linux ;;
     darwin) OS=macOS ;;
     dragonfly) OS=DragonFlyBSD ;;
     freebsd) OS=FreeBSD ;;
@@ -120,6 +121,7 @@ adjust_arch() {
     arm64) ARCH=ARM64 ;;
     ppc64le) ARCH=PPC64LE ;;
     s390x) ARCH=s390x ;;
+    riscv64) ARCH=riscv64 ;;
   esac
   true
 }
@@ -203,6 +205,7 @@ uname_arch() {
     armv6*) arch="armv6" ;;
     armv7*) arch="armv7" ;;
     s390*) arch="s390x" ;;
+    riscv64*) arch="riscv64" ;;
   esac
   echo ${arch}
 }
@@ -240,6 +243,7 @@ uname_arch_check() {
     mips64) return 0 ;;
     mips64le) return 0 ;;
     s390x) return 0 ;;
+    riscv64) return 0 ;;
     amd64p32) return 0 ;;
   esac
   log_crit "uname_arch_check '$(uname -m)' got converted to '$arch' which is not a GOARCH value.  Please file bug report at https://github.com/client9/shlib"
