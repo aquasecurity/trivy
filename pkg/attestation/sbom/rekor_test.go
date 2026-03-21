@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/attestation/sbom"
+	"github.com/aquasecurity/trivy/pkg/config"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/rekortest"
 )
@@ -30,7 +31,7 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 		},
 	}
 
-	log.InitLogger(false, true)
+	log.InitLogger(false, true, config.NeverColor)
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)

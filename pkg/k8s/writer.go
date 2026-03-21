@@ -11,7 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// Write writes the results in the give format
+// Write writes the results in the given format
 func Write(ctx context.Context, k8sreport report.Report, option report.Option) error {
 	k8sreport.PrintErrors()
 
@@ -27,7 +27,7 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 
 		if option.Report == report.SummaryReport {
 			target := fmt.Sprintf("Summary Report for %s", k8sreport.ClusterName)
-			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output))
+			table.RenderTarget(option.Output, target, table.IsOutputToTerminal(option.Output), option.ColorMode)
 		}
 
 		for _, r := range separatedReports {

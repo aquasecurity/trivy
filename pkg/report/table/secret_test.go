@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/config"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report/table"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -143,7 +144,7 @@ this is a title
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			buf := bytes.NewBuffer([]byte{})
-			renderer := table.NewSecretRenderer(buf, false, []dbTypes.Severity{
+			renderer := table.NewSecretRenderer(buf, false, config.NeverColor, []dbTypes.Severity{
 				dbTypes.SeverityHigh,
 				dbTypes.SeverityMedium,
 			})
