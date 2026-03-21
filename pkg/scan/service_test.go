@@ -147,6 +147,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 												Value: "x86_64",
 											},
 											{
+												Key:   "checksum",
+												Value: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+											},
+											{
 												Key:   "distro",
 												Value: "3.11.5",
 											},
@@ -182,6 +186,10 @@ func TestScanner_ScanArtifact(t *testing.T) {
 											{
 												Key:   "arch",
 												Value: "x86_64",
+											},
+											{
+												Key:   "checksum",
+												Value: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
 											},
 											{
 												Key:   "distro",

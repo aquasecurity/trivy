@@ -12,6 +12,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -250,6 +251,14 @@ func (p *PackageURL) Package() *ftypes.Package {
 			epoch, err := strconv.Atoi(q.Value)
 			if err == nil {
 				pkg.Epoch = epoch
+			}
+		case "checksum":
+			cs := q.Value
+			if i := strings.Index(cs, ","); i > 0 {
+				cs = cs[:i]
+			}
+			if cs != "" {
+				pkg.Digest = digest.Digest(cs)
 			}
 		}
 	}
@@ -512,6 +521,13 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 		qualifiers = append(qualifiers, packageurl.Qualifier{
 			Key:   "epoch",
 			Value: strconv.Itoa(pkg.Epoch),
+		})
+	}
+	// checksum qualifier (algorithm:hex_value, lowercase); valid for all package types per spec.
+	if pkg.Digest != "" {
+		qualifiers = append(qualifiers, packageurl.Qualifier{
+			Key:   "checksum",
+			Value: strings.ToLower(string(pkg.Digest)),
 		})
 	}
 
