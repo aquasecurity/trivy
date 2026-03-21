@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 
@@ -86,6 +87,14 @@ var (
 		TelemetrySafe: true,
 		Internal:      true, // Hidden from help output, intended for maintainer debugging only
 	}
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Usage:         "disable colorized output",
+		Persistent:    true,
+		TelemetrySafe: true,
+		EnvName:       "NO_COLOR", // https://no-color.org/
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -100,6 +109,7 @@ type GlobalFlagGroup struct {
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
 	TraceHTTP             *Flag[bool]
+	NoColor               *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -114,6 +124,7 @@ type GlobalOptions struct {
 	CacheDir              string
 	GenerateDefaultConfig bool
 	TraceHTTP             bool
+	NoColor               bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -128,6 +139,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
 		TraceHTTP:             TraceHTTPFlag.Clone(),
+		NoColor:               NoColorFlag.Clone(),
 	}
 }
 
@@ -147,6 +159,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.CacheDir,
 		f.GenerateDefaultConfig,
 		f.TraceHTTP,
+		f.NoColor,
 	}
 }
 
@@ -175,6 +188,12 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
+	// Respect the NO_COLOR env var (https://no-color.org/) as well as --no-color flag.
+	noColor := f.NoColor.Value() || os.Getenv("NO_COLOR") != ""
+	if noColor {
+		color.NoColor = true
+	}
+
 	opts.GlobalOptions = GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),
 		ShowVersion:           f.ShowVersion.Value(),
@@ -186,6 +205,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
 		TraceHTTP:             f.TraceHTTP.Value(),
+		NoColor:               noColor,
 	}
 	return nil
 }
