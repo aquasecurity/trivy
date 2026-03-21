@@ -12,23 +12,26 @@ import (
 
 var pkgs = []types.Package{
 	{
-		ID:      "glibc@2.40",
+		ID:      "glibc@1:2.40-1.1740525475.e3a5862c.br1",
 		Name:    "glibc",
 		Version: "2.40",
+		Release: "1.1740525475.e3a5862c.br1",
 		Epoch:   1,
 		Arch:    "x86_64",
 	},
 	{
-		ID:      "kernel-6.1@6.1.128",
+		ID:      "kernel-6.1@6.1.128-1.1740603423.4d405dc9.br1",
 		Name:    "kernel-6.1",
 		Version: "6.1.128",
+		Release: "1.1740603423.4d405dc9.br1",
 		Epoch:   0,
 		Arch:    "x86_64",
 	},
 	{
-		ID:      "systemd@252.22",
+		ID:      "systemd@252.22-1.1740525475.e3a5862c.br1",
 		Name:    "systemd",
 		Version: "252.22",
+		Release: "1.1740525475.e3a5862c.br1",
 		Epoch:   0,
 		Arch:    "x86_64",
 	},
