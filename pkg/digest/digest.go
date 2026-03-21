@@ -3,6 +3,7 @@ package digest
 import (
 	"crypto/sha1" // nolint
 	"crypto/sha256"
+	"crypto/sha512"
 	"encoding/hex"
 	"fmt"
 	"hash"
@@ -87,4 +88,22 @@ func CalcSHA256FromReader(r io.ReadSeeker) (Digest, error) {
 	}
 
 	return NewDigest(SHA256, h), nil
+}
+
+// CalcSHA512 calculates the SHA512 hash of the given data
+func CalcSHA512(data []byte) Digest {
+	h := sha512.Sum512(data)
+	return NewDigestFromString(SHA512, hex.EncodeToString(h[:]))
+}
+
+// CalcSHA512FromReader calculates the SHA512 hash from a reader
+func CalcSHA512FromReader(r io.ReadSeeker) (Digest, error) {
+	defer r.Seek(0, io.SeekStart)
+
+	h := sha512.New()
+	if _, err := io.Copy(h, r); err != nil {
+		return "", xerrors.Errorf("unable to calculate sha512 digest: %w", err)
+	}
+
+	return NewDigest(SHA512, h), nil
 }
