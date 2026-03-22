@@ -39,11 +39,12 @@ type Proxy struct {
 }
 
 type settings struct {
-	LocalRepository string    `xml:"localRepository"`
-	Servers         []Server  `xml:"servers>server"`
-	Profiles        []Profile `xml:"profiles>profile"`
-	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
-	Proxies         []Proxy   `xml:"proxies>proxy"`
+	LocalRepository string          `xml:"localRepository"`
+	Servers         []Server        `xml:"servers>server"`
+	Profiles        []Profile       `xml:"profiles>profile"`
+	ActiveProfiles  []string        `xml:"activeProfiles>activeProfile"`
+	Proxies         []Proxy         `xml:"proxies>proxy"`
+	Repositories    []pomRepository `xml:"repositories>repository"` // Maven 4
 }
 
 func (s settings) effectiveRepositories() []repository {
@@ -53,6 +54,11 @@ func (s settings) effectiveRepositories() []repository {
 			pomRepos = append(pomRepos, profile.Repositories...)
 		}
 	}
+
+	// Root-level repositories (Maven 4)
+	// Profile repos take precedence, so they come first for dedup.
+	pomRepos = append(pomRepos, s.Repositories...)
+
 	pomRepos = lo.UniqBy(pomRepos, func(r pomRepository) string {
 		return r.ID
 	})
@@ -102,13 +108,24 @@ func (p Proxy) isNonProxyHost(host string) bool {
 	return false
 }
 
-func readSettings() settings {
+func readSettings(rootDir string) settings {
 	s := settings{}
 
 	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".m2", "settings.xml")
 	userSettings, err := openSettings(userSettingsPath)
 	if err == nil {
 		s = userSettings
+	}
+
+	// Maven 4: project-specific settings (.mvn/settings.xml)
+	// User settings take precedence over project settings.
+	// https://maven.apache.org/ref/4-LATEST/api/maven-api-settings/settings.html
+	if rootDir != "" {
+		projectSettingsPath := filepath.Join(rootDir, ".mvn", "settings.xml")
+		projectSettings, pErr := openSettings(projectSettingsPath)
+		if pErr == nil {
+			mergeInto(&s, projectSettings)
+		}
 	}
 
 	// Some package managers use this path by default
@@ -119,31 +136,34 @@ func readSettings() settings {
 	globalSettingsPath := filepath.Join(mavenHome, "conf", "settings.xml")
 	globalSettings, err := openSettings(globalSettingsPath)
 	if err == nil {
-		// We need to merge global and user settings. User settings being dominant.
+		// We need to merge global, project, and user settings.
+		// Precedence: user > project > global
 		// https://maven.apache.org/settings.html#quick-overview
-		if s.LocalRepository == "" {
-			s.LocalRepository = globalSettings.LocalRepository
-		}
-
-		// Maven servers
-		s.Servers = lo.UniqBy(append(s.Servers, globalSettings.Servers...), func(server Server) string {
-			return server.ID
-		})
-
-		// Merge profiles
-		s.Profiles = lo.UniqBy(append(s.Profiles, globalSettings.Profiles...), func(p Profile) string {
-			return p.ID
-		})
-		// Merge active profiles
-		s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, globalSettings.ActiveProfiles...))
-
-		// Merge proxies
-		s.Proxies = lo.UniqBy(append(s.Proxies, globalSettings.Proxies...), func(p Proxy) string {
-			return p.ID
-		})
+		mergeInto(&s, globalSettings)
 	}
 
 	return s
+}
+
+// mergeInto merges lower-priority settings into s. s keeps its values on conflict.
+func mergeInto(s *settings, lower settings) {
+	if s.LocalRepository == "" {
+		s.LocalRepository = lower.LocalRepository
+	}
+
+	s.Servers = lo.UniqBy(append(s.Servers, lower.Servers...), func(server Server) string {
+		return server.ID
+	})
+	s.Profiles = lo.UniqBy(append(s.Profiles, lower.Profiles...), func(p Profile) string {
+		return p.ID
+	})
+	s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, lower.ActiveProfiles...))
+	s.Proxies = lo.UniqBy(append(s.Proxies, lower.Proxies...), func(p Proxy) string {
+		return p.ID
+	})
+	s.Repositories = lo.UniqBy(append(s.Repositories, lower.Repositories...), func(r pomRepository) string {
+		return r.ID
+	})
 }
 
 func openSettings(filePath string) (settings, error) {
@@ -194,5 +214,12 @@ func expandAllEnvPlaceholders(s *settings) {
 		s.Proxies[i].Username = evaluateVariable(proxy.Username, nil, nil)
 		s.Proxies[i].Password = evaluateVariable(proxy.Password, nil, nil)
 		s.Proxies[i].NonProxyHosts = evaluateVariable(proxy.NonProxyHosts, nil, nil)
+	}
+
+	// Root-level repositories (Maven 4)
+	for i, repo := range s.Repositories {
+		s.Repositories[i].ID = evaluateVariable(repo.ID, nil, nil)
+		s.Repositories[i].Name = evaluateVariable(repo.Name, nil, nil)
+		s.Repositories[i].URL = evaluateVariable(repo.URL, nil, nil)
 	}
 }

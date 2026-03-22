@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/2.0.0 https://maven.apache.org/xsd/settings-2.0.0.xsd">
+    <localRepository>testdata/project/repository</localRepository>
+
+    <servers>
+        <server>
+            <id>project-server</id>
+        </server>
+        <server>
+            <id>server-with-credentials</id>
+            <username>test-user</username>
+            <password>test-password-from-project</password>
+        </server>
+    </servers>
+    <profiles>
+        <profile>
+            <id>mycompany-project</id>
+            <repositories>
+                <repository>
+                    <id>mycompany-project-releases</id>
+                    <url>https://mycompany.example.com/repository/project-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+    </profiles>
+</settings>

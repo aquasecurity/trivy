@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/2.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/2.0.0 https://maven.apache.org/xsd/settings-2.0.0.xsd">
+    <servers>
+        <server>
+            <id>root-repo</id>
+            <username>root-user</username>
+            <password>root-pass</password>
+        </server>
+    </servers>
+    <repositories>
+        <repository>
+            <id>root-repo</id>
+            <url>https://mycompany.example.com/repository/root-releases</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+    <profiles>
+        <profile>
+            <id>profile-with-repo</id>
+            <repositories>
+                <repository>
+                    <id>profile-repo</id>
+                    <url>https://mycompany.example.com/repository/profile-releases</url>
+                    <releases>
+                        <enabled>true</enabled>
+                    </releases>
+                    <snapshots>
+                        <enabled>false</enabled>
+                    </snapshots>
+                </repository>
+            </repositories>
+        </profile>
+    </profiles>
+    <activeProfiles>
+        <activeProfile>profile-with-repo</activeProfile>
+    </activeProfiles>
+</settings>

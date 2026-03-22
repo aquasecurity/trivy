@@ -11,6 +11,7 @@ import (
 func Test_ReadSettings(t *testing.T) {
 	tests := []struct {
 		name         string
+		rootDir      string
 		envs         map[string]string
 		wantSettings settings
 	}{
@@ -70,6 +71,7 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{},
 				Proxies:        []Proxy{},
+				Repositories:   []pomRepository{},
 			},
 		},
 		{
@@ -251,7 +253,126 @@ func Test_ReadSettings(t *testing.T) {
 				ActiveProfiles: []string{
 					"mycompany-global",
 				},
-				Proxies: []Proxy{},
+				Proxies:      []Proxy{},
+				Repositories: []pomRepository{},
+			},
+		},
+		{
+			name:    "happy path with only project settings",
+			rootDir: filepath.Join("testdata", "settings", "project"),
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/project/repository",
+				Servers: []Server{
+					{
+						ID: "project-server",
+					},
+					{
+						ID:       "server-with-credentials",
+						Username: "test-user",
+						Password: "test-password-from-project",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-project",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-project-releases",
+								URL:              "https://mycompany.example.com/repository/project-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{},
+				Proxies:        []Proxy{},
+				Repositories:   []pomRepository{},
+			},
+		},
+		{
+			name:    "global < project < user merge precedence",
+			rootDir: filepath.Join("testdata", "settings", "project"),
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers: []Server{
+					{
+						ID: "user-server",
+					},
+					{
+						ID:       "server-with-credentials",
+						Username: "test-user",
+						Password: "test-password",
+					},
+					{
+						ID:       "server-with-name-only",
+						Username: "test-user-only",
+					},
+					{
+						ID: "project-server",
+					},
+					{
+						ID: "global-server",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "mycompany-global",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-releases",
+								URL:              "https://mycompany.example.com/repository/user-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+							{
+								ID:               "mycompany-user-snapshots",
+								URL:              "https://mycompany.example.com/repository/user-snapshots",
+								ReleasesEnabled:  "false",
+								SnapshotsEnabled: "true",
+							},
+						},
+						ActiveByDefault: true,
+					},
+					{
+						ID: "mycompany-project",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-project-releases",
+								URL:              "https://mycompany.example.com/repository/project-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+						ActiveByDefault: true,
+					},
+					{
+						ID: "default",
+						Repositories: []pomRepository{
+							{
+								ID:               "mycompany-default-releases",
+								URL:              "https://mycompany.example.com/repository/default-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+						ActiveByDefault: true,
+					},
+				},
+				ActiveProfiles: []string{
+					"mycompany-global",
+				},
+				Proxies:      []Proxy{},
+				Repositories: []pomRepository{},
 			},
 		},
 		{
@@ -352,6 +473,7 @@ func Test_ReadSettings(t *testing.T) {
 						Port:     "8080",
 					},
 				},
+				Repositories: []pomRepository{},
 			},
 		},
 		{
@@ -377,6 +499,7 @@ func Test_ReadSettings(t *testing.T) {
 						NonProxyHosts: "localhost|*.internal.com",
 					},
 				},
+				Repositories: []pomRepository{},
 			},
 		},
 	}
@@ -386,7 +509,7 @@ func Test_ReadSettings(t *testing.T) {
 				t.Setenv(env, settingsDir)
 			}
 
-			gotSettings := readSettings()
+			gotSettings := readSettings(tt.rootDir)
 			require.Equal(t, tt.wantSettings, gotSettings)
 		})
 	}
@@ -492,6 +615,73 @@ func Test_effectiveRepositories(t *testing.T) {
 					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
+				},
+			},
+		},
+		{
+			name: "root-level repositories (Maven 4)",
+			s: settings{
+				Repositories: []pomRepository{
+					{
+						ID:               "root-repo",
+						URL:              "https://example.com/root",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+				},
+			},
+			want: []repository{
+				{
+					url:             mustParseURL(t, "https://example.com/root"),
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+			},
+		},
+		{
+			name: "root-level repos + profile repos combined, profiles take precedence",
+			s: settings{
+				Repositories: []pomRepository{
+					{
+						ID:               "dup",
+						URL:              "https://example.com/root-dup",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+					{
+						ID:               "root-only",
+						URL:              "https://example.com/root-only",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID:              "p1",
+						ActiveByDefault: true,
+						Repositories: []pomRepository{
+							{
+								ID:               "dup",
+								URL:              "https://example.com/profile-dup",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "true",
+							},
+						},
+					},
+				},
+			},
+			// Profile repo "dup" wins over root-level "dup".
+			// After reverse: [root-only, dup(from profile)]
+			want: []repository{
+				{
+					url:             mustParseURL(t, "https://example.com/root-only"),
+					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+				{
+					url:             mustParseURL(t, "https://example.com/profile-dup"),
+					releaseEnabled:  true,
+					snapshotEnabled: true,
 				},
 			},
 		},
