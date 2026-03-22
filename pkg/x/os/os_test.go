@@ -3,7 +3,6 @@ package os
 import (
 	"os"
 	"path/filepath"
-	"strconv"
 	"strings"
 	"sync"
 	"testing"
@@ -26,10 +25,8 @@ func TestTempDir(t *testing.T) {
 
 	got := TempDir()
 
-	// Should contain process ID
-	pid := os.Getpid()
-	want := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(pid))
-	assert.Equal(t, want, got)
+	// Should be under system temp dir with trivy- prefix
+	assert.True(t, strings.HasPrefix(got, filepath.Join(os.TempDir(), "trivy-")))
 
 	// Directory should exist
 	_, err := os.Stat(got)
@@ -72,10 +69,8 @@ func TestCreateTemp(t *testing.T) {
 			_, err = os.Stat(file.Name())
 			require.NoError(t, err)
 
-			// File should be in our temp directory
-			pid := os.Getpid()
-			expectedDir := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(pid))
-			assert.True(t, strings.HasPrefix(file.Name(), expectedDir))
+			// File should be under a trivy- prefixed temp directory
+			assert.True(t, strings.HasPrefix(file.Name(), filepath.Join(os.TempDir(), "trivy-")))
 
 			// Test with specific dir
 			customDir := t.TempDir()
@@ -123,9 +118,8 @@ func TestMkdirTemp(t *testing.T) {
 			_, err = os.Stat(dir)
 			require.NoError(t, err)
 
-			// Directory should be in our temp directory
-			wantParent := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(os.Getpid()))
-			assert.True(t, strings.HasPrefix(dir, wantParent))
+			// Directory should be under a trivy- prefixed temp directory
+			assert.True(t, strings.HasPrefix(dir, filepath.Join(os.TempDir(), "trivy-")))
 
 			// Test with specific dir
 			customParent := t.TempDir()
@@ -152,8 +146,8 @@ func TestCleanup(t *testing.T) {
 	filename := file.Name()
 	require.NoError(t, file.Close())
 
-	// Directory should exist
-	dir := filepath.Join(os.TempDir(), "trivy-"+strconv.Itoa(os.Getpid()))
+	// Get the trivy temp directory (parent of the file)
+	dir := TempDir()
 	_, err = os.Stat(dir)
 	require.NoError(t, err)
 
@@ -172,4 +166,24 @@ func TestCleanup(t *testing.T) {
 	// Directory should be gone
 	_, err = os.Stat(dir)
 	assert.ErrorIs(t, err, os.ErrNotExist)
+}
+
+func TestTempDirUniqueness(t *testing.T) {
+	// Each call to initTempDir should produce a unique directory
+	resetForTest()
+	dir1 := TempDir()
+	t.Cleanup(func() {
+		_ = os.RemoveAll(dir1)
+	})
+
+	// Reset and get another dir
+	resetForTest()
+	initialized.Store(false)
+	dir2 := TempDir()
+	t.Cleanup(func() {
+		_ = os.RemoveAll(dir2)
+		resetForTest()
+	})
+
+	assert.NotEqual(t, dir1, dir2, "two separate initializations should produce different directories")
 }
