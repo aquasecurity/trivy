@@ -88,7 +88,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		defaultRepo: mavenCentralRepo,
 	}
 
-	s := readSettings(filepath.Dir(filePath))
+	s := readSettings(findMvnProjectRoot(filepath.Dir(filePath)))
 	o.settingsRepos = s.effectiveRepositories()
 	localRepository := s.LocalRepository
 	if localRepository == "" {

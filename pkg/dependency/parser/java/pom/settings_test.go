@@ -296,6 +296,46 @@ func Test_ReadSettings(t *testing.T) {
 			},
 		},
 		{
+			name:    "project settings with root-level repositories (Maven 4)",
+			rootDir: filepath.Join("testdata", "settings", "project-with-repos"),
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				Servers: []Server{
+					{
+						ID:       "root-repo",
+						Username: "root-user",
+						Password: "root-pass",
+					},
+				},
+				Profiles: []Profile{
+					{
+						ID: "profile-with-repo",
+						Repositories: []pomRepository{
+							{
+								ID:               "profile-repo",
+								URL:              "https://mycompany.example.com/repository/profile-releases",
+								ReleasesEnabled:  "true",
+								SnapshotsEnabled: "false",
+							},
+						},
+					},
+				},
+				ActiveProfiles: []string{"profile-with-repo"},
+				Proxies:        []Proxy{},
+				Repositories: []pomRepository{
+					{
+						ID:               "root-repo",
+						URL:              "https://mycompany.example.com/repository/root-releases",
+						ReleasesEnabled:  "true",
+						SnapshotsEnabled: "false",
+					},
+				},
+			},
+		},
+		{
 			name:    "global < project < user merge precedence",
 			rootDir: filepath.Join("testdata", "settings", "project"),
 			envs: map[string]string{
@@ -733,6 +773,36 @@ func mustParseURL(t *testing.T, s string) url.URL {
 	u, err := url.Parse(s)
 	require.NoError(t, err)
 	return *u
+}
+
+func Test_findMvnProjectRoot(t *testing.T) {
+	tests := []struct {
+		name     string
+		startDir string
+		want     string
+	}{
+		{
+			name:     "finds .mvn/settings.xml in same directory",
+			startDir: filepath.Join("testdata", "settings", "project"),
+			want:     filepath.Join("testdata", "settings", "project"),
+		},
+		{
+			name:     "walks up to find .mvn/settings.xml from subdirectory",
+			startDir: filepath.Join("testdata", "settings", "project", "submodule"),
+			want:     filepath.Join("testdata", "settings", "project"),
+		},
+		{
+			name:     "returns empty when .mvn/settings.xml not found",
+			startDir: filepath.Join("testdata", "settings", "user"),
+			want:     "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := findMvnProjectRoot(tt.startDir)
+			require.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func Test_effectiveProxies(t *testing.T) {

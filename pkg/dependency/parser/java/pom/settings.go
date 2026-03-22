@@ -108,6 +108,22 @@ func (p Proxy) isNonProxyHost(host string) bool {
 	return false
 }
 
+// findMvnProjectRoot walks up from startDir looking for a .mvn/settings.xml file.
+// Returns the directory containing .mvn/settings.xml, or empty string if not found.
+func findMvnProjectRoot(startDir string) string {
+	dir := startDir
+	for {
+		if _, err := os.Stat(filepath.Join(dir, ".mvn", "settings.xml")); err == nil {
+			return dir
+		}
+		parent := filepath.Dir(dir)
+		if parent == dir {
+			return ""
+		}
+		dir = parent
+	}
+}
+
 func readSettings(rootDir string) settings {
 	s := settings{}
 
