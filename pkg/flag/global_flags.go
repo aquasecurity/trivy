@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"golang.org/x/xerrors"
 
@@ -86,6 +87,13 @@ var (
 		TelemetrySafe: true,
 		Internal:      true, // Hidden from help output, intended for maintainer debugging only
 	}
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Usage:         "disable color output (also respects NO_COLOR env var)",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -100,6 +108,7 @@ type GlobalFlagGroup struct {
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
 	TraceHTTP             *Flag[bool]
+	NoColor               *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -114,6 +123,7 @@ type GlobalOptions struct {
 	CacheDir              string
 	GenerateDefaultConfig bool
 	TraceHTTP             bool
+	NoColor               bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -128,6 +138,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
 		TraceHTTP:             TraceHTTPFlag.Clone(),
+		NoColor:               NoColorFlag.Clone(),
 	}
 }
 
@@ -147,6 +158,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.CacheDir,
 		f.GenerateDefaultConfig,
 		f.TraceHTTP,
+		f.NoColor,
 	}
 }
 
@@ -173,6 +185,12 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		return xerrors.Errorf("failed to load root CA certificates: %w", err)
 	}
 
+	// Respect --no-color flag and NO_COLOR env var (https://no-color.org/)
+	noColor := f.NoColor.Value() || os.Getenv("NO_COLOR") != ""
+	if noColor {
+		color.NoColor = true
+	}
+
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
 	opts.GlobalOptions = GlobalOptions{
@@ -186,6 +204,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
 		TraceHTTP:             f.TraceHTTP.Value(),
+		NoColor:               noColor,
 	}
 	return nil
 }
