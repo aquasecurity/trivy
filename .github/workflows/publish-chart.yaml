@@ -81,7 +81,9 @@ jobs:
         # Failed with upload the same version: https://github.com/helm/chart-releaser/issues/101
         continue-on-error: true
         run: |
-          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${{ secrets.ORG_REPO_TOKEN }} -p .cr-release-packages
+          ./cr upload -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} --token ${ORG_REPO_TOKEN} -p .cr-release-packages
+        env:
+          ORG_REPO_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
       - name: Index helm chart
         run: |
           ./cr index -o ${{ env.GH_OWNER }} -r ${{ env.HELM_REP }} -c https://${{ env.GH_OWNER }}.github.io/${{ env.HELM_REP }}/ -i index.yaml
