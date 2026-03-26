@@ -11,9 +11,10 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-// resetForTest resets global variables for testing
+// resetForTest resets all global state for testing
 func resetForTest() {
 	tempDirOnce = sync.OnceValues(initTempDir)
+	initialized.Store(false)
 }
 
 func TestTempDir(t *testing.T) {
@@ -178,7 +179,6 @@ func TestTempDirUniqueness(t *testing.T) {
 
 	// Reset and get another dir
 	resetForTest()
-	initialized.Store(false)
 	dir2 := TempDir()
 	t.Cleanup(func() {
 		_ = os.RemoveAll(dir2)

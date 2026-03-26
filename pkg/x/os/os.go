@@ -70,8 +70,10 @@ func TempDir() string {
 	return tempDir
 }
 
-// Cleanup removes the entire process-specific temp directory
-// Note: On Windows, directory deletion may fail if files are still open
+// Cleanup removes the entire process-specific temp directory.
+// Note: After Cleanup(), TempDir() will still return the deleted path.
+// Callers should not use TempDir() after Cleanup().
+// Note: On Windows, directory deletion may fail if files are still open.
 func Cleanup() error {
 	// If temp dir was never initialized, nothing to clean up
 	if !initialized.Load() {
