@@ -262,8 +262,8 @@ github.com/bufbuild/protocompile v0.14.1 h1:iA73zAf/fyljNjQKwYzUHD6AD4R8KMasmwa/
 github.com/bufbuild/protocompile v0.14.1/go.mod h1:ppVdAIhbr2H8asPk6k4pY7t9zB1OU5DoEw9xY/FUi1c=
 github.com/bufbuild/protoplugin v0.0.0-20250218205857-750e09ce93e1 h1:V1xulAoqLqVg44rY97xOR+mQpD2N+GzhMHVwJ030WEU=
 github.com/bufbuild/protoplugin v0.0.0-20250218205857-750e09ce93e1/go.mod h1:c5D8gWRIZ2HLWO3gXYTtUfw/hbJyD8xikv2ooPxnklQ=
-github.com/buger/jsonparser v1.1.1 h1:2PnMjfWD7wBILjqQbt530v576A/cAbQvEW9gGIpYMUs=
-github.com/buger/jsonparser v1.1.1/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
+github.com/buger/jsonparser v1.1.2 h1:frqHqw7otoVbk5M8LlE/L7HTnIq2v9RX6EJ48i9AxJk=
+github.com/buger/jsonparser v1.1.2/go.mod h1:6RYKKt7H4d4+iWqouImQ9R2FZql3VbhNgx27UK13J/0=
 github.com/bytecodealliance/wasmtime-go/v39 v39.0.1 h1:RibaT47yiyCRxMOj/l2cvL8cWiWBSqDXHyqsa9sGcCE=
 github.com/bytecodealliance/wasmtime-go/v39 v39.0.1/go.mod h1:miR4NYIEBXeDNamZIzpskhJ0z/p8al+lwMWylQ/ZJb4=
 github.com/cenkalti/backoff/v4 v4.3.0 h1:MyRJ/UdXutAwSAT+s3wNd7MfTIcy71VQueUuFK343L8=
