@@ -3,6 +3,7 @@ package report
 import (
 	"context"
 	"fmt"
+	"time"
 	"io"
 	"net/url"
 	"path/filepath"
@@ -126,6 +127,7 @@ func pathToFileURI(path string) string {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
+	startTime := time.Now().UTC()
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -268,6 +270,17 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+
+	endTime := time.Now().UTC()
+	success := true
+	sw.run.Invocations = []*sarif.Invocation{
+		{
+			ExecutionSuccessful: &success,
+			StartTimeUTC:        &startTime,
+			EndTimeUTC:          &endTime,
+		},
+	}
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }

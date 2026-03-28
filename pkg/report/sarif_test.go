@@ -178,6 +178,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 						PropertyBag: sarif.PropertyBag{
 							Properties: map[string]any{
 								"imageName":   "debian:9",
@@ -331,6 +336,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
 								URI: lo.ToPtr(tmpScanURI),
@@ -426,6 +436,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
 								URI: lo.ToPtr(tmpScanURI),
@@ -516,6 +531,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
 								URI: lo.ToPtr(tmpScanURI),
@@ -544,6 +564,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 						},
 						Results:    []*sarif.Result{},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
 							"ROOTPATH": {
 								URI: lo.ToPtr(tmpScanURI),
@@ -728,6 +753,11 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 						},
 						ColumnKind: "utf16CodeUnits",
+						Invocations: []*sarif.Invocation{
+						    {
+						        ExecutionSuccessful: lo.ToPtr(true),
+						    },
+						},
 					},
 				},
 			},
@@ -747,6 +777,19 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
+			for i := range result.Runs {
+			    if len(result.Runs[i].Invocations) > 0 {
+			        result.Runs[i].Invocations[0].StartTimeUTC = nil
+			        result.Runs[i].Invocations[0].EndTimeUTC = nil
+			    }
+			}
+			
+			for i := range tt.want.Runs {
+			    if len(tt.want.Runs[i].Invocations) > 0 {
+			        tt.want.Runs[i].Invocations[0].StartTimeUTC = nil
+			        tt.want.Runs[i].Invocations[0].EndTimeUTC = nil
+			    }
+			}
 			assert.Equal(t, tt.want, result)
 		})
 	}
