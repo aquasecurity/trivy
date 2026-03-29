@@ -10,11 +10,13 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	trivydb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -463,4 +465,63 @@ func TestService_generateArtifactID(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestBuildTrivyInfo(t *testing.T) {
+	t.Run("standalone mode with empty cache dir", func(t *testing.T) {
+		info := scan.BuildTrivyInfo(tTypes.ScanOptions{
+			CacheDir: "",
+			IsRemote: false,
+		}, tTypes.VersionInfo{})
+		assert.NotEmpty(t, info.Version)
+	})
+
+	t.Run("client/server mode excludes VulnerabilityDB and populates Server field", func(t *testing.T) {
+		serverInfo := tTypes.VersionInfo{
+			Version: "0.50.0",
+		}
+		info := scan.BuildTrivyInfo(tTypes.ScanOptions{
+			CacheDir: "/non/existent/path",
+			IsRemote: true,
+		}, serverInfo)
+		assert.NotEmpty(t, info.Version)
+		assert.Nil(t, info.VulnerabilityDB)
+		assert.Equal(t, serverInfo, info.Server)
+	})
+
+	t.Run("standalone mode with non-existent cache dir", func(t *testing.T) {
+		info := scan.BuildTrivyInfo(tTypes.ScanOptions{
+			CacheDir: "/non/existent/path",
+			IsRemote: false,
+		}, tTypes.VersionInfo{})
+		assert.NotEmpty(t, info.Version)
+		assert.Nil(t, info.VulnerabilityDB)
+		assert.Nil(t, info.JavaDB)
+		assert.Nil(t, info.CheckBundle)
+	})
+
+	t.Run("standalone mode with valid vulnerability DB metadata", func(t *testing.T) {
+		cacheDir := t.TempDir()
+		dbDir := trivydb.Dir(cacheDir)
+		testMeta := metadata.Metadata{
+			Version:      2,
+			NextUpdate:   time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+			UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+			DownloadedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+		}
+		metaClient := metadata.NewClient(dbDir)
+		require.NoError(t, metaClient.Update(testMeta))
+
+		info := scan.BuildTrivyInfo(tTypes.ScanOptions{
+			CacheDir: cacheDir,
+			IsRemote: false,
+		}, tTypes.VersionInfo{})
+
+		assert.NotEmpty(t, info.Version)
+		require.NotNil(t, info.VulnerabilityDB)
+		assert.Equal(t, 2, info.VulnerabilityDB.Version)
+		assert.Equal(t, time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC), info.VulnerabilityDB.UpdatedAt)
+		assert.Equal(t, time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC), info.VulnerabilityDB.NextUpdate)
+		assert.Equal(t, time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC), info.VulnerabilityDB.DownloadedAt)
+	})
 }

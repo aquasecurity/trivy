@@ -11,8 +11,8 @@ import (
 // This is a lightweight alternative to policy.Metadata to avoid importing
 // pkg/policy which has dependencies incompatible with wasip1/wasm.
 type BundleMetadata struct {
-	Digest       string
-	DownloadedAt time.Time
+	Digest       string    `json:",omitempty"`
+	DownloadedAt time.Time `json:",omitempty"`
 }
 
 func (m BundleMetadata) String() string {

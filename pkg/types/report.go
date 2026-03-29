@@ -10,10 +10,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 )
 
-// TrivyInfo contains Trivy-specific information
+// TrivyInfo contains Trivy version and database metadata.
 type TrivyInfo struct {
-	Version string      `json:",omitempty"` // Client version
-	Server  VersionInfo `json:",omitzero"`  // Server info (client/server mode only)
+	VersionInfo              // Client version + local DB metadata (VulnerabilityDB, JavaDB, CheckBundle)
+	Server      VersionInfo `json:",omitzero"` // Server info (client/server mode only)
 }
 
 // Report represents a scan result
