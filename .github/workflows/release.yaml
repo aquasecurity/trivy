@@ -36,7 +36,7 @@ jobs:
       # tag-push event. Only maintainers can push tags, so external contributors cannot influence
       # the cache contents. The key includes github.sha to prevent collisions across runs.
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3 # zizmor: ignore[cache-poisoning]
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.3 # zizmor: ignore[cache-poisoning]
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{github.workflow}}-${{github.sha}}
