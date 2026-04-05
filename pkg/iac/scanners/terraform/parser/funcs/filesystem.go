@@ -9,12 +9,12 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
-	"github.com/mitchellh/go-homedir"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
 )
@@ -196,7 +196,7 @@ func MakeFileExistsFunc(target fs.FS, baseDir string) function.Function {
 		Type: function.StaticReturnType(cty.Bool),
 		Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 			path := args[0].AsString()
-			path, err := homedir.Expand(path)
+			path, err := expandHome(path)
 			if err != nil {
 				return cty.UnknownVal(cty.Bool), fmt.Errorf("failed to expand ~: %s", err)
 			}
@@ -350,13 +350,13 @@ var PathExpandFunc = function.New(&function.Spec{
 	Type: function.StaticReturnType(cty.String),
 	Impl: func(args []cty.Value, retType cty.Type) (cty.Value, error) {
 
-		homePath, err := homedir.Expand(args[0].AsString())
+		homePath, err := expandHome(args[0].AsString())
 		return cty.StringVal(homePath), err
 	},
 })
 
 func openFile(target fs.FS, baseDir, path string) (fs.File, error) {
-	path, err := homedir.Expand(path)
+	path, err := expandHome(path)
 	if err != nil {
 		return nil, fmt.Errorf("failed to expand ~: %s", err)
 	}
@@ -403,4 +403,19 @@ func readFileBytes(target fs.FS, baseDir, path string) ([]byte, error) {
 func File(target fs.FS, baseDir string, path cty.Value) (cty.Value, error) {
 	fn := MakeFileFunc(target, baseDir, false)
 	return fn.Call([]cty.Value{path})
+}
+
+// expandHome expands a leading ~ in the path to the current user's home directory.
+func expandHome(path string) (string, error) {
+	if path == "~" {
+		return os.UserHomeDir()
+	}
+	if strings.HasPrefix(path, "~/") || strings.HasPrefix(path, `~\`) {
+		home, err := os.UserHomeDir()
+		if err != nil {
+			return "", err
+		}
+		return filepath.Join(home, path[2:]), nil
+	}
+	return path, nil
 }
