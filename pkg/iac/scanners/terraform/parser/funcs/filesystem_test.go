@@ -1,0 +1,75 @@
+package funcs
+
+import (
+	"os"
+	"path/filepath"
+	"testing"
+)
+
+func TestExpandHome(t *testing.T) {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		t.Fatalf("os.UserHomeDir() failed: %v", err)
+	}
+
+	tests := []struct {
+		name    string
+		input   string
+		want    string
+		wantErr bool
+	}{
+		{
+			name:  "tilde only",
+			input: "~",
+			want:  home,
+		},
+		{
+			name:  "tilde with forward slash path",
+			input: "~/Documents/test.tf",
+			want:  filepath.Join(home, "Documents/test.tf"),
+		},
+		{
+			name:  "tilde with nested path",
+			input: "~/a/b/c",
+			want:  filepath.Join(home, "a/b/c"),
+		},
+		{
+			name:  "absolute path unchanged",
+			input: "/etc/passwd",
+			want:  "/etc/passwd",
+		},
+		{
+			name:  "relative path unchanged",
+			input: "relative/path",
+			want:  "relative/path",
+		},
+		{
+			name:  "empty string",
+			input: "",
+			want:  "",
+		},
+		{
+			name:  "tilde in middle unchanged",
+			input: "/foo/~/bar",
+			want:  "/foo/~/bar",
+		},
+		{
+			name:  "tilde prefix without slash unchanged",
+			input: "~username",
+			want:  "~username",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := expandHome(tt.input)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("expandHome(%q) error = %v, wantErr %v", tt.input, err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("expandHome(%q) = %q, want %q", tt.input, got, tt.want)
+			}
+		})
+	}
+}
