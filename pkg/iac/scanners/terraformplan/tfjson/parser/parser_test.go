@@ -81,6 +81,13 @@ resource "aws_security_group" "sg" {
 }
 `,
 		},
+		{
+			name: "resource with no matching resource_change",
+			path: "../testdata/plan_missing_changes.json",
+			expected: `resource "null_resource" "example" {
+}
+`,
+		},
 	}
 
 	for _, tt := range tests {
