@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
@@ -259,6 +260,13 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 
 	}
 	sw.run.ColumnKind = columnKind
+
+	// Add invocation with start/end timestamps per SARIF v2.1.0 §3.20.7-8
+	invocation := sw.run.AddInvocation(true)
+	if !report.CreatedAt.IsZero() {
+		invocation.WithStartTimeUTC(report.CreatedAt.UTC())
+	}
+	invocation.WithEndTimeUTC(time.Now().UTC())
 
 	if sw.Target != "" {
 		rootPath := pathToFileURI(sw.Target)
