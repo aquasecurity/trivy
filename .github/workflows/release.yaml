@@ -23,7 +23,7 @@ jobs:
   deploy-packages:
     name: Deploy rpm/deb packages
     needs: release # run this job after 'release' job completes
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Trigger deploy-packages workflow in trivy-repo
         env:
