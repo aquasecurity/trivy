@@ -59,12 +59,11 @@ jobs:
     if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
     needs:
       - test-chart
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Trigger publish-chart workflow in helm-charts
         env:
-          # TODO: replace ORG_REPO_TOKEN with a dedicated trigger token once it is released
-          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_TOKEN }}
           REF: ${{ github.sha }}
         run: |
           gh workflow run publish-chart.yaml \
