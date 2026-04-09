@@ -23,13 +23,15 @@ jobs:
       ECR_ACCESS_KEY_ID: ${{ secrets.ECR_ACCESS_KEY_ID }}
       ECR_SECRET_ACCESS_KEY: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       GPG_KEY: ${{ secrets.GPG_KEY }}
-      ORG_REPO_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+      TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   upload-binaries:
     name: Upload binaries
     needs: build-binaries # run this job after 'build-binaries' job completes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
+    permissions:
+      actions: write # Required to delete caches
     steps:
       - name: Restore Trivy binaries from cache
         uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
