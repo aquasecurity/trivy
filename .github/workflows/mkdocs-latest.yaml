@@ -11,7 +11,7 @@ on:
 jobs:
   deploy:
     name: Deploy the latest documentation
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Checkout main
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -46,13 +46,13 @@ jobs:
   # This workflow is used to trigger the trivy-www deployment
   trigger-trivy-www-deploy: 
     needs: deploy
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Trigger update_version workflow in trivy-telemetry
         env:
-          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # Use TRIVY_WORKFLOW_TRIGGER_TOKEN instead of GITHUB_TOKEN
           # This allows triggering workflows in other repositories
-          GH_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GH_TOKEN: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_TOKEN }}
         run: |
           gh workflow run build-docs.yml \
             --repo "$GITHUB_REPOSITORY_OWNER/trivy-www" \
