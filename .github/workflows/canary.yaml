@@ -34,35 +34,35 @@ jobs:
       actions: write # Required to delete caches
     steps:
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}
 
         # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_Linux-64bit
           path: dist/trivy_*_Linux-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_Linux-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_Linux-ARM64
           path: dist/trivy_*_Linux-ARM64.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_macOS-64bit
           path: dist/trivy_*_macOS-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: trivy_macOS-ARM64
           path: dist/trivy_*_macOS-ARM64.tar.gz
