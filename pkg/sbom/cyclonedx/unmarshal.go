@@ -267,6 +267,8 @@ func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.Digest {
 			alg = digest.SHA1
 		case cdx.HashAlgoSHA256:
 			alg = digest.SHA256
+		case cdx.HashAlgoSHA384:
+			alg = digest.SHA384
 		case cdx.HashAlgoSHA512:
 			alg = digest.SHA512
 		case cdx.HashAlgoMD5:

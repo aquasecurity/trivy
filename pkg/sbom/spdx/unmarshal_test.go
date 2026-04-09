@@ -332,6 +332,32 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path package with hash",
+			inputFile: "testdata/happy/package-hashes.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: "node-pkg",
+						Packages: ftypes.Packages{
+							{
+								ID:      "lodash@4.17.21",
+								Name:    "lodash",
+								Version: "4.17.21",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "lodash",
+										Version: "4.17.21",
+									},
+								},
+								Digest: "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "happy path empty component",
 			inputFile: "testdata/happy/empty-bom.json",
 			want:      types.SBOM{},

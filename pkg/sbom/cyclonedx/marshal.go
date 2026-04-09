@@ -280,6 +280,8 @@ func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 			alg = cdx.HashAlgoSHA1
 		case digest.SHA256:
 			alg = cdx.HashAlgoSHA256
+		case digest.SHA384:
+			alg = cdx.HashAlgoSHA384
 		case digest.SHA512:
 			alg = cdx.HashAlgoSHA512
 		case digest.MD5:
