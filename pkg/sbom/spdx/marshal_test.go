@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -1664,6 +1665,90 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 			})
 			assert.Equal(t, tt.wantLicenseName, gotLicenseName)
 			assert.Equal(t, tt.wantOtherLicenses, gotOtherLicenses)
+		})
+	}
+}
+
+func TestMarshaler_SpdxChecksums(t *testing.T) {
+	m := tspdx.NewMarshaler("")
+
+	tests := []struct {
+		name string
+		input []digest.Digest
+		want  []common.Checksum
+	}{
+		{
+			name:  "SHA1",
+			input: []digest.Digest{"sha1:413f98442c83808042b5d1d2611a346b999bdca5"},
+			want: []common.Checksum{
+				{
+					Algorithm: spdx.SHA1,
+					Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+				},
+			},
+		},
+		{
+			name:  "SHA256",
+			input: []digest.Digest{"sha256:a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d"},
+			want: []common.Checksum{
+				{
+					Algorithm: spdx.SHA256,
+					Value:     "a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d",
+				},
+			},
+		},
+		{
+			name:  "SHA512",
+			input: []digest.Digest{"sha512:cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e"},
+			want: []common.Checksum{
+				{
+					Algorithm: spdx.SHA512,
+					Value:     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e",
+				},
+			},
+		},
+		{
+			name:  "MD5",
+			input: []digest.Digest{"md5:7459cec61bb4d1b0ca8107e25e0dd005"},
+			want: []common.Checksum{
+				{
+					Algorithm: spdx.MD5,
+					Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+				},
+			},
+		},
+		{
+			name: "mixed algorithms",
+			input: []digest.Digest{
+				"sha1:413f98442c83808042b5d1d2611a346b999bdca5",
+				"sha256:a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d",
+				"sha512:cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e",
+			},
+			want: []common.Checksum{
+				{
+					Algorithm: spdx.SHA1,
+					Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+				},
+				{
+					Algorithm: spdx.SHA256,
+					Value:     "a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d",
+				},
+				{
+					Algorithm: spdx.SHA512,
+					Value:     "cf83e1357eefb8bdf1542850d66d8007d620e4050b5715dc83f4a921d36ce9ce47d0d13c5d85f2b0ff8318d2877eec2f63b931bd47417a81a538327af927da3e",
+				},
+			},
+		},
+		{
+			name:  "unsupported algorithm returns nil",
+			input: []digest.Digest{"sha384:aabbccdd"},
+			want:  nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := m.SpdxChecksums(tt.input)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
