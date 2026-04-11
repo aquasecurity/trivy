@@ -341,6 +341,7 @@ func ConvertToRPCVulns(vulns []types.DetectedVulnerability) []*common.Vulnerabil
 			CustomAdvisoryData: customAdvisoryData,
 			CustomVulnData:     customVulnData,
 			DataSource:         ConvertToRPCDataSource(vuln.DataSource),
+			Locations:          ConvertToRPCLocations(vuln.Locations),
 		})
 	}
 	return rpcVulns
@@ -644,6 +645,7 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 			PrimaryURL:     vuln.PrimaryUrl,
 			Custom:         customAdvisoryData,
 			DataSource:     ConvertFromRPCDataSource(vuln.DataSource),
+			Locations:      ConvertFromRPCLocation(vuln.Locations),
 		})
 	}
 	return vulns
