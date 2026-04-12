@@ -81,6 +81,17 @@ resource "aws_security_group" "sg" {
 }
 `,
 		},
+		{
+			// Regression test: resource present in planned_values but absent from
+			// resource_changes must not cause a nil-pointer panic. The block is
+			// emitted with no attributes because there is no "after" state to
+			// decode values from.
+			name: "resource present in planned_values but missing from resource_changes",
+			path: "../testdata/missing_resource_changes.json",
+			expected: `resource "aws_s3_bucket" "example" {
+}
+`,
+		},
 	}
 
 	for _, tt := range tests {
