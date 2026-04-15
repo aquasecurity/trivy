@@ -11,15 +11,13 @@ import (
 )
 
 func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStackContainer, string, error) {
-
 	if err := os.Setenv("TESTCONTAINERS_RYUK_DISABLED", "true"); err != nil {
 		return nil, "", err
 	}
 
-	c, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
+	c, err := localstack.Run(ctx, "localstack/localstack:"+version, testcontainers.CustomizeRequest(
 		testcontainers.GenericContainerRequest{
 			ContainerRequest: testcontainers.ContainerRequest{
-				Image: "localstack/localstack:" + version,
 				HostConfigModifier: func(hostConfig *container.HostConfig) {
 					hostConfig.AutoRemove = true
 				},
