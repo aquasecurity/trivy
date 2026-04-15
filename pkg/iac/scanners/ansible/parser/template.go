@@ -2,34 +2,28 @@ package parser
 
 import (
 	"bytes"
-	"crypto/sha256"
 	"errors"
 	"fmt"
-	"strings"
+	"path"
 	"time"
 
-	"github.com/nikolalohinski/gonja/v2"
-	"github.com/nikolalohinski/gonja/v2/config"
-	"github.com/nikolalohinski/gonja/v2/exec"
-	"github.com/nikolalohinski/gonja/v2/loaders"
+	"github.com/mitsuhiko/minijinja/minijinja-go/v2"
+	"github.com/mitsuhiko/minijinja/minijinja-go/v2/value"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/vars"
 )
 
-var gonjaConfig *config.Config
-var gonjaEnv *exec.Environment
+var templateEnv *minijinja.Environment
 
 // TODO: implement support for a subset of popular Ansible filter plugins.
 // https://docs.ansible.com/ansible/latest/collections/ansible/builtin/index.html#filter-plugins
 // Example: see dirnameFilter for how the "dirname" filter is implemented.
 func init() {
-	gonjaConfig = gonja.DefaultConfig.Inherit()
-	gonjaConfig.StrictUndefined = true
-
-	gonjaEnv = gonja.DefaultEnvironment
-	gonjaEnv.Filters.Register("dirname", dirnameFilter)
+	templateEnv = minijinja.NewEnvironment()
+	templateEnv.SetUndefinedBehavior(minijinja.UndefinedStrict)
+	templateEnv.AddFilter("dirname", dirnameFilter)
 }
 
 // TODO: add support for a subset of popular Ansible lookup plugins.
@@ -52,7 +46,7 @@ func init() {
 //		},
 //	})
 
-// evaluateTemplateSafe executes a Gonja template with given variables safely.
+// evaluateTemplate executes a Jinja2 template with given variables safely.
 // It prevents infinite loops and recovers from panics.
 // Added due to infinite loop issue: https://github.com/NikolaLohinski/gonja/issues/52
 func evaluateTemplate(input string, variables vars.Vars) (string, error) {
@@ -87,7 +81,7 @@ func evaluateTemplate(input string, variables vars.Vars) (string, error) {
 	}
 }
 
-// evaluateTemplate evaluates a template with given variables.
+// evaluateTemplateUnsafe evaluates a template with given variables.
 func evaluateTemplateUnsafe(input string, variables vars.Vars) (string, error) {
 	tpl, err := newTemplate(input)
 	if err != nil {
@@ -95,49 +89,54 @@ func evaluateTemplateUnsafe(input string, variables vars.Vars) (string, error) {
 	}
 
 	var buf bytes.Buffer
-
-	if err := tpl.Execute(&buf, exec.NewContext(variables.ToPlain())); err != nil {
+	if err := tpl.RenderToWrite(templateCtx{variables.ToPlain()}, &buf); err != nil {
 		return "", xerrors.Errorf("execute template: %w", err)
 	}
 	return buf.String(), nil
 }
 
-// newTemplate creates a new template. This function is similar to [gonja.FromBytes],
-// but applies a custom configuration.
-func newTemplate(input string) (*exec.Template, error) {
-	rootID := fmt.Sprintf("root-%s", string(sha256.New().Sum([]byte(input))))
-
-	loader, err := loaders.NewFileSystemLoader("")
+// newTemplate creates a new template from a string.
+func newTemplate(input string) (*minijinja.Template, error) {
+	tpl, err := templateEnv.TemplateFromString(input)
 	if err != nil {
-		return nil, xerrors.Errorf("create fs loader: %w", err)
+		return nil, xerrors.Errorf("create template: %w", err)
 	}
-
-	shiftedLoader, err := loaders.NewShiftedLoader(rootID, strings.NewReader(input), loader)
-	if err != nil {
-		return nil, xerrors.Errorf("create shifted loader: %w", err)
-	}
-
-	tpl, err := exec.NewTemplate(rootID, gonjaConfig, shiftedLoader, gonjaEnv)
-	if err != nil {
-		return nil, xerrors.Errorf("create new template: %w", err)
-	}
-
 	return tpl, nil
 }
 
-func dirnameFilter(_ *exec.Evaluator, in *exec.Value, params *exec.VarArgs) *exec.Value {
-	if in == nil {
-		return exec.ValueError(errors.New("input value is nil"))
-	}
+var _ value.MapObject = (*templateCtx)(nil)
 
-	if params != nil && len(params.Args) > 0 {
-		return exec.ValueError(errors.New("no parameters allowed"))
-	}
+// templateCtx wraps a plain vars map and implements value.MapObject so that
+// FileSource values are lazily converted to their string path representation
+// when accessed by the template engine.
+type templateCtx struct{ m map[string]any }
 
-	switch val := in.Val.Interface().(type) {
-	case fsutils.FileSource:
-		return exec.AsSafeValue(val.Dir())
-	default:
-		return exec.ValueError(fmt.Errorf("unsupported type %T", in.Val.Interface()))
+func (c templateCtx) Keys() []string {
+	keys := make([]string, 0, len(c.m))
+	for k := range c.m {
+		keys = append(keys, k)
 	}
+	return keys
+}
+
+func (c templateCtx) GetAttr(name string) value.Value {
+	v, ok := c.m[name]
+	if !ok {
+		return value.Undefined()
+	}
+	if fs, ok := v.(fsutils.FileSource); ok {
+		return value.FromString(fs.String())
+	}
+	return value.FromAny(v)
+}
+
+func dirnameFilter(_ minijinja.FilterState, val minijinja.Value, args []minijinja.Value, _ map[string]minijinja.Value) (minijinja.Value, error) {
+	if len(args) > 0 {
+		return value.Undefined(), errors.New("dirname: no parameters allowed")
+	}
+	s, ok := val.AsString()
+	if !ok {
+		return value.Undefined(), fmt.Errorf("dirname: expected string, got %s", val.Kind())
+	}
+	return value.FromString(path.Dir(s)), nil
 }

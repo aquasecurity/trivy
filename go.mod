@@ -80,6 +80,7 @@ require (
 	github.com/mattn/go-shellwords v1.0.12
 	github.com/mitchellh/go-homedir v1.1.0
 	github.com/mitchellh/hashstructure/v2 v2.0.2
+	github.com/mitsuhiko/minijinja/minijinja-go/v2 v2.19.0
 	github.com/moby/buildkit v0.28.1
 	github.com/moby/docker-image-spec v1.3.1
 	github.com/moby/moby/client v0.2.2
@@ -136,7 +137,6 @@ require (
 	github.com/go-ini/ini v1.67.0
 	github.com/invopop/jsonschema v0.13.0
 	github.com/moby/moby/api v1.53.0
-	github.com/nikolalohinski/gonja/v2 v2.7.0
 )
 
 require (
