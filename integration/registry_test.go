@@ -17,12 +17,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/go-connections/nat"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	dockercontainer "github.com/moby/moby/api/types/container"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -98,7 +97,7 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 	return authC, err
 }
 
-func getURL(ctx context.Context, container testcontainers.Container, exposedPort nat.Port) (*url.URL, error) {
+func getURL(ctx context.Context, container testcontainers.Container, exposedPort string) (*url.URL, error) {
 	ip, err := container.Host(ctx)
 	if err != nil {
 		return nil, err

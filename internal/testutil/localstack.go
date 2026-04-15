@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
+	dockercontainer "github.com/moby/moby/api/types/container"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
 )
@@ -46,6 +46,6 @@ func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStac
 		return nil, "", err
 	}
 
-	return container, fmt.Sprintf("http://%s:%d", host, p.Int()), nil
+	return container, fmt.Sprintf("http://%s:%d", host, p.Num()), nil
 
 }
