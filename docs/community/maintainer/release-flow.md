@@ -24,6 +24,7 @@ The release flow consists of the following main steps:
 1. Drafting the release notes in GitHub Discussions
 1. Merging the release PR
 1. Updating the release notes in GitHub Discussions
+1. Moving the discussion to the Announcements category
 1. Navigating to the release notes in GitHub Releases page
 
 ### Automatic Release PR Creation
@@ -60,8 +61,13 @@ Once the draft of the release notes is complete, merge the release PR.
 When the PR is merged, a tag is automatically created, and [GoReleaser][goreleaser] releases binaries, container images, etc.
 
 ### Updating the Release Notes
-If the release completes without errors, a page for the release notes is created in GitHub Discussions (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
+If the release completes without errors, a page for the release notes is created in GitHub Discussions under the **Development** category (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
 Copy the draft release notes, adjust the formatting, and finalize the release notes.
+
+Once the release notes are finalized, change the discussion category from **Development** to **Announcements** manually via the GitHub UI.
+
+!!! note
+    GoReleaser creates the discussion under **Development** instead of **Announcements** because GitHub restricts posting to the **Announcements** category — only repository maintainers and moderators can post there, not GitHub Apps. This means GoReleaser (which runs as a GitHub App token) cannot create discussions in **Announcements** directly.
 
 ### Navigating to the Release Notes
 To navigate to the release highlights and summary in GitHub Discussions, place a link in the GitHub Releases page as below:
