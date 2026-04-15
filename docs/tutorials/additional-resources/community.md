@@ -12,6 +12,7 @@ Below is a list of additional resources from the community.
 - [Continuous Container Vulnerability Testing with Trivy](https://semaphoreci.com/blog/continuous-container-vulnerability-testing-with-trivy)
 - [Getting Started With Trivy and Jenkins](https://youtu.be/MWe01VdwuMA)
 - [How to use Tekton to set up a CI pipeline with OpenShift Pipelines](https://www.redhat.com/architect/cicd-pipeline-openshift-tekton)
+- [12 Steps to Secure GitHub Actions After the Trivy Attack](https://haitmg.pl/blog/github-actions-security-after-trivy-attack/)
 
 ## Misconfiguration Scanning
 
