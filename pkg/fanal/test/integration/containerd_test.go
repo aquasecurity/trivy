@@ -19,7 +19,7 @@ import (
 	"github.com/containerd/containerd/v2/core/images"
 	"github.com/containerd/containerd/v2/pkg/namespaces"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
-	dockercontainer "github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/api/types/container"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -91,7 +91,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(hostPath, "/run"),
 		),
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 		WaitingFor: wait.ForLog("containerd successfully booted"),

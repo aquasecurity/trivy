@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	dockercontainer "github.com/moby/moby/api/types/container"
+	"github.com/moby/moby/api/types/container"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/modules/localstack"
 )
@@ -16,11 +16,11 @@ func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStac
 		return nil, "", err
 	}
 
-	container, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
+	c, err := localstack.RunContainer(ctx, testcontainers.CustomizeRequest(
 		testcontainers.GenericContainerRequest{
 			ContainerRequest: testcontainers.ContainerRequest{
 				Image: "localstack/localstack:" + version,
-				HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+				HostConfigModifier: func(hostConfig *container.HostConfig) {
 					hostConfig.AutoRemove = true
 				},
 			},
@@ -30,7 +30,7 @@ func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStac
 		return nil, "", err
 	}
 
-	p, err := container.MappedPort(ctx, "4566/tcp")
+	p, err := c.MappedPort(ctx, "4566/tcp")
 	if err != nil {
 		return nil, "", err
 	}
@@ -46,6 +46,6 @@ func SetupLocalStack(ctx context.Context, version string) (*localstack.LocalStac
 		return nil, "", err
 	}
 
-	return container, fmt.Sprintf("http://%s:%d", host, p.Num()), nil
+	return c, fmt.Sprintf("http://%s:%d", host, p.Num()), nil
 
 }
