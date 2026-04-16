@@ -38,6 +38,13 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "9.4.48.v20220622",
 			want:    false,
 		},
+		{
+			name:    "maven non-seal package with seal.sp prefix but no digit",
+			eco:     ecosystem.Maven,
+			pkgName: "seal.space.something:artifact",
+			pkgVer:  "1.0.0",
+			want:    false,
+		},
 		// npm - name prefix @seal-security/
 		{
 			name:    "npm seal package",

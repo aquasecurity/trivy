@@ -37,7 +37,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 	switch eco {
 	case ecosystem.Maven:
 		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
-		return strings.HasPrefix(pkgName, "seal.sp")
+		return len(pkgName) > 7 && strings.HasPrefix(pkgName, "seal.sp") && pkgName[7] >= '0' && pkgName[7] <= '9'
 	case ecosystem.Npm:
 		// e.g. @seal-security/ejs
 		return strings.HasPrefix(pkgName, "@seal-security/")
