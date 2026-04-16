@@ -1,5 +1,46 @@
 # Changelog
 
+## [0.70.0](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.70.0) (2026-04-16)
+
+
+### Features
+
+* **go:** detect version from ELF symbol table for binaries built with -trimpath ([#10197](https://github.com/aquasecurity/trivy/issues/10197)) ([7acb5f6](https://github.com/aquasecurity/trivy/commit/7acb5f6f095a11cb9911af5a0bc03aecc7c88f8f))
+* **java:** add support for proxy configuration from Maven settings.xml ([#10187](https://github.com/aquasecurity/trivy/issues/10187)) ([350fe33](https://github.com/aquasecurity/trivy/commit/350fe3345129f0f341ab80438f66f951b602364a))
+* **misconf:** adapt ARM k8s clusters ([#9696](https://github.com/aquasecurity/trivy/issues/9696)) ([#10125](https://github.com/aquasecurity/trivy/issues/10125)) ([66bdec4](https://github.com/aquasecurity/trivy/commit/66bdec4f6af6100b6ab991ca417b0c801cb5cd80))
+* **misconf:** resolve Azure resources via resource_id ([#10173](https://github.com/aquasecurity/trivy/issues/10173)) ([823f363](https://github.com/aquasecurity/trivy/commit/823f3634ae8f41a17be8695ceabcb8ca52f82a63))
+* **misconf:** support for azurerm_network_interface_security_group_association  ([#10215](https://github.com/aquasecurity/trivy/issues/10215)) ([da94d5f](https://github.com/aquasecurity/trivy/commit/da94d5f38676885264787fe22f3ed8ab42511b2a))
+* **python:** add pylock.toml (PEP 751) parser ([#9632](https://github.com/aquasecurity/trivy/issues/9632)) ([1a72b32](https://github.com/aquasecurity/trivy/commit/1a72b326bba9e0959d5f3b63367bb311f064d795))
+* **python:** add pylock.toml support ([#10137](https://github.com/aquasecurity/trivy/issues/10137)) ([d0a3f63](https://github.com/aquasecurity/trivy/commit/d0a3f63b84e6a8cd9067e85344097f9179c14b0d))
+* **server:** include server version info in JSON output for client/server mode ([#10075](https://github.com/aquasecurity/trivy/issues/10075)) ([4c46d41](https://github.com/aquasecurity/trivy/commit/4c46d418c58c9a070a87b9d3c88966d40e435329))
+* **ubuntu:** add eol data for 25.10 ([#10181](https://github.com/aquasecurity/trivy/issues/10181)) ([2c1f65b](https://github.com/aquasecurity/trivy/commit/2c1f65bdeec62baef45e93f58cc8e5eca7d84d26))
+* **vuln:** skip third-party packages in common Detect function ([#10129](https://github.com/aquasecurity/trivy/issues/10129)) ([d6e6331](https://github.com/aquasecurity/trivy/commit/d6e6331abba28fe22f6d8d3bc36f7821601ff8ad))
+
+
+### Bug Fixes
+
+* **cyclonedx:** include CVSS v4 vulnerability ratings ([#10313](https://github.com/aquasecurity/trivy/issues/10313)) ([2a4dfbf](https://github.com/aquasecurity/trivy/commit/2a4dfbf18a71a17de2c22c02afc5742466f6d799))
+* detected vulnerability fields in azure and mariner detector ([#10275](https://github.com/aquasecurity/trivy/issues/10275)) ([77f5cb5](https://github.com/aquasecurity/trivy/commit/77f5cb5abda49844b936322e85829b256cb4599c))
+* **flag:** validate template file extension ([#10296](https://github.com/aquasecurity/trivy/issues/10296)) ([20458b8](https://github.com/aquasecurity/trivy/commit/20458b836b71b2bed72d31ebba1ba9572333dcfd))
+* handle Go 1.26 GOEXPERIMENT version format change ([#10351](https://github.com/aquasecurity/trivy/issues/10351)) ([f207ec6](https://github.com/aquasecurity/trivy/commit/f207ec693b23b6d5114dbf3b309903689b93073d))
+* **java:** Disable overwriting exclusions ([#10088](https://github.com/aquasecurity/trivy/issues/10088)) ([9a3e0a8](https://github.com/aquasecurity/trivy/commit/9a3e0a845db68a79f4fd0e71f5cb7d8ca3976bbe))
+* **misconf:** apply check aliases when filtering results via .trivyignore ([#10112](https://github.com/aquasecurity/trivy/issues/10112)) ([b775a1b](https://github.com/aquasecurity/trivy/commit/b775a1b63cd7afeda8dec2c1c8b8b6d422418bc6))
+* **misconf:** initialize custom annotation field if empty ([#10123](https://github.com/aquasecurity/trivy/issues/10123)) ([0f0d6db](https://github.com/aquasecurity/trivy/commit/0f0d6dbff4825f7b0ea7744b2229e0157af52972))
+* **python:** handle multiple version specifiers in requirements.txt ([#10361](https://github.com/aquasecurity/trivy/issues/10361)) ([4cf4498](https://github.com/aquasecurity/trivy/commit/4cf44985c58575850138c9cc3780b201dfad7c09))
+* **python:** nil pointer dereference with optional poetry groups without dependencies ([#10359](https://github.com/aquasecurity/trivy/issues/10359)) ([12ab3ce](https://github.com/aquasecurity/trivy/commit/12ab3cee257f89b3b180c38bc2d765dc4c7918a1))
+* remove os.Stdout from wazero module config ([#10403](https://github.com/aquasecurity/trivy/issues/10403)) ([bda9710](https://github.com/aquasecurity/trivy/commit/bda9710eb0c4c7d5ba1bc60bbaa06d43dc3c523a))
+* **report:** set correct sarif ROOTPATH uri when scanning a git repository ([#10366](https://github.com/aquasecurity/trivy/issues/10366)) ([e5da6de](https://github.com/aquasecurity/trivy/commit/e5da6deee9904d00cb4fd5ea1f67e8a1711ec8dd))
+* **sbom:** add NOASSERTION for licenseDeclared/licenseConcluded in SPDX non-library packages ([#10368](https://github.com/aquasecurity/trivy/issues/10368)) ([33b9d8e](https://github.com/aquasecurity/trivy/commit/33b9d8ec318bb1f4081371a0a5fd46071080aef1))
+* **sbom:** preserve Red Hat BuildInfo when scanning SBOMs without layer info ([#10378](https://github.com/aquasecurity/trivy/issues/10378)) ([e9e9e8c](https://github.com/aquasecurity/trivy/commit/e9e9e8c6bd914b4d4802107bbf8d0c40bad1dd57))
+* **server:** exclude JavaDB and CheckBundle from /version endpoint ([#10100](https://github.com/aquasecurity/trivy/issues/10100)) ([b9a8d2d](https://github.com/aquasecurity/trivy/commit/b9a8d2d80adc47bf9f48e13c2738b099c907518b))
+* update PhotonOS feed URL ([#10122](https://github.com/aquasecurity/trivy/issues/10122)) ([fa195b4](https://github.com/aquasecurity/trivy/commit/fa195b4d11d946b0212900b2a153a1abf381e8a2))
+* use Development category for GoReleaser discussions ([#10530](https://github.com/aquasecurity/trivy/issues/10530)) ([7ee3e1e](https://github.com/aquasecurity/trivy/commit/7ee3e1eeb0faf69a08837a3f42678e5e7f314286))
+
+
+### Performance Improvements
+
+* **plugin:** optimize directory traversal by replacing filepath.Walk with filepath.WalkDir ([#10325](https://github.com/aquasecurity/trivy/issues/10325)) ([d7fb355](https://github.com/aquasecurity/trivy/commit/d7fb3558db610dc08ef1c3e22dd37082180368b2))
+
 ## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2026-01-30)
 
 
