@@ -21,7 +21,7 @@ require (
 	github.com/aquasecurity/go-version v0.0.1
 	github.com/aquasecurity/iamgo v0.0.10
 	github.com/aquasecurity/table v1.11.0
-	github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17
+	github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.12.2-0.20251219190323-79d27547baf5
 	github.com/aquasecurity/trivy-db v0.0.0-20251222105351-a833f47f8f0d
@@ -48,7 +48,7 @@ require (
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/gocsaf/csaf/v3 v3.5.1
 	github.com/golang-jwt/jwt/v5 v5.3.1
-	github.com/google/go-containerregistry v0.21.2
+	github.com/google/go-containerregistry v0.21.4
 	github.com/google/go-github/v62 v62.0.0
 	github.com/google/jsonschema-go v0.4.2
 	github.com/google/licenseclassifier/v2 v2.0.0

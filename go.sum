@@ -170,8 +170,8 @@ github.com/aquasecurity/jfather v0.0.8 h1:tUjPoLGdlkJU0qE7dSzd1MHk2nQFNPR0ZfF+6s
 github.com/aquasecurity/jfather v0.0.8/go.mod h1:Ag+L/KuR/f8vn8okUi8Wc1d7u8yOpi2QTaGX10h71oY=
 github.com/aquasecurity/table v1.11.0 h1:SzgCAv7dZcv/gyAyzxorS6OgEk7w/WU5iT2pStIkpl4=
 github.com/aquasecurity/table v1.11.0/go.mod h1:eqOmvjjB7AhXFgFqpJUEE/ietg7RrMSJZXyTN8E/wZw=
-github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17 h1:/xWTD1YaNdjvFdClrz5t3GutwVcyJPsMkYzHWlbE3ys=
-github.com/aquasecurity/testdocker v0.0.0-20250616060700-ba6845ac6d17/go.mod h1:6kYuX29QyBWHJejvbKkA4yzz8EUX/Fn+GmQ09JAZ5lY=
+github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56 h1:VUjEtNqvWRoJQ7zQhngppIMPvJbCLrox54x0C72UGOo=
+github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56/go.mod h1:4ahMSJAwow5T1YsPOvyUpCz6faBXlD7p/fdKmA9baEQ=
 github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gwo=
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.12.2-0.20251219190323-79d27547baf5 h1:8HnXyjgCiJwVX1mTKeqdyizd7ZBmXMPL+BMQ5UZd0Nk=
@@ -591,8 +591,8 @@ github.com/google/go-cmp v0.5.9/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeN
 github.com/google/go-cmp v0.6.0/go.mod h1:17dUlkBOakJ0+DkrSSNjCkIjxS6bF9zb3elmeNGIjoY=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
-github.com/google/go-containerregistry v0.21.2 h1:vYaMU4nU55JJGFC9JR/s8NZcTjbE9DBBbvusTW9NeS0=
-github.com/google/go-containerregistry v0.21.2/go.mod h1:ctO5aCaewH4AK1AumSF5DPW+0+R+d2FmylMJdp5G7p0=
+github.com/google/go-containerregistry v0.21.4 h1:VrhlIQtdhE6riZW//MjPrcJ1snAjPoCCpPHqGOygrv8=
+github.com/google/go-containerregistry v0.21.4/go.mod h1:kxgc23zQ2qMY/hAKt0wCbB/7tkeovAP2mE2ienynJUw=
 github.com/google/go-github/v31 v31.0.0 h1:JJUxlP9lFK+ziXKimTCprajMApV1ecWD4NB6CCb0plo=
 github.com/google/go-github/v31 v31.0.0/go.mod h1:NQPZol8/1sMoWYGN2yaALIBytu17gAWfhbweiEed3pM=
 github.com/google/go-github/v62 v62.0.0 h1:/6mGCaRywZz9MuHyw9gD1CwsbmBX8GWsbFkwMmHdhl4=
