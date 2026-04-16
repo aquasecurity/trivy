@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
+
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 

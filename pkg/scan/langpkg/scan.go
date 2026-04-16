@@ -7,11 +7,12 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/detector/library"
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 
 var (

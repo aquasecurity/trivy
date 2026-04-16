@@ -11,9 +11,10 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 
 func TestDriver_Detect(t *testing.T) {
