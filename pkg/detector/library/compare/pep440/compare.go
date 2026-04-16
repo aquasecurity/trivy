@@ -12,10 +12,17 @@ import (
 type Option func(*Comparer)
 
 // AllowLocalSpecifier allows local version labels in specifiers (constraints) and enables
-// strict local segment matching. Without this option, local labels in specifiers cause a
-// parse error, and local segments of the candidate version are ignored in comparisons
-// (e.g. "4.2.8+sp1" matches "== 4.2.8"). With this option, specifiers like
-// ">= 4.2.8+sp1, < 4.2.8+sp999" are valid and "4.2.8+sp1" does not match "== 4.2.8".
+// strict local segment matching.
+//
+// Note: PEP 440 does not allow local version labels in version specifiers
+// (https://peps.python.org/pep-0440/#version-specifiers). This option relaxes that
+// restriction to support advisory constraints that rely on local segments
+// (e.g. ">= 4.2.8+sp1, < 4.2.8+sp999").
+//
+// Without this option, local labels in specifiers cause a parse error, and local segments
+// of the candidate version are ignored in comparisons (e.g. "4.2.8+sp1" matches "== 4.2.8").
+// With this option, specifiers like ">= 4.2.8+sp1, < 4.2.8+sp999" are valid and
+// "4.2.8+sp1" does not match "== 4.2.8".
 func AllowLocalSpecifier() Option {
 	return func(c *Comparer) {
 		c.allowLocalSpecifier = true
