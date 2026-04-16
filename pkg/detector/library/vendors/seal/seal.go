@@ -5,11 +5,16 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// SealSecurity matches packages patched by Seal Security.
+func init() {
+	library.RegisterVendor(sealSecurity{})
+}
+
+// sealSecurity matches packages patched by Seal Security.
 // Seal Security provides patched versions of open source packages with their own
 // vulnerability advisories. Their packages are identified by ecosystem-specific
 // naming patterns:
@@ -20,15 +25,15 @@ import (
 //   - Ruby:    seal-$name
 //
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
-type SealSecurity struct{}
+type sealSecurity struct{}
 
-func (SealSecurity) Name() string {
+func (sealSecurity) Name() string {
 	return "seal"
 }
 
 // Match determines whether a package is provided by Seal Security.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
-func (SealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
+func (sealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 	switch eco {
 	case ecosystem.Maven:
 		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
@@ -47,7 +52,7 @@ func (SealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 }
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.
-func (s SealSecurity) BucketPrefix(eco ecosystem.Type) string {
+func (s sealSecurity) BucketPrefix(eco ecosystem.Type) string {
 	return fmt.Sprintf("%s %s::", s.Name(), eco)
 }
 
@@ -55,7 +60,7 @@ func (s SealSecurity) BucketPrefix(eco ecosystem.Type) string {
 // For pip (Python), it enables local version specifiers to correctly handle
 // Seal Security version suffixes (e.g. "4.2.8+sp1").
 // For other ecosystems, it returns the default comparer unchanged.
-func (SealSecurity) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
+func (sealSecurity) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	if eco == ecosystem.Pip {
 		return pep440.NewComparer(pep440.AllowLocalSpecifier())
 	}

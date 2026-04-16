@@ -2,10 +2,10 @@ package library
 
 import (
 	"fmt"
+	"slices"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
-	"github.com/aquasecurity/trivy/pkg/detector/library/vendors/seal"
 )
 
 // Vendor represents a third-party security vendor that provides patched packages
@@ -38,8 +38,19 @@ type Vendor interface {
 
 // vendors is the list of registered vendors. The first matching vendor wins.
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
-var vendors = []Vendor{
-	seal.SealSecurity{},
+var vendors []Vendor
+
+// RegisterVendor registers a new vendor for library vulnerability detection.
+// It should be called from an init() function in the vendor's package.
+func RegisterVendor(v Vendor) {
+	vendors = append(vendors, v)
+}
+
+// DeregisterVendor removes a registered vendor by name.
+func DeregisterVendor(name string) {
+	vendors = slices.DeleteFunc(vendors, func(v Vendor) bool {
+		return v.Name() == name
+	})
 }
 
 // lookupVendor finds the matching vendor for the given package.

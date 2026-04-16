@@ -3,6 +3,8 @@ package seal
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 )
 
@@ -130,11 +132,9 @@ func TestSealSecurity_Match(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			s := SealSecurity{}
+			s := sealSecurity{}
 			got := s.Match(tt.eco, tt.pkgName, tt.pkgVer)
-			if got != tt.want {
-				t.Errorf("SealSecurity.Match() = %v, want %v", got, tt.want)
-			}
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -1,4 +1,4 @@
-package library
+package library_test
 
 import (
 	"testing"
@@ -7,59 +7,61 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
+	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/vendors/seal" // register Seal Security vendor
 )
 
 func Test_lookupVendor(t *testing.T) {
 	defaultComparer := compare.GenericComparer{}
 
 	tests := []struct {
-		name            string
-		eco             ecosystem.Type
-		pkgName         string
-		wantMatch       bool
-		wantPrefix      string
+		name                string
+		eco                 ecosystem.Type
+		pkgName             string
+		wantMatch           bool
+		wantPrefix          string
 		wantDefaultComparer bool
 	}{
 		{
-			name:            "seal pip package returns vendor prefix and pep440 comparer",
-			eco:             ecosystem.Pip,
-			pkgName:         "seal-requests",
-			wantMatch:       true,
-			wantPrefix:      "seal pip::",
+			name:                "seal pip package returns vendor prefix and pep440 comparer",
+			eco:                 ecosystem.Pip,
+			pkgName:             "seal-requests",
+			wantMatch:           true,
+			wantPrefix:          "seal pip::",
 			wantDefaultComparer: false,
 		},
 		{
-			name:            "seal npm package returns vendor prefix and default comparer",
-			eco:             ecosystem.Npm,
-			pkgName:         "@seal-security/ejs",
-			wantMatch:       true,
-			wantPrefix:      "seal npm::",
+			name:                "seal npm package returns vendor prefix and default comparer",
+			eco:                 ecosystem.Npm,
+			pkgName:             "@seal-security/ejs",
+			wantMatch:           true,
+			wantPrefix:          "seal npm::",
 			wantDefaultComparer: true,
 		},
 		{
-			name:            "seal go package returns vendor prefix and default comparer",
-			eco:             ecosystem.Go,
-			pkgName:         "sealsecurity.io/github.com/foo/bar",
-			wantMatch:       true,
-			wantPrefix:      "seal go::",
+			name:                "seal go package returns vendor prefix and default comparer",
+			eco:                 ecosystem.Go,
+			pkgName:             "sealsecurity.io/github.com/foo/bar",
+			wantMatch:           true,
+			wantPrefix:          "seal go::",
 			wantDefaultComparer: true,
 		},
 		{
-			name:            "seal maven package returns vendor prefix and default comparer",
-			eco:             ecosystem.Maven,
-			pkgName:         "seal.sp1.org.eclipse.jetty:jetty-http",
-			wantMatch:       true,
-			wantPrefix:      "seal maven::",
+			name:                "seal maven package returns vendor prefix and default comparer",
+			eco:                 ecosystem.Maven,
+			pkgName:             "seal.sp1.org.eclipse.jetty:jetty-http",
+			wantMatch:           true,
+			wantPrefix:          "seal maven::",
 			wantDefaultComparer: true,
 		},
 		{
-			name:            "seal rubygems package returns vendor prefix and default comparer",
-			eco:             ecosystem.RubyGems,
-			pkgName:         "seal-rack",
-			wantMatch:       true,
-			wantPrefix:      "seal rubygems::",
+			name:                "seal rubygems package returns vendor prefix and default comparer",
+			eco:                 ecosystem.RubyGems,
+			pkgName:             "seal-rack",
+			wantMatch:           true,
+			wantPrefix:          "seal rubygems::",
 			wantDefaultComparer: true,
 		},
 		{
@@ -78,7 +80,7 @@ func Test_lookupVendor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v, ok := lookupVendor(tt.eco, tt.pkgName, "")
+			v, ok := library.LookupVendor(tt.eco, tt.pkgName, "")
 			require.Equal(t, tt.wantMatch, ok)
 			if !ok {
 				return
