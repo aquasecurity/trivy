@@ -8234,6 +8234,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#publishing-the-release-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing the Release Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#navigating-to-the-release-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8599,6 +8610,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#publishing-the-release-notes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Publishing the Release Notes
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#navigating-to-the-release-notes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8686,6 +8708,7 @@ If there are any, please review and merge them before creating a release. This w
 <li>Drafting the release notes in GitHub Discussions</li>
 <li>Merging the release PR</li>
 <li>Updating the release notes in GitHub Discussions</li>
+<li>Moving the discussion to the Announcements category</li>
 <li>Navigating to the release notes in GitHub Releases page</li>
 </ol>
 <h3 id="automatic-release-pr-creation">Automatic Release PR Creation<a class="headerlink" href="#automatic-release-pr-creation" title="Permanent link">&para;</a></h3>
@@ -8716,8 +8739,14 @@ For patch version updates, this step can be skipped since they only involve bug 
 <p>Once the draft of the release notes is complete, merge the release PR.
 When the PR is merged, a tag is automatically created, and <a href="https://goreleaser.com/">GoReleaser</a> releases binaries, container images, etc.</p>
 <h3 id="updating-the-release-notes">Updating the Release Notes<a class="headerlink" href="#updating-the-release-notes" title="Permanent link">&para;</a></h3>
-<p>If the release completes without errors, a page for the release notes is created in GitHub Discussions (e.g., <a href="https://github.com/aquasecurity/trivy/discussions/6622">https://github.com/aquasecurity/trivy/discussions/6622</a>).
+<p>If the release completes without errors, a page for the release notes is created in GitHub Discussions under the <strong>Development</strong> category (e.g., <a href="https://github.com/aquasecurity/trivy/discussions/6622">https://github.com/aquasecurity/trivy/discussions/6622</a>).
 Copy the draft release notes, adjust the formatting, and finalize the release notes.</p>
+<h3 id="publishing-the-release-notes">Publishing the Release Notes<a class="headerlink" href="#publishing-the-release-notes" title="Permanent link">&para;</a></h3>
+<p>Once the release notes are finalized, change the discussion category from <strong>Development</strong> to <strong>Announcements</strong> manually via the GitHub UI.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>GoReleaser creates the discussion under <strong>Development</strong> instead of <strong>Announcements</strong> because GitHub restricts posting to the <strong>Announcements</strong> category — only users with maintainer and admin roles can post there.</p>
+</div>
 <h3 id="navigating-to-the-release-notes">Navigating to the Release Notes<a class="headerlink" href="#navigating-to-the-release-notes" title="Permanent link">&para;</a></h3>
 <p>To navigate to the release highlights and summary in GitHub Discussions, place a link in the GitHub Releases page as below:</p>
 <div class="highlight"><pre><span></span><code>## ⚡Release highlights and summary⚡
