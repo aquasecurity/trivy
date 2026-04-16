@@ -30,9 +30,10 @@ type Vendor interface {
 	// For example, "seal pip::" for Seal Security pip packages.
 	BucketPrefix(eco ecosystem.Type) string
 
-	// Comparer returns a custom version comparer for the given ecosystem,
-	// or nil to use the default comparer for that ecosystem.
-	Comparer(eco ecosystem.Type) compare.Comparer
+	// Comparer returns a version comparer for the given ecosystem.
+	// The defaultComparer is provided so the vendor can return it unchanged
+	// when no custom comparison logic is needed.
+	Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer
 }
 
 // vendors is the list of registered vendors. The first matching vendor wins.

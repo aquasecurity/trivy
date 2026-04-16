@@ -121,9 +121,7 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 	comparer := d.comparer
 	if v, ok := lookupVendor(d.ecosystem, normalizedName, pkgVer); ok {
 		prefix = v.BucketPrefix(d.ecosystem)
-		if c := v.Comparer(d.ecosystem); c != nil {
-			comparer = c
-		}
+		comparer = v.Comparer(d.ecosystem, d.comparer)
 	}
 	advisories, err := d.dbc.GetAdvisories(prefix, normalizedName)
 	if err != nil {

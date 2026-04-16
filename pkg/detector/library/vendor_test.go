@@ -20,7 +20,7 @@ func Test_lookupVendor(t *testing.T) {
 		pkgName         string
 		wantMatch       bool
 		wantPrefix      string
-		wantComparerNil bool // true if the default comparer should be returned unchanged
+		wantDefaultComparer bool
 	}{
 		{
 			name:            "seal pip package returns vendor prefix and pep440 comparer",
@@ -28,7 +28,7 @@ func Test_lookupVendor(t *testing.T) {
 			pkgName:         "seal-requests",
 			wantMatch:       true,
 			wantPrefix:      "seal pip::",
-			wantComparerNil: false,
+			wantDefaultComparer: false,
 		},
 		{
 			name:            "seal npm package returns vendor prefix and default comparer",
@@ -36,7 +36,7 @@ func Test_lookupVendor(t *testing.T) {
 			pkgName:         "@seal-security/ejs",
 			wantMatch:       true,
 			wantPrefix:      "seal npm::",
-			wantComparerNil: true,
+			wantDefaultComparer: true,
 		},
 		{
 			name:            "seal go package returns vendor prefix and default comparer",
@@ -44,7 +44,7 @@ func Test_lookupVendor(t *testing.T) {
 			pkgName:         "sealsecurity.io/github.com/foo/bar",
 			wantMatch:       true,
 			wantPrefix:      "seal go::",
-			wantComparerNil: true,
+			wantDefaultComparer: true,
 		},
 		{
 			name:            "seal maven package returns vendor prefix and default comparer",
@@ -52,7 +52,7 @@ func Test_lookupVendor(t *testing.T) {
 			pkgName:         "seal.sp1.org.eclipse.jetty:jetty-http",
 			wantMatch:       true,
 			wantPrefix:      "seal maven::",
-			wantComparerNil: true,
+			wantDefaultComparer: true,
 		},
 		{
 			name:            "seal rubygems package returns vendor prefix and default comparer",
@@ -60,7 +60,7 @@ func Test_lookupVendor(t *testing.T) {
 			pkgName:         "seal-rack",
 			wantMatch:       true,
 			wantPrefix:      "seal rubygems::",
-			wantComparerNil: true,
+			wantDefaultComparer: true,
 		},
 		{
 			name:      "non-seal pip package returns no match",
@@ -84,16 +84,13 @@ func Test_lookupVendor(t *testing.T) {
 				return
 			}
 			assert.Equal(t, tt.wantPrefix, v.BucketPrefix(tt.eco))
-			if tt.wantComparerNil {
-				assert.Nil(t, v.Comparer(tt.eco))
+			comparer := v.Comparer(tt.eco, defaultComparer)
+			if tt.wantDefaultComparer {
+				// When no custom comparer is needed, the default should be returned unchanged.
+				assert.Equal(t, defaultComparer, comparer)
 			} else {
 				// For seal pip, a custom pep440 comparer with AllowLocalSpecifier should be returned.
-				assert.IsType(t, pep440.Comparer{}, v.Comparer(tt.eco))
-			}
-
-			// When Comparer returns nil, the caller should use the default comparer.
-			if v.Comparer(tt.eco) == nil {
-				assert.Equal(t, defaultComparer, defaultComparer)
+				assert.IsType(t, pep440.Comparer{}, comparer)
 			}
 		})
 	}

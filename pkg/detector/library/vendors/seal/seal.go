@@ -51,13 +51,13 @@ func (s SealSecurity) BucketPrefix(eco ecosystem.Type) string {
 	return fmt.Sprintf("%s %s::", s.Name(), eco)
 }
 
-// Comparer returns a custom version comparer for the given ecosystem.
+// Comparer returns a version comparer for the given ecosystem.
 // For pip (Python), it enables local version specifiers to correctly handle
 // Seal Security version suffixes (e.g. "4.2.8+sp1").
-// For other ecosystems, it returns nil to use the default comparer.
-func (SealSecurity) Comparer(eco ecosystem.Type) compare.Comparer {
+// For other ecosystems, it returns the default comparer unchanged.
+func (SealSecurity) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	if eco == ecosystem.Pip {
 		return pep440.NewComparer(pep440.AllowLocalSpecifier())
 	}
-	return nil
+	return defaultComparer
 }
