@@ -4,7 +4,6 @@ import (
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
-	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
@@ -26,22 +25,22 @@ func (SealSecurity) Name() string {
 	return "seal"
 }
 
+// Match determines whether a package is provided by Seal Security.
+// It expects a normalized package name (see vulnerability.NormalizePkgName).
 func (SealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
-	normalized := vulnerability.NormalizePkgName(eco, pkgName)
-
 	switch eco {
 	case ecosystem.Maven:
 		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
-		return strings.HasPrefix(normalized, "seal.sp")
+		return strings.HasPrefix(pkgName, "seal.sp")
 	case ecosystem.Npm:
-		// e.g. @seal-security/ejs, @seal-security/seal-ejs
-		return strings.HasPrefix(normalized, "@seal-security/")
+		// e.g. @seal-security/ejs
+		return strings.HasPrefix(pkgName, "@seal-security/")
 	case ecosystem.Pip, ecosystem.RubyGems:
 		// e.g. seal-django (pip), seal-rack (rubygems)
-		return strings.HasPrefix(normalized, "seal-")
+		return strings.HasPrefix(pkgName, "seal-")
 	case ecosystem.Go:
 		// e.g. sealsecurity.io/github.com/Masterminds/goutils
-		return strings.HasPrefix(normalized, "sealsecurity.io/")
+		return strings.HasPrefix(pkgName, "sealsecurity.io/")
 	}
 	return false
 }

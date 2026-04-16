@@ -22,8 +22,8 @@ type Vendor interface {
 	Name() string
 
 	// Match determines whether a package is provided by this vendor.
-	// It receives the ecosystem type, package name, and version to make the determination.
-	// Vendors may use different identification methods such as package name prefixes or suffixes.
+	// It receives the ecosystem type, a normalized package name
+	// (see vulnerability.NormalizePkgName), and version to make the determination.
 	Match(eco ecosystem.Type, pkgName, pkgVer string) bool
 
 	// Comparer returns a custom version comparer for the given ecosystem,

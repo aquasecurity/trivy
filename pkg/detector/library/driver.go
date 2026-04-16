@@ -113,10 +113,12 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
+	normalizedName := vulnerability.NormalizePkgName(d.ecosystem, pkgName)
+
 	// Resolve advisory prefix and comparer based on package info.
 	// For vendor packages (e.g. Seal Security), returns a vendor-specific prefix and comparer.
-	prefix, comparer := lookupVendor(d.ecosystem, pkgName, pkgVer, d.comparer)
-	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
+	prefix, comparer := lookupVendor(d.ecosystem, normalizedName, pkgVer, d.comparer)
+	advisories, err := d.dbc.GetAdvisories(prefix, normalizedName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
