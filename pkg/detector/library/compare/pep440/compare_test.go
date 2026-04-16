@@ -15,9 +15,10 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 		advisory       dbTypes.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name           string
+		allowLocalSpec bool
+		args           args
+		want           bool
 	}{
 		{
 			name: "happy path",
@@ -105,27 +106,6 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			c := pep440.Comparer{}
-			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
-			assert.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestPep440Comparer_AllowLocalSpecifier(t *testing.T) {
-	type args struct {
-		currentVersion string
-		advisory       dbTypes.Advisory
-	}
-	tests := []struct {
-		name           string
-		allowLocalSpec bool
-		args           args
-		want           bool
-	}{
 		{
 			// Without AllowLocalSpecifier, the local segment is stripped from the candidate version,
 			// so "4.2.8+sp1" matches "== 4.2.8" and is incorrectly treated as vulnerable.
