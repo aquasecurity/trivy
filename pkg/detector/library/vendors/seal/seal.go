@@ -1,6 +1,7 @@
 package seal
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
@@ -43,6 +44,11 @@ func (SealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 		return strings.HasPrefix(pkgName, "sealsecurity.io/")
 	}
 	return false
+}
+
+// BucketPrefix returns the vendor-specific advisory bucket prefix.
+func (s SealSecurity) BucketPrefix(eco ecosystem.Type) string {
+	return fmt.Sprintf("%s %s::", s.Name(), eco)
 }
 
 // Comparer returns a custom version comparer for the given ecosystem.

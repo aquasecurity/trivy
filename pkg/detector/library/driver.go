@@ -116,8 +116,15 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 	normalizedName := vulnerability.NormalizePkgName(d.ecosystem, pkgName)
 
 	// Resolve advisory prefix and comparer based on package info.
-	// For vendor packages (e.g. Seal Security), returns a vendor-specific prefix and comparer.
-	prefix, comparer := lookupVendor(d.ecosystem, normalizedName, pkgVer, d.comparer)
+	// For vendor packages (e.g. Seal Security), uses a vendor-specific prefix and comparer.
+	prefix := defaultBucketPrefix(d.ecosystem)
+	comparer := d.comparer
+	if v, ok := lookupVendor(d.ecosystem, normalizedName, pkgVer); ok {
+		prefix = v.BucketPrefix(d.ecosystem)
+		if c := v.Comparer(d.ecosystem); c != nil {
+			comparer = c
+		}
+	}
 	advisories, err := d.dbc.GetAdvisories(prefix, normalizedName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)

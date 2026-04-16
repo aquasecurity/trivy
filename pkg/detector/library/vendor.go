@@ -26,6 +26,10 @@ type Vendor interface {
 	// (see vulnerability.NormalizePkgName), and version to make the determination.
 	Match(eco ecosystem.Type, pkgName, pkgVer string) bool
 
+	// BucketPrefix returns the advisory bucket prefix for the given ecosystem.
+	// For example, "seal pip::" for Seal Security pip packages.
+	BucketPrefix(eco ecosystem.Type) string
+
 	// Comparer returns a custom version comparer for the given ecosystem,
 	// or nil to use the default comparer for that ecosystem.
 	Comparer(eco ecosystem.Type) compare.Comparer
@@ -37,18 +41,19 @@ var vendors = []Vendor{
 	seal.SealSecurity{},
 }
 
-// lookupVendor finds the matching vendor for the given package and returns
-// the advisory bucket prefix and an optional custom comparer.
-// If no vendor matches, it returns the standard ecosystem prefix and the default comparer.
-func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string, defaultComparer compare.Comparer) (string, compare.Comparer) {
+// lookupVendor finds the matching vendor for the given package.
+// If a vendor matches, it is returned with ok=true.
+// If no vendor matches, ok is false.
+func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string) (Vendor, bool) {
 	for _, v := range vendors {
 		if v.Match(eco, pkgName, pkgVer) {
-			prefix := fmt.Sprintf("%s %s::", v.Name(), eco)
-			if c := v.Comparer(eco); c != nil {
-				return prefix, c
-			}
-			return prefix, defaultComparer
+			return v, true
 		}
 	}
-	return fmt.Sprintf("%s::", eco), defaultComparer
+	return nil, false
+}
+
+// defaultBucketPrefix returns the standard ecosystem bucket prefix (e.g. "pip::").
+func defaultBucketPrefix(eco ecosystem.Type) string {
+	return fmt.Sprintf("%s::", eco)
 }
