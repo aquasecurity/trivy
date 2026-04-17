@@ -49,4 +49,31 @@ var (
 		{ID: "pytest@8.3.4", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.2.2", "iniconfig@2.0.0", "packaging@24.2", "pluggy@1.5.0", "tomli@2.2.1"}},
 		{ID: "requests@2.32.0", DependsOn: []string{"certifi@2024.12.14", "charset-normalizer@3.4.0", "idna@3.10", "urllib3@2.2.3"}},
 	}
+
+	uvWorkspaceVirtual = []ftypes.Package{
+		{ID: "a@0.1.0", Name: "a", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "b@0.1.0", Name: "b", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "pillow@11.0.0", Name: "pillow", Version: "11.0.0", Relationship: ftypes.RelationshipDirect},
+		{ID: "requests@2.32.3", Name: "requests", Version: "2.32.3", Relationship: ftypes.RelationshipDirect},
+	}
+
+	uvWorkspaceVirtualDeps = []ftypes.Dependency{
+		{ID: "a@0.1.0", DependsOn: []string{"requests@2.32.3"}},
+		{ID: "b@0.1.0", DependsOn: []string{"pillow@11.0.0"}},
+	}
+
+	uvWorkspaceRooted = []ftypes.Package{
+		{ID: "root@0.1.0", Name: "root", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
+		{ID: "a@0.1.0", Name: "a", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "b@0.1.0", Name: "b", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "click@8.1.7", Name: "click", Version: "8.1.7", Relationship: ftypes.RelationshipDirect},
+		{ID: "pillow@11.0.0", Name: "pillow", Version: "11.0.0", Relationship: ftypes.RelationshipDirect},
+		{ID: "requests@2.32.3", Name: "requests", Version: "2.32.3", Relationship: ftypes.RelationshipDirect},
+	}
+
+	uvWorkspaceRootedDeps = []ftypes.Dependency{
+		{ID: "a@0.1.0", DependsOn: []string{"requests@2.32.3"}},
+		{ID: "b@0.1.0", DependsOn: []string{"pillow@11.0.0"}},
+		{ID: "root@0.1.0", DependsOn: []string{"click@8.1.7"}},
+	}
 )

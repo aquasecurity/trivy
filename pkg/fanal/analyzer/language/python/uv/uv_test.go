@@ -149,6 +149,97 @@ func Test_uvAnalyzer_PostAnalyze(t *testing.T) {
 			},
 		},
 		{
+			dir: "testdata/workspace-virtual",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Uv,
+						FilePath: "uv.lock",
+						Packages: types.Packages{
+							{
+								ID:           "a@0.1.0",
+								Name:         "a",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn:    []string{"requests@2.32.3"},
+							},
+							{
+								ID:           "b@0.1.0",
+								Name:         "b",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn:    []string{"pillow@11.0.0"},
+							},
+							{
+								ID:           "pillow@11.0.0",
+								Name:         "pillow",
+								Version:      "11.0.0",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "requests@2.32.3",
+								Name:         "requests",
+								Version:      "2.32.3",
+								Relationship: types.RelationshipDirect,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			dir: "testdata/workspace-rooted",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Uv,
+						FilePath: "uv.lock",
+						Packages: types.Packages{
+							{
+								ID:           "root@0.1.0",
+								Name:         "root",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn:    []string{"click@8.1.7"},
+							},
+							{
+								ID:           "a@0.1.0",
+								Name:         "a",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn:    []string{"requests@2.32.3"},
+							},
+							{
+								ID:           "b@0.1.0",
+								Name:         "b",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								DependsOn:    []string{"pillow@11.0.0"},
+							},
+							{
+								ID:           "click@8.1.7",
+								Name:         "click",
+								Version:      "8.1.7",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "pillow@11.0.0",
+								Name:         "pillow",
+								Version:      "11.0.0",
+								Relationship: types.RelationshipDirect,
+							},
+							{
+								ID:           "requests@2.32.3",
+								Name:         "requests",
+								Version:      "2.32.3",
+								Relationship: types.RelationshipDirect,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			dir:  "testdata/broken-lock",
 			want: &analyzer.AnalysisResult{},
 		},
