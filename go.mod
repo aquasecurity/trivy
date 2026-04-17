@@ -43,7 +43,7 @@ require (
 	github.com/docker/cli v29.4.0+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.19.0
-	github.com/go-git/go-git/v5 v5.17.2
+	github.com/go-git/go-git/v5 v5.18.0
 	github.com/go-redis/redis/v8 v8.11.5
 	github.com/go-viper/mapstructure/v2 v2.5.0
 	github.com/gocsaf/csaf/v3 v3.5.1
