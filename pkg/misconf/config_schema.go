@@ -60,11 +60,11 @@ func newConfigFileSchema(path string) (*ConfigFileSchema, error) {
 	b = regexp.MustCompile(`\(\?\!.*\)`).ReplaceAll(b, []byte{})
 	var s jsonschema.Schema
 	if err := json.Unmarshal(b, &s); err != nil {
-		return nil, xerrors.Errorf("compile config schema %s error: %w", path, err)
+		return nil, xerrors.Errorf("parse config schema %s error: %w", path, err)
 	}
 	schema, err := s.Resolve(nil)
 	if err != nil {
-		return nil, xerrors.Errorf("compile config schema %s error: %w", path, err)
+		return nil, xerrors.Errorf("resolve config schema %s error: %w", path, err)
 	}
 
 	fileName := filepath.Base(path)

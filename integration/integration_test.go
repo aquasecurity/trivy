@@ -465,6 +465,9 @@ func validateReport(t *testing.T, schemaURL string, report any) {
 			return nil, err
 		}
 		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("unexpected status %d fetching schema %s", resp.StatusCode, u)
+		}
 		var s jsonschema.Schema
 		if err := json.NewDecoder(resp.Body).Decode(&s); err != nil {
 			return nil, err
