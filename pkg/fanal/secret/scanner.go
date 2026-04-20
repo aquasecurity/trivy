@@ -438,6 +438,15 @@ func precomputeLowercaseKeywords(rules []Rule) {
 	}
 }
 
+// resolveSkipList returns the configured list when set, or a clone of the default list otherwise.
+// Cloning the default prevents callers from accidentally mutating the package-level variable.
+func resolveSkipList(configured *[]string, defaultList []string) []string {
+	if configured != nil {
+		return *configured
+	}
+	return slices.Clone(defaultList)
+}
+
 func NewScanner(config *Config, opts ...Option) Scanner {
 	scanner := Scanner{
 		logger:      log.WithPrefix(log.PrefixSecret),
@@ -466,9 +475,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		scanner.Global = &Global{
 			Rules:      builtinRules,
 			AllowRules: builtinAllowRules,
-			SkipDirs:   DefaultSkipDirs,
-			SkipFiles:  DefaultSkipFiles,
-			SkipExts:   DefaultSkipExts,
+			SkipDirs:   slices.Clone(DefaultSkipDirs),
+			SkipFiles:  slices.Clone(DefaultSkipFiles),
+			SkipExts:   slices.Clone(DefaultSkipExts),
 		}
 		return scanner
 	}
@@ -498,18 +507,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	// Pre-compute lowercase keywords for all rules
 	precomputeLowercaseKeywords(rules)
 
-	skipDirs := DefaultSkipDirs
-	if config.SkipDirs != nil {
-		skipDirs = *config.SkipDirs
-	}
-	skipFiles := DefaultSkipFiles
-	if config.SkipFiles != nil {
-		skipFiles = *config.SkipFiles
-	}
-	skipExts := DefaultSkipExts
-	if config.SkipExts != nil {
-		skipExts = *config.SkipExts
-	}
+	skipDirs := resolveSkipList(config.SkipDirs, DefaultSkipDirs)
+	skipFiles := resolveSkipList(config.SkipFiles, DefaultSkipFiles)
+	skipExts := resolveSkipList(config.SkipExts, DefaultSkipExts)
 
 	scanner.Global = &Global{
 		Rules:        rules,
