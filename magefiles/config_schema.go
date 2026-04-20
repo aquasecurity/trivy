@@ -3,11 +3,9 @@
 package main
 
 import (
-	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
-	"sort"
 	"strings"
 	"time"
 
@@ -50,7 +48,7 @@ func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) err
 		}
 	}
 
-	data, err := marshalOrdered(root, []string{"$schema", "type", "title", "description"})
+	data, err := json.MarshalIndent(root, "", "  ")
 	if err != nil {
 		return err
 	}
@@ -61,66 +59,6 @@ func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) err
 	}
 
 	return os.WriteFile(outputPath, data, 0644)
-}
-
-// marshalOrdered marshals v to indented JSON with the given keys appearing
-// first in the output. Remaining keys follow in sorted order.
-// This is needed because the jsonschema library fixes the field order
-// in its MarshalJSON implementation.
-func marshalOrdered(v any, firstKeys []string) ([]byte, error) {
-	raw, err := json.Marshal(v)
-	if err != nil {
-		return nil, err
-	}
-
-	var fields map[string]json.RawMessage
-	if err := json.Unmarshal(raw, &fields); err != nil {
-		return nil, err
-	}
-
-	written := make(map[string]bool, len(firstKeys))
-	var buf bytes.Buffer
-	buf.WriteByte('{')
-	first := true
-
-	writeField := func(k string, v json.RawMessage) {
-		if !first {
-			buf.WriteByte(',')
-		}
-		first = false
-		key, _ := json.Marshal(k)
-		buf.Write(key)
-		buf.WriteByte(':')
-		buf.Write(v)
-	}
-
-	for _, k := range firstKeys {
-		v, ok := fields[k]
-		if !ok {
-			continue
-		}
-		writeField(k, v)
-		written[k] = true
-	}
-
-	remaining := make([]string, 0, len(fields))
-	for k := range fields {
-		if !written[k] {
-			remaining = append(remaining, k)
-		}
-	}
-	sort.Strings(remaining)
-	for _, k := range remaining {
-		writeField(k, fields[k])
-	}
-
-	buf.WriteByte('}')
-
-	var pretty bytes.Buffer
-	if err := json.Indent(&pretty, buf.Bytes(), "", "  "); err != nil {
-		return nil, err
-	}
-	return pretty.Bytes(), nil
 }
 
 // addFlagToSchema adds a flag to the schema, creating nested objects as needed.
