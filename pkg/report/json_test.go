@@ -10,6 +10,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -58,6 +59,56 @@ func TestReportWriter_JSON(t *testing.T) {
 									Severity:    "HIGH",
 									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
 										vulnerability.NVD: dbTypes.SeverityHigh,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "vulnerability with locations",
+			detectedVulns: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2021-9999",
+					PkgName:          "bar",
+					InstalledVersion: "2.0.0",
+					FixedVersion:     "2.0.1",
+					PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2021-9999",
+					Locations: ftypes.Locations{
+						{StartLine: 12, EndLine: 14},
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Title:    "barbaz",
+						Severity: "MEDIUM",
+						VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+							vulnerability.NVD: dbTypes.SeverityMedium,
+						},
+					},
+				},
+			},
+			want: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "alpine:3.14",
+				Results: types.Results{
+					types.Result{
+						Target: "foojson",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2021-9999",
+								PkgName:          "bar",
+								InstalledVersion: "2.0.0",
+								FixedVersion:     "2.0.1",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2021-9999",
+								Locations: ftypes.Locations{
+									{StartLine: 12, EndLine: 14},
+								},
+								Vulnerability: dbTypes.Vulnerability{
+									Title:    "barbaz",
+									Severity: "MEDIUM",
+									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
+										vulnerability.NVD: dbTypes.SeverityMedium,
 									},
 								},
 							},
