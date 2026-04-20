@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/samber/lo"
@@ -750,6 +751,39 @@ func TestReportWriter_Sarif(t *testing.T) {
 			assert.Equal(t, tt.want, result)
 		})
 	}
+}
+
+func TestSarifWriter_InvocationTimestamps(t *testing.T) {
+	// Verify that startTimeUtc and endTimeUtc are included in the SARIF
+	// invocation block when Report.StartedAt / Report.CreatedAt are set.
+	startedAt := lo.Must(time.Parse(time.RFC3339, "2026-01-01T10:00:00Z"))
+	createdAt := lo.Must(time.Parse(time.RFC3339, "2026-01-01T10:01:30Z"))
+
+	input := types.Report{
+		ArtifactName: "myimage:latest",
+		ArtifactType: ftypes.TypeContainerImage,
+		StartedAt:    startedAt,
+		CreatedAt:    createdAt,
+		Results:      types.Results{},
+	}
+
+	var buf bytes.Buffer
+	w := report.SarifWriter{Output: &buf}
+	require.NoError(t, w.Write(t.Context(), input))
+
+	var got sarif.Report
+	require.NoError(t, json.Unmarshal(buf.Bytes(), &got))
+
+	require.Len(t, got.Runs, 1)
+	invocations := got.Runs[0].Invocations
+	require.Len(t, invocations, 1, "expected exactly one invocation block")
+
+	inv := invocations[0]
+	assert.True(t, inv.ExecutionSuccessful, "executionSuccessful should be true")
+	require.NotNil(t, inv.StartTimeUTC, "startTimeUtc must be set")
+	require.NotNil(t, inv.EndTimeUTC, "endTimeUtc must be set")
+	assert.Equal(t, startedAt.UTC(), *inv.StartTimeUTC)
+	assert.Equal(t, createdAt.UTC(), *inv.EndTimeUTC)
 }
 
 func TestReportWriter_toSarifErrorLevel(t *testing.T) {

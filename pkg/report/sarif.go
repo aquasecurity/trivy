@@ -260,6 +260,16 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	}
 	sw.run.ColumnKind = columnKind
 
+	// Populate the SARIF invocation block with scan start/end timestamps so
+	// consumers can verify report freshness (see GitHub issue #3226).
+	inv := sw.run.AddInvocation(true)
+	if !report.StartedAt.IsZero() {
+		inv.WithStartTimeUTC(report.StartedAt)
+	}
+	if !report.CreatedAt.IsZero() {
+		inv.WithEndTimeUTC(report.CreatedAt)
+	}
+
 	if sw.Target != "" {
 		rootPath := pathToFileURI(sw.Target)
 		sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{

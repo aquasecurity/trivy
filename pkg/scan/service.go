@@ -49,6 +49,8 @@ func NewService(backend Backend, ar artifact.Artifact) Service {
 // It first inspects the artifact to gather necessary information,
 // then delegates the actual scanning to the configured backend implementation.
 func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (types.Report, error) {
+	startedAt := clock.Now(ctx)
+
 	artifactInfo, err := s.artifact.Inspect(ctx)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("failed analysis: %w", err)
@@ -90,8 +92,9 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			Version: app.Version(),
 			Server:  scanResponse.ServerInfo,
 		},
-		ReportID:     reportID.String(),
-		CreatedAt:    clock.Now(ctx),
+		ReportID:  reportID.String(),
+		StartedAt: startedAt,
+		CreatedAt: clock.Now(ctx),
 		ArtifactID:   s.generateArtifactID(artifactInfo),
 		ArtifactName: artifactInfo.Name,
 		ArtifactType: artifactInfo.Type,
