@@ -9,7 +9,11 @@ import (
 const defaultSizeThreshold = int64(100) << 20 // 200MB
 
 var defaultSkipDirs = []string{
-	"**/.git",
+	// Skip heavy binary subdirectories of .git/ for performance, but allow
+	// .git/config to be scanned since it may contain credentials in remote URLs.
+	"**/.git/objects",
+	"**/.git/lfs",
+	"**/.git/modules",
 	"proc",
 	"sys",
 	"dev",

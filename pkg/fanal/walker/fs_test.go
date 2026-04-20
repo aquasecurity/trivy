@@ -89,6 +89,34 @@ func TestFS_Walk(t *testing.T) {
 	}
 }
 
+func TestFS_Walk_GitConfig(t *testing.T) {
+	// .git/config may contain credentials embedded in remote URLs and must be
+	// scanned. Heavy binary subdirectories (.git/objects, .git/lfs,
+	// .git/modules) must remain skipped for performance reasons.
+	// We create a temporary tree because git itself does not track nested .git
+	// directories inside a repository.
+	root := t.TempDir()
+	require.NoError(t, os.MkdirAll(filepath.Join(root, ".git", "objects"), 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(root, ".git", "config"),
+		[]byte("[remote \"origin\"]\n\turl = https://user:token@github.com/org/repo.git\n"), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(root, ".git", "objects", "abc123"),
+		[]byte("binary content"), 0o644))
+
+	var visitedConfig bool
+	w := walker.NewFS()
+	err := w.Walk(root, walker.Option{}, func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
+		if strings.HasSuffix(filePath, ".git/objects/abc123") {
+			assert.Fail(t, ".git/objects must be skipped", "got %s", filePath)
+		}
+		if strings.HasSuffix(filePath, ".git/config") {
+			visitedConfig = true
+		}
+		return nil
+	})
+	require.NoError(t, err)
+	assert.True(t, visitedConfig, ".git/config should be scanned")
+}
+
 func TestFS_BuildSkipPaths(t *testing.T) {
 	tests := []struct {
 		name  string
