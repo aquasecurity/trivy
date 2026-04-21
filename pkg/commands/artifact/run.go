@@ -142,6 +142,10 @@ func NewRunner(ctx context.Context, cliOptions flag.Options, targetKind TargetKi
 
 	r.versionChecker = notification.NewVersionChecker(string(targetKind), &cliOptions)
 
+	if err = r.initChecksBundle(ctx, cliOptions); err != nil {
+		return nil, xerrors.Errorf("checks bundle error: %w", err)
+	}
+
 	// Update the vulnerability database if needed.
 	if err := r.initDB(ctx, cliOptions); err != nil {
 		return nil, xerrors.Errorf("DB error: %w", err)
@@ -194,6 +198,23 @@ func (r *runner) Close(ctx context.Context) error {
 	}
 
 	return errs
+}
+
+func (r *runner) initChecksBundle(ctx context.Context, opts flag.Options) error {
+	if !opts.DownloadChecksBundleOnly {
+		return nil
+	}
+
+	c, err := policy.NewClient(opts.CacheDir, opts.Quiet, opts.MisconfOptions.ChecksBundleRepository)
+	if err != nil {
+		return xerrors.Errorf("check client error: %w", err)
+	}
+
+	if _, err = operation.InitBuiltinChecks(ctx, c, opts.SkipCheckUpdate, opts.RegistryOpts()); err != nil {
+		return err
+	}
+
+	return SkipScan
 }
 
 func (r *runner) ScanImage(ctx context.Context, opts flag.Options) (types.Report, error) {

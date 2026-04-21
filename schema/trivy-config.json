@@ -384,6 +384,10 @@
           "type": "string",
           "description": "OCI registry URL to retrieve checks bundle from"
         },
+        "download-checks-bundle-only": {
+          "type": "boolean",
+          "description": "download/update checks bundle but don't run a scan"
+        },
         "helm": {
           "type": "object",
           "properties": {
