@@ -9,11 +9,17 @@ import (
 const defaultSizeThreshold = int64(100) << 20 // 200MB
 
 var defaultSkipDirs = []string{
-	// Skip heavy binary subdirectories of .git/ for performance, but allow
-	// .git/config to be scanned since it may contain credentials in remote URLs.
+	// Scan .git/ metadata (e.g. .git/config, .git/credentials) for secrets, but
+	// skip subdirectories that are either binary-heavy or high-volume with no
+	// secret value:
+	//   objects  – packed git object store; binary, can be very large
+	//   lfs      – Git LFS binary data
+	//   modules  – submodule checkouts
+	//   logs     – reflog entries; plaintext but high-volume and low-signal
 	"**/.git/objects",
 	"**/.git/lfs",
 	"**/.git/modules",
+	"**/.git/logs",
 	"proc",
 	"sys",
 	"dev",
