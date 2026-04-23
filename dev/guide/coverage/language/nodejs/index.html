@@ -8924,7 +8924,12 @@ You can use Bun v1.2 which uses this file as default or use <code>bun install --
 <p>Trivy parses the manifest files of installed packages in container image scanning and so on.</p>
 <h3 id="packagejson">package.json<a class="headerlink" href="#packagejson" title="Permanent link">&para;</a></h3>
 <p>Trivy searches for <code>package.json</code> files under <code>node_modules</code> and identifies installed packages.
-It only extracts package names, versions and licenses for those packages.</p>
+It only extracts package names, versions and licenses for those packages; the <code>dependencies</code> field is not analyzed.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>To detect vulnerabilities in Node.js dependencies within a container image, ensure that <code>node_modules</code> is present in the image,
+or use a lock file (<code>package-lock.json</code>, <code>yarn.lock</code>, etc.) with filesystem scanning.</p>
+</div>
 <div class="footnote">
 <hr />
 <ol>
