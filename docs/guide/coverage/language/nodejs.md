@@ -89,7 +89,11 @@ Trivy parses the manifest files of installed packages in container image scannin
 
 ### package.json
 Trivy searches for `package.json` files under `node_modules` and identifies installed packages.
-It only extracts package names, versions and licenses for those packages.
+It only extracts package names, versions and licenses for those packages; the `dependencies` field is not analyzed.
+
+!!! note
+    To detect vulnerabilities in Node.js dependencies within a container image, ensure that `node_modules` is present in the image,
+    or use a lock file (`package-lock.json`, `yarn.lock`, etc.) with filesystem scanning.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [pnpm-lockfile-v6]: https://github.com/pnpm/spec/blob/fd3238639af86c09b7032cc942bab3438b497036/lockfile/6.0.md

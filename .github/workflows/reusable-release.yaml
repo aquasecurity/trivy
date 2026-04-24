@@ -22,9 +22,9 @@ on:
         required: true
       GPG_KEY:
         required: true
-      ORG_REPO_TOKEN:
-        required: true
       GPG_PASSPHRASE:
+        required: true
+      TRIVY_REPO_TOKEN:
         required: true
 
 env:
@@ -33,7 +33,7 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-2404-4core
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
@@ -110,7 +110,7 @@ jobs:
           version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
-          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
           TMPDIR: "tmp"

@@ -14,18 +14,18 @@ on:
 
 jobs:
   release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
     if: ${{ !startsWith(github.event.head_commit.message, 'release:') && !github.event.inputs.version }}
     steps:
       - name: Release Please
         id: release
         uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
         with:
-          token: ${{ secrets.ORG_REPO_TOKEN }}
+          token: ${{ secrets.TRIVY_REPO_TOKEN }}
           target-branch: ${{ github.ref_name }}
 
   manual-release-please:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
     if: ${{ github.event.inputs.version }}
     steps:
       - name: Install Release Please CLI
@@ -36,12 +36,12 @@ jobs:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
         run: |
           release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-            --token="${{ secrets.ORG_REPO_TOKEN }}" \
+            --token="${{ secrets.TRIVY_REPO_TOKEN }}" \
             --release-as="$RELEASE_VERSION" \
             --target-branch="$GITHUB_REF_NAME"
 
   release-tag:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
     if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
     steps:
       # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
@@ -62,7 +62,7 @@ jobs:
         env:
           VERSION: ${{ steps.extract_info.outputs.version }}
         with:
-          github-token: ${{ secrets.ORG_REPO_TOKEN }} # To trigger another workflow
+          github-token: ${{ secrets.TRIVY_REPO_TOKEN }} # To trigger another workflow
           script: |
             await github.rest.git.createRef({
               owner: context.repo.owner,
@@ -87,18 +87,7 @@ jobs:
               ref: `refs/heads/${releaseBranch}`,
               sha: context.sha
             });
-      
 
-      # Add release branch to rulesets to enable merge queue
-      - name: Add release branch to rulesets
-        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
-          RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
-        shell: bash
-        run: |
-          RULESET_ID=$(gh api /repos/${GITHUB_REPOSITORY}/rulesets --jq '.[] | select(.name=="release") | .id')
-          gh api /repos/${GITHUB_REPOSITORY}/rulesets/$RULESET_ID | jq '{conditions}' | jq ".conditions.ref_name.include += [\"refs/heads/${RELEASE_BRANCH}\"]" | gh api --method put --input - /repos/${GITHUB_REPOSITORY}/rulesets/$RULESET_ID
 
       # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
       # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.

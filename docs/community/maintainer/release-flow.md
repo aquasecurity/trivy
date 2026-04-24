@@ -24,6 +24,7 @@ The release flow consists of the following main steps:
 1. Drafting the release notes in GitHub Discussions
 1. Merging the release PR
 1. Updating the release notes in GitHub Discussions
+1. Moving the discussion to the Announcements category
 1. Navigating to the release notes in GitHub Releases page
 
 ### Automatic Release PR Creation
@@ -60,8 +61,14 @@ Once the draft of the release notes is complete, merge the release PR.
 When the PR is merged, a tag is automatically created, and [GoReleaser][goreleaser] releases binaries, container images, etc.
 
 ### Updating the Release Notes
-If the release completes without errors, a page for the release notes is created in GitHub Discussions (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
+If the release completes without errors, a page for the release notes is created in GitHub Discussions under the **Development** category (e.g., https://github.com/aquasecurity/trivy/discussions/6622).
 Copy the draft release notes, adjust the formatting, and finalize the release notes.
+
+### Publishing the Release Notes
+Once the release notes are finalized, change the discussion category from **Development** to **Announcements** manually via the GitHub UI.
+
+!!! note
+    GoReleaser creates the discussion under **Development** instead of **Announcements** because GitHub restricts posting to the **Announcements** category — only users with maintainer and admin roles can post there.
 
 ### Navigating to the Release Notes
 To navigate to the release highlights and summary in GitHub Discussions, place a link in the GitHub Releases page as below:
@@ -78,6 +85,11 @@ https://github.com/aquasecurity/trivy/blob/main/CHANGELOG.md#0520-2024-06-03
 Replace URLs with appropriate ones.
 
 Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0
+
+### Adding the Release Branch to Rulesets
+For major and minor releases (e.g., v0.52.0), a `release/vX.Y` branch is automatically created.
+The release maintainer must add this branch to the repository ruleset to enable merge queue protection, unless it has already been added in advance.
+Go to the repository settings → Rules → Rulesets → "release" and add `release/vX.Y` to the branch targeting pattern.
 
 ### Merging the auto-generated Helm chart update PR
 Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen [here](https://github.com/aquasecurity/trivy/pull/8638).
