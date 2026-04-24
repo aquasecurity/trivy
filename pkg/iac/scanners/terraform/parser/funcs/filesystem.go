@@ -16,6 +16,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/function"
+	"golang.org/x/xerrors"
 )
 
 // MakeFileFunc constructs a function that takes a file path and returns the
@@ -415,7 +416,7 @@ func expandHome(path string) (string, error) {
 		return path, nil
 	}
 	if len(path) > 1 && path[1] != '/' && path[1] != '\\' {
-		return "", errors.New("cannot expand user-specific home dir")
+		return "", xerrors.New("cannot expand user-specific home dir")
 	}
 	home, err := os.UserHomeDir()
 	if err != nil {
