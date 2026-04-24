@@ -9,7 +9,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"strings"
 	"unicode/utf8"
 
 	"github.com/bmatcuk/doublestar/v4"
@@ -406,16 +405,21 @@ func File(target fs.FS, baseDir string, path cty.Value) (cty.Value, error) {
 }
 
 // expandHome expands a leading ~ in the path to the current user's home directory.
+// User-specific forms like ~user/foo are not supported and return an error,
+// matching the behavior of the archived github.com/mitchellh/go-homedir Expand.
 func expandHome(path string) (string, error) {
-	if path == "~" {
-		return os.UserHomeDir()
+	if len(path) == 0 {
+		return path, nil
 	}
-	if strings.HasPrefix(path, "~/") || strings.HasPrefix(path, `~\`) {
-		home, err := os.UserHomeDir()
-		if err != nil {
-			return "", err
-		}
-		return filepath.Join(home, path[2:]), nil
+	if path[0] != '~' {
+		return path, nil
 	}
-	return path, nil
+	if len(path) > 1 && path[1] != '/' && path[1] != '\\' {
+		return "", errors.New("cannot expand user-specific home dir")
+	}
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return "", err
+	}
+	return filepath.Join(home, path[1:]), nil
 }

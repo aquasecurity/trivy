@@ -54,9 +54,14 @@ func TestExpandHome(t *testing.T) {
 			want:  "/foo/~/bar",
 		},
 		{
-			name:  "tilde prefix without slash unchanged",
-			input: "~username",
-			want:  "~username",
+			name:    "user-specific home dir is not supported",
+			input:   "~username",
+			wantErr: true,
+		},
+		{
+			name:    "user-specific home dir with path is not supported",
+			input:   "~foo/foo",
+			wantErr: true,
 		},
 	}
 
