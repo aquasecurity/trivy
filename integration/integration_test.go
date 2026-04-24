@@ -9,6 +9,8 @@ import (
 	"fmt"
 	"io"
 	"net"
+	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"sort"
@@ -17,13 +19,13 @@ import (
 	"time"
 
 	cdx "github.com/CycloneDX/cyclonedx-go"
+	"github.com/google/jsonschema-go/jsonschema"
 	spdxjson "github.com/spdx/tools-golang/json"
 	"github.com/spdx/tools-golang/spdx"
 	"github.com/spdx/tools-golang/spdxlib"
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/xeipuuv/gojsonschema"
 
 	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	"github.com/aquasecurity/trivy/internal/dbtest"
@@ -34,7 +36,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 	"github.com/aquasecurity/trivy/pkg/vex/repo"
-	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 
 	_ "modernc.org/sqlite"
 )
@@ -455,18 +456,44 @@ func compareSPDXJson(t *testing.T, wantFile, gotFile string) {
 	validateReport(t, fmt.Sprintf(SPDXSchema, SPDXVersion), got)
 }
 
-func validateReport(t *testing.T, schema string, report any) {
-	schemaLoader := gojsonschema.NewReferenceLoader(schema)
-	documentLoader := gojsonschema.NewGoLoader(report)
-	result, err := gojsonschema.Validate(schemaLoader, documentLoader)
+func validateReport(t *testing.T, schemaURL string, report any) {
+	t.Helper()
+
+	fetchSchema := func(u *url.URL) (*jsonschema.Schema, error) {
+		resp, err := http.Get(u.String())
+		if err != nil {
+			return nil, err
+		}
+		defer resp.Body.Close()
+		if resp.StatusCode != http.StatusOK {
+			return nil, fmt.Errorf("unexpected status %d fetching schema %s", resp.StatusCode, u)
+		}
+		var s jsonschema.Schema
+		if err := json.NewDecoder(resp.Body).Decode(&s); err != nil {
+			return nil, err
+		}
+		return &s, nil
+	}
+
+	u, err := url.Parse(schemaURL)
 	require.NoError(t, err)
 
-	if valid := result.Valid(); !valid {
-		errs := xslices.Map(result.Errors(), func(err gojsonschema.ResultError) string {
-			return err.String()
-		})
-		assert.True(t, valid, strings.Join(errs, "\n"))
-	}
+	s, err := fetchSchema(u)
+	require.NoError(t, err)
+
+	resolved, err := s.Resolve(&jsonschema.ResolveOptions{
+		BaseURI: schemaURL,
+		Loader:  fetchSchema,
+	})
+	require.NoError(t, err)
+
+	// Convert report to JSON-compatible map via JSON round-trip
+	b, err := json.Marshal(report)
+	require.NoError(t, err)
+	var instance any
+	require.NoError(t, json.Unmarshal(b, &instance))
+
+	require.NoError(t, resolved.Validate(instance))
 }
 
 func overrideFuncs(funcs ...OverrideFunc) OverrideFunc {

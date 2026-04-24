@@ -72,7 +72,7 @@ trivy image python:3.4-alpine
 <details>
 <summary>Result</summary>
 
-https://user-images.githubusercontent.com/1161307/171013513-95f18734-233d-45d3-aaf5-d6aec687db0e.mov
+https://github.com/user-attachments/assets/af1c11e7-d9c5-48af-8e05-cb34dfd6352a
 
 </details>
 
@@ -83,7 +83,7 @@ trivy fs --scanners vuln,secret,misconfig myproject/
 <details>
 <summary>Result</summary>
 
-https://user-images.githubusercontent.com/1161307/171013917-b1f37810-f434-465c-b01a-22de036bd9b3.mov
+https://github.com/user-attachments/assets/6b3894b7-77c5-4ffc-ac94-ffe6648a30dc
 
 </details>
 

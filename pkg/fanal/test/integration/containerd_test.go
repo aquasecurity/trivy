@@ -18,8 +18,8 @@ import (
 	"github.com/containerd/containerd/v2/client"
 	"github.com/containerd/containerd/v2/core/images"
 	"github.com/containerd/containerd/v2/pkg/namespaces"
-	dockercontainer "github.com/docker/docker/api/types/container"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/moby/moby/api/types/container"
 	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -91,7 +91,7 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(hostPath, "/run"),
 		),
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 		WaitingFor: wait.ForLog("containerd successfully booted"),
@@ -354,7 +354,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			imageName:  testutil.ImageName("", "vulnimage", ""),
 			tarArchive: "../../../../integration/testdata/fixtures/images/vulnimage.tar.gz",
 			wantMetadata: artifact.ImageMetadata{
-				ID: "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
+				ID:        "sha256:c17083664da903e13e9092fa3a3a1aeee2431aa2728298e3dbcec72f26369c41",
 				Reference: testutil.MustParseReference(t, testutil.ImageName("", "vulnimage", "")),
 				DiffIDs: []string{
 					"sha256:ebf12965380b39889c99a9c02e82ba465f887b45975b6e389d42e9e6a3857888",

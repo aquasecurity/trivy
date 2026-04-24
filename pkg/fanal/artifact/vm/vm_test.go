@@ -76,11 +76,9 @@ func TestNewArtifact(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
-			name:   "sad path unsupported vm format",
-			target: "testdata/monolithicSparse.vmdk",
-			wantErr: func(t assert.TestingT, err error, _ ...any) bool {
-				return assert.ErrorContains(t, err, "unsupported type error")
-			},
+			name:    "happy path for monolithic sparse vmdk format",
+			target:  "testdata/monolithicSparse.vmdk",
+			wantErr: assert.NoError,
 		},
 		{
 			name:   "sad path file not found",
