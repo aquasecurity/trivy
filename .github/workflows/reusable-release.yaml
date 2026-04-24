@@ -146,7 +146,7 @@ jobs:
       # by external contributors. The key is scoped to github.sha, making cross-run collisions
       # impossible. Cache is written here and read only by the deploy-packages job in release.yaml.
       - name: Cache Trivy binaries
-        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.3 # zizmor: ignore[cache-poisoning]
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # zizmor: ignore[cache-poisoning] # v5.0.4
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
