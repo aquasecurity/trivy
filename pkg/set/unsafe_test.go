@@ -581,3 +581,64 @@ func Test_unsafeSet_Difference(t *testing.T) {
 		})
 	}
 }
+
+func Test_unsafeSet_Find(t *testing.T) {
+	tests := []struct {
+		name      string
+		prepare   func(s set.Set[int])
+		lookup    int
+		wantValue int
+		wantFound bool
+	}{
+		{
+			name:      "exact match",
+			prepare:   func(s set.Set[int]) { s.Append(1, 2, 3) },
+			lookup:    2,
+			wantValue: 2,
+			wantFound: true,
+		},
+		{
+			name:      "not found",
+			prepare:   func(s set.Set[int]) { s.Append(1, 2, 3) },
+			lookup:    99,
+			wantValue: 0,
+			wantFound: false,
+		},
+		{
+			name:      "find in empty set",
+			prepare:   nil,
+			lookup:    1,
+			wantValue: 0,
+			wantFound: false,
+		},
+		{
+			name:      "find string value",
+			prepare:   func(s set.Set[string]) { s.Append("hello", "world") },
+			lookup:    "hello",
+			wantValue: "hello",
+			wantFound: true,
+		},
+		{
+			name:      "find custom struct",
+			prepare: func(s set.Set[struct{ id int }]) {
+				s.Append(struct{ id int }{1})
+				s.Append(struct{ id int }{2})
+			},
+			lookup:    struct{ id int }{2},
+			wantValue: struct{ id int }{2},
+			wantFound: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := set.New[int]()
+			if tt.prepare != nil {
+				tt.prepare(s)
+			}
+			gotValue, gotFound := s.Find(tt.lookup)
+			assert.Equal(t, tt.wantValue, gotValue)
+			assert.Equal(t, tt.wantFound, gotFound)
+		})
+	}
+}
