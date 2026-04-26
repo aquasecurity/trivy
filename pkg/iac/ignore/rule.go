@@ -103,8 +103,9 @@ func defaultIgnorers(ids []string) map[string]Ignorer {
 				return true
 			}
 
+			lowerID := strings.ToLower(id)
 			return slices.ContainsFunc(ids, func(s string) bool {
-				return MatchPattern(s, id)
+				return MatchPattern(strings.ToLower(s), lowerID)
 			})
 		},
 		"exp": func(_ types.Metadata, param any) bool {

@@ -362,6 +362,12 @@ resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
 		{
+			name: "ignore by alias is case-insensitive",
+			source: `#%s:ignore:MY-ALIAS
+resource "aws_s3_bucket" "test" {}`,
+			assertLength: 0,
+		},
+		{
 			name: "ignore for implied IAM resource",
 			source: `# %s:ignore:aws-iam-enforce-mfa
 resource "aws_iam_group" "this" {
