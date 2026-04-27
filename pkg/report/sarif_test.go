@@ -747,6 +747,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
+
+			// Verify invocation timestamps are present before clearing them for structural comparison.
+			require.Len(t, result.Runs, 1)
+			require.Len(t, result.Runs[0].Invocations, 1)
+			inv := result.Runs[0].Invocations[0]
+			assert.NotNil(t, inv.StartTimeUTC, "invocation startTimeUtc should be set")
+			assert.NotNil(t, inv.EndTimeUTC, "invocation endTimeUtc should be set")
+			require.NotNil(t, inv.ExecutionSuccessful)
+			assert.True(t, *inv.ExecutionSuccessful)
+			// Clear dynamic invocations before structural comparison.
+			result.Runs[0].Invocations = nil
+
 			assert.Equal(t, tt.want, result)
 		})
 	}
