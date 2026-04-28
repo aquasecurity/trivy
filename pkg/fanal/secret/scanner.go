@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"sort"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -28,38 +30,32 @@ var (
 	})
 )
 
-// Default skip lists used when not overridden in the secret config file.
-var (
-	DefaultSkipDirs = []string{
-		".git",
-		"node_modules",
-	}
-	DefaultSkipFiles = []string{
-		"go.mod",
-		"go.sum",
-		"package-lock.json",
-		"yarn.lock",
-		"pnpm-lock.yaml",
-		"Pipfile.lock",
-		"Gemfile.lock",
-	}
-	DefaultSkipExts = []string{
-		".jpg",
-		".png",
-		".gif",
-		".doc",
-		".pdf",
-		".bin",
-		".svg",
-		".socket",
-		".deb",
-		".rpm",
-		".zip",
-		".gz",
-		".gzip",
-		".tar",
-	}
-)
+// DefaultSkipPatterns is the set of glob patterns used when skip-patterns is not set in the config.
+var DefaultSkipPatterns = []string{
+	"**/.git/**",
+	"**/node_modules/**",
+	"**/go.mod",
+	"**/go.sum",
+	"**/package-lock.json",
+	"**/yarn.lock",
+	"**/pnpm-lock.yaml",
+	"**/Pipfile.lock",
+	"**/Gemfile.lock",
+	"**/*.jpg",
+	"**/*.png",
+	"**/*.gif",
+	"**/*.doc",
+	"**/*.pdf",
+	"**/*.bin",
+	"**/*.svg",
+	"**/*.socket",
+	"**/*.deb",
+	"**/*.rpm",
+	"**/*.zip",
+	"**/*.gz",
+	"**/*.gzip",
+	"**/*.tar",
+}
 
 const (
 	// DefaultBufferSize is the default chunk size for streaming secret scanning
@@ -97,29 +93,17 @@ type Config struct {
 	CustomAllowRules AllowRules   `yaml:"allow-rules"`
 	ExcludeBlock     ExcludeBlock `yaml:"exclude-block"`
 
-	// SkipDirs is a list of directory names to skip during secret scanning.
-	// If nil (not set in config), DefaultSkipDirs is used.
-	// Set to an empty list to disable all directory skipping.
-	SkipDirs *[]string `yaml:"skip-dirs"`
-
-	// SkipFiles is a list of file names to skip during secret scanning.
-	// If nil (not set in config), DefaultSkipFiles is used.
-	// Set to an empty list to disable all file skipping.
-	SkipFiles *[]string `yaml:"skip-files"`
-
-	// SkipExts is a list of file extensions to skip during secret scanning.
-	// If nil (not set in config), DefaultSkipExts is used.
-	// Set to an empty list to disable all extension skipping.
-	SkipExts *[]string `yaml:"skip-exts"`
+	// SkipPatterns is a list of doublestar glob patterns for paths to skip during secret scanning.
+	// If nil (not set in config), DefaultSkipPatterns is used.
+	// Set to an empty list to disable all path skipping.
+	SkipPatterns *[]string `yaml:"skip-patterns"`
 }
 
 type Global struct {
 	Rules        []Rule
 	AllowRules   AllowRules
 	ExcludeBlock ExcludeBlock
-	SkipDirs     []string
-	SkipFiles    []string
-	SkipExts     []string
+	SkipPatterns []string
 }
 
 // Allow checks if the match is allowed
@@ -132,19 +116,15 @@ func (g Global) AllowPath(path string) bool {
 	return g.AllowRules.AllowPath(path)
 }
 
-// ContainsSkipDir reports whether name matches any of the configured skip directories.
-func (g Global) ContainsSkipDir(name string) bool {
-	return slices.Contains(g.SkipDirs, name)
-}
-
-// IsSkipFile reports whether name matches any of the configured skip file names.
-func (g Global) IsSkipFile(name string) bool {
-	return slices.Contains(g.SkipFiles, name)
-}
-
-// IsSkipExt reports whether ext matches any of the configured skip extensions.
-func (g Global) IsSkipExt(ext string) bool {
-	return slices.Contains(g.SkipExts, ext)
+// IsSkipped reports whether the given path matches any configured skip pattern.
+func (g Global) IsSkipped(path string) bool {
+	path = filepath.ToSlash(path)
+	for _, pattern := range g.SkipPatterns {
+		if matched, _ := doublestar.Match(pattern, path); matched {
+			return true
+		}
+	}
+	return false
 }
 
 // Regexp adds unmarshalling from YAML for regexp.Regexp
@@ -438,15 +418,6 @@ func precomputeLowercaseKeywords(rules []Rule) {
 	}
 }
 
-// resolveSkipList returns the configured list when set, or a clone of the default list otherwise.
-// Cloning the default prevents callers from accidentally mutating the package-level variable.
-func resolveSkipList(configured *[]string, defaultList []string) []string {
-	if configured != nil {
-		return *configured
-	}
-	return slices.Clone(defaultList)
-}
-
 func NewScanner(config *Config, opts ...Option) Scanner {
 	scanner := Scanner{
 		logger:      log.WithPrefix(log.PrefixSecret),
@@ -473,11 +444,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		precomputeLowercaseKeywords(builtinRules)
 
 		scanner.Global = &Global{
-			Rules:      builtinRules,
-			AllowRules: builtinAllowRules,
-			SkipDirs:   slices.Clone(DefaultSkipDirs),
-			SkipFiles:  slices.Clone(DefaultSkipFiles),
-			SkipExts:   slices.Clone(DefaultSkipExts),
+			Rules:        builtinRules,
+			AllowRules:   builtinAllowRules,
+			SkipPatterns: slices.Clone(DefaultSkipPatterns),
 		}
 		return scanner
 	}
@@ -507,17 +476,16 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	// Pre-compute lowercase keywords for all rules
 	precomputeLowercaseKeywords(rules)
 
-	skipDirs := resolveSkipList(config.SkipDirs, DefaultSkipDirs)
-	skipFiles := resolveSkipList(config.SkipFiles, DefaultSkipFiles)
-	skipExts := resolveSkipList(config.SkipExts, DefaultSkipExts)
+	skipPatterns := slices.Clone(DefaultSkipPatterns)
+	if config.SkipPatterns != nil {
+		skipPatterns = *config.SkipPatterns
+	}
 
 	scanner.Global = &Global{
 		Rules:        rules,
 		AllowRules:   allowRules,
 		ExcludeBlock: config.ExcludeBlock,
-		SkipDirs:     skipDirs,
-		SkipFiles:    skipFiles,
-		SkipExts:     skipExts,
+		SkipPatterns: skipPatterns,
 	}
 
 	return scanner

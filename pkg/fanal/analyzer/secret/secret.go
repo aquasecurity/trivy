@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -111,33 +110,15 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 }
 
 func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
-	// Skip small files
 	if fi.Size() < 10 {
 		return false
 	}
 
-	dir, fileName := filepath.Split(filePath)
-	dir = filepath.ToSlash(dir)
-	dirs := strings.Split(dir, "/")
-
-	// Check if the directory should be skipped
-	if slices.ContainsFunc(dirs, a.scanner.ContainsSkipDir) {
-		return false
-	}
-
-	// Check if the file should be skipped
-	if a.scanner.IsSkipFile(fileName) {
-		return false
-	}
-
-	// Skip the config file for secret scanning
 	if filepath.Base(a.configPath) == filePath {
 		return false
 	}
 
-	// Check if the file extension should be skipped
-	ext := filepath.Ext(fileName)
-	if a.scanner.IsSkipExt(ext) {
+	if a.scanner.IsSkipped(filePath) {
 		return false
 	}
 

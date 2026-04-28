@@ -231,50 +231,44 @@ disable-allow-rules:
   - markdown
 ```
 
-### Skip Dirs, Files and Extensions
-By default, Trivy skips the following directories, files, and extensions during secret scanning:
+### Skip Patterns
 
-| Option | Defaults |
-|--------|----------|
-| `skip-dirs` | `.git`, `node_modules` |
-| `skip-files` | `go.mod`, `go.sum`, `package-lock.json`, `yarn.lock`, `pnpm-lock.yaml`, `Pipfile.lock`, `Gemfile.lock` |
-| `skip-exts` | `.jpg`, `.png`, `.gif`, `.doc`, `.pdf`, `.bin`, `.svg`, `.socket`, `.deb`, `.rpm`, `.zip`, `.gz`, `.gzip`, `.tar` |
+By default, Trivy skips the following paths during secret scanning (expressed as [doublestar](https://github.com/bmatcuk/doublestar) glob patterns):
 
-You can override these lists in the configuration file.
+```
+**/.git/**         **/node_modules/**
+**/go.mod          **/go.sum          **/package-lock.json
+**/yarn.lock       **/pnpm-lock.yaml  **/Pipfile.lock    **/Gemfile.lock
+**/*.jpg  **/*.png  **/*.gif  **/*.doc  **/*.pdf  **/*.bin
+**/*.svg  **/*.socket  **/*.deb  **/*.rpm
+**/*.zip  **/*.gz  **/*.gzip  **/*.tar
+```
+
+You can override this list with `skip-patterns` in the configuration file.
 
 !!! warning
-    When any of these options is specified, it **replaces** the corresponding default list entirely — defaults are not merged.
-    If you want to keep the defaults and add new entries, you must include them explicitly.
+    When `skip-patterns` is specified, it **replaces** the default list entirely — defaults are not merged.
+    To keep the defaults and add new patterns, include them explicitly.
 
 ``` yaml
-skip-dirs:
-  - vendor
-  - testdata
-skip-files:
-  - custom.lock
-  - secrets.json
-skip-exts:
-  - .xyz
-  - .dat
+skip-patterns:
+  - "**/vendor/**"
+  - "**/testdata/**"
+  - "**/custom.lock"
+  - "**/*.xyz"
 ```
 
-In the example above, the default skip dirs (`.git`, `node_modules`) will **no longer** be skipped; only `vendor` and `testdata` will be.
-
-To disable all skipping for a particular category, set it to an empty list:
+To disable all skipping, set it to an empty list:
 
 ``` yaml
-skip-dirs: []
-skip-files: []
-skip-exts: []
+skip-patterns: []
 ```
-
-This will cause Trivy to scan every directory, file, and extension without any exclusions.
 
 ## Recommendation
-We would recommend specifying `--skip-dirs` for faster secret scanning.
+We would recommend using `skip-patterns` in the secret config for faster secret scanning.
 In container image scanning, Trivy walks the file tree rooted at `/` and scans all the files other than [built-in allowed paths][builtin-allow].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
-If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
+Adding glob patterns such as `**/vendor/**` helps so that Trivy will skip those paths entirely.
 You can see more options [here](../configuration/others.md).
 
 `allow-rules` is also helpful. See the [allow-rules](#allow-rules) section.

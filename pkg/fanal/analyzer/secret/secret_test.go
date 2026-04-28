@@ -260,8 +260,8 @@ func TestSecretRequire(t *testing.T) {
 }
 
 func TestSecretRequireCustomSkips(t *testing.T) {
-	// Custom config overrides all three default skip lists.
-	// Verify that custom entries are skipped and former defaults are no longer skipped.
+	// Custom config replaces the default skip-patterns entirely.
+	// Verify that custom patterns are skipped and former defaults are no longer skipped.
 	tests := []struct {
 		name     string
 		filePath string
@@ -319,8 +319,8 @@ func TestSecretRequireCustomSkips(t *testing.T) {
 }
 
 func TestSecretRequireEmptySkips(t *testing.T) {
-	// When skip lists are explicitly set to empty in the config, nothing should be skipped —
-	// even files/dirs/extensions that are in the default skip lists.
+	// When skip-patterns is explicitly set to empty, nothing should be skipped —
+	// even paths that match the default skip patterns.
 	tests := []struct {
 		name     string
 		filePath string
