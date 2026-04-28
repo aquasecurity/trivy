@@ -34,9 +34,10 @@ jobs:
       - name: Release Please
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
+          TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
         run: |
           release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-            --token="${{ secrets.TRIVY_REPO_TOKEN }}" \
+            --token="$TRIVY_REPO_TOKEN" \
             --release-as="$RELEASE_VERSION" \
             --target-branch="$GITHUB_REF_NAME"
 
