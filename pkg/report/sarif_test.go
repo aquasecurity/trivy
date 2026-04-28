@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/stretchr/testify/assert"
@@ -737,8 +738,9 @@ func TestReportWriter_Sarif(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
-				Output: sarifWritten,
-				Target: tt.target,
+				Output:    sarifWritten,
+				Target:    tt.target,
+				StartedAt: time.Now(),
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
