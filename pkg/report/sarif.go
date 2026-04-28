@@ -46,6 +46,7 @@ var (
 type SarifWriter struct {
 	Output        io.Writer
 	Version       string
+	StartedAt     time.Time
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
@@ -127,7 +128,7 @@ func pathToFileURI(path string) string {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
-	startTime := time.Now().UTC()
+	startTime := sw.StartedAt.UTC()
 
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
