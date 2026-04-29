@@ -10,6 +10,7 @@ import (
 	"os"
 	"slices"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -447,6 +448,7 @@ func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.R
 	}
 
 	// 1. Scan the artifact
+	opts.ScanStartedAt = time.Now().UTC()
 	report, err := scanFunction(ctx, opts)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("%s scan error: %w", targetKind, err)
