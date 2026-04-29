@@ -4,7 +4,6 @@ import (
 	"context"
 	"io"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"golang.org/x/xerrors"
@@ -28,8 +27,6 @@ const (
 
 // Write writes the result to output, format as passed in argument
 func Write(ctx context.Context, report types.Report, option flag.Options) (err error) {
-	startedAt := time.Now()
-
 	// Call pre-report hooks
 	if err := extension.PreReport(ctx, &report, option); err != nil {
 		return xerrors.Errorf("pre report error: %w", err)
@@ -87,9 +84,9 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
 			log.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
-				Output:     output,
-				Version:    option.AppVersion,
-				StartedAt:  startedAt,
+				Output:    output,
+				Version:   option.AppVersion,
+				StartedAt: option.ScanStartedAt,
 			}
 			break
 		}
@@ -105,7 +102,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			Output:    output,
 			Version:   option.AppVersion,
 			Target:    target,
-			StartedAt: startedAt,
+			StartedAt: option.ScanStartedAt,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)

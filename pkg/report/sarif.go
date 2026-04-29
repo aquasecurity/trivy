@@ -128,7 +128,10 @@ func pathToFileURI(path string) string {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
-	startTime := sw.StartedAt.UTC()
+	startTime := sw.StartedAt
+	if startTime.IsZero() {
+		startTime = time.Now().UTC()
+	}
 
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
