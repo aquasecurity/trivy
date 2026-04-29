@@ -1974,3 +1974,72 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 		})
 	}
 }
+
+func TestNewScannerSkipPatternSlashConversion(t *testing.T) {
+	t.Run("default skip patterns use forward slashes", func(t *testing.T) {
+		s := secret.NewScanner(nil)
+		for _, p := range s.SkipPatterns {
+			assert.NotContains(t, p, "\\", "default skip pattern should not contain backslashes: %q", p)
+		}
+	})
+
+	t.Run("OS-native patterns in config are converted to forward slashes", func(t *testing.T) {
+		// filepath.FromSlash converts "/" to OS separator — backslash on Windows, no-op on Linux/macOS.
+		// This lets the test exercise the real conversion path on every platform.
+		nativePatterns := []string{
+			filepath.FromSlash("**/.git/**"),
+			filepath.FromSlash("**/node_modules/**"),
+			filepath.FromSlash("**/go.sum"),
+		}
+		c := &secret.Config{
+			SkipPatterns: &nativePatterns,
+		}
+		s := secret.NewScanner(c)
+		for _, p := range s.SkipPatterns {
+			assert.NotContains(t, p, "\\", "skip pattern should not contain backslashes after NewScanner: %q", p)
+		}
+		assert.Equal(t, []string{"**/.git/**", "**/node_modules/**", "**/go.sum"}, s.SkipPatterns)
+	})
+}
+
+func TestIsSkippedSlashConversion(t *testing.T) {
+	tests := []struct {
+		name     string
+		patterns []string
+		path     string
+		want     bool
+	}{
+		{
+			name:     "forward slash path matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/.git/config",
+			want:     true,
+		},
+		{
+			name:     "OS-native path separator matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			// filepath.FromSlash converts to OS separator — exercises ToSlash inside IsSkipped on Windows.
+			path: filepath.FromSlash("some/repo/.git/config"),
+			want: true,
+		},
+		{
+			name:     "non-matching path returns false",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/src/main.go",
+			want:     false,
+		},
+		{
+			name:     "OS-native path matches node_modules pattern",
+			patterns: []string{"**/node_modules/**"},
+			path:     filepath.FromSlash("project/node_modules/lodash/index.js"),
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := secret.Global{SkipPatterns: tt.patterns}
+			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
+		})
+	}
+}
