@@ -443,10 +443,14 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		// Pre-compute lowercase keywords for builtin rules
 		precomputeLowercaseKeywords(builtinRules)
 
+		skipPatterns := slices.Clone(DefaultSkipPatterns)
+		for i, p := range skipPatterns {
+			skipPatterns[i] = filepath.ToSlash(p)
+		}
 		scanner.Global = &Global{
 			Rules:        builtinRules,
 			AllowRules:   builtinAllowRules,
-			SkipPatterns: slices.Clone(DefaultSkipPatterns),
+			SkipPatterns: skipPatterns,
 		}
 		return scanner
 	}
@@ -479,6 +483,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	skipPatterns := slices.Clone(DefaultSkipPatterns)
 	if config.SkipPatterns != nil {
 		skipPatterns = *config.SkipPatterns
+	}
+	for i, p := range skipPatterns {
+		skipPatterns[i] = filepath.ToSlash(p)
 	}
 
 	scanner.Global = &Global{
