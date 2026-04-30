@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
+	"helm.sh/helm/v3/pkg/chart/loader"
 )
 
 var errSkipFS = errors.New("skip parse FS")
@@ -71,7 +72,12 @@ func (p *Parser) unpackArchive(srcFS fs.FS, targetFS *mapfs.FS, archivePath stri
 				return err
 			}
 		case tar.TypeReg:
-			data, err := io.ReadAll(tr)
+			if header.Size > loader.MaxDecompressedFileSize {
+				p.logger.Warn("Skipping large file in chart archive",
+					log.FilePath(targetPath), log.Int64("size", header.Size))
+				continue
+			}
+			data, err := io.ReadAll(io.LimitReader(tr, loader.MaxDecompressedFileSize))
 			if err != nil {
 				return fmt.Errorf("read file: %w", err)
 			}
