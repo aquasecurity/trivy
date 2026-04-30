@@ -103,12 +103,19 @@ jobs:
         run: |
           mkdir tmp    
 
+      - name: Build GoReleaser args
+        id: goreleaser-args
+        run: echo "args=-f=${GORELEASER_CONFIG} ${GORELEASER_OPTIONS}" >> "$GITHUB_OUTPUT"
+        env:
+          GORELEASER_CONFIG: ${{ inputs.goreleaser_config }}
+          GORELEASER_OPTIONS: ${{ inputs.goreleaser_options }}
+
       - name: GoReleaser
         id: goreleaser
         uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
         with:
           version: v2.1.0
-          args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
+          args: release ${{ steps.goreleaser-args.outputs.args }}
         env:
           GITHUB_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
