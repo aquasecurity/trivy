@@ -11,10 +11,11 @@ import (
 	"path"
 	"path/filepath"
 
+	"helm.sh/helm/v3/pkg/chart/loader"
+
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/mapfs"
-	"helm.sh/helm/v3/pkg/chart/loader"
 )
 
 var errSkipFS = errors.New("skip parse FS")
