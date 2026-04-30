@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
@@ -46,6 +47,7 @@ type SarifWriter struct {
 	Output        io.Writer
 	Version       string
 	run           *sarif.Run
+	startTime     time.Time
 	locationCache map[string][]location
 	Target        string
 }
@@ -132,6 +134,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	}
 	sw.run = sarif.NewRunWithInformationURI("Trivy", "https://github.com/aquasecurity/trivy")
 	sw.run.Tool.Driver.WithVersion(sw.Version)
+	sw.startTime = time.Now().UTC()
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = make(map[string][]location)
 	if report.ArtifactType == ftypes.TypeContainerImage {
@@ -268,6 +271,11 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+	invocation := sarif.NewInvocation().
+		WithStartTimeUTC(sw.startTime).
+		WithEndTimeUTC(time.Now().UTC()).
+		WithExecutionSuccessful(true)
+	sw.run.WithInvocations([]*sarif.Invocation{invocation})
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }
