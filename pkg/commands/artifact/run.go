@@ -421,6 +421,8 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
+	opts.ScanStartedAt = time.Now().UTC()
+
 	// Perform validation checks
 	checkOptions(ctx, opts, targetKind)
 
@@ -448,7 +450,6 @@ func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.R
 	}
 
 	// 1. Scan the artifact
-	opts.ScanStartedAt = time.Now().UTC()
 	report, err := scanFunction(ctx, opts)
 	if err != nil {
 		return types.Report{}, xerrors.Errorf("%s scan error: %w", targetKind, err)
