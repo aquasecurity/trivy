@@ -91,9 +91,13 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:      "invalid package name",
+			// Subdirectory package.json (e.g. node_modules/rxjs/ajax/package.json) — the
+			// slash in the name field is a bundler resolution hint, not a real package.
+			// The parser should silently skip these (return empty Package, no error)
+			// so they don't show up as noisy "Walk error" logs.
+			name:      "subdirectory package.json with slash in name",
 			inputFile: "testdata/invalid_name.json",
-			wantErr:   "Name can only contain URL-friendly characters",
+			want:      packagejson.Package{},
 		},
 		{
 			name:      "sad path",
