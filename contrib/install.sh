@@ -8,9 +8,13 @@ usage() {
   cat <<EOF
 $this: download go binaries for aquasecurity/trivy
 
-Usage: $this [-b] bindir [-c] client [-d] [tag]
+Usage: $this [-b] bindir [-c] client [-s sha256] [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
   -c sets client identifier for download tracking (letters, digits, and '-' characters are allowed), Defaults to install-script
+  -s verifies the downloaded tarball against the supplied sha256 instead of the
+     checksum file published with the release. Use this to pin a known-good
+     digest from a trusted out-of-band source (e.g. a value in your CI config).
+     Can also be set via the EXPECTED_TARBALL_SHA256 environment variable.
   -d turns on debug logging
   -x turns on verbose logging
    [tag] is a tag from
@@ -30,7 +34,8 @@ parse_args() {
 
   BINDIR=${BINDIR:-./bin}
   CLIENT=${CLIENT:-install-script}
-  while getopts "b:c:dh?x" arg; do
+  EXPECTED_TARBALL_SHA256=${EXPECTED_TARBALL_SHA256:-}
+  while getopts "b:c:s:dh?x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
       c)
@@ -38,6 +43,14 @@ parse_args() {
           CLIENT="$OPTARG"
         else
           log_crit "invalid client identifier '${OPTARG}'; allowed characters are: letters, digits, and '-'"
+          exit 1
+        fi
+        ;;
+      s)
+        if printf '%s' "$OPTARG" | grep -Eq '^[A-Fa-f0-9]{64}$'; then
+          EXPECTED_TARBALL_SHA256="$OPTARG"
+        else
+          log_crit "invalid sha256 '${OPTARG}'; expected 64 hexadecimal characters"
           exit 1
         fi
         ;;
@@ -57,8 +70,13 @@ execute() {
   tmpdir=$(mktemp -d)
   log_debug "downloading files into ${tmpdir}"
   http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
-  http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
-  hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  if [ -n "${EXPECTED_TARBALL_SHA256:-}" ]; then
+    log_info "verifying ${TARBALL} against user-supplied sha256"
+    hash_sha256_verify_value "${tmpdir}/${TARBALL}" "${EXPECTED_TARBALL_SHA256}"
+  else
+    http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
+    hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  fi
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   test ! -d "${BINDIR}" && install -d "${BINDIR}"
@@ -347,6 +365,19 @@ hash_sha256_verify() {
   got=$(hash_sha256 "$TARGET")
   if [ "$want" != "$got" ]; then
     log_err "hash_sha256_verify checksum for '$TARGET' did not verify ${want} vs $got"
+    return 1
+  fi
+}
+hash_sha256_verify_value() {
+  TARGET=$1
+  want=$2
+  if [ -z "$want" ]; then
+    log_err "hash_sha256_verify_value expected sha256 not supplied"
+    return 1
+  fi
+  got=$(hash_sha256 "$TARGET")
+  if [ "$want" != "$got" ]; then
+    log_err "hash_sha256_verify_value checksum for '$TARGET' did not verify ${want} vs $got"
     return 1
   fi
 }
