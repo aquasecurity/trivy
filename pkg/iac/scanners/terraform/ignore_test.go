@@ -590,6 +590,43 @@ resource "aws_s3_bucket" "test" {}
 	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
 }
 
+// Regression test for issue #10374: when an alias-style identifier is the
+// only place an AVD ID lives (i.e. the rule's avd_id field stays empty and
+// the AVD identifier is exposed via the aliases list instead), the inline
+// ignore comment should still match it case-insensitively — the same way
+// `trivy:ignore:` already matches against ID / AVDID case-insensitively.
+func Test_IgnoreByLowercaseAlias(t *testing.T) {
+	check := `# METADATA
+# custom:
+#   id: TEST-0123
+#   short_code: non-empty-bucket
+#   provider: aws
+#   service: s3
+#   aliases:
+#     - AVD-TEST-0123
+package user.test123
+
+import rego.v1
+
+
+deny contains res if {
+  some bucket in input.aws.s3.buckets
+  bucket.name.value == ""
+  res := result.new("The bucket name cannot be empty.", bucket.name)
+}`
+
+	src := `
+# trivy:ignore:avd-test-0123
+resource "aws_s3_bucket" "test" {}
+`
+
+	results := scanHCL(t, src,
+		rego.WithPolicyReader(strings.NewReader(check)),
+		rego.WithPolicyNamespaces("user"),
+	)
+	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+}
+
 func Test_IgnoreInlineByAllIDs(t *testing.T) {
 	testCases := []struct {
 		input string

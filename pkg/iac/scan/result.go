@@ -276,7 +276,14 @@ func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ign
 			strings.ToLower(result.Rule().AVDID),
 			result.Rule().ShortCode,
 		}
-		allIDs = append(allIDs, result.Rule().Aliases...)
+		// Aliases need a case-insensitive companion entry too — the
+		// same rule applied to ID / AVDID just above. Without this,
+		// `# trivy:ignore:avd-aws-0053` (lowercase) misses the
+		// `AVD-AWS-0053` alias that the new alias-based AVDID storage
+		// puts in the rule. See issue #10374.
+		for _, a := range result.Rule().Aliases {
+			allIDs = append(allIDs, a, strings.ToLower(a))
+		}
 
 		if ignoreRules.Ignore(result.Metadata(), allIDs, ignores) {
 			(*r)[i].OverrideStatus(StatusIgnored)
