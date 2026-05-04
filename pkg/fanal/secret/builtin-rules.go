@@ -71,6 +71,7 @@ var (
 	CategoryDocker               = types.SecretRuleCategory("Docker")
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
+	CategoryAzure                = types.SecretRuleCategory("Azure")
 )
 
 // Reusable regex patterns
@@ -854,5 +855,81 @@ var builtinRules = []Rule{
 		Severity: "HIGH",
 		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt|ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt`),
 		Keywords: []string{"TokenIsNotSoSecret"},
+	},
+	// Azure credential detection rules. See
+	// https://github.com/aquasecurity/trivy/issues/10615 for the full
+	// discussion of pattern provenance and severity rationale.
+	//
+	// Each pattern below is anchored on a token-format marker that's
+	// unique enough to keep false positives down without DLP-style
+	// proximity scoring (which Trivy doesn't have). When in doubt, the
+	// rule errs on the side of precision over recall — a missed leak is
+	// recoverable, a noisy rule that gets disabled in CI is not.
+	{
+		// Storage Account Key, anchored on `AccountKey=` so we catch keys
+		// in env vars and partial config snippets, not just full
+		// connection strings (which the Microsoft Purview "non-generic"
+		// SIT pattern requires). Storage account keys are 64 raw bytes
+		// base64-encoded → 88 characters with the trailing `==` padding.
+		ID:              "azure-storage-account-key",
+		Category:        CategoryAzure,
+		Title:           "Azure Storage Account Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)AccountKey\s*=\s*(?P<secret>[A-Za-z0-9+/]{86}==)`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"AccountKey"},
+	},
+	{
+		// Cosmos DB account key, distinguished from a generic Storage key
+		// (same 88-char base64 shape) by the `*.documents.azure.com` /
+		// `*.cosmos.azure.com` endpoint anchor. Either subdomain is
+		// accepted because Microsoft surfaces the same key under both
+		// hostnames depending on API.
+		ID:              "azure-cosmosdb-account-key",
+		Category:        CategoryAzure,
+		Title:           "Azure Cosmos DB Account Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)AccountEndpoint\s*=\s*https://[a-z0-9-]+\.(?:documents|cosmos)\.azure\.com:443/?\s*;\s*AccountKey\s*=\s*(?P<secret>[A-Za-z0-9+/]{86}==)`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"AccountEndpoint", "AccountKey"},
+	},
+	{
+		// Entra ID (formerly Azure AD) application client secret. Total
+		// 40 characters with the literal marker `8Q~` at positions 4-6.
+		// The marker is unique to this token format, so the regex doesn't
+		// need an additional context anchor.
+		// See https://gitlab.com/gitlab-org/security-products/secret-detection/secret-detection-rules/-/merge_requests/174
+		ID:              "azure-entra-id-client-secret",
+		Category:        CategoryAzure,
+		Title:           "Azure Entra ID Client Secret",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithBoundaries(`?P<secret>[A-Za-z0-9_~]{3}8Q~[A-Za-z0-9_~.-]{34}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"8Q~"},
+	},
+	{
+		// Azure App Configuration connection string. The `*.azconfig.io`
+		// endpoint is unique to App Configuration and provides a tight
+		// anchor; the Id+Secret tail then carries the actual credential.
+		ID:              "azure-app-configuration-connection-string",
+		Category:        CategoryAzure,
+		Title:           "Azure App Configuration Connection String",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)Endpoint\s*=\s*https://[a-z0-9-]+\.azconfig\.io\s*;\s*Id\s*=\s*[A-Za-z0-9+/=:-]+\s*;\s*Secret\s*=\s*(?P<secret>[A-Za-z0-9+/=]{40,100})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"azconfig.io"},
+	},
+	{
+		// Azure SAS (Shared Access Signature) token URL. Anchored on the
+		// service-version field `sv=YYYY-MM-DD`, which is specific to
+		// Azure Storage SAS — it eliminates most generic URL-signature
+		// false positives that would match on `sig=` alone.
+		ID:              "azure-sas-token",
+		Category:        CategoryAzure,
+		Title:           "Azure Shared Access Signature (SAS) Token",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)sv=\d{4}-\d{2}-\d{2}(?:[&;][a-z]+=[^&\s'"]*){1,12}[&;]sig=(?P<secret>[A-Za-z0-9%+/=]{40,})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sig="},
 	},
 }
