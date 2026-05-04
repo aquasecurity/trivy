@@ -12,7 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/all" // register library vulnerability vendors
 )
 
 var (
