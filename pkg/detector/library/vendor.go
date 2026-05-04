@@ -47,6 +47,8 @@ func RegisterVendor(v Vendor) {
 }
 
 // DeregisterVendor removes a registered vendor by name.
+// Use it to opt out of a vendor that was registered via
+// pkg/detector/library/all (e.g., DeregisterVendor("seal")).
 func DeregisterVendor(name string) {
 	vendors = slices.DeleteFunc(vendors, func(v Vendor) bool {
 		return v.Name() == name
