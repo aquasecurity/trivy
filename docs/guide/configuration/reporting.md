@@ -532,10 +532,11 @@ Critical: 0, High: 2
 For other features of sprig, see the official [sprig][sprig] documentation.
 
 #### Load templates from a file
-You can load templates from a file prefixing the template path with an @.
+You can load templates from a file prefixing the template path with an `@`.
+The template file must have a `.tpl` extension.
 
 ```
-$ trivy image --format template --template "@/path/to/template" golang:1.12-alpine
+$ trivy image --format template --template "@/path/to/template.tpl" golang:1.12-alpine
 ```
 
 #### Default Templates

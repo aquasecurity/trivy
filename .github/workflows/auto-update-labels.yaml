@@ -8,7 +8,7 @@ on:
 jobs:
   deploy:
     name: Auto-update labels
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Checkout main
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2

@@ -6,6 +6,8 @@
 #
 babel==2.16.0
     # via mkdocs-material
+backrefs==6.2
+    # via mkdocs-material
 certifi==2024.8.30
     # via requests
 charset-normalizer==3.4.0
@@ -56,7 +58,7 @@ mkdocs-get-deps==0.2.0
     # via mkdocs
 mkdocs-macros-plugin==1.3.7
     # via -r docs/build/requirements.in
-mkdocs-material==9.5.44
+mkdocs-material==9.7.0
     # via -r docs/build/requirements.in
 mkdocs-material-extensions==1.3.1
     # via mkdocs-material
@@ -94,8 +96,6 @@ pyyaml-env-tag==0.1
     # via
     #   mike
     #   mkdocs
-regex==2024.11.6
-    # via mkdocs-material
 requests==2.32.3
     # via mkdocs-material
 six==1.16.0

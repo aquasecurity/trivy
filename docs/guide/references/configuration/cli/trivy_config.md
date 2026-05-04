@@ -77,7 +77,7 @@ trivy config [flags] DIR
       --skip-files strings                specify the files or glob patterns to skip
       --skip-version-check                suppress notices about version updates and Trivy announcements
       --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
-  -t, --template string                   output template
+  -t, --template string                   output template (file path must have .tpl extension)
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tf-vars strings                   specify paths to override the Terraform tfvars files
       --trace-rego                        enable more verbose trace output for custom queries

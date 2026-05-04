@@ -7,7 +7,7 @@ on:
 jobs:
   check_permission:
     name: Check comment author permissions
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-2404-2core
     outputs:
       is_maintainer: ${{ steps.check_permission.outputs.is_maintainer }}
     steps:
@@ -32,8 +32,7 @@ jobs:
       github.event.issue.pull_request &&
       github.event.issue.pull_request.merged_at != null &&
       startsWith(github.event.comment.body, '@aqua-bot backport release/')
-    runs-on: ubuntu-latest
-
+    runs-on: ubuntu-2404-2core
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -59,8 +58,8 @@ jobs:
 
       - name: Run backport script
         env:
-          # Use ORG_REPO_TOKEN instead of GITHUB_TOKEN
+          # Use TRIVY_REPO_TOKEN instead of GITHUB_TOKEN
           # This allows the created PR to trigger tests and other workflows
-          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: ./misc/backport/backport.sh "$BRANCH_NAME" "$ISSUE_NUMBER"
