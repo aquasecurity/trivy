@@ -3,6 +3,7 @@ package seal
 import (
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -41,7 +42,8 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 	switch eco {
 	case ecosystem.Maven:
 		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
-		return len(pkgName) > 7 && strings.HasPrefix(pkgName, "seal.sp") && pkgName[7] >= '0' && pkgName[7] <= '9'
+		rest, ok := strings.CutPrefix(pkgName, "seal.sp")
+		return ok && len(rest) > 0 && unicode.IsDigit(rune(rest[0]))
 	case ecosystem.Npm:
 		// e.g. @seal-security/ejs
 		return strings.HasPrefix(pkgName, "@seal-security/")
