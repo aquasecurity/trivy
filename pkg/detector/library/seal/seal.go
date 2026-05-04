@@ -43,7 +43,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
 	case ecosystem.Maven:
 		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
 		rest, ok := strings.CutPrefix(pkgName, "seal.sp")
-		return ok && len(rest) > 0 && unicode.IsDigit(rune(rest[0]))
+		return ok && rest != "" && unicode.IsDigit(rune(rest[0]))
 	case ecosystem.Npm:
 		// e.g. @seal-security/ejs
 		return strings.HasPrefix(pkgName, "@seal-security/")
