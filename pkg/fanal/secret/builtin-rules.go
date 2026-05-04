@@ -137,11 +137,19 @@ var builtinRules = []Rule{
 		Keywords:        []string{"gho_"},
 	},
 	{
+		// `ghu_` user-to-server tokens stay strictly 36 characters, but
+		// starting 2026-04-27 GitHub rolled out a new stateless format for
+		// `ghs_` installation tokens shaped `ghs_<APPID>_<JWT>` (~520 chars
+		// average, with an internal `_` separator). Keep ghu_ strict and
+		// broaden ghs_ to accept the new variable-length form so we don't
+		// silently miss every installation token minted after the cutover.
+		// See https://github.com/aquasecurity/trivy/issues/10591 and
+		// https://github.blog/changelog/2026-04-24-notice-about-upcoming-new-format-for-github-app-installation-tokens/.
 		ID:              "github-app-token",
 		Category:        CategoryGitHub,
 		Title:           "GitHub App Token",
 		Severity:        "CRITICAL",
-		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(ghu|ghs)_[0-9a-zA-Z]{36}`),
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(?:ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z_]{36,})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ghu_", "ghs_"},
 	},
