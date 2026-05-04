@@ -11,7 +11,9 @@ import (
 )
 
 func init() {
-	library.RegisterVendor(sealSecurity{})
+	library.RegisterVendor(sealSecurity{
+		pipComparer: pep440.NewComparer(pep440.AllowLocalSpecifier()),
+	})
 }
 
 // sealSecurity matches packages patched by Seal Security.
@@ -25,7 +27,9 @@ func init() {
 //   - Ruby:    seal-$name
 //
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
-type sealSecurity struct{}
+type sealSecurity struct {
+	pipComparer compare.Comparer
+}
 
 func (sealSecurity) Name() string {
 	return "seal"
@@ -60,9 +64,9 @@ func (s sealSecurity) BucketPrefix(eco ecosystem.Type) string {
 // For pip (Python), it enables local version specifiers to correctly handle
 // Seal Security version suffixes (e.g. "4.2.8+sp1").
 // For other ecosystems, it returns the default comparer unchanged.
-func (sealSecurity) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
+func (s sealSecurity) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	if eco == ecosystem.Pip {
-		return pep440.NewComparer(pep440.AllowLocalSpecifier())
+		return s.pipComparer
 	}
 	return defaultComparer
 }
