@@ -18,6 +18,11 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 		return nil, nil
 	}
 
+	contents = bytes.TrimSpace(contents)
+	if len(contents) == 0 {
+		return nil, nil
+	}
+
 	if bytes.TrimSpace(contents)[0] == '{' {
 		manifest, err := ManifestFromJSON(path, contents)
 		if err != nil {
