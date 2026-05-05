@@ -195,7 +195,7 @@ As an example, consider the following check metadata:
 ```
 Long ID would look like the following: `aws-s3-enable-logging`.
 
-Example for CloudFromation:
+Example for CloudFormation:
 ```yaml
 AWSTemplateFormatVersion: "2010-09-09"
 Resources:
