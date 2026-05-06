@@ -8822,6 +8822,10 @@ This document explains Trivy's network connectivity requirements, and how to con
 <h2 id="check-updates-service">Check updates service<a class="headerlink" href="#check-updates-service" title="Permanent link">&para;</a></h2>
 <p>Trivy <a href="../../configuration/others/#check-for-updates">checks for updates</a> and <a href="../telemetry/">collects usage telemetry</a> by connecting to the following domain: <code>https://check.trivy.dev</code>.
 Connectivity with this domain is entirely optional and is not necessary for the normal operation of Trivy.</p>
+<p>To prevent Trivy from connecting to <code>check.trivy.dev</code>, disable both the version check and telemetry collection explicitly:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--skip-version-check<span class="w"> </span>--disable-telemetry<span class="w"> </span>&lt;image&gt;
+</code></pre></div>
+<p>Note that these are two independent features controlled by separate flags — using only one of them is not sufficient to prevent all connections to this domain.</p>
 
 
 
