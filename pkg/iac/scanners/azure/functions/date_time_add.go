@@ -41,11 +41,7 @@ func DateTimeAdd(args ...any) any {
 	timeDuration := duration.timeDuration()
 	baseTime = baseTime.Add(timeDuration)
 
-	if ok {
-		return baseTime.Format(format)
-	}
-
-	return baseTime.Format(time.RFC3339)
+	return baseTime.Format(format)
 }
 
 type Iso8601Duration struct {
