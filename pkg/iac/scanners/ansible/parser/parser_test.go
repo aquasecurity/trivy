@@ -56,6 +56,26 @@ func TestParser_Parse(t *testing.T) {
 			expectedTasks: []string{"Pre-task", "Task", "Post-task"},
 		},
 		{
+			name: "playbook with empty/null sequence entry",
+			files: map[string]string{
+				"playbook.yaml": `-
+- hosts: localhost
+  tasks:
+    - name: only real task
+      debug:
+        msg: test
+`,
+			},
+			expectedTasks: []string{"only real task"},
+		},
+		{
+			name: "playbook is only an empty sequence entry",
+			files: map[string]string{
+				"playbook.yaml": "-\n",
+			},
+			expectedTasks: nil,
+		},
+		{
 			name: "task name with unquoted template",
 			files: map[string]string{
 				"playbook.yaml": `---

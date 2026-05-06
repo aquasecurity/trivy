@@ -226,6 +226,24 @@ func (p *Parser) loadPlaybook(f fsutils.FileSource) (*Playbook, error) {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
 
+	// A YAML sequence with empty/null entries (e.g. a top-level "-" with no
+	// mapping under it) decodes into a []*Play that contains nil pointers.
+	// Drop those so downstream code can dereference plays freely.
+	skipped := 0
+	filtered := plays[:0]
+	for _, play := range plays {
+		if play == nil {
+			skipped++
+			continue
+		}
+		filtered = append(filtered, play)
+	}
+	plays = filtered
+	if skipped > 0 {
+		p.logger.Debug("Skipped empty plays in playbook",
+			log.FilePath(f.Path), log.Int("skipped", skipped))
+	}
+
 	p.logger.Debug("Loaded playbook",
 		log.FilePath(f.Path), log.Int("plays_count", len(plays)))
 	return &Playbook{
