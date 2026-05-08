@@ -8755,7 +8755,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/920fad2537094670414116d799231ba0e0e13a55pkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/a75a468facbff12c81da00742709c88c0a4ad29dpkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
@@ -8842,7 +8842,7 @@ Ensure<span class="w"> </span>that<span class="w"> </span>Serverless<span class=
 Checks triggered by the absence of a resource (e.g., <strong>AVD-DS-0002</strong> when a Dockerfile lacks a <code>USER</code> instruction) cannot be ignored inline.<br />
 Use a <a href="../../../../configuration/filtering/#trivyignoreyaml">.trivyignore.yaml</a> file to ignore such checks.</p>
 </div>
-<p>The ignore rule must contain one of the possible check IDs that can be found in its metadata: ID, short code or alias. The <code>id</code> from the metadata is not case-sensitive, so you can specify, for example, <code>AVD-AWS-0089</code> or <code>avd-aws-0089</code>.</p>
+<p>The ignore rule must contain one of the possible check identifiers that can be found in its metadata: ID, long id, or aliases. All of these identifiers are case-insensitive, so you can specify, for example, <code>AWS-0089</code>, <code>aws-0089</code>, or any combination of upper/lowercase letters.</p>
 <p>For example, to ignore a misconfiguration ID <code>AVD-GCP-0051</code> in a Terraform HCL file:</p>
 <div class="highlight"><pre><span></span><code><span class="c1">#trivy:ignore:AVD-GCP-0051</span>
 <span class="kr">resource</span><span class="w"> </span><span class="nc">&quot;google_container_cluster&quot;</span><span class="w"> </span><span class="nv">&quot;example&quot;</span><span class="w"> </span><span class="p">{</span>
