@@ -28,6 +28,18 @@ func Fixtures() error {
 		return nil
 	}
 
+	if repo, err := git.PlainOpen(cloneDir); err == nil {
+		slog.Info("Pulling...", slog.String("url", repoURL))
+		w, err := repo.Worktree()
+		if err != nil {
+			return xerrors.Errorf("error getting worktree: %w", err)
+		}
+		if err = w.Pull(&git.PullOptions{}); err != nil && err != git.NoErrAlreadyUpToDate {
+			return xerrors.Errorf("error pulling repository: %w", err)
+		}
+		return nil
+	}
+
 	slog.Info("Cloning...", slog.String("url", repoURL))
 
 	// Clone the repository with all branches and tags
