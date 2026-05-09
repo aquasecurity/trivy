@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"golang.org/x/xerrors"
+	corev1 "k8s.io/api/core/v1"
 
 	trivy_checks "github.com/aquasecurity/trivy-checks"
 	k8sArtifacts "github.com/aquasecurity/trivy-kubernetes/pkg/artifacts"
@@ -61,11 +62,17 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 }
 
 func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.NodeCollectorOption {
+	// Add default tolerations for common control-plane taints if none are specified
+	tolerations := opts.Tolerations
+	if len(tolerations) == 0 {
+		tolerations = getDefaultTolerations()
+	}
+
 	nodeCollectorOptions := []trivyk8s.NodeCollectorOption{
 		trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
 		trivyk8s.WithIgnoreLabels(opts.ExcludeNodes),
 		trivyk8s.WithScanJobImageRef(opts.NodeCollectorImageRef),
-		trivyk8s.WithTolerations(opts.Tolerations),
+		trivyk8s.WithTolerations(tolerations),
 	}
 
 	ctx = log.WithContextPrefix(ctx, log.PrefixMisconfiguration)
@@ -100,4 +107,21 @@ func getComplianceCommands(opts flag.Options) []string {
 		}
 	}
 	return commands
+}
+
+// getDefaultTolerations returns default tolerations for common control-plane taints
+// This allows the node-collector job to be scheduled on control-plane nodes by default
+func getDefaultTolerations() []corev1.Toleration {
+	return []corev1.Toleration{
+		{
+			Key:      "node-role.kubernetes.io/control-plane",
+			Operator: corev1.TolerationOpExists,
+			Effect:   corev1.TaintEffectNoSchedule,
+		},
+		{
+			Key:      "node-role.kubernetes.io/master",
+			Operator: corev1.TolerationOpExists,
+			Effect:   corev1.TaintEffectNoSchedule,
+		},
+	}
 }
