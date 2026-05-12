@@ -14,16 +14,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 		return nil, err
 	}
 
-	if len(contents) == 0 {
-		return nil, nil
-	}
-
-	contents = bytes.TrimSpace(contents)
-	if len(contents) == 0 {
-		return nil, nil
-	}
-
-	if bytes.TrimSpace(contents)[0] == '{' {
+	if bytes.HasPrefix(contents, []byte("{")) {
 		manifest, err := ManifestFromJSON(path, contents)
 		if err != nil {
 			return nil, err
