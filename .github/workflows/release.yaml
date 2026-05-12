@@ -18,7 +18,6 @@ jobs:
       ECR_SECRET_ACCESS_KEY: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       GPG_KEY: ${{ secrets.GPG_KEY }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-      TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
 
   deploy-packages:
     name: Deploy rpm/deb packages
