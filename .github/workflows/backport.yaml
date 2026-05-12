@@ -34,11 +34,21 @@ jobs:
       startsWith(github.event.comment.body, '@aqua-bot backport release/')
     runs-on: ubuntu-2404-2core
     steps:
+      # GITHUB_TOKEN cannot trigger workflows on PRs it creates, so the backport
+      # PR would not run CI — generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           persist-credentials: true # backport.sh runs git push
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Extract branch name
         env:
@@ -58,8 +68,6 @@ jobs:
 
       - name: Run backport script
         env:
-          # Use TRIVY_REPO_TOKEN instead of GITHUB_TOKEN
-          # This allows the created PR to trigger tests and other workflows
-          GITHUB_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
           ISSUE_NUMBER: ${{ github.event.issue.number }}
         run: ./misc/backport/backport.sh "$BRANCH_NAME" "$ISSUE_NUMBER"
