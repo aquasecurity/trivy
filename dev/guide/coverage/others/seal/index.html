@@ -4226,6 +4226,24 @@ You're not viewing the latest version of the documentation.
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Seal Security
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="./" class="md-nav__link md-nav__link--active">
         
   
@@ -4242,6 +4260,64 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#os-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-ecosystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Ecosystems
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
       
     </li>
   
@@ -8378,6 +8454,53 @@ You're not viewing the latest version of the documentation.
     
   
   
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#os-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        OS Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#application-dependencies" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Application Dependencies
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Application Dependencies">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-ecosystems" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported Ecosystems
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
 </nav>
                   </div>
                 </div>
@@ -8406,9 +8529,11 @@ You're not viewing the latest version of the documentation.
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>Scanning results may be inaccurate.</p>
 </div>
-<p>While it is not an OS, this page describes the details of the <a href="https://sealsecurity.io/">Seal Security</a> vulnerability feed.
-Seal provides security advisories and patched versions for multiple Linux distributions, including <a href="../../os/debian/">Debian</a>, <a href="../../os/ubuntu/">Ubuntu</a>, <a href="../../os/alpine/">Alpine</a>, <a href="../../os/rhel/">Red Hat Enterprise Linux</a>, <a href="../../os/centos/">CentOS</a>, <a href="../../os/oracle/">Oracle Linux</a>, and <a href="../../os/azure/">Azure Linux (CBL‑Mariner)</a>.</p>
-<p>Seal advisories are used when Trivy finds packages that indicate Seal-provided components:</p>
+<p>This page describes the details of the <a href="https://sealsecurity.io/">Seal Security</a> vulnerability feed.
+Seal provides security advisories and patched versions for both OS packages and application dependencies.</p>
+<h2 id="os-packages">OS Packages<a class="headerlink" href="#os-packages" title="Permanent link">&para;</a></h2>
+<p>Seal provides patched versions for multiple Linux distributions, including <a href="../../os/debian/">Debian</a>, <a href="../../os/ubuntu/">Ubuntu</a>, <a href="../../os/alpine/">Alpine</a>, <a href="../../os/rhel/">Red Hat Enterprise Linux</a>, <a href="../../os/centos/">CentOS</a>, <a href="../../os/oracle/">Oracle Linux</a>, and <a href="../../os/azure/">Azure Linux (CBL‑Mariner)</a>.</p>
+<p>Seal OS package advisories are used when Trivy finds packages that indicate Seal-provided components:</p>
 <ul>
 <li>Packages whose name or source name starts with <code>seal-</code> (for example, <code>seal-wget</code>, <code>seal-zlib</code>).</li>
 </ul>
@@ -8427,6 +8552,46 @@ Seal provides security advisories and patched versions for multiple Linux distri
 <li><a href="../../os/oracle/">Oracle Linux</a></li>
 <li><a href="../../os/azure/">Azure Linux (CBL‑Mariner)</a></li>
 </ul>
+<h2 id="application-dependencies">Application Dependencies<a class="headerlink" href="#application-dependencies" title="Permanent link">&para;</a></h2>
+<p>Seal also provides patched versions of application dependencies with their own vulnerability advisories. Trivy automatically detects Seal-patched packages based on special naming patterns specific to each ecosystem.</p>
+<h3 id="supported-ecosystems">Supported Ecosystems<a class="headerlink" href="#supported-ecosystems" title="Permanent link">&para;</a></h3>
+<table>
+<thead>
+<tr>
+<th>Ecosystem</th>
+<th>Package Pattern</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Python (pip)</td>
+<td><code>seal-*</code></td>
+<td><code>seal-requests</code></td>
+</tr>
+<tr>
+<td>Node.js (npm)</td>
+<td><code>@seal-security/*</code></td>
+<td><code>@seal-security/ejs</code></td>
+</tr>
+<tr>
+<td>Go</td>
+<td><code>sealsecurity.io/*</code></td>
+<td><code>sealsecurity.io/github.com/Masterminds/goutils</code></td>
+</tr>
+<tr>
+<td>Java (Maven)</td>
+<td><code>seal.sp*</code></td>
+<td><code>seal.sp1.org.eclipse.jetty:jetty-http</code></td>
+</tr>
+<tr>
+<td>Ruby (RubyGems)</td>
+<td><code>seal-*</code></td>
+<td><code>seal-rack</code></td>
+</tr>
+</tbody>
+</table>
+<p>When Trivy detects packages matching these patterns, it automatically uses Seal Security advisories for vulnerability scanning.</p>
 
 
 
