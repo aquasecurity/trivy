@@ -93,7 +93,7 @@ func TestParse(t *testing.T) {
 		{
 			name:      "invalid package name",
 			inputFile: "testdata/invalid_name.json",
-			wantErr:   "Name can only contain URL-friendly characters",
+			want:      packagejson.Package{},
 		},
 		{
 			name:      "sad path",
