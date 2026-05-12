@@ -62,11 +62,9 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 }
 
 func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.NodeCollectorOption {
-	// Add default tolerations for common control-plane taints if none are specified
-	tolerations := opts.Tolerations
-	if len(tolerations) == 0 {
-		tolerations = getDefaultTolerations()
-	}
+	// Merge user-provided tolerations with defaults for common control-plane taints
+	// This ensures control-plane nodes are always scannable even when custom tolerations are added
+	tolerations := append(getDefaultTolerations(), opts.Tolerations...)
 
 	nodeCollectorOptions := []trivyk8s.NodeCollectorOption{
 		trivyk8s.WithScanJobNamespace(opts.NodeCollectorNamespace),
