@@ -23,7 +23,6 @@ jobs:
       ECR_ACCESS_KEY_ID: ${{ secrets.ECR_ACCESS_KEY_ID }}
       ECR_SECRET_ACCESS_KEY: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       GPG_KEY: ${{ secrets.GPG_KEY }}
-      TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   upload-binaries:

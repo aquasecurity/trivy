@@ -159,8 +159,8 @@ github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgB
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
 github.com/aquasecurity/go-npm-version v0.0.2 h1:6sNIaeW4Hw8Xg51nPoD3VSo/5qmFSu0VL809iehEOvc=
 github.com/aquasecurity/go-npm-version v0.0.2/go.mod h1:DXyKqRe2yb83peANMjQr8dGDkHanEgoFv8BOQdWlSUQ=
-github.com/aquasecurity/go-pep440-version v0.0.1 h1:8VKKQtH2aV61+0hovZS3T//rUF+6GDn18paFTVS0h0M=
-github.com/aquasecurity/go-pep440-version v0.0.1/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
+github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4 h1:QC8nsF3LvAGHUxkr5bvcekaUQPE9Zk4jyMugyg5Fxy0=
+github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
 github.com/aquasecurity/go-version v0.0.1 h1:4cNl516agK0TCn5F7mmYN+xVs1E3S45LkgZk3cbaW2E=
 github.com/aquasecurity/go-version v0.0.1/go.mod h1:s1UU6/v2hctXcOa3OLwfj5d9yoXHa3ahf+ipSwEvGT0=
@@ -795,8 +795,8 @@ github.com/masahiro331/go-ebs-file v0.0.0-20260422020928-9d24e29aac27 h1:IrxbYTV
 github.com/masahiro331/go-ebs-file v0.0.0-20260422020928-9d24e29aac27/go.mod h1:XFWPTlAcEL733RUjbr0QBybdt6oK2DH7LZk8id2qtd4=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20260423010602-fe51f5b5e52b h1:IAYuiQq6BVizPeXTKBoY3Jcin3gGn8No7h31lvH0aKo=
 github.com/masahiro331/go-ext4-filesystem v0.0.0-20260423010602-fe51f5b5e52b/go.mod h1:3XMMY1M486mWGTD13WPItg6FsgflQR72ZMAkd+gsyoQ=
-github.com/masahiro331/go-mvn-version v0.0.0-20250131095131-f4974fa13b8a h1:eLvAzVoRfHEOl64OxFhepPf3vj7SKvXY/tFc3BS0b7s=
-github.com/masahiro331/go-mvn-version v0.0.0-20250131095131-f4974fa13b8a/go.mod h1:jZ3F25l7DbD7l7DcA8aj7eo1EZ84nbzcQHBB4lCSrI8=
+github.com/masahiro331/go-mvn-version v0.0.0-20260119054159-d21fcd2e7de1 h1:XC9v1PB6rMOCTnQIInoFvgSA+vhTCt0wQ7B+Tjpombk=
+github.com/masahiro331/go-mvn-version v0.0.0-20260119054159-d21fcd2e7de1/go.mod h1:jZ3F25l7DbD7l7DcA8aj7eo1EZ84nbzcQHBB4lCSrI8=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20260423020818-08305fa668d2 h1:38MMtiCO8na0qZ8MAD3d1z6JVt15RTx8Z2EA/txYnkQ=
 github.com/masahiro331/go-vmdk-parser v0.0.0-20260423020818-08305fa668d2/go.mod h1:5f7mCJGW9cJb8SDn3z8qodGxpMCOo8d/2nls/tiwRrw=
 github.com/masahiro331/go-xfs-filesystem v0.0.0-20260422061116-d21e5e4481bb h1:2c5hvZu2o6ccumpPVlyGiRT3aXvc6Yxj1Kqh+usy1iM=

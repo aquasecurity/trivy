@@ -24,8 +24,6 @@ on:
         required: true
       GPG_PASSPHRASE:
         required: true
-      TRIVY_REPO_TOKEN:
-        required: true
 
 env:
   GH_USER: "aqua-bot"
@@ -39,7 +37,8 @@ jobs:
     permissions:
       id-token: write # For cosign
       packages: write # For GHCR
-      contents: read  # Not required for public repositories, but for clarity
+      contents: write # For GoReleaser to create the GitHub Release
+      discussions: write # For GoReleaser to attach the release to a Discussion (discussion_category_name)
       attestations: write # For build provenance attestations
     steps:
       - name: Cosign install
@@ -110,7 +109,7 @@ jobs:
           version: v2.1.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
-          GITHUB_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
           TMPDIR: "tmp"
