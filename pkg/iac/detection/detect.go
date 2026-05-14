@@ -8,7 +8,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/google/jsonschema-go/jsonschema"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraformplan/snapshot"
@@ -352,29 +352,29 @@ func isYAML(name string) bool {
 	return strings.EqualFold(ext, ".yaml") || strings.EqualFold(ext, ".yml")
 }
 
-func IsFileMatchesSchemas(schemas map[string]*gojsonschema.Schema, typ FileType, name string, r io.ReadSeeker) bool {
+func IsFileMatchesSchemas(schemas map[string]*jsonschema.Resolved, typ FileType, name string, r io.ReadSeeker) bool {
 	defer resetReader(r)
 
-	var l gojsonschema.JSONLoader
+	var instance any
 	switch {
 	case typ == FileTypeJSON && isJSON(name):
 		b, err := io.ReadAll(r)
 		if err != nil {
 			return false
 		}
-		l = gojsonschema.NewBytesLoader(b)
-	case typ == FileTypeYAML && isYAML(name):
-		var content any
-		if err := yaml.NewDecoder(r).Decode(&content); err != nil {
+		if err := json.Unmarshal(b, &instance); err != nil {
 			return false
 		}
-		l = gojsonschema.NewGoLoader(content)
+	case typ == FileTypeYAML && isYAML(name):
+		if err := yaml.NewDecoder(r).Decode(&instance); err != nil {
+			return false
+		}
 	default:
 		return false
 	}
 
 	for schemaPath, schema := range schemas {
-		if res, err := schema.Validate(l); err == nil && res.Valid() {
+		if err := schema.Validate(instance); err == nil {
 			log.Debug("File matched schema", log.FilePath(name), log.String("schema_path", schemaPath))
 			return true
 		}

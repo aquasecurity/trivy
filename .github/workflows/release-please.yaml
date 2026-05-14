@@ -19,7 +19,7 @@ jobs:
     steps:
       - name: Release Please
         id: release
-        uses: googleapis/release-please-action@16a9c90856f42705d54a6fda1823352bdc62cf38 # v4.4.0
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
         with:
           token: ${{ secrets.TRIVY_REPO_TOKEN }}
           target-branch: ${{ github.ref_name }}
@@ -34,9 +34,10 @@ jobs:
       - name: Release Please
         env:
           RELEASE_VERSION: ${{ github.event.inputs.version }}
+          TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
         run: |
           release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
-            --token="${{ secrets.TRIVY_REPO_TOKEN }}" \
+            --token="$TRIVY_REPO_TOKEN" \
             --release-as="$RELEASE_VERSION" \
             --target-branch="$GITHUB_REF_NAME"
 
@@ -58,7 +59,7 @@ jobs:
 
       - name: Tag release
         if: ${{ steps.extract_info.outputs.version }}
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           VERSION: ${{ steps.extract_info.outputs.version }}
         with:
@@ -74,7 +75,7 @@ jobs:
       # When v0.50.0 is released, a release branch "release/v0.50" is created.
       - name: Create release branch for patch versions
         if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         with:
@@ -94,7 +95,7 @@ jobs:
       # cf. https://github.com/googleapis/release-please?tab=readme-ov-file#release-please-bot-does-not-create-a-release-pr-why
       - name: Remove the label from PR
         if: ${{ steps.extract_info.outputs.pr_number }}
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
         env:
           PR_NUMBER: ${{ steps.extract_info.outputs.pr_number }}
         with:
