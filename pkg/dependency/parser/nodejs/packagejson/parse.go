@@ -45,6 +45,14 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	if !IsValidName(pkgJSON.Name) {
+		// Subdirectory package.json files (e.g. rxjs/ajax/package.json)
+		// are module resolution hints, not real packages.
+		// They are never published independently and may have slashes
+		// in the name field. Silently skip them.
+		// https://github.com/aquasecurity/trivy/issues/10607
+		if pkgJSON.Version == "" {
+			return Package{}, nil
+		}
 		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
 	}
 
