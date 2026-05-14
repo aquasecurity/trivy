@@ -94,7 +94,19 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	// scan images from kubernetes cluster in parallel
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
+		var resCache *resourceCache
+		if s.opts.CacheDir != "" {
+			resCache, _ = newResourceCache(s.opts.CacheDir)
+		}
+
 		onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
+			if resCache != nil {
+				if cached, ok := resCache.get(ctx, artifact); ok {
+					log.DebugContext(ctx, "Cache hit for k8s artifact", log.String("kind", artifact.Kind), log.String("name", artifact.Name))
+					return cached, nil
+				}
+			}
+
 			opts := s.opts
 			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
 			copy(opts.Credentials, s.opts.Credentials)
@@ -112,6 +124,9 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 			vulns, err := s.scanVulns(ctx, artifact, opts)
 			if err != nil {
 				return nil, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+			}
+			if resCache != nil {
+				resCache.put(ctx, artifact, vulns)
 			}
 			return vulns, nil
 		}
