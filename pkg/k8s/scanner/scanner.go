@@ -94,57 +94,11 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 
 	// scan images from kubernetes cluster in parallel
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner, types.SecretScanner) && !s.opts.SkipImages {
-		var resCache *resourceCache
-		if s.opts.CacheDir != "" {
-			resCache, _ = newResourceCache(s.opts.CacheDir)
-		}
-
-		onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
-			if resCache != nil {
-				if cached, ok := resCache.get(ctx, artifact); ok {
-					log.DebugContext(ctx, "Cache hit for k8s artifact", log.String("kind", artifact.Kind), log.String("name", artifact.Name))
-					return cached, nil
-				}
-			}
-
-			opts := s.opts
-			opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
-			copy(opts.Credentials, s.opts.Credentials)
-			// add image private registry credential auto detected from workload imagePullsecret / serviceAccount
-			if len(artifact.Credentials) > 0 {
-				for _, cred := range artifact.Credentials {
-					opts.RegistryOptions.Credentials = append(opts.RegistryOptions.Credentials,
-						ftypes.Credential{
-							Username: cred.Username,
-							Password: cred.Password,
-						},
-					)
-				}
-			}
-			vulns, err := s.scanVulns(ctx, artifact, opts)
-			if err != nil {
-				return nil, xerrors.Errorf("scanning vulnerabilities error: %w", err)
-			}
-			if resCache != nil {
-				resCache.put(ctx, artifact, vulns)
-			}
-			return vulns, nil
-		}
-
-		onResult := func(result []report.Resource) error {
-			resources = append(resources, result...)
-			return nil
-		}
-		workers := s.opts.Parallel
-		if s.opts.CacheBackend == string(cache.TypeFS) {
-			// To avoid lock contention in bbolt, we limit the number of workers to 1 when using FS cache.
-			workers = 1
-		}
-
-		p := parallel.NewPipeline(workers, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
-		if err := p.Do(ctx); err != nil {
+		imageResources, err := s.scanImages(ctx, resourceArtifacts)
+		if err != nil {
 			return report.Report{}, err
 		}
+		resources = append(resources, imageResources...)
 	}
 
 	if s.opts.Scanners.AnyEnabled(types.VulnerabilityScanner) {
@@ -160,6 +114,67 @@ func (s *Scanner) Scan(ctx context.Context, artifactsData []*artifacts.Artifact)
 		Resources:     resources,
 	}, nil
 
+}
+
+func (s *Scanner) scanImages(ctx context.Context, resourceArtifacts []*artifacts.Artifact) ([]report.Resource, error) {
+	var resCache *resourceCache
+	if s.opts.CacheDir != "" {
+		var cacheErr error
+		resCache, cacheErr = newResourceCache(s.opts.CacheDir)
+		if cacheErr != nil {
+			log.WarnContext(ctx, "Failed to initialize k8s artifact cache", log.Err(cacheErr))
+		}
+	}
+
+	var resources []report.Resource
+
+	onItem := func(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, error) {
+		if resCache != nil {
+			if cached, ok := resCache.get(ctx, artifact); ok {
+				log.DebugContext(ctx, "Cache hit for k8s artifact", log.String("kind", artifact.Kind), log.String("name", artifact.Name))
+				return cached, nil
+			}
+		}
+
+		opts := s.opts
+		opts.Credentials = make([]ftypes.Credential, len(s.opts.Credentials))
+		copy(opts.Credentials, s.opts.Credentials)
+		// add image private registry credential auto detected from workload imagePullsecret / serviceAccount
+		if len(artifact.Credentials) > 0 {
+			for _, cred := range artifact.Credentials {
+				opts.RegistryOptions.Credentials = append(opts.RegistryOptions.Credentials,
+					ftypes.Credential{
+						Username: cred.Username,
+						Password: cred.Password,
+					},
+				)
+			}
+		}
+		vulns, err := s.scanVulns(ctx, artifact, opts)
+		if err != nil {
+			return nil, xerrors.Errorf("scanning vulnerabilities error: %w", err)
+		}
+		if resCache != nil {
+			resCache.put(ctx, artifact, vulns)
+		}
+		return vulns, nil
+	}
+
+	onResult := func(result []report.Resource) error {
+		resources = append(resources, result...)
+		return nil
+	}
+	workers := s.opts.Parallel
+	if s.opts.CacheBackend == string(cache.TypeFS) {
+		// To avoid lock contention in bbolt, we limit the number of workers to 1 when using FS cache.
+		workers = 1
+	}
+
+	p := parallel.NewPipeline(workers, !s.opts.Quiet, resourceArtifacts, onItem, onResult)
+	if err := p.Do(ctx); err != nil {
+		return nil, err
+	}
+	return resources, nil
 }
 
 func (s *Scanner) scanVulns(ctx context.Context, artifact *artifacts.Artifact, opts flag.Options) ([]report.Resource, error) {

@@ -19,22 +19,31 @@ type resourceCache struct {
 
 func newResourceCache(baseDir string) (*resourceCache, error) {
 	cacheDir := filepath.Join(baseDir, "k8s-artifacts")
-	if err := os.MkdirAll(cacheDir, 0700); err != nil {
+	if err := os.MkdirAll(cacheDir, 0o700); err != nil {
 		return nil, err
 	}
 	return &resourceCache{dir: cacheDir}, nil
 }
 
-func (c *resourceCache) key(artifact *artifacts.Artifact) string {
+func (c *resourceCache) key(artifact *artifacts.Artifact) (string, error) {
 	// Create a unique hash for the artifact based on its identifying fields.
 	// Since K8s resources change versions, hashing the raw resource is a safe bet.
+	data, err := json.Marshal(artifact.RawResource)
+	if err != nil {
+		return "", err
+	}
 	h := sha256.New()
-	h.Write(artifact.RawResource)
-	return hex.EncodeToString(h.Sum(nil)) + ".json"
+	_, _ = h.Write(data)
+	return hex.EncodeToString(h.Sum(nil)) + ".json", nil
 }
 
 func (c *resourceCache) get(ctx context.Context, artifact *artifacts.Artifact) ([]report.Resource, bool) {
-	path := filepath.Join(c.dir, c.key(artifact))
+	key, err := c.key(artifact)
+	if err != nil {
+		log.WarnContext(ctx, "Failed to compute cache key", log.Err(err))
+		return nil, false
+	}
+	path := filepath.Join(c.dir, key)
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, false
@@ -48,13 +57,18 @@ func (c *resourceCache) get(ctx context.Context, artifact *artifacts.Artifact) (
 }
 
 func (c *resourceCache) put(ctx context.Context, artifact *artifacts.Artifact, res []report.Resource) {
-	path := filepath.Join(c.dir, c.key(artifact))
+	key, err := c.key(artifact)
+	if err != nil {
+		log.WarnContext(ctx, "Failed to compute cache key", log.Err(err))
+		return
+	}
+	path := filepath.Join(c.dir, key)
 	data, err := json.Marshal(res)
 	if err != nil {
 		log.WarnContext(ctx, "Failed to marshal k8s artifact for cache", log.Err(err))
 		return
 	}
-	if err := os.WriteFile(path, data, 0600); err != nil {
+	if err := os.WriteFile(path, data, 0o600); err != nil {
 		log.WarnContext(ctx, "Failed to write k8s artifact to cache", log.Err(err))
 	}
 }
