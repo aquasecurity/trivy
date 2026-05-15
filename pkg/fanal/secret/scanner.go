@@ -30,8 +30,8 @@ var (
 	})
 )
 
-// DefaultSkipPatterns is the set of glob patterns used when skip-patterns is not set in the config.
-var DefaultSkipPatterns = []string{
+// defaultSkipPatterns is the set of glob patterns used when skip-patterns is not set in the config.
+var defaultSkipPatterns = []string{
 	"**/.git/**",
 	"**/node_modules/**",
 	"**/go.mod",
@@ -96,7 +96,7 @@ type Config struct {
 	// SkipPatterns is a list of doublestar glob patterns for paths to skip during secret scanning.
 	// ParseConfig validates patterns and converts them to forward-slash form;
 	// callers building Config directly must supply valid slash-form patterns.
-	// If nil (not set in config), DefaultSkipPatterns is used.
+	// If nil (not set in config), defaultSkipPatterns is used.
 	// Set to an empty list to disable all path skipping.
 	SkipPatterns *[]string `yaml:"skip-patterns"`
 }
@@ -461,7 +461,7 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		scanner.Global = &Global{
 			Rules:        builtinRules,
 			AllowRules:   builtinAllowRules,
-			SkipPatterns: DefaultSkipPatterns,
+			SkipPatterns: defaultSkipPatterns,
 		}
 		return scanner
 	}
@@ -491,7 +491,7 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	// Pre-compute lowercase keywords for all rules
 	precomputeLowercaseKeywords(rules)
 
-	skipPatterns := DefaultSkipPatterns
+	skipPatterns := defaultSkipPatterns
 	if config.SkipPatterns != nil {
 		skipPatterns = slices.Clone(*config.SkipPatterns)
 	}
