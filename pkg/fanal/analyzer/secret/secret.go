@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
-	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -24,41 +23,9 @@ var _ analyzer.Initializer = &SecretAnalyzer{}
 
 const version = 1
 
-var (
-	skipFiles = []string{
-		"go.mod",
-		"go.sum",
-		"package-lock.json",
-		"yarn.lock",
-		"pnpm-lock.yaml",
-		"Pipfile.lock",
-		"Gemfile.lock",
-	}
-	skipDirs = []string{
-		".git",
-		"node_modules",
-	}
-	skipExts = []string{
-		".jpg",
-		".png",
-		".gif",
-		".doc",
-		".pdf",
-		".bin",
-		".svg",
-		".socket",
-		".deb",
-		".rpm",
-		".zip",
-		".gz",
-		".gzip",
-		".tar",
-	}
-
-	allowedBinaries = []string{
-		".pyc",
-	}
-)
+var allowedBinaries = []string{
+	".pyc",
+}
 
 func init() {
 	// The scanner will be initialized later via InitScanner()
@@ -143,24 +110,7 @@ func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput
 }
 
 func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
-	// Skip small files
 	if fi.Size() < 10 {
-		return false
-	}
-
-	dir, fileName := filepath.Split(filePath)
-	dir = filepath.ToSlash(dir)
-	dirs := strings.Split(dir, "/")
-
-	// Check if the directory should be skipped
-	for _, skipDir := range skipDirs {
-		if slices.Contains(dirs, skipDir) {
-			return false
-		}
-	}
-
-	// Check if the file should be skipped
-	if slices.Contains(skipFiles, fileName) {
 		return false
 	}
 
@@ -169,9 +119,7 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
-	// Check if the file extension should be skipped
-	ext := filepath.Ext(fileName)
-	if slices.Contains(skipExts, ext) {
+	if a.scanner.IsSkipped(filePath) {
 		return false
 	}
 
