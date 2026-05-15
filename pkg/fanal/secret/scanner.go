@@ -482,7 +482,7 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 
 	skipPatterns := slices.Clone(DefaultSkipPatterns)
 	if config.SkipPatterns != nil {
-		skipPatterns = *config.SkipPatterns
+		skipPatterns = slices.Clone(*config.SkipPatterns)
 	}
 	for i, p := range skipPatterns {
 		skipPatterns[i] = filepath.ToSlash(p)
