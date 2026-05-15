@@ -114,6 +114,7 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
+	// Skip the config file for secret scanning
 	if filepath.Base(a.configPath) == filePath {
 		return false
 	}
