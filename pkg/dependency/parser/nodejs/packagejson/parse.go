@@ -45,7 +45,11 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	if !IsValidName(pkgJSON.Name) {
-		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
+		// Names that aren't URL-friendly aren't publishable to the registry,
+		// so these are almost always subpath package.json files that exist
+		// purely as module resolution hints (e.g. rxjs/ajax/package.json).
+		// Skip them silently — callers already ignore packages without an ID.
+		return Package{}, nil
 	}
 
 	var id string

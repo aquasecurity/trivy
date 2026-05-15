@@ -91,9 +91,12 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:      "invalid package name",
+			// Subpath package.json files (e.g. rxjs/ajax/package.json) carry
+			// a non-URL-friendly name and aren't real packages. Parser
+			// returns an empty Package and no error so the caller skips it.
+			name:      "subpath package.json with non-URL-friendly name",
 			inputFile: "testdata/invalid_name.json",
-			wantErr:   "Name can only contain URL-friendly characters",
+			want:      packagejson.Package{},
 		},
 		{
 			name:      "sad path",
