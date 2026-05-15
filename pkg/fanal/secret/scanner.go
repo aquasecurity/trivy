@@ -94,6 +94,8 @@ type Config struct {
 	ExcludeBlock     ExcludeBlock `yaml:"exclude-block"`
 
 	// SkipPatterns is a list of doublestar glob patterns for paths to skip during secret scanning.
+	// ParseConfig validates patterns and converts them to forward-slash form;
+	// callers building Config directly must supply valid slash-form patterns.
 	// If nil (not set in config), DefaultSkipPatterns is used.
 	// Set to an empty list to disable all path skipping.
 	SkipPatterns *[]string `yaml:"skip-patterns"`
@@ -372,6 +374,19 @@ func ParseConfig(configPath string) (*Config, error) {
 		return nil, xerrors.Errorf("secrets config decode error: %w", err)
 	}
 
+	// Normalize and validate user-supplied skip patterns to fail early on invalid input.
+	if config.SkipPatterns != nil {
+		patterns := make([]string, len(*config.SkipPatterns))
+		for i, p := range *config.SkipPatterns {
+			p = filepath.ToSlash(p)
+			if !doublestar.ValidatePattern(p) {
+				return nil, xerrors.Errorf("invalid skip-pattern %q", p)
+			}
+			patterns[i] = p
+		}
+		config.SkipPatterns = &patterns
+	}
+
 	// Update severity for custom rules
 	for i := range config.CustomRules {
 		config.CustomRules[i].Severity = convertSeverity(logger, config.CustomRules[i].Severity)
@@ -443,14 +458,10 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		// Pre-compute lowercase keywords for builtin rules
 		precomputeLowercaseKeywords(builtinRules)
 
-		skipPatterns := slices.Clone(DefaultSkipPatterns)
-		for i, p := range skipPatterns {
-			skipPatterns[i] = filepath.ToSlash(p)
-		}
 		scanner.Global = &Global{
 			Rules:        builtinRules,
 			AllowRules:   builtinAllowRules,
-			SkipPatterns: skipPatterns,
+			SkipPatterns: DefaultSkipPatterns,
 		}
 		return scanner
 	}
@@ -480,12 +491,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	// Pre-compute lowercase keywords for all rules
 	precomputeLowercaseKeywords(rules)
 
-	skipPatterns := slices.Clone(DefaultSkipPatterns)
+	skipPatterns := DefaultSkipPatterns
 	if config.SkipPatterns != nil {
 		skipPatterns = slices.Clone(*config.SkipPatterns)
-	}
-	for i, p := range skipPatterns {
-		skipPatterns[i] = filepath.ToSlash(p)
 	}
 
 	scanner.Global = &Global{
