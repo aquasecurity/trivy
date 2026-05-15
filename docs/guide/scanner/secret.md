@@ -266,7 +266,7 @@ skip-patterns: []
 ```
 
 ## Recommendation
-We would recommend using `skip-patterns` in the secret config for faster secret scanning.
+We would recommend specifying `--skip-dirs` or `--skip-files` for faster secret scanning. Also there is a way to use `skip-patterns` in the secret config to speed up your scanning.
 In container image scanning, Trivy walks the file tree rooted at `/` and scans all the files other than [built-in allowed paths][builtin-allow].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
 Adding glob patterns such as `**/vendor/**` helps so that Trivy will skip those paths entirely.
