@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -1973,4 +1974,23 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 			assert.Equal(t, tt.want.Findings, got.Findings, "unexpected findings")
 		})
 	}
+}
+
+func TestScanConcurrent(_ *testing.T) {
+	// Regression test for a data race on builtinRules.keywordsLower when
+	// multiple goroutines call NewScanner(nil) and Scan concurrently.
+	const workers = 20
+	content := strings.Repeat("aws_access_key_id = AKIAIOSFODNN7EXAMPLE\n", 50)
+
+	var wg sync.WaitGroup
+	for range workers {
+		wg.Go(func() {
+			scanner := secret.NewScanner(nil)
+			scanner.Scan(secret.ScanArgs{
+				FilePath: "test.env",
+				Content:  strings.NewReader(content),
+			})
+		})
+	}
+	wg.Wait()
 }

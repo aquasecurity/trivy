@@ -28,6 +28,10 @@ var (
 	})
 )
 
+var initBuiltinRules = sync.OnceFunc(func() {
+	precomputeLowercaseKeywords(builtinRules)
+})
+
 const (
 	// DefaultBufferSize is the default chunk size for streaming secret scanning
 	// 64KB provides a good balance between memory usage and I/O efficiency
@@ -373,6 +377,8 @@ func precomputeLowercaseKeywords(rules []Rule) {
 }
 
 func NewScanner(config *Config, opts ...Option) Scanner {
+	initBuiltinRules()
+
 	scanner := Scanner{
 		logger:      log.WithPrefix(log.PrefixSecret),
 		bufferSize:  DefaultBufferSize,
@@ -394,9 +400,6 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 
 	// Use the default rules
 	if config == nil {
-		// Pre-compute lowercase keywords for builtin rules
-		precomputeLowercaseKeywords(builtinRules)
-
 		scanner.Global = &Global{
 			Rules:      builtinRules,
 			AllowRules: builtinAllowRules,
@@ -412,6 +415,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		})
 	}
 
+	// Pre-compute lowercase keywords before copying into enabledRules.
+	precomputeLowercaseKeywords(config.CustomRules)
+
 	// Custom rules are enabled regardless of "enable-builtin-rules".
 	enabledRules = append(enabledRules, config.CustomRules...)
 
@@ -425,9 +431,6 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	allowRules = lo.Filter(allowRules, func(v AllowRule, _ int) bool {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
-
-	// Pre-compute lowercase keywords for all rules
-	precomputeLowercaseKeywords(rules)
 
 	scanner.Global = &Global{
 		Rules:        rules,
