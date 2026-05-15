@@ -208,35 +208,73 @@ func TestSecretAnalyzer(t *testing.T) {
 }
 
 func TestSecretRequire(t *testing.T) {
+	const defaultConfig = "testdata/skip-tests-config.yaml"
+
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name       string
+		configPath string
+		filePath   string
+		want       bool
 	}{
 		{
-			name:     "pass regular file",
-			filePath: "testdata/secret.txt",
-			want:     true,
+			name:       "pass regular file",
+			configPath: defaultConfig,
+			filePath:   "testdata/secret.txt",
+			want:       true,
 		},
 		{
-			name:     "skip small file",
-			filePath: "testdata/emptyfile",
-			want:     false,
+			name:       "skip small file",
+			configPath: defaultConfig,
+			filePath:   "testdata/emptyfile",
+			want:       false,
 		},
 		{
-			name:     "skip folder",
-			filePath: "testdata/node_modules/secret.txt",
-			want:     false,
+			name:       "skip folder",
+			configPath: defaultConfig,
+			filePath:   "testdata/node_modules/secret.txt",
+			want:       false,
 		},
 		{
-			name:     "skip file",
-			filePath: "testdata/package-lock.json",
-			want:     false,
+			name:       "skip file",
+			configPath: defaultConfig,
+			filePath:   "testdata/package-lock.json",
+			want:       false,
 		},
 		{
-			name:     "skip extension",
-			filePath: "testdata/secret.doc",
-			want:     false,
+			name:       "skip extension",
+			configPath: defaultConfig,
+			filePath:   "testdata/secret.doc",
+			want:       false,
+		},
+		{
+			name:       "skip config file when configPath is a relative path matching filePath",
+			configPath: "testdata/skip-tests-config.yaml",
+			filePath:   "testdata/skip-tests-config.yaml",
+			want:       false,
+		},
+		{
+			name:       "skip config file when configPath is a bare filename matching filePath",
+			configPath: "skip-tests-config.yaml",
+			filePath:   "skip-tests-config.yaml",
+			want:       false,
+		},
+		{
+			name:       "do not skip unrelated file sharing a path suffix with configPath",
+			configPath: "foo/bar/myconfig.yaml",
+			filePath:   "bar/myconfig.yaml",
+			want:       true,
+		},
+		{
+			name:       "do not skip file at scan root when configPath is in a subfolder",
+			configPath: "configs/myconfig.yaml",
+			filePath:   "myconfig.yaml",
+			want:       true,
+		},
+		{
+			name:       "do not skip file when configPath is empty",
+			configPath: "",
+			filePath:   "src/myfile.yaml",
+			want:       true,
 		},
 	}
 
@@ -245,12 +283,18 @@ func TestSecretRequire(t *testing.T) {
 			a := secret.SecretAnalyzer{}
 			err := a.Init(analyzer.AnalyzerOptions{
 				SecretScannerOption: analyzer.SecretScannerOption{
-					ConfigPath: "testdata/skip-tests-config.yaml",
+					ConfigPath: tt.configPath,
 				},
 			})
 			require.NoError(t, err)
 
-			fi, err := os.Stat(tt.filePath)
+			// Stat a real file so fi.Size() passes the small-file check; the path
+			// argument passed to Required can be a synthetic scan-relative path.
+			statPath := tt.filePath
+			if _, err := os.Stat(statPath); err != nil {
+				statPath = defaultConfig
+			}
+			fi, err := os.Stat(statPath)
 			require.NoError(t, err)
 
 			got := a.Required(tt.filePath, fi)
