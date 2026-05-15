@@ -243,6 +243,7 @@ By default, Trivy skips the following paths during secret scanning (expressed as
 **/*.svg  **/*.socket  **/*.deb  **/*.rpm
 **/*.zip  **/*.gz  **/*.gzip  **/*.tar
 ```
+You can see a full list of default skip patterns [here][default-secret-patterns].
 
 You can override this list with `skip-patterns` in the configuration file.
 
@@ -344,6 +345,7 @@ This feature is inspired by [gitleaks][gitleaks].
 
 [builtin]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/builtin-rules.go
 [builtin-allow]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/builtin-allow-rules.go
+[default-secret-patterns]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/scanner.go
 [gitleaks]: https://github.com/gitleaks/gitleaks
 
 [builtin]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go
