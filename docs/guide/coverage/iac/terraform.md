@@ -66,7 +66,7 @@ user_data = file("scripts/bootstrap.sh")
 user_data = file("../shared/bootstrap.sh")
 ```
 
-This can affect configurations that reference shared files from a parent directory, for example when scanning a subdirectory such as `envs/production/` while shared files live at the repository root.
+This can affect configurations that reference shared files from a parent directory, for example, when scanning a subdirectory such as `envs/production/`, while shared files live at the repository root.
 
 **Workaround:** scan from the repository root so all referenced files fall within the scan boundary:
 
