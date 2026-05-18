@@ -4123,6 +4123,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#filesystem-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#data-sources-and-computed-attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8619,6 +8630,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#filesystem-functions" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Filesystem functions
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#data-sources-and-computed-attributes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8763,6 +8785,20 @@ If you don't want to scan them, you can use the <code>--tf-exclude-downloaded-mo
 <p>The secret scan is performed on plain text files, with no special treatment for Terraform.</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
 <h3 id="terraform-configurations">Terraform configurations<a class="headerlink" href="#terraform-configurations" title="Permanent link">&para;</a></h3>
+<h4 id="filesystem-functions">Filesystem functions<a class="headerlink" href="#filesystem-functions" title="Permanent link">&para;</a></h4>
+<p>Trivy treats the scan root as a trust boundary: only files within it are considered trusted input.
+Functions such as <code>file()</code>, <code>filebase64()</code>, and related file-reading functions cannot access paths outside the scanned directory.</p>
+<div class="highlight"><pre><span></span><code><span class="c1"># Works: path is within the scan root</span>
+<span class="na">user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">file</span><span class="p">(</span><span class="s2">&quot;scripts/bootstrap.sh&quot;</span><span class="p">)</span>
+
+<span class="c1"># Fails: path escapes the scan root</span>
+<span class="na">user_data</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="nf">file</span><span class="p">(</span><span class="s2">&quot;../shared/bootstrap.sh&quot;</span><span class="p">)</span>
+</code></pre></div>
+<p>This can affect configurations that reference shared files from a parent directory, for example, when scanning a subdirectory such as <code>envs/production/</code>, while shared files live at the repository root.</p>
+<p><strong>Workaround:</strong> scan from the repository root so all referenced files fall within the scan boundary:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--skip-dirs<span class="w"> </span>envs/staging<span class="w"> </span>./
+</code></pre></div>
+<p>If certain checks produce false positives due to unresolved <code>file()</code> calls, they can be suppressed using <code>--ignore-policy</code> or inline <code># trivy:ignore</code> comments.</p>
 <h4 id="data-sources-and-computed-attributes">Data sources and computed attributes<a class="headerlink" href="#data-sources-and-computed-attributes" title="Permanent link">&para;</a></h4>
 <p>Trivy relies on static analysis of Terraform configurations. As a result, data sources and
 resource attributes whose values are only known after creation or update are not fully supported.</p>
