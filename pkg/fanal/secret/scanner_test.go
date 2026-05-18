@@ -1974,3 +1974,111 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 		})
 	}
 }
+
+func writeSecretConfig(t *testing.T, body string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "trivy-secret.yaml")
+	require.NoError(t, os.WriteFile(path, []byte(body), 0o644))
+	return path
+}
+
+func TestParseConfig(t *testing.T) {
+	tests := []struct {
+		name    string
+		body    string
+		want    *[]string // nil == expect c.SkipPatterns == nil
+		wantErr string
+	}{
+		{
+			name: "missing skip-patterns leaves SkipPatterns nil",
+			body: "disable-allow-rules:\n  - tests\n",
+			want: nil,
+		},
+		{
+			name: "empty skip-patterns yields non-nil empty slice",
+			body: "skip-patterns: []\n",
+			want: &[]string{},
+		},
+		{
+			name: "valid forward-slash patterns are preserved",
+			body: "skip-patterns:\n  - '**/.git/**'\n  - '**/node_modules/**'\n  - '**/go.sum'\n",
+			want: &[]string{"**/.git/**", "**/node_modules/**", "**/go.sum"},
+		},
+		{
+			name: "OS-native patterns are converted to forward slashes",
+			// filepath.FromSlash uses the OS separator — backslash on Windows, no-op elsewhere.
+			body: "skip-patterns:\n" +
+				"  - '" + filepath.FromSlash("**/.git/**") + "'\n" +
+				"  - '" + filepath.FromSlash("**/node_modules/**") + "'\n" +
+				"  - '" + filepath.FromSlash("**/go.sum") + "'\n",
+			want: &[]string{"**/.git/**", "**/node_modules/**", "**/go.sum"},
+		},
+		{
+			name:    "invalid pattern returns error",
+			body:    "skip-patterns:\n  - '[invalid'\n",
+			wantErr: "invalid skip-pattern",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := writeSecretConfig(t, tt.body)
+			c, err := secret.ParseConfig(path)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			require.NotNil(t, c)
+			if tt.want == nil {
+				assert.Nil(t, c.SkipPatterns)
+				return
+			}
+			require.NotNil(t, c.SkipPatterns)
+			assert.Equal(t, *tt.want, *c.SkipPatterns)
+		})
+	}
+}
+
+func TestIsSkippedSlashConversion(t *testing.T) {
+	tests := []struct {
+		name     string
+		patterns []string
+		path     string
+		want     bool
+	}{
+		{
+			name:     "forward slash path matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/.git/config",
+			want:     true,
+		},
+		{
+			name:     "OS-native path separator matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			// filepath.FromSlash converts to OS separator — exercises ToSlash inside IsSkipped on Windows.
+			path: filepath.FromSlash("some/repo/.git/config"),
+			want: true,
+		},
+		{
+			name:     "non-matching path returns false",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/src/main.go",
+			want:     false,
+		},
+		{
+			name:     "OS-native path matches node_modules pattern",
+			patterns: []string{"**/node_modules/**"},
+			path:     filepath.FromSlash("project/node_modules/lodash/index.js"),
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := secret.Global{SkipPatterns: tt.patterns}
+			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
+		})
+	}
+}

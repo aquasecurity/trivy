@@ -302,3 +302,106 @@ func TestSecretRequire(t *testing.T) {
 		})
 	}
 }
+
+func TestSecretRequireCustomSkips(t *testing.T) {
+	// Custom config replaces the default skip-patterns entirely.
+	// Verify that custom patterns are skipped and former defaults are no longer skipped.
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "skip custom dir (vendor)",
+			filePath: "testdata/vendor/secret.txt",
+			want:     false,
+		},
+		{
+			name:     "no longer skip default dir (node_modules)",
+			filePath: "testdata/node_modules/secret.txt",
+			want:     true,
+		},
+		{
+			name:     "skip custom file (custom.lock)",
+			filePath: "testdata/custom.lock",
+			want:     false,
+		},
+		{
+			name:     "no longer skip default file (package-lock.json)",
+			filePath: "testdata/package-lock.json",
+			want:     true,
+		},
+		{
+			name:     "skip custom extension (.xyz)",
+			filePath: "testdata/secret.xyz",
+			want:     false,
+		},
+		{
+			name:     "no longer skip default extension (.doc)",
+			filePath: "testdata/secret.doc",
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := secret.SecretAnalyzer{}
+			err := a.Init(analyzer.AnalyzerOptions{
+				SecretScannerOption: analyzer.SecretScannerOption{
+					ConfigPath: "testdata/custom-skip-config.yaml",
+				},
+			})
+			require.NoError(t, err)
+
+			fi, err := os.Stat(tt.filePath)
+			require.NoError(t, err)
+
+			got := a.Required(tt.filePath, fi)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestSecretRequireEmptySkips(t *testing.T) {
+	// When skip-patterns is explicitly set to empty, nothing should be skipped —
+	// even paths that match the default skip patterns.
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "default skip dir (node_modules) is no longer skipped",
+			filePath: "testdata/node_modules/secret.txt",
+			want:     true,
+		},
+		{
+			name:     "default skip file (package-lock.json) is no longer skipped",
+			filePath: "testdata/package-lock.json",
+			want:     true,
+		},
+		{
+			name:     "default skip extension (.doc) is no longer skipped",
+			filePath: "testdata/secret.doc",
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := secret.SecretAnalyzer{}
+			err := a.Init(analyzer.AnalyzerOptions{
+				SecretScannerOption: analyzer.SecretScannerOption{
+					ConfigPath: "testdata/empty-skip-config.yaml",
+				},
+			})
+			require.NoError(t, err)
+
+			fi, err := os.Stat(tt.filePath)
+			require.NoError(t, err)
+
+			got := a.Required(tt.filePath, fi)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

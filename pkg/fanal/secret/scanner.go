@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"regexp"
 	"slices"
 	"sort"
@@ -13,6 +14,7 @@ import (
 	"sync"
 	"unicode/utf8"
 
+	"github.com/bmatcuk/doublestar/v4"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
@@ -27,6 +29,33 @@ var (
 		log.WithPrefix(log.PrefixSecret).Warn("Invalid UTF-8 sequences detected in file content, replacing with empty string")
 	})
 )
+
+// defaultSkipPatterns is the set of glob patterns used when skip-patterns is not set in the config.
+var defaultSkipPatterns = []string{
+	"**/.git/**",
+	"**/node_modules/**",
+	"**/go.mod",
+	"**/go.sum",
+	"**/package-lock.json",
+	"**/yarn.lock",
+	"**/pnpm-lock.yaml",
+	"**/Pipfile.lock",
+	"**/Gemfile.lock",
+	"**/*.jpg",
+	"**/*.png",
+	"**/*.gif",
+	"**/*.doc",
+	"**/*.pdf",
+	"**/*.bin",
+	"**/*.svg",
+	"**/*.socket",
+	"**/*.deb",
+	"**/*.rpm",
+	"**/*.zip",
+	"**/*.gz",
+	"**/*.gzip",
+	"**/*.tar",
+}
 
 const (
 	// DefaultBufferSize is the default chunk size for streaming secret scanning
@@ -63,12 +92,20 @@ type Config struct {
 	CustomRules      []Rule       `yaml:"rules"`
 	CustomAllowRules AllowRules   `yaml:"allow-rules"`
 	ExcludeBlock     ExcludeBlock `yaml:"exclude-block"`
+
+	// SkipPatterns is a list of doublestar glob patterns for paths to skip during secret scanning.
+	// ParseConfig validates patterns and converts them to forward-slash form;
+	// callers building Config directly must supply valid slash-form patterns.
+	// If nil (not set in config), defaultSkipPatterns is used.
+	// Set to an empty list to disable all path skipping.
+	SkipPatterns *[]string `yaml:"skip-patterns"`
 }
 
 type Global struct {
 	Rules        []Rule
 	AllowRules   AllowRules
 	ExcludeBlock ExcludeBlock
+	SkipPatterns []string
 }
 
 // Allow checks if the match is allowed
@@ -79,6 +116,17 @@ func (g Global) Allow(match string) bool {
 // AllowPath checks if the path is allowed
 func (g Global) AllowPath(path string) bool {
 	return g.AllowRules.AllowPath(path)
+}
+
+// IsSkipped reports whether the given path matches any configured skip pattern.
+func (g Global) IsSkipped(path string) bool {
+	path = filepath.ToSlash(path)
+	for _, pattern := range g.SkipPatterns {
+		if matched, _ := doublestar.Match(pattern, path); matched {
+			return true
+		}
+	}
+	return false
 }
 
 // Regexp adds unmarshalling from YAML for regexp.Regexp
@@ -326,6 +374,19 @@ func ParseConfig(configPath string) (*Config, error) {
 		return nil, xerrors.Errorf("secrets config decode error: %w", err)
 	}
 
+	// Normalize and validate user-supplied skip patterns to fail early on invalid input.
+	if config.SkipPatterns != nil {
+		patterns := make([]string, len(*config.SkipPatterns))
+		for i, p := range *config.SkipPatterns {
+			p = filepath.ToSlash(p)
+			if !doublestar.ValidatePattern(p) {
+				return nil, xerrors.Errorf("invalid skip-pattern %q", p)
+			}
+			patterns[i] = p
+		}
+		config.SkipPatterns = &patterns
+	}
+
 	// Update severity for custom rules
 	for i := range config.CustomRules {
 		config.CustomRules[i].Severity = convertSeverity(logger, config.CustomRules[i].Severity)
@@ -398,8 +459,9 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		precomputeLowercaseKeywords(builtinRules)
 
 		scanner.Global = &Global{
-			Rules:      builtinRules,
-			AllowRules: builtinAllowRules,
+			Rules:        builtinRules,
+			AllowRules:   builtinAllowRules,
+			SkipPatterns: defaultSkipPatterns,
 		}
 		return scanner
 	}
@@ -429,10 +491,16 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 	// Pre-compute lowercase keywords for all rules
 	precomputeLowercaseKeywords(rules)
 
+	skipPatterns := defaultSkipPatterns
+	if config.SkipPatterns != nil {
+		skipPatterns = slices.Clone(*config.SkipPatterns)
+	}
+
 	scanner.Global = &Global{
 		Rules:        rules,
 		AllowRules:   allowRules,
 		ExcludeBlock: config.ExcludeBlock,
+		SkipPatterns: skipPatterns,
 	}
 
 	return scanner
