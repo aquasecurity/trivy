@@ -52,8 +52,8 @@ func TestFunctions_File(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		fns := Functions(newTestFS(t), tt.baseDir)
 		t.Run(tt.name, func(t *testing.T) {
+			fns := Functions(newTestFS(t), tt.baseDir)
 			val, err := fns["file"].Call([]cty.Value{cty.StringVal(tt.path)})
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)
