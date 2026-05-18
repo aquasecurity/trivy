@@ -303,18 +303,35 @@ func TestScanner_Scan(t *testing.T) {
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
 			setupCache: func(t *testing.T) cache.Cache {
 				c := cache.NewMemoryCache()
+				// Override muslPkg with `3.10` distro in PURL
+				pkg := muslPkg
+				pkg.Identifier.PURL = &packageurl.PackageURL{
+					Type:      muslPkg.Identifier.PURL.Type,
+					Namespace: muslPkg.Identifier.PURL.Namespace,
+					Name:      muslPkg.Identifier.PURL.Name,
+					Version:   muslPkg.Identifier.PURL.Version,
+					Qualifiers: packageurl.Qualifiers{
+						packageurl.Qualifier{
+							Key:   "distro",
+							Value: "3.10",
+						},
+					},
+				}
+
 				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					Size:          1000,
 					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
 					OS: ftypes.OS{
 						Family: ftypes.Alpine,
-						Name:   "3.11",
+						Name:   "3.10",
 					},
 					PackageInfos: []ftypes.PackageInfo{
 						{
 							FilePath: "lib/apk/db/installed",
-							Packages: []ftypes.Package{muslPkg},
+							Packages: []ftypes.Package{
+								pkg,
+							},
 						},
 					},
 				}))
@@ -347,6 +364,71 @@ func TestScanner_Scan(t *testing.T) {
 									Severity:    "HIGH",
 								},
 							},
+						},
+					},
+				},
+				OS: ftypes.OS{
+					Family: "alpine",
+					Name:   "3.11",
+					Eosl:   true,
+				},
+				Layers: ftypes.Layers{
+					{
+						Size:   1000,
+						DiffID: "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with empty OS rewriting",
+			args: args{
+				target:   "alpine:unknown-os",
+				layerIDs: []string{"sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10"},
+				options: types.ScanOptions{
+					PkgTypes: []string{
+						types.PkgTypeOS,
+						types.PkgTypeLibrary,
+					},
+					PkgRelationships:    ftypes.Relationships,
+					Scanners:            types.Scanners{types.VulnerabilityScanner},
+					VulnSeveritySources: []dbTypes.SourceID{"auto"},
+					Distro: ftypes.OS{
+						Family: "alpine",
+						Name:   "3.11",
+					},
+				},
+			},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				// Override muslPkg with empty PURL, because OS not found
+				pkg := muslPkg
+				pkg.Identifier.PURL = nil
+
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					Size:          1000,
+					DiffID:        "sha256:5216338b40a7b96416b8b9858974bbe4acc3096ee60acbc4dfb1ee02aecceb10",
+					// OS not found, but OS package exists
+					PackageInfos: []ftypes.PackageInfo{
+						{
+							FilePath: "lib/apk/db/installed",
+							Packages: []ftypes.Package{
+								pkg,
+							},
+						},
+					},
+				}))
+				return c
+			},
+			want: types.ScanResponse{
+				Results: types.Results{
+					{
+						Target: "alpine:unknown-os (alpine 3.11)",
+						Class:  types.ClassOSPkg,
+						Type:   ftypes.Alpine,
+						Packages: ftypes.Packages{
+							muslPkg,
 						},
 					},
 				},
