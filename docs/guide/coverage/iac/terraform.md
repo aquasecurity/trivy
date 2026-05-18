@@ -53,6 +53,29 @@ The secret scan is performed on plain text files, with no special treatment for 
 
 ### Terraform configurations
 
+#### Filesystem functions
+
+Trivy treats the scan root as a trust boundary: only files within it are considered trusted input.
+Functions such as `file()`, `filebase64()`, and related file-reading functions cannot access paths outside the scanned directory.
+
+```hcl
+# Works: path is within the scan root
+user_data = file("scripts/bootstrap.sh")
+
+# Fails: path escapes the scan root
+user_data = file("../shared/bootstrap.sh")
+```
+
+This can affect configurations that reference shared files from a parent directory, for example, when scanning a subdirectory such as `envs/production/`, while shared files live at the repository root.
+
+**Workaround:** scan from the repository root so all referenced files fall within the scan boundary:
+
+```bash
+trivy config --skip-dirs envs/staging ./
+```
+
+If certain checks produce false positives due to unresolved `file()` calls, they can be suppressed using `--ignore-policy` or inline `# trivy:ignore` comments.
+
 #### Data sources and computed attributes
 
 Trivy relies on static analysis of Terraform configurations. As a result, data sources and
