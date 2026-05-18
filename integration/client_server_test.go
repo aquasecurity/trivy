@@ -12,8 +12,6 @@ import (
 	"time"
 
 	"github.com/moby/moby/api/types/container"
-	"github.com/package-url/packageurl-go"
-	lom "github.com/samber/lo/mutable"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -73,12 +71,11 @@ func TestClientServer(t *testing.T) {
 				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
 				for i := range want.Results[0].Vulnerabilities {
 					qs := want.Results[0].Vulnerabilities[i].PkgIdentifier.PURL.Qualifiers
-					lom.Map(qs, func(q packageurl.Qualifier) packageurl.Qualifier {
-						if q.Key == "distro" {
-							q.Value = "3.10"
+					for j := range qs {
+						if qs[j].Key == "distro" {
+							qs[j].Value = "3.10"
 						}
-						return q
-					})
+					}
 				}
 			},
 			golden: goldenAlpine39,
