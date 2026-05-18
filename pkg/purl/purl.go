@@ -65,11 +65,13 @@ func FromString(s string) (*PackageURL, error) {
 
 // New builds a PackageURL from the given package and metadata.
 //
-// It returns (nil, nil) — without error — when the input cannot produce a
-// well-formed PURL, in particular:
-//   - the resolved package name is empty (e.g. local package.json without a
-//     name field, or a parser that strips the name);
-//   - the OCI metadata does not contain enough information to build a PURL.
+// It returns (nil, nil), without error, when the input cannot produce a
+// well-formed PURL. Concretely:
+//   - the resolved package name is empty: either pkg.Name is empty
+//     (e.g. a local package.json with no "name" field) or a parser
+//     strips it (parseGolang returns "" for local paths "./..." or "../...");
+//   - for OCI, parseOCI returns nil when metadata.RepoDigests is missing
+//     or unparseable.
 //
 // nolint: gocyclo
 func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
@@ -123,9 +125,10 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 	case packageurl.TypeCocoapods:
 		name, subpath = parseCocoapods(name)
 	case packageurl.TypeOCI:
-		// OCI PURLs are derived from metadata, not pkg.Name, and several callers
-		// pass ftypes.Package{} here. The function returns from inside this case,
-		// so the empty-name guard at the bottom does not apply to OCI.
+		// OCI PURLs are built from metadata.RepoDigests and deliberately
+		// ignore pkg.Name (callers like pkg/sbom/io/encode.go pass an empty
+		// ftypes.Package{}). This case returns from the switch, so the
+		// empty-name guard at the bottom does not apply to OCI.
 		purl, err := parseOCI(metadata)
 		if err != nil {
 			return nil, err
