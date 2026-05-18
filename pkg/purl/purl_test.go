@@ -526,6 +526,14 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "empty package name",
+			typ:  ftypes.NodePkg,
+			pkg: ftypes.Package{
+				Version: "1.0.0",
+			},
+			want: nil,
+		},
 	}
 
 	for _, tc := range testCases {
