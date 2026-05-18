@@ -1101,10 +1101,6 @@ func TestSecretScanner(t *testing.T) {
 		Offset: 14,
 	}
 
-	azureSharedKey88 := strings.Repeat("*", 88)
-	azureSharedKey44 := strings.Repeat("*", 44)
-	azureDevOpsPAT52 := strings.Repeat("*", 52)
-
 	wantFindingAzureStorageAccountKey := types.SecretFinding{
 		RuleID:    "azure-storage-account-key",
 		Category:  secret.CategoryAzure,
@@ -1112,13 +1108,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "AccountKey=" + azureSharedKey88,
+		Match:     "AccountKey=" + strings.Repeat("*", 88),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "AccountKey=" + azureSharedKey88,
-					Highlighted: "AccountKey=" + azureSharedKey88,
+					Content:     "AccountKey=" + strings.Repeat("*", 88),
+					Highlighted: "AccountKey=" + strings.Repeat("*", 88),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1134,13 +1130,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "1T00%3A00%3A00Z&spr=https&sig=" + azureSharedKey44,
+		Match:     "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "1T00%3A00%3A00Z&spr=https&sig=" + azureSharedKey44,
-					Highlighted: "1T00%3A00%3A00Z&spr=https&sig=" + azureSharedKey44,
+					Content:     "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
+					Highlighted: "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1156,13 +1152,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "AZURE_DEVOPS_TOKEN=" + azureDevOpsPAT52,
+		Match:     "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "AZURE_DEVOPS_TOKEN=" + azureDevOpsPAT52,
-					Highlighted: "AZURE_DEVOPS_TOKEN=" + azureDevOpsPAT52,
+					Content:     "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
+					Highlighted: "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1172,10 +1168,7 @@ func TestSecretScanner(t *testing.T) {
 		Offset: 19,
 	}
 
-	azureEntraSecret := strings.Repeat("*", 40)
 	azureStructuredToken := strings.Repeat("*", 84)
-	azureACRPassword := strings.Repeat("*", 32)
-	azureAppConfigSecret := strings.Repeat("*", 36)
 
 	wantFindingAzureEntraClientSecret := types.SecretFinding{
 		RuleID:    "azure-entra-client-secret",
@@ -1184,13 +1177,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "client_secret=" + azureEntraSecret,
+		Match:     "client_secret=" + strings.Repeat("*", 40),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "client_secret=" + azureEntraSecret,
-					Highlighted: "client_secret=" + azureEntraSecret,
+					Content:     "client_secret=" + strings.Repeat("*", 40),
+					Highlighted: "client_secret=" + strings.Repeat("*", 40),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1228,13 +1221,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "myregistry.azurecr.io password: " + azureACRPassword,
+		Match:     "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "myregistry.azurecr.io password: " + azureACRPassword,
-					Highlighted: "myregistry.azurecr.io password: " + azureACRPassword,
+					Content:     "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
+					Highlighted: "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1250,13 +1243,13 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "CRITICAL",
 		StartLine: 1,
 		EndLine:   1,
-		Match:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + azureAppConfigSecret,
+		Match:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
 		Code: types.Code{
 			Lines: []types.Line{
 				{
 					Number:      1,
-					Content:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + azureAppConfigSecret,
-					Highlighted: "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + azureAppConfigSecret,
+					Content:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
+					Highlighted: "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
