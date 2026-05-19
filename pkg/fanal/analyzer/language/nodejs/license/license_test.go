@@ -36,7 +36,7 @@ func Test_ParseLicenses(t *testing.T) {
 			fsys := mapfs.New()
 			require.NoError(t, fsys.CopyFilesUnder(tt.dir))
 
-			l := license.NewLicense(0.9)
+			l := license.NewLicense("npm", 0.9)
 			licenses, err := l.Traverse(fsys, ".")
 			if tt.wantErr != "" {
 				assert.ErrorContainsf(t, err, tt.wantErr, tt.name)

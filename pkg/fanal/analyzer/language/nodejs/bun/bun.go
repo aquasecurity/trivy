@@ -2,7 +2,6 @@ package bun
 
 import (
 	"context"
-	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -13,9 +12,9 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/bun"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -32,16 +31,16 @@ const (
 )
 
 type bunLibraryAnalyzer struct {
-	logger        *log.Logger
-	lockParser    language.Parser
-	packageParser *packagejson.Parser
+	logger     *log.Logger
+	lockParser language.Parser
+	license    *license.License
 }
 
-func newBunLibraryAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+func newBunLibraryAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &bunLibraryAnalyzer{
-		logger:        log.WithPrefix("bun"),
-		lockParser:    bun.NewParser(),
-		packageParser: packagejson.NewParser(),
+		logger:     log.WithPrefix("bun"),
+		lockParser: bun.NewParser(),
+		license:    license.NewLicense("bun", opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 
@@ -54,7 +53,7 @@ func (a bunLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 	var apps []types.Application
 	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, _ io.Reader) error {
 		// Find all licenses from package.json files under node_modules dirs
-		licenses, err := a.findLicenses(input.FS, filePath)
+		licenses, err := a.license.Traverse(input.FS, path.Join(path.Dir(filePath), "node_modules"))
 		if err != nil {
 			a.logger.Error("Unable to collect licenses", log.Err(err))
 			licenses = make(map[string][]string)
@@ -122,37 +121,4 @@ func (a bunLibraryAnalyzer) parseBunLock(ctx context.Context, fsys fs.FS, filePa
 
 	// parse bun.lock
 	return language.Parse(ctx, types.Bun, filePath, file, a.lockParser)
-}
-
-func (a bunLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[string][]string, error) {
-	dir := path.Dir(lockPath)
-	root := path.Join(dir, "node_modules")
-	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
-		a.logger.Info(`To collect the license information of packages, "bun install" needs to be performed beforehand`,
-			log.String("dir", root))
-		return nil, nil
-	}
-
-	// Parse package.json
-	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkg
-	}
-
-	// Traverse node_modules dir and find licenses
-	// Note that fs.FS is always slashed regardless of the platform,
-	// and path.Join should be used rather than filepath.Join.
-	licenses := make(map[string][]string)
-	err := fsutils.WalkDir(fsys, root, required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
-		pkg, err := a.packageParser.Parse(r)
-		if err != nil {
-			return xerrors.Errorf("unable to parse %q: %w", filePath, err)
-		}
-
-		licenses[pkg.ID] = pkg.Licenses
-		return nil
-	})
-	if err != nil {
-		return nil, xerrors.Errorf("walk error: %w", err)
-	}
-	return licenses, nil
 }
