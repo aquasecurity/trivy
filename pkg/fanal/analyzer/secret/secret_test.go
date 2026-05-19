@@ -1,6 +1,7 @@
 package secret_test
 
 import (
+	"cmp"
 	"os"
 	"testing"
 	"time"
@@ -285,6 +286,16 @@ func TestSecretRequire(t *testing.T) {
 			want:       true,
 		},
 		{
+			// Known limitation of the path-suffix match: an unrelated file at the scan
+			// root whose name equals the configPath's tail is also skipped. This locks
+			// in the trade-off documented in Required so a refactor cannot silently
+			// change it.
+			name:       "over-skip: configPath suffix matches unrelated file at scan root",
+			configPath: "configs/myconfig.yaml",
+			filePath:   "myconfig.yaml",
+			want:       false,
+		},
+		{
 			name:       "do not skip file when configPath is empty",
 			configPath: "",
 			filePath:   "src/myfile.yaml",
@@ -302,10 +313,7 @@ func TestSecretRequire(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			size := tt.size
-			if size == 0 {
-				size = 1024
-			}
+			size := cmp.Or(tt.size, 1024)
 			got := a.Required(tt.filePath, fakeFileInfo{size: size})
 			assert.Equal(t, tt.want, got)
 		})
