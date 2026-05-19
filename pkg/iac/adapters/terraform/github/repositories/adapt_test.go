@@ -3,109 +3,163 @@ package repositories
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/terraform/tftestutil"
+	"github.com/aquasecurity/trivy/pkg/iac/providers/github"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-func Test_AdaptDefaults(t *testing.T) {
-
-	src := `
-resource "github_repository" "my-repo" {
-	
-}
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
-
-	assert.True(t, repo.Public.IsTrue())
-}
-
-func Test_Adapt_Private(t *testing.T) {
-
-	src := `
+func Test_Adapt(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected github.Repository
+	}{
+		{
+			name: "defaults",
+			src: `
+resource "github_repository" "my-repo" {}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "private field",
+			src: `
 resource "github_repository" "my-repo" {
 	private = true
 }
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
-
-	assert.False(t, repo.Public.IsTrue())
-	assert.Equal(t, 3, repo.Public.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 3, repo.Public.GetMetadata().Range().GetEndLine())
-}
-
-func Test_Adapt_Public(t *testing.T) {
-
-	src := `
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(false),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "public field",
+			src: `
 resource "github_repository" "my-repo" {
 	private = false
 }
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
-
-	assert.True(t, repo.Public.IsTrue())
-	assert.Equal(t, 3, repo.Public.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 3, repo.Public.GetMetadata().Range().GetEndLine())
-}
-
-func Test_Adapt_VisibilityOverride(t *testing.T) {
-
-	src := `
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "visibility overrides private",
+			src: `
 resource "github_repository" "my-repo" {
-	private = true
+	private    = true
 	visibility = "public"
 }
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
-
-	assert.True(t, repo.Public.IsTrue())
-	assert.Equal(t, 4, repo.Public.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 4, repo.Public.GetMetadata().Range().GetEndLine())
-}
-
-func Test_Adapt_VulnerabilityAlertsEnabled(t *testing.T) {
-
-	src := `
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "deprecated field enabled",
+			src: `
 resource "github_repository" "my-repo" {
 	vulnerability_alerts = true
 }
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
-
-	assert.True(t, repo.VulnerabilityAlerts.IsTrue())
-	assert.Equal(t, 3, repo.VulnerabilityAlerts.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 3, repo.VulnerabilityAlerts.GetMetadata().Range().GetEndLine())
-}
-
-func Test_Adapt_VulnerabilityAlertsDisabled(t *testing.T) {
-
-	src := `
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(true),
+			},
+		},
+		{
+			name: "deprecated field disabled",
+			src: `
 resource "github_repository" "my-repo" {
 	vulnerability_alerts = false
 }
-`
-	modules := tftestutil.CreateModulesFromSource(t, src, ".tf")
-	repositories := Adapt(modules)
-	require.Len(t, repositories, 1)
-	repo := repositories[0]
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "standalone resource enabled",
+			src: `
+resource "github_repository" "my-repo" {
+	name = "my-repo"
+}
+resource "github_repository_vulnerability_alerts" "my-repo" {
+	repository = github_repository.my-repo.name
+	enabled    = true
+}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(true),
+			},
+		},
+		{
+			name: "standalone resource disabled",
+			src: `
+resource "github_repository" "my-repo" {
+	name = "my-repo"
+}
+resource "github_repository_vulnerability_alerts" "my-repo" {
+	repository = github_repository.my-repo.name
+	enabled    = false
+}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
+			},
+		},
+		{
+			name: "standalone resource default enabled",
+			src: `
+resource "github_repository" "my-repo" {
+	name = "my-repo"
+}
+resource "github_repository_vulnerability_alerts" "my-repo" {
+	repository = github_repository.my-repo.name
+}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(true),
+			},
+		},
+		{
+			name: "standalone resource overrides deprecated",
+			src: `
+resource "github_repository" "my-repo" {
+	name                 = "my-repo"
+	vulnerability_alerts = false
+}
+resource "github_repository_vulnerability_alerts" "my-repo" {
+	repository = github_repository.my-repo.name
+	enabled    = true
+}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(true),
+			},
+		},
+	}
 
-	assert.False(t, repo.VulnerabilityAlerts.IsTrue())
-	assert.Equal(t, 3, repo.VulnerabilityAlerts.GetMetadata().Range().GetStartLine())
-	assert.Equal(t, 3, repo.VulnerabilityAlerts.GetMetadata().Range().GetEndLine())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, tt.src, ".tf")
+			adapted := Adapt(modules)
+			require.Len(t, adapted, 1)
+			testutil.AssertDefsecEqual(t, tt.expected, adapted[0])
+		})
+	}
 }
