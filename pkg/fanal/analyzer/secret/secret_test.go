@@ -259,15 +259,15 @@ func TestSecretRequire(t *testing.T) {
 			want:       false,
 		},
 		{
-			name:       "do not skip unrelated file sharing a path suffix with configPath",
-			configPath: "foo/bar/myconfig.yaml",
-			filePath:   "bar/myconfig.yaml",
-			want:       true,
+			name:       "skip config file when configPath has a scan-root prefix and filePath is the tail",
+			configPath: "testdata/fixtures/repo/secrets/trivy-secret.yaml",
+			filePath:   "trivy-secret.yaml",
+			want:       false,
 		},
 		{
-			name:       "do not skip file at scan root when configPath is in a subfolder",
-			configPath: "configs/myconfig.yaml",
-			filePath:   "myconfig.yaml",
+			name:       "do not skip file whose basename matches but path boundary does not",
+			configPath: "trivy-secret.yaml",
+			filePath:   "my-trivy-secret.yaml",
 			want:       true,
 		},
 		{

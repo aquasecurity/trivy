@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -116,11 +117,14 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 
 	// Skip the secret-scanner config file itself.
 	// filePath is scan-relative and slash-normalized by the walker; configPath comes from the
-	// --secret-config flag verbatim and may contain native separators, so normalize both.
+	// --secret-config flag verbatim and may carry a scan-root prefix or native separators, so
+	// normalize both and accept filePath as a path-boundary suffix of configPath. This trades
+	// off a rare over-skip (same-basename file elsewhere in the scan tree) for correctly
+	// handling the common case where the flag value is given relative to CWD, not scan root.
 	if a.configPath != "" {
 		cleanFile := filepath.ToSlash(filepath.Clean(filePath))
 		cleanConfig := filepath.ToSlash(filepath.Clean(a.configPath))
-		if cleanConfig == cleanFile {
+		if cleanConfig == cleanFile || strings.HasSuffix(cleanConfig, "/"+cleanFile) {
 			return false
 		}
 	}
