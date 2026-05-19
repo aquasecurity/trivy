@@ -217,7 +217,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 			metadata: policy.Metadata{
 				Digest:       `sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
-				MajorVersion: lo.ToPtr(1),
+				MajorVersion: new(1),
 			},
 			want: true,
 		},
@@ -229,14 +229,14 @@ func TestClient_NeedsUpdate(t *testing.T) {
 				Digest:       `sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d`,
 				DownloadedAt: time.Date(2021, 1, 1, 0, 0, 0, 0, time.UTC),
 				CustomBuild:  true,
-				MajorVersion: lo.ToPtr(1),
+				MajorVersion: new(1),
 			},
 			want: false,
 			wantMetadata: &policy.Metadata{
 				Digest:       `sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d`,
 				DownloadedAt: time.Date(2021, 1, 2, 1, 0, 0, 0, time.UTC),
 				CustomBuild:  true,
-				MajorVersion: lo.ToPtr(1),
+				MajorVersion: new(1),
 			},
 		},
 	}
@@ -307,7 +307,7 @@ func TestClient_NeedsUpdate(t *testing.T) {
 
 				if tt.wantMetadata == nil {
 					// Metadata has not been changed
-					tt.wantMetadata = lo.ToPtr(metadata)
+					tt.wantMetadata = new(metadata)
 				}
 
 				assert.Equal(t, tt.wantMetadata, &want)
@@ -393,7 +393,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
-				MajorVersion: lo.ToPtr(0),
+				MajorVersion: new(0),
 				CustomBuild:  true,
 			},
 		},
@@ -415,7 +415,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
-				MajorVersion: lo.ToPtr(0),
+				MajorVersion: new(0),
 				CustomBuild:  true,
 			},
 		},
@@ -437,7 +437,7 @@ func TestClient_DownloadBuiltinChecks(t *testing.T) {
 			want: &policy.Metadata{
 				Digest:       "sha256:01e033e78bd8a59fa4f4577215e7da06c05e1152526094d8d79d2aa06e98cb9d",
 				DownloadedAt: time.Date(2021, 1, 1, 1, 0, 0, 0, time.UTC),
-				MajorVersion: lo.ToPtr(2),
+				MajorVersion: new(2),
 				CustomBuild:  false,
 			},
 		},
