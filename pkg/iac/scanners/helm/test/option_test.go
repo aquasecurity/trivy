@@ -3,7 +3,6 @@ package test
 import (
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -48,14 +47,7 @@ func Test_helm_parser_with_options_with_values_file(t *testing.T) {
 
 			for _, manifest := range manifests {
 				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
-
-				expectedContent, err := os.ReadFile(expectedPath)
-				require.NoError(t, err)
-
-				cleanExpected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
-				cleanActual := strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n")
-
-				assert.Equal(t, cleanExpected, cleanActual)
+				assertManifestEqual(t, expectedPath, manifest.ManifestContent)
 			}
 		})
 	}
@@ -103,14 +95,7 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 
 			for _, manifest := range manifests {
 				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
-
-				expectedContent, err := os.ReadFile(expectedPath)
-				require.NoError(t, err)
-
-				cleanExpected := strings.ReplaceAll(string(expectedContent), "\r\n", "\n")
-				cleanActual := strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n")
-
-				assert.Equal(t, cleanExpected, cleanActual)
+				assertManifestEqual(t, expectedPath, manifest.ManifestContent)
 			}
 		})
 	}
@@ -153,14 +138,7 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 
 			for _, manifest := range manifests {
 				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
-
-				expectedContent, err := os.ReadFile(expectedPath)
-				require.NoError(t, err)
-
-				cleanExpected := strings.TrimSpace(strings.ReplaceAll(string(expectedContent), "\r\n", "\n"))
-				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
-
-				assert.Equal(t, cleanExpected, cleanActual)
+				assertManifestEqual(t, expectedPath, manifest.ManifestContent)
 			}
 		})
 	}
@@ -211,14 +189,7 @@ func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
 
 			for _, manifest := range manifests {
 				expectedPath := filepath.Join("testdata", "expected", "options", chartName, manifest.TemplateFilePath)
-
-				expectedContent, err := os.ReadFile(expectedPath)
-				require.NoError(t, err)
-
-				cleanExpected := strings.TrimSpace(strings.ReplaceAll(string(expectedContent), "\r\n", "\n"))
-				cleanActual := strings.TrimSpace(strings.ReplaceAll(manifest.ManifestContent, "\r\n", "\n"))
-
-				assert.Equal(t, cleanExpected, cleanActual)
+				assertManifestEqual(t, expectedPath, manifest.ManifestContent)
 			}
 		})
 	}

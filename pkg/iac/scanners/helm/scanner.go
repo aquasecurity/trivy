@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"helm.sh/helm/v3/pkg/chartutil"
+	chartutilv2 "helm.sh/helm/v4/pkg/chart/v2/util"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
@@ -78,7 +78,7 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 				return err
 			}
 			results = append(results, scanResults...)
-		} else if path.Base(filePath) == chartutil.ChartfileName {
+		} else if path.Base(filePath) == chartutilv2.ChartfileName {
 			if scanResults, err := s.getScanResults(ctx, filepath.Dir(filePath), fsys); err != nil {
 				return err
 			} else {
