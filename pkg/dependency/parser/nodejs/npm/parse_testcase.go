@@ -1767,4 +1767,64 @@ var (
 			DependsOn: []string{"mkdirp@0.5.1"},
 		},
 	}
+
+	npmV3WithLegacyLicensesPkgs = []ftypes.Package{
+		{
+			ID:           "mustache@2.3.2",
+			Name:         "mustache",
+			Version:      "2.3.2",
+			Licenses:     []string{"MIT"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/mustache/-/mustache-2.3.2.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 41,
+					EndLine:   46,
+				},
+			},
+		},
+		{
+			ID:           "pause-stream@0.0.11",
+			Name:         "pause-stream",
+			Version:      "0.0.11",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/pause-stream/-/pause-stream-0.0.11.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 32,
+					EndLine:   40,
+				},
+			},
+		},
+		{
+			ID:           "tv4@1.3.0",
+			Name:         "tv4",
+			Version:      "1.3.0",
+			Licenses:     []string{"Public Domain", "MIT"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/tv4/-/tv4-1.3.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 17,
+					EndLine:   31,
+				},
+			},
+		},
+	}
 )

@@ -1,0 +1,48 @@
+{
+  "name": "node_v3_legacy_licenses",
+  "version": "1.0.0",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "node_v3_legacy_licenses",
+      "version": "1.0.0",
+      "license": "ISC",
+      "dependencies": {
+        "tv4": "^1.3.0",
+        "pause-stream": "^0.0.11",
+        "mustache": "^2.3.2"
+      }
+    },
+    "node_modules/tv4": {
+      "version": "1.3.0",
+      "resolved": "https://registry.npmjs.org/tv4/-/tv4-1.3.0.tgz",
+      "integrity": "sha512-afizzfpJgvPr+eDkREK4MxJ/+r8nEEHcmitwgnPUqpaP+FpwQyadnxNoSACbgc/b1LsZYtODGoPiFxQrgJgjvw==",
+      "license": [
+        {
+          "type": "Public Domain",
+          "url": "http://geraintluff.github.io/tv4/LICENSE.txt"
+        },
+        {
+          "type": "MIT",
+          "url": "http://jsonary.com/LICENSE.txt"
+        }
+      ]
+    },
+    "node_modules/pause-stream": {
+      "version": "0.0.11",
+      "resolved": "https://registry.npmjs.org/pause-stream/-/pause-stream-0.0.11.tgz",
+      "integrity": "sha512-e3FBlXLmN/D1S+zHzanP4E/4Z60oFAa3O051qt1pxa7DEJWKAyil6upYVXCWadEnuoqa4Pkc9oUx9zsxYeRv8A==",
+      "license": {
+        "type": "Apache-2.0",
+        "url": "http://www.apache.org/licenses/LICENSE-2.0"
+      }
+    },
+    "node_modules/mustache": {
+      "version": "2.3.2",
+      "resolved": "https://registry.npmjs.org/mustache/-/mustache-2.3.2.tgz",
+      "integrity": "sha512-KpMNwdQsYz3O/SBS1qJ/o3sqUJ5wSb8gb0pul8CO0S56b9Y2ALm8zCfsjPXsqGFfoNBkDwZuZIAjhsZI03gYVQ==",
+      "license": "MIT"
+    }
+  }
+}
