@@ -80,6 +80,31 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "empty array license",
+			inputFile: "testdata/empty_array_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "empty-array-license@1.0.0",
+					Name:    "empty-array-license",
+					Version: "1.0.0",
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "mixed array of objects with empty type",
+			inputFile: "testdata/mixed_array_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:       "mixed-array-license@1.0.0",
+					Name:     "mixed-array-license",
+					Version:  "1.0.0",
+					Licenses: []string{"MIT"},
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
 			name:      "invalid license value (number)",
 			inputFile: "testdata/invalid_license_package.json",
 			want: packagejson.Package{

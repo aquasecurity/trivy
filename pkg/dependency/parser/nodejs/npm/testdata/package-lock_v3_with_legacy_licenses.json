@@ -33,10 +33,7 @@
       "version": "0.0.11",
       "resolved": "https://registry.npmjs.org/pause-stream/-/pause-stream-0.0.11.tgz",
       "integrity": "sha512-e3FBlXLmN/D1S+zHzanP4E/4Z60oFAa3O051qt1pxa7DEJWKAyil6upYVXCWadEnuoqa4Pkc9oUx9zsxYeRv8A==",
-      "license": {
-        "type": "Apache-2.0",
-        "url": "http://www.apache.org/licenses/LICENSE-2.0"
-      }
+      "license": ["MIT", "Apache2"]
     },
     "node_modules/mustache": {
       "version": "2.3.2",

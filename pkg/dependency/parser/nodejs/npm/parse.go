@@ -41,7 +41,8 @@ type Dependency struct {
 type Package struct {
 	Name    string `json:"name"`
 	Version string `json:"version"`
-	// License is reused from packagejson because npm just passes this value through from package.json.
+	// License is reused from packagejson because npm copies this field from package.json.
+	// Modern npm versions normalize it, but legacy lockfiles still contain object/array shapes.
 	License              packagejson.License `json:"license"`
 	Dependencies         map[string]string   `json:"dependencies"`
 	OptionalDependencies map[string]string   `json:"optionalDependencies"`
@@ -142,8 +143,8 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			sort.Sort(savedPkg.Locations)
 
 			// If for some reason license is missing in savedPkg, but exists in the current pkg, add it.
-			if len(savedPkg.Licenses) == 0 && len(pkg.License.Names()) > 0 {
-				savedPkg.Licenses = pkg.License.Names()
+			if licenses := pkg.License.Names(); len(savedPkg.Licenses) == 0 && len(licenses) > 0 {
+				savedPkg.Licenses = licenses
 			}
 
 			pkgs[pkgID] = savedPkg

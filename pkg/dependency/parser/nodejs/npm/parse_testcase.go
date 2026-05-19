@@ -1783,16 +1783,17 @@ var (
 			},
 			Locations: []ftypes.Location{
 				{
-					StartLine: 41,
-					EndLine:   46,
+					StartLine: 38,
+					EndLine:   43,
 				},
 			},
 		},
 		{
+			// Array-of-strings license shape is not supported, so no licenses are extracted.
+			// The rest of the lockfile must still be parsed successfully.
 			ID:           "pause-stream@0.0.11",
 			Name:         "pause-stream",
 			Version:      "0.0.11",
-			Licenses:     []string{"Apache-2.0"},
 			Relationship: ftypes.RelationshipDirect,
 			ExternalReferences: []ftypes.ExternalRef{
 				{
@@ -1803,7 +1804,7 @@ var (
 			Locations: []ftypes.Location{
 				{
 					StartLine: 32,
-					EndLine:   40,
+					EndLine:   37,
 				},
 			},
 		},
