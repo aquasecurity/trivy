@@ -37,7 +37,7 @@ func newPnpmAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 	return &pnpmAnalyzer{
 		logger:     log.WithPrefix("pnpm"),
 		lockParser: pnpm.NewParser(),
-		license:    license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
+		license:    license.NewLicense("pnpm", opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 

@@ -40,7 +40,7 @@ func newBunLibraryAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 	return &bunLibraryAnalyzer{
 		logger:     log.WithPrefix("bun"),
 		lockParser: bun.NewParser(),
-		license:    license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
+		license:    license.NewLicense("bun", opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 

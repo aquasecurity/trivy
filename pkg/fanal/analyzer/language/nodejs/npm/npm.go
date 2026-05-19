@@ -39,7 +39,7 @@ func newNpmLibraryAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer,
 	return &npmLibraryAnalyzer{
 		logger:     log.WithPrefix("npm"),
 		lockParser: npm.NewParser(),
-		license:    license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
+		license:    license.NewLicense("npm", opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 

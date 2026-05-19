@@ -2,6 +2,7 @@ package license
 
 import (
 	"errors"
+	"fmt"
 	"io"
 	"io/fs"
 	"path"
@@ -18,13 +19,15 @@ import (
 
 type License struct {
 	logger                    *log.Logger
+	pkgManager                string
 	parser                    *packagejson.Parser
 	classifierConfidenceLevel float64
 }
 
-func NewLicense(classifierConfidenceLevel float64) *License {
+func NewLicense(pkgManager string, classifierConfidenceLevel float64) *License {
 	return &License{
-		logger:                    log.WithPrefix("npm"),
+		logger:                    log.WithPrefix(pkgManager),
+		pkgManager:                pkgManager,
 		parser:                    packagejson.NewParser(),
 		classifierConfidenceLevel: classifierConfidenceLevel,
 	}
@@ -32,7 +35,7 @@ func NewLicense(classifierConfidenceLevel float64) *License {
 
 func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error) {
 	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
-		l.logger.Info("To collect the license information of packages, run the package manager install command",
+		l.logger.Info(fmt.Sprintf(`Run "%s install" to collect the license information of packages`, l.pkgManager),
 			log.String("dir", root))
 		return make(map[string][]string), nil
 	}

@@ -55,7 +55,7 @@ func newYarnAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error
 		logger:            log.WithPrefix("yarn"),
 		packageJsonParser: packagejson.NewParser(),
 		comparer:          npm.Comparer{},
-		license:           license.NewLicense(opt.LicenseScannerOption.ClassifierConfidenceLevel),
+		license:           license.NewLicense("yarn", opt.LicenseScannerOption.ClassifierConfidenceLevel),
 	}, nil
 }
 
@@ -440,6 +440,9 @@ func (a yarnAnalyzer) traverseYarnModernPkgs(fsys fs.FS) (map[string][]string, e
 func (a yarnAnalyzer) traverseUnpluggedDir(fsys fs.FS) (map[string][]string, error) {
 	// `unplugged` hold machine-specific build artifacts
 	// Traverse .yarn/unplugged dir
+	if _, err := fs.Stat(fsys, "unplugged"); errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	}
 	return a.license.Traverse(fsys, "unplugged")
 }
 
