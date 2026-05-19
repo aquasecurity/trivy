@@ -396,23 +396,13 @@ func (a yarnAnalyzer) traverseLicenses(fsys fs.FS, lockPath string) (map[string]
 	if err != nil {
 		return nil, xerrors.Errorf("fs error: %w", err)
 	}
-	var errs error
-
 	// Yarn v1
-	licenses, err := a.traverseYarnClassicPkgs(sub)
-	if err == nil {
-		return licenses, nil
+	if _, err = fs.Stat(sub, "node_modules"); err == nil {
+		return a.traverseYarnClassicPkgs(sub)
 	}
-	errs = multierror.Append(errs, err)
 
 	// Yarn v2+
-	licenses, err = a.traverseYarnModernPkgs(sub)
-	if err == nil {
-		return licenses, nil
-	}
-	errs = multierror.Append(errs, err)
-
-	return nil, errs
+	return a.traverseYarnModernPkgs(sub)
 }
 
 func (a yarnAnalyzer) traverseYarnClassicPkgs(fsys fs.FS) (map[string][]string, error) {

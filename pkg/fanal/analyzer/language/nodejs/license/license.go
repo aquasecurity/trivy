@@ -31,6 +31,12 @@ func NewLicense(classifierConfidenceLevel float64) *License {
 }
 
 func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error) {
+	if _, err := fs.Stat(fsys, root); errors.Is(err, fs.ErrNotExist) {
+		l.logger.Info("To collect the license information of packages, run the package manager install command",
+			log.String("dir", root))
+		return make(map[string][]string), nil
+	}
+
 	licenses := make(map[string][]string)
 	walkDirFunc := func(pkgJSONPath string, _ fs.DirEntry, r io.Reader) error {
 		pkg, err := l.parser.Parse(r)
