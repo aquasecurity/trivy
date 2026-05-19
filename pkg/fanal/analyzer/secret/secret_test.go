@@ -3,6 +3,7 @@ package secret_test
 import (
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -11,6 +12,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+// fakeFileInfo lets Required tests use synthetic scan-relative paths without
+// needing the path to exist on disk; Required only reads Size().
+type fakeFileInfo struct{ size int64 }
+
+func (f fakeFileInfo) Name() string       { return "" }
+func (f fakeFileInfo) Size() int64        { return f.size }
+func (f fakeFileInfo) Mode() os.FileMode  { return 0 }
+func (f fakeFileInfo) ModTime() time.Time { return time.Time{} }
+func (f fakeFileInfo) IsDir() bool        { return false }
+func (f fakeFileInfo) Sys() any           { return nil }
 
 func TestSecretAnalyzer(t *testing.T) {
 	wantFinding1 := types.SecretFinding{
@@ -214,6 +226,7 @@ func TestSecretRequire(t *testing.T) {
 		name       string
 		configPath string
 		filePath   string
+		size       int64
 		want       bool
 	}{
 		{
@@ -226,6 +239,7 @@ func TestSecretRequire(t *testing.T) {
 			name:       "skip small file",
 			configPath: defaultConfig,
 			filePath:   "testdata/emptyfile",
+			size:       5,
 			want:       false,
 		},
 		{
@@ -288,16 +302,11 @@ func TestSecretRequire(t *testing.T) {
 			})
 			require.NoError(t, err)
 
-			// Stat a real file so fi.Size() passes the small-file check; the path
-			// argument passed to Required can be a synthetic scan-relative path.
-			statPath := tt.filePath
-			if _, err := os.Stat(statPath); err != nil {
-				statPath = defaultConfig
+			size := tt.size
+			if size == 0 {
+				size = 1024
 			}
-			fi, err := os.Stat(statPath)
-			require.NoError(t, err)
-
-			got := a.Required(tt.filePath, fi)
+			got := a.Required(tt.filePath, fakeFileInfo{size: size})
 			assert.Equal(t, tt.want, got)
 		})
 	}
