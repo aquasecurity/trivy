@@ -104,6 +104,20 @@ func Test_mirror_matches(t *testing.T) {
 			want:     false,
 		},
 		{
+			name:     "external with exclusion — excluded id is not mirrored",
+			patterns: []string{"external:*", "!internal"},
+			repoID:   "internal",
+			repoURL:  mustParseURL(t, "https://internal.example.com/repo"),
+			want:     false,
+		},
+		{
+			name:     "external with exclusion — non-excluded external id is mirrored",
+			patterns: []string{"external:*", "!internal"},
+			repoID:   "central",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+			want:     true,
+		},
+		{
 			name:     "external:http matches http",
 			patterns: []string{"external:http:*"},
 			repoID:   "legacy",
