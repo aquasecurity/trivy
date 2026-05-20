@@ -806,6 +806,10 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	// 2. remoteRepositories from pom.xml (passed as parameter)
 	// 3. default remoteRepository (Maven Central for Release repository)
 	for _, repo := range slices.Concat(p.remoteRepos.settings, pomRepos, []repository{p.remoteRepos.defaultRepo}) {
+		// Apply <mirrors> from settings.xml so that settings/pom-declared/default
+		// repositories are all routed through a matching mirror at request time.
+		repo = p.mirrorFor(repo)
+
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
 			continue

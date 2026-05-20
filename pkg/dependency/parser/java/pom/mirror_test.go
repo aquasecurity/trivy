@@ -1,10 +1,14 @@
 package pom
 
 import (
+	"net/http"
+	"net/http/httptest"
 	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Test_mirror_matches(t *testing.T) {
@@ -435,25 +439,100 @@ func TestParser_mirrorFor(t *testing.T) {
 	}
 }
 
-func Test_isExternalRepo(t *testing.T) {
+// Test_fetchPOMFromRemoteRepositories_mirror verifies that mirrors substitute
+// the target URL inside fetchPOMFromRemoteRepositories — i.e. that mirrorFor
+// is wired into the fetch loop, not just the matching logic.
+func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
+	const minimalPOM = `<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>example-api</artifactId>
+  <version>1.0.0</version>
+</project>`
+
+	// Matching logic and credential resolution are covered by Test_mirror_matches,
+	// Test_resolveMirrors and TestParser_mirrorFor. Here we only verify the two
+	// things that can only be observed end-to-end through HTTP: that mirrorFor is
+	// actually applied to the fetch loop, and that mirror credentials reach the
+	// remote request as Basic Auth.
 	tests := []struct {
-		name string
-		url  string
-		want bool
+		name            string
+		mirrorPatterns  []string
+		mirrorWithCreds bool
+		wantBasicAuth   string
 	}{
-		{"https external", "https://example.com/repo", true},
-		{"http external", "http://example.com/repo", true},
-		{"file scheme", "file:///tmp/repo", false},
-		{"localhost", "http://localhost:8081/repo", false},
-		{"127.0.0.1", "http://127.0.0.1/repo", false},
-		{"IPv6 loopback", "http://[::1]/repo", false},
+		{
+			name:           "wildcard mirror redirects the fetch to the mirror server",
+			mirrorPatterns: []string{"*"},
+		},
+		{
+			name:            "credentials baked into mirror URL are sent as Basic Auth",
+			mirrorPatterns:  []string{"*"},
+			mirrorWithCreds: true,
+			wantBasicAuth:   "mirror-user",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			u, err := url.Parse(tt.url)
+			var mirrorHits, originalHits int
+			var gotBasicAuth string
+
+			mirrorServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				mirrorHits++
+				if u, _, ok := r.BasicAuth(); ok {
+					gotBasicAuth = u
+				}
+				_, _ = w.Write([]byte(minimalPOM))
+			}))
+			defer mirrorServer.Close()
+
+			originalServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				originalHits++
+				_, _ = w.Write([]byte(minimalPOM))
+			}))
+			defer originalServer.Close()
+
+			mirrorURL := mirrorServer.URL
+			if tt.mirrorWithCreds {
+				u, err := url.Parse(mirrorServer.URL)
+				require.NoError(t, err)
+				u.User = url.UserPassword("mirror-user", "mirror-pass")
+				mirrorURL = u.String()
+			}
+			u, err := url.Parse(mirrorURL)
 			require.NoError(t, err)
-			require.Equal(t, tt.want, isExternalRepo(u))
+			mirrors := []mirror{
+				{
+					id:       "m1",
+					patterns: tt.mirrorPatterns,
+					url:      *u,
+				},
+			}
+
+			origURL, err := url.Parse(originalServer.URL)
+			require.NoError(t, err)
+			pomRepo := repository{
+				id:             "central",
+				url:            *origURL,
+				releaseEnabled: true,
+			}
+
+			p := &Parser{
+				logger:     log.WithPrefix("pom"),
+				mirrors:    mirrors,
+				httpClient: http.DefaultClient,
+			}
+
+			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
+			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
+			require.NoError(t, err)
+			require.NotNil(t, got)
+
+			require.Equal(t, 1, mirrorHits, "mirror hits")
+			require.Equal(t, 0, originalHits, "original hits")
+			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
 		})
 	}
 }
