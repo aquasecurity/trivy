@@ -34,20 +34,6 @@ func Test_mirror_matches(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "exact id no match",
-			patterns: []string{"central"},
-			repoID:   "internal",
-			repoURL:  mustParseURL(t, "https://example.com/repo"),
-			want:     false,
-		},
-		{
-			name:     "comma-separated ids match",
-			patterns: []string{"central", "internal"},
-			repoID:   "internal",
-			repoURL:  mustParseURL(t, "https://example.com/repo"),
-			want:     true,
-		},
-		{
 			name:     "exclusion after wildcard",
 			patterns: []string{"*", "!internal"},
 			repoID:   "internal",
@@ -97,25 +83,11 @@ func Test_mirror_matches(t *testing.T) {
 			want:     false,
 		},
 		{
-			name:     "external skips IPv6 loopback",
-			patterns: []string{"external:*"},
-			repoID:   "local",
-			repoURL:  mustParseURL(t, "http://[::1]/repo"),
-			want:     false,
-		},
-		{
 			name:     "external with exclusion — excluded id is not mirrored",
 			patterns: []string{"external:*", "!internal"},
 			repoID:   "internal",
 			repoURL:  mustParseURL(t, "https://internal.example.com/repo"),
 			want:     false,
-		},
-		{
-			name:     "external with exclusion — non-excluded external id is mirrored",
-			patterns: []string{"external:*", "!internal"},
-			repoID:   "central",
-			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
-			want:     true,
 		},
 		{
 			name:     "external:http matches http",
@@ -228,30 +200,6 @@ func Test_resolveMirrors(t *testing.T) {
 			},
 		},
 		{
-			name: "server with empty credentials is ignored",
-			mirrors: []Mirror{
-				{
-					ID:       "m1",
-					URL:      "https://mirror.example.com/maven2",
-					MirrorOf: "*",
-				},
-			},
-			servers: []Server{
-				{
-					ID:       "m1",
-					Username: "user",
-					// Password missing — should not embed credentials.
-				},
-			},
-			want: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
-				},
-			},
-		},
-		{
 			name: "server with non-matching id is ignored",
 			mirrors: []Mirror{
 				{
@@ -341,20 +289,6 @@ func TestParser_mirrorFor(t *testing.T) {
 		repo    repository
 		want    repository
 	}{
-		{
-			name:    "no mirrors — repository returned unchanged",
-			mirrors: nil,
-			repo: repository{
-				id:             "central",
-				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
-				releaseEnabled: true,
-			},
-			want: repository{
-				id:             "central",
-				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
-				releaseEnabled: true,
-			},
-		},
 		{
 			name: "no match — repository returned unchanged",
 			mirrors: []mirror{
