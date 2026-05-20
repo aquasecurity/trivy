@@ -29,6 +29,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/types"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
@@ -852,7 +853,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return "", newRateLimitError(req, resp)
+		return "", rateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -893,7 +894,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return nil, newRateLimitError(req, resp)
+		return nil, rateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -972,42 +973,31 @@ func shouldReturnError(err error) bool {
 	if errors.Is(err, context.DeadlineExceeded) {
 		return true
 	}
-	var rl *RateLimitError
-	return errors.As(err, &rl)
+	var ue *types.UserError
+	return errors.As(err, &ue)
 }
 
-// RateLimitError indicates that a remote Maven repository returned 429 Too Many Requests.
-// Maven Central rate limits are per-IP and apply to all subsequent requests (including
-// cached ones), so continuing the scan is pointless until the block clears.
-// See https://central.sonatype.org/faq/429-error/
-type RateLimitError struct {
-	URL        string
-	RetryAfter time.Duration // 0 if header missing or unparsable
-}
-
-func (e *RateLimitError) Error() string {
+// rateLimitError builds a user-facing error for a 429 response from a remote Maven
+// repository. Maven Central rate limits are per-IP and apply to all subsequent
+// requests (including cached ones), so continuing the scan is pointless until the
+// block clears. See https://central.sonatype.org/faq/429-error/
+func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
 	var ra string
-	if e.RetryAfter > 0 {
-		ra = fmt.Sprintf(" Retry-After: %s.", e.RetryAfter.Round(time.Second))
-	}
-	return fmt.Sprintf(
-		"remote Maven repository returned 429 Too Many Requests for %s.%s "+
-			"The repository blocks all subsequent requests from this IP until the block clears. "+
-			"To avoid this, populate the local Maven cache before scanning "+
-			"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI). "+
-			"See https://central.sonatype.org/faq/429-error/",
-		e.URL, ra,
-	)
-}
-
-func newRateLimitError(req *http.Request, resp *http.Response) *RateLimitError {
-	var d time.Duration
+	// Maven Central / Cloudflare send delay-seconds; HTTP-date form is allowed
+	// by RFC 7231 but not used here, so we don't parse it.
 	if v := resp.Header.Get("Retry-After"); v != "" {
-		// Maven Central / Cloudflare send delay-seconds; HTTP-date form is allowed
-		// by RFC 7231 but not used here, so we don't parse it.
 		if secs, err := strconv.Atoi(v); err == nil && secs > 0 {
-			d = time.Duration(secs) * time.Second
+			ra = fmt.Sprintf(" Retry-After: %s.", (time.Duration(secs) * time.Second).Round(time.Second))
 		}
 	}
-	return &RateLimitError{URL: req.URL.Redacted(), RetryAfter: d}
+	return &types.UserError{
+		Message: fmt.Sprintf(
+			"remote Maven repository returned 429 Too Many Requests for %s.%s "+
+				"The repository blocks all subsequent requests from this IP until the block clears. "+
+				"To avoid this, populate the local Maven cache before scanning "+
+				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI). "+
+				"See https://central.sonatype.org/faq/429-error/",
+			req.URL.Redacted(), ra,
+		),
+	}
 }
