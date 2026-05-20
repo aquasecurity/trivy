@@ -2,7 +2,6 @@ package pom_test
 
 import (
 	"bytes"
-	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -2507,7 +2506,7 @@ func TestPom_Parse(t *testing.T) {
 				t.Setenv("MAVEN_HOME", "testdata/settings/global")
 			} else {
 				// for remote repository
-				var h http.Handler = http.FileServer(http.Dir(filepath.Join("testdata", "repository")))
+				h := http.FileServer(http.Dir(filepath.Join("testdata", "repository")))
 				if tt.serverHandler != nil {
 					h = tt.serverHandler
 				}
@@ -2529,7 +2528,7 @@ func TestPom_Parse(t *testing.T) {
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				var ue *types.UserError
-				require.True(t, errors.As(err, &ue), "expected error to unwrap to *types.UserError")
+				require.ErrorAs(t, err, &ue, "expected error to unwrap to *types.UserError")
 				assert.Contains(t, ue.Message, "Retry-After: 1800")
 				return
 			}
