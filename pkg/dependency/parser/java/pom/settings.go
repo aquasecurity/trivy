@@ -2,6 +2,7 @@ package pom
 
 import (
 	"encoding/xml"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -43,6 +44,77 @@ type Mirror struct {
 	Name     string `xml:"name"`
 	URL      string `xml:"url"`
 	MirrorOf string `xml:"mirrorOf"`
+}
+
+// matches reports whether this mirror should serve the given repository.
+//
+// mirrorOf is a comma-separated list of patterns. Supported tokens:
+//   - "*"               — matches any repository
+//   - "external:*"      — matches any non-local repository (not file:// and not
+//     localhost/127.0.0.1/::1)
+//   - "external:http:*" — same as external:* but only for the http scheme
+//   - "<id>"            — matches a repository by exact id
+//   - "!<id>"           — excludes a repository by id; an exclusion always wins
+//     regardless of its position in the list, so "*,!internal"
+//     and "!internal,*" behave identically.
+//
+// See https://maven.apache.org/guides/mini/guide-mirror-settings.html
+func (m Mirror) matches(repoID, repoURL string) bool {
+	patterns := strings.Split(m.MirrorOf, ",")
+
+	// First pass: check exclusions. They take priority over any include token in
+	// the same list, so we must scan them all before deciding the include result.
+	for _, p := range patterns {
+		if id, ok := strings.CutPrefix(strings.TrimSpace(p), "!"); ok && id == repoID {
+			return false
+		}
+	}
+
+	// Second pass: check include tokens. Parse the URL once for the
+	// external/external:http checks; ignore url.Parse errors — isExternalRepo
+	// treats a nil/empty URL as non-external.
+	parsed, _ := url.Parse(repoURL)
+	for _, p := range patterns {
+		p = strings.TrimSpace(p)
+		// Skip empty entries (e.g. trailing comma) and exclusion tokens
+		// already handled in the first pass.
+		if p == "" || strings.HasPrefix(p, "!") {
+			continue
+		}
+		switch p {
+		case "*":
+			return true
+		case "external:*":
+			if isExternalRepo(parsed) {
+				return true
+			}
+		case "external:http:*":
+			// external:http:* is external:* restricted to the http scheme;
+			// https and other schemes must not match.
+			if isExternalRepo(parsed) && parsed.Scheme == "http" {
+				return true
+			}
+		default:
+			// Any non-keyword token is treated as an exact repository id.
+			if p == repoID {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+// isExternalRepo reports whether the URL points to an external repository.
+// A repository is considered external when its scheme is not "file" and its
+// hostname is not one of the loopback addresses (localhost, 127.0.0.1, ::1).
+// A nil URL is treated as non-external so that unparsable URLs never trigger
+// an external:* match.
+func isExternalRepo(u *url.URL) bool {
+	if u == nil || u.Scheme == "file" {
+		return false
+	}
+	h := u.Hostname()
+	return h != "localhost" && h != "127.0.0.1" && h != "::1"
 }
 
 type settings struct {
