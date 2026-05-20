@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -45,7 +46,7 @@ type SecretAnalyzer struct {
 func NewSecretAnalyzer(s secret.Scanner, configPath string) *SecretAnalyzer {
 	return &SecretAnalyzer{
 		scanner:    s,
-		configPath: configPath,
+		configPath: cleanPath(configPath),
 	}
 }
 
@@ -62,8 +63,15 @@ func (a *SecretAnalyzer) Init(opt analyzer.AnalyzerOptions) error {
 		return xerrors.Errorf("secret config error: %w", err)
 	}
 	a.scanner = secret.NewScanner(c)
-	a.configPath = configPath
+	a.configPath = cleanPath(opt.SecretScannerOption.ConfigPath)
 	return nil
+}
+
+func cleanPath(p string) string {
+	if p == "" {
+		return ""
+	}
+	return filepath.ToSlash(filepath.Clean(p))
 }
 
 func (a *SecretAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
@@ -114,9 +122,18 @@ func (a *SecretAnalyzer) Required(filePath string, fi os.FileInfo) bool {
 		return false
 	}
 
-	// Skip the config file for secret scanning
-	if filepath.Base(a.configPath) == filePath {
-		return false
+	// Skip the secret-scanner config file itself.
+	// a.configPath is already cleaned/slash-normalized in Init; filePath is scan-relative
+	// from the walker but may carry native separators on Windows, so normalize it too.
+	// We accept filePath as a path-boundary suffix of configPath to handle the common case
+	// where --secret-config is given relative to CWD (so it carries a scan-root prefix that
+	// the walker strips from filePath). This trades off a rare over-skip (same-basename
+	// file elsewhere in the scan tree) for correctness in the common case.
+	if a.configPath != "" {
+		cleanFile := cleanPath(filePath)
+		if a.configPath == cleanFile || strings.HasSuffix(a.configPath, "/"+cleanFile) {
+			return false
+		}
 	}
 
 	if a.scanner.IsSkipped(filePath) {

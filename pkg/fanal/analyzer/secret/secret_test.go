@@ -1,8 +1,10 @@
 package secret_test
 
 import (
+	"cmp"
 	"os"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -11,6 +13,17 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+// fakeFileInfo lets Required tests use synthetic scan-relative paths without
+// needing the path to exist on disk; Required only reads Size().
+type fakeFileInfo struct{ size int64 }
+
+func (f fakeFileInfo) Name() string       { return "" }
+func (f fakeFileInfo) Size() int64        { return f.size }
+func (f fakeFileInfo) Mode() os.FileMode  { return 0 }
+func (f fakeFileInfo) ModTime() time.Time { return time.Time{} }
+func (f fakeFileInfo) IsDir() bool        { return false }
+func (f fakeFileInfo) Sys() any           { return nil }
 
 func TestSecretAnalyzer(t *testing.T) {
 	wantFinding1 := types.SecretFinding{
@@ -208,35 +221,85 @@ func TestSecretAnalyzer(t *testing.T) {
 }
 
 func TestSecretRequire(t *testing.T) {
+	const defaultConfig = "testdata/skip-tests-config.yaml"
+
 	tests := []struct {
-		name     string
-		filePath string
-		want     bool
+		name       string
+		configPath string
+		filePath   string
+		size       int64
+		want       bool
 	}{
 		{
-			name:     "pass regular file",
-			filePath: "testdata/secret.txt",
-			want:     true,
+			name:       "pass regular file",
+			configPath: defaultConfig,
+			filePath:   "testdata/secret.txt",
+			want:       true,
 		},
 		{
-			name:     "skip small file",
-			filePath: "testdata/emptyfile",
-			want:     false,
+			name:       "skip small file",
+			configPath: defaultConfig,
+			filePath:   "testdata/emptyfile",
+			size:       5,
+			want:       false,
 		},
 		{
-			name:     "skip folder",
-			filePath: "testdata/node_modules/secret.txt",
-			want:     false,
+			name:       "skip folder",
+			configPath: defaultConfig,
+			filePath:   "testdata/node_modules/secret.txt",
+			want:       false,
 		},
 		{
-			name:     "skip file",
-			filePath: "testdata/package-lock.json",
-			want:     false,
+			name:       "skip file",
+			configPath: defaultConfig,
+			filePath:   "testdata/package-lock.json",
+			want:       false,
 		},
 		{
-			name:     "skip extension",
-			filePath: "testdata/secret.doc",
-			want:     false,
+			name:       "skip extension",
+			configPath: defaultConfig,
+			filePath:   "testdata/secret.doc",
+			want:       false,
+		},
+		{
+			name:       "skip config file when configPath is a relative path matching filePath",
+			configPath: "testdata/skip-tests-config.yaml",
+			filePath:   "testdata/skip-tests-config.yaml",
+			want:       false,
+		},
+		{
+			name:       "skip config file when configPath is a bare filename matching filePath",
+			configPath: "skip-tests-config.yaml",
+			filePath:   "skip-tests-config.yaml",
+			want:       false,
+		},
+		{
+			name:       "skip config file when configPath has a scan-root prefix and filePath is the tail",
+			configPath: "testdata/fixtures/repo/secrets/trivy-secret.yaml",
+			filePath:   "trivy-secret.yaml",
+			want:       false,
+		},
+		{
+			name:       "do not skip file whose basename matches but path boundary does not",
+			configPath: "trivy-secret.yaml",
+			filePath:   "my-trivy-secret.yaml",
+			want:       true,
+		},
+		{
+			// Known limitation of the path-suffix match: an unrelated file at the scan
+			// root whose name equals the configPath's tail is also skipped. This locks
+			// in the trade-off documented in Required so a refactor cannot silently
+			// change it.
+			name:       "over-skip: configPath suffix matches unrelated file at scan root",
+			configPath: "configs/myconfig.yaml",
+			filePath:   "myconfig.yaml",
+			want:       false,
+		},
+		{
+			name:       "do not skip file when configPath is empty",
+			configPath: "",
+			filePath:   "src/myfile.yaml",
+			want:       true,
 		},
 	}
 
@@ -245,15 +308,13 @@ func TestSecretRequire(t *testing.T) {
 			a := secret.SecretAnalyzer{}
 			err := a.Init(analyzer.AnalyzerOptions{
 				SecretScannerOption: analyzer.SecretScannerOption{
-					ConfigPath: "testdata/skip-tests-config.yaml",
+					ConfigPath: tt.configPath,
 				},
 			})
 			require.NoError(t, err)
 
-			fi, err := os.Stat(tt.filePath)
-			require.NoError(t, err)
-
-			got := a.Required(tt.filePath, fi)
+			size := cmp.Or(tt.size, 1024)
+			got := a.Required(tt.filePath, fakeFileInfo{size: size})
 			assert.Equal(t, tt.want, got)
 		})
 	}
