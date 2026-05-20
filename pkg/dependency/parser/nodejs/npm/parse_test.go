@@ -71,6 +71,12 @@ func TestParse(t *testing.T) {
 			want:     nil,
 			wantDeps: nil,
 		},
+		{
+			name:     "lock version v3 with legacy license formats",
+			file:     "testdata/package-lock_v3_with_legacy_licenses.json",
+			want:     npmV3WithLegacyLicensesPkgs,
+			wantDeps: nil,
+		},
 	}
 
 	for _, tt := range tests {
