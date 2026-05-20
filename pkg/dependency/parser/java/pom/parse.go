@@ -16,7 +16,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure/v2"
@@ -978,25 +977,19 @@ func shouldReturnError(err error) bool {
 }
 
 // rateLimitError builds a user-facing error for a 429 response from a remote Maven
-// repository. Maven Central rate limits are per-IP and apply to all subsequent
-// requests (including cached ones), so continuing the scan is pointless until the
-// block clears. See https://central.sonatype.org/faq/429-error/
+// repository. Rate limits are typically per-IP and apply to all subsequent requests
+// (including cached ones), so continuing the scan is pointless until the block clears.
 func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
 	var ra string
-	// Maven Central / Cloudflare send delay-seconds; HTTP-date form is allowed
-	// by RFC 7231 but not used here, so we don't parse it.
 	if v := resp.Header.Get("Retry-After"); v != "" {
-		if secs, err := strconv.Atoi(v); err == nil && secs > 0 {
-			ra = fmt.Sprintf(" Retry-After: %s.", (time.Duration(secs) * time.Second).Round(time.Second))
-		}
+		ra = fmt.Sprintf(" Retry-After: %s.", v)
 	}
 	return &types.UserError{
 		Message: fmt.Sprintf(
 			"remote Maven repository returned 429 Too Many Requests for %s.%s "+
 				"The repository blocks all subsequent requests from this IP until the block clears. "+
 				"To avoid this, populate the local Maven cache before scanning "+
-				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI). "+
-				"See https://central.sonatype.org/faq/429-error/",
+				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
 			req.URL.Redacted(), ra,
 		),
 	}
