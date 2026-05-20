@@ -39,7 +39,9 @@ func resolveMirrors(mirrors []Mirror, servers []Server) []mirror {
 
 		u, err := url.Parse(m.URL)
 		if err != nil {
-			logger.Debug("Unable to parse mirror url", log.String("id", m.ID), log.Err(err))
+			// Don't log the wrapped error: url.Error.Error() prints the raw URL,
+			// which would leak any userinfo configured in <mirror><url>.
+			logger.Debug("Unable to parse mirror url", log.String("id", m.ID))
 			continue
 		}
 
