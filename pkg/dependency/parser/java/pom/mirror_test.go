@@ -204,6 +204,30 @@ func Test_resolveMirrors(t *testing.T) {
 			},
 		},
 		{
+			name: "<server> credentials override userinfo embedded in mirror URL",
+			mirrors: []Mirror{
+				{
+					ID:       "m1",
+					URL:      "https://url-user:url-pass@mirror.example.com/maven2",
+					MirrorOf: "*",
+				},
+			},
+			servers: []Server{
+				{
+					ID:       "m1",
+					Username: "server-user",
+					Password: "server-pass",
+				},
+			},
+			want: []mirror{
+				{
+					id:       "m1",
+					patterns: []string{"*"},
+					url:      mustParseURL(t, "https://server-user:server-pass@mirror.example.com/maven2"),
+				},
+			},
+		},
+		{
 			name: "server with empty credentials is ignored",
 			mirrors: []Mirror{
 				{
