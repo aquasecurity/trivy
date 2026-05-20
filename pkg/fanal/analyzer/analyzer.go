@@ -16,6 +16,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
+	pomparser "github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -504,11 +505,17 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 				Options:  opts,
 			})
 			if analyzeErr != nil {
+				var rateLimitErr *pomparser.RateLimitError
 				switch {
 				case errors.Is(analyzeErr, fos.AnalyzeOSError):
 					// The OS could not be detected.
 				case errors.Is(analyzeErr, context.DeadlineExceeded):
 					return xerrors.Errorf("analyzer timed out: %w", analyzeErr)
+				case errors.As(analyzeErr, &rateLimitErr):
+					// Remote Maven repository rate-limited the request. The block applies to all
+					// subsequent requests from this IP, so continuing the scan would produce
+					// incomplete results. Abort instead of silently swallowing.
+					return xerrors.Errorf("scan aborted: %w", analyzeErr)
 				default:
 					ag.logger.Debug("Analysis error", log.Err(err))
 					return nil

@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure/v2"
@@ -850,6 +851,9 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return "", newRateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
@@ -888,6 +892,9 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, newRateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
@@ -962,5 +969,45 @@ func isDirectory(path string) (bool, error) {
 }
 
 func shouldReturnError(err error) bool {
-	return errors.Is(err, context.DeadlineExceeded)
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+	var rl *RateLimitError
+	return errors.As(err, &rl)
+}
+
+// RateLimitError indicates that a remote Maven repository returned 429 Too Many Requests.
+// Maven Central rate limits are per-IP and apply to all subsequent requests (including
+// cached ones), so continuing the scan is pointless until the block clears.
+// See https://central.sonatype.org/faq/429-error/
+type RateLimitError struct {
+	URL        string
+	RetryAfter time.Duration // 0 if header missing or unparsable
+}
+
+func (e *RateLimitError) Error() string {
+	var ra string
+	if e.RetryAfter > 0 {
+		ra = fmt.Sprintf(" Retry-After: %s.", e.RetryAfter.Round(time.Second))
+	}
+	return fmt.Sprintf(
+		"remote Maven repository returned 429 Too Many Requests for %s.%s "+
+			"The repository blocks all subsequent requests from this IP until the block clears. "+
+			"To avoid this, populate the local Maven cache before scanning "+
+			"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI). "+
+			"See https://central.sonatype.org/faq/429-error/",
+		e.URL, ra,
+	)
+}
+
+func newRateLimitError(req *http.Request, resp *http.Response) *RateLimitError {
+	var d time.Duration
+	if v := resp.Header.Get("Retry-After"); v != "" {
+		// Maven Central / Cloudflare send delay-seconds; HTTP-date form is allowed
+		// by RFC 7231 but not used here, so we don't parse it.
+		if secs, err := strconv.Atoi(v); err == nil && secs > 0 {
+			d = time.Duration(secs) * time.Second
+		}
+	}
+	return &RateLimitError{URL: req.URL.Redacted(), RetryAfter: d}
 }
