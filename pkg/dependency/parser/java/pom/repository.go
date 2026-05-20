@@ -7,6 +7,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+// mavenCentralRepoID is the conventional <id> for the default Maven Central
+// repository. <mirror> rules use it (e.g. <mirrorOf>central</mirrorOf>), so
+// it must be the same wherever we construct a repository pointing at Central.
+const mavenCentralRepoID = "central"
+
 var centralURL, _ = url.Parse("https://repo.maven.apache.org/maven2/")
 
 type repository struct {
@@ -22,7 +27,7 @@ type repositories struct {
 }
 
 var mavenCentralRepo = repository{
-	id:             "central",
+	id:             mavenCentralRepoID,
 	url:            *centralURL,
 	releaseEnabled: true,
 }

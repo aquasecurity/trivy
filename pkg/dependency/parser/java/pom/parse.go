@@ -51,7 +51,7 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	return func(opts *options) {
 		u, _ := url.Parse(repoURL)
 		opts.defaultRepo = repository{
-			id:              "central",
+			id:              mavenCentralRepoID,
 			url:             *u,
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
