@@ -280,6 +280,7 @@ func Test_ReadSettings(t *testing.T) {
 				"MIRROR_ID":       "mirror-id-from-env",
 				"MIRROR_NAME":     "Mirror From Env",
 				"MIRROR_URL":      "https://mirror.example.com",
+				"MIRROR_OF":       "central",
 			},
 			wantSettings: settings{
 				LocalRepository: "part1/part2/.m2/repository",

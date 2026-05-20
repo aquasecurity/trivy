@@ -209,10 +209,10 @@ func expandAllEnvPlaceholders(s *settings) {
 		s.Proxies[i].NonProxyHosts = evaluateVariable(proxy.NonProxyHosts, nil, nil)
 	}
 
-	// MirrorOf is a static matching rule, not a value — intentionally not expanded.
 	for i, m := range s.Mirrors {
 		s.Mirrors[i].ID = evaluateVariable(m.ID, nil, nil)
 		s.Mirrors[i].Name = evaluateVariable(m.Name, nil, nil)
 		s.Mirrors[i].URL = evaluateVariable(m.URL, nil, nil)
+		s.Mirrors[i].MirrorOf = evaluateVariable(m.MirrorOf, nil, nil)
 	}
 }
