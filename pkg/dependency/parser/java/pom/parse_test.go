@@ -2,6 +2,7 @@ package pom_test
 
 import (
 	"bytes"
+	"errors"
 	"fmt"
 	"io/fs"
 	"net/http"
@@ -17,6 +18,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -240,7 +242,16 @@ func TestPom_Parse(t *testing.T) {
 				w.Header().Set("Retry-After", "1800")
 				w.WriteHeader(http.StatusTooManyRequests)
 			}),
-			wantErr: "429 Too Many Requests",
+			wantErr: "429 Too Many Requests for http://",
+		},
+		{
+			name:      "snapshot repository returns 429 Too Many Requests on maven-metadata.xml",
+			inputFile: filepath.Join("testdata", "snapshot", "with-maven-metadata", "pom.xml"),
+			serverHandler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Retry-After", "1800")
+				w.WriteHeader(http.StatusTooManyRequests)
+			}),
+			wantErr: "429 Too Many Requests for http://",
 		},
 		{
 			name:      "snapshot dependency",
@@ -2517,6 +2528,9 @@ func TestPom_Parse(t *testing.T) {
 			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
+				var ue *types.UserError
+				require.True(t, errors.As(err, &ue), "expected error to unwrap to *types.UserError")
+				assert.Contains(t, ue.Message, "Retry-After: 1800")
 				return
 			}
 			require.NoError(t, err)

@@ -517,7 +517,7 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 					// incomplete results without the user noticing.
 					return analyzeErr
 				default:
-					ag.logger.Debug("Analysis error", log.Err(err))
+					ag.logger.Debug("Analysis error", log.Err(analyzeErr))
 					return nil
 				}
 			}

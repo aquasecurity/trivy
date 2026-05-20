@@ -986,8 +986,8 @@ func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
 	}
 	return &types.UserError{
 		Message: fmt.Sprintf(
-			"remote Maven repository returned 429 Too Many Requests for %s.%s "+
-				"The repository blocks all subsequent requests from this IP until the block clears. "+
+			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
+				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
 				"To avoid this, populate the local Maven cache before scanning "+
 				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
 			req.URL.Redacted(), ra,
