@@ -75,7 +75,7 @@ func resolveMirrors(mirrors []Mirror, servers []Server) []mirror {
 //     and "!internal,*" behave identically.
 //
 // See https://maven.apache.org/guides/mini/guide-mirror-settings.html
-func (m mirror) matches(repoID, repoURL string) bool {
+func (m mirror) matches(repoID string, repoURL *url.URL) bool {
 	// First pass: check exclusions. They take priority over any include token in
 	// the same list, so we must scan them all before deciding the include result.
 	for _, p := range m.patterns {
@@ -84,10 +84,7 @@ func (m mirror) matches(repoID, repoURL string) bool {
 		}
 	}
 
-	// Second pass: check include tokens. Parse the URL once for the
-	// external/external:http checks; ignore url.Parse errors — isExternalRepo
-	// treats a nil URL as non-external.
-	parsed, _ := url.Parse(repoURL)
+	// Second pass: check include tokens.
 	for _, p := range m.patterns {
 		// Exclusion tokens are already handled in the first pass.
 		if strings.HasPrefix(p, "!") {
@@ -97,13 +94,13 @@ func (m mirror) matches(repoID, repoURL string) bool {
 		case "*":
 			return true
 		case "external:*":
-			if isExternalRepo(parsed) {
+			if isExternalRepo(repoURL) {
 				return true
 			}
 		case "external:http:*":
 			// external:http:* is external:* restricted to the http scheme;
 			// https and other schemes must not match.
-			if isExternalRepo(parsed) && parsed.Scheme == "http" {
+			if isExternalRepo(repoURL) && repoURL.Scheme == "http" {
 				return true
 			}
 		default:

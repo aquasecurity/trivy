@@ -163,7 +163,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 // mirror wins — Maven does not chain mirrors.
 func (p *Parser) mirrorFor(repo repository) repository {
 	for _, m := range p.mirrors {
-		if !m.matches(repo.id, repo.url.String()) {
+		if !m.matches(repo.id, &repo.url) {
 			continue
 		}
 		return repository{

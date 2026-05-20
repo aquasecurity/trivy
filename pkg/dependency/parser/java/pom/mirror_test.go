@@ -16,119 +16,119 @@ func Test_mirror_matches(t *testing.T) {
 		name     string
 		patterns []string
 		repoID   string
-		repoURL  string
+		repoURL  url.URL
 		want     bool
 	}{
 		{
 			name:     "wildcard matches everything",
 			patterns: []string{"*"},
 			repoID:   "anything",
-			repoURL:  "https://example.com/repo",
+			repoURL:  mustParseURL(t, "https://example.com/repo"),
 			want:     true,
 		},
 		{
 			name:     "exact id match",
 			patterns: []string{"central"},
 			repoID:   "central",
-			repoURL:  "https://repo.maven.apache.org/maven2",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
 			want:     true,
 		},
 		{
 			name:     "exact id no match",
 			patterns: []string{"central"},
 			repoID:   "internal",
-			repoURL:  "https://example.com/repo",
+			repoURL:  mustParseURL(t, "https://example.com/repo"),
 			want:     false,
 		},
 		{
 			name:     "comma-separated ids match",
 			patterns: []string{"central", "internal"},
 			repoID:   "internal",
-			repoURL:  "https://example.com/repo",
+			repoURL:  mustParseURL(t, "https://example.com/repo"),
 			want:     true,
 		},
 		{
 			name:     "exclusion after wildcard",
 			patterns: []string{"*", "!internal"},
 			repoID:   "internal",
-			repoURL:  "https://example.com/repo",
+			repoURL:  mustParseURL(t, "https://example.com/repo"),
 			want:     false,
 		},
 		{
 			name:     "exclusion before wildcard still wins",
 			patterns: []string{"!internal", "*"},
 			repoID:   "internal",
-			repoURL:  "https://example.com/repo",
+			repoURL:  mustParseURL(t, "https://example.com/repo"),
 			want:     false,
 		},
 		{
 			name:     "wildcard with unrelated exclusion",
 			patterns: []string{"*", "!internal"},
 			repoID:   "central",
-			repoURL:  "https://repo.maven.apache.org/maven2",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
 			want:     true,
 		},
 		{
 			name:     "external matches https",
 			patterns: []string{"external:*"},
 			repoID:   "central",
-			repoURL:  "https://repo.maven.apache.org/maven2",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
 			want:     true,
 		},
 		{
 			name:     "external skips file scheme",
 			patterns: []string{"external:*"},
 			repoID:   "local",
-			repoURL:  "file:///tmp/repo",
+			repoURL:  mustParseURL(t, "file:///tmp/repo"),
 			want:     false,
 		},
 		{
 			name:     "external skips localhost",
 			patterns: []string{"external:*"},
 			repoID:   "local",
-			repoURL:  "http://localhost:8081/repo",
+			repoURL:  mustParseURL(t, "http://localhost:8081/repo"),
 			want:     false,
 		},
 		{
 			name:     "external skips 127.0.0.1",
 			patterns: []string{"external:*"},
 			repoID:   "local",
-			repoURL:  "http://127.0.0.1/repo",
+			repoURL:  mustParseURL(t, "http://127.0.0.1/repo"),
 			want:     false,
 		},
 		{
 			name:     "external skips IPv6 loopback",
 			patterns: []string{"external:*"},
 			repoID:   "local",
-			repoURL:  "http://[::1]/repo",
+			repoURL:  mustParseURL(t, "http://[::1]/repo"),
 			want:     false,
 		},
 		{
 			name:     "external:http matches http",
 			patterns: []string{"external:http:*"},
 			repoID:   "legacy",
-			repoURL:  "http://example.com/repo",
+			repoURL:  mustParseURL(t, "http://example.com/repo"),
 			want:     true,
 		},
 		{
 			name:     "external:http does not match https",
 			patterns: []string{"external:http:*"},
 			repoID:   "central",
-			repoURL:  "https://repo.maven.apache.org/maven2",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
 			want:     false,
 		},
 		{
 			name:     "external:http does not match localhost",
 			patterns: []string{"external:http:*"},
 			repoID:   "local",
-			repoURL:  "http://localhost/repo",
+			repoURL:  mustParseURL(t, "http://localhost/repo"),
 			want:     false,
 		},
 		{
 			name:     "empty patterns do not match",
 			patterns: nil,
 			repoID:   "central",
-			repoURL:  "https://repo.maven.apache.org/maven2",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
 			want:     false,
 		},
 	}
@@ -136,7 +136,7 @@ func Test_mirror_matches(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			m := mirror{patterns: tt.patterns}
-			require.Equal(t, tt.want, m.matches(tt.repoID, tt.repoURL))
+			require.Equal(t, tt.want, m.matches(tt.repoID, &tt.repoURL))
 		})
 	}
 }
