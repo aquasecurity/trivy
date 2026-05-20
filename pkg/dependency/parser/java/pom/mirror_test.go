@@ -460,7 +460,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			}))
 			defer mirrorServer.Close()
 
-			originalServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			originalServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
 				originalHits++
 				_, _ = w.Write([]byte(minimalPOM))
 			}))
