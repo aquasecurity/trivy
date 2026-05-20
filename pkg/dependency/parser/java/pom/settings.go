@@ -38,12 +38,20 @@ type Proxy struct {
 	NonProxyHosts string `xml:"nonProxyHosts"`
 }
 
+type Mirror struct {
+	ID       string `xml:"id"`
+	Name     string `xml:"name"`
+	URL      string `xml:"url"`
+	MirrorOf string `xml:"mirrorOf"`
+}
+
 type settings struct {
 	LocalRepository string    `xml:"localRepository"`
 	Servers         []Server  `xml:"servers>server"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
 	Proxies         []Proxy   `xml:"proxies>proxy"`
+	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 }
 
 func (s settings) effectiveRepositories() []repository {
