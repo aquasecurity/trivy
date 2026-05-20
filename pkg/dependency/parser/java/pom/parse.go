@@ -59,11 +59,20 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	}
 }
 
-func WithSettingsRepos(repoURLs []string, releaseEnabled, snapshotEnabled bool) option {
+// SettingsRepo is a repository injected via WithSettingsRepos.
+// ID is needed so that <mirror> rules like <mirrorOf>my-repo</mirrorOf> can
+// match by exact repository id; wildcard and external:* match without it.
+type SettingsRepo struct {
+	ID  string
+	URL string
+}
+
+func WithSettingsRepos(repos []SettingsRepo, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.settingsRepos = xslices.Map(repoURLs, func(repoURL string) repository {
-			u, _ := url.Parse(repoURL)
+		opts.settingsRepos = xslices.Map(repos, func(r SettingsRepo) repository {
+			u, _ := url.Parse(r.URL)
 			return repository{
+				id:              r.ID,
 				url:             *u,
 				releaseEnabled:  releaseEnabled,
 				snapshotEnabled: snapshotEnabled,

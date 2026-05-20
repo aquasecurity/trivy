@@ -2480,7 +2480,7 @@ func TestPom_Parse(t *testing.T) {
 			defer f.Close()
 
 			var defaultRepo string
-			var settingsRepos []string
+			var settingsRepos []pom.SettingsRepo
 			if tt.local {
 				// for local repository
 				t.Setenv("MAVEN_HOME", "testdata/settings/global")
@@ -2494,7 +2494,7 @@ func TestPom_Parse(t *testing.T) {
 				if tt.enableRepoForSettingsRepo {
 					ch := http.FileServer(http.Dir(filepath.Join("testdata", "repository-for-settings-repo")))
 					cts := httptest.NewServer(ch)
-					settingsRepos = []string{cts.URL}
+					settingsRepos = []pom.SettingsRepo{{URL: cts.URL}}
 				}
 			}
 
