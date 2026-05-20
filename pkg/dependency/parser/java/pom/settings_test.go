@@ -275,6 +275,9 @@ func Test_ReadSettings(t *testing.T) {
 				"PROFILE_ID":      "mycompany-global",
 				"REPO_ID":         "mycompany-releases",
 				"REPO_URL":        "https://mycompany.example.com",
+				"MIRROR_ID":       "mirror-id-from-env",
+				"MIRROR_NAME":     "Mirror From Env",
+				"MIRROR_URL":      "https://mirror.example.com",
 			},
 			wantSettings: settings{
 				LocalRepository: "part1/part2/.m2/repository",
@@ -307,6 +310,14 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{
 					"mycompany-global",
+				},
+				Mirrors: []Mirror{
+					{
+						ID:       "mirror-id-from-env",
+						Name:     "Mirror From Env",
+						URL:      "https://mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
 				},
 			},
 		},
