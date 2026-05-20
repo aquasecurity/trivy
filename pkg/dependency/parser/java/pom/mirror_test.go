@@ -292,6 +292,149 @@ func Test_resolveMirrors(t *testing.T) {
 	}
 }
 
+func TestParser_mirrorFor(t *testing.T) {
+	tests := []struct {
+		name    string
+		mirrors []mirror
+		repo    repository
+		want    repository
+	}{
+		{
+			name:    "no mirrors — repository returned unchanged",
+			mirrors: nil,
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+			want: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+		},
+		{
+			name: "no match — repository returned unchanged",
+			mirrors: []mirror{
+				{
+					id:       "m1",
+					patterns: []string{"internal"},
+					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+				},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+			want: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+		},
+		{
+			name: "match by exact id — release/snapshot flags preserved from original repo",
+			mirrors: []mirror{
+				{
+					id:       "m1",
+					patterns: []string{"central"},
+					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+				},
+			},
+			repo: repository{
+				id:              "central",
+				url:             mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled:  true,
+				snapshotEnabled: false,
+			},
+			want: repository{
+				id:              "m1",
+				url:             mustParseURL(t, "https://mirror.example.com/maven2"),
+				releaseEnabled:  true,
+				snapshotEnabled: false,
+			},
+		},
+		{
+			name: "credentials from mirror (not original repo) are kept",
+			mirrors: []mirror{
+				{
+					id:       "m1",
+					patterns: []string{"*"},
+					url:      mustParseURL(t, "https://mirror-user:mirror-pass@mirror.example.com/maven2"),
+				},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://central-user:central-pass@repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+			want: repository{
+				id:             "m1",
+				url:            mustParseURL(t, "https://mirror-user:mirror-pass@mirror.example.com/maven2"),
+				releaseEnabled: true,
+			},
+		},
+		{
+			name: "first matching mirror wins (no chaining)",
+			mirrors: []mirror{
+				{
+					id:       "first",
+					patterns: []string{"*"},
+					url:      mustParseURL(t, "https://first.example.com/maven2"),
+				},
+				{
+					id:       "second",
+					patterns: []string{"*"},
+					url:      mustParseURL(t, "https://second.example.com/maven2"),
+				},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+			want: repository{
+				id:             "first",
+				url:            mustParseURL(t, "https://first.example.com/maven2"),
+				releaseEnabled: true,
+			},
+		},
+		{
+			name: "exclusion blocks match and falls through to next mirror",
+			mirrors: []mirror{
+				{
+					id:       "first",
+					patterns: []string{"*", "!central"},
+					url:      mustParseURL(t, "https://first.example.com/maven2"),
+				},
+				{
+					id:       "second",
+					patterns: []string{"central"},
+					url:      mustParseURL(t, "https://second.example.com/maven2"),
+				},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+				releaseEnabled: true,
+			},
+			want: repository{
+				id:             "second",
+				url:            mustParseURL(t, "https://second.example.com/maven2"),
+				releaseEnabled: true,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := &Parser{mirrors: tt.mirrors}
+			require.Equal(t, tt.want, p.mirrorFor(tt.repo))
+		})
+	}
+}
+
 func Test_isExternalRepo(t *testing.T) {
 	tests := []struct {
 		name string

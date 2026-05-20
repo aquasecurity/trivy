@@ -532,11 +532,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "r2",
 					url:             mustParseURL(t, "https://example.com/repo2"),
 					releaseEnabled:  false,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "r1",
 					url:             mustParseURL(t, "https://u:p@example.com/repo1"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -585,11 +587,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			// After reverse: [only-p1, dup(from p1)]
 			want: []repository{
 				{
+					id:              "only-p1",
 					url:             mustParseURL(t, "https://p1.example.com/only"),
 					releaseEnabled:  true,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "dup",
 					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -622,6 +626,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "enabled",
 					url:             mustParseURL(t, "https://example.com/enabled"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,

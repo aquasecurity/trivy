@@ -210,9 +210,9 @@ func expandAllEnvPlaceholders(s *settings) {
 	}
 
 	// MirrorOf is a static matching rule, not a value — intentionally not expanded.
-	for i, mirror := range s.Mirrors {
-		s.Mirrors[i].ID = evaluateVariable(mirror.ID, nil, nil)
-		s.Mirrors[i].Name = evaluateVariable(mirror.Name, nil, nil)
-		s.Mirrors[i].URL = evaluateVariable(mirror.URL, nil, nil)
+	for i, m := range s.Mirrors {
+		s.Mirrors[i].ID = evaluateVariable(m.ID, nil, nil)
+		s.Mirrors[i].Name = evaluateVariable(m.Name, nil, nil)
+		s.Mirrors[i].URL = evaluateVariable(m.URL, nil, nil)
 	}
 }

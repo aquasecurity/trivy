@@ -51,6 +51,7 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	return func(opts *options) {
 		u, _ := url.Parse(repoURL)
 		opts.defaultRepo = repository{
+			id:              "central",
 			url:             *u,
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
@@ -79,6 +80,7 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
+	mirrors         []mirror
 	httpClient      *http.Client
 }
 
@@ -140,10 +142,29 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
+		mirrors:         resolveMirrors(s.Mirrors, s.Servers),
 		httpClient: &http.Client{
 			Transport: tr.Build(),
 		},
 	}
+}
+
+// mirrorFor returns a mirrored repository for repo if one of the configured
+// mirrors matches; otherwise repo is returned unchanged. The first matching
+// mirror wins — Maven does not chain mirrors.
+func (p *Parser) mirrorFor(repo repository) repository {
+	for _, m := range p.mirrors {
+		if !m.matches(repo.id, repo.url.String()) {
+			continue
+		}
+		return repository{
+			id:              m.id,
+			url:             m.url,
+			releaseEnabled:  repo.releaseEnabled,
+			snapshotEnabled: repo.snapshotEnabled,
+		}
+	}
+	return repo
 }
 
 func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
