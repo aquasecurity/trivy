@@ -70,6 +70,7 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{},
 				Proxies:        []Proxy{},
+				Mirrors:        []Mirror{},
 			},
 		},
 		{
@@ -252,6 +253,7 @@ func Test_ReadSettings(t *testing.T) {
 					"mycompany-global",
 				},
 				Proxies: []Proxy{},
+				Mirrors: []Mirror{},
 			},
 		},
 		{
@@ -363,6 +365,7 @@ func Test_ReadSettings(t *testing.T) {
 						Port:     "8080",
 					},
 				},
+				Mirrors: []Mirror{},
 			},
 		},
 		{
@@ -410,6 +413,69 @@ func Test_ReadSettings(t *testing.T) {
 						Username:      "user-proxy-user",
 						Password:      "user-proxy-pass",
 						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+				Mirrors: []Mirror{},
+			},
+		},
+		{
+			name: "global settings mirrors",
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (global)",
+						URL:      "https://global.shared.example.com/maven2",
+						MirrorOf: "external:*",
+					},
+				},
+			},
+		},
+		{
+			name: "user and global mirrors - user takes precedence on duplicate ID",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-mirrors"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "user-mirror",
+						Name:     "User Mirror",
+						URL:      "https://user.mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (user)",
+						URL:      "https://user.shared.example.com/maven2",
+						MirrorOf: "*,!internal",
+					},
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
 					},
 				},
 			},

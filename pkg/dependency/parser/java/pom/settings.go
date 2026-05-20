@@ -149,6 +149,11 @@ func readSettings() settings {
 		s.Proxies = lo.UniqBy(append(s.Proxies, globalSettings.Proxies...), func(p Proxy) string {
 			return p.ID
 		})
+
+		// Merge mirrors
+		s.Mirrors = lo.UniqBy(append(s.Mirrors, globalSettings.Mirrors...), func(m Mirror) string {
+			return m.ID
+		})
 	}
 
 	return s
