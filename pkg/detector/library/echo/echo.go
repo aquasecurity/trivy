@@ -2,13 +2,17 @@ package echo
 
 import (
 	"fmt"
-	"strings"
+	"regexp"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
+
+// echoLocalSegmentRe matches the Echo-specific PEP 440 local version segment,
+// e.g. "+echo.1" in "2.14.2+echo.1".
+var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+`)
 
 func init() {
 	library.RegisterVendor(echoVendor{
@@ -30,12 +34,13 @@ func (echoVendor) Name() string {
 
 // Match determines whether a package is provided by Echo.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
-// Echo packages are identified by a "+echo." segment in the version string.
+// Echo packages are identified by a "+echo.N" segment in the version string,
+// where N is a numeric revision (e.g. "2.14.2+echo.1").
 func (echoVendor) Match(eco ecosystem.Type, _, pkgVer string) bool {
 	if eco != ecosystem.Pip {
 		return false
 	}
-	return strings.Contains(pkgVer, "+echo.")
+	return echoLocalSegmentRe.MatchString(pkgVer)
 }
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.

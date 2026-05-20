@@ -86,6 +86,20 @@ func TestEchoVendor_Match(t *testing.T) {
 			pkgVer:  "2.14.2-echo.1",
 			want:    false,
 		},
+		{
+			name:    "pip package with +echo. but no digits",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.14.2+echo.",
+			want:    false,
+		},
+		{
+			name:    "pip package with +echo. followed by non-digit",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.14.2+echo.beta",
+			want:    false,
+		},
 	}
 
 	for _, tt := range tests {
