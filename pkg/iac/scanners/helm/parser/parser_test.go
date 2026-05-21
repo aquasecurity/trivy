@@ -10,6 +10,20 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
+func TestRenderedChartFiles(t *testing.T) {
+	t.Run("chart nested in subdirectory", func(t *testing.T) {
+		// Chart.yaml is at parent/my-chart/Chart.yaml, so rootPath has multiple path segments.
+		// On Windows, filepath.Dir would return OS-specific separators, causing TrimPrefix
+		// to fail and LoadFiles to not find Chart.yaml at the chart root.
+		p, err := New(".")
+		require.NoError(t, err)
+		require.NoError(t, p.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", "nested-chart")), "."))
+
+		_, err = p.RenderedChartFiles()
+		require.NoError(t, err)
+	})
+}
+
 func TestParseFS(t *testing.T) {
 	t.Run("source chart is located next to an same archived chart", func(t *testing.T) {
 		p, err := New(".")
