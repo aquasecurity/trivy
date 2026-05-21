@@ -7454,6 +7454,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#maven-central-rate-limiting-http-429" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maven Central rate limiting (HTTP 429)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#unable-to-open-jar-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8837,6 +8848,17 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#maven-central-rate-limiting-http-429" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Maven Central rate limiting (HTTP 429)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#unable-to-open-jar-files" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -9173,6 +9195,22 @@ API<span class="w"> </span>rate<span class="w"> </span>limit<span class="w"> </s
 <p><code>GITHUB_TOKEN</code> doesn't help with the rate limit for the vulnerability database and other assets.
 See <a href="https://github.com/aquasecurity/trivy/discussions/8009">https://github.com/aquasecurity/trivy/discussions/8009</a></p>
 </div>
+<h3 id="maven-central-rate-limiting-http-429">Maven Central rate limiting (HTTP 429)<a class="headerlink" href="#maven-central-rate-limiting-http-429" title="Permanent link">&para;</a></h3>
+<p>When scanning Java projects, Trivy resolves transitive dependencies by downloading POM files from Maven Central (or any other configured remote Maven repository) when they are missing from the local <code>~/.m2</code> cache. Remote Maven repositories typically rate-limit per IP and return <code>429 Too Many Requests</code> once the limit is exceeded; scans of large projects with an empty local cache routinely run into this.</p>
+<div class="admonition error">
+<p class="admonition-title">Error</p>
+<div class="highlight"><pre><span></span><code>FATAL Error remote Maven repository returned 429 Too Many Requests for https://repo.maven.apache.org/maven2/.../&lt;artifact&gt;-&lt;version&gt;.pom. Retry-After: 1800.
+The repository blocks all subsequent requests from this IP until the block clears.
+To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).
+</code></pre></div>
+</div>
+<p>The block applies to <em>all</em> subsequent requests from the affected IP for the duration indicated by <code>Retry-After</code>, regardless of whether the artifact would otherwise be served from a cache layer. The wait depends on the repository's policy — for Maven Central it is typically tens of minutes on the first violation and grows on repeat — so Trivy fails fast on the first <code>429</code> rather than retrying and risking an extended block.</p>
+<p>Recommended mitigations:</p>
+<ul>
+<li><strong>Populate <code>~/.m2</code> before scanning.</strong> Run <code>mvn dependency:resolve</code> (or any build step that resolves dependencies) so that every POM is cached locally. In CI, cache the <code>~/.m2</code> directory between runs (e.g. keyed on <code>pom.xml</code> checksums) so subsequent runs reuse the artifacts.</li>
+<li><strong>Wait for the block to expire.</strong> The <code>Retry-After</code> value in the error tells you the minimum wait. Repeated scans during the block will extend it.</li>
+<li><strong>Use <code>--offline-scan</code></strong> to skip remote lookups entirely and rely only on the local <code>~/.m2</code> cache. Be careful: any transitive POM missing from the cache is silently skipped, so populate <code>~/.m2</code> first (see above) — otherwise the dependency tree will be incomplete.</li>
+</ul>
 <h3 id="unable-to-open-jar-files">Unable to open JAR files<a class="headerlink" href="#unable-to-open-jar-files" title="Permanent link">&para;</a></h3>
 <div class="admonition error">
 <p class="admonition-title">Error</p>
