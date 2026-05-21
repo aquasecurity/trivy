@@ -52,6 +52,7 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	return func(opts *options) {
 		u, _ := url.Parse(repoURL)
 		opts.defaultRepo = repository{
+			id:              mavenCentralRepoID,
 			url:             *u,
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
@@ -59,11 +60,20 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	}
 }
 
-func WithSettingsRepos(repoURLs []string, releaseEnabled, snapshotEnabled bool) option {
+// SettingsRepo is a repository injected via WithSettingsRepos.
+// ID is needed so that <mirror> rules like <mirrorOf>my-repo</mirrorOf> can
+// match by exact repository id; wildcard and external:* match without it.
+type SettingsRepo struct {
+	ID  string
+	URL string
+}
+
+func WithSettingsRepos(repos []SettingsRepo, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.settingsRepos = xslices.Map(repoURLs, func(repoURL string) repository {
-			u, _ := url.Parse(repoURL)
+		opts.settingsRepos = xslices.Map(repos, func(r SettingsRepo) repository {
+			u, _ := url.Parse(r.URL)
 			return repository{
+				id:              r.ID,
 				url:             *u,
 				releaseEnabled:  releaseEnabled,
 				snapshotEnabled: snapshotEnabled,
@@ -80,6 +90,7 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
+	mirrors         []mirror
 	httpClient      *http.Client
 }
 
@@ -141,10 +152,29 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
+		mirrors:         resolveMirrors(s.Mirrors, s.Servers),
 		httpClient: &http.Client{
 			Transport: tr.Build(),
 		},
 	}
+}
+
+// mirrorFor returns a mirrored repository for repo if one of the configured
+// mirrors matches; otherwise repo is returned unchanged. The first matching
+// mirror wins — Maven does not chain mirrors.
+func (p *Parser) mirrorFor(repo repository) repository {
+	for _, m := range p.mirrors {
+		if !m.matches(repo.id, &repo.url) {
+			continue
+		}
+		return repository{
+			id:              m.id,
+			url:             m.url,
+			releaseEnabled:  repo.releaseEnabled,
+			snapshotEnabled: repo.snapshotEnabled,
+		}
+	}
+	return repo
 }
 
 func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -781,11 +811,24 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		return nil, xerrors.New("offline mode")
 	}
 
+	seen := set.New[string]()
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
 	// 3. default remoteRepository (Maven Central for Release repository)
 	for _, repo := range slices.Concat(p.remoteRepos.settings, pomRepos, []repository{p.remoteRepos.defaultRepo}) {
+		// Apply <mirrors> from settings.xml so that settings/pom-declared/default
+		// repositories are all routed through a matching mirror at request time.
+		repo = p.mirrorFor(repo)
+
+		// After mirrorFor different source repositories may collapse to the same URL
+		// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
+		// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
+		if seen.Contains(repo.url.String()) {
+			continue
+		}
+		seen.Append(repo.url.String())
+
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
 			continue
