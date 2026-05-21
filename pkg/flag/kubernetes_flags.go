@@ -5,7 +5,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
 )
@@ -245,7 +244,7 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 			if err != nil {
 				return nil, errors.New("TolerationSeconds must must be a number")
 			}
-			toleration.TolerationSeconds = lo.ToPtr(int64(tolerationSec))
+			toleration.TolerationSeconds = new(int64(tolerationSec))
 		}
 		tolerations = append(tolerations, toleration)
 	}

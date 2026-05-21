@@ -602,10 +602,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
-			lastModifiedDate = lo.ToPtr(vuln.LastModifiedDate.AsTime())
+			lastModifiedDate = new(vuln.LastModifiedDate.AsTime())
 		}
 		if vuln.PublishedDate != nil {
-			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
+			publishedDate = new(vuln.PublishedDate.AsTime())
 		}
 
 		// Handle custom data conversion from protobuf.Value

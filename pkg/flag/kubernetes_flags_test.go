@@ -3,7 +3,6 @@ package flag
 import (
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	corev1 "k8s.io/api/core/v1"
@@ -25,7 +24,7 @@ func TestOptionToToleration(t *testing.T) {
 					Operator:          "Equal",
 					Value:             "CriticalAddonsOnly",
 					Effect:            "NoExecute",
-					TolerationSeconds: lo.ToPtr(int64(3600)),
+					TolerationSeconds: new(int64(3600)),
 				},
 			},
 		},

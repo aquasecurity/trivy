@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -261,8 +260,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -734,8 +733,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -821,8 +820,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -930,8 +929,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -1014,8 +1013,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -1139,8 +1138,8 @@ func TestScanner_Scan(t *testing.T) {
 									References: []string{
 										"http://example.com",
 									},
-									LastModifiedDate: lo.ToPtr(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
-									PublishedDate:    lo.ToPtr(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2020, 2, 1, 1, 1, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2020, 1, 1, 1, 1, 0, 0, time.UTC)),
 								},
 							},
 						},
