@@ -28,6 +28,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/types"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
@@ -850,6 +851,9 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return "", rateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
@@ -888,6 +892,9 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, rateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
@@ -961,6 +968,33 @@ func isDirectory(path string) (bool, error) {
 	return fileInfo.IsDir(), err
 }
 
+// shouldReturnError reports whether err should abort POM resolving.
+// context.DeadlineExceeded and any *types.UserError stop the resolving to
+// avoid producing a report with incomplete information; the error is then
+// propagated up the stack.
 func shouldReturnError(err error) bool {
-	return errors.Is(err, context.DeadlineExceeded)
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+	var ue *types.UserError
+	return errors.As(err, &ue)
+}
+
+// rateLimitError builds a user-facing error for a 429 response from a remote Maven
+// repository. Rate limits are typically per-IP and apply to all subsequent requests
+// (including cached ones), so continuing the scan is pointless until the block clears.
+func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
+	var ra string
+	if v := resp.Header.Get("Retry-After"); v != "" {
+		ra = fmt.Sprintf(" Retry-After: %s.", v)
+	}
+	return &types.UserError{
+		Message: fmt.Sprintf(
+			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
+				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
+				"To avoid this, populate the local Maven cache before scanning "+
+				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
+			req.URL.Redacted(), ra,
+		),
+	}
 }
