@@ -6,7 +6,6 @@ import (
 	"testing"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -140,7 +139,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Results: []*sarif.Result{
 							{
 								RuleID:    new("CVE-2020-0001"),
-								RuleIndex: lo.ToPtr[uint](0),
+								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   sarif.Message{Text: new("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
 								Locations: []*sarif.Location{
@@ -285,7 +284,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Results: []*sarif.Result{
 							{
 								RuleID:    new("KSV001"),
-								RuleIndex: lo.ToPtr[uint](0),
+								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
 								Locations: []*sarif.Location{
@@ -308,7 +307,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 							},
 							{
 								RuleID:    new("KSV002"),
-								RuleIndex: lo.ToPtr[uint](1),
+								RuleIndex: new(uint(1)),
 								Level:     new("error"),
 								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nVulnerability KSV002\nSeverity: CRITICAL\nMessage: Message\nLink: [KSV002](https://avd.aquasec.com/appshield/ksv002)")},
 								Locations: []*sarif.Location{
@@ -403,7 +402,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Results: []*sarif.Result{
 							{
 								RuleID:    new("aws-secret-access-key"),
-								RuleIndex: lo.ToPtr[uint](0),
+								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
 								Locations: []*sarif.Location{
