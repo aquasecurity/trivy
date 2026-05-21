@@ -1,11 +1,11 @@
 package parser
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"io/fs"
-	"path"
 	"path/filepath"
 	"regexp"
 	"sort"
@@ -22,9 +22,7 @@ import (
 	"helm.sh/helm/v4/pkg/release"
 	releaseutil "helm.sh/helm/v4/pkg/release/v1/util"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
@@ -35,6 +33,7 @@ type Parser struct {
 	rootPath     string
 	ChartSource  string
 	filepaths    map[string]fs.FS
+	archiveFiles []*archive.BufferedFile
 	valuesFiles  []string
 	values       []string
 	fileValues   []string
@@ -82,10 +81,6 @@ func New(src string, opts ...Option) (*Parser, error) {
 }
 
 func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
-	return p.parseFS(ctx, fsys, target)
-}
-
-func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 	target = filepath.ToSlash(target)
 	if err := fs.WalkDir(fsys, target, func(filePath string, entry fs.DirEntry, err error) error {
 		select {
@@ -99,38 +94,34 @@ func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 		if entry.IsDir() {
 			return nil
 		}
-
-		if detection.IsArchive(filePath) && !isDependencyChartArchive(fsys, filePath) {
-			memFS := mapfs.New()
-			if err := p.unpackArchive(fsys, memFS, filePath); errors.Is(err, errSkipFS) {
-				// an unpacked Chart already exists
-				return nil
-			} else if err != nil {
-				return fmt.Errorf("unpack archive %q: %w", filePath, err)
-			}
-
-			if err := p.parseFS(ctx, memFS, "."); err != nil {
-				return fmt.Errorf("parse archive FS error: %w", err)
-			}
-			return nil
-		}
-
 		return p.addPaths(fsys, filePath)
 	}); err != nil {
 		return fmt.Errorf("walk dir error: %w", err)
 	}
-
 	return nil
 }
 
-func isDependencyChartArchive(fsys fs.FS, archivePath string) bool {
-	parent := path.Dir(archivePath)
-	if path.Base(parent) != "charts" {
-		return false
+func (p *Parser) ParseArchive(_ context.Context, fsys fs.FS, archivePath string) error {
+	f, err := fsys.Open(archivePath)
+	if err != nil {
+		return fmt.Errorf("open archive: %w", err)
+	}
+	defer f.Close()
+
+	files, err := archive.LoadArchiveFiles(f)
+	if err != nil {
+		return fmt.Errorf("load archive files: %w", err)
 	}
 
-	_, err := fs.Stat(fsys, path.Join(parent, "..", "Chart.yaml"))
-	return err == nil
+	for _, file := range files {
+		if file.Name == "Chart.yaml" {
+			p.applyChartName(file.Data, "")
+			break
+		}
+	}
+
+	p.archiveFiles = files
+	return nil
 }
 
 func (p *Parser) addPaths(fsys fs.FS, paths ...string) error {
@@ -140,9 +131,15 @@ func (p *Parser) addPaths(fsys fs.FS, paths ...string) error {
 		}
 
 		if strings.HasSuffix(filePath, "Chart.yaml") && p.rootPath == "" {
-			if err := p.extractChartName(fsys, filePath); err != nil {
+			data, err := fs.ReadFile(fsys, filePath)
+			if err != nil {
 				return err
 			}
+			dir := filepath.Dir(filePath)
+			if dir == "." {
+				dir = ""
+			}
+			p.applyChartName(data, dir)
 			p.rootPath = filepath.Dir(filePath)
 		}
 		p.filepaths[filePath] = fsys
@@ -150,30 +147,29 @@ func (p *Parser) addPaths(fsys fs.FS, paths ...string) error {
 	return nil
 }
 
-func (p *Parser) extractChartName(fsys fs.FS, chartPath string) error {
-	chrt, err := fsys.Open(chartPath)
+func (p *Parser) applyChartName(data []byte, fallback string) {
+	name, err := parseChartName(data)
 	if err != nil {
-		return err
-	}
-	defer func() { _ = chrt.Close() }()
-
-	var chartContent map[string]any
-	if err := yaml.NewDecoder(chrt).Decode(&chartContent); err != nil {
-		// the chart likely has the name templated and so cannot be parsed as yaml - use a temporary name
-		if dir := filepath.Dir(chartPath); dir != "" && dir != "." {
-			p.helmClient.ReleaseName = dir
+		if fallback != "" {
+			p.helmClient.ReleaseName = fallback
 		} else {
 			p.helmClient.ReleaseName = uuid.NewString()
 		}
-		return nil
+		return
 	}
+	p.helmClient.ReleaseName = name
+}
 
+func parseChartName(data []byte) (string, error) {
+	var chartContent map[string]any
+	if err := yaml.NewDecoder(bytes.NewReader(data)).Decode(&chartContent); err != nil {
+		return "", err
+	}
 	name, ok := chartContent["name"]
 	if !ok {
-		return fmt.Errorf("could not extract the chart name from %s", chartPath)
+		return "", fmt.Errorf("could not extract the chart name from Chart.yaml")
 	}
-	p.helmClient.ReleaseName = fmt.Sprintf("%v", name)
-	return nil
+	return fmt.Sprintf("%v", name), nil
 }
 
 func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
@@ -227,18 +223,21 @@ func (p *Parser) getRelease(chrt *chartv2.Chart) (release.Accessor, error) {
 func (p *Parser) loadChart() (*chartv2.Chart, error) {
 	var files []*archive.BufferedFile
 
-	for filePath, fsys := range p.filepaths {
-		b, err := fs.ReadFile(fsys, filePath)
-		if err != nil {
-			return nil, err
+	if p.archiveFiles != nil {
+		files = p.archiveFiles
+	} else {
+		for filePath, fsys := range p.filepaths {
+			b, err := fs.ReadFile(fsys, filePath)
+			if err != nil {
+				return nil, err
+			}
+			filePath = strings.TrimPrefix(filePath, p.rootPath+"/")
+			filePath = filepath.ToSlash(filePath)
+			files = append(files, &archive.BufferedFile{
+				Name: filePath,
+				Data: b,
+			})
 		}
-
-		filePath = strings.TrimPrefix(filePath, p.rootPath+"/")
-		filePath = filepath.ToSlash(filePath)
-		files = append(files, &archive.BufferedFile{
-			Name: filePath,
-			Data: b,
-		})
 	}
 
 	chrt, err := loaderv2.LoadFiles(files)

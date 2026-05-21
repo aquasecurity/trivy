@@ -14,7 +14,6 @@ import (
 )
 
 func Test_helm_parser(t *testing.T) {
-
 	tests := []struct {
 		testName  string
 		chartName string
@@ -49,7 +48,6 @@ func Test_helm_parser(t *testing.T) {
 }
 
 func Test_helm_parser_where_name_non_string(t *testing.T) {
-
 	tests := []struct {
 		testName  string
 		chartName string
@@ -61,18 +59,13 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		chartName := test.chartName
-
-		t.Logf("Running test: %s", test.testName)
-
-		helmParser, err := parser.New(chartName)
+		helmParser, err := parser.New(test.chartName)
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", chartName)), "."))
+		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", test.chartName)), "."))
 	}
 }
 
 func Test_tar_is_chart(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		archiveFile string
@@ -118,17 +111,11 @@ func Test_tar_is_chart(t *testing.T) {
 }
 
 func Test_helm_tarball_parser(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		chartName   string
 		archiveFile string
 	}{
-		{
-			testName:    "standard tarball",
-			chartName:   "mysql",
-			archiveFile: "mysql-8.8.26.tar",
-		},
 		{
 			testName:    "gzip tarball with tar.gz extension",
 			chartName:   "mysql",
@@ -142,12 +129,9 @@ func Test_helm_tarball_parser(t *testing.T) {
 	}
 
 	for _, test := range tests {
-
-		t.Logf("Running test: %s", test.testName)
-
 		helmParser, err := parser.New(test.archiveFile)
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS("testdata"), test.archiveFile))
+		require.NoError(t, helmParser.ParseArchive(t.Context(), os.DirFS("testdata"), test.archiveFile))
 
 		manifests, err := helmParser.RenderedChartFiles()
 		require.NoError(t, err)

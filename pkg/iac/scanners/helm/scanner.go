@@ -1,6 +1,8 @@
 package helm
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"context"
 	"fmt"
 	"io/fs"
@@ -73,6 +75,9 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 		}
 
 		if detection.IsArchive(filePath) {
+			if shouldSkipArchive(fsys, filePath) {
+				return nil
+			}
 			scanResults, err := s.getScanResults(ctx, filePath, fsys)
 			if err != nil {
 				return err
@@ -96,13 +101,53 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 
 }
 
+func shouldSkipArchive(fsys fs.FS, archivePath string) bool {
+	return hasChartYaml(fsys, path.Dir(archivePath)) || unpackedChartExists(fsys, archivePath)
+}
+
+func hasChartYaml(fsys fs.FS, dir string) bool {
+	_, err := fs.Stat(fsys, path.Join(dir, "Chart.yaml"))
+	return err == nil
+}
+
+func unpackedChartExists(fsys fs.FS, archivePath string) bool {
+	f, err := fsys.Open(archivePath)
+	if err != nil {
+		return false
+	}
+	defer f.Close()
+
+	gz, err := gzip.NewReader(f)
+	if err != nil {
+		return false
+	}
+	defer gz.Close()
+
+	hdr, err := tar.NewReader(gz).Next()
+	if err != nil {
+		return false
+	}
+
+	firstComponent := strings.SplitN(filepath.ToSlash(hdr.Name), "/", 2)[0]
+	if firstComponent == "" {
+		return false
+	}
+
+	_, err = fs.Stat(fsys, path.Join(path.Dir(archivePath), firstComponent))
+	return err == nil
+}
+
 func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS) (results []scan.Result, err error) {
 	helmParser, err := parser.New(path, s.parserOptions...)
 	if err != nil {
 		return nil, err
 	}
 
-	if err := helmParser.ParseFS(ctx, target, path); err != nil {
+	if detection.IsArchive(path) {
+		if err := helmParser.ParseArchive(ctx, target, path); err != nil {
+			return nil, err
+		}
+	} else if err := helmParser.ParseFS(ctx, target, path); err != nil {
 		return nil, err
 	}
 

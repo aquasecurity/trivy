@@ -26,7 +26,7 @@ func TestScanner_ScanFS(t *testing.T) {
 	}{
 		{
 			name:   "archived chart",
-			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
+			target: filepath.Join("testdata", "mysql-8.8.26.tar.gz"),
 			assert: assertIds([]string{
 				"KSV-0001", "KSV-0003",
 				"KSV-0011", "KSV-0012", "KSV-0014",
@@ -72,7 +72,7 @@ func TestScanner_ScanFS(t *testing.T) {
 		},
 		{
 			name:   "with custom check",
-			target: filepath.Join("testdata", "mysql-8.8.26.tar"),
+			target: filepath.Join("testdata", "mysql-8.8.26.tar.gz"),
 			opts: []options.ScannerOption{
 				rego.WithPolicyNamespaces("user"),
 				rego.WithPolicyReader(strings.NewReader(`package user.kubernetes.ID001

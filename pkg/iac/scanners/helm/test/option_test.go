@@ -12,7 +12,6 @@ import (
 )
 
 func Test_helm_parser_with_options_with_values_file(t *testing.T) {
-
 	tests := []struct {
 		testName   string
 		chartName  string
@@ -102,7 +101,6 @@ func Test_helm_parser_with_options_with_set_value(t *testing.T) {
 }
 
 func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
-
 	tests := []struct {
 		testName    string
 		chartName   string
@@ -145,7 +143,6 @@ func Test_helm_parser_with_options_with_api_versions(t *testing.T) {
 }
 
 func Test_helm_parser_with_options_with_kube_versions(t *testing.T) {
-
 	tests := []struct {
 		testName      string
 		chartName     string
