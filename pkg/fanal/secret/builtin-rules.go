@@ -72,6 +72,7 @@ var (
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
 	CategoryAzure                = types.SecretRuleCategory("Azure")
+	CategoryMaven                = types.SecretRuleCategory("Maven")
 )
 
 // Reusable regex patterns
@@ -881,7 +882,9 @@ var builtinRules = []Rule{
 		Severity:        "HIGH",
 		Regex:           MustCompile(`(?i)(?:azure[_\-]?devops|ado)[_\-]?(?:pat|token|personal.?access.?token)\s*[:=]\s*["']?(?P<secret>[a-z2-7]{52})["']?`),
 		SecretGroupName: "secret",
-		Keywords:        []string{"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token"},
+		Keywords: []string{
+			"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token",
+		},
 	},
 	{
 		ID:              "azure-entra-client-secret",
@@ -927,5 +930,33 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?P<secret>[A-Za-z0-9+/]{52}JQQJ99C[A-Z][A-Za-z0-9+/]{7}XJ3w3[A-Za-z0-9+/]{4}ACOG[A-Za-z0-9+/]{4})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"XJ3w3"},
+	},
+	// Maven secrets for settings.xml and settings-security.xml, which are commonly used to store credentials for Maven repositories and servers.
+	{
+		ID:       "maven-settings-password",
+		Category: CategoryMaven,
+		Title:    "Maven settings.xml password",
+		Severity: "HIGH",
+		Regex:    MustCompile(`<\s*password\s*>\s*[^<\s][^<]{2,}\s*<\s*/\s*password\s*>`),
+		Path:     MustCompile(`(^|/)settings\.xml$`),
+		Keywords: []string{"password"},
+	},
+	{
+		ID:       "maven-settings-passphrase",
+		Category: CategoryMaven,
+		Title:    "Maven settings.xml passphrase",
+		Severity: "HIGH",
+		Regex:    MustCompile(`<\s*passphrase\s*>\s*[^<]+\s*<\s*/\s*passphrase\s*>`),
+		Path:     MustCompile(`(^|/)settings\.xml$`),
+		Keywords: []string{"passphrase"},
+	},
+	{
+		ID:       "maven-settings-security-master",
+		Category: CategoryMaven,
+		Title:    "Maven settings-security.xml master password",
+		Severity: "HIGH",
+		Regex:    MustCompile(`<\s*master\s*>\s*[^<]+\s*<\s*/\s*master\s*>`),
+		Path:     MustCompile(`(^|/)settings-security\.xml$`),
+		Keywords: []string{"master"},
 	},
 }

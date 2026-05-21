@@ -1280,6 +1280,107 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 0,
 	}
+	wantFindingMavenSettingsPassword := types.SecretFinding{
+		RuleID:    "maven-settings-password",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "********************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "********************************",
+					Highlighted: "********************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "**************************************",
+					Highlighted: "**************************************",
+				},
+			},
+		},
+		Offset: 11,
+	}
+	wantFindingMavenSettingsPassphrase := types.SecretFinding{
+		RuleID:    "maven-settings-passphrase",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml passphrase",
+		Severity:  "HIGH",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     "**************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "********************************",
+					Highlighted: "********************************",
+				},
+				{
+					Number:      3,
+					Content:     "**************************************",
+					Highlighted: "**************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      4,
+					Content:     "</settings>",
+					Highlighted: "</settings>",
+				},
+			},
+		},
+		Offset: 44,
+	}
+	wantFindingMavenSettingsSecurityMaster := types.SecretFinding{
+		RuleID:    "maven-settings-security-master",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings-security.xml master password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "***************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settingsSecurity>",
+					Highlighted: "<settingsSecurity>",
+				},
+				{
+					Number:      2,
+					Content:     "***************************************************************",
+					Highlighted: "***************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "</settingsSecurity>",
+					Highlighted: "</settingsSecurity>",
+				},
+			},
+		},
+		Offset: 19,
+	}
 
 	tests := []struct {
 		name          string
@@ -1832,6 +1933,27 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
 				Findings: []types.SecretFinding{wantFindingAzureAIServicesKey},
+			},
+		},
+		{
+			name:          "find Maven settings.xml password and passphrase",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings.xml"),
+				Findings: []types.SecretFinding{
+					wantFindingMavenSettingsPassphrase,
+					wantFindingMavenSettingsPassword,
+				},
+			},
+		},
+		{
+			name:          "find Maven settings-security.xml master password",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-security.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings-security.xml"),
+				Findings: []types.SecretFinding{wantFindingMavenSettingsSecurityMaster},
 			},
 		},
 		{
