@@ -810,6 +810,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		return nil, xerrors.New("offline mode")
 	}
 
+	seen := set.New[string]()
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
@@ -818,6 +819,14 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		// Apply <mirrors> from settings.xml so that settings/pom-declared/default
 		// repositories are all routed through a matching mirror at request time.
 		repo = p.mirrorFor(repo)
+
+		// After mirrorFor different source repositories may collapse to the same URL
+		// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
+		// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
+		if seen.Contains(repo.url.String()) {
+			continue
+		}
+		seen.Append(repo.url.String())
 
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
