@@ -1287,7 +1287,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "********************************",
+		Match:     "<password>***********</password>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1297,20 +1297,20 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "********************************",
-					Highlighted: "********************************",
+					Content:     "<password>***********</password>",
+					Highlighted: "<password>***********</password>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
 				},
 				{
 					Number:      3,
-					Content:     "**************************************",
-					Highlighted: "**************************************",
+					Content:     "<passphrase>*************</passphrase>",
+					Highlighted: "<passphrase>*************</passphrase>",
 				},
 			},
 		},
-		Offset: 11,
+		Offset: 21,
 	}
 	wantFindingMavenSettingsPassphrase := types.SecretFinding{
 		RuleID:    "maven-settings-passphrase",
@@ -1319,7 +1319,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 3,
 		EndLine:   3,
-		Match:     "**************************************",
+		Match:     "<passphrase>*************</passphrase>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1329,13 +1329,13 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "********************************",
-					Highlighted: "********************************",
+					Content:     "<password>***********</password>",
+					Highlighted: "<password>***********</password>",
 				},
 				{
 					Number:      3,
-					Content:     "**************************************",
-					Highlighted: "**************************************",
+					Content:     "<passphrase>*************</passphrase>",
+					Highlighted: "<passphrase>*************</passphrase>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1347,7 +1347,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
-		Offset: 44,
+		Offset: 56,
 	}
 	wantFindingMavenSettingsSecurityMaster := types.SecretFinding{
 		RuleID:    "maven-settings-security-master",
@@ -1356,7 +1356,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "***************************************************************",
+		Match:     "<master>**********************************************</master>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1366,8 +1366,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "***************************************************************",
-					Highlighted: "***************************************************************",
+					Content:     "<master>**********************************************</master>",
+					Highlighted: "<master>**********************************************</master>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1379,7 +1379,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
-		Offset: 19,
+		Offset: 27,
 	}
 
 	tests := []struct {
