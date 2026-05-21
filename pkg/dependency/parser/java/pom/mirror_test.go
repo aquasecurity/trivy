@@ -34,6 +34,15 @@ func Test_mirror_matches(t *testing.T) {
 			want:     true,
 		},
 		{
+			// Maven's order-sensitive semantics: the exact-id match is terminal,
+			// so a later exclusion of the same id never gets evaluated.
+			name:     "exact id wins over a later exclusion of the same id",
+			patterns: []string{"central", "!central"},
+			repoID:   "central",
+			repoURL:  mustParseURL(t, "https://repo.maven.apache.org/maven2"),
+			want:     true,
+		},
+		{
 			name:     "exclusion after wildcard",
 			patterns: []string{"*", "!internal"},
 			repoID:   "internal",

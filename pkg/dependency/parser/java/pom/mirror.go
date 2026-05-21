@@ -65,54 +65,50 @@ func resolveMirrors(mirrors []Mirror, servers []Server) []mirror {
 }
 
 // matches reports whether this mirror should serve the given repository.
-//
-// patterns originate from <mirrorOf>. Supported tokens:
-//   - "*"               — matches any repository
-//   - "external:*"      — matches any non-local repository (not file:// and not
-//     localhost/127.0.0.1/::1)
-//   - "external:http:*" — same as external:* but only for the http scheme
-//   - "<id>"            — matches a repository by exact id
-//   - "!<id>"           — excludes a repository by id; an exclusion always wins
-//     regardless of its position in the list, so "*,!internal"
-//     and "!internal,*" behave identically.
-//
 // See https://maven.apache.org/guides/mini/guide-mirror-settings.html
+//
+// Implements the same order-sensitive semantics as Maven's
+// DefaultMirrorSelector.matchPattern in maven-resolver. Patterns are walked
+// left-to-right; the loop terminates as soon as either an exact id or an
+// exclusion fires. Non-terminal tokens just set the flag and keep iterating
+// so that a later "!<id>" can still veto.
+//
+// Terminal tokens:
+//   - "<id>"            — exact match. Returns true.
+//   - "!<id>"           — exclusion of an exact id. Returns false.
+//
+// Non-terminal tokens (set flag, continue):
+//   - "*"               — any repository.
+//   - "external:*"      — any URL that is not file:// and not localhost /
+//     127.0.0.1 / ::1.
+//   - "external:http:*" — same as external:*, restricted to the http scheme.
 func (m mirror) matches(repoID string, repoURL *url.URL) bool {
-	// First pass: check exclusions. They take priority over any include token in
-	// the same list, so we must scan them all before deciding the include result.
+	result := false
 	for _, p := range m.patterns {
-		if id, ok := strings.CutPrefix(p, "!"); ok && id == repoID {
-			return false
-		}
-	}
-
-	// Second pass: check include tokens.
-	for _, p := range m.patterns {
-		// Exclusion tokens are already handled in the first pass.
-		if strings.HasPrefix(p, "!") {
-			continue
-		}
-		switch p {
-		case "*":
-			return true
-		case "external:*":
-			if isExternalRepo(repoURL) {
-				return true
+		switch {
+		// Exclusion token. A bare "!" without an id is not a valid exclusion,
+		// so the length check skips it (matches Maven's repo.length() > 1).
+		case len(p) > 1 && p[0] == '!':
+			if p[1:] == repoID {
+				return false
 			}
-		case "external:http:*":
+		case p == repoID:
+			return true
+		case p == "*":
+			result = true
+		case p == "external:*":
+			if isExternalRepo(repoURL) {
+				result = true
+			}
+		case p == "external:http:*":
 			// external:http:* is external:* restricted to the http scheme;
 			// https and other schemes must not match.
 			if isExternalRepo(repoURL) && repoURL.Scheme == "http" {
-				return true
-			}
-		default:
-			// Any non-keyword token is treated as an exact repository id.
-			if p == repoID {
-				return true
+				result = true
 			}
 		}
 	}
-	return false
+	return result
 }
 
 // isExternalRepo reports whether the URL points to an external repository.
