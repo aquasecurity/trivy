@@ -1957,6 +1957,17 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			// Three classes of non-secret values must be skipped:
+			//   1. Maven-encrypted (`{...}`) — safe without the master, which a separate
+			//      rule catches.
+			//   2. Maven property substitution (`${env.X}`) — a reference, not a literal.
+			//   3. Empty or whitespace-only values — fail the minimum-length check.
+			name:          "skip non-secret values (encrypted, placeholders, empty)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-encrypted.xml"),
+			want:          types.Secret{},
+		},
+		{
 			name:          "invalid UTF-8 sequences in secrets",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "invalid-utf8.txt"),

@@ -931,14 +931,28 @@ var builtinRules = []Rule{
 		SecretGroupName: "secret",
 		Keywords:        []string{"XJ3w3"},
 	},
-	// Maven secrets for settings.xml and settings-security.xml, which are commonly used to store credentials for Maven repositories and servers.
+	// Maven secrets for settings.xml and settings-security.xml — common storage for
+	// repository/server credentials baked into images.
+	//
+	// Path matches any settings.xml on the filesystem (not anchored to ~/.m2 or
+	// /etc/maven) because Maven settings ship in many locations and a narrower
+	// filter would miss legitimate cases. The XML tag combined with file name is
+	// already specific enough to keep false positives low.
+	//
+	// `password` and `passphrase` exclude `{` from the secret value, which skips
+	// both Maven-encrypted values (`{...}`, see
+	// plexus-cipher.DefaultPlexusCipher#ENCRYPTED_STRING_PATTERN) and Maven
+	// property substitution (`${env.X}`, `${prop.Y}`). Encrypted values are
+	// useless without the master from settings-security.xml (detected by a
+	// separate rule), and property placeholders are references rather than
+	// literal secrets.
 	{
 		ID:              "maven-settings-password",
 		Category:        CategoryMaven,
 		Title:           "Maven settings.xml password",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`<\s*password\s*>\s*(?P<secret>[^<\s][^<]{2,})\s*<\s*/\s*password\s*>`),
-		Path:            MustCompile(`(^|/)settings\.xml$`),
+		Regex:           MustCompile(`(?i)<\s*password\s*>\s*(?P<secret>[^<\s{][^<{]{2,})\s*<\s*/\s*password\s*>`),
+		Path:            MustCompile(`(?i)(^|/)settings\.xml$`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"password"},
 	},
@@ -947,8 +961,8 @@ var builtinRules = []Rule{
 		Category:        CategoryMaven,
 		Title:           "Maven settings.xml passphrase",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`<\s*passphrase\s*>\s*(?P<secret>[^<]+)\s*<\s*/\s*passphrase\s*>`),
-		Path:            MustCompile(`(^|/)settings\.xml$`),
+		Regex:           MustCompile(`(?i)<\s*passphrase\s*>\s*(?P<secret>[^<\s{][^<{]{2,})\s*<\s*/\s*passphrase\s*>`),
+		Path:            MustCompile(`(?i)(^|/)settings\.xml$`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"passphrase"},
 	},
@@ -957,8 +971,8 @@ var builtinRules = []Rule{
 		Category:        CategoryMaven,
 		Title:           "Maven settings-security.xml master password",
 		Severity:        "HIGH",
-		Regex:           MustCompile(`<\s*master\s*>\s*(?P<secret>[^<]+)\s*<\s*/\s*master\s*>`),
-		Path:            MustCompile(`(^|/)settings-security\.xml$`),
+		Regex:           MustCompile(`(?i)<\s*master\s*>\s*(?P<secret>[^<\s][^<]{2,})\s*<\s*/\s*master\s*>`),
+		Path:            MustCompile(`(?i)(^|/)settings-security\.xml$`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"master"},
 	},
