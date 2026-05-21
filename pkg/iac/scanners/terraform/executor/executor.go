@@ -237,7 +237,7 @@ func workspaceIgnorer(ws string) ignore.Ignorer {
 		if !ok {
 			return false
 		}
-		return ignore.MatchPattern(ws, ignoredWorkspace)
+		return ignore.MatchPatternCaseSensitive(ws, ignoredWorkspace)
 	}
 }
 

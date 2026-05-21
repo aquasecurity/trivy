@@ -267,19 +267,19 @@ func (r *Results) AddIgnored(source any, descriptions ...string) {
 }
 
 func (r *Results) Ignore(ignoreRules ignore.Rules, ignores map[string]ignore.Ignorer) {
-	for i, result := range *r {
+	for i := range *r {
+		result := &(*r)[i]
+		rule := result.Rule()
 		allIDs := []string{
-			result.Rule().ID,
-			strings.ToLower(result.Rule().ID),
-			result.Rule().CanonicalID(),
-			result.Rule().AVDID,
-			strings.ToLower(result.Rule().AVDID),
-			result.Rule().ShortCode,
+			rule.ID,
+			rule.CanonicalID(),
+			rule.AVDID,
+			rule.ShortCode,
 		}
-		allIDs = append(allIDs, result.Rule().Aliases...)
+		allIDs = append(allIDs, rule.Aliases...)
 
 		if ignoreRules.Ignore(result.Metadata(), allIDs, ignores) {
-			(*r)[i].OverrideStatus(StatusIgnored)
+			result.OverrideStatus(StatusIgnored)
 		}
 	}
 }

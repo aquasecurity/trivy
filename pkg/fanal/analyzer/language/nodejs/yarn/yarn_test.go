@@ -398,6 +398,76 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 				},
 			},
 		},
+		// docker run --rm -v ".../yarn-berry-node-modules:/work" -w /work node:sha256:fb4cd12c85ee03686f6af5362a0b0d56d50c58a04632e6c0fb8363f609372293 sh
+		// yarn init -y && yarn set version 3.4.1
+		// printf "nodeLinker: node-modules\n" >> .yarnrc.yml
+		// yarn add is-callable@1.2.7 is-odd@3.0.1
+		{
+			name: "parse licenses (yarn v2+ with node-modules linker)",
+			dir:  "testdata/yarn-berry-node-modules",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Packages: []types.Package{
+							{
+								ID:           "work@1.0.0",
+								Name:         "work",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								Licenses:     []string{"MIT"},
+								DependsOn: []string{
+									"is-callable@1.2.7",
+									"is-odd@3.0.1",
+								},
+							},
+							{
+								ID:           "is-callable@1.2.7",
+								Name:         "is-callable",
+								Version:      "1.2.7",
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 8,
+										EndLine:   13,
+									},
+								},
+							},
+							{
+								ID:           "is-odd@3.0.1",
+								Name:         "is-odd",
+								Version:      "3.0.1",
+								Relationship: types.RelationshipDirect,
+								Licenses:     []string{"MIT"},
+								DependsOn:    []string{"is-number@6.0.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   29,
+									},
+								},
+							},
+							{
+								ID:           "is-number@6.0.0",
+								Name:         "is-number",
+								Version:      "6.0.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Licenses:     []string{"MIT"},
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   20,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 		{
 			name: "package uses `latest` version",
 			dir:  "testdata/latest-version",

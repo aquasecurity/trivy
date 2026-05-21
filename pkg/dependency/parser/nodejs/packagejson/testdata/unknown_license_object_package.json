@@ -1,0 +1,8 @@
+{
+  "name": "unknown-license-object",
+  "version": "1.0.0",
+  "license": {
+    "foo": "bar"
+  },
+  "dependencies": {}
+}

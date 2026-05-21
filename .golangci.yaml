@@ -204,7 +204,7 @@ linters:
     warn-unused: true
 
 run:
-  go: "1.25"
+  go: "1.26"
   timeout: 30m
 
 formatters:
