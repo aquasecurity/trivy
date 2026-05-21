@@ -73,21 +73,21 @@ func Test_mirror_matches(t *testing.T) {
 		{
 			name:     "external skips file scheme",
 			patterns: []string{"external:*"},
-			repoID:   "local",
+			repoID:   "my-local",
 			repoURL:  mustParseURL(t, "file:///tmp/repo"),
 			want:     false,
 		},
 		{
 			name:     "external skips localhost",
 			patterns: []string{"external:*"},
-			repoID:   "local",
+			repoID:   "my-local",
 			repoURL:  mustParseURL(t, "http://localhost:8081/repo"),
 			want:     false,
 		},
 		{
 			name:     "external skips 127.0.0.1",
 			patterns: []string{"external:*"},
-			repoID:   "local",
+			repoID:   "my-local",
 			repoURL:  mustParseURL(t, "http://127.0.0.1/repo"),
 			want:     false,
 		},
@@ -115,7 +115,7 @@ func Test_mirror_matches(t *testing.T) {
 		{
 			name:     "external:http does not match localhost",
 			patterns: []string{"external:http:*"},
-			repoID:   "local",
+			repoID:   "my-local",
 			repoURL:  mustParseURL(t, "http://localhost/repo"),
 			want:     false,
 		},
