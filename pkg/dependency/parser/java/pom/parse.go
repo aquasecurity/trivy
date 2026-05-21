@@ -968,6 +968,10 @@ func isDirectory(path string) (bool, error) {
 	return fileInfo.IsDir(), err
 }
 
+// shouldReturnError reports whether err should abort POM resolving.
+// context.DeadlineExceeded and any *types.UserError stop the resolving to
+// avoid producing a report with incomplete information; the error is then
+// propagated up the stack.
 func shouldReturnError(err error) bool {
 	if errors.Is(err, context.DeadlineExceeded) {
 		return true
