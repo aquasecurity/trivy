@@ -120,10 +120,31 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", srcName, err)
 		}
 
-		for _, adv := range advisories {
-			vulnerable := s.isVulnerable(ctx, installedVer, identifier, isRFPackage, adv)
+		// Fallback: some upstream RapidFort advisory files key entries by the binary
+		// package name rather than the SRPM name.
+		// Query the binary name as well and merge, deduping by VulnerabilityID with srcName entries winning.
+		if pkg.Name != srcName {
+			binAdvisories, err := s.dbc.GetAdvisories(platformName, pkg.Name)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", pkg.Name, err)
+			}
+			if len(binAdvisories) > 0 {
+				seen := make(map[string]struct{}, len(advisories))
+				for _, adv := range advisories {
+					seen[adv.VulnerabilityID] = struct{}{}
+				}
+				for _, adv := range binAdvisories {
+					if _, ok := seen[adv.VulnerabilityID]; ok {
+						continue
+					}
+					seen[adv.VulnerabilityID] = struct{}{}
+					advisories = append(advisories, adv)
+				}
+			}
+		}
 
-			if !vulnerable {
+		for _, adv := range advisories {
+			if !s.isVulnerable(ctx, installedVer, identifier, isRFPackage, adv) {
 				continue
 			}
 

@@ -434,6 +434,197 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Source→binary fallback: rpm-sequoia is the installed binary,
+			// rust-rpm-sequoia is its SRPM. CVE-2025-0977 lives in the SRPM
+			// bucket (primary lookup). CVE-2026-2625 lives in the binary
+			// bucket (must be picked up by the fallback). CVE-2025-OVERLAP
+			// is present in both buckets — dedupe must keep the SRPM entry
+			// (Severity High, fix 1.9.0-1.el9), not the binary one.
+			name:   "RedHat: source→binary fallback picks up binary-keyed advisory",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rpm-sequoia",
+						Version:    "1.0.0-1.el9",
+						SrcName:    "rust-rpm-sequoia",
+						SrcVersion: "1.0.0-1.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-0977",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.8.0-2.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-OVERLAP",
+					InstalledVersion: "1.0.0-1.el9",
+					// SRPM entry wins on dedupe: fix = 1.9.0-1.el9, not 99.99.99-1.el9.
+					FixedVersion:   "1.9.0-1.el9",
+					SeveritySource: "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						// SRPM entry wins: High, not Low from the binary bucket.
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2026-2625",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.10.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// When pkg.Name == pkg.SrcName the binary bucket must NOT be
+			// queried. CVE-2026-2625 lives only in the rpm-sequoia bucket;
+			// for an installed package whose Name and SrcName both equal
+			// rust-rpm-sequoia, it must not surface.
+			name:   "RedHat: no fallback when Name == SrcName (binary bucket not queried)",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rust-rpm-sequoia",
+						Version:    "1.0.0-1.el9",
+						SrcName:    "rust-rpm-sequoia",
+						SrcVersion: "1.0.0-1.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rust-rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-0977",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.8.0-2.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rust-rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-OVERLAP",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.9.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
+		{
+			// SrcName empty → falls back to pkg.Name internally (existing behavior).
+			// pkg.Name == derived srcName so the binary-name fallback must NOT
+			// fire — CVE-2025-0977 (only in the rust-rpm-sequoia bucket) must
+			// not appear.
+			name:   "RedHat: empty SrcName falls back to Name, no second lookup",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rpm-sequoia",
+						Version:    "1.0.0-1.el9",
+						SrcVersion: "1.0.0-1.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-OVERLAP",
+					InstalledVersion: "1.0.0-1.el9",
+					// Only the rpm-sequoia bucket entry is seen here.
+					FixedVersion:   "99.99.99-1.el9",
+					SeveritySource: "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2026-2625",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.10.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

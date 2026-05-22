@@ -77,6 +77,58 @@
             Custom:
               identifiers:
                 - "fc39"
+    # SRPM bucket: trivy looks up advisories here using pkg.SrcName.
+    - bucket: rust-rpm-sequoia
+      pairs:
+        - key: CVE-2025-0977
+          value:
+            VulnerableVersions:
+              - ">= 0, < 1.8.0-2.el9"
+            PatchedVersions:
+              - "1.8.0-2.el9"
+            Severity: 3
+            Custom:
+              identifiers:
+                - "el9"
+        # Overlap with rpm-sequoia bucket — dedupe must keep the srcName entry
+        # (this Severity=3 / fix=1.9.0-1.el9), not the binary one below.
+        - key: CVE-2025-OVERLAP
+          value:
+            VulnerableVersions:
+              - ">= 0, < 1.9.0-1.el9"
+            PatchedVersions:
+              - "1.9.0-1.el9"
+            Severity: 3
+            Custom:
+              identifiers:
+                - "el9"
+    # Binary bucket: trivy must also query this and merge when pkg.Name differs
+    # from pkg.SrcName. Mirrors the upstream rpm-sequoia.json mis-key issue.
+    - bucket: rpm-sequoia
+      pairs:
+        - key: CVE-2026-2625
+          value:
+            VulnerableVersions:
+              - ">= 0, < 1.10.0-1.el9"
+            PatchedVersions:
+              - "1.10.0-1.el9"
+            Severity: 2
+            Custom:
+              identifiers:
+                - "el9"
+        # Same CVE as in rust-rpm-sequoia bucket but with a different (wrong)
+        # fix version + severity. Dedupe must drop this entry in favor of the
+        # srcName one.
+        - key: CVE-2025-OVERLAP
+          value:
+            VulnerableVersions:
+              - ">= 0, < 99.99.99-1.el9"
+            PatchedVersions:
+              - "99.99.99-1.el9"
+            Severity: 1
+            Custom:
+              identifiers:
+                - "el9"
     - bucket: curl
       pairs:
         - key: CVE-2023-27536
