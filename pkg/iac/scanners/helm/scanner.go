@@ -100,11 +100,21 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 		return nil, err
 	}
 
+	if len(locations) == 0 {
+		return nil, nil
+	}
+
+	rs, err := s.InitRegoScanner(fsys, s.options)
+	if err != nil {
+		return nil, fmt.Errorf("init rego scanner: %w", err)
+	}
+
 	var results []scan.Result
 	for _, loc := range locations {
-		scanResults, err := s.scanChart(ctx, loc, fsys)
+		scanResults, err := s.scanChart(ctx, rs, loc, fsys)
 		if err != nil {
-			return nil, err
+			s.logger.Warn("Skipping chart", log.FilePath(loc.path), log.Err(err))
+			continue
 		}
 		results = append(results, scanResults...)
 	}
@@ -147,7 +157,7 @@ func unpackedChartExists(fsys fs.FS, archivePath string) bool {
 	return err == nil
 }
 
-func (s *Scanner) scanChart(ctx context.Context, loc chartLocation, target fs.FS) (results []scan.Result, err error) {
+func (s *Scanner) scanChart(ctx context.Context, rs *rego.Scanner, loc chartLocation, target fs.FS) (results []scan.Result, err error) {
 	helmParser, err := parser.New(s.parserOptions...)
 	if err != nil {
 		return nil, err
@@ -159,17 +169,8 @@ func (s *Scanner) scanChart(ctx context.Context, loc chartLocation, target fs.FS
 	} else {
 		manifests, err = helmParser.ParseFS(ctx, target, loc.path)
 	}
-	if err != nil { // not valid helm, maybe some other yaml etc., abort
-		s.logger.Error(
-			"Failed to render Chart files",
-			log.FilePath(loc.path), log.Err(err),
-		)
-		return nil, nil
-	}
-
-	rs, err := s.InitRegoScanner(target, s.options)
 	if err != nil {
-		return nil, fmt.Errorf("init rego scanner: %w", err)
+		return nil, fmt.Errorf("parse chart: %w", err)
 	}
 
 	for _, file := range manifests {
@@ -178,7 +179,7 @@ func (s *Scanner) scanChart(ctx context.Context, loc chartLocation, target fs.FS
 		ignoreRules := ignore.Parse(file.Content, file.Path, loc.path)
 		k8sManifests, err := kparser.Parse(ctx, strings.NewReader(file.Content), file.Path)
 		if err != nil {
-			return nil, fmt.Errorf("unmarshal yaml: %w", err)
+			return nil, fmt.Errorf("parse rendered manifest %q: %w", file.Path, err)
 		}
 
 		manifestFS := mapfs.New()
@@ -196,7 +197,7 @@ func (s *Scanner) scanChart(ctx context.Context, loc chartLocation, target fs.FS
 				FS:       manifestFS,
 			})
 			if err != nil {
-				return nil, fmt.Errorf("scanning error: %w", err)
+				return nil, fmt.Errorf("rego scan %q: %w", file.Path, err)
 			}
 
 			fileResults.SetSourceAndFilesystem(loc.path, manifestFS, loc.isArchive)
