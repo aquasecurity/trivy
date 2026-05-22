@@ -1,3 +1,4 @@
+-- templates/pdb.yaml --
 # Source: with-api-version/templates/pdb.yaml
 apiVersion: policy/v1
 kind: PodDisruptionBudget
@@ -15,3 +16,4 @@ spec:
       app.kubernetes.io/name: with-api-version
       app.kubernetes.io/instance: with-api-version
   maxUnavailable: 0
+

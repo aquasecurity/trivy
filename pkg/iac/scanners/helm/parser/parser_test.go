@@ -1,6 +1,7 @@
 package parser_test
 
 import (
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -9,15 +10,16 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 )
 
-func assertManifestEqual(t *testing.T, expectedPath, actual string) {
+func assertManifestEqual(t *testing.T, fsys fs.FS, path, actual string) {
 	t.Helper()
-	expectedContent, err := os.ReadFile(expectedPath)
+	expected, err := fs.ReadFile(fsys, path)
 	require.NoError(t, err)
-	assert.Equal(t, normalizeManifest(string(expectedContent)), normalizeManifest(actual))
+	assert.Equal(t, normalizeManifest(string(expected)), normalizeManifest(actual))
 }
 
 func normalizeManifest(s string) string {
@@ -31,24 +33,16 @@ func TestParseFS(t *testing.T) {
 		chartName     string
 		opts          []parser.Option
 		manifestCount int
-		expectedDir   string
 		expectedError string
 	}{
 		{
 			name:          "simple chart",
 			chartName:     "testchart",
 			manifestCount: 3,
-			expectedDir:   filepath.Join("testdata", "expected", "testchart"),
-		},
-		{
-			name:          "chart with tarred dependency",
-			chartName:     "with-tarred-dep",
-			manifestCount: 3,
-			expectedDir:   filepath.Join("testdata", "expected", "with-tarred-dep"),
 		},
 		{
 			name:          "chart with integer name",
-			chartName:     "numberName",
+			chartName:     "chart-with-integer-name",
 			manifestCount: 0,
 		},
 		{
@@ -56,28 +50,24 @@ func TestParseFS(t *testing.T) {
 			chartName:     "testchart",
 			opts:          []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values", "values.yaml"))},
 			manifestCount: 3,
-			expectedDir:   filepath.Join("testdata", "expected", "options", "testchart"),
 		},
 		{
 			name:          "set value option",
 			chartName:     "testchart",
 			opts:          []parser.Option{parser.OptionWithValues("securityContext.runAsUser=0")},
 			manifestCount: 3,
-			expectedDir:   filepath.Join("testdata", "expected", "options", "testchart"),
 		},
 		{
 			name:          "api versions option",
 			chartName:     "with-api-version",
 			opts:          []parser.Option{parser.OptionWithAPIVersions("policy/v1/PodDisruptionBudget")},
 			manifestCount: 1,
-			expectedDir:   filepath.Join("testdata", "expected", "options", "with-api-version"),
 		},
 		{
 			name:          "kube version option",
 			chartName:     "with-kube-version",
 			opts:          []parser.Option{parser.OptionWithKubeVersion("1.60")},
 			manifestCount: 1,
-			expectedDir:   filepath.Join("testdata", "expected", "options", "with-kube-version"),
 		},
 		{
 			name:          "invalid kube version",
@@ -96,37 +86,98 @@ func TestParseFS(t *testing.T) {
 			}
 			require.NoError(t, err)
 
-			manifests, err := p.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", tt.chartName)), ".")
+			fsys := testutil.TxtarToFS(t, filepath.Join("testdata", tt.chartName+".txtar"))
+			manifests, err := p.ParseFS(t.Context(), fsys, ".")
 			require.NoError(t, err)
 			assert.Len(t, manifests, tt.manifestCount)
+		})
+	}
+}
 
-			if tt.expectedDir != "" {
-				for _, manifest := range manifests {
-					assertManifestEqual(t, filepath.Join(tt.expectedDir, manifest.Path), manifest.Content)
-				}
+func TestParseFS_Rendered(t *testing.T) {
+	tests := []struct {
+		name         string
+		chartName    string
+		opts         []parser.Option
+		expectedFile string
+	}{
+		{
+			name:         "simple chart",
+			chartName:    "testchart",
+			expectedFile: "testchart.txtar",
+		},
+		{
+			name:         "values file option",
+			chartName:    "testchart",
+			opts:         []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values", "values.yaml"))},
+			expectedFile: "testchart-with-options.txtar",
+		},
+		{
+			name:         "set value option",
+			chartName:    "testchart",
+			opts:         []parser.Option{parser.OptionWithValues("securityContext.runAsUser=0")},
+			expectedFile: "testchart-with-options.txtar",
+		},
+		{
+			name:         "api versions option",
+			chartName:    "with-api-version",
+			opts:         []parser.Option{parser.OptionWithAPIVersions("policy/v1/PodDisruptionBudget")},
+			expectedFile: "with-api-version.txtar",
+		},
+		{
+			name:         "kube version option",
+			chartName:    "with-kube-version",
+			opts:         []parser.Option{parser.OptionWithKubeVersion("1.60")},
+			expectedFile: "with-kube-version.txtar",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p, err := parser.New(tt.opts...)
+			require.NoError(t, err)
+
+			fsys := testutil.TxtarToFS(t, filepath.Join("testdata", tt.chartName+".txtar"))
+			manifests, err := p.ParseFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+
+			expectedFS := testutil.TxtarToFS(t, filepath.Join("testdata", "expected", tt.expectedFile))
+			for _, manifest := range manifests {
+				assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
 			}
 		})
 	}
 }
 
+func TestParseFS_WithArchivedDependency(t *testing.T) {
+	expectedFS := testutil.TxtarToFS(t, filepath.Join("testdata", "expected", "chart-with-packaged-dep.txtar"))
+
+	p, err := parser.New()
+	require.NoError(t, err)
+
+	manifests, err := p.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", "chart-with-packaged-dep")), ".")
+	require.NoError(t, err)
+	assert.Len(t, manifests, 3)
+
+	for _, manifest := range manifests {
+		assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
+	}
+}
+
 func TestParseArchive(t *testing.T) {
+	expectedFS := testutil.TxtarToFS(t, filepath.Join("testdata", "expected", "mysql.txtar"))
+
 	tests := []struct {
-		name          string
-		archiveFile   string
-		manifestCount int
-		expectedDir   string
+		name        string
+		archiveFile string
 	}{
 		{
-			name:          "tar.gz archive",
-			archiveFile:   "mysql-8.8.26.tar.gz",
-			manifestCount: 6,
-			expectedDir:   filepath.Join("testdata", "expected", "mysql"),
+			name:        "tar.gz archive",
+			archiveFile: "mysql-8.8.26.tar.gz",
 		},
 		{
-			name:          "tgz archive",
-			archiveFile:   "mysql-8.8.26.tgz",
-			manifestCount: 6,
-			expectedDir:   filepath.Join("testdata", "expected", "mysql"),
+			name:        "tgz archive",
+			archiveFile: "mysql-8.8.26.tgz",
 		},
 	}
 
@@ -137,24 +188,13 @@ func TestParseArchive(t *testing.T) {
 
 			manifests, err := p.ParseArchive(t.Context(), os.DirFS("testdata"), tt.archiveFile)
 			require.NoError(t, err)
-			assert.Len(t, manifests, tt.manifestCount)
+			assert.Len(t, manifests, 6)
 
-			oneOf := []string{
-				"configmap.yaml",
-				"statefulset.yaml",
-				"svc-headless.yaml",
-				"svc.yaml",
-				"secrets.yaml",
-				"serviceaccount.yaml",
-			}
 			for _, manifest := range manifests {
-				filename := filepath.Base(manifest.Path)
-				assert.Contains(t, oneOf, filename)
-
 				if strings.HasSuffix(manifest.Path, "secrets.yaml") {
 					continue
 				}
-				assertManifestEqual(t, filepath.Join(tt.expectedDir, manifest.Path), manifest.Content)
+				assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
 			}
 		})
 	}

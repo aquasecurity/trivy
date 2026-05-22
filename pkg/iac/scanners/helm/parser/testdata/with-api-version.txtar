@@ -1,15 +1,15 @@
-{{/*
-Expand the name of the chart.
-*/}}
+-- Chart.yaml --
+apiVersion: v2
+name: with-api-version
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+-- values.yaml --
+-- templates/_helpers.tpl --
 {{- define "with-api-version.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Create a default fully qualified app name.
-We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
-If release name contains chart name it will be used as a full name.
-*/}}
 {{- define "with-api-version.fullname" -}}
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
@@ -23,16 +23,10 @@ If release name contains chart name it will be used as a full name.
 {{- end }}
 {{- end }}
 
-{{/*
-Create chart name and version as used by the chart label.
-*/}}
 {{- define "with-api-version.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
-{{/*
-Common labels
-*/}}
 {{- define "with-api-version.labels" -}}
 helm.sh/chart: {{ include "with-api-version.chart" . }}
 {{ include "with-api-version.selectorLabels" . }}
@@ -42,21 +36,19 @@ app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
 {{- end }}
 
-{{/*
-Selector labels
-*/}}
 {{- define "with-api-version.selectorLabels" -}}
 app.kubernetes.io/name: {{ include "with-api-version.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
-{{/*
-Create the name of the service account to use
-*/}}
-{{- define "with-api-version.serviceAccountName" -}}
-{{- if .Values.serviceAccount.create }}
-{{- default (include "with-api-version.fullname" .) .Values.serviceAccount.name }}
-{{- else }}
-{{- default "default" .Values.serviceAccount.name }}
-{{- end }}
-{{- end }}
+-- templates/pdb.yaml --
+apiVersion: {{ $.Capabilities.APIVersions.Has "policy/v1/PodDisruptionBudget" | ternary "policy/v1" "policy/v1beta1" }}
+kind: PodDisruptionBudget
+metadata:
+  name: {{ include "with-api-version.fullname" . }}
+  labels:
+    {{- include "with-api-version.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "with-api-version.selectorLabels" . | nindent 6 }}
+  maxUnavailable: 0
