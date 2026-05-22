@@ -1,3 +1,6 @@
+Chart with two nearly identical templates. Used to verify that failed scan results 
+include the correct source code snippet.
+
 -- Chart.yaml --
 apiVersion: v2
 name: test-license-manager

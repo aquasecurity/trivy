@@ -1,3 +1,6 @@
+Real-world chart (aws-cluster-autoscaler) where the chart name is missing from Chart.yaml 
+and derived from values. Tests parser recovery.
+
 -- Chart.yaml --
 apiVersion: v1
 deprecated: true

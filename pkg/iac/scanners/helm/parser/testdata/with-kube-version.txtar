@@ -1,3 +1,5 @@
+Chart that uses .Capabilities.KubeVersion to conditionally render a resource.
+
 -- Chart.yaml --
 apiVersion: v2
 name: with-api-version

@@ -1,3 +1,5 @@
+Chart that uses .Capabilities.APIVersions to conditionally render a PodDisruptionBudget.
+
 -- Chart.yaml --
 apiVersion: v2
 name: with-api-version

@@ -1,3 +1,5 @@
+Chart with an embedded subchart (nginx). Verifies that the subchart is scanned exactly once.
+
 -- Chart.yaml --
 apiVersion: v2
 name: test

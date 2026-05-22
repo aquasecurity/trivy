@@ -1,3 +1,5 @@
+Base test chart used across parser tests.
+
 -- Chart.yaml --
 apiVersion: v2
 name: testchart

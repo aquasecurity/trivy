@@ -1,3 +1,5 @@
+Chart whose name is defined via a template expression. Verifies the scanner handles dynamic chart names.
+
 -- Chart.yaml --
 apiVersion: v2
 name: {{COMPONENT_NAME}}

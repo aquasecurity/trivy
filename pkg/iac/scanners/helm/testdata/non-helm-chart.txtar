@@ -1,2 +1,4 @@
+Non-helm file. Verifies that the scanner does not error on unrecognized input.
+
 -- testChart.yaml --
 foo: bar
