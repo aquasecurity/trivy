@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -14,12 +13,14 @@ import (
 
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
-	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/chart"
-	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/chartutil"
-	"helm.sh/helm/v3/pkg/release"
-	"helm.sh/helm/v3/pkg/releaseutil"
+	"helm.sh/helm/v4/pkg/action"
+	"helm.sh/helm/v4/pkg/chart"
+	"helm.sh/helm/v4/pkg/chart/common"
+	"helm.sh/helm/v4/pkg/chart/loader/archive"
+	chartv2 "helm.sh/helm/v4/pkg/chart/v2"
+	loaderv2 "helm.sh/helm/v4/pkg/chart/v2/loader"
+	"helm.sh/helm/v4/pkg/release"
+	releaseutil "helm.sh/helm/v4/pkg/release/v1/util"
 
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -50,9 +51,8 @@ type ChartFile struct {
 func New(src string, opts ...Option) (*Parser, error) {
 
 	client := action.NewInstall(&action.Configuration{})
-	client.DryRun = true     // don't do anything
-	client.Replace = true    // skip name check
-	client.ClientOnly = true // don't try to talk to a cluster
+	client.DryRunStrategy = action.DryRunClient // to avoid the client making calls to the server
+	client.Replace = true                       // skip name check
 
 	p := &Parser{
 		helmClient:  client,
@@ -70,7 +70,7 @@ func New(src string, opts ...Option) (*Parser, error) {
 	}
 
 	if p.kubeVersion != "" {
-		kubeVersion, err := chartutil.ParseKubeVersion(p.kubeVersion)
+		kubeVersion, err := common.ParseKubeVersion(p.kubeVersion)
 		if err != nil {
 			return nil, err
 		}
@@ -151,7 +151,6 @@ func (p *Parser) addPaths(fsys fs.FS, paths ...string) error {
 }
 
 func (p *Parser) extractChartName(fsys fs.FS, chartPath string) error {
-
 	chrt, err := fsys.Open(chartPath)
 	if err != nil {
 		return err
@@ -169,29 +168,26 @@ func (p *Parser) extractChartName(fsys fs.FS, chartPath string) error {
 		return nil
 	}
 
-	if name, ok := chartContent["name"]; !ok {
+	name, ok := chartContent["name"]
+	if !ok {
 		return fmt.Errorf("could not extract the chart name from %s", chartPath)
-	} else {
-		p.helmClient.ReleaseName = fmt.Sprintf("%v", name)
 	}
+	p.helmClient.ReleaseName = fmt.Sprintf("%v", name)
 	return nil
 }
 
 func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
-	workingChart, err := p.loadChart()
+	chrt, err := p.loadChart()
 	if err != nil {
 		return nil, err
 	}
 
-	workingRelease, err := p.getRelease(workingChart)
+	acc, err := p.getRelease(chrt)
 	if err != nil {
 		return nil, err
 	}
 
-	var manifests bytes.Buffer
-	_, _ = fmt.Fprintln(&manifests, strings.TrimSpace(workingRelease.Manifest))
-
-	splitManifests := releaseutil.SplitManifests(manifests.String())
+	splitManifests := releaseutil.SplitManifests(strings.TrimSpace(acc.Manifest()))
 	manifestsKeys := make([]string, 0, len(splitManifests))
 	for k := range splitManifests {
 		manifestsKeys = append(manifestsKeys, k)
@@ -199,7 +195,7 @@ func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
 	return p.getRenderedManifests(manifestsKeys, splitManifests), nil
 }
 
-func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
+func (p *Parser) getRelease(chrt *chartv2.Chart) (release.Accessor, error) {
 	opts := &ValueOptions{
 		ValueFiles:   p.valuesFiles,
 		Values:       p.values,
@@ -211,19 +207,25 @@ func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	r, err := p.helmClient.RunWithContext(context.Background(), chrt, vals)
+
+	rel, err := p.helmClient.RunWithContext(context.Background(), chrt, vals)
 	if err != nil {
 		return nil, err
 	}
 
-	if r == nil {
+	if rel == nil {
 		return nil, errors.New("there is nothing in the release")
 	}
-	return r, nil
+
+	acc, err := release.NewAccessor(rel)
+	if err != nil {
+		return nil, err
+	}
+	return acc, nil
 }
 
-func (p *Parser) loadChart() (*chart.Chart, error) {
-	var files []*loader.BufferedFile
+func (p *Parser) loadChart() (*chartv2.Chart, error) {
+	var files []*archive.BufferedFile
 
 	for filePath, fsys := range p.filepaths {
 		b, err := fs.ReadFile(fsys, filePath)
@@ -233,24 +235,29 @@ func (p *Parser) loadChart() (*chart.Chart, error) {
 
 		filePath = strings.TrimPrefix(filePath, p.rootPath+"/")
 		filePath = filepath.ToSlash(filePath)
-		files = append(files, &loader.BufferedFile{
+		files = append(files, &archive.BufferedFile{
 			Name: filePath,
 			Data: b,
 		})
 	}
 
-	c, err := loader.LoadFiles(files)
+	chrt, err := loaderv2.LoadFiles(files)
 	if err != nil {
 		return nil, err
 	}
 
-	if req := c.Metadata.Dependencies; req != nil {
-		if err := action.CheckDependencies(c, req); err != nil {
+	if req := chrt.Metadata.Dependencies; req != nil {
+		acc, err := chart.NewAccessor(chrt)
+		if err != nil {
+			return nil, err
+		}
+
+		if err := action.CheckDependencies(chrt, acc.MetaDependencies()); err != nil {
 			return nil, err
 		}
 	}
 
-	return c, nil
+	return chrt, nil
 }
 
 func (*Parser) getRenderedManifests(manifestsKeys []string, splitManifests map[string]string) []ChartFile {
