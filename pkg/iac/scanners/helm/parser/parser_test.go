@@ -1,14 +1,13 @@
 package parser_test
 
 import (
-	"archive/tar"
 	"bytes"
-	"compress/gzip"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -17,49 +16,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 )
-
-func makeTar(t *testing.T, files map[string]string) []byte {
-	t.Helper()
-	var buf bytes.Buffer
-	tw := tar.NewWriter(&buf)
-	for name, content := range files {
-		require.NoError(t, tw.WriteHeader(&tar.Header{
-			Name: name, Typeflag: tar.TypeReg, Size: int64(len(content)),
-		}))
-		_, err := tw.Write([]byte(content))
-		require.NoError(t, err)
-	}
-	require.NoError(t, tw.Close())
-	return buf.Bytes()
-}
-
-func makeTarGz(t *testing.T, files map[string]string) []byte {
-	t.Helper()
-	var buf bytes.Buffer
-	gw := gzip.NewWriter(&buf)
-	_, err := gw.Write(makeTar(t, files))
-	require.NoError(t, err)
-	require.NoError(t, gw.Close())
-	return buf.Bytes()
-}
-
-func makeBrokenTarGz(t *testing.T, files map[string]string) []byte {
-	t.Helper()
-	var buf bytes.Buffer
-	gw := gzip.NewWriter(&buf)
-	tw := tar.NewWriter(gw)
-	for name, content := range files {
-		require.NoError(t, tw.WriteHeader(&tar.Header{
-			Name: name, Typeflag: tar.TypeReg, Size: int64(len(content)),
-		}))
-		_, err := tw.Write([]byte(content))
-		require.NoError(t, err)
-	}
-	_, err := gw.Write([]byte("corrupted tar data"))
-	require.NoError(t, err)
-	require.NoError(t, gw.Close())
-	return buf.Bytes()
-}
 
 func assertManifestEqual(t *testing.T, fsys fs.FS, path, actual string) {
 	t.Helper()
@@ -94,7 +50,7 @@ func TestParseFS(t *testing.T) {
 		{
 			name:          "values file option",
 			chartName:     "testchart",
-			opts:          []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values", "values.yaml"))},
+			opts:          []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values.yaml"))},
 			manifestCount: 3,
 		},
 		{
@@ -155,7 +111,7 @@ func TestParseFS_Rendered(t *testing.T) {
 		{
 			name:         "values file option",
 			chartName:    "testchart",
-			opts:         []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values", "values.yaml"))},
+			opts:         []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values.yaml"))},
 			expectedFile: "testchart-with-options.txtar",
 		},
 		{
@@ -201,6 +157,8 @@ func TestParseFS_WithArchivedDependency(t *testing.T) {
 	p, err := parser.New()
 	require.NoError(t, err)
 
+	// os.DirFS is used here because the chart contains a binary .tgz dependency (common-1.16.1.tgz)
+	// which cannot be embedded in a txtar file.
 	manifests, err := p.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", "chart-with-packaged-dep")), ".")
 	require.NoError(t, err)
 	assert.Len(t, manifests, 3)
@@ -211,88 +169,60 @@ func TestParseFS_WithArchivedDependency(t *testing.T) {
 }
 
 func TestParseArchive(t *testing.T) {
-	expectedFS := testutil.TxtarToFS(t, filepath.Join("testdata", "expected", "mysql.txtar"))
+	expectedFS := testutil.TxtarToFS(t, filepath.Join("testdata", "expected", "testchart.txtar"))
+	fsys := testutil.TxtarToFS(t, filepath.Join("testdata", "testchart.txtar"))
+	archiveData := testutil.FSToTarGz(t, fsys, "testchart")
+	archiveFS := fstest.MapFS{"testchart.tar.gz": {Data: archiveData}}
 
-	tests := []struct {
-		name        string
-		archiveFile string
-	}{
-		{
-			name:        "tar.gz archive",
-			archiveFile: "mysql-8.8.26.tar.gz",
-		},
-		{
-			name:        "tgz archive",
-			archiveFile: "mysql-8.8.26.tgz",
-		},
-	}
+	p, err := parser.New()
+	require.NoError(t, err)
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			p, err := parser.New()
-			require.NoError(t, err)
+	manifests, err := p.ParseArchive(t.Context(), archiveFS, "testchart.tar.gz")
+	require.NoError(t, err)
+	assert.Len(t, manifests, 3)
 
-			manifests, err := p.ParseArchive(t.Context(), os.DirFS("testdata"), tt.archiveFile)
-			require.NoError(t, err)
-			assert.Len(t, manifests, 6)
-
-			for _, manifest := range manifests {
-				if strings.HasSuffix(manifest.Path, "secrets.yaml") {
-					continue
-				}
-				assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
-			}
-		})
+	for _, manifest := range manifests {
+		assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
 	}
 }
 
 // TODO: move to pkg/iac/detection
 func TestIsHelmChartArchive(t *testing.T) {
 	chartYAML := "apiVersion: v2\nname: test\nversion: 1.0.0\n"
-	helmFiles := map[string]string{"chart/Chart.yaml": chartYAML}
-	nonHelmFiles := map[string]string{"chart/README.md": "# readme\n"}
+	helmFS := fstest.MapFS{"chart/Chart.yaml": {Data: []byte(chartYAML)}}
+	nonHelmFS := fstest.MapFS{"chart/README.md": {Data: []byte("# readme\n")}}
 
 	tests := []struct {
-		name        string
-		filename    string
-		data        []byte
-		isHelmChart bool
+		name     string
+		filename string
+		fsys     fs.FS
+		expected bool
 	}{
 		{
-			name:        "standard tarball",
-			filename:    "chart.tar",
-			data:        makeTar(t, helmFiles),
-			isHelmChart: true,
+			name:     "gzip tarball with tar.gz extension",
+			filename: "chart.tar.gz",
+			fsys:     helmFS,
+			expected: true,
 		},
 		{
-			name:        "gzip tarball with tar.gz extension",
-			filename:    "chart.tar.gz",
-			data:        makeTarGz(t, helmFiles),
-			isHelmChart: true,
+			name:     "gzip tarball with tgz extension",
+			filename: "chart.tgz",
+			fsys:     helmFS,
+			expected: true,
 		},
 		{
-			name:        "broken gzip tarball",
-			filename:    "chart.tar.gz",
-			data:        makeTarGz(t, helmFiles),
-			isHelmChart: true,
-		},
-		{
-			name:        "gzip tarball with tgz extension",
-			filename:    "chart.tgz",
-			data:        makeTarGz(t, helmFiles),
-			isHelmChart: true,
-		},
-		{
-			name:        "non-helm tgz",
-			filename:    "chart.tgz",
-			data:        makeTarGz(t, nonHelmFiles),
-			isHelmChart: false,
+			name:     "non-helm tgz",
+			filename: "chart.tgz",
+			fsys:     nonHelmFS,
+			expected: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.isHelmChart, detection.IsHelmChartArchive(tt.filename, bytes.NewReader(tt.data)))
+			data := testutil.FSToTarGz(t, tt.fsys, "chart")
+			isArchive := detection.IsHelmChartArchive(tt.filename, bytes.NewReader(data))
+			assert.Equal(t, tt.expected, isArchive)
 		})
 	}
 }

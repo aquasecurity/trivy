@@ -1,3 +1,12 @@
+-- Chart.yaml --
+apiVersion: v2
+name: test-license-manager
+version: 1.10.0
+type: application
+appVersion: 1.10.0
+deprecated: false
+
+-- templates/deployment.yaml --
 apiVersion: apps/v1
 kind: Deployment
 spec:
@@ -19,3 +28,8 @@ spec:
             cpu: "500m"
         ports:
         - containerPort: 80
+
+-- templates/manifest.yaml --
+apiVersion: apps/v1
+kind: Deployment
+

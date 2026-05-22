@@ -1,3 +1,4 @@
+-- Chart.yaml --
 apiVersion: v2
 name: {{COMPONENT_NAME}}
 version: {{COMPONENT_VERSION}}
@@ -5,3 +6,4 @@ description: A Helm chart for Kubernetes
 keywords:
   - kublr
   - audit
+

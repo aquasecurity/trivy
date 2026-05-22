@@ -1,0 +1,149 @@
+-- Chart.yaml --
+apiVersion: v1
+deprecated: true
+description: DEPRECATED Scales worker nodes within autoscaling groups.
+name: aws-cluster-autoscaler
+version: 0.3.4
+sources:
+  - https://github.com/kubernetes/contrib/tree/master/cluster-autoscaler/cloudprovider/aws
+engine: gotpl
+-- values.yaml --
+autoscalingGroups: []
+
+awsRegion: us-east-1
+
+image:
+  repository: k8s.gcr.io/cluster-autoscaler
+  tag: v0.6.1
+  pullPolicy: IfNotPresent
+
+extraArgs: {}
+
+nodeSelector: {}
+
+podAnnotations: {}
+replicaCount: 1
+
+resources: {}
+
+scaleDownDelay: 10m
+
+service:
+  annotations: {}
+  clusterIP: ""
+  externalIPs: []
+  loadBalancerIP: ""
+  loadBalancerSourceRanges: []
+  servicePort: 8085
+  type: ClusterIP
+
+skipNodes:
+  withLocalStorage: false
+  withSystemPods: true
+-- templates/_helpers.tpl --
+{{/* vim: set filetype=mustache: */}}
+{{- define "name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{- define "fullname" -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+-- templates/deployment.yaml --
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "fullname" . }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  template:
+    metadata:
+    {{- if .Values.podAnnotations }}
+      annotations:
+{{ toYaml .Values.podAnnotations | indent 8 }}
+    {{- end }}
+      labels:
+        app: {{ template "name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ template "name" . }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: "{{ .Values.image.pullPolicy }}"
+          command:
+            - ./cluster-autoscaler
+            - --cloud-provider=aws
+          {{- range .Values.autoscalingGroups }}
+            - --nodes={{ .minSize }}:{{ .maxSize }}:{{ .name }}
+          {{- end }}
+            - --scale-down-delay={{ .Values.scaleDownDelay }}
+            - --skip-nodes-with-local-storage={{ .Values.skipNodes.withLocalStorage }}
+            - --skip-nodes-with-system-pods={{ .Values.skipNodes.withSystemPods }}
+            - --v=4
+          {{- range $key, $value := .Values.extraArgs }}
+            - --{{ $key }}={{ $value }}
+          {{- end }}
+          env:
+            - name: AWS_REGION
+              value: "{{ .Values.awsRegion }}"
+          ports:
+            - containerPort: 8085
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+          volumeMounts:
+            - name: ssl-certs
+              mountPath: /etc/ssl/certs/ca-certificates.crt
+              readOnly: true
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      volumes:
+        - name: ssl-certs
+          hostPath:
+            path: /etc/ssl/certs/ca-certificates.crt
+-- templates/service.yaml --
+apiVersion: v1
+kind: Service
+metadata:
+{{- if .Values.service.annotations }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+{{- end }}
+  labels:
+    app: {{ template "name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  name: {{ template "fullname" . }}
+spec:
+  clusterIP: "{{ .Values.service.clusterIP }}"
+{{- if .Values.service.externalIPs }}
+  externalIPs:
+{{ toYaml .Values.service.externalIPs | indent 4 }}
+{{- end }}
+{{- if .Values.service.loadBalancerIP }}
+  loadBalancerIP: "{{ .Values.service.loadBalancerIP }}"
+{{- end }}
+{{- if .Values.service.loadBalancerSourceRanges }}
+  loadBalancerSourceRanges:
+{{ toYaml .Values.service.loadBalancerSourceRanges | indent 4 }}
+{{- end }}
+  ports:
+    - port: {{ .Values.service.servicePort }}
+      protocol: TCP
+      targetPort: 8085
+  selector:
+    app: {{ template "name" . }}
+    release: {{ .Release.Name }}
+  type: "{{ .Values.service.type }}"
+-- templates/NOTES.txt --
+To verify that aws-cluster-autoscaler has started, run:
+
+  kubectl --namespace={{ .Release.Namespace }} get pods -l "app={{ template "name" . }},release={{ .Release.Name }}"
