@@ -1356,7 +1356,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "<master>**********************************************</master>",
+		Match:     "<master>***********</master>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1366,8 +1366,8 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "<master>**********************************************</master>",
-					Highlighted: "<master>**********************************************</master>",
+					Content:     "<master>***********</master>",
+					Highlighted: "<master>***********</master>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
