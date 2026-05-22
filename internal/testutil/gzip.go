@@ -116,7 +116,7 @@ func writeFSToTar(tw *tar.Writer, fsys fs.FS, prefix string) error {
 			name = prefix + "/" + path
 		}
 		if err := tw.WriteHeader(&tar.Header{
-			Name: name, Typeflag: tar.TypeReg, Size: int64(len(data)), Mode: 0644,
+			Name: name, Typeflag: tar.TypeReg, Size: int64(len(data)), Mode: 0o644,
 		}); err != nil {
 			return err
 		}

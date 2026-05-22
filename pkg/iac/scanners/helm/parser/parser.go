@@ -173,7 +173,7 @@ func parseChartName(data []byte) (string, error) {
 		return "", err
 	}
 	if meta.Name == "" {
-		return "", fmt.Errorf("could not extract the chart name from Chart.yaml")
+		return "", errors.New("could not extract the chart name from Chart.yaml")
 	}
 	return meta.Name, nil
 }

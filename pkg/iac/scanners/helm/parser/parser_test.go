@@ -35,7 +35,7 @@ func TestParseFS(t *testing.T) {
 		chartName     string
 		opts          []parser.Option
 		manifestCount int
-		expectedError string
+		wantErr       string
 	}{
 		{
 			name:          "simple chart",
@@ -72,18 +72,18 @@ func TestParseFS(t *testing.T) {
 			manifestCount: 1,
 		},
 		{
-			name:          "invalid kube version",
-			chartName:     "with-kube-version",
-			opts:          []parser.Option{parser.OptionWithKubeVersion("a.b.c")},
-			expectedError: `could not parse "a.b.c" as version`,
+			name:      "invalid kube version",
+			chartName: "with-kube-version",
+			opts:      []parser.Option{parser.OptionWithKubeVersion("a.b.c")},
+			wantErr:   `could not parse "a.b.c" as version`,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			p, err := parser.New(tt.opts...)
-			if tt.expectedError != "" {
-				require.EqualError(t, err, tt.expectedError)
+			if tt.wantErr != "" {
+				assert.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

@@ -285,7 +285,7 @@ func TestScanner_ScanFS_ChartDiscovery(t *testing.T) {
 		combined := fstest.MapFS{"autoscaler.tgz": {Data: autoscalerArchive}}
 		addFiles(t, combined, testchartFS, "testchart")
 
-		assert.Equal(t, baselineTestchart+baselineAutoscaler, len(runScan(t, combined)))
+		assert.Len(t, runScan(t, combined), baselineTestchart+baselineAutoscaler)
 	})
 
 	t.Run("archive inside chart directory is skipped", func(t *testing.T) {
@@ -297,7 +297,7 @@ func TestScanner_ScanFS_ChartDiscovery(t *testing.T) {
 		combined := fstest.MapFS{"testchart/testchart.tgz": {Data: archiveData}}
 		addFiles(t, combined, testchartFS, "testchart")
 
-		assert.Equal(t, baselineCount, len(runScan(t, combined)))
+		assert.Len(t, runScan(t, combined), baselineCount)
 	})
 
 	t.Run("archive next to chart directory is skipped", func(t *testing.T) {
@@ -309,6 +309,6 @@ func TestScanner_ScanFS_ChartDiscovery(t *testing.T) {
 		combined := fstest.MapFS{"testchart.tgz": {Data: archiveData}}
 		addFiles(t, combined, testchartFS, "testchart")
 
-		assert.Equal(t, baselineCount, len(runScan(t, combined)))
+		assert.Len(t, runScan(t, combined), baselineCount)
 	})
 }
