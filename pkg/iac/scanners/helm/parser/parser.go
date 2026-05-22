@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -169,7 +168,7 @@ func parseChartName(data []byte) (string, error) {
 	var meta struct {
 		Name string `yaml:"name"`
 	}
-	if err := yaml.NewDecoder(bytes.NewReader(data)).Decode(&meta); err != nil {
+	if err := yaml.Unmarshal(data, &meta); err != nil {
 		return "", err
 	}
 	if meta.Name == "" {
