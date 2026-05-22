@@ -80,7 +80,7 @@ func locateCharts(ctx context.Context, fsys fs.FS, dir string) ([]chartLocation,
 		}
 
 		if detection.IsArchive(filePath) {
-			if shouldSkipArchive(fsys, filePath) {
+			if chartAlreadyDiscovered(fsys, filePath) {
 				return nil
 			}
 			locations = append(locations, chartLocation{path: filePath, isArchive: true})
@@ -121,15 +121,32 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 	return results, nil
 }
 
-func shouldSkipArchive(fsys fs.FS, archivePath string) bool {
-	return hasChartYaml(fsys, path.Dir(archivePath)) || unpackedChartExists(fsys, archivePath)
+// chartAlreadyDiscovered reports whether the archive at archivePath duplicates
+// a chart already present elsewhere in fsys, in which case scanning it would
+// produce duplicate results. Two cases are covered:
+//
+//  1. Archive sits inside a chart directory (e.g. my-chart/my-chart-1.0.0.tgz
+//     alongside my-chart/Chart.yaml) — the parent chart takes precedence.
+//  2. Archive sits next to its unpacked copy (e.g. ./my-chart-1.0.0.tgz
+//     alongside ./my-chart/) — the unpacked directory takes precedence.
+//
+// Errors during the check are treated as "not a duplicate" so the caller still
+// attempts to parse the archive; any real failure surfaces as a parse error.
+func chartAlreadyDiscovered(fsys fs.FS, archivePath string) bool {
+	return chartYamlInDir(fsys, path.Dir(archivePath)) ||
+		unpackedChartExists(fsys, archivePath)
 }
 
-func hasChartYaml(fsys fs.FS, dir string) bool {
+// chartYamlInDir reports whether dir contains a Chart.yaml.
+func chartYamlInDir(fsys fs.FS, dir string) bool {
 	_, err := fs.Stat(fsys, path.Join(dir, "Chart.yaml"))
 	return err == nil
 }
 
+// unpackedChartExists reports whether a directory matching the archive's
+// top-level entry exists next to the archive. It peeks at the first tar
+// header to derive the chart's root directory name — helm package always
+// writes that directory first.
 func unpackedChartExists(fsys fs.FS, archivePath string) bool {
 	f, err := fsys.Open(archivePath)
 	if err != nil {
@@ -148,8 +165,12 @@ func unpackedChartExists(fsys fs.FS, archivePath string) bool {
 		return false
 	}
 
-	firstComponent := strings.SplitN(filepath.ToSlash(hdr.Name), "/", 2)[0]
-	if firstComponent == "" {
+	name := path.Clean(filepath.ToSlash(hdr.Name))
+	if path.IsAbs(name) {
+		return false
+	}
+	firstComponent := strings.SplitN(name, "/", 2)[0]
+	if firstComponent == "." || firstComponent == ".." {
 		return false
 	}
 
