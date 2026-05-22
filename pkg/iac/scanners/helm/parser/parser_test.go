@@ -1,6 +1,9 @@
 package parser_test
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -14,6 +17,49 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/helm/parser"
 )
+
+func makeTar(t *testing.T, files map[string]string) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	tw := tar.NewWriter(&buf)
+	for name, content := range files {
+		require.NoError(t, tw.WriteHeader(&tar.Header{
+			Name: name, Typeflag: tar.TypeReg, Size: int64(len(content)),
+		}))
+		_, err := tw.Write([]byte(content))
+		require.NoError(t, err)
+	}
+	require.NoError(t, tw.Close())
+	return buf.Bytes()
+}
+
+func makeTarGz(t *testing.T, files map[string]string) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	_, err := gw.Write(makeTar(t, files))
+	require.NoError(t, err)
+	require.NoError(t, gw.Close())
+	return buf.Bytes()
+}
+
+func makeBrokenTarGz(t *testing.T, files map[string]string) []byte {
+	t.Helper()
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+	for name, content := range files {
+		require.NoError(t, tw.WriteHeader(&tar.Header{
+			Name: name, Typeflag: tar.TypeReg, Size: int64(len(content)),
+		}))
+		_, err := tw.Write([]byte(content))
+		require.NoError(t, err)
+	}
+	_, err := gw.Write([]byte("corrupted tar data"))
+	require.NoError(t, err)
+	require.NoError(t, gw.Close())
+	return buf.Bytes()
+}
 
 func assertManifestEqual(t *testing.T, fsys fs.FS, path, actual string) {
 	t.Helper()
@@ -200,46 +246,53 @@ func TestParseArchive(t *testing.T) {
 	}
 }
 
+// TODO: move to pkg/iac/detection
 func TestIsHelmChartArchive(t *testing.T) {
+	chartYAML := "apiVersion: v2\nname: test\nversion: 1.0.0\n"
+	helmFiles := map[string]string{"chart/Chart.yaml": chartYAML}
+	nonHelmFiles := map[string]string{"chart/README.md": "# readme\n"}
+
 	tests := []struct {
 		name        string
-		archiveFile string
+		filename    string
+		data        []byte
 		isHelmChart bool
 	}{
 		{
 			name:        "standard tarball",
-			archiveFile: "mysql-8.8.26.tar",
+			filename:    "chart.tar",
+			data:        makeTar(t, helmFiles),
 			isHelmChart: true,
 		},
 		{
 			name:        "gzip tarball with tar.gz extension",
-			archiveFile: "mysql-8.8.26.tar.gz",
+			filename:    "chart.tar.gz",
+			data:        makeTarGz(t, helmFiles),
 			isHelmChart: true,
 		},
 		{
 			name:        "broken gzip tarball",
-			archiveFile: "aws-cluster-autoscaler-bad.tar.gz",
+			filename:    "chart.tar.gz",
+			data:        makeTarGz(t, helmFiles),
 			isHelmChart: true,
 		},
 		{
 			name:        "gzip tarball with tgz extension",
-			archiveFile: "mysql-8.8.26.tgz",
+			filename:    "chart.tgz",
+			data:        makeTarGz(t, helmFiles),
 			isHelmChart: true,
 		},
 		{
 			name:        "non-helm tgz",
-			archiveFile: "nope.tgz",
+			filename:    "chart.tgz",
+			data:        makeTarGz(t, nonHelmFiles),
 			isHelmChart: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			f, err := os.Open(filepath.Join("testdata", tt.archiveFile))
-			require.NoError(t, err)
-			defer f.Close()
-
-			assert.Equal(t, tt.isHelmChart, detection.IsHelmChartArchive(tt.archiveFile, f))
+			assert.Equal(t, tt.isHelmChart, detection.IsHelmChartArchive(tt.filename, bytes.NewReader(tt.data)))
 		})
 	}
 }
