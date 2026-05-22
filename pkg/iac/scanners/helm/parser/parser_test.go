@@ -36,6 +36,7 @@ func TestParseFS(t *testing.T) {
 		opts          []parser.Option
 		manifestCount int
 		wantErr       string
+		wantParseErr  string
 	}{
 		{
 			name:          "simple chart",
@@ -48,15 +49,38 @@ func TestParseFS(t *testing.T) {
 			manifestCount: 0,
 		},
 		{
+			name:         "chart without name returns error",
+			chartName:    "chart-without-name",
+			wantParseErr: "chart.metadata.name is required",
+		},
+		{
 			name:          "values file option",
 			chartName:     "testchart",
 			opts:          []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "values.yaml"))},
 			manifestCount: 3,
 		},
 		{
+			name:         "non-existent values file",
+			chartName:    "testchart",
+			opts:         []parser.Option{parser.OptionWithValuesFile(filepath.Join("testdata", "nonexistent.yaml"))},
+			wantParseErr: "nonexistent.yaml",
+		},
+		{
 			name:          "set value option",
 			chartName:     "testchart",
 			opts:          []parser.Option{parser.OptionWithValues("securityContext.runAsUser=0")},
+			manifestCount: 3,
+		},
+		{
+			name:          "set string value option",
+			chartName:     "testchart",
+			opts:          []parser.Option{parser.OptionWithStringValues("securityContext.runAsUser=0")},
+			manifestCount: 3,
+		},
+		{
+			name:          "set file value option",
+			chartName:     "testchart",
+			opts:          []parser.Option{parser.OptionWithFileValues("image.tag=" + filepath.Join("testdata", "values.yaml"))},
 			manifestCount: 3,
 		},
 		{
@@ -90,6 +114,10 @@ func TestParseFS(t *testing.T) {
 
 			fsys := testutil.TxtarToFS(t, filepath.Join("testdata", tt.chartName+".txtar"))
 			manifests, err := p.ParseFS(t.Context(), fsys, ".")
+			if tt.wantParseErr != "" {
+				assert.ErrorContains(t, err, tt.wantParseErr)
+				return
+			}
 			require.NoError(t, err)
 			assert.Len(t, manifests, tt.manifestCount)
 		})
@@ -184,6 +212,26 @@ func TestParseArchive(t *testing.T) {
 	for _, manifest := range manifests {
 		assertManifestEqual(t, expectedFS, manifest.Path, manifest.Content)
 	}
+}
+
+func TestParseArchive_ChartWithoutName(t *testing.T) {
+	fsys := testutil.TxtarToFS(t, filepath.Join("testdata", "chart-without-name.txtar"))
+	archiveFS := fstest.MapFS{"chart-without-name.tgz": {Data: testutil.FSToTarGz(t, fsys, "chart-without-name")}}
+
+	p, err := parser.New()
+	require.NoError(t, err)
+
+	_, err = p.ParseArchive(t.Context(), archiveFS, "chart-without-name.tgz")
+	assert.ErrorContains(t, err, "chart.metadata.name is required")
+}
+
+func TestParseArchive_InvalidArchive(t *testing.T) {
+	p, err := parser.New()
+	require.NoError(t, err)
+
+	fsys := fstest.MapFS{"chart.tgz": {Data: []byte("not a valid archive")}}
+	_, err = p.ParseArchive(t.Context(), fsys, "chart.tgz")
+	assert.ErrorContains(t, err, "load archive files")
 }
 
 // TODO: move to pkg/iac/detection
