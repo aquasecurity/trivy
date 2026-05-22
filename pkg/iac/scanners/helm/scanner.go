@@ -57,9 +57,14 @@ func (s *Scanner) Name() string {
 	return "Helm"
 }
 
-func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
-	var results []scan.Result
-	if err := fs.WalkDir(fsys, dir, func(filePath string, d fs.DirEntry, err error) error {
+type chartLocation struct {
+	path      string
+	isArchive bool
+}
+
+func locateCharts(ctx context.Context, fsys fs.FS, dir string) ([]chartLocation, error) {
+	var locations []chartLocation
+	err := fs.WalkDir(fsys, dir, func(filePath string, d fs.DirEntry, err error) error {
 		select {
 		case <-ctx.Done():
 			return ctx.Err()
@@ -78,27 +83,32 @@ func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Resu
 			if shouldSkipArchive(fsys, filePath) {
 				return nil
 			}
-			scanResults, err := s.getScanResults(ctx, filePath, fsys)
-			if err != nil {
-				return err
-			}
-			results = append(results, scanResults...)
+			locations = append(locations, chartLocation{path: filePath, isArchive: true})
 		} else if path.Base(filePath) == chartutilv2.ChartfileName {
-			if scanResults, err := s.getScanResults(ctx, filepath.Dir(filePath), fsys); err != nil {
-				return err
-			} else {
-				results = append(results, scanResults...)
-			}
+			locations = append(locations, chartLocation{path: path.Dir(filePath)})
 			return fs.SkipDir
 		}
 
 		return nil
-	}); err != nil {
+	})
+	return locations, err
+}
+
+func (s *Scanner) ScanFS(ctx context.Context, fsys fs.FS, dir string) (scan.Results, error) {
+	locations, err := locateCharts(ctx, fsys, dir)
+	if err != nil {
 		return nil, err
 	}
 
+	var results []scan.Result
+	for _, loc := range locations {
+		scanResults, err := s.scanChart(ctx, loc, fsys)
+		if err != nil {
+			return nil, err
+		}
+		results = append(results, scanResults...)
+	}
 	return results, nil
-
 }
 
 func shouldSkipArchive(fsys fs.FS, archivePath string) bool {
@@ -137,25 +147,22 @@ func unpackedChartExists(fsys fs.FS, archivePath string) bool {
 	return err == nil
 }
 
-func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS) (results []scan.Result, err error) {
-	helmParser, err := parser.New(path, s.parserOptions...)
+func (s *Scanner) scanChart(ctx context.Context, loc chartLocation, target fs.FS) (results []scan.Result, err error) {
+	helmParser, err := parser.New(s.parserOptions...)
 	if err != nil {
 		return nil, err
 	}
 
-	if detection.IsArchive(path) {
-		if err := helmParser.ParseArchive(ctx, target, path); err != nil {
-			return nil, err
-		}
-	} else if err := helmParser.ParseFS(ctx, target, path); err != nil {
-		return nil, err
+	var manifests []parser.Manifest
+	if loc.isArchive {
+		manifests, err = helmParser.ParseArchive(ctx, target, loc.path)
+	} else {
+		manifests, err = helmParser.ParseFS(ctx, target, loc.path)
 	}
-
-	chartFiles, err := helmParser.RenderedChartFiles()
 	if err != nil { // not valid helm, maybe some other yaml etc., abort
 		s.logger.Error(
 			"Failed to render Chart files",
-			log.FilePath(path), log.Err(err),
+			log.FilePath(loc.path), log.Err(err),
 		)
 		return nil, nil
 	}
@@ -165,26 +172,26 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 		return nil, fmt.Errorf("init rego scanner: %w", err)
 	}
 
-	for _, file := range chartFiles {
-		s.logger.Debug("Processing rendered chart file", log.FilePath(file.TemplateFilePath))
+	for _, file := range manifests {
+		s.logger.Debug("Processing rendered chart file", log.FilePath(file.Path))
 
-		ignoreRules := ignore.Parse(file.ManifestContent, file.TemplateFilePath, helmParser.ChartSource)
-		manifests, err := kparser.Parse(ctx, strings.NewReader(file.ManifestContent), file.TemplateFilePath)
+		ignoreRules := ignore.Parse(file.Content, file.Path, loc.path)
+		k8sManifests, err := kparser.Parse(ctx, strings.NewReader(file.Content), file.Path)
 		if err != nil {
 			return nil, fmt.Errorf("unmarshal yaml: %w", err)
 		}
 
 		manifestFS := mapfs.New()
-		if err := manifestFS.MkdirAll(filepath.Dir(file.TemplateFilePath), fs.ModePerm); err != nil {
+		if err := manifestFS.MkdirAll(path.Dir(file.Path), fs.ModePerm); err != nil {
 			return nil, err
 		}
-		if err := manifestFS.WriteVirtualFile(file.TemplateFilePath, []byte(file.ManifestContent), fs.ModePerm); err != nil {
+		if err := manifestFS.WriteVirtualFile(file.Path, []byte(file.Content), fs.ModePerm); err != nil {
 			return nil, err
 		}
 
-		for _, manifest := range manifests {
+		for _, manifest := range k8sManifests {
 			fileResults, err := rs.ScanInput(ctx, types.SourceKubernetes, rego.Input{
-				Path:     file.TemplateFilePath,
+				Path:     file.Path,
 				Contents: manifest.ToRego(),
 				FS:       manifestFS,
 			})
@@ -192,12 +199,11 @@ func (s *Scanner) getScanResults(ctx context.Context, path string, target fs.FS)
 				return nil, fmt.Errorf("scanning error: %w", err)
 			}
 
-			fileResults.SetSourceAndFilesystem(helmParser.ChartSource, manifestFS, detection.IsArchive(helmParser.ChartSource))
+			fileResults.SetSourceAndFilesystem(loc.path, manifestFS, loc.isArchive)
 			fileResults.Ignore(ignoreRules, nil)
 
 			results = append(results, fileResults...)
 		}
-
 	}
 	return results, nil
 }

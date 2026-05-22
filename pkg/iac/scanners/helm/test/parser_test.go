@@ -31,17 +31,16 @@ func Test_helm_parser(t *testing.T) {
 	for _, test := range tests {
 		t.Run(test.testName, func(t *testing.T) {
 			chartName := test.chartName
-			helmParser, err := parser.New(chartName)
+			helmParser, err := parser.New()
 			require.NoError(t, err)
-			require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS("testdata"), chartName))
-			manifests, err := helmParser.RenderedChartFiles()
+			manifests, err := helmParser.ParseFS(t.Context(), os.DirFS("testdata"), chartName)
 			require.NoError(t, err)
 
 			assert.Len(t, manifests, 3)
 
 			for _, manifest := range manifests {
-				expectedPath := filepath.Join("testdata", "expected", chartName, manifest.TemplateFilePath)
-				assertManifestEqual(t, expectedPath, manifest.ManifestContent)
+				expectedPath := filepath.Join("testdata", "expected", chartName, manifest.Path)
+				assertManifestEqual(t, expectedPath, manifest.Content)
 			}
 		})
 	}
@@ -59,9 +58,10 @@ func Test_helm_parser_where_name_non_string(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		helmParser, err := parser.New(test.chartName)
+		helmParser, err := parser.New()
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", test.chartName)), "."))
+		_, err = helmParser.ParseFS(t.Context(), os.DirFS(filepath.Join("testdata", test.chartName)), ".")
+		require.NoError(t, err)
 	}
 }
 
@@ -129,11 +129,9 @@ func Test_helm_tarball_parser(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		helmParser, err := parser.New(test.archiveFile)
+		helmParser, err := parser.New()
 		require.NoError(t, err)
-		require.NoError(t, helmParser.ParseArchive(t.Context(), os.DirFS("testdata"), test.archiveFile))
-
-		manifests, err := helmParser.RenderedChartFiles()
+		manifests, err := helmParser.ParseArchive(t.Context(), os.DirFS("testdata"), test.archiveFile)
 		require.NoError(t, err)
 
 		assert.Len(t, manifests, 6)
@@ -148,14 +146,14 @@ func Test_helm_tarball_parser(t *testing.T) {
 		}
 
 		for _, manifest := range manifests {
-			filename := filepath.Base(manifest.TemplateFilePath)
+			filename := filepath.Base(manifest.Path)
 			assert.Contains(t, oneOf, filename)
 
-			if strings.HasSuffix(manifest.TemplateFilePath, "secrets.yaml") {
+			if strings.HasSuffix(manifest.Path, "secrets.yaml") {
 				continue
 			}
-			expectedPath := filepath.Join("testdata", "expected", test.chartName, manifest.TemplateFilePath)
-			assertManifestEqual(t, expectedPath, manifest.ManifestContent)
+			expectedPath := filepath.Join("testdata", "expected", test.chartName, manifest.Path)
+			assertManifestEqual(t, expectedPath, manifest.Content)
 		}
 	}
 }
