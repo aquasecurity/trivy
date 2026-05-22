@@ -89,7 +89,7 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 			}
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
-			createdBy = buildRunInstruction(createdBy)
+			createdBy = buildRunInstruction(h.CreatedBy)
 		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
 			// buildkit instructions
 			// COPY ./foo /foo # buildkit
