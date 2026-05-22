@@ -26,7 +26,7 @@ var (
 	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
-const analyzerVersion = 1
+const analyzerVersion = 2
 
 func init() {
 	analyzer.RegisterConfigAnalyzer(analyzer.TypeHistoryDockerfile, newHistoryAnalyzer)
