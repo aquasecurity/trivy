@@ -709,6 +709,9 @@ func setupClient(t *testing.T, c csArgs, addr, cacheDir string) []string {
 		c.RemoteAddrOption,
 		"http://" + addr,
 		"--quiet",
+		// Scan offline for stable test runs: otherwise dependency resolution may reach
+		// remote registries (e.g. Maven Central), which can return a 429
+		"--offline-scan",
 	}
 
 	if c.Format != "" {
