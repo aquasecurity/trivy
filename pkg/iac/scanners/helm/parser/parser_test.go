@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/fs"
 	"os"
+	"path"
 	"path/filepath"
 	"strings"
 	"testing"
@@ -80,7 +81,7 @@ func TestParseFS(t *testing.T) {
 		{
 			name:          "set file value option",
 			chartName:     "testchart",
-			opts:          []parser.Option{parser.OptionWithFileValues("image.tag=" + filepath.Join("testdata", "values.yaml"))},
+			opts:          []parser.Option{parser.OptionWithFileValues("image.tag=" + path.Join("testdata", "values.yaml"))},
 			manifestCount: 3,
 		},
 		{
