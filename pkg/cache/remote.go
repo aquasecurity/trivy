@@ -6,6 +6,7 @@ import (
 
 	"github.com/twitchtv/twirp"
 	"golang.org/x/xerrors"
+	"google.golang.org/protobuf/types/known/emptypb"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/rpc"
@@ -45,7 +46,7 @@ func NewRemoteCache(ctx context.Context, opts RemoteOptions) *RemoteCache {
 
 // PutArtifact sends artifact to remote client
 func (c RemoteCache) PutArtifact(ctx context.Context, imageID string, artifactInfo types.ArtifactInfo) error {
-	_, err := rpc.Retry(ctx, func() (any, error) {
+	_, err := rpc.Retry(ctx, func() (*emptypb.Empty, error) {
 		return c.client.PutArtifact(c.ctx, rpc.ConvertToRPCArtifactInfo(imageID, artifactInfo))
 	})
 	if err != nil {
@@ -56,7 +57,7 @@ func (c RemoteCache) PutArtifact(ctx context.Context, imageID string, artifactIn
 
 // PutBlob sends blobInfo to remote client
 func (c RemoteCache) PutBlob(ctx context.Context, diffID string, blobInfo types.BlobInfo) error {
-	_, err := rpc.Retry(ctx, func() (any, error) {
+	_, err := rpc.Retry(ctx, func() (*emptypb.Empty, error) {
 		return c.client.PutBlob(c.ctx, rpc.ConvertToRPCPutBlobRequest(diffID, blobInfo))
 	})
 	if err != nil {
@@ -78,7 +79,7 @@ func (c RemoteCache) MissingBlobs(ctx context.Context, imageID string, layerIDs 
 
 // DeleteBlobs removes blobs by IDs from RemoteCache
 func (c RemoteCache) DeleteBlobs(ctx context.Context, blobIDs []string) error {
-	_, err := rpc.Retry(ctx, func() (any, error) {
+	_, err := rpc.Retry(ctx, func() (*emptypb.Empty, error) {
 		return c.client.DeleteBlobs(c.ctx, rpc.ConvertToDeleteBlobsRequest(blobIDs))
 	})
 	if err != nil {
