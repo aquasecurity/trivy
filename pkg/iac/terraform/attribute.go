@@ -673,8 +673,7 @@ func (a *Attribute) AsMapValue() iacTypes.MapValue {
 
 		values := make(map[string]string)
 		v.ForEachElement(func(key cty.Value, val cty.Value) (stop bool) {
-			if key.Type() == cty.String && key.IsKnown() &&
-				val.Type() == cty.String && val.IsKnown() {
+			if isDefined(key, cty.String) && isDefined(val, cty.String) {
 				values[key.AsString()] = val.AsString()
 			}
 			return false
@@ -829,6 +828,10 @@ func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
 	unmarked, _ := val.UnmarkDeep()
 
 	return fn(unmarked)
+}
+
+func isDefined(v cty.Value, t cty.Type) bool {
+	return v.Type() == t && v.IsKnown() && !v.IsNull()
 }
 
 // RewriteExpr applies the given function `transform` to the expression of the attribute,
