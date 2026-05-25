@@ -688,7 +688,7 @@ func (b *Block) iteratorName(blockType string) (string, error) {
 		return blockType, nil
 	}
 
-	traversal, diags := hcl.AbsTraversalForExpr(iteratorAttr.hclAttribute.Expr)
+	traversal, diags := hcl.AbsTraversalForExpr(iteratorAttr.HCLAttribute().Expr)
 	if diags.HasErrors() {
 		return "", diags
 	}

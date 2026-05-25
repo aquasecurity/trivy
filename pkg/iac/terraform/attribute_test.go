@@ -89,6 +89,72 @@ func Test_Attribute_AsMapValue(t *testing.T) {
 	}
 }
 
+func Test_Attribute_GetRawValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		val      cty.Value
+		expected any
+	}{
+		{
+			name:     "string",
+			val:      cty.StringVal("hello"),
+			expected: "hello",
+		},
+		{
+			name:     "bool",
+			val:      cty.BoolVal(true),
+			expected: true,
+		},
+		{
+			name:     "number",
+			val:      cty.NumberIntVal(42),
+			expected: float64(42),
+		},
+		{
+			name:     "list of strings",
+			val:      cty.ListVal([]cty.Value{cty.StringVal("a"), cty.StringVal("b")}),
+			expected: []any{"a", "b"},
+		},
+		{
+			name:     "list of numbers",
+			val:      cty.ListVal([]cty.Value{cty.NumberIntVal(1), cty.NumberIntVal(2)}),
+			expected: []any{float64(1), float64(2)},
+		},
+		{
+			name:     "list of bools",
+			val:      cty.ListVal([]cty.Value{cty.BoolVal(true), cty.BoolVal(false)}),
+			expected: []any{true, false},
+		},
+		{
+			name:     "empty list",
+			val:      cty.ListValEmpty(cty.String),
+			expected: []any(nil),
+		},
+		{
+			name:     "null element in list is skipped",
+			val:      cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.NullVal(cty.String)}),
+			expected: []any{"a"},
+		},
+		{
+			name:     "unknown element in list is skipped",
+			val:      cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.UnknownVal(cty.String)}),
+			expected: []any{"a"},
+		},
+		{
+			name: "mixed tuple",
+			val:  cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.NumberIntVal(1), cty.BoolVal(true)}),
+			expected: []any{"a", float64(1), true},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, "val", map[string]cty.Value{"val": tt.val})
+			assert.Equal(t, tt.expected, attr.GetRawValue())
+		})
+	}
+}
+
 func Test_AllReferences(t *testing.T) {
 	cases := []struct {
 		input string

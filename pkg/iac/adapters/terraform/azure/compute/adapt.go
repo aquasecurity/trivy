@@ -80,7 +80,7 @@ func adaptLinuxVM(resource *terraform.Block, modules terraform.Modules) compute.
 	}
 	customDataAttr := workingBlock.GetAttribute("custom_data")
 	customDataVal := iacTypes.StringDefault("", workingBlock.GetMetadata())
-	if customDataAttr.IsResolvable() && customDataAttr.IsString() {
+	if customDataAttr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(customDataAttr.Value().AsString())
 		if err != nil {
 			encoded = []byte(customDataAttr.Value().AsString())
@@ -122,7 +122,7 @@ func adaptWindowsVM(resource *terraform.Block, modules terraform.Modules) comput
 	customDataAttr := workingBlock.GetAttribute("custom_data")
 	customDataVal := iacTypes.StringDefault("", workingBlock.GetMetadata())
 
-	if customDataAttr.IsResolvable() && customDataAttr.IsString() {
+	if customDataAttr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(customDataAttr.Value().AsString())
 		if err != nil {
 			encoded = []byte(customDataAttr.Value().AsString())

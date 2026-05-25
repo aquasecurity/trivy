@@ -73,73 +73,57 @@ func (a *Attribute) GetMetadata() iacTypes.Metadata {
 
 func (a *Attribute) GetRawValue() any {
 	return safeOp(a, func(v cty.Value) any {
-		switch typ := v.Type(); typ {
-		case cty.String:
-			return v.AsString()
-		case cty.Bool:
-			return v.True()
-		case cty.Number:
-			float, _ := v.AsBigFloat().Float64()
-			return float
-		default:
-			switch {
-			case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
-				values := a.Value().AsValueSlice()
-				if len(values) == 0 {
-					return []string{}
-				}
-				switch values[0].Type() {
-				case cty.String:
-					var output []string
-					for _, value := range values {
-						output = append(output, value.AsString())
-					}
-					return output
-				case cty.Number:
-					var output []float64
-					for _, value := range values {
-						bf := value.AsBigFloat()
-						f, _ := bf.Float64()
-						output = append(output, f)
-					}
-					return output
-				case cty.Bool:
-					var output []bool
-					for _, value := range values {
-						output = append(output, value.True())
-					}
-					return output
-				}
+		return toRawValue(v)
+	})
+}
+
+func toRawValue(v cty.Value) any {
+	if v.IsNull() || !v.IsKnown() {
+		return nil
+	}
+	switch typ := v.Type(); {
+	case typ == cty.String:
+		return v.AsString()
+	case typ == cty.Bool:
+		return v.True()
+	case typ == cty.Number:
+		f, _ := v.AsBigFloat().Float64()
+		return f
+	case typ.IsListType(), typ.IsSetType(), typ.IsTupleType():
+		var output []any
+		for _, el := range v.AsValueSlice() {
+			if val := toRawValue(el); val != nil {
+				output = append(output, val)
 			}
 		}
+		return output
+	default:
 		return nil
-	})
+	}
 }
 
 func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) iacTypes.BytesValue {
 	if a.IsNil() {
 		return iacTypes.BytesDefault(defaultValue, parent.GetMetadata())
 	}
-	if !a.IsResolvable() || !a.IsString() {
-		return iacTypes.BytesUnresolvable(a.GetMetadata())
-	}
-	return iacTypes.BytesExplicit(
-		[]byte(a.Value().AsString()),
-		a.GetMetadata(),
-	)
+	return safeOpOr(a, iacTypes.BytesUnresolvable(a.GetMetadata()), func(v cty.Value) iacTypes.BytesValue {
+		if v.Type() != cty.String {
+			return iacTypes.BytesUnresolvable(a.GetMetadata())
+		}
+		return iacTypes.BytesExplicit([]byte(v.AsString()), a.GetMetadata())
+	})
 }
 
 func (a *Attribute) AsStringValueOrDefault(defaultValue string, parent *Block) iacTypes.StringValue {
 	if a.IsNil() {
 		return iacTypes.StringDefault(defaultValue, parent.GetMetadata())
 	}
-	if !a.IsResolvable() || !a.IsString() {
-		return iacTypes.StringUnresolvable(a.GetMetadata())
-	}
-	return iacTypes.StringExplicit(
-		a.Value().AsString(),
-		a.GetMetadata(),
-	)
+	return safeOpOr(a, iacTypes.StringUnresolvable(a.GetMetadata()), func(v cty.Value) iacTypes.StringValue {
+		if v.Type() != cty.String {
+			return iacTypes.StringUnresolvable(a.GetMetadata())
+		}
+		return iacTypes.StringExplicit(v.AsString(), a.GetMetadata())
+	})
 }
 
 func (a *Attribute) AsStringValueSliceOrEmpty() (stringValues []iacTypes.StringValue) {
@@ -164,27 +148,24 @@ func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) iacTy
 	if a.IsNil() {
 		return iacTypes.BoolDefault(defaultValue, parent.GetMetadata())
 	}
-	if !a.IsResolvable() || !a.IsBool() {
-		return iacTypes.BoolUnresolvable(a.GetMetadata())
-	}
-	return iacTypes.BoolExplicit(
-		a.IsTrue(),
-		a.GetMetadata(),
-	)
+	return safeOpOr(a, iacTypes.BoolUnresolvable(a.GetMetadata()), func(_ cty.Value) iacTypes.BoolValue {
+		if !a.IsBool() {
+			return iacTypes.BoolUnresolvable(a.GetMetadata())
+		}
+		return iacTypes.BoolExplicit(a.IsTrue(), a.GetMetadata())
+	})
 }
 
 func (a *Attribute) AsIntValueOrDefault(defaultValue int, parent *Block) iacTypes.IntValue {
 	if a.IsNil() {
 		return iacTypes.IntDefault(defaultValue, parent.GetMetadata())
 	}
-	if !a.IsResolvable() || !a.IsNumber() {
-		return iacTypes.IntUnresolvable(a.GetMetadata())
-	}
-	flt := a.AsNumber()
-	return iacTypes.IntExplicit(
-		int(flt),
-		a.GetMetadata(),
-	)
+	return safeOpOr(a, iacTypes.IntUnresolvable(a.GetMetadata()), func(_ cty.Value) iacTypes.IntValue {
+		if !a.IsNumber() {
+			return iacTypes.IntUnresolvable(a.GetMetadata())
+		}
+		return iacTypes.IntExplicit(int(a.AsNumber()), a.GetMetadata())
+	})
 }
 
 func (a *Attribute) IsLiteral() bool {
@@ -192,13 +173,6 @@ func (a *Attribute) IsLiteral() bool {
 		return false
 	}
 	return len(a.hclAttribute.Expr.Variables()) == 0
-}
-
-func (a *Attribute) IsResolvable() bool {
-	if a == nil {
-		return false
-	}
-	return a.Value() != cty.NilVal && a.Value().IsKnown()
 }
 
 func (a *Attribute) Type() cty.Type {
@@ -209,13 +183,11 @@ func (a *Attribute) Type() cty.Type {
 }
 
 func (a *Attribute) IsIterable() bool {
-	if a == nil {
-		return false
-	}
-
-	ty := a.Value().Type()
-	return ty.IsListType() || ty.IsObjectType() || ty.IsMapType() ||
-		ty.IsSetType() || ty.IsTupleType()
+	return safeOp(a, func(v cty.Value) bool {
+		ty := v.Type()
+		return ty.IsListType() || ty.IsObjectType() || ty.IsMapType() ||
+			ty.IsSetType() || ty.IsTupleType()
+	})
 }
 
 func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
@@ -412,16 +384,10 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 
 	result = iacTypes.StringUnresolvable(a.metadata)
 
-	if value.IsNull() || !value.IsKnown() {
+	if !isDefined(value, cty.String) {
 		return result
 	}
-
-	switch value.Type() {
-	case cty.String:
-		return iacTypes.String(value.AsString(), a.metadata)
-	default:
-		return result
-	}
+	return iacTypes.String(value.AsString(), a.metadata)
 }
 
 func (a *Attribute) listContains(stringToLookFor string, ignoreCase bool) bool {
@@ -443,6 +409,9 @@ func (a *Attribute) listContains(stringToLookFor string, ignoreCase bool) bool {
 			}
 			if el.Type().HasDynamicTypes() {
 				return slices.Contains(a.extractListValues(), stringToLookFor)
+			}
+			if !isDefined(stringToTest, cty.String) {
+				continue
 			}
 			if ignoreCase {
 				return strings.EqualFold(stringToTest.AsString(), stringToLookFor)
@@ -601,55 +570,18 @@ func (a *Attribute) IsEmpty() bool {
 	if a == nil {
 		return false
 	}
-	val := a.Value()
-	ty := val.Type()
-	if ty.IsTupleType() || ty.IsObjectType() {
-		return val.LengthInt() == 0
-	}
-
-	if val.IsNull() {
-		return a.isNullAttributeEmpty()
-	}
-
-	if !val.IsKnown() {
-		return false
-	}
-
-	switch {
-	case ty == cty.String:
-		return val.AsString() == ""
-	case ty == cty.Number:
-		// a number can't ever be empty
-		return false
-	case ty.IsListType(), ty.IsSetType(), ty.IsMapType():
-		return val.LengthInt() == 0
-	}
-
-	return true
-}
-
-func (a *Attribute) isNullAttributeEmpty() bool {
-	if a == nil {
-		return false
-	}
-	switch t := a.hclAttribute.Expr.(type) {
-	case *hclsyntax.FunctionCallExpr, *hclsyntax.ScopeTraversalExpr,
-		*hclsyntax.ConditionalExpr, *hclsyntax.LiteralValueExpr:
-		return false
-	case *hclsyntax.TemplateExpr:
-		// walk the parts of the expression to ensure that it has a literal value
-		for _, p := range t.Parts {
-			switch pt := p.(type) {
-			case *hclsyntax.LiteralValueExpr:
-				if pt != nil && !pt.Val.IsNull() {
-					return false
-				}
-			case *hclsyntax.ScopeTraversalExpr:
-				return false
-			}
+	return safeOp(a, func(v cty.Value) bool {
+		ty := v.Type()
+		switch {
+		case ty.IsTupleType(), ty.IsObjectType(), ty.IsListType(), ty.IsSetType(), ty.IsMapType():
+			return v.LengthInt() == 0
+		case ty == cty.String:
+			return v.AsString() == ""
+		case ty == cty.Number:
+			return false
 		}
-	}
-	return true
+		return true
+	})
 }
 
 func (a *Attribute) MapValue(mapKey string) cty.Value {
@@ -815,18 +747,21 @@ func (a *Attribute) AsNumber() float64 {
 }
 
 func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
-	var res T
+	var zero T
+	return safeOpOr(a, zero, fn)
+}
+
+func safeOpOr[T any](a *Attribute, fallback T, fn func(cty.Value) T) T {
 	if a == nil {
-		return res
+		return fallback
 	}
 
 	val := a.Value()
 	if val.IsNull() || !val.IsKnown() {
-		return res
+		return fallback
 	}
 
 	unmarked, _ := val.UnmarkDeep()
-
 	return fn(unmarked)
 }
 
