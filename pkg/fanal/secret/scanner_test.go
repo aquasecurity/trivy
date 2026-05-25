@@ -1287,7 +1287,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 2,
 		EndLine:   2,
-		Match:     "<password>***********</password>",
+		Match:     "<password>  ***********  </password>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1297,20 +1297,20 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "<password>***********</password>",
-					Highlighted: "<password>***********</password>",
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
 				},
 				{
 					Number:      3,
-					Content:     "<passphrase>*************</passphrase>",
-					Highlighted: "<passphrase>*************</passphrase>",
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
 				},
 			},
 		},
-		Offset: 21,
+		Offset: 23,
 	}
 	wantFindingMavenSettingsPassphrase := types.SecretFinding{
 		RuleID:    "maven-settings-passphrase",
@@ -1319,7 +1319,7 @@ func TestSecretScanner(t *testing.T) {
 		Severity:  "HIGH",
 		StartLine: 3,
 		EndLine:   3,
-		Match:     "<passphrase>*************</passphrase>",
+		Match:     "<passphrase>  *************  </passphrase>",
 		Code: types.Code{
 			Lines: []types.Line{
 				{
@@ -1329,13 +1329,13 @@ func TestSecretScanner(t *testing.T) {
 				},
 				{
 					Number:      2,
-					Content:     "<password>***********</password>",
-					Highlighted: "<password>***********</password>",
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
 				},
 				{
 					Number:      3,
-					Content:     "<passphrase>*************</passphrase>",
-					Highlighted: "<passphrase>*************</passphrase>",
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
 					IsCause:     true,
 					FirstCause:  true,
 					LastCause:   true,
@@ -1347,7 +1347,7 @@ func TestSecretScanner(t *testing.T) {
 				},
 			},
 		},
-		Offset: 56,
+		Offset: 62,
 	}
 	wantFindingMavenSettingsSecurityMaster := types.SecretFinding{
 		RuleID:    "maven-settings-security-master",
