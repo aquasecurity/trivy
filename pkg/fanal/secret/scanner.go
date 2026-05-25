@@ -912,12 +912,10 @@ func findLocation(start, end int, content []byte) (int, int, types.Code, string)
 		})
 		foundFirst = foundFirst || inCause
 	}
-	if len(code.Lines) > 0 {
-		for i := len(code.Lines) - 1; i >= 0; i-- {
-			if code.Lines[i].IsCause {
-				code.Lines[i].LastCause = true
-				break
-			}
+	for i, v := range slices.Backward(code.Lines) {
+		if v.IsCause {
+			code.Lines[i].LastCause = true
+			break
 		}
 	}
 
