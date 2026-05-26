@@ -27,7 +27,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	if !IsValidName(pkgJSON.Name) {
-		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
+		return Package{}, nil // Silently skip package.json files with invalid names (e.g. subdirectory module resolution hints)
 	}
 
 	var id string
