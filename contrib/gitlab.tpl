@@ -94,8 +94,8 @@
             {{- $links = append $links . -}}
           {{- end -}}
         {{- end -}}
-        {{- range $i, $url := $links -}}
-        {{- if $i }},{{ end -}}
+        {{- range $i, $url := $links }}
+        {{- if $i }},{{ end }}
         {
           "url": "{{ $url }}"
         }
