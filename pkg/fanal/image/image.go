@@ -3,6 +3,7 @@ package image
 import (
 	"context"
 	"fmt"
+	"slices"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
@@ -114,9 +115,7 @@ func LayerIDs(img v1.Image) ([]string, error) {
 func GuessBaseImageIndex(histories []v1.History) int {
 	baseImageIndex := -1
 	var foundNonEmpty bool
-	for i := len(histories) - 1; i >= 0; i-- {
-		h := histories[i]
-
+	for i, h := range slices.Backward(histories) {
 		// Skip the last CMD, ENTRYPOINT, etc.
 		if !foundNonEmpty {
 			if h.EmptyLayer {

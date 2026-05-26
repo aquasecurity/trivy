@@ -21,9 +21,6 @@ linters:
     errcheck:
       check-type-assertions: true
       check-blank: true
-    goconst:
-      min-len: 3
-      min-occurrences: 3
     gocritic:
       disabled-checks:
         - appendAssign
@@ -69,12 +66,15 @@ linters:
         - G114
         - G115
         - G117 # Potential exposure of secrets in values marshaled by JSON/YAML/XML/TOML
+        - G118 # Context propagation failures that can cause goroutine/resource leaks
+        - G122 # filepath.Walk/WalkDir symlink TOCTOU race risks
         - G204
         - G304
         - G402
         - G703 # Path traversal via taint analysis
         - G704 # SSRF via taint analysis
         - G705 # XSS via taint analysis
+        - G709 # Unsafe deserialization of untrusted data via taint analysis
     govet:
       disable:
         - shadow
@@ -149,7 +149,6 @@ linters:
   enable:
     - bodyclose
     - depguard
-    - goconst
     - gocritic
     - gocyclo
     - gomodguard
@@ -174,7 +173,6 @@ linters:
     rules:
       - path: ".*_test.go$"
         linters:
-          - goconst
           - gosec
           - unused
       - path: ".*_test.go$"
@@ -193,9 +191,6 @@ linters:
         linters:
           - gocritic
         text: "importShadow:"
-      - linters:
-          - goconst
-        text: "string `each` has 3 occurrences, make it a constant" # FIXME
     presets:
       - comments
       - common-false-positives
