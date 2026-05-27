@@ -78,17 +78,6 @@ func DecompressSparseGzip(t *testing.T, src, dst string) {
 	}
 }
 
-// FSToTar creates an in-memory tar archive from an fs.FS.
-// prefix is prepended to every file path inside the archive.
-func FSToTar(t *testing.T, fsys fs.FS, prefix string) []byte {
-	t.Helper()
-	var buf bytes.Buffer
-	tw := tar.NewWriter(&buf)
-	require.NoError(t, writeFSToTar(tw, fsys, prefix))
-	require.NoError(t, tw.Close())
-	return buf.Bytes()
-}
-
 // FSToTarGz creates an in-memory tar.gz archive from an fs.FS.
 // prefix is prepended to every file path inside the archive.
 func FSToTarGz(t *testing.T, fsys fs.FS, prefix string) []byte {
