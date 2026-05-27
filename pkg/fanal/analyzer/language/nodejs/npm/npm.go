@@ -15,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	nodepkg "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
@@ -135,9 +136,8 @@ func (a npmLibraryAnalyzer) findLicenses(fsys fs.FS, lockPath string) (map[strin
 		return nil, nil
 	}
 
-	// Parse package.json
 	required := func(path string, _ fs.DirEntry) bool {
-		return filepath.Base(path) == types.NpmPkg
+		return nodepkg.IsPackageRoot(path)
 	}
 
 	// Traverse node_modules dir and find licenses

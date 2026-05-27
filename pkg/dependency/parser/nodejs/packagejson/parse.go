@@ -45,11 +45,7 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 	}
 
 	if !IsValidName(pkgJSON.Name) {
-		// Subdirectory package.json files (e.g. node_modules/rxjs/ajax/package.json) put a
-		// slash in the name field as a module-resolution hint for bundlers. They aren't real
-		// packages, have no version, and aren't published to npm. Silently skip them by
-		// returning an empty Package — callers that key on Package.ID already drop these.
-		return Package{}, nil
+		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
 	}
 
 	var id string

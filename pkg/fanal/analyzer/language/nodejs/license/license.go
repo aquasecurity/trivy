@@ -10,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
+	nodepkg "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pkg"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -59,7 +60,10 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 		}
 		return nil
 	}
-	if err := fsutils.WalkDir(fsys, root, fsutils.RequiredFile(types.NpmPkg), walkDirFunc); err != nil {
+	required := func(p string, _ fs.DirEntry) bool {
+		return nodepkg.IsPackageRoot(p)
+	}
+	if err := fsutils.WalkDir(fsys, root, required, walkDirFunc); err != nil {
 		return nil, xerrors.Errorf("walk error: %w", err)
 	}
 
