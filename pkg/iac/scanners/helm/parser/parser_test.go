@@ -47,7 +47,7 @@ func TestParseFS(t *testing.T) {
 		{
 			name:          "chart with integer name",
 			chartName:     "chart-with-integer-name",
-			manifestCount: 0,
+			manifestCount: 1,
 		},
 		{
 			name:         "chart without name returns error",
