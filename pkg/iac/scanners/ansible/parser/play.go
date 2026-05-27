@@ -46,9 +46,7 @@ func parsePlays(f fsutils.FileSource) ([]*Play, error) {
 		return nil, xerrors.Errorf("decode YAML file: %w", err)
 	}
 
-	return lo.Filter(plays, func(p *Play, _ int) bool {
-		return p != nil
-	}), nil
+	return lo.Compact(plays), nil
 }
 
 // Play represents a single play in an Ansible playbook.
