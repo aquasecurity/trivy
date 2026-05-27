@@ -85,7 +85,7 @@ func findRelatedLaunchTemplate(modules terraform.Modules, instanceBlock *terrafo
 
 	templateRef := launchTemplateBlock.GetAttribute("name")
 
-	if !templateRef.IsResolvable() {
+	if !templateRef.IsString() {
 		templateRef = launchTemplateBlock.GetAttribute("id")
 	}
 

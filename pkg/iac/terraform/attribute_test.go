@@ -6,11 +6,154 @@ import (
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/hashicorp/hcl/v2/json"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
+
+func newTestAttribute(t *testing.T, expr string, vars map[string]cty.Value) *Attribute {
+	t.Helper()
+	evalCtx := &hcl.EvalContext{Variables: vars}
+	ctx := context.NewContext(evalCtx, nil)
+	exp, diags := hclsyntax.ParseExpression([]byte(expr), "", hcl.Pos{Line: 1, Column: 1})
+	require.False(t, diags.HasErrors())
+	return NewAttribute(&hcl.Attribute{
+		Name:      "test",
+		Expr:      exp,
+		Range:     hcl.Range{},
+		NameRange: hcl.Range{},
+	}, ctx, "", types.Metadata{}, Reference{}, "", nil)
+}
+
+func Test_Attribute_AsMapValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		val      cty.Value
+		expected map[string]string
+	}{
+		{
+			name: "all valid string values",
+			val: cty.ObjectVal(map[string]cty.Value{
+				"env":  cty.StringVal("staging"),
+				"team": cty.StringVal("platform"),
+			}),
+			expected: map[string]string{"env": "staging", "team": "platform"},
+		},
+		{
+			name: "null value is skipped",
+			val: cty.ObjectVal(map[string]cty.Value{
+				"env":     cty.StringVal("staging"),
+				"project": cty.NullVal(cty.String),
+			}),
+			expected: map[string]string{"env": "staging"},
+		},
+		{
+			name: "all null values",
+			val: cty.ObjectVal(map[string]cty.Value{
+				"env":     cty.NullVal(cty.String),
+				"project": cty.NullVal(cty.String),
+			}),
+			expected: make(map[string]string),
+		},
+		{
+			name: "unknown value is skipped",
+			val: cty.ObjectVal(map[string]cty.Value{
+				"env":     cty.StringVal("staging"),
+				"project": cty.UnknownVal(cty.String),
+			}),
+			expected: map[string]string{"env": "staging"},
+		},
+		{
+			name: "non-string value is skipped",
+			val: cty.ObjectVal(map[string]cty.Value{
+				"env":   cty.StringVal("staging"),
+				"count": cty.NumberIntVal(5),
+			}),
+			expected: map[string]string{"env": "staging"},
+		},
+		{
+			name:     "non-map type returns nil",
+			val:      cty.StringVal("not-a-map"),
+			expected: nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, "val", map[string]cty.Value{"val": tt.val})
+			assert.Equal(t, tt.expected, attr.AsMapValue().Value())
+		})
+	}
+}
+
+func Test_Attribute_GetRawValue(t *testing.T) {
+	tests := []struct {
+		name     string
+		val      cty.Value
+		expected any
+	}{
+		{
+			name:     "string",
+			val:      cty.StringVal("hello"),
+			expected: "hello",
+		},
+		{
+			name:     "bool",
+			val:      cty.BoolVal(true),
+			expected: true,
+		},
+		{
+			name:     "number",
+			val:      cty.NumberIntVal(42),
+			expected: float64(42),
+		},
+		{
+			name:     "list of strings",
+			val:      cty.ListVal([]cty.Value{cty.StringVal("a"), cty.StringVal("b")}),
+			expected: []any{"a", "b"},
+		},
+		{
+			name:     "list of numbers",
+			val:      cty.ListVal([]cty.Value{cty.NumberIntVal(1), cty.NumberIntVal(2)}),
+			expected: []any{float64(1), float64(2)},
+		},
+		{
+			name:     "list of bools",
+			val:      cty.ListVal([]cty.Value{cty.BoolVal(true), cty.BoolVal(false)}),
+			expected: []any{true, false},
+		},
+		{
+			name:     "empty list",
+			val:      cty.ListValEmpty(cty.String),
+			expected: []any(nil),
+		},
+		{
+			name:     "null element in list is skipped",
+			val:      cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.NullVal(cty.String)}),
+			expected: []any{"a"},
+		},
+		{
+			name:     "unknown element in list is skipped",
+			val:      cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.UnknownVal(cty.String)}),
+			expected: []any{"a"},
+		},
+		{
+			name: "mixed tuple",
+			val:  cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.NumberIntVal(1), cty.BoolVal(true)}),
+			expected: []any{"a", float64(1), true},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, "val", map[string]cty.Value{"val": tt.val})
+			assert.Equal(t, tt.expected, attr.GetRawValue())
+		})
+	}
+}
 
 func Test_AllReferences(t *testing.T) {
 	cases := []struct {
@@ -70,19 +213,7 @@ func Test_AllReferences(t *testing.T) {
 
 	for _, test := range cases {
 		t.Run(test.input, func(t *testing.T) {
-			ctx := context.NewContext(&hcl.EvalContext{}, nil)
-
-			exp, diag := hclsyntax.ParseExpression([]byte(test.input), "", hcl.Pos{Line: 1, Column: 1})
-			if diag.HasErrors() {
-				require.NoError(t, diag)
-			}
-
-			a := NewAttribute(&hcl.Attribute{
-				Name:      "test",
-				Expr:      exp,
-				Range:     hcl.Range{},
-				NameRange: hcl.Range{},
-			}, ctx, "", types.Metadata{}, Reference{}, "", nil)
+			a := newTestAttribute(t, test.input, nil)
 
 			refs := a.AllReferences()
 			humanRefs := make([]string, 0, len(refs))
