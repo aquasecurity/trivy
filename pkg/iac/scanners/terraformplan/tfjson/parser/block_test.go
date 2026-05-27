@@ -123,6 +123,38 @@ func Test_ToHcl(t *testing.T) {
 `,
 		},
 		{
+			name: "list attribute with nested lists",
+			block: PlanBlock{
+				BlockType: "resource",
+				Type:      "foo",
+				Name:      "bar",
+				Attributes: map[string]any{
+					"nested": []any{
+						[]any{"a", "b"},
+						[]any{"c"},
+						[]any{"d", "e", "f"},
+					},
+				},
+			},
+			expected: `resource "foo" "bar" {
+  nested = [
+    [
+      "a",
+      "b"
+    ],
+    [
+      "c"
+    ],
+    [
+      "d",
+      "e",
+      "f"
+    ]
+  ]
+}
+`,
+		},
+		{
 			name: "map key doesn't valid identifier",
 			block: PlanBlock{
 				BlockType: "resource",
