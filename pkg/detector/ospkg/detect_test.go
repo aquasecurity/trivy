@@ -146,9 +146,10 @@ func TestDetector_Detect(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			mockDrv := &mockDriver{}
-			d := ospkg.NewTestDetector(tt.target, mockDrv)
+			d, err := ospkg.NewDetector(tt.target, ospkg.WithDriver(tt.target.OS.Family, mockDrv))
+			require.NoError(t, err)
 
-			_, _, err := d.Detect(t.Context())
+			_, _, err = d.Detect(t.Context())
 			require.NoError(t, err)
 			assert.Equal(t, tt.wantPkgs, mockDrv.receivedPkgs)
 		})

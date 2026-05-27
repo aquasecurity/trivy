@@ -2,6 +2,8 @@ package ospkg
 
 import (
 	"context"
+	"maps"
+	"slices"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -74,9 +76,42 @@ var (
 	}
 )
 
+// options holds the drivers and providers used to resolve a driver for a scan target.
+type options struct {
+	drivers   map[ftypes.OSType]driver.Driver
+	providers []driver.Provider
+}
+
+// Option configures a Detector. Options are provided for extensibility by users
+// of Trivy as a library and are not used within Trivy itself.
+type Option func(*options)
+
+// WithDriver registers a driver for the given OS family, overriding the default one.
+func WithDriver(family ftypes.OSType, drv driver.Driver) Option {
+	return func(o *options) {
+		o.drivers[family] = drv
+	}
+}
+
+// WithProvider registers an additional provider. It takes priority over the
+// built-in providers and the standard OS-specific drivers.
+func WithProvider(provider driver.Provider) Option {
+	return func(o *options) {
+		o.providers = slices.Insert(o.providers, 0, provider)
+	}
+}
+
 // NewDetector creates a new Detector for the given scan target
-func NewDetector(target types.ScanTarget) (*Detector, error) {
-	drv, err := newDriver(target.OS.Family, target.Packages)
+func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
+	o := &options{
+		drivers:   maps.Clone(drivers),
+		providers: slices.Clone(providers),
+	}
+	for _, opt := range opts {
+		opt(o)
+	}
+
+	drv, err := o.newDriver(target.OS.Family, target.Packages)
 	if err != nil {
 		return nil, err
 	}
@@ -122,16 +157,16 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
 	return filtered
 }
 
-func newDriver(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
+func (o *options) newDriver(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
 	// Try providers first
-	for _, provider := range providers {
+	for _, provider := range o.providers {
 		if d := provider(osFamily, pkgs); d != nil {
 			return d, nil
 		}
 	}
 
 	// Fall back to standard drivers
-	if d, ok := drivers[osFamily]; ok {
+	if d, ok := o.drivers[osFamily]; ok {
 		return d, nil
 	}
 
