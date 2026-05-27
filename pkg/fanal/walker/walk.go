@@ -18,6 +18,10 @@ var defaultSkipDirs = []string{
 type Option struct {
 	SkipFiles []string
 	SkipDirs  []string
+
+	// FollowSymlinks follows symlinks to regular files; dir symlinks are
+	// never followed (avoids traversal cycles).
+	FollowSymlinks bool
 }
 
 type WalkFunc func(filePath string, info os.FileInfo, opener analyzer.Opener) error
