@@ -65,6 +65,9 @@ func buildPlanBlocks(module Module, resourceChanges []ResourceChange, configurat
 		resourceExprs := getConfiguration(r.Address, module.Address, configuration)
 		schema := schemaForBlock(r, resourceExprs)
 		changes := getValues(r.Address, resourceChanges)
+		if changes == nil {
+			continue
+		}
 		resource := decodeBlock(schema, changes.After)
 		// fill top-level block fields
 		resource.BlockType = r.BlockType()
