@@ -94,7 +94,8 @@ func WithDriver(family ftypes.OSType, drv driver.Driver) Option {
 }
 
 // WithProvider registers an additional provider. It takes priority over the
-// built-in providers and the standard OS-specific drivers.
+// built-in providers and the standard OS-specific drivers. When called multiple
+// times, the most recently registered provider is tried first.
 func WithProvider(provider driver.Provider) Option {
 	return func(o *options) {
 		o.providers = slices.Insert(o.providers, 0, provider)
