@@ -38,12 +38,20 @@ type Proxy struct {
 	NonProxyHosts string `xml:"nonProxyHosts"`
 }
 
+type Mirror struct {
+	ID       string `xml:"id"`
+	Name     string `xml:"name"`
+	URL      string `xml:"url"`
+	MirrorOf string `xml:"mirrorOf"`
+}
+
 type settings struct {
 	LocalRepository string    `xml:"localRepository"`
 	Servers         []Server  `xml:"servers>server"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
 	Proxies         []Proxy   `xml:"proxies>proxy"`
+	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 }
 
 func (s settings) effectiveRepositories() []repository {
@@ -141,6 +149,11 @@ func readSettings() settings {
 		s.Proxies = lo.UniqBy(append(s.Proxies, globalSettings.Proxies...), func(p Proxy) string {
 			return p.ID
 		})
+
+		// Merge mirrors
+		s.Mirrors = lo.UniqBy(append(s.Mirrors, globalSettings.Mirrors...), func(m Mirror) string {
+			return m.ID
+		})
 	}
 
 	return s
@@ -194,5 +207,12 @@ func expandAllEnvPlaceholders(s *settings) {
 		s.Proxies[i].Username = evaluateVariable(proxy.Username, nil, nil)
 		s.Proxies[i].Password = evaluateVariable(proxy.Password, nil, nil)
 		s.Proxies[i].NonProxyHosts = evaluateVariable(proxy.NonProxyHosts, nil, nil)
+	}
+
+	for i, m := range s.Mirrors {
+		s.Mirrors[i].ID = evaluateVariable(m.ID, nil, nil)
+		s.Mirrors[i].Name = evaluateVariable(m.Name, nil, nil)
+		s.Mirrors[i].URL = evaluateVariable(m.URL, nil, nil)
+		s.Mirrors[i].MirrorOf = evaluateVariable(m.MirrorOf, nil, nil)
 	}
 }

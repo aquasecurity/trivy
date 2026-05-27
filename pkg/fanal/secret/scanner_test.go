@@ -1101,6 +1101,186 @@ func TestSecretScanner(t *testing.T) {
 		Offset: 14,
 	}
 
+	wantFindingAzureStorageAccountKey := types.SecretFinding{
+		RuleID:    "azure-storage-account-key",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure Storage Account Key",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "AccountKey=" + strings.Repeat("*", 88),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "AccountKey=" + strings.Repeat("*", 88),
+					Highlighted: "AccountKey=" + strings.Repeat("*", 88),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 11,
+	}
+	wantFindingAzureSASToken := types.SecretFinding{
+		RuleID:    "azure-sas-token",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure Shared Access Signature Token",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
+					Highlighted: "1T00%3A00%3A00Z&spr=https&sig=" + strings.Repeat("*", 44),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 66,
+	}
+	wantFindingAzureDevOpsPAT := types.SecretFinding{
+		RuleID:    "azure-devops-pat",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure DevOps Personal Access Token",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
+					Highlighted: "AZURE_DEVOPS_TOKEN=" + strings.Repeat("*", 52),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 19,
+	}
+
+	azureStructuredToken := strings.Repeat("*", 84)
+
+	wantFindingAzureEntraClientSecret := types.SecretFinding{
+		RuleID:    "azure-entra-client-secret",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure Entra ID Client Secret",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "client_secret=" + strings.Repeat("*", 40),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "client_secret=" + strings.Repeat("*", 40),
+					Highlighted: "client_secret=" + strings.Repeat("*", 40),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 14,
+	}
+	wantFindingAzureContainerRegistryCredential := types.SecretFinding{
+		RuleID:    "azure-container-registry-credential",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure Container Registry Credential",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     azureStructuredToken,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     azureStructuredToken,
+					Highlighted: azureStructuredToken,
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 0,
+	}
+	wantFindingAzureContainerRegistryPassword := types.SecretFinding{
+		RuleID:    "azure-container-registry-password",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure Container Registry Password",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
+					Highlighted: "myregistry.azurecr.io password: " + strings.Repeat("*", 32),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 32,
+	}
+	wantFindingAzureAppConfigConnectionString := types.SecretFinding{
+		RuleID:    "azure-app-config-connection-string",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure App Configuration Connection String",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
+					Highlighted: "Endpoint=https://mystore.azconfig.io;Id=iLiM;Secret=" + strings.Repeat("*", 36),
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 52,
+	}
+	wantFindingAzureAIServicesKey := types.SecretFinding{
+		RuleID:    "azure-ai-services-key",
+		Category:  secret.CategoryAzure,
+		Title:     "Azure AI Services Key",
+		Severity:  "HIGH",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     azureStructuredToken,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     azureStructuredToken,
+					Highlighted: azureStructuredToken,
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 0,
+	}
+
 	tests := []struct {
 		name          string
 		configPath    string
@@ -1583,6 +1763,78 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			name:          "find Azure Storage Account Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-storage-account-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-storage-account-key.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureStorageAccountKey},
+			},
+		},
+		{
+			name:          "find Azure SAS Token",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-sas-token.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-sas-token.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureSASToken},
+			},
+		},
+		{
+			name:          "find Azure DevOps PAT",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-devops-pat.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-devops-pat.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureDevOpsPAT},
+			},
+		},
+		{
+			name:          "find Azure Entra ID Client Secret",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-entra-client-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-entra-client-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureEntraClientSecret},
+			},
+		},
+		{
+			name:          "find Azure Container Registry Credential",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-container-registry-credential.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-container-registry-credential.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureContainerRegistryCredential},
+			},
+		},
+		{
+			name:          "find Azure Container Registry Password",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-container-registry-password.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-container-registry-password.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureContainerRegistryPassword},
+			},
+		},
+		{
+			name:          "find Azure App Configuration Connection String",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-app-config-connection-string.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-app-config-connection-string.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureAppConfigConnectionString},
+			},
+		},
+		{
+			name:          "find Azure AI Services Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
+				Findings: []types.SecretFinding{wantFindingAzureAIServicesKey},
+			},
+		},
+		{
 			name:          "invalid UTF-8 sequences in secrets",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "invalid-utf8.txt"),
@@ -1971,6 +2223,114 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 
 			// Compare all findings at once
 			assert.Equal(t, tt.want.Findings, got.Findings, "unexpected findings")
+		})
+	}
+}
+
+func writeSecretConfig(t *testing.T, body string) string {
+	t.Helper()
+	path := filepath.Join(t.TempDir(), "trivy-secret.yaml")
+	require.NoError(t, os.WriteFile(path, []byte(body), 0o644))
+	return path
+}
+
+func TestParseConfig(t *testing.T) {
+	tests := []struct {
+		name    string
+		body    string
+		want    *[]string // nil == expect c.SkipPatterns == nil
+		wantErr string
+	}{
+		{
+			name: "missing skip-patterns leaves SkipPatterns nil",
+			body: "disable-allow-rules:\n  - tests\n",
+			want: nil,
+		},
+		{
+			name: "empty skip-patterns yields non-nil empty slice",
+			body: "skip-patterns: []\n",
+			want: &[]string{},
+		},
+		{
+			name: "valid forward-slash patterns are preserved",
+			body: "skip-patterns:\n  - '**/.git/**'\n  - '**/node_modules/**'\n  - '**/go.sum'\n",
+			want: &[]string{"**/.git/**", "**/node_modules/**", "**/go.sum"},
+		},
+		{
+			name: "OS-native patterns are converted to forward slashes",
+			// filepath.FromSlash uses the OS separator — backslash on Windows, no-op elsewhere.
+			body: "skip-patterns:\n" +
+				"  - '" + filepath.FromSlash("**/.git/**") + "'\n" +
+				"  - '" + filepath.FromSlash("**/node_modules/**") + "'\n" +
+				"  - '" + filepath.FromSlash("**/go.sum") + "'\n",
+			want: &[]string{"**/.git/**", "**/node_modules/**", "**/go.sum"},
+		},
+		{
+			name:    "invalid pattern returns error",
+			body:    "skip-patterns:\n  - '[invalid'\n",
+			wantErr: "invalid skip-pattern",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			path := writeSecretConfig(t, tt.body)
+			c, err := secret.ParseConfig(path)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			require.NotNil(t, c)
+			if tt.want == nil {
+				assert.Nil(t, c.SkipPatterns)
+				return
+			}
+			require.NotNil(t, c.SkipPatterns)
+			assert.Equal(t, *tt.want, *c.SkipPatterns)
+		})
+	}
+}
+
+func TestIsSkippedSlashConversion(t *testing.T) {
+	tests := []struct {
+		name     string
+		patterns []string
+		path     string
+		want     bool
+	}{
+		{
+			name:     "forward slash path matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/.git/config",
+			want:     true,
+		},
+		{
+			name:     "OS-native path separator matches forward slash pattern",
+			patterns: []string{"**/.git/**"},
+			// filepath.FromSlash converts to OS separator — exercises ToSlash inside IsSkipped on Windows.
+			path: filepath.FromSlash("some/repo/.git/config"),
+			want: true,
+		},
+		{
+			name:     "non-matching path returns false",
+			patterns: []string{"**/.git/**"},
+			path:     "some/repo/src/main.go",
+			want:     false,
+		},
+		{
+			name:     "OS-native path matches node_modules pattern",
+			patterns: []string{"**/node_modules/**"},
+			path:     filepath.FromSlash("project/node_modules/lodash/index.js"),
+			want:     true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			g := secret.Global{SkipPatterns: tt.patterns}
+			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
 		})
 	}
 }

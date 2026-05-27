@@ -61,9 +61,19 @@ jobs:
       - test-chart
     runs-on: ubuntu-2404-2core
     steps:
+      # GITHUB_TOKEN is scoped to the current repository and cannot trigger
+      # workflows in other repos — generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.ACTIONS_MULTI_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: helm-charts
       - name: Trigger publish-chart workflow in helm-charts
         env:
-          GH_TOKEN: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           REF: ${{ github.sha }}
         run: |
           gh workflow run publish-chart.yaml \

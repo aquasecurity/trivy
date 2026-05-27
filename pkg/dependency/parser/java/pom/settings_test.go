@@ -70,6 +70,7 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{},
 				Proxies:        []Proxy{},
+				Mirrors:        []Mirror{},
 			},
 		},
 		{
@@ -252,6 +253,7 @@ func Test_ReadSettings(t *testing.T) {
 					"mycompany-global",
 				},
 				Proxies: []Proxy{},
+				Mirrors: []Mirror{},
 			},
 		},
 		{
@@ -275,6 +277,10 @@ func Test_ReadSettings(t *testing.T) {
 				"PROFILE_ID":      "mycompany-global",
 				"REPO_ID":         "mycompany-releases",
 				"REPO_URL":        "https://mycompany.example.com",
+				"MIRROR_ID":       "mirror-id-from-env",
+				"MIRROR_NAME":     "Mirror From Env",
+				"MIRROR_URL":      "https://mirror.example.com",
+				"MIRROR_OF":       "central",
 			},
 			wantSettings: settings{
 				LocalRepository: "part1/part2/.m2/repository",
@@ -307,6 +313,14 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{
 					"mycompany-global",
+				},
+				Mirrors: []Mirror{
+					{
+						ID:       "mirror-id-from-env",
+						Name:     "Mirror From Env",
+						URL:      "https://mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
 				},
 			},
 		},
@@ -352,6 +366,31 @@ func Test_ReadSettings(t *testing.T) {
 						Port:     "8080",
 					},
 				},
+				Mirrors: []Mirror{},
+			},
+		},
+		{
+			name: "user settings mirrors",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-mirrors"),
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Mirrors: []Mirror{
+					{
+						ID:       "user-mirror",
+						Name:     "User Mirror",
+						URL:      "https://user.mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (user)",
+						URL:      "https://user.shared.example.com/maven2",
+						MirrorOf: "*,!internal",
+					},
+				},
 			},
 		},
 		{
@@ -375,6 +414,69 @@ func Test_ReadSettings(t *testing.T) {
 						Username:      "user-proxy-user",
 						Password:      "user-proxy-pass",
 						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+				Mirrors: []Mirror{},
+			},
+		},
+		{
+			name: "global settings mirrors",
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (global)",
+						URL:      "https://global.shared.example.com/maven2",
+						MirrorOf: "external:*",
+					},
+				},
+			},
+		},
+		{
+			name: "user and global mirrors - user takes precedence on duplicate ID",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-mirrors"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "user-mirror",
+						Name:     "User Mirror",
+						URL:      "https://user.mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (user)",
+						URL:      "https://user.shared.example.com/maven2",
+						MirrorOf: "*,!internal",
+					},
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
 					},
 				},
 			},
@@ -431,11 +533,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "r2",
 					url:             mustParseURL(t, "https://example.com/repo2"),
 					releaseEnabled:  false,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "r1",
 					url:             mustParseURL(t, "https://u:p@example.com/repo1"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -484,11 +588,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			// After reverse: [only-p1, dup(from p1)]
 			want: []repository{
 				{
+					id:              "only-p1",
 					url:             mustParseURL(t, "https://p1.example.com/only"),
 					releaseEnabled:  true,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "dup",
 					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -521,6 +627,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "enabled",
 					url:             mustParseURL(t, "https://example.com/enabled"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,

@@ -6,7 +6,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
@@ -21,7 +20,7 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Severity: control.Severity,
 		}
 		if !strings.Contains(control.Name, "Manual") {
-			ccm.TotalFail = lo.ToPtr(len(control.Results))
+			ccm.TotalFail = new(len(control.Results))
 		}
 		ccma = append(ccma, ccm)
 	}

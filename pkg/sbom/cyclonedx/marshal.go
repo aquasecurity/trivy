@@ -333,7 +333,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
 		// Use license.name for everything else (invalid SPDX ID, SPDX expression, etc.)
 		return cdx.LicenseChoice{License: &cdx.License{Name: expr.String()}}
 	})
-	return lo.ToPtr(cdx.Licenses(choices))
+	return new(cdx.Licenses(choices))
 }
 
 func (m *Marshaler) normalizeLicense(license string) expression.Expression {

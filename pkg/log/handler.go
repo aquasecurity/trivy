@@ -97,21 +97,15 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		return buf
 	}
 
-	var key string
-	for _, g := range groups {
-		key += g + "."
-	}
-	key += a.Key
-
 	switch a.Value.Kind() {
 	case slog.KindString:
 		// Quote string values, to make them easy to parse.
-		buf = append(buf, key...)
+		buf = appendKey(buf, groups, a.Key)
 		buf = append(buf, '=')
 		buf = strconv.AppendQuote(buf, a.Value.String())
 	case slog.KindTime:
 		// Write times in a standard way, without the monotonic time.
-		buf = append(buf, key...)
+		buf = appendKey(buf, groups, a.Key)
 		buf = append(buf, '=')
 		buf = a.Value.Time().AppendFormat(buf, time.RFC3339Nano)
 	case slog.KindGroup:
@@ -128,7 +122,7 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		}
 		buf = bytes.TrimRight(buf, " ") // Trim the trailing space.
 	default:
-		buf = append(buf, key...)
+		buf = appendKey(buf, groups, a.Key)
 		buf = append(buf, '=')
 		if err, ok := a.Value.Any().(error); ok {
 			buf = append(buf, color.HiRedString(strconv.Quote(err.Error()))...)
@@ -287,6 +281,14 @@ func FilePath(filePath string) slog.Attr {
 func isLogPrefix(a slog.Attr) bool {
 	_, ok := a.Value.Any().(logPrefix)
 	return ok
+}
+
+func appendKey(buf []byte, groups []string, key string) []byte {
+	for _, g := range groups {
+		buf = append(buf, g...)
+		buf = append(buf, '.')
+	}
+	return append(buf, key...)
 }
 
 func levelString(level slog.Level) string {

@@ -9,8 +9,8 @@ import (
 	"strings"
 
 	"gopkg.in/yaml.v3"
-	"helm.sh/helm/v3/pkg/getter"
-	"helm.sh/helm/v3/pkg/strvals"
+	"helm.sh/helm/v4/pkg/getter"
+	"helm.sh/helm/v4/pkg/strvals"
 )
 
 type ValueOptions struct {

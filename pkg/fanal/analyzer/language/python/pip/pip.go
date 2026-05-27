@@ -7,6 +7,7 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -194,8 +195,8 @@ func (a pipLibraryAnalyzer) findSitePackagesDir(libDir string) (string, error) {
 	// Find python dir which contains `site-packages` dir
 	// First check for newer versions
 	pythonDirs := a.sortPythonDirs(entries)
-	for i := len(pythonDirs) - 1; i >= 0; i-- {
-		dir := filepath.Join(libDir, pythonDirs[i], "site-packages")
+	for _, v := range slices.Backward(pythonDirs) {
+		dir := filepath.Join(libDir, v, "site-packages")
 		if fsutils.DirExists(dir) {
 			return dir, nil
 		}

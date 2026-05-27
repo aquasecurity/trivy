@@ -86,7 +86,7 @@ wheel==0.42.0
 Therefore, Trivy scans only for the direct dependencies with `requirements.txt`.
 
 To detect transitive dependencies as well, you need to generate `requirements.txt` that contains them.
-Like described above, tou can do it with `pip freeze` or `pip-compile`.
+Like described above, you can do it with `pip freeze` or `pip-compile`.
 
 ```zsh
 $ cat requirements.txt # it will only find `requests@2.28.2`.

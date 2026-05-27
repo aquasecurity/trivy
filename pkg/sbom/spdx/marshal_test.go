@@ -488,7 +488,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
-								Digest:   "sha1:413f98442c83808042b5d1d2611a346b999bdca5",
+								Digest:   "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a", // Changed for tests
 							},
 						},
 					},
@@ -577,7 +577,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						FilesAnalyzed:         true,
 						PackageVerificationCode: &spdx.PackageVerificationCode{
-							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
 						},
 					},
 					{
@@ -625,8 +625,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						FileName:           "tools/project-doe/specifications/actionpack.gemspec",
 						Checksums: []spdx.Checksum{
 							{
-								Algorithm: spdx.SHA1,
-								Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+								Algorithm: spdx.SHA512,
+								Value:     "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
 							},
 						},
 					},
@@ -678,7 +678,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "CONTAINS",
 					},
 				},
-
 				OtherLicenses: nil,
 				Annotations:   nil,
 				Reviews:       nil,

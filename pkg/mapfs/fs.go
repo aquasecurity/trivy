@@ -273,6 +273,12 @@ func (m *FS) RemoveAll(path string) error {
 	return m.root.RemoveAll(cleanPath(path))
 }
 
+// Sandboxed returns a copy of the filesystem without the underlying root,
+// preventing access to the local filesystem outside of the in-memory filesystem.
+func (m *FS) Sandboxed() *FS {
+	return &FS{root: m.root}
+}
+
 func cleanPath(path string) string {
 	// Convert the volume name like 'C:' into dir like 'C\'
 	if vol := filepath.VolumeName(path); vol != "" {
