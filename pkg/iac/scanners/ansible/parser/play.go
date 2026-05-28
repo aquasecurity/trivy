@@ -3,6 +3,8 @@ package parser
 import (
 	"path/filepath"
 
+	"github.com/samber/lo"
+	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/ansible/fsutils"
@@ -36,6 +38,15 @@ type Playbook struct {
 
 func (pb *Playbook) resolveIncludedSrc(incPath string) fsutils.FileSource {
 	return pb.Src.Dir().Join(incPath)
+}
+
+func parsePlays(f fsutils.FileSource) ([]*Play, error) {
+	var plays []*Play
+	if err := decodeYAMLFile(f, &plays); err != nil {
+		return nil, xerrors.Errorf("decode YAML file: %w", err)
+	}
+
+	return lo.Compact(plays), nil
 }
 
 // Play represents a single play in an Ansible playbook.
