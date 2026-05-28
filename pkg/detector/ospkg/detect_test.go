@@ -198,13 +198,12 @@ func TestNewDetector(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Create a named mock driver on demand, reusing the same instance per name.
+			// Create a named mock driver and track it for assertions.
 			mocks := make(map[string]*mockDriver)
 			mock := func(name string) *mockDriver {
-				if _, ok := mocks[name]; !ok {
-					mocks[name] = &mockDriver{}
-				}
-				return mocks[name]
+				m := &mockDriver{}
+				mocks[name] = m
+				return m
 			}
 
 			var opts []ospkg.Option
