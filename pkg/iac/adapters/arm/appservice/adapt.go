@@ -33,7 +33,7 @@ func adaptServices(deployment azure.Deployment) []appservice.Service {
 func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 	return appservice.FunctionApp{
 		Metadata:  resource.Metadata,
-		HTTPSOnly: resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false),
+		HTTPSOnly: resource.Properties.GetMapValue("httpsOnly").AsBoolValue(),
 	}
 }
 
@@ -45,22 +45,22 @@ func adaptService(resource azure.Resource) appservice.Service {
 	return appservice.Service{
 		Metadata:         resource.Metadata,
 		Resource:         types.String("Microsoft.Web/sites", resource.Metadata),
-		EnableClientCert: props.GetMapValue("clientCertEnabled").AsBoolValue(false),
-		HTTPSOnly:        props.GetMapValue("httpsOnly").AsBoolValue(false),
+		EnableClientCert: props.GetMapValue("clientCertEnabled").AsBoolValue(),
+		HTTPSOnly:        props.GetMapValue("httpsOnly").AsBoolValue(),
 		Identity: appservice.Identity{
 			Metadata: identity.GetMetadata(),
-			Type:     identity.GetMapValue("type").AsStringValue(""),
+			Type:     identity.GetMapValue("type").AsStringValue(),
 		},
 		Authentication: appservice.Authentication{
 			Metadata: siteAuthSettings.GetMetadata(),
-			Enabled:  siteAuthSettings.GetMapValue("enabled").AsBoolValue(false),
+			Enabled:  siteAuthSettings.GetMapValue("enabled").AsBoolValue(),
 		},
 		Site: appservice.Site{
-			EnableHTTP2:       siteConfig.GetMapValue("http20Enabled").AsBoolValue(false),
-			MinimumTLSVersion: siteConfig.GetMapValue("minTlsVersion").AsStringValue(""),
-			PHPVersion:        siteConfig.GetMapValue("phpVersion").AsStringValue(""),
-			PythonVersion:     siteConfig.GetMapValue("pythonVersion").AsStringValue(""),
-			FTPSState:         siteConfig.GetMapValue("ftpsState").AsStringValue(""),
+			EnableHTTP2:       siteConfig.GetMapValue("http20Enabled").AsBoolValue(),
+			MinimumTLSVersion: siteConfig.GetMapValue("minTlsVersion").AsStringValue(),
+			PHPVersion:        siteConfig.GetMapValue("phpVersion").AsStringValue(),
+			PythonVersion:     siteConfig.GetMapValue("pythonVersion").AsStringValue(),
+			FTPSState:         siteConfig.GetMapValue("ftpsState").AsStringValue(),
 		},
 	}
 }

@@ -45,7 +45,6 @@ var NullValue = Value{
 var boolTrueValues = set.NewCaseInsensitive("true", "1", "yes", "on", "enabled")
 
 func NewValue(value any, metadata types.Metadata) Value {
-
 	v := Value{
 		metadata: &metadata,
 	}
@@ -198,15 +197,15 @@ func (v Value) AsFloat() float64 {
 	return v.rLit.(float64)
 }
 
-func (v Value) AsIntValue(defaultValue int) types.IntValue {
+func (v Value) AsIntValue(defaultValue ...int) types.IntValue {
 	v.Resolve()
 	if v.Kind != KindNumber {
-		return types.Int(defaultValue, v.GetMetadata())
+		return types.Int(firstOrZero(defaultValue), v.GetMetadata())
 	}
 	return types.Int(v.AsInt(), v.GetMetadata())
 }
 
-func (v Value) AsBoolValue(defaultValue bool) types.BoolValue {
+func (v Value) AsBoolValue(defaultValue ...bool) types.BoolValue {
 	v.Resolve()
 	if v.Kind == KindString {
 		if boolTrueValues.Contains(v.rLit.(string)) {
@@ -215,7 +214,7 @@ func (v Value) AsBoolValue(defaultValue bool) types.BoolValue {
 	}
 
 	if v.Kind != KindBoolean {
-		return types.Bool(defaultValue, v.GetMetadata())
+		return types.Bool(firstOrZero(defaultValue), v.GetMetadata())
 	}
 
 	return types.Bool(v.rLit.(bool), v.GetMetadata())
@@ -230,10 +229,10 @@ func (v Value) EqualTo(value any) bool {
 	}
 }
 
-func (v Value) AsStringValue(defaultValue string) types.StringValue {
+func (v Value) AsStringValue(defaultValue ...string) types.StringValue {
 	v.Resolve()
 	if v.Kind != KindString {
-		return types.StringDefault(defaultValue, v.GetMetadata())
+		return types.StringDefault(firstOrZero(defaultValue), v.GetMetadata())
 	}
 	return types.String(v.rLit.(string), v.GetMetadata())
 }
@@ -318,13 +317,13 @@ func (v Value) AsTimeValue() types.TimeValue {
 	}
 }
 
-func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.StringValue) {
+func (v Value) AsStringValuesList(defaultValue ...string) (stringValues []types.StringValue) {
 	v.Resolve()
 	if v.Kind != KindArray {
 		return
 	}
 	for _, item := range v.rArr {
-		stringValues = append(stringValues, item.AsStringValue(defaultValue))
+		stringValues = append(stringValues, item.AsStringValue(defaultValue...))
 	}
 
 	return stringValues
@@ -332,4 +331,12 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 
 func (v Value) IsNull() bool {
 	return v.Kind == KindNull
+}
+
+func firstOrZero[T any](values []T) T {
+	if len(values) > 0 {
+		return values[0]
+	}
+	var zero T
+	return zero
 }

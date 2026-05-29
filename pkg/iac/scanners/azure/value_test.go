@@ -60,17 +60,17 @@ func Test_GetMapValue_MetadataPropagation(t *testing.T) {
 	}, parentMeta)
 
 	t.Run("existing key returns own metadata", func(t *testing.T) {
-		got := obj.GetMapValue("existing").AsStringValue("")
+		got := obj.GetMapValue("existing").AsStringValue()
 		assert.Equal(t, childMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
 	})
 
 	t.Run("missing key propagates parent metadata", func(t *testing.T) {
-		got := obj.GetMapValue("missing").AsStringValue("")
+		got := obj.GetMapValue("missing").AsStringValue()
 		assert.Equal(t, parentMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
 	})
 
 	t.Run("chained missing keys propagate metadata", func(t *testing.T) {
-		got := obj.GetMapValue("missing").GetMapValue("also_missing").AsBoolValue(false)
+		got := obj.GetMapValue("missing").GetMapValue("also_missing").AsBoolValue()
 		assert.Equal(t, parentMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
 	})
 }

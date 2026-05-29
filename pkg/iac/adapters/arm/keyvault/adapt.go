@@ -24,11 +24,11 @@ func adaptVault(resource azure.Resource, deployment azure.Deployment) keyvault.V
 		Metadata:                resource.Metadata,
 		Secrets:                 adaptSecrets(resource, deployment),
 		Keys:                    adaptKeys(resource, deployment),
-		EnablePurgeProtection:   resource.Properties.GetMapValue("enablePurgeProtection").AsBoolValue(false),
+		EnablePurgeProtection:   resource.Properties.GetMapValue("enablePurgeProtection").AsBoolValue(),
 		SoftDeleteRetentionDays: resource.Properties.GetMapValue("softDeleteRetentionInDays").AsIntValue(7),
 		NetworkACLs: keyvault.NetworkACLs{
 			Metadata:      resource.Metadata,
-			DefaultAction: resource.Properties.GetMapValue("properties").GetMapValue("networkAcls").GetMapValue("defaultAction").AsStringValue(""),
+			DefaultAction: resource.Properties.GetMapValue("properties").GetMapValue("networkAcls").GetMapValue("defaultAction").AsStringValue(),
 		},
 	}
 }
@@ -58,7 +58,7 @@ func adaptSecrets(_ azure.Resource, deployment azure.Deployment) (secrets []keyv
 func adaptSecret(resource azure.Resource) keyvault.Secret {
 	return keyvault.Secret{
 		Metadata:    resource.Metadata,
-		ContentType: resource.Properties.GetMapValue("contentType").AsStringValue(""),
+		ContentType: resource.Properties.GetMapValue("contentType").AsStringValue(),
 		ExpiryDate:  resource.Properties.GetMapValue("attributes").GetMapValue("exp").AsTimeValue(),
 	}
 }

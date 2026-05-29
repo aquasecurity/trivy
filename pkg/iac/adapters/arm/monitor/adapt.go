@@ -25,21 +25,21 @@ func adaptLogProfile(resource azure.Resource) monitor.LogProfile {
 	categories := resource.Properties.GetMapValue("categories").AsList()
 	var categoriesList []types.StringValue
 	for _, category := range categories {
-		categoriesList = append(categoriesList, category.AsStringValue(""))
+		categoriesList = append(categoriesList, category.AsStringValue())
 	}
 
 	locations := resource.Properties.GetMapValue("locations").AsList()
 	var locationsList []types.StringValue
 	for _, location := range locations {
-		locationsList = append(locationsList, location.AsStringValue(""))
+		locationsList = append(locationsList, location.AsStringValue())
 	}
 
 	return monitor.LogProfile{
 		Metadata: resource.Metadata,
 		RetentionPolicy: monitor.RetentionPolicy{
 			Metadata: resource.Metadata,
-			Enabled:  resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").AsBoolValue(false),
-			Days:     resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0),
+			Enabled:  resource.Properties.GetMapValue("retentionPolicy").GetMapValue("enabled").AsBoolValue(),
+			Days:     resource.Properties.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(),
 		},
 		Categories: categoriesList,
 		Locations:  locationsList,

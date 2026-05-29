@@ -20,32 +20,32 @@ func adaptKubernetesClusters(deployment azure.Deployment) []container.Kubernetes
 			Metadata: resource.Metadata,
 			NetworkProfile: container.NetworkProfile{
 				Metadata:      props.GetMapValue("networkProfile").GetMetadata(),
-				NetworkPolicy: props.GetMapValue("networkProfile").GetMapValue("networkPolicy").AsStringValue(""),
+				NetworkPolicy: props.GetMapValue("networkProfile").GetMapValue("networkPolicy").AsStringValue(),
 			},
-			EnablePrivateCluster:        props.GetMapValue("apiServerAccessProfile").GetMapValue("enablePrivateCluster").AsBoolValue(false),
+			EnablePrivateCluster:        props.GetMapValue("apiServerAccessProfile").GetMapValue("enablePrivateCluster").AsBoolValue(),
 			APIServerAuthorizedIPRanges: nil, // Extracted below
 			RoleBasedAccessControl: container.RoleBasedAccessControl{
 				Metadata: props.GetMetadata(),
-				Enabled:  props.GetMapValue("enableRBAC").AsBoolValue(false),
+				Enabled:  props.GetMapValue("enableRBAC").AsBoolValue(),
 			},
 			AddonProfile: container.AddonProfile{
 				Metadata: props.GetMapValue("addonProfiles").GetMetadata(),
 				OMSAgent: container.OMSAgent{
 					Metadata: props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMetadata(),
-					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMapValue("enabled").AsBoolValue(false),
+					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMapValue("enabled").AsBoolValue(),
 				},
 				AzurePolicy: container.AzurePolicy{
 					Metadata: props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMetadata(),
-					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMapValue("enabled").AsBoolValue(false),
+					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMapValue("enabled").AsBoolValue(),
 				},
 			},
-			DiskEncryptionSetID: props.GetMapValue("diskEncryptionSetID").AsStringValue(""),
+			DiskEncryptionSetID: props.GetMapValue("diskEncryptionSetID").AsStringValue(),
 			AgentPools:          adaptAgentPools(resource),
 		}
 
 		// API Server Authorized IP Ranges
 		if ranges := props.GetMapValue("apiServerAccessProfile").GetMapValue("authorizedIPRanges"); !ranges.IsNull() {
-			cluster.APIServerAuthorizedIPRanges = ranges.AsStringValuesList("")
+			cluster.APIServerAuthorizedIPRanges = ranges.AsStringValuesList()
 		}
 
 		clusters = append(clusters, cluster)
@@ -61,7 +61,7 @@ func adaptAgentPools(resource azure.Resource) []container.AgentPool {
 		for _, profile := range profiles.AsList() {
 			pools = append(pools, container.AgentPool{
 				Metadata:            profile.GetMetadata(),
-				DiskEncryptionSetID: profile.GetMapValue("diskEncryptionSetID").AsStringValue(""),
+				DiskEncryptionSetID: profile.GetMapValue("diskEncryptionSetID").AsStringValue(),
 				NodeType:            profile.GetMapValue("type").AsStringValue("VirtualMachineScaleSets"),
 			})
 		}

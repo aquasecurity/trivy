@@ -23,7 +23,7 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		for _, queueResource := range resource.GetResourcesByType("queueServices/queues") {
 			queues = append(queues, storage.Queue{
 				Metadata: queueResource.Metadata,
-				Name:     queueResource.Name.AsStringValue(""),
+				Name:     queueResource.Name.AsStringValue(),
 			})
 		}
 
@@ -52,15 +52,15 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 				Metadata: resource.Properties.GetMetadata(),
 				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 					Metadata: resource.Properties.GetMetadata(),
-					Days:     resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy").GetMapValue("days").AsIntValue(0),
+					Days:     resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy").GetMapValue("days").AsIntValue(),
 				},
 			},
-			AccountReplicationType:          resource.Properties.GetMapValue("sku").GetMapValue("name").AsStringValue(""),
-			InfrastructureEncryptionEnabled: resource.Properties.GetMapValue("encryption").GetMapValue("requireInfrastructureEncryption").AsBoolValue(false),
+			AccountReplicationType:          resource.Properties.GetMapValue("sku").GetMapValue("name").AsStringValue(),
+			InfrastructureEncryptionEnabled: resource.Properties.GetMapValue("encryption").GetMapValue("requireInfrastructureEncryption").AsBoolValue(),
 			CustomerManagedKey: storage.CustomerManagedKey{
 				Metadata:               resource.Properties.GetMetadata(),
-				KeyVaultKeyId:          resource.Properties.GetMapValue("encryption").GetMapValue("keyVaultProperties").GetMapValue("keyUri").AsStringValue(""),
-				UserAssignedIdentityId: resource.Properties.GetMapValue("encryption").GetMapValue("identity").GetMapValue("userAssignedIdentity").AsStringValue(""),
+				KeyVaultKeyId:          resource.Properties.GetMapValue("encryption").GetMapValue("keyVaultProperties").GetMapValue("keyUri").AsStringValue(),
+				UserAssignedIdentityId: resource.Properties.GetMapValue("encryption").GetMapValue("identity").GetMapValue("userAssignedIdentity").AsStringValue(),
 			},
 		}
 
@@ -69,11 +69,11 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		if !queueServiceLogging.IsNull() {
 			account.QueueProperties.Logging = storage.QueueLogging{
 				Metadata:            queueServiceLogging.GetMetadata(),
-				Delete:              queueServiceLogging.GetMapValue("delete").AsBoolValue(false),
-				Read:                queueServiceLogging.GetMapValue("read").AsBoolValue(false),
-				Write:               queueServiceLogging.GetMapValue("write").AsBoolValue(false),
-				Version:             queueServiceLogging.GetMapValue("version").AsStringValue(""),
-				RetentionPolicyDays: queueServiceLogging.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(0),
+				Delete:              queueServiceLogging.GetMapValue("delete").AsBoolValue(),
+				Read:                queueServiceLogging.GetMapValue("read").AsBoolValue(),
+				Write:               queueServiceLogging.GetMapValue("write").AsBoolValue(),
+				Version:             queueServiceLogging.GetMapValue("version").AsStringValue(),
+				RetentionPolicyDays: queueServiceLogging.GetMapValue("retentionPolicy").GetMapValue("days").AsIntValue(),
 			}
 			if account.QueueProperties.Logging.Delete.IsTrue() || account.QueueProperties.Logging.Read.IsTrue() || account.QueueProperties.Logging.Write.IsTrue() {
 				account.QueueProperties.EnableLogging = types.Bool(true, queueServiceLogging.GetMetadata())

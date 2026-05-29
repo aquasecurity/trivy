@@ -28,9 +28,9 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 		Metadata: resource.Metadata,
 		Server: database.Server{
 			Metadata:                  resource.Metadata,
-			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false),
+			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(),
 			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled"),
-			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false),
+			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(),
 			FirewallRules:             addFirewallRule(resource),
 		},
 		Config:                    adaptPostgreSQLConfiguration(resource, deployment),
@@ -57,19 +57,19 @@ func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Depl
 		}
 		val := configuration.Properties.GetMapValue("value")
 		if strings.HasSuffix(configuration.Name.AsString(), "log_checkpoints") {
-			config.LogCheckpoints = val.AsBoolValue(false)
+			config.LogCheckpoints = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "log_connections") {
-			config.LogConnections = val.AsBoolValue(false)
+			config.LogConnections = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "connection_throttling") {
-			config.ConnectionThrottling = val.AsBoolValue(false)
+			config.ConnectionThrottling = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "log_disconnections") {
-			config.LogDisconnections = val.AsBoolValue(false)
+			config.LogDisconnections = val.AsBoolValue()
 			continue
 		}
 	}

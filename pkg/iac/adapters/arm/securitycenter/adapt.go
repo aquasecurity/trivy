@@ -23,8 +23,8 @@ func adaptContacts(deployment azure.Deployment) []securitycenter.Contact {
 }
 
 func adaptContact(resource azure.Resource) securitycenter.Contact {
-	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue("")
-	isEnabledValue := resource.Properties.GetMapValue("isEnabled").AsBoolValue(false)
+	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue()
+	isEnabledValue := resource.Properties.GetMapValue("isEnabled").AsBoolValue()
 
 	enableAlertNotifications, minimalSeverity := extractNotificationSettings(resource, isEnabledValue)
 
@@ -32,8 +32,8 @@ func adaptContact(resource azure.Resource) securitycenter.Contact {
 		Metadata:                 resource.Metadata,
 		EnableAlertNotifications: enableAlertNotifications,
 		EnableAlertsToAdmins:     iacTypes.Bool(alertsToAdminsState.EqualTo("On"), resource.Metadata),
-		Email:                    resource.Properties.GetMapValue("emails").AsStringValue(""),
-		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue(""),
+		Email:                    resource.Properties.GetMapValue("emails").AsStringValue(),
+		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue(),
 		IsEnabled:                isEnabledValue,
 		MinimalSeverity:          minimalSeverity,
 	}
@@ -45,7 +45,7 @@ func extractNotificationSettings(resource azure.Resource, isEnabled iacTypes.Boo
 		return extractFromNotificationsSources(notificationsSources, isEnabled, resource)
 	}
 
-	enableAlertNotifications := resource.Properties.GetMapValue("alertNotifications").AsBoolValue(false)
+	enableAlertNotifications := resource.Properties.GetMapValue("alertNotifications").AsBoolValue()
 	minimalSeverity := iacTypes.StringDefault("", resource.Metadata)
 	return enableAlertNotifications, minimalSeverity
 }
@@ -60,12 +60,12 @@ func extractFromNotificationsSources(notificationsSources azure.Value, isEnabled
 		}
 
 		sourceType, hasSourceType := sourceMap["sourceType"]
-		if !hasSourceType || !sourceType.AsStringValue("").EqualTo("Alert") {
+		if !hasSourceType || !sourceType.AsStringValue().EqualTo("Alert") {
 			continue
 		}
 
 		if minimalSeverityVal, hasMinimalSeverity := sourceMap["minimalSeverity"]; hasMinimalSeverity {
-			minimalSeverity = minimalSeverityVal.AsStringValue("")
+			minimalSeverity = minimalSeverityVal.AsStringValue()
 		}
 		break
 	}

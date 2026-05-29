@@ -25,7 +25,7 @@ func adaptRoleDefinition(resource azure.Resource) authorization.RoleDefinition {
 	return authorization.RoleDefinition{
 		Metadata:         resource.Metadata,
 		Permissions:      adaptPermissions(resource),
-		AssignableScopes: resource.Properties.GetMapValue("assignableScopes").AsStringValuesList(""),
+		AssignableScopes: resource.Properties.GetMapValue("assignableScopes").AsStringValuesList(),
 	}
 }
 
@@ -39,10 +39,10 @@ func adaptRoleAssignments(deployment azure.Deployment) (roleAssignments []author
 func adaptRoleAssignment(resource azure.Resource) authorization.RoleAssignment {
 	return authorization.RoleAssignment{
 		Metadata:           resource.Metadata,
-		RoleDefinitionId:   resource.Properties.GetMapValue("roleDefinitionId").AsStringValue(""),
+		RoleDefinitionId:   resource.Properties.GetMapValue("roleDefinitionId").AsStringValue(),
 		RoleDefinitionName: iacTypes.String("", iacTypes.NewUnmanagedMetadata()),
-		PrincipalId:        resource.Properties.GetMapValue("principalId").AsStringValue(""),
-		PrincipalType:      resource.Properties.GetMapValue("principalType").AsStringValue(""),
+		PrincipalId:        resource.Properties.GetMapValue("principalId").AsStringValue(),
+		PrincipalType:      resource.Properties.GetMapValue("principalType").AsStringValue(),
 	}
 }
 
@@ -50,7 +50,7 @@ func adaptPermissions(resource azure.Resource) (permissions []authorization.Perm
 	for _, permission := range resource.Properties.GetMapValue("permissions").AsList() {
 		permissions = append(permissions, authorization.Permission{
 			Metadata: resource.Metadata,
-			Actions:  permission.GetMapValue("actions").AsStringValuesList(""),
+			Actions:  permission.GetMapValue("actions").AsStringValuesList(),
 		})
 	}
 	return permissions
