@@ -8,18 +8,29 @@ jobs:
   build:
     name: Scan Go vulnerabilities
     runs-on: ubuntu-2404-2core
+    permissions:
+      contents: read # Required to checkout and read repo files
+      security-events: write # Required to upload SARIF files to Security tab
     steps:
       - name: Checkout code
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           persist-credentials: false
 
-      - name: Run Trivy vulnerability scanner and create GitHub issues
-        uses: knqyf263/trivy-issue-action@4466f52d1401b66dd2a2ab9e0c40cddc021829ec # v0.0.6
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          assignee: knqyf263
-          severity: CRITICAL
-          skip-dirs: integration,examples,pkg
-          label: kind/security
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          scan-type: fs
+          scan-ref: .
+          scanners: vuln
+          format: sarif
+          output: report.sarif
+          severity: HIGH,CRITICAL
+          limit-severities-for-sarif: true
+          skip-dirs: integration,examples,pkg,docs,internal
+          version: v0.70.0
+
+      - name: Upload Trivy scan results to GitHub Security tab
+        uses: github/codeql-action/upload-sarif@7211b7c8077ea37d8641b6271f6a365a22a5fbfa # v4.36.0
+        with:
+          sarif_file: report.sarif
