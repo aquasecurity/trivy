@@ -6,6 +6,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func firstOrZero[T any](values []T) T {
@@ -143,9 +144,7 @@ func (p *Property) AsIntValue(defaultValue ...int) iacTypes.IntValue {
 	return iacTypes.IntExplicit(p.AsInt(), p.Metadata())
 }
 
-var boolTrueStrings = map[string]struct{}{
-	"true": {}, "yes": {}, "1": {},
-}
+var boolTrueStrings = set.NewCaseInsensitive("true", "yes", "1")
 
 func (p *Property) AsBool() bool {
 	if p.isFunction() {
@@ -158,8 +157,7 @@ func (p *Property) AsBool() bool {
 	case cftypes.Bool:
 		return p.Value.(bool)
 	case cftypes.String:
-		_, ok := boolTrueStrings[strings.ToLower(p.AsString())]
-		return ok
+		return boolTrueStrings.Contains(p.AsString())
 	case cftypes.Int:
 		return p.AsInt() != 0
 	}

@@ -308,7 +308,6 @@ func (p *Property) ParentRange() iacTypes.Range {
 	return p.parentRange
 }
 
-
 func (p *Property) String() string {
 	r := ""
 	switch p.Type {

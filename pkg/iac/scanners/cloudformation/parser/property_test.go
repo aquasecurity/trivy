@@ -7,7 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-
 func mustParseYAML(t *testing.T, source string) FileContexts {
 	t.Helper()
 	files, err := parseFile(t, source, "cf.yaml")
@@ -63,8 +62,6 @@ Resources:
 	assert.True(t, resource.GetBoolProperty("Missing", true).IsTrue())
 }
 
-
-
 func Test_Resource_GetProperty_MetadataPropagation(t *testing.T) {
 	source := `---
 Resources:
@@ -86,10 +83,10 @@ Resources:
 	assert.Equal(t, resource.GetProperty("Nested.DeepKey").Metadata().Range(), deep.GetMetadata().Range())
 
 	missing := resource.GetStringProperty("Missing")
-	assert.Equal(t, "", missing.Value())
+	assert.Empty(t, missing.Value())
 	assert.Equal(t, resource.Range(), missing.GetMetadata().Range())
 
 	nestedMissing := resource.GetStringProperty("Nested.Missing")
-	assert.Equal(t, "", nestedMissing.Value())
+	assert.Empty(t, nestedMissing.Value())
 	assert.Equal(t, resource.GetProperty("Nested").Metadata().Range(), nestedMissing.GetMetadata().Range())
 }
