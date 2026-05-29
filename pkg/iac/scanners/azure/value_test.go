@@ -45,8 +45,32 @@ func Test_ValueAsTime(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			val := NewValue(tt.val, types.NewTestMetadata())
-			got := val.AsTimeValue(types.NewTestMetadata()).Value()
+			got := val.AsTimeValue().Value()
 			assert.Equal(t, tt.expected, got)
 		})
 	}
+}
+
+func Test_GetMapValue_MetadataPropagation(t *testing.T) {
+	parentMeta := types.NewMetadata(types.NewRange("test.json", 1, 10, "", nil), "parent")
+	childMeta := types.NewMetadata(types.NewRange("test.json", 3, 5, "", nil), "child")
+
+	obj := NewValue(map[string]Value{
+		"existing": NewValue("hello", childMeta),
+	}, parentMeta)
+
+	t.Run("existing key returns own metadata", func(t *testing.T) {
+		got := obj.GetMapValue("existing").AsStringValue("")
+		assert.Equal(t, childMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
+	})
+
+	t.Run("missing key propagates parent metadata", func(t *testing.T) {
+		got := obj.GetMapValue("missing").AsStringValue("")
+		assert.Equal(t, parentMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
+	})
+
+	t.Run("chained missing keys propagate metadata", func(t *testing.T) {
+		got := obj.GetMapValue("missing").GetMapValue("also_missing").AsBoolValue(false)
+		assert.Equal(t, parentMeta.Range().GetStartLine(), got.GetMetadata().Range().GetStartLine())
+	})
 }

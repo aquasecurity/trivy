@@ -23,8 +23,8 @@ func adaptContacts(deployment azure.Deployment) []securitycenter.Contact {
 }
 
 func adaptContact(resource azure.Resource) securitycenter.Contact {
-	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue("", resource.Metadata)
-	isEnabledValue := resource.Properties.GetMapValue("isEnabled").AsBoolValue(false, resource.Metadata)
+	alertsToAdminsState := resource.Properties.GetMapValue("notificationsByRole").GetMapValue("state").AsStringValue("")
+	isEnabledValue := resource.Properties.GetMapValue("isEnabled").AsBoolValue(false)
 
 	enableAlertNotifications, minimalSeverity := extractNotificationSettings(resource, isEnabledValue)
 
@@ -32,8 +32,8 @@ func adaptContact(resource azure.Resource) securitycenter.Contact {
 		Metadata:                 resource.Metadata,
 		EnableAlertNotifications: enableAlertNotifications,
 		EnableAlertsToAdmins:     iacTypes.Bool(alertsToAdminsState.EqualTo("On"), resource.Metadata),
-		Email:                    resource.Properties.GetMapValue("emails").AsStringValue("", resource.Metadata),
-		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue("", resource.Metadata),
+		Email:                    resource.Properties.GetMapValue("emails").AsStringValue(""),
+		Phone:                    resource.Properties.GetMapValue("phone").AsStringValue(""),
 		IsEnabled:                isEnabledValue,
 		MinimalSeverity:          minimalSeverity,
 	}
@@ -45,7 +45,7 @@ func extractNotificationSettings(resource azure.Resource, isEnabled iacTypes.Boo
 		return extractFromNotificationsSources(notificationsSources, isEnabled, resource)
 	}
 
-	enableAlertNotifications := resource.Properties.GetMapValue("alertNotifications").AsBoolValue(false, resource.Metadata)
+	enableAlertNotifications := resource.Properties.GetMapValue("alertNotifications").AsBoolValue(false)
 	minimalSeverity := iacTypes.StringDefault("", resource.Metadata)
 	return enableAlertNotifications, minimalSeverity
 }
@@ -60,12 +60,12 @@ func extractFromNotificationsSources(notificationsSources azure.Value, isEnabled
 		}
 
 		sourceType, hasSourceType := sourceMap["sourceType"]
-		if !hasSourceType || !sourceType.AsStringValue("", resource.Metadata).EqualTo("Alert") {
+		if !hasSourceType || !sourceType.AsStringValue("").EqualTo("Alert") {
 			continue
 		}
 
 		if minimalSeverityVal, hasMinimalSeverity := sourceMap["minimalSeverity"]; hasMinimalSeverity {
-			minimalSeverity = minimalSeverityVal.AsStringValue("", resource.Metadata)
+			minimalSeverity = minimalSeverityVal.AsStringValue("")
 		}
 		break
 	}
@@ -85,6 +85,6 @@ func adaptSubscriptions(deployment azure.Deployment) []securitycenter.Subscripti
 func adaptSubscription(resource azure.Resource) securitycenter.SubscriptionPricing {
 	return securitycenter.SubscriptionPricing{
 		Metadata: resource.Metadata,
-		Tier:     resource.Properties.GetMapValue("pricingTier").AsStringValue("Free", resource.Metadata),
+		Tier:     resource.Properties.GetMapValue("pricingTier").AsStringValue("Free"),
 	}
 }

@@ -198,24 +198,24 @@ func (v Value) AsFloat() float64 {
 	return v.rLit.(float64)
 }
 
-func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntValue {
+func (v Value) AsIntValue(defaultValue int) types.IntValue {
 	v.Resolve()
 	if v.Kind != KindNumber {
-		return types.Int(defaultValue, metadata)
+		return types.Int(defaultValue, v.GetMetadata())
 	}
-	return types.Int(v.AsInt(), metadata)
+	return types.Int(v.AsInt(), v.GetMetadata())
 }
 
-func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.BoolValue {
+func (v Value) AsBoolValue(defaultValue bool) types.BoolValue {
 	v.Resolve()
 	if v.Kind == KindString {
 		if boolTrueValues.Contains(v.rLit.(string)) {
-			return types.Bool(true, metadata)
+			return types.Bool(true, v.GetMetadata())
 		}
 	}
 
 	if v.Kind != KindBoolean {
-		return types.Bool(defaultValue, metadata)
+		return types.Bool(defaultValue, v.GetMetadata())
 	}
 
 	return types.Bool(v.rLit.(bool), v.GetMetadata())
@@ -230,10 +230,10 @@ func (v Value) EqualTo(value any) bool {
 	}
 }
 
-func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types.StringValue {
+func (v Value) AsStringValue(defaultValue string) types.StringValue {
 	v.Resolve()
 	if v.Kind != KindString {
-		return types.StringDefault(defaultValue, metadata)
+		return types.StringDefault(defaultValue, v.GetMetadata())
 	}
 	return types.String(v.rLit.(string), v.GetMetadata())
 }
@@ -241,13 +241,13 @@ func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types
 func (v Value) GetMapValue(key string) Value {
 	v.Resolve()
 	if v.Kind != KindObject {
-		return NullValue
+		return Value{Kind: KindNull, metadata: v.metadata}
 	}
-	v, exists := v.rMap[key]
+	child, exists := v.rMap[key]
 	if !exists {
-		return NullValue
+		return Value{Kind: KindNull, metadata: v.metadata}
 	}
-	return v
+	return child
 }
 
 func (v Value) AsMap() map[string]Value {
@@ -294,14 +294,14 @@ func (v Value) HasKey(key string) bool {
 	return ok
 }
 
-func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
+func (v Value) AsTimeValue() types.TimeValue {
 	v.Resolve()
 
 	switch v.Kind {
 	case KindString:
 		t, err := time.Parse(time.RFC3339, v.rLit.(string))
 		if err != nil {
-			return types.Time(time.Time{}, parentMeta)
+			return types.Time(time.Time{}, v.GetMetadata())
 		}
 		return types.Time(t, v.GetMetadata())
 	case KindNumber:
@@ -314,7 +314,7 @@ func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
 		}
 		return types.Time(time.Unix(tv, 0), v.GetMetadata())
 	default:
-		return types.Time(time.Time{}, parentMeta)
+		return types.Time(time.Time{}, v.GetMetadata())
 	}
 }
 
@@ -324,7 +324,7 @@ func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.Str
 		return
 	}
 	for _, item := range v.rArr {
-		stringValues = append(stringValues, item.AsStringValue(defaultValue, item.GetMetadata()))
+		stringValues = append(stringValues, item.AsStringValue(defaultValue))
 	}
 
 	return stringValues

@@ -32,9 +32,8 @@ func adaptServices(deployment azure.Deployment) []appservice.Service {
 
 func adaptFunctionApp(resource azure.Resource) appservice.FunctionApp {
 	return appservice.FunctionApp{
-		Metadata: resource.Metadata,
-		HTTPSOnly: resource.Properties.GetMapValue("httpsOnly").
-			AsBoolValue(false, resource.Properties.GetMetadata()),
+		Metadata:  resource.Metadata,
+		HTTPSOnly: resource.Properties.GetMapValue("httpsOnly").AsBoolValue(false),
 	}
 }
 
@@ -46,23 +45,22 @@ func adaptService(resource azure.Resource) appservice.Service {
 	return appservice.Service{
 		Metadata:         resource.Metadata,
 		Resource:         types.String("Microsoft.Web/sites", resource.Metadata),
-		EnableClientCert: props.GetMapValue("clientCertEnabled").AsBoolValue(false, props.GetMetadata()),
-		HTTPSOnly:        props.GetMapValue("httpsOnly").AsBoolValue(false, props.GetMetadata()),
+		EnableClientCert: props.GetMapValue("clientCertEnabled").AsBoolValue(false),
+		HTTPSOnly:        props.GetMapValue("httpsOnly").AsBoolValue(false),
 		Identity: appservice.Identity{
 			Metadata: identity.GetMetadata(),
-			Type: identity.GetMapValue("type").
-				AsStringValue("", props.GetMetadata()),
+			Type:     identity.GetMapValue("type").AsStringValue(""),
 		},
 		Authentication: appservice.Authentication{
 			Metadata: siteAuthSettings.GetMetadata(),
-			Enabled:  siteAuthSettings.GetMapValue("enabled").AsBoolValue(false, props.GetMetadata()),
+			Enabled:  siteAuthSettings.GetMapValue("enabled").AsBoolValue(false),
 		},
 		Site: appservice.Site{
-			EnableHTTP2:       siteConfig.GetMapValue("http20Enabled").AsBoolValue(false, siteConfig.GetMetadata()),
-			MinimumTLSVersion: siteConfig.GetMapValue("minTlsVersion").AsStringValue("", siteConfig.GetMetadata()),
-			PHPVersion:        siteConfig.GetMapValue("phpVersion").AsStringValue("", siteConfig.GetMetadata()),
-			PythonVersion:     siteConfig.GetMapValue("pythonVersion").AsStringValue("", siteConfig.GetMetadata()),
-			FTPSState:         siteConfig.GetMapValue("ftpsState").AsStringValue("", siteConfig.GetMetadata()),
+			EnableHTTP2:       siteConfig.GetMapValue("http20Enabled").AsBoolValue(false),
+			MinimumTLSVersion: siteConfig.GetMapValue("minTlsVersion").AsStringValue(""),
+			PHPVersion:        siteConfig.GetMapValue("phpVersion").AsStringValue(""),
+			PythonVersion:     siteConfig.GetMapValue("pythonVersion").AsStringValue(""),
+			FTPSState:         siteConfig.GetMapValue("ftpsState").AsStringValue(""),
 		},
 	}
 }

@@ -20,26 +20,26 @@ func adaptKubernetesClusters(deployment azure.Deployment) []container.Kubernetes
 			Metadata: resource.Metadata,
 			NetworkProfile: container.NetworkProfile{
 				Metadata:      props.GetMapValue("networkProfile").GetMetadata(),
-				NetworkPolicy: props.GetMapValue("networkProfile").GetMapValue("networkPolicy").AsStringValue("", props.GetMapValue("networkProfile").GetMetadata()),
+				NetworkPolicy: props.GetMapValue("networkProfile").GetMapValue("networkPolicy").AsStringValue(""),
 			},
-			EnablePrivateCluster:        props.GetMapValue("apiServerAccessProfile").GetMapValue("enablePrivateCluster").AsBoolValue(false, props.GetMapValue("apiServerAccessProfile").GetMetadata()),
+			EnablePrivateCluster:        props.GetMapValue("apiServerAccessProfile").GetMapValue("enablePrivateCluster").AsBoolValue(false),
 			APIServerAuthorizedIPRanges: nil, // Extracted below
 			RoleBasedAccessControl: container.RoleBasedAccessControl{
 				Metadata: props.GetMetadata(),
-				Enabled:  props.GetMapValue("enableRBAC").AsBoolValue(false, props.GetMetadata()),
+				Enabled:  props.GetMapValue("enableRBAC").AsBoolValue(false),
 			},
 			AddonProfile: container.AddonProfile{
 				Metadata: props.GetMapValue("addonProfiles").GetMetadata(),
 				OMSAgent: container.OMSAgent{
 					Metadata: props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMetadata(),
-					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMapValue("enabled").AsBoolValue(false, props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMetadata()),
+					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("omsagent").GetMapValue("enabled").AsBoolValue(false),
 				},
 				AzurePolicy: container.AzurePolicy{
 					Metadata: props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMetadata(),
-					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMapValue("enabled").AsBoolValue(false, props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMetadata()),
+					Enabled:  props.GetMapValue("addonProfiles").GetMapValue("azurepolicy").GetMapValue("enabled").AsBoolValue(false),
 				},
 			},
-			DiskEncryptionSetID: props.GetMapValue("diskEncryptionSetID").AsStringValue("", props.GetMetadata()),
+			DiskEncryptionSetID: props.GetMapValue("diskEncryptionSetID").AsStringValue(""),
 			AgentPools:          adaptAgentPools(resource),
 		}
 
@@ -61,8 +61,8 @@ func adaptAgentPools(resource azure.Resource) []container.AgentPool {
 		for _, profile := range profiles.AsList() {
 			pools = append(pools, container.AgentPool{
 				Metadata:            profile.GetMetadata(),
-				DiskEncryptionSetID: profile.GetMapValue("diskEncryptionSetID").AsStringValue("", profile.GetMetadata()),
-				NodeType:            profile.GetMapValue("type").AsStringValue("VirtualMachineScaleSets", profile.GetMetadata()),
+				DiskEncryptionSetID: profile.GetMapValue("diskEncryptionSetID").AsStringValue(""),
+				NodeType:            profile.GetMapValue("type").AsStringValue("VirtualMachineScaleSets"),
 			})
 		}
 	}
