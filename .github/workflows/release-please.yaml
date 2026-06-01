@@ -75,9 +75,11 @@ jobs:
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "version=$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "pr_number=$( echo "$COMMIT_MESSAGE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "release_branch=release/v$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          # Take only the first line to avoid git trailers (e.g. Co-authored-by) breaking $GITHUB_OUTPUT
+          FIRST_LINE=${COMMIT_MESSAGE%%$'\n'*}
+          echo "version=$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "pr_number=$( echo "$FIRST_LINE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
 
       # GITHUB_TOKEN cannot trigger the release workflow on the created tag —
       # generate a GitHub App installation token instead.
