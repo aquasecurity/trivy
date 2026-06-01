@@ -1280,6 +1280,107 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 0,
 	}
+	wantFindingMavenSettingsPassword := types.SecretFinding{
+		RuleID:    "maven-settings-password",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "<password>  ***********  </password>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
+				},
+			},
+		},
+		Offset: 23,
+	}
+	wantFindingMavenSettingsPassphrase := types.SecretFinding{
+		RuleID:    "maven-settings-passphrase",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml passphrase",
+		Severity:  "HIGH",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     "<passphrase>  *************  </passphrase>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
+				},
+				{
+					Number:      3,
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      4,
+					Content:     "</settings>",
+					Highlighted: "</settings>",
+				},
+			},
+		},
+		Offset: 62,
+	}
+	wantFindingMavenSettingsSecurityMaster := types.SecretFinding{
+		RuleID:    "maven-settings-security-master",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings-security.xml master password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "<master>***********</master>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settingsSecurity>",
+					Highlighted: "<settingsSecurity>",
+				},
+				{
+					Number:      2,
+					Content:     "<master>***********</master>",
+					Highlighted: "<master>***********</master>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "</settingsSecurity>",
+					Highlighted: "</settingsSecurity>",
+				},
+			},
+		},
+		Offset: 27,
+	}
 
 	tests := []struct {
 		name          string
@@ -1833,6 +1934,38 @@ func TestSecretScanner(t *testing.T) {
 				FilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
 				Findings: []types.SecretFinding{wantFindingAzureAIServicesKey},
 			},
+		},
+		{
+			name:          "find Maven settings.xml password and passphrase",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings.xml"),
+				Findings: []types.SecretFinding{
+					wantFindingMavenSettingsPassphrase,
+					wantFindingMavenSettingsPassword,
+				},
+			},
+		},
+		{
+			name:          "find Maven settings-security.xml master password",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-security.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings-security.xml"),
+				Findings: []types.SecretFinding{wantFindingMavenSettingsSecurityMaster},
+			},
+		},
+		{
+			// Three classes of non-secret values must be skipped:
+			//   1. Maven-encrypted (`{...}`) — safe without the master, which a separate
+			//      rule catches.
+			//   2. Maven property substitution (`${env.X}`) — a reference, not a literal.
+			//   3. Empty or whitespace-only values — fail the minimum-length check.
+			name:          "skip non-secret values (encrypted, placeholders, empty)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-encrypted.xml"),
+			want:          types.Secret{},
 		},
 		{
 			name:          "invalid UTF-8 sequences in secrets",
