@@ -76,20 +76,20 @@ var (
 	}
 )
 
-// options holds the drivers and providers used to resolve a driver for a scan target.
-type options struct {
+// resolver holds the candidate drivers and providers and resolves one for a scan target.
+type resolver struct {
 	drivers   map[ftypes.OSType]driver.Driver
 	providers []driver.Provider
 }
 
 // Option configures a Detector. Options are provided for extensibility by users
 // of Trivy as a library and are not used within Trivy itself.
-type Option func(*options)
+type Option func(*resolver)
 
 // WithDriver registers a driver for the given OS family, overriding the default one.
 func WithDriver(family ftypes.OSType, drv driver.Driver) Option {
-	return func(o *options) {
-		o.drivers[family] = drv
+	return func(r *resolver) {
+		r.drivers[family] = drv
 	}
 }
 
@@ -97,22 +97,22 @@ func WithDriver(family ftypes.OSType, drv driver.Driver) Option {
 // built-in providers and the standard OS-specific drivers. When called multiple
 // times, the most recently registered provider is tried first.
 func WithProvider(provider driver.Provider) Option {
-	return func(o *options) {
-		o.providers = slices.Insert(o.providers, 0, provider)
+	return func(r *resolver) {
+		r.providers = slices.Insert(r.providers, 0, provider)
 	}
 }
 
 // NewDetector creates a new Detector for the given scan target
 func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
-	o := &options{
+	r := &resolver{
 		drivers:   maps.Clone(drivers),
 		providers: slices.Clone(providers),
 	}
 	for _, opt := range opts {
-		opt(o)
+		opt(r)
 	}
 
-	drv, err := o.newDriver(target.OS.Family, target.Packages)
+	drv, err := r.resolve(target.OS.Family, target.Packages)
 	if err != nil {
 		return nil, err
 	}
@@ -158,16 +158,16 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
 	return filtered
 }
 
-func (o *options) newDriver(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
+func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
 	// Try providers first
-	for _, provider := range o.providers {
+	for _, provider := range r.providers {
 		if d := provider(osFamily, pkgs); d != nil {
 			return d, nil
 		}
 	}
 
 	// Fall back to standard drivers
-	if d, ok := o.drivers[osFamily]; ok {
+	if d, ok := r.drivers[osFamily]; ok {
 		return d, nil
 	}
 
