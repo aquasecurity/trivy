@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -14,16 +13,17 @@ import (
 
 	"github.com/google/uuid"
 	"gopkg.in/yaml.v3"
-	"helm.sh/helm/v3/pkg/action"
-	"helm.sh/helm/v3/pkg/chart"
-	"helm.sh/helm/v3/pkg/chart/loader"
-	"helm.sh/helm/v3/pkg/chartutil"
-	"helm.sh/helm/v3/pkg/release"
-	"helm.sh/helm/v3/pkg/releaseutil"
+	"helm.sh/helm/v4/pkg/action"
+	"helm.sh/helm/v4/pkg/chart"
+	"helm.sh/helm/v4/pkg/chart/common"
+	"helm.sh/helm/v4/pkg/chart/loader/archive"
+	chartv2 "helm.sh/helm/v4/pkg/chart/v2"
+	loaderv2 "helm.sh/helm/v4/pkg/chart/v2/loader"
+	chartutilv2 "helm.sh/helm/v4/pkg/chart/v2/util"
+	"helm.sh/helm/v4/pkg/release"
+	releaseutil "helm.sh/helm/v4/pkg/release/v1/util"
 
-	"github.com/aquasecurity/trivy/pkg/iac/detection"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
@@ -31,9 +31,6 @@ var manifestNameRegex = regexp.MustCompile("# Source: [^/]+/(.+)")
 type Parser struct {
 	logger       *log.Logger
 	helmClient   *action.Install
-	rootPath     string
-	ChartSource  string
-	filepaths    map[string]fs.FS
 	valuesFiles  []string
 	values       []string
 	fileValues   []string
@@ -42,23 +39,20 @@ type Parser struct {
 	kubeVersion  string
 }
 
-type ChartFile struct {
-	TemplateFilePath string
-	ManifestContent  string
+// Manifest is a rendered Helm template — the output of helm template for a single Kubernetes resource.
+type Manifest struct {
+	Path    string
+	Content string
 }
 
-func New(src string, opts ...Option) (*Parser, error) {
-
+func New(opts ...Option) (*Parser, error) {
 	client := action.NewInstall(&action.Configuration{})
-	client.DryRun = true     // don't do anything
-	client.Replace = true    // skip name check
-	client.ClientOnly = true // don't try to talk to a cluster
+	client.DryRunStrategy = action.DryRunClient // to avoid the client making calls to the server
+	client.Replace = true                       // skip name check
 
 	p := &Parser{
-		helmClient:  client,
-		ChartSource: src,
-		logger:      log.WithPrefix("helm parser"),
-		filepaths:   make(map[string]fs.FS),
+		helmClient: client,
+		logger:     log.WithPrefix("helm parser"),
 	}
 
 	for _, option := range opts {
@@ -70,7 +64,7 @@ func New(src string, opts ...Option) (*Parser, error) {
 	}
 
 	if p.kubeVersion != "" {
-		kubeVersion, err := chartutil.ParseKubeVersion(p.kubeVersion)
+		kubeVersion, err := common.ParseKubeVersion(p.kubeVersion)
 		if err != nil {
 			return nil, err
 		}
@@ -81,11 +75,11 @@ func New(src string, opts ...Option) (*Parser, error) {
 	return p, nil
 }
 
-func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) error {
-	return p.parseFS(ctx, fsys, target)
-}
+// ParseFS renders a Helm chart from a directory rooted at target within fsys.
+func (p *Parser) ParseFS(ctx context.Context, fsys fs.FS, target string) ([]Manifest, error) {
+	var rootPath string
+	filepaths := make(map[string]fs.FS)
 
-func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 	target = filepath.ToSlash(target)
 	if err := fs.WalkDir(fsys, target, func(filePath string, entry fs.DirEntry, err error) error {
 		select {
@@ -100,106 +94,123 @@ func (p *Parser) parseFS(ctx context.Context, fsys fs.FS, target string) error {
 			return nil
 		}
 
-		if detection.IsArchive(filePath) && !isDependencyChartArchive(fsys, filePath) {
-			memFS := mapfs.New()
-			if err := p.unpackArchive(fsys, memFS, filePath); errors.Is(err, errSkipFS) {
-				// an unpacked Chart already exists
-				return nil
-			} else if err != nil {
-				return fmt.Errorf("unpack archive %q: %w", filePath, err)
-			}
-
-			if err := p.parseFS(ctx, memFS, "."); err != nil {
-				return fmt.Errorf("parse archive FS error: %w", err)
-			}
-			return nil
-		}
-
-		return p.addPaths(fsys, filePath)
-	}); err != nil {
-		return fmt.Errorf("walk dir error: %w", err)
-	}
-
-	return nil
-}
-
-func isDependencyChartArchive(fsys fs.FS, archivePath string) bool {
-	parent := path.Dir(archivePath)
-	if path.Base(parent) != "charts" {
-		return false
-	}
-
-	_, err := fs.Stat(fsys, path.Join(parent, "..", "Chart.yaml"))
-	return err == nil
-}
-
-func (p *Parser) addPaths(fsys fs.FS, paths ...string) error {
-	for _, filePath := range paths {
-		if _, err := fs.Stat(fsys, filePath); err != nil {
-			return err
-		}
-
-		if strings.HasSuffix(filePath, "Chart.yaml") && p.rootPath == "" {
-			if err := p.extractChartName(fsys, filePath); err != nil {
+		if strings.HasSuffix(filePath, chartutilv2.ChartfileName) && rootPath == "" {
+			data, err := fs.ReadFile(fsys, filePath)
+			if err != nil {
 				return err
 			}
-			p.rootPath = filepath.Dir(filePath)
+			dir := path.Dir(filePath)
+			if dir == "." {
+				dir = ""
+			}
+			p.applyChartName(data, dir)
+			rootPath = path.Dir(filePath)
 		}
-		p.filepaths[filePath] = fsys
-	}
-	return nil
-}
-
-func (p *Parser) extractChartName(fsys fs.FS, chartPath string) error {
-
-	chrt, err := fsys.Open(chartPath)
-	if err != nil {
-		return err
-	}
-	defer func() { _ = chrt.Close() }()
-
-	var chartContent map[string]any
-	if err := yaml.NewDecoder(chrt).Decode(&chartContent); err != nil {
-		// the chart likely has the name templated and so cannot be parsed as yaml - use a temporary name
-		if dir := filepath.Dir(chartPath); dir != "" && dir != "." {
-			p.helmClient.ReleaseName = dir
-		} else {
-			p.helmClient.ReleaseName = uuid.NewString()
-		}
+		filepaths[filePath] = fsys
 		return nil
+	}); err != nil {
+		return nil, fmt.Errorf("walk dir error: %w", err)
 	}
 
-	if name, ok := chartContent["name"]; !ok {
-		return fmt.Errorf("could not extract the chart name from %s", chartPath)
+	var files []*archive.BufferedFile
+	for filePath, fsys := range filepaths {
+		b, err := fs.ReadFile(fsys, filePath)
+		if err != nil {
+			return nil, err
+		}
+		filePath = strings.TrimPrefix(filePath, rootPath+"/")
+		filePath = filepath.ToSlash(filePath)
+		files = append(files, &archive.BufferedFile{
+			Name: filePath,
+			Data: b,
+		})
+	}
+
+	return p.render(ctx, files)
+}
+
+// ParseArchive renders a Helm chart from a gzip-compressed tar archive within fsys.
+func (p *Parser) ParseArchive(ctx context.Context, fsys fs.FS, archivePath string) ([]Manifest, error) {
+	f, err := fsys.Open(archivePath)
+	if err != nil {
+		return nil, fmt.Errorf("open archive: %w", err)
+	}
+	defer f.Close()
+
+	files, err := archive.LoadArchiveFiles(f)
+	if err != nil {
+		return nil, fmt.Errorf("load archive files: %w", err)
+	}
+
+	for _, file := range files {
+		if file.Name == chartutilv2.ChartfileName {
+			p.applyChartName(file.Data, "")
+			break
+		}
+	}
+
+	return p.render(ctx, files)
+}
+
+func (p *Parser) applyChartName(data []byte, fallback string) {
+	if name, err := parseChartName(data); err == nil {
+		p.helmClient.ReleaseName = name
+		return
+	}
+	if fallback != "" {
+		p.helmClient.ReleaseName = fallback
 	} else {
-		p.helmClient.ReleaseName = fmt.Sprintf("%v", name)
+		p.helmClient.ReleaseName = uuid.NewString()
 	}
-	return nil
 }
 
-func (p *Parser) RenderedChartFiles() ([]ChartFile, error) {
-	workingChart, err := p.loadChart()
+func parseChartName(data []byte) (string, error) {
+	var meta struct {
+		Name string `yaml:"name"`
+	}
+	if err := yaml.Unmarshal(data, &meta); err != nil {
+		return "", err
+	}
+	if meta.Name == "" {
+		return "", errors.New("could not extract the chart name from Chart.yaml")
+	}
+	return meta.Name, nil
+}
+
+func (p *Parser) render(ctx context.Context, files []*archive.BufferedFile) ([]Manifest, error) {
+	chrt, err := p.loadChart(files)
 	if err != nil {
 		return nil, err
 	}
 
-	workingRelease, err := p.getRelease(workingChart)
+	acc, err := p.getRelease(ctx, chrt)
 	if err != nil {
 		return nil, err
 	}
 
-	var manifests bytes.Buffer
-	_, _ = fmt.Fprintln(&manifests, strings.TrimSpace(workingRelease.Manifest))
-
-	splitManifests := releaseutil.SplitManifests(manifests.String())
-	manifestsKeys := make([]string, 0, len(splitManifests))
-	for k := range splitManifests {
-		manifestsKeys = append(manifestsKeys, k)
+	manifests := releaseutil.SplitManifests(strings.TrimSpace(acc.Manifest()))
+	keys := make([]string, 0, len(manifests))
+	for k := range manifests {
+		keys = append(keys, k)
 	}
-	return p.getRenderedManifests(manifestsKeys, splitManifests), nil
+	sort.Sort(releaseutil.BySplitManifestsOrder(keys))
+
+	var result []Manifest
+	for _, key := range keys {
+		manifest := manifests[key]
+		submatch := manifestNameRegex.FindStringSubmatch(manifest)
+		if submatch == nil {
+			continue
+		}
+		result = append(result, Manifest{
+			Path:    submatch[1],
+			Content: manifest,
+		})
+	}
+	return result, nil
 }
 
-func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
+func (p *Parser) getRelease(ctx context.Context, chrt *chartv2.Chart) (release.Accessor, error) {
 	opts := &ValueOptions{
 		ValueFiles:   p.valuesFiles,
 		Values:       p.values,
@@ -211,73 +222,39 @@ func (p *Parser) getRelease(chrt *chart.Chart) (*release.Release, error) {
 	if err != nil {
 		return nil, err
 	}
-	r, err := p.helmClient.RunWithContext(context.Background(), chrt, vals)
+
+	rel, err := p.helmClient.RunWithContext(ctx, chrt, vals)
 	if err != nil {
 		return nil, err
 	}
 
-	if r == nil {
+	if rel == nil {
 		return nil, errors.New("there is nothing in the release")
 	}
-	return r, nil
+
+	acc, err := release.NewAccessor(rel)
+	if err != nil {
+		return nil, err
+	}
+	return acc, nil
 }
 
-func (p *Parser) loadChart() (*chart.Chart, error) {
-	var files []*loader.BufferedFile
+func (p *Parser) loadChart(files []*archive.BufferedFile) (*chartv2.Chart, error) {
+	chrt, err := loaderv2.LoadFiles(files)
+	if err != nil {
+		return nil, err
+	}
 
-	for filePath, fsys := range p.filepaths {
-		b, err := fs.ReadFile(fsys, filePath)
+	if req := chrt.Metadata.Dependencies; req != nil {
+		acc, err := chart.NewAccessor(chrt)
 		if err != nil {
 			return nil, err
 		}
 
-		filePath = strings.TrimPrefix(filePath, p.rootPath+"/")
-		filePath = filepath.ToSlash(filePath)
-		files = append(files, &loader.BufferedFile{
-			Name: filePath,
-			Data: b,
-		})
-	}
-
-	c, err := loader.LoadFiles(files)
-	if err != nil {
-		return nil, err
-	}
-
-	if req := c.Metadata.Dependencies; req != nil {
-		if err := action.CheckDependencies(c, req); err != nil {
+		if err := action.CheckDependencies(chrt, acc.MetaDependencies()); err != nil {
 			return nil, err
 		}
 	}
 
-	return c, nil
-}
-
-func (*Parser) getRenderedManifests(manifestsKeys []string, splitManifests map[string]string) []ChartFile {
-	sort.Sort(releaseutil.BySplitManifestsOrder(manifestsKeys))
-	var manifestsToRender []ChartFile
-	for _, manifestKey := range manifestsKeys {
-		manifest := splitManifests[manifestKey]
-		submatch := manifestNameRegex.FindStringSubmatch(manifest)
-		if len(submatch) == 0 {
-			continue
-		}
-		manifestsToRender = append(manifestsToRender, ChartFile{
-			TemplateFilePath: getManifestPath(manifest),
-			ManifestContent:  manifest,
-		})
-	}
-	return manifestsToRender
-}
-
-func getManifestPath(manifest string) string {
-	lines := strings.Split(manifest, "\n")
-	if len(lines) == 0 {
-		return "unknown.yaml"
-	}
-	manifestFilePathParts := strings.SplitN(strings.TrimPrefix(lines[0], "# Source: "), "/", 2)
-	if len(manifestFilePathParts) > 1 {
-		return manifestFilePathParts[1]
-	}
-	return manifestFilePathParts[0]
+	return chrt, nil
 }

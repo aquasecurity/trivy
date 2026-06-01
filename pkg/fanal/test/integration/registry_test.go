@@ -9,8 +9,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/go-connections/nat"
+	"github.com/moby/moby/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -60,7 +59,7 @@ func TestTLSRegistry(t *testing.T) {
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "certs"), "/certs"),
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "registry", "auth"), "/auth"),
 		),
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 		WaitingFor: wait.ForLog("listening on [::]:5443"),
@@ -199,7 +198,7 @@ func TestTLSRegistry(t *testing.T) {
 	}
 }
 
-func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exposedPort nat.Port) (*url.URL, error) {
+func getRegistryURL(ctx context.Context, registryC testcontainers.Container, exposedPort string) (*url.URL, error) {
 	ip, err := registryC.Host(ctx)
 	if err != nil {
 		return nil, err

@@ -231,11 +231,45 @@ disable-allow-rules:
   - markdown
 ```
 
+### Skip Patterns
+
+By default, Trivy skips the following paths during secret scanning (expressed as [doublestar](https://github.com/bmatcuk/doublestar) glob patterns):
+
+```
+**/.git/**         **/node_modules/**
+**/go.mod          **/go.sum          **/package-lock.json
+**/yarn.lock       **/pnpm-lock.yaml  **/Pipfile.lock    **/Gemfile.lock
+**/*.jpg  **/*.png  **/*.gif  **/*.doc  **/*.pdf  **/*.bin
+**/*.svg  **/*.socket  **/*.deb  **/*.rpm
+**/*.zip  **/*.gz  **/*.gzip  **/*.tar
+```
+You can see a full list of default skip patterns [here][default-secret-patterns].
+
+You can override this list with `skip-patterns` in the configuration file.
+
+!!! warning
+    When `skip-patterns` is specified, it **replaces** the default list entirely — defaults are not merged.
+    To keep the defaults and add new patterns, include them explicitly.
+
+``` yaml
+skip-patterns:
+  - "**/vendor/**"
+  - "**/testdata/**"
+  - "**/custom.lock"
+  - "**/*.xyz"
+```
+
+To disable all skipping, set it to an empty list:
+
+``` yaml
+skip-patterns: []
+```
+
 ## Recommendation
-We would recommend specifying `--skip-dirs` for faster secret scanning.
+We would recommend specifying `--skip-dirs` or `--skip-files` for faster secret scanning. Also there is a way to use [skip-patterns](#skip-patterns) in the secret config to speed up your scanning.
 In container image scanning, Trivy walks the file tree rooted at `/` and scans all the files other than [built-in allowed paths][builtin-allow].
 It will take a while if your image contains a lot of files even though Trivy tries to avoid scanning layers from a base image.
-If you want to make scanning faster, `--skip-dirs` and `--skip-files` helps so that Trivy will skip scanning those files and directories.
+Adding glob patterns such as `**/vendor/**` helps so that Trivy will skip those paths entirely.
 You can see more options [here](../configuration/others.md).
 
 `allow-rules` is also helpful. See the [allow-rules](#allow-rules) section.
@@ -311,6 +345,7 @@ This feature is inspired by [gitleaks][gitleaks].
 
 [builtin]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/builtin-rules.go
 [builtin-allow]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/builtin-allow-rules.go
+[default-secret-patterns]: https://github.com/aquasecurity/trivy/blob/{{ git.tag }}/pkg/fanal/secret/scanner.go
 [gitleaks]: https://github.com/gitleaks/gitleaks
 
 [builtin]: https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go

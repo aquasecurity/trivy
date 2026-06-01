@@ -78,7 +78,7 @@ builds:
 release:
     extra_files:
       - glob: ./bom.json
-    discussion_category_name: Announcements
+    discussion_category_name: Development
 
 nfpms:
   -

@@ -14,24 +14,6 @@ import (
 
 var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
 
-type packageJSON struct {
-	Name                 string            `json:"name"`
-	Version              string            `json:"version"`
-	License              any               `json:"license"`
-	Dependencies         map[string]string `json:"dependencies"`
-	OptionalDependencies map[string]string `json:"optionalDependencies"`
-	DevDependencies      map[string]string `json:"devDependencies"`
-	Workspaces           any               `json:"workspaces"`
-}
-
-type Package struct {
-	ftypes.Package
-	Dependencies         map[string]string
-	OptionalDependencies map[string]string
-	DevDependencies      map[string]string
-	Workspaces           []string
-}
-
 type Parser struct{}
 
 func NewParser() *Parser {
@@ -60,30 +42,13 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 			ID:       id,
 			Name:     pkgJSON.Name,
 			Version:  pkgJSON.Version,
-			Licenses: parseLicense(pkgJSON.License),
+			Licenses: pkgJSON.License.Names(),
 		},
 		Dependencies:         pkgJSON.Dependencies,
 		OptionalDependencies: pkgJSON.OptionalDependencies,
 		DevDependencies:      pkgJSON.DevDependencies,
 		Workspaces:           ParseWorkspaces(pkgJSON.Workspaces),
 	}, nil
-}
-
-func parseLicense(val any) []string {
-	// the license isn't always a string, check for legacy struct if not string
-	switch v := val.(type) {
-	case string:
-		if v != "" {
-			return []string{v}
-		}
-	case map[string]any:
-		if license, ok := v["type"]; ok {
-			if s, ok := license.(string); ok && s != "" {
-				return []string{s}
-			}
-		}
-	}
-	return nil
 }
 
 // ParseWorkspaces returns slice of workspaces

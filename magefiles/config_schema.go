@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/invopop/jsonschema"
+	"github.com/google/jsonschema-go/jsonschema"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
@@ -29,11 +29,11 @@ const configSchemaPath = "schema/trivy-config.json"
 // generateConfigSchema generates a JSON schema for trivy.yaml configuration file.
 func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) error {
 	root := &jsonschema.Schema{
-		Version:     jsonschema.Version,
+		Schema:      "https://json-schema.org/draft/2020-12/schema",
 		Type:        schemaTypeObject,
 		Title:       "Trivy Configuration",
 		Description: "Configuration file for Trivy security scanner (trivy.yaml)",
-		Properties:  jsonschema.NewProperties(),
+		Properties:  make(map[string]*jsonschema.Schema),
 	}
 
 	for _, group := range allFlagGroups {
@@ -72,14 +72,15 @@ func addFlagToSchema(root *jsonschema.Schema, f flag.Flagger) error {
 	// Navigate/create intermediate objects
 	current := root
 	for _, part := range parentParts {
-		if existing, ok := current.Properties.Get(part); ok {
+		if existing, ok := current.Properties[part]; ok {
 			current = existing
 		} else {
 			newSchema := &jsonschema.Schema{
 				Type:       schemaTypeObject,
-				Properties: jsonschema.NewProperties(),
+				Properties: make(map[string]*jsonschema.Schema),
 			}
-			current.Properties.Set(part, newSchema)
+			current.Properties[part] = newSchema
+			current.PropertyOrder = append(current.PropertyOrder, part)
 			current = newSchema
 		}
 	}
@@ -89,7 +90,8 @@ func addFlagToSchema(root *jsonschema.Schema, f flag.Flagger) error {
 	if err != nil {
 		return err
 	}
-	current.Properties.Set(leafName, schema)
+	current.Properties[leafName] = schema
+	current.PropertyOrder = append(current.PropertyOrder, leafName)
 	return nil
 }
 

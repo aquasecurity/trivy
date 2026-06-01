@@ -17,12 +17,11 @@ import (
 	"path/filepath"
 	"testing"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/go-connections/nat"
 	"github.com/google/go-containerregistry/pkg/authn"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/tarball"
+	"github.com/moby/moby/api/types/container"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
 	"github.com/testcontainers/testcontainers-go/wait"
@@ -60,7 +59,7 @@ func setupRegistry(ctx context.Context, baseDir string, authURL *url.URL) (testc
 		Mounts: testcontainers.Mounts(
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 		WaitingFor: wait.ForHTTP("v2").WithTLS(true).WithAllowInsecure(true).
@@ -85,7 +84,7 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "auth_config"), "/config"),
 			testcontainers.BindMount(filepath.Join(baseDir, "data", "certs"), "/certs"),
 		),
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 		Cmd: []string{"/config/config.yml"},
@@ -98,7 +97,7 @@ func setupAuthServer(ctx context.Context, baseDir string) (testcontainers.Contai
 	return authC, err
 }
 
-func getURL(ctx context.Context, container testcontainers.Container, exposedPort nat.Port) (*url.URL, error) {
+func getURL(ctx context.Context, container testcontainers.Container, exposedPort string) (*url.URL, error) {
 	ip, err := container.Host(ctx)
 	if err != nil {
 		return nil, err

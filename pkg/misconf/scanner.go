@@ -12,8 +12,8 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/samber/lo"
-	"github.com/xeipuuv/gojsonschema"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -186,7 +186,7 @@ func (s *Scanner) filterFS(fsys fs.FS) (fs.FS, error) {
 		return fsys, nil
 	}
 
-	schemas := lo.SliceToMap(s.configFileSchemas, func(schema *ConfigFileSchema) (string, *gojsonschema.Schema) {
+	schemas := lo.SliceToMap(s.configFileSchemas, func(schema *ConfigFileSchema) (string, *jsonschema.Resolved) {
 		return schema.path, schema.schema
 	})
 

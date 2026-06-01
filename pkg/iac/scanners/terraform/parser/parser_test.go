@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
@@ -2177,7 +2178,17 @@ resource "test" "fileset-func" {
 		"path/b.py": ``,
 	}
 
-	resources := parse(t, files).GetResourcesByType("test")
+	fsys := mapfs.New()
+	for name, content := range files {
+		fsys.MkdirAll(filepath.Dir(name), 0o755)
+		fsys.WriteVirtualFile(name, []byte(content), 0o644)
+	}
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	resources := modules.GetResourcesByType("test")
 	require.Len(t, resources, 1)
 	attr := resources[0].GetAttribute("value")
 	require.NotNil(t, attr)

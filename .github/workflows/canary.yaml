@@ -23,7 +23,6 @@ jobs:
       ECR_ACCESS_KEY_ID: ${{ secrets.ECR_ACCESS_KEY_ID }}
       ECR_SECRET_ACCESS_KEY: ${{ secrets.ECR_SECRET_ACCESS_KEY }}
       GPG_KEY: ${{ secrets.GPG_KEY }}
-      TRIVY_REPO_TOKEN: ${{ secrets.TRIVY_REPO_TOKEN }}
       GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
 
   upload-binaries:
@@ -34,35 +33,35 @@ jobs:
       actions: write # Required to delete caches
     steps:
       - name: Restore Trivy binaries from cache
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
         with:
           path: dist/
           key: ${{ runner.os }}-bins-${{ github.workflow }}-${{ github.sha }}
 
         # Upload artifacts
       - name: Upload artifacts (trivy_Linux-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: trivy_Linux-64bit
           path: dist/trivy_*_Linux-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_Linux-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: trivy_Linux-ARM64
           path: dist/trivy_*_Linux-ARM64.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-64bit)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: trivy_macOS-64bit
           path: dist/trivy_*_macOS-64bit.tar.gz
           if-no-files-found: error
 
       - name: Upload artifacts (trivy_macOS-ARM64)
-        uses: actions/upload-artifact@b7c566a772e6b6bfb58ed0dc250532a479d7789f # v6.0.0
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: trivy_macOS-ARM64
           path: dist/trivy_*_macOS-ARM64.tar.gz

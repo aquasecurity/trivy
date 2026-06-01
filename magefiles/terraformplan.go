@@ -9,7 +9,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	hversion "github.com/hashicorp/go-version" //nolint:gomodguard // hc-install uses hashicorp/go-version
+	hversion "github.com/hashicorp/go-version" //nolint:gomodguard_v2 // hc-install uses hashicorp/go-version
 	"github.com/hashicorp/hc-install/product"
 	"github.com/hashicorp/hc-install/releases"
 	"github.com/hashicorp/terraform-exec/tfexec"

@@ -10,11 +10,19 @@ import (
 	"github.com/zclconf/go-cty/cty/function/stdlib"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/funcs"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 // Functions returns the set of functions that should be used to when evaluating
 // expressions in the receiving scope.
 func Functions(target fs.FS, baseDir string) map[string]function.Function {
+	// Use a sandboxed FS without underlyingRoot for file functions to prevent
+	// path traversal above the scan root via mapfs's underlying OS fallback.
+	if mfs, ok := target.(*mapfs.FS); ok {
+		target = mfs.Sandboxed()
+	} else {
+		target = mapfs.New()
+	}
 	return map[string]function.Function{
 		"abs":              stdlib.AbsoluteFunc,
 		"abspath":          funcs.AbsPathFunc,

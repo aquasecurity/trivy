@@ -2,6 +2,7 @@ package detection
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"os"
@@ -9,9 +10,9 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/jsonschema-go/jsonschema"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"github.com/xeipuuv/gojsonschema"
 )
 
 func Test_Detection(t *testing.T) {
@@ -753,12 +754,14 @@ number: 2`,
 		},
 	}
 	for _, tt := range tests {
-		schemas := make(map[string]*gojsonschema.Schema)
+		schemas := make(map[string]*jsonschema.Resolved)
 		for i, content := range tt.args.schemas {
-			l := gojsonschema.NewStringLoader(content)
-			s, err := gojsonschema.NewSchema(l)
+			var s jsonschema.Schema
+			err := json.Unmarshal([]byte(content), &s)
 			require.NoError(t, err)
-			schemas[fmt.Sprintf("schema-%d.json", i)] = s
+			resolved, err := s.Resolve(nil)
+			require.NoError(t, err)
+			schemas[fmt.Sprintf("schema-%d.json", i)] = resolved
 		}
 		rs := strings.NewReader(tt.args.fileContent)
 		got := IsFileMatchesSchemas(schemas, tt.args.fileType, tt.args.fileName, rs)

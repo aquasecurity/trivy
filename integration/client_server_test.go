@@ -11,8 +11,7 @@ import (
 	"testing"
 	"time"
 
-	dockercontainer "github.com/docker/docker/api/types/container"
-	"github.com/docker/go-connections/nat"
+	"github.com/moby/moby/api/types/container"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/testcontainers/testcontainers-go"
@@ -70,6 +69,14 @@ func TestClientServer(t *testing.T) {
 			override: func(_ *testing.T, want, _ *types.Report) {
 				want.Metadata.OS.Name = "3.10"
 				want.Results[0].Target = "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.10)"
+				for i := range want.Results[0].Vulnerabilities {
+					qs := want.Results[0].Vulnerabilities[i].PkgIdentifier.PURL.Qualifiers
+					for j := range qs {
+						if qs[j].Key == "distro" {
+							qs[j].Value = "3.10"
+						}
+					}
+				}
 			},
 			golden: goldenAlpine39,
 		},
@@ -768,7 +775,7 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 		Name:         "redis",
 		Image:        imageName,
 		ExposedPorts: []string{port},
-		HostConfigModifier: func(hostConfig *dockercontainer.HostConfig) {
+		HostConfigModifier: func(hostConfig *container.HostConfig) {
 			hostConfig.AutoRemove = true
 		},
 	}
@@ -782,7 +789,7 @@ func setupRedis(t *testing.T, ctx context.Context) (testcontainers.Container, st
 	ip, err := redis.Host(ctx)
 	require.NoError(t, err)
 
-	p, err := redis.MappedPort(ctx, nat.Port(port))
+	p, err := redis.MappedPort(ctx, port)
 	require.NoError(t, err)
 
 	addr := fmt.Sprintf("redis://%s:%s", ip, p.Port())

@@ -27,7 +27,7 @@ jobs:
           fetch-depth: 0
           persist-credentials: false
       - name: Install Helm
-        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
+        uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
         with:
           version: v3.14.4
       - name: Set up python
@@ -61,9 +61,20 @@ jobs:
       - test-chart
     runs-on: ubuntu-2404-2core
     steps:
+      # GITHUB_TOKEN is scoped to the current repository and cannot trigger
+      # workflows in other repos — generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          client-id: ${{ secrets.ACTIONS_MULTI_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
+          owner: ${{ github.repository_owner }}
+          repositories: helm-charts
+          permission-actions: write
       - name: Trigger publish-chart workflow in helm-charts
         env:
-          GH_TOKEN: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_TOKEN }}
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
           REF: ${{ github.sha }}
         run: |
           gh workflow run publish-chart.yaml \

@@ -390,7 +390,7 @@ func updateVEX(output string, statements []vex.Statement) error {
 		Metadata: vex.Metadata{
 			Context:   "https://openvex.dev/ns/v0.2.0",
 			Author:    "Aqua Security",
-			Timestamp: lo.ToPtr(time.Now()),
+			Timestamp: new(time.Now()),
 			Version:   doc.Version + 1,
 			Tooling:   "https://github.com/aquasecurity/trivy/tree/main/magefiles/vex.go",
 		},

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+    <localRepository>testdata/repository</localRepository>
+    <mirrors>
+        <mirror>
+            <id>global-mirror</id>
+            <name>Global Mirror</name>
+            <url>https://global.mirror.example.com/maven2</url>
+            <mirrorOf>external:http:*</mirrorOf>
+        </mirror>
+        <mirror>
+            <id>shared-mirror</id>
+            <name>Shared Mirror (global)</name>
+            <url>https://global.shared.example.com/maven2</url>
+            <mirrorOf>external:*</mirrorOf>
+        </mirror>
+    </mirrors>
+</settings>

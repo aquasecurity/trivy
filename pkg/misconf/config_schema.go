@@ -2,13 +2,14 @@ package misconf
 
 import (
 	"bytes"
+	"encoding/json"
 	"io/fs"
 	"os"
 	"path/filepath"
 	"regexp"
 	"strings"
 
-	"github.com/xeipuuv/gojsonschema"
+	"github.com/google/jsonschema-go/jsonschema"
 	"golang.org/x/xerrors"
 )
 
@@ -16,7 +17,7 @@ type ConfigFileSchema struct {
 	path   string
 	name   string
 	source []byte
-	schema *gojsonschema.Schema
+	schema *jsonschema.Resolved
 }
 
 func LoadConfigSchemas(paths []string) ([]*ConfigFileSchema, error) {
@@ -57,9 +58,13 @@ func newConfigFileSchema(path string) (*ConfigFileSchema, error) {
 
 	// Go's regular expression engine does not support negative lookahead
 	b = regexp.MustCompile(`\(\?\!.*\)`).ReplaceAll(b, []byte{})
-	schema, err := gojsonschema.NewSchema(gojsonschema.NewBytesLoader(b))
+	var s jsonschema.Schema
+	if err := json.Unmarshal(b, &s); err != nil {
+		return nil, xerrors.Errorf("parse config schema %s error: %w", path, err)
+	}
+	schema, err := s.Resolve(nil)
 	if err != nil {
-		return nil, xerrors.Errorf("compile config schema %s error: %w", path, err)
+		return nil, xerrors.Errorf("resolve config schema %s error: %w", path, err)
 	}
 
 	fileName := filepath.Base(path)

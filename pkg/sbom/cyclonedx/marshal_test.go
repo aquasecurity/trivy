@@ -7,7 +7,6 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -227,8 +226,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 											V3Score:  5.3,
 										},
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2018, 12, 31, 19, 29, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2019, 10, 31, 1, 15, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -327,10 +326,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000014",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -647,7 +646,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000013",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref: "pkg:gem/actioncontroller@7.0.0",
@@ -657,11 +656,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:golang/golang.org/x/crypto@v0.0.0-20210421170649-83a5a9bb288b",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref:          "pkg:nuget/Newtonsoft.Json@9.0.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref: "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
@@ -675,7 +674,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:rpm/centos/binutils@2.30-93.el8?arch=aarch64&distro=centos-8.3.2011",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -691,7 +690,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
-								Score:    lo.ToPtr(4.3),
+								Score:    new(4.3),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv2,
 								Vector:   "AV:N/AC:M/Au:N/C:N/I:N/A:P",
@@ -701,7 +700,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									Name: string(vulnerability.NVD),
 									URL:  "",
 								},
-								Score:    lo.ToPtr(5.5),
+								Score:    new(5.5),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv3,
 								Vector:   "CVSS:3.0/AV:L/AC:L/PR:N/UI:R/S:U/C:N/I:N/A:H",
@@ -711,7 +710,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									Name: string(vulnerability.RedHatOVAL),
 									URL:  "",
 								},
-								Score:    lo.ToPtr(5.3),
+								Score:    new(5.3),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv3,
 								Vector:   "CVSS:3.0/AV:L/AC:L/PR:L/UI:N/S:U/C:L/I:L/A:L",
@@ -913,8 +912,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"  extraPrefix http://www.openwall.com/lists/oss-security/2022/02/11/5",
 										"https://access.redhat.com/security/cve/CVE-2022-23633 (extra suffix)",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
 								},
 							},
 							{
@@ -957,8 +956,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"http://www.openwall.com/lists/oss-security/2022/02/11/5",
 										"https://access.redhat.com/security/cve/CVE-2022-23633",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2022, 2, 11, 21, 15, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2022, 2, 22, 21, 47, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -966,10 +965,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1185,11 +1184,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actionpack@7.0.0",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref:          "pkg:gem/actionpack@7.0.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref: "pkg:rpm/centos/acl@2.2.53-1.el8?arch=aarch64&distro=centos-8.3.2011&epoch=1",
@@ -1199,7 +1198,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:rpm/centos/glibc@2.28-151.el8?arch=aarch64&distro=centos-8.3.2011",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -1215,7 +1214,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    lo.ToPtr(9.7),
+								Score:    new(9.7),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv2,
 								Vector:   "AV:N/AC:L/Au:N/C:C/I:P/A:C",
@@ -1224,7 +1223,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    lo.ToPtr(5.9),
+								Score:    new(5.9),
 								Severity: cdx.SeverityMedium,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
@@ -1233,7 +1232,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.RedHat),
 								},
-								Score:    lo.ToPtr(5.9),
+								Score:    new(5.9),
 								Severity: cdx.SeverityLow,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:H/I:N/A:N",
@@ -1354,10 +1353,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000007",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1492,15 +1491,15 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:gem/actioncable@6.1.4.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref:          "pkg:maven/org.springframework/spring-web@5.3.22",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref:          "pkg:npm/%40babel/helper-string-parser@7.23.4",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 			},
@@ -1576,8 +1575,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 									References: []string{
 										"https://access.redhat.com/security/cve/CVE-2022-42003",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2022, 10, 2, 5, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2022, 10, 2, 5, 15, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2022, 12, 20, 10, 15, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -1586,10 +1585,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOM: testSBOM(),
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1652,7 +1651,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.GHSA),
 								},
-								Score:    lo.ToPtr(7.5),
+								Score:    new(7.5),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
@@ -1661,7 +1660,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.GHSA),
 								},
-								Score:    lo.ToPtr(8.7),
+								Score:    new(8.7),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv4,
 								Vector:   "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:H/SC:N/SI:N/SA:N",
@@ -1700,7 +1699,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 			},
@@ -1794,8 +1793,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"http://www.openwall.com/lists/oss-security/2023/06/12/3",
 										"https://github.com/advisories/GHSA-xm2m-2q6h-22jw",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
 								},
 							},
 							{
@@ -1845,8 +1844,8 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 										"http://www.openwall.com/lists/oss-security/2023/06/12/3",
 										"https://github.com/advisories/GHSA-xm2m-2q6h-22jw",
 									},
-									PublishedDate:    lo.ToPtr(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
-									LastModifiedDate: lo.ToPtr(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
+									PublishedDate:    new(time.Date(2023, 6, 12, 16, 15, 0, 0, time.UTC)),
+									LastModifiedDate: new(time.Date(2023, 6, 21, 2, 20, 0, 0, time.UTC)),
 								},
 							},
 						},
@@ -1854,10 +1853,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -1935,11 +1934,11 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:maven/org.apache.nifi/nifi-dbcp-base@1.20.0",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 					{
 						Ref:          "pkg:maven/org.apache.nifi/nifi-hikari-dbcp-service@1.20.0",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{
@@ -1955,7 +1954,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.GHSA),
 								},
-								Score:    lo.ToPtr(8.8),
+								Score:    new(8.8),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
@@ -1964,13 +1963,13 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Source: &cdx.Source{
 									Name: string(vulnerability.NVD),
 								},
-								Score:    lo.ToPtr(8.8),
+								Score:    new(8.8),
 								Severity: cdx.SeverityHigh,
 								Method:   cdx.ScoringMethodCVSSv31,
 								Vector:   "CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:U/C:H/I:H/A:H",
 							},
 						},
-						CWEs:        lo.ToPtr([]int{94}),
+						CWEs:        new([]int{94}),
 						Description: "The DBCPConnectionPool and HikariCPConnectionPool Controller Services in Apache NiFi 0.0.2 through 1.21.0...",
 						Advisories: &[]cdx.Advisory{
 							{
@@ -2044,10 +2043,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000003",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -2121,7 +2120,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "pkg:npm/ruby-typeprof@0.20.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 			},
@@ -2135,10 +2134,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Results:       types.Results{},
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -2173,7 +2172,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000001",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 			},
@@ -2188,10 +2187,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOM:           testSBOMWithoutRoot(),
 			},
 			want: &cdx.BOM{
-				XMLNS:        "http://cyclonedx.org/schema/bom/1.6",
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
 				BOMFormat:    "CycloneDX",
-				SpecVersion:  cdx.SpecVersion1_6,
-				JSONSchema:   "http://cyclonedx.org/schema/bom-1.6.schema.json",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
 				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000001",
 				Version:      1,
 				Metadata: &cdx.Metadata{
@@ -2234,7 +2233,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				Dependencies: &[]cdx.Dependency{
 					{
 						Ref:          "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
-						Dependencies: lo.ToPtr([]string{}),
+						Dependencies: new([]string{}),
 					},
 				},
 			},
