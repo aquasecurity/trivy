@@ -46,20 +46,19 @@ linters:
     gocyclo:
       # Next highest complexity candidate: ApplyLayers in pkg/fanal/applier/docker.go (score: 28)
       min-complexity: 20
-    gomodguard:
+    gomodguard_v2:
       blocked:
-        modules:
-          - github.com/hashicorp/go-version:
-              recommendations:
-                - github.com/aquasecurity/go-version
-              reason: "`aquasecurity/go-version` is designed for our use-cases"
-          - github.com/Masterminds/semver:
-              recommendations:
-                - github.com/aquasecurity/go-version
-              reason: "`aquasecurity/go-version` is designed for our use-cases"
-          - github.com/liamg/memoryfs:
-              recommendations:
-                - github.com/aquasecurity/trivy/pkg/mapfs
+        - module: github.com/hashicorp/go-version
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/Masterminds/semver
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/liamg/memoryfs
+          recommendations:
+            - github.com/aquasecurity/trivy/pkg/mapfs
     gosec:
       excludes:
         - G101
@@ -151,7 +150,7 @@ linters:
     - depguard
     - gocritic
     - gocyclo
-    - gomodguard
+    - gomodguard_v2
     - gosec
     - govet
     - ineffassign

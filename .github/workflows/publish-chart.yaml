@@ -71,6 +71,7 @@ jobs:
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: helm-charts
+          permission-actions: write
       - name: Trigger publish-chart workflow in helm-charts
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

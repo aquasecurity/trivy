@@ -123,3 +123,99 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 		})
 	}
 }
+
+func TestIsPackageRoot(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want bool
+	}{
+		// Real package roots
+		{
+			name: "unscoped package root",
+			path: "node_modules/rxjs/package.json",
+			want: true,
+		},
+		{
+			name: "scoped package root",
+			path: "node_modules/@angular/core/package.json",
+			want: true,
+		},
+		{
+			name: "nested dep — anchor on inner node_modules",
+			path: "node_modules/rxjs/node_modules/foo/package.json",
+			want: true,
+		},
+		{
+			name: "pnpm virtual store",
+			path: "node_modules/.pnpm/rxjs@6.6.7/node_modules/rxjs/package.json",
+			want: true,
+		},
+		{
+			name: "pnpm virtual store, scoped",
+			path: "node_modules/.pnpm/@angular+core@13.0.0/node_modules/@angular/core/package.json",
+			want: true,
+		},
+		{
+			name: "yarn unplugged",
+			path: ".yarn/unplugged/zeromq-virtual-abc/node_modules/zeromq/package.json",
+			want: true,
+		},
+
+		// Subpath-helper files (the rxjs/ajax case from issue #10607)
+		{
+			name: "subpath helper unscoped",
+			path: "node_modules/rxjs/ajax/package.json",
+			want: false,
+		},
+		{
+			name: "subpath helper unscoped — fetch",
+			path: "node_modules/rxjs/fetch/package.json",
+			want: false,
+		},
+		{
+			name: "subpath helper unscoped — operators",
+			path: "node_modules/rxjs/operators/package.json",
+			want: false,
+		},
+		{
+			name: "subpath helper scoped",
+			path: "node_modules/@angular/core/testing/package.json",
+			want: false,
+		},
+		{
+			name: "subpath helper inside pnpm virtual store",
+			path: "node_modules/.pnpm/rxjs@6.6.7/node_modules/rxjs/ajax/package.json",
+			want: false,
+		},
+		{
+			name: "deep subpath",
+			path: "node_modules/foo/a/b/c/package.json",
+			want: false,
+		},
+
+		// Non-package.json files — never accepted
+		{
+			name: "non-package.json file",
+			path: "node_modules/rxjs/index.js",
+			want: false,
+		},
+
+		// Outside node_modules — pass through (project root / workspace root)
+		{
+			name: "project root package.json",
+			path: "package.json",
+			want: true,
+		},
+		{
+			name: "yarn workspace root",
+			path: "packages/foo/package.json",
+			want: true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, IsPackageRoot(tt.path))
+		})
+	}
+}

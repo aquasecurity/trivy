@@ -55,6 +55,7 @@ jobs:
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: trivy-www
+          permission-actions: write
       - name: Trigger build-docs workflow in trivy-www
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

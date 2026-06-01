@@ -34,6 +34,7 @@ jobs:
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: trivy-repo
+          permission-actions: write
       - name: Trigger deploy-packages workflow in trivy-repo
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -56,6 +57,8 @@ jobs:
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Checkout
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -99,6 +102,7 @@ jobs:
             trivy-downloads
             trivy-chocolatey
             trivy-action
+          permission-actions: write
       - name: Trigger update_version workflow in trivy-telemetry
         if: always()
         env:
