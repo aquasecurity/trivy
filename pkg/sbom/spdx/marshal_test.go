@@ -1526,6 +1526,30 @@ func TestMarshaler_Marshal(t *testing.T) {
 	}
 }
 
+func TestMarshaler_Marshal_NoRoot(t *testing.T) {
+	// When the input BOM has no root component (e.g. an SPDX SBOM without a
+	// DESCRIBES relationship from SPDXRef-DOCUMENT), Marshal must not panic.
+	// Regression for https://github.com/aquasecurity/trivy/issues/10764
+	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+
+	bom := core.NewBOM(core.Options{})
+	// Add a library component without marking it as root, so bom.Root() == nil.
+	bom.AddComponent(&core.Component{
+		Type: core.TypeLibrary,
+		Name: "openssl",
+	})
+
+	marshaler := tspdx.NewMarshaler("0.56.2")
+	doc, err := marshaler.Marshal(ctx, bom)
+	require.NoError(t, err)
+	require.NotNil(t, doc)
+	// The document must not have a DESCRIBES relationship since there is no root.
+	for _, rel := range doc.Relationships {
+		assert.NotEqual(t, "DESCRIBES", rel.Relationship,
+			"unexpected DESCRIBES relationship when there is no root component")
+	}
+}
+
 func TestMarshaler_normalizeLicenses(t *testing.T) {
 	tests := []struct {
 		name              string

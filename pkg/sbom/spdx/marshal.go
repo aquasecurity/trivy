@@ -134,21 +134,29 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	timeNow := clock.Now(ctx).UTC().Format(time.RFC3339)
 
 	root := bom.Root()
-	pkgDownloadLocation := m.packageDownloadLocation(root)
 
 	// Component ID => SPDX ID
 	packageIDs := make(map[uuid.UUID]spdx.ElementID)
 
-	// Root package contains OS, OS packages, language-specific packages and so on.
-	rootPkg, err := m.rootSPDXPackage(root, timeNow, pkgDownloadLocation)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to generate a root package: %w", err)
+	// pkgDownloadLocation defaults to NONE when there is no root component.
+	pkgDownloadLocation := noneField
+	if root != nil {
+		pkgDownloadLocation = m.packageDownloadLocation(root)
+
+		// Root package contains OS, OS packages, language-specific packages and so on.
+		rootPkg, err := m.rootSPDXPackage(root, timeNow, pkgDownloadLocation)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to generate a root package: %w", err)
+		}
+		packages = append(packages, rootPkg)
+		relationShips = append(relationShips,
+			m.spdxRelationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
+		)
+		packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
+	} else {
+		// Since we reuse the scanned SBOM, the root component can be empty.
+		m.logger.Debug("Root component not found")
 	}
-	packages = append(packages, rootPkg)
-	relationShips = append(relationShips,
-		m.spdxRelationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
-	)
-	packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
 
 	var files []*spdx.File
 	var otherLicenses []*spdx.OtherLicense
@@ -224,7 +232,7 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		SPDXVersion:       spdx.Version,
 		DataLicense:       spdx.DataLicense,
 		SPDXIdentifier:    DocumentSPDXIdentifier,
-		DocumentName:      root.Name,
+		DocumentName:      rootDocumentName(root),
 		DocumentNamespace: getDocumentNamespace(root),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
@@ -628,7 +636,17 @@ func elementID(elementType, pkgID string) spdx.ElementID {
 	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
 }
 
+func rootDocumentName(root *core.Component) string {
+	if root == nil {
+		return ""
+	}
+	return root.Name
+}
+
 func getDocumentNamespace(root *core.Component) string {
+	if root == nil {
+		return fmt.Sprintf("%s/unknown/%s", DocumentNamespace, uuid.New().String())
+	}
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
 		string(root.Type),
