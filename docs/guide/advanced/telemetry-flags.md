@@ -1,5 +1,6 @@
 ```
 --clear-cache
+--color
 --debug
 --dependency-tree
 --detection-priority

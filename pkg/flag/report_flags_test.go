@@ -34,6 +34,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		debug            bool
 		pkgTypes         string
 		tableModes       []string
+		color            string
 	}
 	tests := []struct {
 		name     string
@@ -56,6 +57,31 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			want: flag.ReportOptions{
 				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
 				Format:     types.FormatCycloneDX,
+			},
+		},
+		{
+			name: "happy path with --color=never",
+			fields: fields{
+				format: "table",
+				color:  "never",
+			},
+			want: flag.ReportOptions{
+				Format: types.FormatTable,
+				Color:  types.ColorNever,
+			},
+		},
+		{
+			name: "--color is ignored with non-table format",
+			fields: fields{
+				format: "json",
+				color:  "always",
+			},
+			wantLogs: []string{
+				`"--color" is ignored because it can be used only with "--format table".`,
+			},
+			want: flag.ReportOptions{
+				Format: types.FormatJSON,
+				Color:  types.ColorAlways,
 			},
 		},
 		{
@@ -238,6 +264,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 			setValue(flag.SeverityFlag.ConfigName, tt.fields.severities)
 			setValue(flag.ComplianceFlag.ConfigName, tt.fields.compliance)
 			setSliceValue(flag.TableModeFlag.ConfigName, tt.fields.tableModes)
+			setValue(flag.ColorFlag.ConfigName, tt.fields.color)
 
 			// Assert options
 			f := &flag.ReportFlagGroup{
@@ -254,6 +281,7 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 				Severity:        flag.SeverityFlag.Clone(),
 				Compliance:      flag.ComplianceFlag.Clone(),
 				TableMode:       flag.TableModeFlag.Clone(),
+				Color:           flag.ColorFlag.Clone(),
 			}
 
 			flags := flag.Flags{f}
