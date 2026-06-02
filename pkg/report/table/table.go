@@ -58,6 +58,9 @@ type Options struct {
 	// Show/hide summary/detailed tables
 	TableModes []types.TableMode
 
+	// Control colored output (auto, always, never). Empty defaults to auto.
+	ColorMode types.ColorMode
+
 	// For misconfigurations
 	IncludeNonFailures bool
 	Trace              bool
@@ -70,7 +73,7 @@ type Options struct {
 
 func NewWriter(options Options) *Writer {
 	buf := bytes.NewBuffer([]byte{})
-	isTerminal := IsOutputToTerminal(options.Output)
+	isTerminal := colorEnabled(options.ColorMode, options.Output)
 	return &Writer{
 		buf: buf,
 
@@ -171,6 +174,25 @@ func summarize(specifiedSeverities []dbTypes.Severity, severityCount map[string]
 	}
 
 	return total, summaries
+}
+
+// colorEnabled resolves whether the table renderer should produce styled output,
+// based on the --color mode (auto, always, never) layered on top of TTY detection.
+// For the explicit "always"/"never" modes it also pins the global fatih/color
+// switch so the color helpers (SeverityColor, ColorizeSeverity) follow the same
+// decision. In "auto" mode the global is intentionally left to fatih/color's own
+// detection, which already honors both TTY presence and the NO_COLOR env var.
+func colorEnabled(mode types.ColorMode, output io.Writer) bool {
+	switch mode {
+	case types.ColorAlways:
+		color.NoColor = false
+		return true
+	case types.ColorNever:
+		color.NoColor = true
+		return false
+	default: // auto (and empty value for backward compatibility)
+		return IsOutputToTerminal(output)
+	}
 }
 
 func IsOutputToTerminal(output io.Writer) bool {
