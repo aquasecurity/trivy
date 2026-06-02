@@ -822,6 +822,15 @@
       },
       "description": "[EXPERIMENTAL] tables that will be displayed in 'table' format"
     },
+    "color": {
+      "type": "string",
+      "description": "control colored output (only for 'table' format)",
+      "enum": [
+        "auto",
+        "always",
+        "never"
+      ]
+    },
     "repository": {
       "type": "object",
       "properties": {
