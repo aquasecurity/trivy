@@ -1527,10 +1527,12 @@ func TestMarshaler_Marshal(t *testing.T) {
 }
 
 func TestMarshaler_Marshal_NoRoot(t *testing.T) {
-	// When the input BOM has no root component (e.g. an SPDX SBOM without a
-	// DESCRIBES relationship from SPDXRef-DOCUMENT), Marshal must not panic.
 	// Regression for https://github.com/aquasecurity/trivy/issues/10764
+	// When the input BOM has no root component (e.g. an SPDX SBOM without a
+	// DESCRIBES relationship from SPDXRef-DOCUMENT), Marshal must not panic,
+	// must produce a valid SPDX document, and must not emit a DESCRIBES relationship.
 	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
 	bom := core.NewBOM(core.Options{})
 	// Add a library component without marking it as root, so bom.Root() == nil.
@@ -1543,7 +1545,15 @@ func TestMarshaler_Marshal_NoRoot(t *testing.T) {
 	doc, err := marshaler.Marshal(ctx, bom)
 	require.NoError(t, err)
 	require.NotNil(t, doc)
-	// The document must not have a DESCRIBES relationship since there is no root.
+
+	// DocumentName must not be empty — the SPDX spec forbids an empty name field.
+	assert.Equal(t, "unknown", doc.DocumentName,
+		"DocumentName must be 'unknown' when there is no root component")
+
+	// The document must be valid per the SPDX spec.
+	assert.NoError(t, spdxlib.ValidateDocument(doc))
+
+	// No DESCRIBES relationship should be emitted when there is no root.
 	for _, rel := range doc.Relationships {
 		assert.NotEqual(t, "DESCRIBES", rel.Relationship,
 			"unexpected DESCRIBES relationship when there is no root component")

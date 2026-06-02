@@ -36,6 +36,7 @@ const (
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
 	noAssertionField       = "NOASSERTION"
+	noRoot                 = "unknown"
 )
 
 const (
@@ -140,7 +141,9 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 
 	// pkgDownloadLocation defaults to NONE when there is no root component.
 	pkgDownloadLocation := noneField
+	rootDocumentName := noRoot
 	if root != nil {
+		rootDocumentName = root.Name
 		pkgDownloadLocation = m.packageDownloadLocation(root)
 
 		// Root package contains OS, OS packages, language-specific packages and so on.
@@ -232,8 +235,8 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		SPDXVersion:       spdx.Version,
 		DataLicense:       spdx.DataLicense,
 		SPDXIdentifier:    DocumentSPDXIdentifier,
-		DocumentName:      rootDocumentName(root),
-		DocumentNamespace: getDocumentNamespace(root),
+		DocumentName:      rootDocumentName,
+		DocumentNamespace: rootDocumentNamespace(root),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
 				{
@@ -636,16 +639,9 @@ func elementID(elementType, pkgID string) spdx.ElementID {
 	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
 }
 
-func rootDocumentName(root *core.Component) string {
+func rootDocumentNamespace(root *core.Component) string {
 	if root == nil {
-		return ""
-	}
-	return root.Name
-}
-
-func getDocumentNamespace(root *core.Component) string {
-	if root == nil {
-		return fmt.Sprintf("%s/unknown/%s", DocumentNamespace, uuid.New().String())
+		return fmt.Sprintf("%s/%s/%s", DocumentNamespace, noRoot, uuid.New().String())
 	}
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
