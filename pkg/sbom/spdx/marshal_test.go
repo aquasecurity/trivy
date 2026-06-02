@@ -42,6 +42,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 	testCases := []struct {
 		name        string
 		inputReport types.Report
+		inputBOM    *core.BOM // when set, Marshal is called directly instead of MarshalReport
 		wantSBOM    *spdx.Document
 	}{
 		{
@@ -1482,42 +1483,78 @@ func TestMarshaler_Marshal(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Regression for https://github.com/aquasecurity/trivy/issues/10764:
+			// Marshal must not panic when the BOM has no root component (e.g. an SPDX
+			// SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT).
+			name:     "no root component",
+			inputBOM: core.NewBOM(core.Options{}),
+			wantSBOM: &spdx.Document{
+				SPDXVersion:       spdx.Version,
+				DataLicense:       spdx.DataLicense,
+				SPDXIdentifier:    tspdx.DocumentSPDXIdentifier,
+				DocumentName:      "unknown",
+				DocumentNamespace: "http://trivy.dev/unknown/unknown-3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.56.2",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			// Fake function calculating the hash value
-			h := fnv.New64()
-			hasher := func(v any, _ hashstructure.Format, _ *hashstructure.HashOptions) (uint64, error) {
-				h.Reset()
-
-				var str string
-				switch vv := v.(type) {
-				case *core.Component:
-					str = vv.Name + vv.Version + vv.SrcFile
-					for _, f := range vv.Files {
-						str += f.Path
-					}
-				case spdx.OtherLicense:
-					str = vv.ExtractedText + vv.LicenseName
-				case string:
-					str = vv
-				default:
-					require.Failf(t, "unknown type", "%T", v)
-				}
-
-				if _, err := h.Write([]byte(str)); err != nil {
-					return 0, err
-				}
-
-				return h.Sum64(), nil
-			}
-
 			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			marshaler := tspdx.NewMarshaler("0.56.2", tspdx.WithHasher(hasher))
-			spdxDoc, err := marshaler.MarshalReport(ctx, tc.inputReport)
+			var (
+				spdxDoc *spdx.Document
+				err     error
+			)
+			if tc.inputBOM != nil {
+				// Some test cases exercise the Marshal path directly (e.g. nil-root BOM).
+				marshaler := tspdx.NewMarshaler("0.56.2")
+				spdxDoc, err = marshaler.Marshal(ctx, tc.inputBOM)
+			} else {
+				// Fake function calculating the hash value
+				h := fnv.New64()
+				hasher := func(v any, _ hashstructure.Format, _ *hashstructure.HashOptions) (uint64, error) {
+					h.Reset()
+
+					var str string
+					switch vv := v.(type) {
+					case *core.Component:
+						str = vv.Name + vv.Version + vv.SrcFile
+						for _, f := range vv.Files {
+							str += f.Path
+						}
+					case spdx.OtherLicense:
+						str = vv.ExtractedText + vv.LicenseName
+					case string:
+						str = vv
+					default:
+						require.Failf(t, "unknown type", "%T", v)
+					}
+
+					if _, err := h.Write([]byte(str)); err != nil {
+						return 0, err
+					}
+
+					return h.Sum64(), nil
+				}
+				marshaler := tspdx.NewMarshaler("0.56.2", tspdx.WithHasher(hasher))
+				spdxDoc, err = marshaler.MarshalReport(ctx, tc.inputReport)
+			}
 			require.NoError(t, err)
 
 			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
@@ -1526,39 +1563,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 	}
 }
 
-func TestMarshaler_Marshal_NoRoot(t *testing.T) {
-	// Regression for https://github.com/aquasecurity/trivy/issues/10764
-	// When the input BOM has no root component (e.g. an SPDX SBOM without a
-	// DESCRIBES relationship from SPDXRef-DOCUMENT), Marshal must not panic,
-	// must produce a valid SPDX document, and must not emit a DESCRIBES relationship.
-	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
-	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-
-	bom := core.NewBOM(core.Options{})
-	// Add a library component without marking it as root, so bom.Root() == nil.
-	bom.AddComponent(&core.Component{
-		Type: core.TypeLibrary,
-		Name: "openssl",
-	})
-
-	marshaler := tspdx.NewMarshaler("0.56.2")
-	doc, err := marshaler.Marshal(ctx, bom)
-	require.NoError(t, err)
-	require.NotNil(t, doc)
-
-	// DocumentName must not be empty — the SPDX spec forbids an empty name field.
-	assert.Equal(t, "unknown", doc.DocumentName,
-		"DocumentName must be 'unknown' when there is no root component")
-
-	// The document must be valid per the SPDX spec.
-	assert.NoError(t, spdxlib.ValidateDocument(doc))
-
-	// No DESCRIBES relationship should be emitted when there is no root.
-	for _, rel := range doc.Relationships {
-		assert.NotEqual(t, "DESCRIBES", rel.Relationship,
-			"unexpected DESCRIBES relationship when there is no root component")
-	}
-}
 
 func TestMarshaler_normalizeLicenses(t *testing.T) {
 	tests := []struct {
