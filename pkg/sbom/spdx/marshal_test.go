@@ -38,11 +38,31 @@ func annotation(t *testing.T, comment string) spdx.Annotation {
 	}
 }
 
+// bomWithoutRoot returns a BOM that has components but no root component,
+// e.g. an SPDX SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT.
+func bomWithoutRoot() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(&core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Group:   "com.fasterxml.jackson.core",
+		Version: "2.13.4.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "com.fasterxml.jackson.core",
+				Name:      "jackson-databind",
+				Version:   "2.13.4.1",
+			},
+		},
+	})
+	return bom
+}
+
 func TestMarshaler_Marshal(t *testing.T) {
 	testCases := []struct {
 		name        string
 		inputReport types.Report
-		inputBOM    *core.BOM // when set, Marshal is called directly instead of MarshalReport
 		wantSBOM    *spdx.Document
 	}{
 		{
@@ -1486,15 +1506,22 @@ func TestMarshaler_Marshal(t *testing.T) {
 		{
 			// Regression for https://github.com/aquasecurity/trivy/issues/10764:
 			// Marshal must not panic when the BOM has no root component (e.g. an SPDX
-			// SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT).
-			name:     "no root component",
-			inputBOM: core.NewBOM(core.Options{}),
+			// SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT). Components
+			// must still be marshaled and no DESCRIBES relationship must be emitted.
+			name: "no root component",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "empty/path",
+				ArtifactType:  ftypes.TypeFilesystem,
+				BOM:           bomWithoutRoot(),
+			},
 			wantSBOM: &spdx.Document{
-				SPDXVersion:       spdx.Version,
-				DataLicense:       spdx.DataLicense,
-				SPDXIdentifier:    tspdx.DocumentSPDXIdentifier,
+				SPDXVersion:    spdx.Version,
+				DataLicense:    spdx.DataLicense,
+				SPDXIdentifier: tspdx.DocumentSPDXIdentifier,
+				// DocumentName and DocumentNamespace fall back to "unknown" when there is no root.
 				DocumentName:      "unknown",
-				DocumentNamespace: "http://trivy.dev/unknown/unknown-3ff14136-e09f-4df9-80ea-000000000001",
+				DocumentNamespace: "http://trivy.dev/unknown/3ff14136-e09f-4df9-80ea-000000000001",
 				CreationInfo: &spdx.CreationInfo{
 					Creators: []common.Creator{
 						{
@@ -1508,53 +1535,64 @@ func TestMarshaler_Marshal(t *testing.T) {
 					},
 					Created: "2021-08-25T12:20:30Z",
 				},
+				// The component is still marshaled, but no root package and no DESCRIBES relationship are emitted.
+				Packages: []*spdx.Package{
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-a6073b1f888c9899"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "com.fasterxml.jackson.core:jackson-databind",
+						PackageVersion:          "2.13.4.1",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
+					},
+				},
 			},
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
+			// Fake function calculating the hash value
+			h := fnv.New64()
+			hasher := func(v any, _ hashstructure.Format, _ *hashstructure.HashOptions) (uint64, error) {
+				h.Reset()
+
+				var str string
+				switch vv := v.(type) {
+				case *core.Component:
+					str = vv.Name + vv.Version + vv.SrcFile
+					for _, f := range vv.Files {
+						str += f.Path
+					}
+				case spdx.OtherLicense:
+					str = vv.ExtractedText + vv.LicenseName
+				case string:
+					str = vv
+				default:
+					require.Failf(t, "unknown type", "%T", v)
+				}
+
+				if _, err := h.Write([]byte(str)); err != nil {
+					return 0, err
+				}
+
+				return h.Sum64(), nil
+			}
+
 			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 
-			var (
-				spdxDoc *spdx.Document
-				err     error
-			)
-			if tc.inputBOM != nil {
-				// Some test cases exercise the Marshal path directly (e.g. nil-root BOM).
-				marshaler := tspdx.NewMarshaler("0.56.2")
-				spdxDoc, err = marshaler.Marshal(ctx, tc.inputBOM)
-			} else {
-				// Fake function calculating the hash value
-				h := fnv.New64()
-				hasher := func(v any, _ hashstructure.Format, _ *hashstructure.HashOptions) (uint64, error) {
-					h.Reset()
-
-					var str string
-					switch vv := v.(type) {
-					case *core.Component:
-						str = vv.Name + vv.Version + vv.SrcFile
-						for _, f := range vv.Files {
-							str += f.Path
-						}
-					case spdx.OtherLicense:
-						str = vv.ExtractedText + vv.LicenseName
-					case string:
-						str = vv
-					default:
-						require.Failf(t, "unknown type", "%T", v)
-					}
-
-					if _, err := h.Write([]byte(str)); err != nil {
-						return 0, err
-					}
-
-					return h.Sum64(), nil
-				}
-				marshaler := tspdx.NewMarshaler("0.56.2", tspdx.WithHasher(hasher))
-				spdxDoc, err = marshaler.MarshalReport(ctx, tc.inputReport)
-			}
+			marshaler := tspdx.NewMarshaler("0.56.2", tspdx.WithHasher(hasher))
+			spdxDoc, err := marshaler.MarshalReport(ctx, tc.inputReport)
 			require.NoError(t, err)
 
 			assert.NoError(t, spdxlib.ValidateDocument(spdxDoc))
@@ -1562,7 +1600,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 		})
 	}
 }
-
 
 func TestMarshaler_normalizeLicenses(t *testing.T) {
 	tests := []struct {
