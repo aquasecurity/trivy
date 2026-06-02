@@ -6,7 +6,7 @@ on:
 
 jobs:
   build:
-    name: Scan Go vulnerabilities
+    name: Scan Trivy canary image for vulnerabilities
     runs-on: ubuntu-2404-2core
     permissions:
       security-events: write # Required to upload SARIF files to Security tab
