@@ -662,8 +662,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 	assert.Len(t, blocks, 2)
 
 	for _, block := range blocks {
-		attr, parent := block.GetNestedAttribute("rule.apply_server_side_encryption_by_default.kms_master_key_id")
-		assert.Equal(t, "apply_server_side_encryption_by_default", parent.Type())
+		attr := block.GetNestedAttribute("rule.apply_server_side_encryption_by_default.kms_master_key_id")
 		assert.NotNil(t, attr)
 		assert.NotEmpty(t, attr.Value().AsString())
 	}
@@ -1719,7 +1718,7 @@ resource "test_resource" "this" {
 	resources := modules.GetResourcesByType("test_resource")
 	require.Len(t, resources, 1)
 
-	attr, _ := resources[0].GetNestedAttribute("dynamic_block.some_attr")
+	attr := resources[0].GetNestedAttribute("dynamic_block.some_attr")
 	require.NotNil(t, attr)
 
 	assert.Equal(t, "test_value", attr.GetRawValue())
@@ -1944,7 +1943,7 @@ module "invalid" {
 	require.Len(t, resources, 1)
 
 	for _, res := range resources {
-		attr, _ := res.GetNestedAttribute("names")
+		attr := res.GetNestedAttribute("names")
 		require.NotNil(t, attr, res.FullName())
 		assert.Equal(t, []string{"Brooklyn", "Queens"}, attr.GetRawValue())
 	}
@@ -2145,7 +2144,7 @@ output "test_out" {
 	require.Len(t, resources, 2)
 
 	for _, res := range resources {
-		attr, _ := res.GetNestedAttribute("dynamic_block.some_attr")
+		attr := res.GetNestedAttribute("dynamic_block.some_attr")
 		require.NotNil(t, attr, res.FullName())
 		assert.Equal(t, "test_value", attr.GetRawValue())
 	}

@@ -137,11 +137,7 @@ func adaptEndpoints(p *terraform.Block) types.MapValue {
 }
 
 func adaptDefaultTags(p *terraform.Block) aws.DefaultTags {
-	attr, _ := p.GetNestedAttribute("default_tags.tags")
-	if attr.IsNil() {
-		return aws.DefaultTags{}
-	}
-
+	attr := p.GetNestedAttribute("default_tags.tags")
 	return aws.DefaultTags{
 		Metadata: attr.GetMetadata(),
 		Tags:     attr.AsMapValue(),

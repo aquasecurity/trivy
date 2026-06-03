@@ -65,23 +65,13 @@ func getEncryption(block *terraform.Block, a *adapter) s3.Encryption {
 }
 
 func newS3Encryption(root, sseConfgihuration *terraform.Block) s3.Encryption {
+	algoAttr := sseConfgihuration.GetNestedAttribute("rule.apply_server_side_encryption_by_default.sse_algorithm")
+	kmsAttr := sseConfgihuration.GetNestedAttribute("rule.apply_server_side_encryption_by_default.kms_master_key_id")
 	return s3.Encryption{
-		Metadata: root.GetMetadata(),
-		Enabled:  isEncrypted(sseConfgihuration),
-		Algorithm: terraform.MapNestedAttribute(
-			sseConfgihuration,
-			"rule.apply_server_side_encryption_by_default.sse_algorithm",
-			func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.StringValue {
-				return attr.AsStringValue()
-			},
-		),
-		KMSKeyId: terraform.MapNestedAttribute(
-			sseConfgihuration,
-			"rule.apply_server_side_encryption_by_default.kms_master_key_id",
-			func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.StringValue {
-				return attr.AsStringValue()
-			},
-		),
+		Metadata:  root.GetMetadata(),
+		Enabled:   isEncrypted(sseConfgihuration),
+		Algorithm: algoAttr.AsStringValue(),
+		KMSKeyId:  kmsAttr.AsStringValue(),
 	}
 }
 
@@ -245,21 +235,10 @@ func getGrants(block *terraform.Block, a *adapter) []s3.Grant {
 }
 
 func isEncrypted(sseConfgihuration *terraform.Block) iacTypes.BoolValue {
-	return terraform.MapNestedAttribute(
-		sseConfgihuration,
-		"rule.apply_server_side_encryption_by_default.sse_algorithm",
-		func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.BoolValue {
-			if attr.IsNil() || !attr.IsString() {
-				return iacTypes.BoolDefault(false, parent.GetMetadata())
-			}
-			algoVal := attr.Value().AsString()
-			isValidAlgo := slices.Contains(s3types.ServerSideEncryption("").Values(), s3types.ServerSideEncryption(algoVal))
-			return iacTypes.Bool(
-				isValidAlgo,
-				attr.GetMetadata(),
-			)
-		},
-	)
+	attr := sseConfgihuration.GetNestedAttribute("rule.apply_server_side_encryption_by_default.sse_algorithm")
+	algoVal := attr.AsStringValue()
+	isValid := slices.Contains(s3types.ServerSideEncryption("").Values(), s3types.ServerSideEncryption(algoVal.Value()))
+	return iacTypes.Bool(isValid, algoVal.GetMetadata())
 }
 
 func hasLogging(b *terraform.Block) iacTypes.BoolValue {

@@ -448,7 +448,7 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 	return val, nil
 }
 
-func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
+func (b *Block) GetNestedAttribute(name string) *Attribute {
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
@@ -457,16 +457,12 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 	for _, subBlock := range blocks {
 		checkBlock := working.GetBlock(subBlock)
 		if checkBlock.IsNil() {
-			return b.nullAttribute(), working
+			return b.nullAttribute()
 		}
 		working = checkBlock
 	}
 
-	return working.GetAttribute(attrName), working
-}
-
-func MapNestedAttribute[T any](block *Block, path string, f func(attr *Attribute, parent *Block) T) T {
-	return f(block.GetNestedAttribute(path))
+	return working.GetAttribute(attrName)
 }
 
 // LocalName is the name relative to the current module
