@@ -8,6 +8,7 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
@@ -48,6 +49,18 @@ type SarifWriter struct {
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
+
+	// Clock is an injectable time source used to populate SARIF invocation
+	// start/end timestamps. If nil, time.Now (UTC) is used. Tests may set
+	// Clock to a deterministic function.
+	Clock func() time.Time
+}
+
+func (sw *SarifWriter) now() time.Time {
+	if sw.Clock != nil {
+		return sw.Clock()
+	}
+	return time.Now().UTC()
 }
 
 type sarifData struct {
@@ -126,6 +139,8 @@ func pathToFileURI(path string) string {
 }
 
 func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
+	startTime := sw.now()
+
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -268,6 +283,17 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+
+	// Record invocation start/end times so downstream tools (e.g., GitHub Code
+	// Scanning) can deduplicate and timestamp findings. See SARIF 2.1.0 §3.20.
+	endTime := sw.now()
+	sw.run.Invocations = append(sw.run.Invocations,
+		sarif.NewInvocation().
+			WithStartTimeUTC(startTime).
+			WithEndTimeUTC(endTime).
+			WithExecutionSuccess(true),
+	)
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }

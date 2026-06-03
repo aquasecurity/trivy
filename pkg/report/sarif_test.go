@@ -746,6 +746,21 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
+
+			// Each run must record exactly one invocation with both start and end
+			// times set, end >= start, and execution marked successful. Strip the
+			// invocations after asserting them so the rest of the report can be
+			// compared by deep equality against the per-test `want` fixture.
+			for _, run := range result.Runs {
+				require.Len(t, run.Invocations, 1)
+				inv := run.Invocations[0]
+				require.NotNil(t, inv.StartTimeUTC, "startTimeUtc should be set")
+				require.NotNil(t, inv.EndTimeUTC, "endTimeUtc should be set")
+				assert.False(t, inv.EndTimeUTC.Before(*inv.StartTimeUTC), "endTimeUtc should be >= startTimeUtc")
+				require.NotNil(t, inv.ExecutionSuccessful, "executionSuccessful should be set")
+				assert.True(t, *inv.ExecutionSuccessful)
+				run.Invocations = nil
+			}
 			assert.Equal(t, tt.want, result)
 		})
 	}
