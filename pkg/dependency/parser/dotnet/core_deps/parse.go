@@ -17,6 +17,10 @@ import (
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
+// runtimePackPrefix is the name prefix the .NET SDK gives the bundled runtime in a
+// self-contained app's deps.json, e.g. "runtimepack.Microsoft.NETCore.App.Runtime.linux-x64".
+const runtimePackPrefix = "runtimepack."
+
 type dotNetDependencies struct {
 	Libraries     map[string]dotNetLibrary        `json:"libraries"`
 	RuntimeTarget RuntimeTarget                   `json:"runtimeTarget"`
@@ -76,8 +80,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			continue
 		}
 
-		// Skip unsupported library types
-		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") {
+		// Skip unsupported library types.
+		// `runtimepack` carries the bundled .NET runtime in self-contained deployments.
+		isRuntimePack := strings.EqualFold(lib.Type, "runtimepack")
+		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") && !isRuntimePack {
 			continue
 		}
 
@@ -86,6 +92,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
 			continue
+		}
+
+		// Strip the prefix so the runtime matches the advisory DB under the same name
+		// framework-dependent apps already use (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
+		if isRuntimePack {
+			name = strings.TrimPrefix(name, runtimePackPrefix)
 		}
 
 		pkg := ftypes.Package{

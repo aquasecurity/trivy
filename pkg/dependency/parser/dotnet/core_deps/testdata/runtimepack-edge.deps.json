@@ -1,0 +1,66 @@
+{
+    "runtimeTarget": {
+      "name": ".NETCoreApp,Version=v8.0/linux-x64",
+      "signature": ""
+    },
+    "compilationOptions": {},
+    "targets": {
+      ".NETCoreApp,Version=v8.0/linux-x64": {
+        "ExampleApp1/1.0.0": {
+          "dependencies": {
+            "SQLitePCLRaw.lib.e_sqlite3": "2.1.6"
+          },
+          "runtime": {
+            "ExampleApp1.dll": {}
+          }
+        },
+        "SQLitePCLRaw.lib.e_sqlite3/2.1.6": {
+          "runtimeTargets": {
+            "runtimes/linux-x64/native/libe_sqlite3.so": {
+              "rid": "linux-x64",
+              "assetType": "native"
+            }
+          }
+        },
+        "runtimepack.Acme.Custom.Pack/4.5.6": {
+          "runtime": {
+            "Acme.Custom.dll": {}
+          }
+        },
+        "runtimepack.Microsoft.NETCore.App.Runtime.linux-x64/8.0.0": {
+          "runtime": {
+            "System.Private.CoreLib.dll": {
+              "assemblyVersion": "8.0.0.0",
+              "fileVersion": "8.0.23.53103"
+            }
+          }
+        }
+      }
+    },
+    "libraries": {
+      "ExampleApp1/1.0.0": {
+        "type": "project",
+        "serviceable": false,
+        "sha512": ""
+      },
+      "SQLitePCLRaw.lib.e_sqlite3/2.1.6": {
+        "type": "package",
+        "serviceable": true,
+        "sha512": "sha512-abc==",
+        "path": "sqlitepclraw.lib.e_sqlite3/2.1.6",
+        "hashPath": "sqlitepclraw.lib.e_sqlite3.2.1.6.nupkg.sha512"
+      },
+      "runtimepack.Acme.Custom.Pack/4.5.6": {
+        "type": "package",
+        "serviceable": true,
+        "sha512": "sha512-def==",
+        "path": "runtimepack.acme.custom.pack/4.5.6",
+        "hashPath": "runtimepack.acme.custom.pack.4.5.6.nupkg.sha512"
+      },
+      "runtimepack.Microsoft.NETCore.App.Runtime.linux-x64/8.0.0": {
+        "type": "runtimepack",
+        "serviceable": false,
+        "sha512": ""
+      }
+    }
+  }

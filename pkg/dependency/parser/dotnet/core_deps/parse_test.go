@@ -151,6 +151,132 @@ func TestParse(t *testing.T) {
 			wantDeps: nil,
 		},
 		{
+			// Self-contained deployments bundle the runtime into the app's deps.json as
+			// `runtimepack.<name>` libraries. They must be reported with the prefix stripped
+			// so the name matches the advisory DB (Microsoft.NETCore.App.Runtime.<rid>).
+			name: "self-contained with bundled runtime",
+			file: "testdata/self-contained.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 44,
+							EndLine:   48,
+						},
+					},
+				},
+				{
+					ID:           "Newtonsoft.Json/13.0.1",
+					Name:         "Newtonsoft.Json",
+					Version:      "13.0.1",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 49,
+							EndLine:   55,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.AspNetCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.AspNetCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 61,
+							EndLine:   65,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.NETCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 56,
+							EndLine:   60,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "ExampleApp1/1.0.0",
+					DependsOn: []string{"Newtonsoft.Json/13.0.1"},
+				},
+			},
+		},
+		{
+			// Only `runtimepack`-typed libraries get the `runtimepack.` prefix stripped.
+			// A real `package` that ships a native DLL keeps its name, and a (contrived)
+			// `package` whose name merely starts with "runtimepack." must NOT be rewritten.
+			name: "runtimepack prefix is stripped only for runtimepack-typed libs",
+			file: "testdata/runtimepack-edge.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 41,
+							EndLine:   45,
+						},
+					},
+				},
+				{
+					ID:           "SQLitePCLRaw.lib.e_sqlite3/2.1.6",
+					Name:         "SQLitePCLRaw.lib.e_sqlite3",
+					Version:      "2.1.6",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 46,
+							EndLine:   52,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.NETCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 60,
+							EndLine:   64,
+						},
+					},
+				},
+				{
+					ID:           "runtimepack.Acme.Custom.Pack/4.5.6",
+					Name:         "runtimepack.Acme.Custom.Pack",
+					Version:      "4.5.6",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 53,
+							EndLine:   59,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "ExampleApp1/1.0.0",
+					DependsOn: []string{"SQLitePCLRaw.lib.e_sqlite3/2.1.6"},
+				},
+			},
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",
