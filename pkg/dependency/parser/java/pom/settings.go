@@ -3,13 +3,17 @@ package pom
 import (
 	"encoding/xml"
 	"os"
+	"path"
 	"path/filepath"
 	"slices"
+	"strings"
 
 	"github.com/samber/lo"
 	"github.com/samber/lo/mutable"
 	"golang.org/x/net/html/charset"
 )
+
+const trueString = "true"
 
 type Server struct {
 	ID       string `xml:"id"`
@@ -23,11 +27,31 @@ type Profile struct {
 	ActiveByDefault bool            `xml:"activation>activeByDefault"`
 }
 
+type Proxy struct {
+	ID            string `xml:"id"`
+	Active        string `xml:"active"`
+	Protocol      string `xml:"protocol"`
+	Host          string `xml:"host"`
+	Port          string `xml:"port"`
+	Username      string `xml:"username"`
+	Password      string `xml:"password"`
+	NonProxyHosts string `xml:"nonProxyHosts"`
+}
+
+type Mirror struct {
+	ID       string `xml:"id"`
+	Name     string `xml:"name"`
+	URL      string `xml:"url"`
+	MirrorOf string `xml:"mirrorOf"`
+}
+
 type settings struct {
 	LocalRepository string    `xml:"localRepository"`
 	Servers         []Server  `xml:"servers>server"`
 	Profiles        []Profile `xml:"profiles>profile"`
 	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
+	Proxies         []Proxy   `xml:"proxies>proxy"`
+	Mirrors         []Mirror  `xml:"mirrors>mirror"`
 }
 
 func (s settings) effectiveRepositories() []repository {
@@ -46,6 +70,44 @@ func (s settings) effectiveRepositories() []repository {
 	mutable.Reverse(pomRepos)
 
 	return resolvePomRepos(s.Servers, pomRepos)
+}
+
+func (s settings) effectiveProxies(protocol, hostname string) []Proxy {
+	var proxies []Proxy
+	for _, proxy := range s.Proxies {
+		if !proxy.isActive() || !strings.EqualFold(proxy.Protocol, protocol) {
+			continue
+		}
+		if hostname != "" && proxy.isNonProxyHost(hostname) {
+			continue
+		}
+		proxies = append(proxies, proxy)
+	}
+	return proxies
+}
+
+func (p Proxy) isActive() bool {
+	return p.Active == trueString || p.Active == ""
+}
+
+func (p Proxy) isNonProxyHost(host string) bool {
+	if p.NonProxyHosts == "" {
+		return false
+	}
+
+	hosts := strings.SplitSeq(p.NonProxyHosts, "|")
+	for h := range hosts {
+		h = strings.TrimSpace(h)
+		if h == "" {
+			continue
+		}
+
+		matched, err := path.Match(strings.ToLower(h), strings.ToLower(host))
+		if err == nil && matched {
+			return true
+		}
+	}
+	return false
 }
 
 func readSettings() settings {
@@ -82,6 +144,16 @@ func readSettings() settings {
 		})
 		// Merge active profiles
 		s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, globalSettings.ActiveProfiles...))
+
+		// Merge proxies
+		s.Proxies = lo.UniqBy(append(s.Proxies, globalSettings.Proxies...), func(p Proxy) string {
+			return p.ID
+		})
+
+		// Merge mirrors
+		s.Mirrors = lo.UniqBy(append(s.Mirrors, globalSettings.Mirrors...), func(m Mirror) string {
+			return m.ID
+		})
 	}
 
 	return s
@@ -124,5 +196,23 @@ func expandAllEnvPlaceholders(s *settings) {
 	}
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
+	}
+
+	for i, proxy := range s.Proxies {
+		s.Proxies[i].ID = evaluateVariable(proxy.ID, nil, nil)
+		s.Proxies[i].Active = evaluateVariable(proxy.Active, nil, nil)
+		s.Proxies[i].Protocol = evaluateVariable(proxy.Protocol, nil, nil)
+		s.Proxies[i].Host = evaluateVariable(proxy.Host, nil, nil)
+		s.Proxies[i].Port = evaluateVariable(proxy.Port, nil, nil)
+		s.Proxies[i].Username = evaluateVariable(proxy.Username, nil, nil)
+		s.Proxies[i].Password = evaluateVariable(proxy.Password, nil, nil)
+		s.Proxies[i].NonProxyHosts = evaluateVariable(proxy.NonProxyHosts, nil, nil)
+	}
+
+	for i, m := range s.Mirrors {
+		s.Mirrors[i].ID = evaluateVariable(m.ID, nil, nil)
+		s.Mirrors[i].Name = evaluateVariable(m.Name, nil, nil)
+		s.Mirrors[i].URL = evaluateVariable(m.URL, nil, nil)
+		s.Mirrors[i].MirrorOf = evaluateVariable(m.MirrorOf, nil, nil)
 	}
 }

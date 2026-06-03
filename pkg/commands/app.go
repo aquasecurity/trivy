@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/spf13/cobra"
@@ -990,11 +991,11 @@ func NewKubernetesCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	reportFlagGroup.ExitOnEOL = nil // disable '--exit-on-eol'
 	reportFlagGroup.TableMode = nil // disable '--table-mode's
 	compliance := flag.ComplianceFlag.Clone()
-	var compliances string
+	var compliances strings.Builder
 	for _, val := range types.BuiltInK8sCompliances {
-		compliances += fmt.Sprintf("\n  - %s", val)
+		fmt.Fprintf(&compliances, "\n  - %s", val)
 	}
-	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances)
+	compliance.Usage = fmt.Sprintf("%s\nBuilt-in compliance's:%s", compliance.Usage, compliances.String())
 	reportFlagGroup.Compliance = compliance // override usage as the accepted values differ for each subcommand.
 
 	formatFlag := flag.FormatFlag.Clone()

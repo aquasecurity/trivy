@@ -8,14 +8,15 @@ runs:
   using: "composite"
   steps:
     - name: Conditionally label discussions based on category and content
+      uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
       env:
         GH_TOKEN: ${{ github.token }}
-      uses: actions/github-script@v6
+        DISCUSSION_NUM: ${{ inputs.discussion_num }}
       with:
         script: |
           const {detectDiscussionLabels, fetchDiscussion, labelDiscussion } = require('${{ github.action_path }}/helpers.js');
           const config = require('${{ github.action_path }}/config.json');
-          discussionNum = parseInt(${{ inputs.discussion_num }});
+          discussionNum = parseInt(process.env.DISCUSSION_NUM);
           let discussion;
           if (discussionNum > 0) {
               discussion = (await fetchDiscussion(github, context.repo.owner, context.repo.repo, discussionNum)).repository.discussion;

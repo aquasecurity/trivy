@@ -32,6 +32,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pip"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pipenv"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/poetry"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/pylock"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/python/uv"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/bundler"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/ruby/gemspec"

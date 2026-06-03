@@ -126,8 +126,8 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 func (a alpineCmdAnalyzer) parseConfig(apkIndexArchive *apkIndex, config *v1.ConfigFile) (packages []types.Package) {
 	envs := make(map[string]string)
 	for _, env := range config.Config.Env {
-		index := strings.Index(env, "=")
-		envs["$"+env[:index]] = env[index+1:]
+		before, after, _ := strings.Cut(env, "=")
+		envs["$"+before] = after
 	}
 
 	uniqPkgs := make(map[string]types.Package)

@@ -65,7 +65,7 @@ func (m *Manager) Search(ctx context.Context, keyword string) error {
 	}
 
 	var buf bytes.Buffer
-	buf.WriteString(fmt.Sprintf("%-20s %-60s %-20s %s\n", "NAME", "DESCRIPTION", "MAINTAINER", "OUTPUT"))
+	fmt.Fprintf(&buf, "%-20s %-60s %-20s %s\n", "NAME", "DESCRIPTION", "MAINTAINER", "OUTPUT")
 	for _, p := range index.Plugins {
 		if keyword == "" || strings.Contains(p.Name, keyword) || strings.Contains(p.Summary, keyword) {
 			s := fmt.Sprintf("%-20s %-60s %-20s %s\n", truncateString(p.Name, 20),

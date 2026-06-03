@@ -1,6 +1,7 @@
 package gittest
 
 import (
+	"errors"
 	"log/slog"
 	"path/filepath"
 	"runtime"
@@ -25,6 +26,22 @@ func Fixtures() error {
 	if updated, err := target.Path(cloneDir, filePath); err != nil {
 		return err
 	} else if !updated {
+		return nil
+	}
+
+	// Pull the repository if it already exists
+	if repo, err := git.PlainOpen(cloneDir); err == nil {
+		slog.Info("Pulling...", slog.String("url", repoURL))
+		w, err := repo.Worktree()
+		if err != nil {
+			return xerrors.Errorf("error getting worktree: %w", err)
+		}
+		if err = w.Pull(&git.PullOptions{}); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+			return xerrors.Errorf("error pulling repository: %w", err)
+		}
+		if err = repo.Fetch(&git.FetchOptions{Tags: git.AllTags}); err != nil && !errors.Is(err, git.NoErrAlreadyUpToDate) {
+			return xerrors.Errorf("error fetching tags: %w", err)
+		}
 		return nil
 	}
 

@@ -18,7 +18,8 @@ type PyProject struct {
 }
 
 type Project struct {
-	Dependencies Dependencies `toml:"dependencies"`
+	Dependencies         Dependencies            `toml:"dependencies"`
+	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
 }
 
 type Tool struct {
@@ -43,8 +44,15 @@ type Dependencies struct {
 // `project.dependencies` (first priority) or `tool.poetry.dependencies` (if `project.dependencies` is missing)
 func (p PyProject) MainDeps() set.Set[string] {
 	deps := set.New[string]()
-	if p.Project.Dependencies.Set != nil {
-		deps.Append(p.Project.Dependencies.Items()...)
+	if p.Project.Dependencies.Set != nil || p.Project.OptionalDependencies != nil {
+		if p.Project.Dependencies.Set != nil {
+			deps.Append(p.Project.Dependencies.Items()...)
+		}
+		// Add dependencies installed to extras
+		// cf. https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#dependencies-optional-dependencies
+		for _, extraDeps := range p.Project.OptionalDependencies {
+			deps.Append(extraDeps.Items()...)
+		}
 	} else if p.Tool.Poetry.Dependencies.Set != nil {
 		deps.Append(p.Tool.Poetry.Dependencies.Items()...)
 	}
@@ -54,7 +62,7 @@ func (p PyProject) MainDeps() set.Set[string] {
 func (d *Dependencies) UnmarshalTOML(data any) error {
 	switch deps := data.(type) {
 	case map[string]any: // For Poetry v1
-		d.Set = set.New[string](lo.MapToSlice(deps, func(pkgName string, _ any) string {
+		d.Set = set.New(lo.MapToSlice(deps, func(pkgName string, _ any) string {
 			return python.NormalizePkgName(pkgName, true)
 		})...)
 	case []any: // For Poetry v2

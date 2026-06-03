@@ -67,6 +67,80 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path - legacy array of objects license",
+			inputFile: "testdata/legacy_array_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:       "tv4@1.3.0",
+					Name:     "tv4",
+					Version:  "1.3.0",
+					Licenses: []string{"Public Domain", "MIT"},
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "empty array license",
+			inputFile: "testdata/empty_array_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "empty-array-license@1.0.0",
+					Name:    "empty-array-license",
+					Version: "1.0.0",
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "mixed array of objects with empty type",
+			inputFile: "testdata/mixed_array_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:       "mixed-array-license@1.0.0",
+					Name:     "mixed-array-license",
+					Version:  "1.0.0",
+					Licenses: []string{"MIT"},
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "invalid license value (number)",
+			inputFile: "testdata/invalid_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "weird-license@1.0.0",
+					Name:    "weird-license",
+					Version: "1.0.0",
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "null license value",
+			inputFile: "testdata/null_license_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "null-license@1.0.0",
+					Name:    "null-license",
+					Version: "1.0.0",
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
+			name:      "unknown license object",
+			inputFile: "testdata/unknown_license_object_package.json",
+			want: packagejson.Package{
+				Package: ftypes.Package{
+					ID:      "unknown-license-object@1.0.0",
+					Name:    "unknown-license-object",
+					Version: "1.0.0",
+				},
+				Dependencies: make(map[string]string),
+			},
+		},
+		{
 			name:      "happy path - version doesn't exist",
 			inputFile: "testdata/without_version_package.json",
 			want: packagejson.Package{

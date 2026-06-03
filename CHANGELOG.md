@@ -1,5 +1,80 @@
 # Changelog
 
+## [0.71.0](https://github.com/aquasecurity/trivy/compare/v0.70.0...v0.71.0) (2026-06-01)
+
+
+### Features
+
+* add WithDriver and WithProvider options to ospkg detector ([#10740](https://github.com/aquasecurity/trivy/issues/10740)) ([f8a6ddb](https://github.com/aquasecurity/trivy/commit/f8a6ddb45e5d041ac209f3d3732afcdcafb61ef6))
+* **java:** support &lt;mirrors&gt; from settings.xml ([#10692](https://github.com/aquasecurity/trivy/issues/10692)) ([c080ce3](https://github.com/aquasecurity/trivy/commit/c080ce34639b6f22c990f59a3b4f9dd19385d129))
+* **sbom:** support for CycloneDX 1.7 ([#10715](https://github.com/aquasecurity/trivy/issues/10715)) ([04f739e](https://github.com/aquasecurity/trivy/commit/04f739e5244db8bd157eb4a2a2fe2caa8dbfa61f))
+* **seal:** add vendor support for language file detection. ([#10297](https://github.com/aquasecurity/trivy/issues/10297)) ([b08bf6a](https://github.com/aquasecurity/trivy/commit/b08bf6a0a59785ff72900a4a6873f25a9d7b2921))
+* **secret:** add a way to customize skipped folders, files and exts ([#10550](https://github.com/aquasecurity/trivy/issues/10550)) ([e4325b1](https://github.com/aquasecurity/trivy/commit/e4325b18246dc90d2d18bf7e032fe47db89108e5))
+* **secret:** add Azure secret detection rules ([#10562](https://github.com/aquasecurity/trivy/issues/10562)) ([69dcd18](https://github.com/aquasecurity/trivy/commit/69dcd18eff5c810948738644d9a2df79a470f0e0))
+* **secret:** add Maven rules to detect passwords and passphrases in settings.xml and settings-security.xml files ([#10704](https://github.com/aquasecurity/trivy/issues/10704)) ([9ad901d](https://github.com/aquasecurity/trivy/commit/9ad901d510ff1013878818f55a899091efd6e46f))
+* **spdx:** add SHA-512 hash algorithm support to SPDX serializer ([#10719](https://github.com/aquasecurity/trivy/issues/10719)) ([f2a1237](https://github.com/aquasecurity/trivy/commit/f2a12375772a93ab9bd6f754c33378f1c0356a76))
+* **ubuntu:** detect Ubuntu 26.04 LTS ([#10592](https://github.com/aquasecurity/trivy/issues/10592)) ([a61feac](https://github.com/aquasecurity/trivy/commit/a61feac3c558ba9d9f7bee58fb5862d3a1d56fd9))
+
+
+### Bug Fixes
+
+* **cloudformation:** propagate AWS::EC2::Instance MetadataOptions ([#10731](https://github.com/aquasecurity/trivy/issues/10731)) ([ac2f3d7](https://github.com/aquasecurity/trivy/commit/ac2f3d79770b6ae65241fec1a7656e0faa069e84))
+* **image:** correctly reconstruct RUN instructions built without BuildKit ([#10714](https://github.com/aquasecurity/trivy/issues/10714)) ([519eac9](https://github.com/aquasecurity/trivy/commit/519eac97accaa4068a4f81ce94cbdb74a91a7b7f))
+* **java:** surface 429 from a remote Maven repository as a fatal error when scanning pom.xml files ([#10693](https://github.com/aquasecurity/trivy/issues/10693)) ([f8fdb93](https://github.com/aquasecurity/trivy/commit/f8fdb932dd8ef6586bebc467a3ee3b098d040a51))
+* **misconf:** fix rendering of nested values in terraform plan lists ([#10746](https://github.com/aquasecurity/trivy/issues/10746)) ([9c1cf65](https://github.com/aquasecurity/trivy/commit/9c1cf658d461b2bc73ac10317947ab6ce8b2e51e))
+* **misconf:** make identifiers in ignore rules case-insensitive ([#10375](https://github.com/aquasecurity/trivy/issues/10375)) ([a75a468](https://github.com/aquasecurity/trivy/commit/a75a468facbff12c81da00742709c88c0a4ad29d))
+* **misconf:** prevent path traversal in Terraform filesystem functions ([#10664](https://github.com/aquasecurity/trivy/issues/10664)) ([9d91b88](https://github.com/aquasecurity/trivy/commit/9d91b888cf63023e9c09b64259a4c1cea8dfe993))
+* **misconf:** reject nil plays during playbook parsing ([#10273](https://github.com/aquasecurity/trivy/issues/10273)) ([0bc5c6d](https://github.com/aquasecurity/trivy/commit/0bc5c6dfa453aa8866ec7fd27044b2603d77cbcc))
+* **misconf:** skip null cty values in AsMapValue to prevent panic ([#10723](https://github.com/aquasecurity/trivy/issues/10723)) ([f080e1e](https://github.com/aquasecurity/trivy/commit/f080e1ec0986833aa95b94c92bb84f14e1889f9d))
+* **misconf:** skip resources with no after changes ([#10352](https://github.com/aquasecurity/trivy/issues/10352)) ([f099dc4](https://github.com/aquasecurity/trivy/commit/f099dc431dd836adbd4c2ed8d7ed0764b9c86b8c))
+* **nodejs:** handle legacy license formats in npm lockfile parser ([#10684](https://github.com/aquasecurity/trivy/issues/10684)) ([451fd99](https://github.com/aquasecurity/trivy/commit/451fd996c0c29459ab8574ab5b8ab85518495a59))
+* **nodejs:** silently skip subdirectory package.json files with invalid names ([#10609](https://github.com/aquasecurity/trivy/issues/10609)) ([0e4dc66](https://github.com/aquasecurity/trivy/commit/0e4dc6686658c4d29c084bedb7b3a925ab85482c))
+* overwrite OS packages PURLs after overwrite OS ([#10298](https://github.com/aquasecurity/trivy/issues/10298)) ([39a28ed](https://github.com/aquasecurity/trivy/commit/39a28edd7f70f63dd4b48dc6838a16c42d36c8dc))
+* pull instead of clone when test repo already exists ([#10636](https://github.com/aquasecurity/trivy/issues/10636)) ([3a2f7fb](https://github.com/aquasecurity/trivy/commit/3a2f7fb2636189a1f703a509125ee34d5c0b9eaa))
+* **report:** don't produce trailing comma in gitlab.tpl links array ([#10728](https://github.com/aquasecurity/trivy/issues/10728)) ([69e78e2](https://github.com/aquasecurity/trivy/commit/69e78e21598898ca57fe31449570d6979e811009))
+* **secret:** correctly skip secret-scanner config file from scanning ([#10666](https://github.com/aquasecurity/trivy/issues/10666)) ([fc1e46f](https://github.com/aquasecurity/trivy/commit/fc1e46fb0214d32f5b91581ff221a3309ebaa94a))
+
+## [0.70.0](https://github.com/aquasecurity/trivy/compare/v0.69.0...v0.70.0) (2026-04-16)
+
+
+### Features
+
+* **go:** detect version from ELF symbol table for binaries built with -trimpath ([#10197](https://github.com/aquasecurity/trivy/issues/10197)) ([7acb5f6](https://github.com/aquasecurity/trivy/commit/7acb5f6f095a11cb9911af5a0bc03aecc7c88f8f))
+* **java:** add support for proxy configuration from Maven settings.xml ([#10187](https://github.com/aquasecurity/trivy/issues/10187)) ([350fe33](https://github.com/aquasecurity/trivy/commit/350fe3345129f0f341ab80438f66f951b602364a))
+* **misconf:** adapt ARM k8s clusters ([#9696](https://github.com/aquasecurity/trivy/issues/9696)) ([#10125](https://github.com/aquasecurity/trivy/issues/10125)) ([66bdec4](https://github.com/aquasecurity/trivy/commit/66bdec4f6af6100b6ab991ca417b0c801cb5cd80))
+* **misconf:** resolve Azure resources via resource_id ([#10173](https://github.com/aquasecurity/trivy/issues/10173)) ([823f363](https://github.com/aquasecurity/trivy/commit/823f3634ae8f41a17be8695ceabcb8ca52f82a63))
+* **misconf:** support for azurerm_network_interface_security_group_association  ([#10215](https://github.com/aquasecurity/trivy/issues/10215)) ([da94d5f](https://github.com/aquasecurity/trivy/commit/da94d5f38676885264787fe22f3ed8ab42511b2a))
+* **python:** add pylock.toml (PEP 751) parser ([#9632](https://github.com/aquasecurity/trivy/issues/9632)) ([1a72b32](https://github.com/aquasecurity/trivy/commit/1a72b326bba9e0959d5f3b63367bb311f064d795))
+* **python:** add pylock.toml support ([#10137](https://github.com/aquasecurity/trivy/issues/10137)) ([d0a3f63](https://github.com/aquasecurity/trivy/commit/d0a3f63b84e6a8cd9067e85344097f9179c14b0d))
+* **server:** include server version info in JSON output for client/server mode ([#10075](https://github.com/aquasecurity/trivy/issues/10075)) ([4c46d41](https://github.com/aquasecurity/trivy/commit/4c46d418c58c9a070a87b9d3c88966d40e435329))
+* **ubuntu:** add eol data for 25.10 ([#10181](https://github.com/aquasecurity/trivy/issues/10181)) ([2c1f65b](https://github.com/aquasecurity/trivy/commit/2c1f65bdeec62baef45e93f58cc8e5eca7d84d26))
+* **vuln:** skip third-party packages in common Detect function ([#10129](https://github.com/aquasecurity/trivy/issues/10129)) ([d6e6331](https://github.com/aquasecurity/trivy/commit/d6e6331abba28fe22f6d8d3bc36f7821601ff8ad))
+
+
+### Bug Fixes
+
+* **cyclonedx:** include CVSS v4 vulnerability ratings ([#10313](https://github.com/aquasecurity/trivy/issues/10313)) ([2a4dfbf](https://github.com/aquasecurity/trivy/commit/2a4dfbf18a71a17de2c22c02afc5742466f6d799))
+* detected vulnerability fields in azure and mariner detector ([#10275](https://github.com/aquasecurity/trivy/issues/10275)) ([77f5cb5](https://github.com/aquasecurity/trivy/commit/77f5cb5abda49844b936322e85829b256cb4599c))
+* **flag:** validate template file extension ([#10296](https://github.com/aquasecurity/trivy/issues/10296)) ([20458b8](https://github.com/aquasecurity/trivy/commit/20458b836b71b2bed72d31ebba1ba9572333dcfd))
+* handle Go 1.26 GOEXPERIMENT version format change ([#10351](https://github.com/aquasecurity/trivy/issues/10351)) ([f207ec6](https://github.com/aquasecurity/trivy/commit/f207ec693b23b6d5114dbf3b309903689b93073d))
+* **java:** Disable overwriting exclusions ([#10088](https://github.com/aquasecurity/trivy/issues/10088)) ([9a3e0a8](https://github.com/aquasecurity/trivy/commit/9a3e0a845db68a79f4fd0e71f5cb7d8ca3976bbe))
+* **misconf:** apply check aliases when filtering results via .trivyignore ([#10112](https://github.com/aquasecurity/trivy/issues/10112)) ([b775a1b](https://github.com/aquasecurity/trivy/commit/b775a1b63cd7afeda8dec2c1c8b8b6d422418bc6))
+* **misconf:** initialize custom annotation field if empty ([#10123](https://github.com/aquasecurity/trivy/issues/10123)) ([0f0d6db](https://github.com/aquasecurity/trivy/commit/0f0d6dbff4825f7b0ea7744b2229e0157af52972))
+* **python:** handle multiple version specifiers in requirements.txt ([#10361](https://github.com/aquasecurity/trivy/issues/10361)) ([4cf4498](https://github.com/aquasecurity/trivy/commit/4cf44985c58575850138c9cc3780b201dfad7c09))
+* **python:** nil pointer dereference with optional poetry groups without dependencies ([#10359](https://github.com/aquasecurity/trivy/issues/10359)) ([12ab3ce](https://github.com/aquasecurity/trivy/commit/12ab3cee257f89b3b180c38bc2d765dc4c7918a1))
+* remove os.Stdout from wazero module config ([#10403](https://github.com/aquasecurity/trivy/issues/10403)) ([bda9710](https://github.com/aquasecurity/trivy/commit/bda9710eb0c4c7d5ba1bc60bbaa06d43dc3c523a))
+* **report:** set correct sarif ROOTPATH uri when scanning a git repository ([#10366](https://github.com/aquasecurity/trivy/issues/10366)) ([e5da6de](https://github.com/aquasecurity/trivy/commit/e5da6deee9904d00cb4fd5ea1f67e8a1711ec8dd))
+* **sbom:** add NOASSERTION for licenseDeclared/licenseConcluded in SPDX non-library packages ([#10368](https://github.com/aquasecurity/trivy/issues/10368)) ([33b9d8e](https://github.com/aquasecurity/trivy/commit/33b9d8ec318bb1f4081371a0a5fd46071080aef1))
+* **sbom:** preserve Red Hat BuildInfo when scanning SBOMs without layer info ([#10378](https://github.com/aquasecurity/trivy/issues/10378)) ([e9e9e8c](https://github.com/aquasecurity/trivy/commit/e9e9e8c6bd914b4d4802107bbf8d0c40bad1dd57))
+* **server:** exclude JavaDB and CheckBundle from /version endpoint ([#10100](https://github.com/aquasecurity/trivy/issues/10100)) ([b9a8d2d](https://github.com/aquasecurity/trivy/commit/b9a8d2d80adc47bf9f48e13c2738b099c907518b))
+* update PhotonOS feed URL ([#10122](https://github.com/aquasecurity/trivy/issues/10122)) ([fa195b4](https://github.com/aquasecurity/trivy/commit/fa195b4d11d946b0212900b2a153a1abf381e8a2))
+* use Development category for GoReleaser discussions ([#10530](https://github.com/aquasecurity/trivy/issues/10530)) ([7ee3e1e](https://github.com/aquasecurity/trivy/commit/7ee3e1eeb0faf69a08837a3f42678e5e7f314286))
+
+
+### Performance Improvements
+
+* **plugin:** optimize directory traversal by replacing filepath.Walk with filepath.WalkDir ([#10325](https://github.com/aquasecurity/trivy/issues/10325)) ([d7fb355](https://github.com/aquasecurity/trivy/commit/d7fb3558db610dc08ef1c3e22dd37082180368b2))
+
 ## [0.69.0](https://github.com/aquasecurity/trivy/compare/v0.68.1...v0.69.0) (2026-01-30)
 
 
@@ -51,7 +126,7 @@
 * **rust:** add cargo workspace members glob support ([#10032](https://github.com/aquasecurity/trivy/issues/10032)) ([d2dc46a](https://github.com/aquasecurity/trivy/commit/d2dc46ad60178371ff9e1099bc8cbe838e1190ad))
 * **rust:** implement version inheritance for Cargo mono repos ([#10011](https://github.com/aquasecurity/trivy/issues/10011)) ([47d3103](https://github.com/aquasecurity/trivy/commit/47d3103c50d455df02c299d0f3e954b61e77fc8e))
 * **secret:** improve word boundary detection for Hugging Face tokens ([#10046](https://github.com/aquasecurity/trivy/issues/10046)) ([cdb28ee](https://github.com/aquasecurity/trivy/commit/cdb28eeeb176684e5b62b1bafbaf52e4cea79d4a))
-* use canonical SPDX license IDs from embeded licenses.json ([#10053](https://github.com/aquasecurity/trivy/issues/10053)) ([c233735](https://github.com/aquasecurity/trivy/commit/c233735b023974c0a5c321c370c7f3ebe5f20eec))
+* use canonical SPDX license IDs from embedded licenses.json ([#10053](https://github.com/aquasecurity/trivy/issues/10053)) ([c233735](https://github.com/aquasecurity/trivy/commit/c233735b023974c0a5c321c370c7f3ebe5f20eec))
 * **vex:** add CVE-2025-66564 as not_affected into Trivy VEX file ([#9924](https://github.com/aquasecurity/trivy/issues/9924)) ([335cc99](https://github.com/aquasecurity/trivy/commit/335cc993fa76cddf2e263cb8e09d0cbbb0b98a09))
 * **vuln:** skip vulns detection for CentOS Stream family without scan failure ([#9964](https://github.com/aquasecurity/trivy/issues/9964)) ([b46cde0](https://github.com/aquasecurity/trivy/commit/b46cde0ebe651cfad461fcde510cfe8b847391c3))
 
@@ -81,7 +156,7 @@
 * add ReportID field to scan reports ([#9670](https://github.com/aquasecurity/trivy/issues/9670)) ([fc976be](https://github.com/aquasecurity/trivy/commit/fc976bea480599e52365d306ad8d6031718d4303))
 * allow ignoring findings by type in Rego ([#9578](https://github.com/aquasecurity/trivy/issues/9578)) ([c638fc6](https://github.com/aquasecurity/trivy/commit/c638fc646c3c0d56ea50c830a31609badb477c5e))
 * **aws:** Add support for dualstack ECR endpoints ([#9862](https://github.com/aquasecurity/trivy/issues/9862)) ([e74e2b1](https://github.com/aquasecurity/trivy/commit/e74e2b1b0a8ca124b1299969abc9196789f30e8b))
-* **cli:** Add trivy cloud suppport ([#9637](https://github.com/aquasecurity/trivy/issues/9637)) ([8e6a7ff](https://github.com/aquasecurity/trivy/commit/8e6a7ff670c64106d4dea6972ac3f6228f9c6269))
+* **cli:** Add trivy cloud support ([#9637](https://github.com/aquasecurity/trivy/issues/9637)) ([8e6a7ff](https://github.com/aquasecurity/trivy/commit/8e6a7ff670c64106d4dea6972ac3f6228f9c6269))
 * **db:** enable concurrent access to vulnerability database ([#9750](https://github.com/aquasecurity/trivy/issues/9750)) ([d70d994](https://github.com/aquasecurity/trivy/commit/d70d994d8882a6e7a8b0c9a9b08524a2cae32ea4))
 * **dotnet:** add dependency graph support for .deps.json files ([#9726](https://github.com/aquasecurity/trivy/issues/9726)) ([18c0ee8](https://github.com/aquasecurity/trivy/commit/18c0ee86f318c7d2b1dab979370f62dd00b73979))
 * **flag:** add `--cacert` flag ([#9781](https://github.com/aquasecurity/trivy/issues/9781)) ([6048173](https://github.com/aquasecurity/trivy/commit/604817326683cdf5628550540aef63b97affc3b0))
@@ -156,9 +231,9 @@
 
 ### Bug Fixes
 
-* **aws:** use `BuildableClient` insead of `xhttp.Client` ([#9436](https://github.com/aquasecurity/trivy/issues/9436)) ([fa6f1bf](https://github.com/aquasecurity/trivy/commit/fa6f1bfecfb68c29ad4684a6fb5d86948c7d6887))
+* **aws:** use `BuildableClient` instead of `xhttp.Client` ([#9436](https://github.com/aquasecurity/trivy/issues/9436)) ([fa6f1bf](https://github.com/aquasecurity/trivy/commit/fa6f1bfecfb68c29ad4684a6fb5d86948c7d6887))
 * close file descriptors and pipes on error paths ([#9536](https://github.com/aquasecurity/trivy/issues/9536)) ([a4cbd6a](https://github.com/aquasecurity/trivy/commit/a4cbd6a1380b7b4dc650a312ec4e5bc47501f674))
-* **db:** Dowload database when missing but metadata still exists ([#9393](https://github.com/aquasecurity/trivy/issues/9393)) ([92ebc7e](https://github.com/aquasecurity/trivy/commit/92ebc7e4d72424c17d93c54e5f24891710c85a60))
+* **db:** Download database when missing but metadata still exists ([#9393](https://github.com/aquasecurity/trivy/issues/9393)) ([92ebc7e](https://github.com/aquasecurity/trivy/commit/92ebc7e4d72424c17d93c54e5f24891710c85a60))
 * **k8s:** disable parallel traversal with fs cache for k8s images ([#9534](https://github.com/aquasecurity/trivy/issues/9534)) ([c0c7a6b](https://github.com/aquasecurity/trivy/commit/c0c7a6bf1b92c868ed44172b3cd15c51667b8a6e))
 * **misconf:** handle tofu files in module detection ([#9486](https://github.com/aquasecurity/trivy/issues/9486)) ([bfd2f6b](https://github.com/aquasecurity/trivy/commit/bfd2f6ba697c223d60a7378283293d8e1fc8a8fe))
 * **misconf:** strip build metadata suffixes from image history ([#9498](https://github.com/aquasecurity/trivy/issues/9498)) ([c938806](https://github.com/aquasecurity/trivy/commit/c9388069a4325a9f8bc53bc8a82ff46d84d06847))
@@ -193,7 +268,7 @@
 * **misconf:** use correct field log_bucket instead of target_bucket in gcp bucket ([#9296](https://github.com/aquasecurity/trivy/issues/9296)) ([04ad0c4](https://github.com/aquasecurity/trivy/commit/04ad0c4fc2926a92e9e9ec11bb8eae826ed95827))
 * persistent flag option typo ([#9374](https://github.com/aquasecurity/trivy/issues/9374)) ([6e99dd3](https://github.com/aquasecurity/trivy/commit/6e99dd304c7fad8213489039e7ca42909383b5ff))
 * **plugin:** don't remove plugins when updating index.yaml file ([#9358](https://github.com/aquasecurity/trivy/issues/9358)) ([5f067ac](https://github.com/aquasecurity/trivy/commit/5f067ac15e5c609283bef26a211746a279b6b5d0))
-* **python:** impove package name normalization  ([#9290](https://github.com/aquasecurity/trivy/issues/9290)) ([1473e88](https://github.com/aquasecurity/trivy/commit/1473e88b74ca269691de7827e045703612b90050))
+* **python:** improve package name normalization  ([#9290](https://github.com/aquasecurity/trivy/issues/9290)) ([1473e88](https://github.com/aquasecurity/trivy/commit/1473e88b74ca269691de7827e045703612b90050))
 * **repo:** preserve RepoMetadata on FS cache hit ([#9389](https://github.com/aquasecurity/trivy/issues/9389)) ([4f2a44e](https://github.com/aquasecurity/trivy/commit/4f2a44ea45bed1e842bb2072077da67ec7e744ac))
 * **repo:** sanitize git repo URL before inserting into report metadata ([#9391](https://github.com/aquasecurity/trivy/issues/9391)) ([1ac9b1f](https://github.com/aquasecurity/trivy/commit/1ac9b1f07cea429cc122bf9721e8909c649549cf))
 * **sbom:** add support for `file` component type of `CycloneDX` ([#9372](https://github.com/aquasecurity/trivy/issues/9372)) ([aa7cf43](https://github.com/aquasecurity/trivy/commit/aa7cf4387c5e82c1f629ac14cd6a35b48fc95983))
@@ -249,7 +324,7 @@
 
 ### Features
 
-* **cli:** add version constraints to annoucements ([#9023](https://github.com/aquasecurity/trivy/issues/9023)) ([19efa9f](https://github.com/aquasecurity/trivy/commit/19efa9fd372242d2ec582a248e9e6573d2caef00))
+* **cli:** add version constraints to announcements ([#9023](https://github.com/aquasecurity/trivy/issues/9023)) ([19efa9f](https://github.com/aquasecurity/trivy/commit/19efa9fd372242d2ec582a248e9e6573d2caef00))
 * **java:** dereference all maven settings.xml env placeholders ([#9024](https://github.com/aquasecurity/trivy/issues/9024)) ([5aade69](https://github.com/aquasecurity/trivy/commit/5aade698c71450badf8db028be61e12ec85c6248))
 * **misconf:** add OpenTofu file extension support ([#8747](https://github.com/aquasecurity/trivy/issues/8747)) ([57801d0](https://github.com/aquasecurity/trivy/commit/57801d0324384d990889ba39d856c881e5b8b070))
 * **misconf:** normalize CreatedBy for buildah and legacy docker builder ([#8953](https://github.com/aquasecurity/trivy/issues/8953)) ([65e155f](https://github.com/aquasecurity/trivy/commit/65e155fdaf0ad02ec82f00a004427f126faf65ed))
@@ -308,7 +383,7 @@
 * **cli:** don't use allow values for `--compliance` flag ([#8881](https://github.com/aquasecurity/trivy/issues/8881)) ([35e8889](https://github.com/aquasecurity/trivy/commit/35e88890c3c201b3eb11f95376172e57bf44df4b))
 * filter all files when processing files installed from package managers ([#8842](https://github.com/aquasecurity/trivy/issues/8842)) ([6ebde88](https://github.com/aquasecurity/trivy/commit/6ebde88dbcaf22f25932bad4844b3c9eaca90560))
 * **java:** exclude dev dependencies in gradle lockfile ([#8803](https://github.com/aquasecurity/trivy/issues/8803)) ([8995838](https://github.com/aquasecurity/trivy/commit/8995838e8d184ee9178d5b52d2d3fa9b4e403015))
-* julia parser panicing ([#8883](https://github.com/aquasecurity/trivy/issues/8883)) ([be8c7b7](https://github.com/aquasecurity/trivy/commit/be8c7b796dbe36d8dc3889e0bdea23336de9a1ab))
+* julia parser panicking ([#8883](https://github.com/aquasecurity/trivy/issues/8883)) ([be8c7b7](https://github.com/aquasecurity/trivy/commit/be8c7b796dbe36d8dc3889e0bdea23336de9a1ab))
 * **julia:** add `Relationship` field support ([#8939](https://github.com/aquasecurity/trivy/issues/8939)) ([22f040f](https://github.com/aquasecurity/trivy/commit/22f040f94790060132c7b0a635f44c35d5a35fb6))
 * **k8s:** use in-memory cache backend during misconfig scanning ([#8873](https://github.com/aquasecurity/trivy/issues/8873)) ([fe12771](https://github.com/aquasecurity/trivy/commit/fe127715e505d753e0d878d52c5f280cdc326b76))
 * **misconf:** check if for-each is known when expanding dyn block ([#8808](https://github.com/aquasecurity/trivy/issues/8808)) ([5706603](https://github.com/aquasecurity/trivy/commit/570660314698472ab831a7e0d55044e0b1e9c6c0))
@@ -381,7 +456,7 @@
 * **fs:** check postAnalyzers for StaticPaths ([#8543](https://github.com/aquasecurity/trivy/issues/8543)) ([c228307](https://github.com/aquasecurity/trivy/commit/c22830766e8cf1532f20198864757161eed6fda4))
 * **k8s:** show report for `--report all` ([#8613](https://github.com/aquasecurity/trivy/issues/8613)) ([dbb6f28](https://github.com/aquasecurity/trivy/commit/dbb6f288712240ef5dec59952e33b73e3a6d5b06))
 * **misconf:** add ephemeral block type to config schema ([#8513](https://github.com/aquasecurity/trivy/issues/8513)) ([41512f8](https://github.com/aquasecurity/trivy/commit/41512f846e75bae73984138ad7b3d03284a53f19))
-* **misconf:** Check values wholly prior to evalution ([#8604](https://github.com/aquasecurity/trivy/issues/8604)) ([ad58cf4](https://github.com/aquasecurity/trivy/commit/ad58cf4457ebef80ff0bc4c113d4ab4c86a9fe56))
+* **misconf:** Check values wholly prior to evaluation ([#8604](https://github.com/aquasecurity/trivy/issues/8604)) ([ad58cf4](https://github.com/aquasecurity/trivy/commit/ad58cf4457ebef80ff0bc4c113d4ab4c86a9fe56))
 * **misconf:** do not skip loading documents from subdirectories ([#8526](https://github.com/aquasecurity/trivy/issues/8526)) ([de7eb13](https://github.com/aquasecurity/trivy/commit/de7eb13938f2709983a27ab3f59dbfac3fb74651))
 * **misconf:** do not use cty.NilVal for non-nil values ([#8567](https://github.com/aquasecurity/trivy/issues/8567)) ([400a79c](https://github.com/aquasecurity/trivy/commit/400a79c2c693e462ad2e1cfc21305ef13d2ec224))
 * **misconf:** identify the chart file exactly by name ([#8590](https://github.com/aquasecurity/trivy/issues/8590)) ([ba77dbe](https://github.com/aquasecurity/trivy/commit/ba77dbe5f952d67bbbbc0f43543d5f34135bc280))
@@ -478,7 +553,7 @@
 * **sbom:** scan results of SBOMs generated from container images are missing layers ([#7635](https://github.com/aquasecurity/trivy/issues/7635)) ([f9fceb5](https://github.com/aquasecurity/trivy/commit/f9fceb58bf64657dee92302df1ed97e597e474c9))
 * **sbom:** use root package for `unknown` dependencies (if exists) ([#8104](https://github.com/aquasecurity/trivy/issues/8104)) ([7558df7](https://github.com/aquasecurity/trivy/commit/7558df7c227c769235e5441fbdd3f9f7efb1ff84))
 * **spdx:** use the `hasExtractedLicensingInfos` field for licenses that are not listed in the SPDX ([#8077](https://github.com/aquasecurity/trivy/issues/8077)) ([aec8885](https://github.com/aquasecurity/trivy/commit/aec8885bc7f7e3c5a2a68214dca9aff28accd122))
-* **suse:** SUSE - update OSType constants and references for compatility ([#8236](https://github.com/aquasecurity/trivy/issues/8236)) ([ae28398](https://github.com/aquasecurity/trivy/commit/ae283985c926ca828b25b69ad0338008be31e5fe))
+* **suse:** SUSE - update OSType constants and references for compatibility ([#8236](https://github.com/aquasecurity/trivy/issues/8236)) ([ae28398](https://github.com/aquasecurity/trivy/commit/ae283985c926ca828b25b69ad0338008be31e5fe))
 * Updated twitter icon ([#7772](https://github.com/aquasecurity/trivy/issues/7772)) ([2c41ac8](https://github.com/aquasecurity/trivy/commit/2c41ac83a95e9347605d36f483171a60ffce0fa2))
 * wasm module test ([#8099](https://github.com/aquasecurity/trivy/issues/8099)) ([2200f38](https://github.com/aquasecurity/trivy/commit/2200f3846d675c64ab9302af43224d663a67c944))
 
@@ -510,7 +585,7 @@
 * **aws:** change CPU and Memory type of ContainerDefinition to a string ([#7995](https://github.com/aquasecurity/trivy/issues/7995)) ([aeeba70](https://github.com/aquasecurity/trivy/commit/aeeba70d15c11443d9fe7c26f90fc7d9dcc7f92c))
 * **cli:** Handle empty ignore files more gracefully ([#7962](https://github.com/aquasecurity/trivy/issues/7962)) ([4cfb2a9](https://github.com/aquasecurity/trivy/commit/4cfb2a97b27923182ab45c178544542ec65981d4))
 * **debian:** infinite loop ([#7928](https://github.com/aquasecurity/trivy/issues/7928)) ([d982e6a](https://github.com/aquasecurity/trivy/commit/d982e6ab89967629f71ec09100cdc61e30a27c63))
-* **fs:** add missing defered Cleanup() call to post analyzer fs ([#7882](https://github.com/aquasecurity/trivy/issues/7882)) ([ab32297](https://github.com/aquasecurity/trivy/commit/ab32297e0a8220a427fa330025f8625281e02275))
+* **fs:** add missing deferred Cleanup() call to post analyzer fs ([#7882](https://github.com/aquasecurity/trivy/issues/7882)) ([ab32297](https://github.com/aquasecurity/trivy/commit/ab32297e0a8220a427fa330025f8625281e02275))
 * Improve version comparisons when build identifiers are present ([#7873](https://github.com/aquasecurity/trivy/issues/7873)) ([eda4d76](https://github.com/aquasecurity/trivy/commit/eda4d7660d8908705bc08a6edc55d8144d02806a))
 * **k8s:** check all results for vulnerabilities ([#7946](https://github.com/aquasecurity/trivy/issues/7946)) ([797b36f](https://github.com/aquasecurity/trivy/commit/797b36fbad90b8e7f04e16e2cf08d6bdc0255ac7))
 * **misconf:** do not erase variable type for child modules ([#7941](https://github.com/aquasecurity/trivy/issues/7941)) ([de3b7ea](https://github.com/aquasecurity/trivy/commit/de3b7ea24c282bce22ce9cacb49a43d8d90e2bde))
@@ -591,7 +666,7 @@
 * allow access to '..' in mapfs ([#7575](https://github.com/aquasecurity/trivy/issues/7575)) ([a8fbe46](https://github.com/aquasecurity/trivy/commit/a8fbe46119adbd89f827a75c75b9e97d392f1842))
 * **db:** check `DownloadedAt` for `trivy-java-db` ([#7592](https://github.com/aquasecurity/trivy/issues/7592)) ([13ef3e7](https://github.com/aquasecurity/trivy/commit/13ef3e7d62ba2bcb3a04d7b44f79b1299674b480))
 * **java:** use `dependencyManagement` from root/child pom's for dependencies from parents ([#7497](https://github.com/aquasecurity/trivy/issues/7497)) ([5442949](https://github.com/aquasecurity/trivy/commit/54429497e7d6a87eac236771d4efb8a5a7faaac5))
-* **license:** stop spliting a long license text ([#7336](https://github.com/aquasecurity/trivy/issues/7336)) ([4926da7](https://github.com/aquasecurity/trivy/commit/4926da79de901fba73819d71845ec0355b68ae0f))
+* **license:** stop splitting a long license text ([#7336](https://github.com/aquasecurity/trivy/issues/7336)) ([4926da7](https://github.com/aquasecurity/trivy/commit/4926da79de901fba73819d71845ec0355b68ae0f))
 * **misconf:** Disable deprecated checks by default ([#7632](https://github.com/aquasecurity/trivy/issues/7632)) ([82e2adc](https://github.com/aquasecurity/trivy/commit/82e2adc6f8e68d0cc0021031170c2adb60d213ba))
 * **misconf:** disable DS016 check for image history analyzer ([#7540](https://github.com/aquasecurity/trivy/issues/7540)) ([de40df9](https://github.com/aquasecurity/trivy/commit/de40df9408d6d856a3ad384ec9f086edce3aa382))
 * **misconf:** escape all special sequences ([#7558](https://github.com/aquasecurity/trivy/issues/7558)) ([ea0cf03](https://github.com/aquasecurity/trivy/commit/ea0cf0379aff0348fde87356dab37947800fc1b6))
@@ -648,7 +723,7 @@
 ### Bug Fixes
 
 * **aws:** handle ECR repositories in different regions ([#6217](https://github.com/aquasecurity/trivy/issues/6217)) ([feaef96](https://github.com/aquasecurity/trivy/commit/feaef9699df5d8ca399770e701a59d7c0ff979a3))
-* **flag:** incorrect behavior for deprected flag `--clear-cache` ([#7281](https://github.com/aquasecurity/trivy/issues/7281)) ([2a0e529](https://github.com/aquasecurity/trivy/commit/2a0e529c36057b572119815af59c28e4790034ca))
+* **flag:** incorrect behavior for deprecated flag `--clear-cache` ([#7281](https://github.com/aquasecurity/trivy/issues/7281)) ([2a0e529](https://github.com/aquasecurity/trivy/commit/2a0e529c36057b572119815af59c28e4790034ca))
 * **helm:** explicitly define `kind` and `apiVersion` of `volumeClaimTemplate` element ([#7362](https://github.com/aquasecurity/trivy/issues/7362)) ([da4ebfa](https://github.com/aquasecurity/trivy/commit/da4ebfa1a741f3f8b0b43289b4028afe763f7d43))
 * **java:** Return error when trying to find a remote pom to avoid segfault ([#7275](https://github.com/aquasecurity/trivy/issues/7275)) ([49d5270](https://github.com/aquasecurity/trivy/commit/49d5270163e305f88fedcf50412973736e69dc69))
 * **license:** add license handling to JUnit template ([#7409](https://github.com/aquasecurity/trivy/issues/7409)) ([f80183c](https://github.com/aquasecurity/trivy/commit/f80183c1139b21bb95bc64e216358f4a76001a65))

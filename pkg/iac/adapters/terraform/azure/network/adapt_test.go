@@ -209,6 +209,79 @@ func Test_adaptWatcherLog(t *testing.T) {
 	}
 }
 
+func Test_AdaptNetworkInterface_AssociationSecurityGroup(t *testing.T) {
+	tests := []struct {
+		name      string
+		terraform string
+		expected  int
+	}{
+		{
+			name: "security group via association resource",
+			terraform: `
+resource "azurerm_network_security_group" "example" {
+	name = "example-nsg"
+}
+
+resource "azurerm_network_interface" "example" {
+	name                = "example-nic"
+	location            = "eastus"
+	resource_group_name = "example-rg"
+
+	ip_configuration {
+		name                          = "primary"
+		subnet_id                     = "subnet-primary-id"
+		private_ip_address_allocation = "Dynamic"
+	}
+}
+
+resource "azurerm_network_interface_security_group_association" "example" {
+	network_interface_id      = azurerm_network_interface.example.id
+	network_security_group_id = azurerm_network_security_group.example.id
+}
+`,
+			expected: 1,
+		},
+		{
+			name: "security group deduplicated when legacy and association both set",
+			terraform: `
+resource "azurerm_network_security_group" "example" {
+	name = "example-nsg"
+}
+
+resource "azurerm_network_interface" "example" {
+	name                      = "example-nic"
+	location                  = "eastus"
+	resource_group_name       = "example-rg"
+	network_security_group_id = azurerm_network_security_group.example.id
+
+	ip_configuration {
+		name                          = "primary"
+		subnet_id                     = "subnet-primary-id"
+		private_ip_address_allocation = "Dynamic"
+	}
+}
+
+resource "azurerm_network_interface_security_group_association" "example" {
+	network_interface_id      = azurerm_network_interface.example.id
+	network_security_group_id = azurerm_network_security_group.example.id
+}
+`,
+			expected: 1,
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			nics := modules.GetResourcesByType("azurerm_network_interface")
+			require.Len(t, nics, 1)
+
+			adapted := AdaptNetworkInterface(nics[0], modules)
+			require.Len(t, adapted.SecurityGroups, test.expected)
+		})
+	}
+}
+
 func TestLines(t *testing.T) {
 	src := `
 	resource "azurerm_network_security_group" "example" {

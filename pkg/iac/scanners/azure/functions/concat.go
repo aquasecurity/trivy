@@ -11,7 +11,7 @@ func Concat(args ...any) any {
 	case string:
 		var sb strings.Builder
 		for _, arg := range args {
-			sb.WriteString(fmt.Sprintf("%v", arg))
+			fmt.Fprintf(&sb, "%v", arg)
 		}
 		return sb.String()
 	case any:

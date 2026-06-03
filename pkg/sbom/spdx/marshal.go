@@ -36,6 +36,7 @@ const (
 	CreatorTool            = "trivy"
 	noneField              = "NONE"
 	noAssertionField       = "NOASSERTION"
+	noRoot                 = "unknown"
 )
 
 const (
@@ -134,21 +135,31 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 	timeNow := clock.Now(ctx).UTC().Format(time.RFC3339)
 
 	root := bom.Root()
-	pkgDownloadLocation := m.packageDownloadLocation(root)
 
 	// Component ID => SPDX ID
 	packageIDs := make(map[uuid.UUID]spdx.ElementID)
 
-	// Root package contains OS, OS packages, language-specific packages and so on.
-	rootPkg, err := m.rootSPDXPackage(root, timeNow, pkgDownloadLocation)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to generate a root package: %w", err)
+	// pkgDownloadLocation defaults to NONE when there is no root component.
+	pkgDownloadLocation := noneField
+	rootDocumentName := noRoot
+	if root != nil {
+		rootDocumentName = root.Name
+		pkgDownloadLocation = m.packageDownloadLocation(root)
+
+		// Root package contains OS, OS packages, language-specific packages and so on.
+		rootPkg, err := m.rootSPDXPackage(root, timeNow, pkgDownloadLocation)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to generate a root package: %w", err)
+		}
+		packages = append(packages, rootPkg)
+		relationShips = append(relationShips,
+			m.spdxRelationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
+		)
+		packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
+	} else {
+		// Since we reuse the scanned SBOM, the root component can be empty.
+		m.logger.Debug("Root component not found")
 	}
-	packages = append(packages, rootPkg)
-	relationShips = append(relationShips,
-		m.spdxRelationShip(DocumentSPDXIdentifier, rootPkg.PackageSPDXIdentifier, RelationShipDescribe),
-	)
-	packageIDs[root.ID()] = rootPkg.PackageSPDXIdentifier
 
 	var files []*spdx.File
 	var otherLicenses []*spdx.OtherLicense
@@ -224,8 +235,8 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		SPDXVersion:       spdx.Version,
 		DataLicense:       spdx.DataLicense,
 		SPDXIdentifier:    DocumentSPDXIdentifier,
-		DocumentName:      root.Name,
-		DocumentNamespace: getDocumentNamespace(root),
+		DocumentName:      rootDocumentName,
+		DocumentNamespace: rootDocumentNamespace(root),
 		CreationInfo: &spdx.CreationInfo{
 			Creators: []common.Creator{
 				{
@@ -277,9 +288,12 @@ func (m *Marshaler) rootSPDXPackage(root *core.Component, timeNow, pkgDownloadLo
 	}
 
 	return &spdx.Package{
-		PackageName:               root.Name,
-		PackageSPDXIdentifier:     elementID(camelCase(string(root.Type)), pkgID),
-		PackageDownloadLocation:   pkgDownloadLocation,
+		PackageName:             root.Name,
+		PackageSPDXIdentifier:   elementID(camelCase(string(root.Type)), pkgID),
+		PackageDownloadLocation: pkgDownloadLocation,
+		// Licenses are only available for library packages, not for root packages.
+		PackageLicenseConcluded:   noAssertionField,
+		PackageLicenseDeclared:    noAssertionField,
 		Annotations:               m.spdxAnnotations(root, timeNow),
 		PackageExternalReferences: externalReferences,
 		PrimaryPackagePurpose:     pkgPurpose,
@@ -405,7 +419,7 @@ func (m *Marshaler) spdxAnnotations(c *core.Component, timeNow string) []spdx.An
 func (m *Marshaler) spdxLicense(c *core.Component) (string, []*spdx.OtherLicense) {
 	// Only library components contain licenses
 	if c.Type != core.TypeLibrary {
-		return "", nil
+		return noAssertionField, nil
 	}
 	if len(c.Licenses) == 0 {
 		return noAssertionField, nil
@@ -504,10 +518,13 @@ func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
 			alg = spdx.SHA1
 		case digest.SHA256:
 			alg = spdx.SHA256
+		case digest.SHA512:
+			alg = spdx.SHA512
 		case digest.MD5:
 			alg = spdx.MD5
 		default:
-			return nil
+			m.logger.Warn("Unsupported hash algorithm", log.String("algorithm", string(alg)))
+			continue
 		}
 		checksums = append(checksums, spdx.Checksum{
 			Algorithm: alg,
@@ -622,7 +639,10 @@ func elementID(elementType, pkgID string) spdx.ElementID {
 	return spdx.ElementID(fmt.Sprintf("%s-%s", elementType, pkgID))
 }
 
-func getDocumentNamespace(root *core.Component) string {
+func rootDocumentNamespace(root *core.Component) string {
+	if root == nil {
+		return fmt.Sprintf("%s/%s/%s", DocumentNamespace, noRoot, uuid.New().String())
+	}
 	return fmt.Sprintf("%s/%s/%s-%s",
 		DocumentNamespace,
 		string(root.Type),

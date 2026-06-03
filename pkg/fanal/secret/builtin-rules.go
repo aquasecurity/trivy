@@ -71,6 +71,8 @@ var (
 	CategoryDocker               = types.SecretRuleCategory("Docker")
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
+	CategoryAzure                = types.SecretRuleCategory("Azure")
+	CategoryMaven                = types.SecretRuleCategory("Maven")
 )
 
 // Reusable regex patterns
@@ -854,5 +856,124 @@ var builtinRules = []Rule{
 		Severity: "HIGH",
 		Regex:    MustCompile(`ThisTokenIsNotSoSecretChangeIt|ThisEzPlatformTokenIsNotSoSecret_PleaseChangeIt`),
 		Keywords: []string{"TokenIsNotSoSecret"},
+	},
+	{
+		ID:              "azure-storage-account-key",
+		Category:        CategoryAzure,
+		Title:           "Azure Storage Account Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)AccountKey\s*=\s*(?P<secret>[A-Za-z0-9+/]{86}==)`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"AccountKey"},
+	},
+	{
+		ID:              "azure-sas-token",
+		Category:        CategoryAzure,
+		Title:           "Azure Shared Access Signature Token",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`sv=\d{4}-\d{2}-\d{2}(?:[&;][a-z]+=[^&\s'"]*){1,12}[&;]sig=(?P<secret>[A-Za-z0-9%+/=]{40,})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sig=", "sv="},
+	},
+	{
+		ID:              "azure-devops-pat",
+		Category:        CategoryAzure,
+		Title:           "Azure DevOps Personal Access Token",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)(?:azure[_\-]?devops|ado)[_\-]?(?:pat|token|personal.?access.?token)\s*[:=]\s*["']?(?P<secret>[a-z2-7]{52})["']?`),
+		SecretGroupName: "secret",
+		Keywords: []string{
+			"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token",
+		},
+	},
+	{
+		ID:              "azure-entra-client-secret",
+		Category:        CategoryAzure,
+		Title:           "Azure Entra ID Client Secret",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?:[^a-zA-Z0-9_~.\-]|\A)(?P<secret>[a-zA-Z0-9_~.\-]{3}8Q~[a-zA-Z0-9_~.\-]{34})(?:[^a-zA-Z0-9_~.\-]|\z)`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"8Q~"},
+	},
+	{
+		ID:              "azure-container-registry-credential",
+		Category:        CategoryAzure,
+		Title:           "Azure Container Registry Credential",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?P<secret>[A-Za-z0-9+/]{52}JQQJ99C[A-Z]ACYeBjFEqg7NAAA[A-Z]AZCR[A-Za-z0-9+/]{4})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ACYeBjFEqg7NAAA"},
+	},
+	{
+		ID:              "azure-container-registry-password",
+		Category:        CategoryAzure,
+		Title:           "Azure Container Registry Password",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)azurecr\.io[^\n]{0,100}(?:password|pwd)\s*[:=]\s*["']?(?P<secret>[a-zA-Z0-9+/]{32})["']?`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"azurecr.io"},
+	},
+	{
+		ID:              "azure-app-config-connection-string",
+		Category:        CategoryAzure,
+		Title:           "Azure App Configuration Connection String",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`(?i)Endpoint\s*=\s*https://[a-zA-Z0-9\-]+\.azconfig\.io\s*;\s*Id\s*=\s*[a-zA-Z0-9+/=:\-]+\s*;\s*Secret\s*=\s*(?P<secret>[a-zA-Z0-9+/=~]{32,88})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"azconfig.io"},
+	},
+	{
+		ID:              "azure-ai-services-key",
+		Category:        CategoryAzure,
+		Title:           "Azure AI Services Key",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?P<secret>[A-Za-z0-9+/]{52}JQQJ99C[A-Z][A-Za-z0-9+/]{7}XJ3w3[A-Za-z0-9+/]{4}ACOG[A-Za-z0-9+/]{4})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"XJ3w3"},
+	},
+	// Maven secrets for settings.xml and settings-security.xml — common storage for
+	// repository/server credentials baked into images.
+	//
+	// Path matches any settings.xml on the filesystem (not anchored to ~/.m2 or
+	// /etc/maven) because Maven settings ship in many locations and a narrower
+	// filter would miss legitimate cases. The XML tag combined with file name is
+	// already specific enough to keep false positives low.
+	//
+	// `password` and `passphrase` exclude `{` from the secret value, which skips
+	// both Maven-encrypted values (`{...}`, see
+	// plexus-cipher.DefaultPlexusCipher#ENCRYPTED_STRING_PATTERN) and Maven
+	// property substitution (`${env.X}`, `${prop.Y}`). Encrypted values are
+	// useless without the master from settings-security.xml (detected by a
+	// separate rule), and property placeholders are references rather than
+	// literal secrets.
+	{
+		ID:              "maven-settings-password",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*password\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*password\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"password"},
+	},
+	{
+		ID:              "maven-settings-passphrase",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml passphrase",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*passphrase\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*passphrase\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"passphrase"},
+	},
+	{
+		ID:              "maven-settings-security-master",
+		Category:        CategoryMaven,
+		Title:           "Maven settings-security.xml master password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*master\s*>\s*(?P<secret>[^<\s][^<]+[^<\s])\s*<\s*/\s*master\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings-security\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"master"},
 	},
 }

@@ -75,14 +75,14 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v2.4.0"
+	const version = "v2.12.2"
 	bin := filepath.Join(GOBIN, "golangci-lint")
 	if exists(bin) && t.matchGolangciLintVersion(bin, version) {
 		return nil
 	}
 	// TODO: use `go install tool`
 	// cf. https://golangci-lint.run/welcome/install/#install-from-sources
-	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b %s %s", GOBIN, version)
+	command := fmt.Sprintf("curl -sfL https://raw.githubusercontent.com/golangci/golangci-lint/main/install.sh | sh -s -- -b %s %s", GOBIN, version)
 	return sh.Run("bash", "-c", command)
 }
 
@@ -340,7 +340,7 @@ func (t Test) UpdateVMGolden() error {
 
 // E2e runs E2E tests using testscript framework
 func (t Test) E2e() error {
-	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "./e2e/...")
+	return sh.RunWithV(ENV, "go", "test", "-v", "-tags=e2e", "-timeout=30m", "./e2e/...")
 }
 
 type Lint mg.Namespace
@@ -348,19 +348,13 @@ type Lint mg.Namespace
 // Run runs linters
 func (l Lint) Run() error {
 	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
-	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration"); err != nil {
-		return err
-	}
-	return sh.RunWithV(ENV, "modernize", "./...")
+	return sh.RunWithV(ENV, "golangci-lint", "run", "--build-tags=integration")
 }
 
 // Fix auto fixes linters
 func (l Lint) Fix() error {
 	mg.Deps(Tool{}.GolangciLint, Tool{}.Install)
-	if err := sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration"); err != nil {
-		return err
-	}
-	return sh.RunWithV(ENV, "modernize", "-fix", "./...")
+	return sh.RunWithV(ENV, "golangci-lint", "run", "--fix", "--build-tags=integration")
 }
 
 // Fmt formats Go code

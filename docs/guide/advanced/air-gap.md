@@ -80,3 +80,11 @@ There's no way to leverage Maven Central in a network-restricted environment, bu
 
 Trivy [checks for updates](../configuration/others.md#check-for-updates) and [collects usage telemetry](../advanced/telemetry.md) by connecting to the following domain: `https://check.trivy.dev`.
 Connectivity with this domain is entirely optional and is not necessary for the normal operation of Trivy.
+
+To prevent Trivy from connecting to `check.trivy.dev`, disable both the version check and telemetry collection explicitly:
+
+```bash
+trivy image --skip-version-check --disable-telemetry <image>
+```
+
+Note that these are two independent features controlled by separate flags — using only one of them is not sufficient to prevent all connections to this domain.

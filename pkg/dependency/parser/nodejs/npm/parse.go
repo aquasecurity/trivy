@@ -39,17 +39,19 @@ type Dependency struct {
 }
 
 type Package struct {
-	Name                 string            `json:"name"`
-	Version              string            `json:"version"`
-	License              string            `json:"license"`
-	Dependencies         map[string]string `json:"dependencies"`
-	OptionalDependencies map[string]string `json:"optionalDependencies"`
-	DevDependencies      map[string]string `json:"devDependencies"`
-	PeerDependencies     map[string]string `json:"peerDependencies"`
-	Resolved             string            `json:"resolved"`
-	Dev                  bool              `json:"dev"`
-	Link                 bool              `json:"link"`
-	Workspaces           any               `json:"workspaces"`
+	Name    string `json:"name"`
+	Version string `json:"version"`
+	// License is reused from packagejson because npm copies this field from package.json.
+	// Modern npm versions normalize it, but legacy lockfiles still contain object/array shapes.
+	License              packagejson.License `json:"license"`
+	Dependencies         map[string]string   `json:"dependencies"`
+	OptionalDependencies map[string]string   `json:"optionalDependencies"`
+	DevDependencies      map[string]string   `json:"devDependencies"`
+	PeerDependencies     map[string]string   `json:"peerDependencies"`
+	Resolved             string              `json:"resolved"`
+	Dev                  bool                `json:"dev"`
+	Link                 bool                `json:"link"`
+	Workspaces           any                 `json:"workspaces"`
 	xjson.Location
 }
 
@@ -141,18 +143,15 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 			sort.Sort(savedPkg.Locations)
 
 			// If for some reason license is missing in savedPkg, but exists in the current pkg, add it.
-			if len(savedPkg.Licenses) == 0 && pkg.License != "" {
-				savedPkg.Licenses = []string{pkg.License}
+			if licenses := pkg.License.Names(); len(savedPkg.Licenses) == 0 && len(licenses) > 0 {
+				savedPkg.Licenses = licenses
 			}
 
 			pkgs[pkgID] = savedPkg
 			continue
 		}
 
-		var licenses []string
-		if pkg.License != "" {
-			licenses = []string{pkg.License}
-		}
+		licenses := pkg.License.Names()
 
 		newPkg := ftypes.Package{
 			ID:                 pkgID,
@@ -269,8 +268,8 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 	//    - "node_modules/body-parser/node_modules/debug/node_modules/ms"
 	//    - "node_modules/body-parser/node_modules/ms"
 	//    - "node_modules/ms"
-	for i := len(paths) - 1; i >= 0; i-- {
-		if paths[i] != nodeModulesDir {
+	for i, v := range slices.Backward(paths) {
+		if v != nodeModulesDir {
 			continue
 		}
 		modulePath := joinPaths(paths[:i+1]...)

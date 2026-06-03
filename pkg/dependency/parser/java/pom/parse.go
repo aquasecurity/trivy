@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"os"
@@ -27,6 +28,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/types"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
@@ -50,6 +52,7 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	return func(opts *options) {
 		u, _ := url.Parse(repoURL)
 		opts.defaultRepo = repository{
+			id:              mavenCentralRepoID,
 			url:             *u,
 			releaseEnabled:  releaseEnabled,
 			snapshotEnabled: snapshotEnabled,
@@ -57,11 +60,20 @@ func WithDefaultRepo(repoURL string, releaseEnabled, snapshotEnabled bool) optio
 	}
 }
 
-func WithSettingsRepos(repoURLs []string, releaseEnabled, snapshotEnabled bool) option {
+// SettingsRepo is a repository injected via WithSettingsRepos.
+// ID is needed so that <mirror> rules like <mirrorOf>my-repo</mirrorOf> can
+// match by exact repository id; wildcard and external:* match without it.
+type SettingsRepo struct {
+	ID  string
+	URL string
+}
+
+func WithSettingsRepos(repos []SettingsRepo, releaseEnabled, snapshotEnabled bool) option {
 	return func(opts *options) {
-		opts.settingsRepos = xslices.Map(repoURLs, func(repoURL string) repository {
-			u, _ := url.Parse(repoURL)
+		opts.settingsRepos = xslices.Map(repos, func(r SettingsRepo) repository {
+			u, _ := url.Parse(r.URL)
 			return repository{
+				id:              r.ID,
 				url:             *u,
 				releaseEnabled:  releaseEnabled,
 				snapshotEnabled: snapshotEnabled,
@@ -78,6 +90,8 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
+	mirrors         []mirror
+	httpClient      *http.Client
 }
 
 func NewParser(filePath string, opts ...option) *Parser {
@@ -103,6 +117,33 @@ func NewParser(filePath string, opts ...option) *Parser {
 		settings:    o.settingsRepos,
 	}
 
+	var httpOpts xhttp.Options
+	if len(s.Proxies) > 0 {
+		httpOpts.Proxy = func(req *http.Request) (*url.URL, error) {
+			protocol := req.URL.Scheme
+			proxies := s.effectiveProxies(protocol, req.URL.Hostname())
+			// No Maven proxy -> fallback to environment
+			if len(proxies) == 0 {
+				return http.ProxyFromEnvironment(req)
+			}
+			// proxy retrieves the first active proxy matching the requested protocol.
+			// Maven evaluates proxies in order and uses the first one that matches,
+			// allowing for protocol-specific proxy configuration (e.g., http, https).
+			proxy := proxies[0]
+
+			proxyURL := &url.URL{
+				Scheme: proxy.Protocol,
+				Host:   net.JoinHostPort(proxy.Host, proxy.Port),
+			}
+			if proxy.Username != "" && proxy.Password != "" {
+				proxyURL.User = url.UserPassword(proxy.Username, proxy.Password)
+			}
+			return proxyURL, nil
+		}
+	}
+
+	tr := xhttp.NewTransport(httpOpts)
+
 	return &Parser{
 		logger:          log.WithPrefix("pom"),
 		rootPath:        filepath.Clean(filePath),
@@ -111,7 +152,29 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
+		mirrors:         resolveMirrors(s.Mirrors, s.Servers),
+		httpClient: &http.Client{
+			Transport: tr.Build(),
+		},
 	}
+}
+
+// mirrorFor returns a mirrored repository for repo if one of the configured
+// mirrors matches; otherwise repo is returned unchanged. The first matching
+// mirror wins — Maven does not chain mirrors.
+func (p *Parser) mirrorFor(repo repository) repository {
+	for _, m := range p.mirrors {
+		if !m.matches(repo.id, &repo.url) {
+			continue
+		}
+		return repository{
+			id:              m.id,
+			url:             m.url,
+			releaseEnabled:  repo.releaseEnabled,
+			snapshotEnabled: repo.snapshotEnabled,
+		}
+	}
+	return repo
 }
 
 func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -748,11 +811,24 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		return nil, xerrors.New("offline mode")
 	}
 
+	seen := set.New[string]()
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
 	// 3. default remoteRepository (Maven Central for Release repository)
 	for _, repo := range slices.Concat(p.remoteRepos.settings, pomRepos, []repository{p.remoteRepos.defaultRepo}) {
+		// Apply <mirrors> from settings.xml so that settings/pom-declared/default
+		// repositories are all routed through a matching mirror at request time.
+		repo = p.mirrorFor(repo)
+
+		// After mirrorFor different source repositories may collapse to the same URL
+		// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
+		// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
+		if seen.Contains(repo.url.String()) {
+			continue
+		}
+		seen.Append(repo.url.String())
+
 		// Skip Release only repositories for snapshot artifacts and vice versa
 		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
 			continue
@@ -808,8 +884,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 		return "", nil
 	}
 
-	client := xhttp.Client()
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return "", err
@@ -819,6 +894,9 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return "", rateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return "", nil
@@ -847,8 +925,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 		return nil, nil
 	}
 
-	client := xhttp.Client()
-	resp, err := client.Do(req)
+	resp, err := p.httpClient.Do(req)
 	if err != nil {
 		if shouldReturnError(err) {
 			return nil, err
@@ -858,6 +935,9 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	}
 	defer resp.Body.Close()
 
+	if resp.StatusCode == http.StatusTooManyRequests {
+		return nil, rateLimitError(req, resp)
+	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
 		return nil, nil
@@ -931,6 +1011,33 @@ func isDirectory(path string) (bool, error) {
 	return fileInfo.IsDir(), err
 }
 
+// shouldReturnError reports whether err should abort POM resolving.
+// context.DeadlineExceeded and any *types.UserError stop the resolving to
+// avoid producing a report with incomplete information; the error is then
+// propagated up the stack.
 func shouldReturnError(err error) bool {
-	return errors.Is(err, context.DeadlineExceeded)
+	if errors.Is(err, context.DeadlineExceeded) {
+		return true
+	}
+	var ue *types.UserError
+	return errors.As(err, &ue)
+}
+
+// rateLimitError builds a user-facing error for a 429 response from a remote Maven
+// repository. Rate limits are typically per-IP and apply to all subsequent requests
+// (including cached ones), so continuing the scan is pointless until the block clears.
+func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
+	var ra string
+	if v := resp.Header.Get("Retry-After"); v != "" {
+		ra = fmt.Sprintf(" Retry-After: %s.", v)
+	}
+	return &types.UserError{
+		Message: fmt.Sprintf(
+			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
+				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
+				"To avoid this, populate the local Maven cache before scanning "+
+				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
+			req.URL.Redacted(), ra,
+		),
+	}
 }

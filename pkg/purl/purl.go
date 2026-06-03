@@ -8,7 +8,6 @@ import (
 	cn "github.com/google/go-containerregistry/pkg/name"
 	version "github.com/knqyf263/go-rpm-version"
 	"github.com/package-url/packageurl-go"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -60,7 +59,7 @@ func FromString(s string) (*PackageURL, error) {
 		p.Qualifiers = nil
 	}
 
-	return lo.ToPtr(PackageURL(p)), nil
+	return new(PackageURL(p)), nil
 }
 
 // nolint: gocyclo
@@ -463,7 +462,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeComposer
 	case ftypes.CondaPkg, ftypes.CondaEnv:
 		return packageurl.TypeConda
-	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry, ftypes.Uv:
+	case ftypes.PythonPkg, ftypes.Pip, ftypes.Pipenv, ftypes.Poetry, ftypes.Uv, ftypes.PyLock:
 		return packageurl.TypePyPi
 	case ftypes.GoBinary, ftypes.GoModule:
 		return packageurl.TypeGolang

@@ -31,7 +31,7 @@ You can interactively view these schemas with the [Trivy Schema Explorer](https:
 
 
 ## Example
-As mentioned earlier, amongst other built-in schemas, Trivy offers a built in-schema for scanning Dockerfiles. It is available [here](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)
+As mentioned earlier, amongst other built-in schemas, Trivy offers a built-in schema for scanning Dockerfiles. It is available [here](https://github.com/aquasecurity/trivy/tree/main/pkg/iac/rego/schemas)
 Without input schemas, a check would be as follows:
 
 !!! example
@@ -175,6 +175,6 @@ If the schema is specified in the check metadata and is in the directory specifi
     If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
 
 !!! tip
-    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma seperated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+    It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma-separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
 
 

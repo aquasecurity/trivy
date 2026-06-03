@@ -114,24 +114,24 @@ func defaultIgnorers(ids []string) map[string]Ignorer {
 	}
 }
 
-// MatchPattern checks if the pattern string matches the input pattern.
+// MatchPattern checks if the pattern matches the input (case-insensitive).
 // The wildcard '*' in the pattern matches any sequence of characters.
 func MatchPattern(input, pattern string) bool {
-	matched, err := regexp.MatchString(regexpFromPattern(pattern), input)
-	return err == nil && matched
+	return doMatchPattern(input, pattern, true)
 }
 
-func regexpFromPattern(pattern string) string {
-	parts := strings.Split(pattern, "*")
-	if len(parts) == 1 {
-		return "^" + pattern + "$"
+// MatchPatternCaseSensitive is like MatchPattern but performs a case-sensitive match.
+func MatchPatternCaseSensitive(input, pattern string) bool {
+	return doMatchPattern(input, pattern, false)
+}
+
+func doMatchPattern(input, pattern string, caseInsensitive bool) bool {
+	prefix := ""
+	if caseInsensitive {
+		prefix = "(?i)"
 	}
-	var sb strings.Builder
-	for i, literal := range parts {
-		if i > 0 {
-			sb.WriteString(".*")
-		}
-		sb.WriteString(regexp.QuoteMeta(literal))
-	}
-	return "^" + sb.String() + "$"
+	// TODO: compile and cache the regex for better performance
+	re := prefix + "^" + strings.ReplaceAll(regexp.QuoteMeta(pattern), "\\*", ".*") + "$"
+	matched, err := regexp.MatchString(re, input)
+	return err == nil && matched
 }

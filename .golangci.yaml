@@ -21,9 +21,6 @@ linters:
     errcheck:
       check-type-assertions: true
       check-blank: true
-    goconst:
-      min-len: 3
-      min-occurrences: 3
     gocritic:
       disabled-checks:
         - appendAssign
@@ -49,28 +46,34 @@ linters:
     gocyclo:
       # Next highest complexity candidate: ApplyLayers in pkg/fanal/applier/docker.go (score: 28)
       min-complexity: 20
-    gomodguard:
+    gomodguard_v2:
       blocked:
-        modules:
-          - github.com/hashicorp/go-version:
-              recommendations:
-                - github.com/aquasecurity/go-version
-              reason: "`aquasecurity/go-version` is designed for our use-cases"
-          - github.com/Masterminds/semver:
-              recommendations:
-                - github.com/aquasecurity/go-version
-              reason: "`aquasecurity/go-version` is designed for our use-cases"
-          - github.com/liamg/memoryfs:
-              recommendations:
-                - github.com/aquasecurity/trivy/pkg/mapfs
+        - module: github.com/hashicorp/go-version
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/Masterminds/semver
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/liamg/memoryfs
+          recommendations:
+            - github.com/aquasecurity/trivy/pkg/mapfs
     gosec:
       excludes:
         - G101
         - G114
         - G115
+        - G117 # Potential exposure of secrets in values marshaled by JSON/YAML/XML/TOML
+        - G118 # Context propagation failures that can cause goroutine/resource leaks
+        - G122 # filepath.Walk/WalkDir symlink TOCTOU race risks
         - G204
         - G304
         - G402
+        - G703 # Path traversal via taint analysis
+        - G704 # SSRF via taint analysis
+        - G705 # XSS via taint analysis
+        - G709 # Unsafe deserialization of untrusted data via taint analysis
     govet:
       disable:
         - shadow
@@ -92,6 +95,8 @@ linters:
       sprintf1: false
       # Optimizes into strings concatenation.
       strconcat: false
+      # Optimizes string concatenation in a loop.
+      concat-loop: false
     revive:
       max-open-files: 2048
       # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
@@ -143,10 +148,9 @@ linters:
   enable:
     - bodyclose
     - depguard
-    - goconst
     - gocritic
     - gocyclo
-    - gomodguard
+    - gomodguard_v2
     - gosec
     - govet
     - ineffassign
@@ -159,6 +163,7 @@ linters:
     - unused
     - usestdlibvars
     - usetesting
+    - modernize
 
   exclusions:
     generated: lax
@@ -167,7 +172,6 @@ linters:
     rules:
       - path: ".*_test.go$"
         linters:
-          - goconst
           - gosec
           - unused
       - path: ".*_test.go$"
@@ -186,9 +190,6 @@ linters:
         linters:
           - gocritic
         text: "importShadow:"
-      - linters:
-          - goconst
-        text: "string `each` has 3 occurrences, make it a constant" # FIXME
     presets:
       - comments
       - common-false-positives
@@ -197,7 +198,7 @@ linters:
     warn-unused: true
 
 run:
-  go: "1.25"
+  go: "1.26"
   timeout: 30m
 
 formatters:

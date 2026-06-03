@@ -4,7 +4,7 @@ import (
 	"reflect"
 )
 
-var converterInterface = reflect.TypeOf((*Converter)(nil)).Elem()
+var converterInterface = reflect.TypeFor[Converter]()
 
 func anonymousToRego(inputValue reflect.Value) any {
 
@@ -24,7 +24,7 @@ func anonymousToRego(inputValue reflect.Value) any {
 		return returns[0].Interface()
 	}
 
-	for inputValue.Type().Kind() == reflect.Ptr {
+	for inputValue.Type().Kind() == reflect.Pointer {
 		if inputValue.IsNil() {
 			return nil
 		}

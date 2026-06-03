@@ -76,7 +76,7 @@ func sanitize(s string) string {
 }
 
 func (b *builder) readProperty(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-	if inputType.Kind() == reflect.Ptr {
+	if inputType.Kind() == reflect.Pointer {
 		inputType = inputType.Elem()
 	}
 
@@ -164,7 +164,7 @@ func (b *builder) readProperty(name string, parent, inputType reflect.Type, inde
 	return nil, nil
 }
 
-var converterInterface = reflect.TypeOf((*convert.Converter)(nil)).Elem()
+var converterInterface = reflect.TypeFor[convert.Converter]()
 
 func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
 
@@ -183,7 +183,7 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 
 	if inputType.Implements(converterInterface) ||
 		inputType.String() == "types.Metadata" {
-		if inputType.Kind() == reflect.Ptr {
+		if inputType.Kind() == reflect.Pointer {
 			inputType = inputType.Elem()
 		}
 		returns := reflect.New(inputType).MethodByName("ToRego").Call(nil)
@@ -192,9 +192,7 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 		}
 	} else {
 
-		for i := 0; i < inputType.NumField(); i++ {
-
-			field := inputType.Field(i)
+		for field := range inputType.Fields() {
 			prop, err := b.readProperty(field.Name, inputType, field.Type, indent+1)
 			if err != nil {
 				return nil, err
@@ -257,7 +255,7 @@ func (b *builder) readRego(def *Property, name string, parent, typ reflect.Type,
 			child := &Property{
 				Properties: make(map[string]Property),
 			}
-			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeOf(v), v, indent+1); err != nil {
+			if err := b.readRego(child, k, reflect.TypeOf(raw), reflect.TypeFor[string](), v, indent+1); err != nil {
 				return err
 			}
 			def.Properties[k] = *child

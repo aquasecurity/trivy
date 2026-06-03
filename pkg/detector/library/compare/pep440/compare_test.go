@@ -15,9 +15,10 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 		advisory       dbTypes.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name           string
+		allowLocalSpec bool
+		args           args
+		want           bool
 	}{
 		{
 			name: "happy path",
@@ -105,10 +106,53 @@ func TestPep440Comparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			// Without AllowLocalSpecifier, the local segment is stripped from the candidate version,
+			// so "4.2.8+sp1" matches "== 4.2.8" and is incorrectly treated as vulnerable.
+			name:           "without AllowLocalSpecifier: local segment ignored, version matches base constraint",
+			allowLocalSpec: false,
+			args: args{
+				currentVersion: "4.2.8+sp1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"== 4.2.8"},
+					PatchedVersions:    []string{"== 4.2.9"},
+				},
+			},
+			want: true,
+		},
+		{
+			// With AllowLocalSpecifier, the local segment is compared strictly,
+			// so "4.2.8+sp999" does not fall in ">= sp1, < sp999" and is correctly not vulnerable.
+			name:           "with AllowLocalSpecifier: patched version not vulnerable",
+			allowLocalSpec: true,
+			args: args{
+				currentVersion: "4.2.8+sp999",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 4.2.8+sp1, < 4.2.8+sp999"},
+					PatchedVersions:    []string{"4.2.8+sp999"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:           "with AllowLocalSpecifier: vulnerable version matched by local range",
+			allowLocalSpec: true,
+			args: args{
+				currentVersion: "4.2.8+sp1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">= 4.2.8+sp1, < 4.2.8+sp999"},
+					PatchedVersions:    []string{"4.2.8+sp999"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := pep440.Comparer{}
+			var c pep440.Comparer
+			if tt.allowLocalSpec {
+				c = pep440.NewComparer(pep440.AllowLocalSpecifier())
+			}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

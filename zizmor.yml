@@ -1,0 +1,11 @@
+rules:
+  # TODO: Add explicit `permissions:` blocks to all jobs and re-enable this rule.
+  # Each job should declare only the minimum required permissions.
+  # See: https://docs.zizmor.sh/audits/#excessive-permissions
+  excessive-permissions:
+    disable: true
+
+  # GitHub environments are not currently used, so secrets are accessed outside of them.
+  # See: https://docs.zizmor.sh/audits/#secrets-outside-env
+  secrets-outside-env:
+    disable: true

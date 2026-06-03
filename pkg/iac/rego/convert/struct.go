@@ -11,12 +11,12 @@ type metadataProvider interface {
 	GetMetadata() types.Metadata
 }
 
-var metadataInterface = reflect.TypeOf((*metadataProvider)(nil)).Elem()
+var metadataInterface = reflect.TypeFor[metadataProvider]()
 
 func StructToRego(inputValue reflect.Value) map[string]any {
 
 	// make sure we have a struct literal
-	for inputValue.Type().Kind() == reflect.Ptr || inputValue.Type().Kind() == reflect.Interface {
+	for inputValue.Type().Kind() == reflect.Pointer || inputValue.Type().Kind() == reflect.Interface {
 		if inputValue.IsNil() {
 			return nil
 		}

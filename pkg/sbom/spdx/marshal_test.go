@@ -38,6 +38,27 @@ func annotation(t *testing.T, comment string) spdx.Annotation {
 	}
 }
 
+// bomWithoutRoot returns a BOM that has components but no root component,
+// e.g. an SPDX SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT.
+func bomWithoutRoot() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(&core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Group:   "com.fasterxml.jackson.core",
+		Version: "2.13.4.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "com.fasterxml.jackson.core",
+				Name:      "jackson-databind",
+				Version:   "2.13.4.1",
+			},
+		},
+	})
+	return bom
+}
+
 func TestMarshaler_Marshal(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -189,6 +210,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -199,6 +222,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "app/subproject/Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -212,7 +237,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Category: tspdx.CategoryPackageManager,
 								RefType:  tspdx.RefTypePurl,
-								Locator:  "pkg:oci/rails@sha256%3Aa27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
+								Locator:  "pkg:oci/rails@sha256:a27fd8080b517143cbbbab9dfb7c8571c40d67d534bbdee55bd6c473f432b177?arch=arm64&repository_url=index.docker.io%2Flibrary%2Frails",
 							},
 						},
 						Annotations: []spdx.Annotation{
@@ -224,7 +249,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-b8d4663e6d412e7"),
@@ -325,6 +352,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -480,7 +509,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 									DiffID: "sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488",
 								},
 								FilePath: "tools/project-doe/specifications/actionpack.gemspec",
-								Digest:   "sha1:413f98442c83808042b5d1d2611a346b999bdca5",
+								Digest:   "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a", // Changed for tests
 							},
 						},
 					},
@@ -516,7 +545,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 							annotation(t, "SchemaVersion: 2"),
 							annotation(t, "Size: 1024"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeContainer,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeContainer,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 					{
 						PackageSPDXIdentifier:   spdx.ElementID("Package-40c4059fe08523bf"),
@@ -567,7 +598,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 						FilesAnalyzed:         true,
 						PackageVerificationCode: &spdx.PackageVerificationCode{
-							Value: "688d98e7e5660b879fd1fc548af8c0df3b7d785a",
+							Value: "da39a3ee5e6b4b0d3255bfef95601890afd80709",
 						},
 					},
 					{
@@ -601,6 +632,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageName:             "centos",
 						PackageVersion:          "8.3.2011",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeOS,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: os-pkgs"),
 							annotation(t, "Type: centos"),
@@ -613,8 +646,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						FileName:           "tools/project-doe/specifications/actionpack.gemspec",
 						Checksums: []spdx.Checksum{
 							{
-								Algorithm: spdx.SHA1,
-								Value:     "413f98442c83808042b5d1d2611a346b999bdca5",
+								Algorithm: spdx.SHA512,
+								Value:     "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
 							},
 						},
 					},
@@ -666,7 +699,6 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Relationship: "CONTAINS",
 					},
 				},
-
 				OtherLicenses: nil,
 				Annotations:   nil,
 				Reviews:       nil,
@@ -744,6 +776,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "Gemfile.lock",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: bundler"),
@@ -754,6 +788,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -809,7 +845,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -903,6 +941,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "pom.xml",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: pom"),
@@ -937,7 +977,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1072,7 +1114,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1174,7 +1218,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Files: []*spdx.File{
@@ -1244,7 +1290,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1306,7 +1354,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1376,6 +1426,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageDownloadLocation: "NONE",
 						PackageName:             "/usr/local/bin/test",
 						PrimaryPackagePurpose:   tspdx.PackagePurposeApplication,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 						Annotations: []spdx.Annotation{
 							annotation(t, "Class: lang-pkgs"),
 							annotation(t, "Type: gobinary"),
@@ -1422,7 +1474,9 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "SchemaVersion: 2"),
 						},
-						PrimaryPackagePurpose: tspdx.PackagePurposeSource,
+						PrimaryPackagePurpose:   tspdx.PackagePurposeSource,
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
 					},
 				},
 				Relationships: []*spdx.Relationship{
@@ -1445,6 +1499,60 @@ func TestMarshaler_Marshal(t *testing.T) {
 						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-e340f27468b382be"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-aab0f4e8cf174c67"},
 						Relationship: "CONTAINS",
+					},
+				},
+			},
+		},
+		{
+			// Regression for https://github.com/aquasecurity/trivy/issues/10764:
+			// Marshal must not panic when the BOM has no root component (e.g. an SPDX
+			// SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT). Components
+			// must still be marshaled and no DESCRIBES relationship must be emitted.
+			name: "no root component",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "empty/path",
+				ArtifactType:  ftypes.TypeFilesystem,
+				BOM:           bomWithoutRoot(),
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:    spdx.Version,
+				DataLicense:    spdx.DataLicense,
+				SPDXIdentifier: tspdx.DocumentSPDXIdentifier,
+				// DocumentName and DocumentNamespace fall back to "unknown" when there is no root.
+				DocumentName:      "unknown",
+				DocumentNamespace: "http://trivy.dev/unknown/3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.56.2",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				// The component is still marshaled, but no root package and no DESCRIBES relationship are emitted.
+				Packages: []*spdx.Package{
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-a6073b1f888c9899"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "com.fasterxml.jackson.core:jackson-databind",
+						PackageVersion:          "2.13.4.1",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 				},
 			},

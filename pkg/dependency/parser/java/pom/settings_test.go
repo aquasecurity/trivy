@@ -69,6 +69,8 @@ func Test_ReadSettings(t *testing.T) {
 					},
 				},
 				ActiveProfiles: []string{},
+				Proxies:        []Proxy{},
+				Mirrors:        []Mirror{},
 			},
 		},
 		{
@@ -250,6 +252,8 @@ func Test_ReadSettings(t *testing.T) {
 				ActiveProfiles: []string{
 					"mycompany-global",
 				},
+				Proxies: []Proxy{},
+				Mirrors: []Mirror{},
 			},
 		},
 		{
@@ -273,6 +277,10 @@ func Test_ReadSettings(t *testing.T) {
 				"PROFILE_ID":      "mycompany-global",
 				"REPO_ID":         "mycompany-releases",
 				"REPO_URL":        "https://mycompany.example.com",
+				"MIRROR_ID":       "mirror-id-from-env",
+				"MIRROR_NAME":     "Mirror From Env",
+				"MIRROR_URL":      "https://mirror.example.com",
+				"MIRROR_OF":       "central",
 			},
 			wantSettings: settings{
 				LocalRepository: "part1/part2/.m2/repository",
@@ -305,6 +313,171 @@ func Test_ReadSettings(t *testing.T) {
 				},
 				ActiveProfiles: []string{
 					"mycompany-global",
+				},
+				Mirrors: []Mirror{
+					{
+						ID:       "mirror-id-from-env",
+						Name:     "Mirror From Env",
+						URL:      "https://mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+				},
+			},
+		},
+		{
+			name: "user settings proxy",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-proxy"),
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Proxies: []Proxy{
+					{
+						ID:            "proxy-http",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "user.proxy.com",
+						Port:          "8080",
+						Username:      "user-proxy-user",
+						Password:      "user-proxy-pass",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+			},
+		},
+		{
+			name: "global settings proxy",
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-proxy"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies: []Proxy{
+					{
+						ID:       "proxy-http",
+						Active:   "true",
+						Protocol: "http",
+						Host:     "foo.proxy.com",
+						Port:     "8080",
+					},
+				},
+				Mirrors: []Mirror{},
+			},
+		},
+		{
+			name: "user settings mirrors",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-mirrors"),
+				"MAVEN_HOME": "NOT_EXISTING_PATH",
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Mirrors: []Mirror{
+					{
+						ID:       "user-mirror",
+						Name:     "User Mirror",
+						URL:      "https://user.mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (user)",
+						URL:      "https://user.shared.example.com/maven2",
+						MirrorOf: "*,!internal",
+					},
+				},
+			},
+		},
+		{
+			name: "user and global proxies - user takes precedence on duplicate ID",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-proxy"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-proxy"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies: []Proxy{
+					{
+						ID:            "proxy-http",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "user.proxy.com",
+						Port:          "8080",
+						Username:      "user-proxy-user",
+						Password:      "user-proxy-pass",
+						NonProxyHosts: "localhost|*.internal.com",
+					},
+				},
+				Mirrors: []Mirror{},
+			},
+		},
+		{
+			name: "global settings mirrors",
+			envs: map[string]string{
+				"HOME":       "",
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (global)",
+						URL:      "https://global.shared.example.com/maven2",
+						MirrorOf: "external:*",
+					},
+				},
+			},
+		},
+		{
+			name: "user and global mirrors - user takes precedence on duplicate ID",
+			envs: map[string]string{
+				"HOME":       filepath.Join("testdata", "settings", "user-with-mirrors"),
+				"MAVEN_HOME": filepath.Join("testdata", "settings", "global-with-mirrors"),
+			},
+			wantSettings: settings{
+				LocalRepository: "testdata/user/repository",
+				Servers:         []Server{},
+				Profiles:        []Profile{},
+				ActiveProfiles:  []string{},
+				Proxies:         []Proxy{},
+				Mirrors: []Mirror{
+					{
+						ID:       "user-mirror",
+						Name:     "User Mirror",
+						URL:      "https://user.mirror.example.com/maven2",
+						MirrorOf: "central",
+					},
+					{
+						ID:       "shared-mirror",
+						Name:     "Shared Mirror (user)",
+						URL:      "https://user.shared.example.com/maven2",
+						MirrorOf: "*,!internal",
+					},
+					{
+						ID:       "global-mirror",
+						Name:     "Global Mirror",
+						URL:      "https://global.mirror.example.com/maven2",
+						MirrorOf: "external:http:*",
+					},
 				},
 			},
 		},
@@ -360,11 +533,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "r2",
 					url:             mustParseURL(t, "https://example.com/repo2"),
 					releaseEnabled:  false,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "r1",
 					url:             mustParseURL(t, "https://u:p@example.com/repo1"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -413,11 +588,13 @@ func Test_effectiveRepositories(t *testing.T) {
 			// After reverse: [only-p1, dup(from p1)]
 			want: []repository{
 				{
+					id:              "only-p1",
 					url:             mustParseURL(t, "https://p1.example.com/only"),
 					releaseEnabled:  true,
 					snapshotEnabled: true,
 				},
 				{
+					id:              "dup",
 					url:             mustParseURL(t, "https://p1.example.com/dup"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -450,6 +627,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 			want: []repository{
 				{
+					id:              "enabled",
 					url:             mustParseURL(t, "https://example.com/enabled"),
 					releaseEnabled:  true,
 					snapshotEnabled: false,
@@ -472,4 +650,118 @@ func mustParseURL(t *testing.T, s string) url.URL {
 	u, err := url.Parse(s)
 	require.NoError(t, err)
 	return *u
+}
+
+func Test_effectiveProxies(t *testing.T) {
+	tests := []struct {
+		name     string
+		s        settings
+		protocol string
+		hostname string
+		want     []Proxy
+	}{
+		{
+			name: "single active proxy",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "true",
+						Protocol: "http",
+						Host:     "proxy1",
+						Port:     "8080",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "example.com",
+			want: []Proxy{
+				{
+					ID:       "p1",
+					Active:   "true",
+					Protocol: "http",
+					Host:     "proxy1",
+					Port:     "8080",
+				},
+			},
+		},
+		{
+			name: "inactive proxy ignored",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "false",
+						Protocol: "http",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "example.com",
+			want:     nil,
+		},
+		{
+			name: "proxy with empty active field (default true)",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "",
+						Protocol: "http",
+						Host:     "proxy1",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "example.com",
+			want: []Proxy{
+				{
+					ID:       "p1",
+					Active:   "",
+					Protocol: "http",
+					Host:     "proxy1",
+				},
+			},
+		},
+		{
+			name: "protocol mismatch",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:       "p1",
+						Active:   "true",
+						Protocol: "https",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "example.com",
+			want:     nil,
+		},
+		{
+			name: "non proxy host is skipped",
+			s: settings{
+				Proxies: []Proxy{
+					{
+						ID:            "p1",
+						Active:        "true",
+						Protocol:      "http",
+						Host:          "proxy1",
+						Port:          "8080",
+						NonProxyHosts: "localhost|*.example.com",
+					},
+				},
+			},
+			protocol: "http",
+			hostname: "test.example.com",
+			want:     nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := tt.s.effectiveProxies(tt.protocol, tt.hostname)
+			require.Equal(t, tt.want, got)
+		})
+	}
 }
