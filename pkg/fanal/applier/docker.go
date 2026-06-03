@@ -243,17 +243,17 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	// Filter OS packages with mismatched PURL namespace
 	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
 
-	// When an image embeds per-package SBOMs (e.g. Chainguard/Wolfi
-	// /var/lib/db/sbom/*.spdx.json), the same OS package is reported by both the
-	// OS package-DB analyzer (apk/dpkg/rpm), which derives the correct SrcName from
-	// the package origin, and the SBOM analyzer, which falls back to SrcName=Name
-	// when the embedded SBOM omits source info. These collide on the same dedup key,
-	// and lo.UniqBy below keeps a non-deterministic entry due to randomized map
-	// iteration upstream. Order SBOM-derived entries last so the OS package-DB
-	// analyzer's entry always wins, making the result deterministic and SrcName correct.
-	// cf. https://github.com/aquasecurity/trivy/discussions/10751
+	// If an image contains embedded per-package SBOMs (e.g. Chainguard/Wolfi
+	// /var/lib/db/sbom/*.spdx.json), both the OS package-DB analyzer (apk/dpkg/rpm) and
+	// the SBOM analyzer report the same OS package, colliding on the same dedup key.
+	// To get a deterministic result, we sort packages before the deduplication below,
+	// giving packages from the OS package managers priority, because:
+	//   1. SBOM-derived packages may carry less complete metadata (e.g. missing source
+	//      info, so SrcName falls back to Name).
+	//   2. package-manager DB files are standardized and hold authoritative package
+	//      info (e.g. source/origin from apk o: / dpkg Source: / rpm source RPM).
+	// cf. https://github.com/aquasecurity/trivy/issues/10778
 	slices.SortStableFunc(mergedLayer.Packages, func(a, b ftypes.Package) int {
-		// A lower value is kept by lo.UniqBy below, so SBOM-derived entries are ordered last.
 		switch {
 		case a.AnalyzedBy == b.AnalyzedBy:
 			return 0
