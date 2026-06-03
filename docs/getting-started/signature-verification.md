@@ -26,29 +26,32 @@ The following checks were performed on each of these signatures:
 
 ## Verifying binary
 
-Since Trivy v0.68.1, GitHub Releases provide [sigstore signature bundles](https://docs.sigstore.dev/cosign/bundle/). Separate `.sig` and certificate (`.pem`) files are no longer published.
+Since Trivy v0.68.1, GitHub Releases provide [sigstore signature bundles](https://docs.sigstore.dev/cosign/bundle/). Separate `.sig` and certificate (`.pem`) files are no longer published. Every release asset has a corresponding `.sigstore.json` bundle file.
 
-Download the required tarball and its associated `.sigstore.json` bundle file from the [GitHub Release](https://github.com/aquasecurity/trivy/releases).
+Download the release asset and its associated `.sigstore.json` bundle file from the [GitHub Release](https://github.com/aquasecurity/trivy/releases).
+
+!!! note
+    [Cosign v3.0.0+](https://github.com/sigstore/cosign) is required. With cosign v2, add the `--new-bundle-format` flag.
 
 Use the following command for keyless verification:
 
 ```shell
-cosign verify-blob-attestation <path to tarball> \
-    --bundle <path to tarball>.sigstore.json \
+cosign verify-blob <path to asset> \
+    --bundle <path to asset>.sigstore.json \
     --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
     --certificate-identity 'https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/<release tag>'
 ```
 
-Example for `trivy_0.68.1_Linux-64bit.tar.gz`:
+Example for `trivy_0.71.0_Linux-64bit.tar.gz`:
 
 ```shell
-cosign verify-blob-attestation trivy_0.68.1_Linux-64bit.tar.gz \
-    --bundle trivy_0.68.1_Linux-64bit.tar.gz.sigstore.json \
+cosign verify-blob trivy_0.71.0_Linux-64bit.tar.gz \
+    --bundle trivy_0.71.0_Linux-64bit.tar.gz.sigstore.json \
     --certificate-oidc-issuer=https://token.actions.githubusercontent.com \
-    --certificate-identity 'https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.68.1'
+    --certificate-identity 'https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.71.0'
 ```
 
-You should get the following output
+The same command applies to `.deb`, `.rpm`, and `.zip` packages. You should get the following output:
 
 ```
 Verified OK
