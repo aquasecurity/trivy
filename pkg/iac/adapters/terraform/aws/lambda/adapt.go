@@ -72,7 +72,7 @@ func (a *adapter) adaptTracing(function *terraform.Block) lambda.Tracing {
 	if tracingConfig := function.GetBlock("tracing_config"); tracingConfig.IsNotNil() {
 		return lambda.Tracing{
 			Metadata: tracingConfig.GetMetadata(),
-			Mode:     tracingConfig.GetAttribute("mode").AsStringValueOrDefault("", tracingConfig),
+			Mode:     tracingConfig.GetAttribute("mode").AsStringValue(),
 		}
 	}
 
@@ -84,7 +84,7 @@ func (a *adapter) adaptTracing(function *terraform.Block) lambda.Tracing {
 
 func (a *adapter) adaptPermission(permission *terraform.Block) lambda.Permission {
 	sourceARNAttr := permission.GetAttribute("source_arn")
-	sourceARN := sourceARNAttr.AsStringValueOrDefault("", permission)
+	sourceARN := sourceARNAttr.AsStringValue()
 
 	if refs := sourceARNAttr.AllReferences(); len(refs) > 0 {
 		sourceARN = iacTypes.String(refs[0].NameLabel(), sourceARNAttr.GetMetadata())
@@ -92,7 +92,7 @@ func (a *adapter) adaptPermission(permission *terraform.Block) lambda.Permission
 
 	return lambda.Permission{
 		Metadata:  permission.GetMetadata(),
-		Principal: permission.GetAttribute("principal").AsStringValueOrDefault("", permission),
+		Principal: permission.GetAttribute("principal").AsStringValue(),
 		SourceARN: sourceARN,
 	}
 }

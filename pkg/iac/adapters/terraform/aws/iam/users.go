@@ -12,7 +12,7 @@ func adaptUsers(modules terraform.Modules) []iam.User {
 	for _, userBlock := range modules.GetResourcesByType("aws_iam_user") {
 		user := iam.User{
 			Metadata:   userBlock.GetMetadata(),
-			Name:       userBlock.GetAttribute("name").AsStringValueOrDefault("", userBlock),
+			Name:       userBlock.GetAttribute("name").AsStringValue(),
 			LastAccess: iacTypes.TimeUnresolvable(userBlock.GetMetadata()),
 		}
 

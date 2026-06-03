@@ -17,7 +17,7 @@ func AdaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
 		SourcePorts:          nil,
 		DestinationAddresses: nil,
 		DestinationPorts:     nil,
-		Protocol:             ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("", ruleBlock),
+		Protocol:             ruleBlock.GetAttribute("protocol").AsStringValue(),
 	}
 
 	accessAttr := ruleBlock.GetAttribute("access")
@@ -42,7 +42,7 @@ func AdaptSGRule(ruleBlock *terraform.Block) network.SecurityGroupRule {
 
 func adaptSource(ruleBlock *terraform.Block, rule *network.SecurityGroupRule) {
 	if sourceAddressAttr := ruleBlock.GetAttribute("source_address_prefix"); sourceAddressAttr.IsString() {
-		rule.SourceAddresses = append(rule.SourceAddresses, sourceAddressAttr.AsStringValueOrDefault("", ruleBlock))
+		rule.SourceAddresses = append(rule.SourceAddresses, sourceAddressAttr.AsStringValue())
 	} else if sourceAddressPrefixesAttr := ruleBlock.GetAttribute("source_address_prefixes"); sourceAddressPrefixesAttr.IsNotNil() {
 		rule.SourceAddresses = append(rule.SourceAddresses, sourceAddressPrefixesAttr.AsStringValues()...)
 	}
@@ -72,7 +72,7 @@ func adaptSource(ruleBlock *terraform.Block, rule *network.SecurityGroupRule) {
 
 func adaptDestination(ruleBlock *terraform.Block, rule *network.SecurityGroupRule) {
 	if destAddressAttr := ruleBlock.GetAttribute("destination_address_prefix"); destAddressAttr.IsString() {
-		rule.DestinationAddresses = append(rule.DestinationAddresses, destAddressAttr.AsStringValueOrDefault("", ruleBlock))
+		rule.DestinationAddresses = append(rule.DestinationAddresses, destAddressAttr.AsStringValue())
 	} else if destAddressPrefixesAttr := ruleBlock.GetAttribute("destination_address_prefixes"); destAddressPrefixesAttr.IsNotNil() {
 		rule.DestinationAddresses = append(rule.DestinationAddresses, destAddressPrefixesAttr.AsStringValues()...)
 	}

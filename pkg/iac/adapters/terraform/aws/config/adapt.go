@@ -25,7 +25,7 @@ func adaptConfigurationAggregrator(modules terraform.Modules) config.Configurati
 			configurationAggregrator.SourceAllRegions = iacTypes.Bool(false, resource.GetMetadata())
 		} else {
 			allRegionsAttr := aggregationBlock.GetAttribute("all_regions")
-			allRegionsVal := allRegionsAttr.AsBoolValueOrDefault(false, aggregationBlock)
+			allRegionsVal := allRegionsAttr.AsBoolValue()
 			configurationAggregrator.SourceAllRegions = allRegionsVal
 		}
 	}

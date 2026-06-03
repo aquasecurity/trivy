@@ -33,7 +33,7 @@ func getInstances(modules terraform.Modules) []ec2.Instance {
 		instance := ec2.Instance{
 			Metadata:        b.GetMetadata(),
 			MetadataOptions: getMetadataOptions(b),
-			UserData:        b.GetAttribute("user_data").AsStringValueOrDefault("", b),
+			UserData:        b.GetAttribute("user_data").AsStringValue(),
 		}
 
 		if launchTemplate := findRelatedLaunchTemplate(modules, b); launchTemplate != nil {
@@ -50,14 +50,14 @@ func getInstances(modules terraform.Modules) []ec2.Instance {
 		if rootBlockDevice := b.GetBlock("root_block_device"); rootBlockDevice.IsNotNil() {
 			instance.RootBlockDevice = &ec2.BlockDevice{
 				Metadata:  rootBlockDevice.GetMetadata(),
-				Encrypted: rootBlockDevice.GetAttribute("encrypted").AsBoolValueOrDefault(false, b),
+				Encrypted: rootBlockDevice.GetAttribute("encrypted").AsBoolValue(),
 			}
 		}
 
 		for _, ebsBlock := range b.GetBlocks("ebs_block_device") {
 			instance.EBSBlockDevices = append(instance.EBSBlockDevices, &ec2.BlockDevice{
 				Metadata:  ebsBlock.GetMetadata(),
-				Encrypted: ebsBlock.GetAttribute("encrypted").AsBoolValueOrDefault(false, b),
+				Encrypted: ebsBlock.GetAttribute("encrypted").AsBoolValue(),
 			})
 		}
 
@@ -91,7 +91,7 @@ func findRelatedLaunchTemplate(modules terraform.Modules, instanceBlock *terrafo
 
 	if templateRef.IsString() {
 		for _, r := range modules.GetResourcesByType("aws_launch_template") {
-			templateName := r.GetAttribute("name").AsStringValueOrDefault("", r).Value()
+			templateName := r.GetAttribute("name").AsStringValue().Value()
 			if templateRef.Equals(r.ID()) || templateRef.Equals(templateName) {
 				launchTemplate := adaptLaunchTemplate(r)
 				return &launchTemplate

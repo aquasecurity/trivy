@@ -33,6 +33,6 @@ func adaptTopic(resourceBlock *terraform.Block) sns.Topic {
 func adaptEncryption(resourceBlock *terraform.Block) sns.Encryption {
 	return sns.Encryption{
 		Metadata: resourceBlock.GetMetadata(),
-		KMSKeyID: resourceBlock.GetAttribute("kms_master_key_id").AsStringValueOrDefault("", resourceBlock),
+		KMSKeyID: resourceBlock.GetAttribute("kms_master_key_id").AsStringValue(),
 	}
 }

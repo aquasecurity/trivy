@@ -19,7 +19,7 @@ func (a *adapter) adaptBuckets() []s3.Bucket {
 	for _, block := range a.modules.GetResourcesByType("aws_s3_bucket") {
 		bucket := &s3.Bucket{
 			Metadata:                      block.GetMetadata(),
-			Name:                          block.GetAttribute("bucket").AsStringValueOrDefault("", block),
+			Name:                          block.GetAttribute("bucket").AsStringValue(),
 			PublicAccessBlock:             nil,
 			BucketPolicies:                nil,
 			Encryption:                    getEncryption(block, a),
@@ -28,7 +28,7 @@ func (a *adapter) adaptBuckets() []s3.Bucket {
 			ACL:                           getBucketAcl(block, a),
 			Grants:                        getGrants(block, a),
 			AccelerateConfigurationStatus: getAccelerateStatus(block, a),
-			BucketLocation:                block.GetAttribute("region").AsStringValueOrDefault("", block),
+			BucketLocation:                block.GetAttribute("region").AsStringValue(),
 			LifecycleConfiguration:        getLifecycle(block, a),
 			Website:                       getWebsite(block, a),
 			Objects:                       getObject(block, a),
@@ -48,7 +48,7 @@ func (a *adapter) adaptBuckets() []s3.Bucket {
 }
 
 func getEncryption(block *terraform.Block, a *adapter) s3.Encryption {
-	if sseConfgihuration := block.GetBlock("server_side_encryption_configuration"); sseConfgihuration != nil {
+	if sseConfgihuration := block.GetBlock("server_side_encryption_configuration"); sseConfgihuration.IsNotNil() {
 		return newS3Encryption(block, sseConfgihuration)
 	}
 	if val, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_server_side_encryption_configuration", func(resource *terraform.Block) s3.Encryption {
@@ -72,14 +72,14 @@ func newS3Encryption(root, sseConfgihuration *terraform.Block) s3.Encryption {
 			sseConfgihuration,
 			"rule.apply_server_side_encryption_by_default.sse_algorithm",
 			func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.StringValue {
-				return attr.AsStringValueOrDefault("", parent)
+				return attr.AsStringValue()
 			},
 		),
 		KMSKeyId: terraform.MapNestedAttribute(
 			sseConfgihuration,
 			"rule.apply_server_side_encryption_by_default.kms_master_key_id",
 			func(attr *terraform.Attribute, parent *terraform.Block) iacTypes.StringValue {
-				return attr.AsStringValueOrDefault("", parent)
+				return attr.AsStringValue()
 			},
 		),
 	}
@@ -91,14 +91,14 @@ func getVersioning(block *terraform.Block, a *adapter) s3.Versioning {
 		Enabled:   iacTypes.BoolDefault(false, block.GetMetadata()),
 		MFADelete: iacTypes.BoolDefault(false, block.GetMetadata()),
 	}
-	if lockBlock := block.GetBlock("object_lock_configuration"); lockBlock != nil {
+	if lockBlock := block.GetBlock("object_lock_configuration"); lockBlock.IsNotNil() {
 		if enabled := isObjeckLockEnabled(lockBlock); enabled != nil {
 			versioning.Enabled = *enabled
 		}
 	}
-	if vBlock := block.GetBlock("versioning"); vBlock != nil {
-		versioning.Enabled = vBlock.GetAttribute("enabled").AsBoolValueOrDefault(true, vBlock)
-		versioning.MFADelete = vBlock.GetAttribute("mfa_delete").AsBoolValueOrDefault(false, vBlock)
+	if vBlock := block.GetBlock("versioning"); vBlock.IsNotNil() {
+		versioning.Enabled = vBlock.GetAttribute("enabled").AsBoolValue(true)
+		versioning.MFADelete = vBlock.GetAttribute("mfa_delete").AsBoolValue()
 	}
 
 	if enabled, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_object_lock_configuration", func(resource *terraform.Block) *iacTypes.BoolValue {
@@ -136,7 +136,7 @@ func getVersioningFromResource(block *terraform.Block) s3.Versioning {
 		Enabled:   iacTypes.BoolDefault(false, block.GetMetadata()),
 		MFADelete: iacTypes.BoolDefault(false, block.GetMetadata()),
 	}
-	if config := block.GetBlock("versioning_configuration"); config != nil {
+	if config := block.GetBlock("versioning_configuration"); config.IsNotNil() {
 		if status := config.GetAttribute("status"); status.IsNotNil() {
 			versioning.Enabled = iacTypes.Bool(status.Equals("Enabled", terraform.IgnoreCase), status.GetMetadata())
 		}
@@ -149,7 +149,7 @@ func getVersioningFromResource(block *terraform.Block) s3.Versioning {
 
 func getLogging(block *terraform.Block, a *adapter) s3.Logging {
 	if loggingBlock := block.GetBlock("logging"); loggingBlock.IsNotNil() {
-		targetBucket := loggingBlock.GetAttribute("target_bucket").AsStringValueOrDefault("", loggingBlock)
+		targetBucket := loggingBlock.GetAttribute("target_bucket").AsStringValue()
 		if referencedBlock, err := a.modules.GetReferencedBlock(loggingBlock.GetAttribute("target_bucket"), loggingBlock); err == nil {
 			targetBucket = iacTypes.String(referencedBlock.FullName(), loggingBlock.GetAttribute("target_bucket").GetMetadata())
 		}
@@ -161,7 +161,7 @@ func getLogging(block *terraform.Block, a *adapter) s3.Logging {
 	}
 
 	if val, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_logging", func(resource *terraform.Block) s3.Logging {
-		targetBucket := resource.GetAttribute("target_bucket").AsStringValueOrDefault("", resource)
+		targetBucket := resource.GetAttribute("target_bucket").AsStringValue()
 		if referencedBlock, err := a.modules.GetReferencedBlock(resource.GetAttribute("target_bucket"), resource); err == nil {
 			targetBucket = iacTypes.String(referencedBlock.FullName(), resource.GetAttribute("target_bucket").GetMetadata())
 		}
@@ -184,11 +184,11 @@ func getLogging(block *terraform.Block, a *adapter) s3.Logging {
 func getBucketAcl(block *terraform.Block, a *adapter) iacTypes.StringValue {
 	aclAttr := block.GetAttribute("acl")
 	if aclAttr.IsString() {
-		return aclAttr.AsStringValueOrDefault("private", block)
+		return aclAttr.AsStringValue("private")
 	}
 
 	if val, ok := applyForBucketRelatedResource(a, block, "aws_s3_bucket_acl", func(resource *terraform.Block) iacTypes.StringValue {
-		return resource.GetAttribute("acl").AsStringValueOrDefault("private", resource)
+		return resource.GetAttribute("acl").AsStringValue("private")
 	}); ok {
 		return val
 	}
@@ -204,15 +204,15 @@ func getGrants(block *terraform.Block, a *adapter) []s3.Grant {
 				grant := s3.Grant{
 					Metadata: grantBlock.GetMetadata(),
 					Permissions: iacTypes.StringValueList{
-						grantBlock.GetAttribute("permission").AsStringValueOrDefault("", grantBlock),
+						grantBlock.GetAttribute("permission").AsStringValue(),
 					},
 				}
 
 				if granteeBlock := grantBlock.GetBlock("grantee"); granteeBlock.IsNotNil() {
 					grant.Grantee = s3.Grantee{
 						Metadata: granteeBlock.GetMetadata(),
-						Type:     granteeBlock.GetAttribute("type").AsStringValueOrDefault("", granteeBlock),
-						URI:      granteeBlock.GetAttribute("uri").AsStringValueOrDefault("", granteeBlock),
+						Type:     granteeBlock.GetAttribute("type").AsStringValue(),
+						URI:      granteeBlock.GetAttribute("uri").AsStringValue(),
 					}
 				}
 
@@ -233,8 +233,8 @@ func getGrants(block *terraform.Block, a *adapter) []s3.Grant {
 			Permissions: grantBlock.GetAttribute("permissions").AsStringValueSliceOrEmpty(),
 			Grantee: s3.Grantee{
 				Metadata: grantBlock.GetMetadata(),
-				Type:     grantBlock.GetAttribute("type").AsStringValueOrDefault("", grantBlock),
-				URI:      grantBlock.GetAttribute("uri").AsStringValueOrDefault("", grantBlock),
+				Type:     grantBlock.GetAttribute("type").AsStringValue(),
+				URI:      grantBlock.GetAttribute("uri").AsStringValue(),
 			},
 		}
 
@@ -283,7 +283,7 @@ func getLifecycle(b *terraform.Block, a *adapter) []s3.Rules {
 		for _, rule := range ruleblock {
 			rules = append(rules, s3.Rules{
 				Metadata: rule.GetMetadata(),
-				Status:   rule.GetAttribute("status").AsStringValueOrDefault("Enabled", rule),
+				Status:   rule.GetAttribute("status").AsStringValue("Enabled"),
 			})
 		}
 	}
@@ -312,7 +312,7 @@ func getObject(b *terraform.Block, a *adapter) []s3.Contents {
 func getAccelerateStatus(b *terraform.Block, a *adapter) iacTypes.StringValue {
 	var status iacTypes.StringValue
 	for _, r := range a.modules.GetReferencingResources(b, "aws_s3_bucket_accelerate_configuration", "bucket") {
-		status = r.GetAttribute("status").AsStringValueOrDefault("Enabled", r)
+		status = r.GetAttribute("status").AsStringValue("Enabled")
 	}
 	return status
 }
@@ -322,7 +322,7 @@ func applyForBucketRelatedResource[T any](a *adapter, block *terraform.Block, re
 		bucketAttr := resource.GetAttribute("bucket")
 		if bucketAttr.IsNotNil() {
 			if bucketAttr.IsString() {
-				actualBucketName := block.GetAttribute("bucket").AsStringValueOrDefault("", block).Value()
+				actualBucketName := block.GetAttribute("bucket").AsStringValue().Value()
 				if bucketAttr.Equals(block.ID()) || bucketAttr.Equals(actualBucketName) {
 					return fn(resource), true
 				}

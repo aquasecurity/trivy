@@ -45,24 +45,24 @@ func adaptProvider(b *terraform.Block) aws.TerraformProvider {
 		ForbiddenAccountIDs:            b.GetAttribute("forbidden_account_ids").AsStringValueSliceOrEmpty(),
 		HttpProxy:                      getStringAttrValue("http_proxy", b),
 		IgnoreTags:                     adaptIgnoreTags(b),
-		Insecure:                       b.GetAttribute("insecure").AsBoolValueOrDefault(false, b),
-		MaxRetries:                     b.GetAttribute("max_retries").AsIntValueOrDefault(defaultMaxRetires, b),
+		Insecure:                       b.GetAttribute("insecure").AsBoolValue(),
+		MaxRetries:                     b.GetAttribute("max_retries").AsIntValue(defaultMaxRetires),
 		Profile:                        getStringAttrValue("profile", b),
 		Region:                         getStringAttrValue("region", b),
 		RetryMode:                      getStringAttrValue("retry_mode", b),
-		S3UsePathStyle:                 b.GetAttribute("s3_use_path_style").AsBoolValueOrDefault(false, b),
+		S3UsePathStyle:                 b.GetAttribute("s3_use_path_style").AsBoolValue(),
 		S3USEast1RegionalEndpoint:      getStringAttrValue("s3_us_east_1_regional_endpoint", b),
 		SecretKey:                      getStringAttrValue("secret_key", b),
-		SharedConfigFiles:              b.GetAttribute("shared_config_files").AsStringValuesOrDefault(b, defaultSharedConfigFile),
-		SharedCredentialsFiles:         b.GetAttribute("shared_credentials_files").AsStringValuesOrDefault(b, defaultSharedCredentialsFile),
-		SkipCredentialsValidation:      b.GetAttribute("skip_credentials_validation").AsBoolValueOrDefault(false, b),
-		SkipMetadataAPICheck:           b.GetAttribute("skip_metadata_api_check").AsBoolValueOrDefault(false, b),
-		SkipRegionValidation:           b.GetAttribute("skip_region_validation").AsBoolValueOrDefault(false, b),
-		SkipRequestingAccountID:        b.GetAttribute("skip_requesting_account_id").AsBoolValueOrDefault(false, b),
+		SharedConfigFiles:              b.GetAttribute("shared_config_files").AsStringValuesOrDefault(defaultSharedConfigFile),
+		SharedCredentialsFiles:         b.GetAttribute("shared_credentials_files").AsStringValuesOrDefault(defaultSharedCredentialsFile),
+		SkipCredentialsValidation:      b.GetAttribute("skip_credentials_validation").AsBoolValue(),
+		SkipMetadataAPICheck:           b.GetAttribute("skip_metadata_api_check").AsBoolValue(),
+		SkipRegionValidation:           b.GetAttribute("skip_region_validation").AsBoolValue(),
+		SkipRequestingAccountID:        b.GetAttribute("skip_requesting_account_id").AsBoolValue(),
 		STSRegion:                      getStringAttrValue("sts_region", b),
 		Token:                          getStringAttrValue("token", b),
-		UseDualstackEndpoint:           b.GetAttribute("use_dualstack_endpoint").AsBoolValueOrDefault(false, b),
-		UseFIPSEndpoint:                b.GetAttribute("use_fips_endpoint").AsBoolValueOrDefault(false, b),
+		UseDualstackEndpoint:           b.GetAttribute("use_dualstack_endpoint").AsBoolValue(),
+		UseFIPSEndpoint:                b.GetAttribute("use_fips_endpoint").AsBoolValue(),
 	}
 }
 
@@ -130,7 +130,7 @@ func adaptEndpoints(p *terraform.Block) types.MapValue {
 	values := make(map[string]string)
 
 	for name, attr := range block.Attributes() {
-		values[name] = attr.AsStringValueOrDefault("", block).Value()
+		values[name] = attr.AsStringValue().Value()
 	}
 
 	return types.Map(values, block.GetMetadata())
@@ -162,5 +162,5 @@ func adaptIgnoreTags(p *terraform.Block) aws.IgnoreTags {
 }
 
 func getStringAttrValue(name string, parent *terraform.Block) types.StringValue {
-	return parent.GetAttribute(name).AsStringValueOrDefault("", parent)
+	return parent.GetAttribute(name).AsStringValue()
 }

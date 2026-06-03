@@ -11,7 +11,7 @@ func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
 	for _, diskBlock := range modules.GetResourcesByType("google_compute_disk") {
 		disk := compute.Disk{
 			Metadata: diskBlock.GetMetadata(),
-			Name:     diskBlock.GetAttribute("name").AsStringValueOrDefault("", diskBlock),
+			Name:     diskBlock.GetAttribute("name").AsStringValue(),
 			Encryption: compute.DiskEncryption{
 				Metadata:   diskBlock.GetMetadata(),
 				RawKey:     iacTypes.BytesDefault(nil, diskBlock.GetMetadata()),
@@ -21,7 +21,7 @@ func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
 		if encBlock := diskBlock.GetBlock("disk_encryption_key"); encBlock.IsNotNil() {
 			disk.Encryption.Metadata = encBlock.GetMetadata()
 			kmsKeyAttr := encBlock.GetAttribute("kms_key_self_link")
-			disk.Encryption.KMSKeyLink = kmsKeyAttr.AsStringValueOrDefault("", encBlock)
+			disk.Encryption.KMSKeyLink = kmsKeyAttr.AsStringValue()
 
 			if kmsKeyAttr.IsResourceBlockReference("google_kms_crypto_key") {
 				if kmsKeyBlock, err := modules.GetReferencedBlock(kmsKeyAttr, encBlock); err == nil {
@@ -29,7 +29,7 @@ func adaptDisks(modules terraform.Modules) (disks []compute.Disk) {
 				}
 			}
 
-			disk.Encryption.RawKey = encBlock.GetAttribute("raw_key").AsBytesValueOrDefault(nil, encBlock)
+			disk.Encryption.RawKey = encBlock.GetAttribute("raw_key").AsBytesValue(nil)
 		}
 		disks = append(disks, disk)
 	}

@@ -116,9 +116,17 @@ func (a *Attribute) GetRawValue() any {
 	})
 }
 
-func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) iacTypes.BytesValue {
+func firstOrZero[T any](values []T) T {
+	if len(values) > 0 {
+		return values[0]
+	}
+	var zero T
+	return zero
+}
+
+func (a *Attribute) AsBytesValue(defaultValue []byte) iacTypes.BytesValue {
 	if a.IsNil() {
-		return iacTypes.BytesDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.BytesDefault(defaultValue, a.metadata)
 	}
 	if !a.IsResolvable() || !a.IsString() {
 		return iacTypes.BytesUnresolvable(a.GetMetadata())
@@ -129,9 +137,9 @@ func (a *Attribute) AsBytesValueOrDefault(defaultValue []byte, parent *Block) ia
 	)
 }
 
-func (a *Attribute) AsStringValueOrDefault(defaultValue string, parent *Block) iacTypes.StringValue {
+func (a *Attribute) AsStringValue(defaultValue ...string) iacTypes.StringValue {
 	if a.IsNil() {
-		return iacTypes.StringDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.StringDefault(firstOrZero(defaultValue), a.metadata)
 	}
 	if !a.IsResolvable() || !a.IsString() {
 		return iacTypes.StringUnresolvable(a.GetMetadata())
@@ -149,20 +157,20 @@ func (a *Attribute) AsStringValueSliceOrEmpty() (stringValues []iacTypes.StringV
 	return a.AsStringValues()
 }
 
-func (a *Attribute) AsStringValuesOrDefault(parent *Block, defaults ...string) []iacTypes.StringValue {
+func (a *Attribute) AsStringValuesOrDefault(defaults ...string) []iacTypes.StringValue {
 	if a.IsNil() {
 		res := make(iacTypes.StringValueList, 0, len(defaults))
 		for _, def := range defaults {
-			res = append(res, iacTypes.StringDefault(def, parent.GetMetadata()))
+			res = append(res, iacTypes.StringDefault(def, a.metadata))
 		}
 		return res
 	}
 	return a.AsStringValues()
 }
 
-func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) iacTypes.BoolValue {
+func (a *Attribute) AsBoolValue(defaultValue ...bool) iacTypes.BoolValue {
 	if a.IsNil() {
-		return iacTypes.BoolDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.BoolDefault(firstOrZero(defaultValue), a.metadata)
 	}
 	if !a.IsResolvable() || !a.IsBool() {
 		return iacTypes.BoolUnresolvable(a.GetMetadata())
@@ -173,43 +181,42 @@ func (a *Attribute) AsBoolValueOrDefault(defaultValue bool, parent *Block) iacTy
 	)
 }
 
-func (a *Attribute) AsIntValueOrDefault(defaultValue int, parent *Block) iacTypes.IntValue {
+func (a *Attribute) AsIntValue(defaultValue ...int) iacTypes.IntValue {
 	if a.IsNil() {
-		return iacTypes.IntDefault(defaultValue, parent.GetMetadata())
+		return iacTypes.IntDefault(firstOrZero(defaultValue), a.metadata)
 	}
 	if !a.IsResolvable() || !a.IsNumber() {
 		return iacTypes.IntUnresolvable(a.GetMetadata())
 	}
-	flt := a.AsNumber()
 	return iacTypes.IntExplicit(
-		int(flt),
+		int(a.AsNumber()),
 		a.GetMetadata(),
 	)
 }
 
 func (a *Attribute) IsLiteral() bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	return len(a.hclAttribute.Expr.Variables()) == 0
 }
 
 func (a *Attribute) IsResolvable() bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	return a.Value() != cty.NilVal && a.Value().IsKnown()
 }
 
 func (a *Attribute) Type() cty.Type {
-	if a == nil {
+	if a.IsNil() {
 		return cty.NilType
 	}
 	return a.Value().Type()
 }
 
 func (a *Attribute) IsIterable() bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 
@@ -219,7 +226,7 @@ func (a *Attribute) IsIterable() bool {
 }
 
 func (a *Attribute) Each(f func(key cty.Value, val cty.Value)) error {
-	if a == nil {
+	if a.IsNil() {
 		return nil
 	}
 	var outerErr error
@@ -278,7 +285,7 @@ func (a *Attribute) IsBool() bool {
 }
 
 func (a *Attribute) Value() (ctyVal cty.Value) {
-	if a == nil {
+	if a == nil || a.hclAttribute == nil {
 		return cty.NilVal
 	}
 	defer func() {
@@ -295,7 +302,7 @@ func (a *Attribute) Value() (ctyVal cty.Value) {
 
 // Allows a null value for a variable https://developer.hashicorp.com/terraform/language/expressions/types#null
 func (a *Attribute) NullableValue() (ctyVal cty.Value) {
-	if a == nil {
+	if a == nil || a.hclAttribute == nil {
 		return cty.NilVal
 	}
 	defer func() {
@@ -311,14 +318,14 @@ func (a *Attribute) NullableValue() (ctyVal cty.Value) {
 }
 
 func (a *Attribute) Name() string {
-	if a == nil {
+	if a.IsNil() {
 		return ""
 	}
 	return a.hclAttribute.Name
 }
 
 func (a *Attribute) AsStringValues() iacTypes.StringValueList {
-	if a == nil {
+	if a.IsNil() {
 		return nil
 	}
 	return a.getStringValues(a.hclAttribute.Expr, a.ctx.Inner())
@@ -598,7 +605,7 @@ func (a *Attribute) IsFalse() bool {
 }
 
 func (a *Attribute) IsEmpty() bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	val := a.Value()
@@ -629,7 +636,7 @@ func (a *Attribute) IsEmpty() bool {
 }
 
 func (a *Attribute) isNullAttributeEmpty() bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	switch t := a.hclAttribute.Expr.(type) {
@@ -706,7 +713,7 @@ func createDotReferenceFromTraversal(parentRef string, traversals ...hcl.Travers
 }
 
 func (a *Attribute) ReferencesBlock(b *Block) bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	for _, ref := range a.AllReferences() {
@@ -718,7 +725,7 @@ func (a *Attribute) ReferencesBlock(b *Block) bool {
 }
 
 func (a *Attribute) AllReferences() []*Reference {
-	if a == nil {
+	if a.IsNil() {
 		return nil
 	}
 	return a.referencesFromExpression(a.hclAttribute.Expr)
@@ -752,7 +759,7 @@ func (a *Attribute) referencesFromExpression(expr hcl.Expression) []*Reference {
 }
 
 func (a *Attribute) IsResourceBlockReference(resourceType string) bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	if t, ok := a.hclAttribute.Expr.(*hclsyntax.ScopeTraversalExpr); ok {
@@ -763,7 +770,7 @@ func (a *Attribute) IsResourceBlockReference(resourceType string) bool {
 }
 
 func (a *Attribute) References(r Reference) bool {
-	if a == nil {
+	if a.IsNil() {
 		return false
 	}
 	for _, ref := range a.AllReferences() {
@@ -792,7 +799,7 @@ func getRawValue(value cty.Value) any {
 }
 
 func (a *Attribute) IsNil() bool {
-	return a == nil
+	return a == nil || a.hclAttribute == nil
 }
 
 func (a *Attribute) IsNotNil() bool {
@@ -816,7 +823,7 @@ func (a *Attribute) AsNumber() float64 {
 
 func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
 	var res T
-	if a == nil {
+	if a.IsNil() {
 		return res
 	}
 
@@ -837,7 +844,7 @@ func isDefined(v cty.Value, t cty.Type) bool {
 // RewriteExpr applies the given function `transform` to the expression of the attribute,
 // recursively traversing and transforming it.
 func (a *Attribute) RewriteExpr(transform func(hclsyntax.Expression) hclsyntax.Expression) {
-	if a == nil || a.hclAttribute == nil {
+	if a.IsNil() {
 		return
 	}
 	expr, ok := a.hclAttribute.Expr.(hclsyntax.Expression)

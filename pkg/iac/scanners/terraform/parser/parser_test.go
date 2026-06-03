@@ -697,7 +697,7 @@ resource "aws_s3_bucket" "main" {
 
 	block := blocks[0]
 
-	assert.Equal(t, "test_bucket", block.GetAttribute("bucket").AsStringValueOrDefault("", block).Value())
+	assert.Equal(t, "test_bucket", block.GetAttribute("bucket").AsStringValue().Value())
 }
 
 func Test_ForEachRefToLocals(t *testing.T) {
@@ -732,7 +732,7 @@ resource "aws_s3_bucket" "this" {
 	for _, block := range blocks {
 		attr := block.GetAttribute("bucket")
 		require.NotNil(t, attr)
-		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValueOrDefault("", block).Value())
+		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValue().Value())
 	}
 }
 
@@ -766,7 +766,7 @@ resource "aws_s3_bucket" "this" {
 	for _, block := range blocks {
 		attr := block.GetAttribute("bucket")
 		require.NotNil(t, attr)
-		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValueOrDefault("", block).Value())
+		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValue().Value())
 	}
 }
 
@@ -819,10 +819,10 @@ policy_rules = {
 
 	block := blocks[0]
 
-	assert.Equal(t, "secure-tag-1", block.GetAttribute("name").AsStringValueOrDefault("", block).Value())
-	assert.True(t, block.GetAttribute("enabled").AsBoolValueOrDefault(false, block).Value())
-	assert.Equal(t, "host() != 'google.com'", block.GetAttribute("session_matcher").AsStringValueOrDefault("", block).Value())
-	assert.Equal(t, 1001, block.GetAttribute("priority").AsIntValueOrDefault(0, block).Value())
+	assert.Equal(t, "secure-tag-1", block.GetAttribute("name").AsStringValue().Value())
+	assert.True(t, block.GetAttribute("enabled").AsBoolValue().Value())
+	assert.Equal(t, "host() != 'google.com'", block.GetAttribute("session_matcher").AsStringValue().Value())
+	assert.Equal(t, 1001, block.GetAttribute("priority").AsIntValue().Value())
 }
 
 func Test_ForEachRefersToMapThatContainsSameStringValues(t *testing.T) {

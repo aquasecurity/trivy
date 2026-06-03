@@ -19,8 +19,8 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 	for _, groupBlock := range modules.GetResourcesByType("openstack_networking_secgroup_v2") {
 		group := openstack.SecurityGroup{
 			Metadata:    groupBlock.GetMetadata(),
-			Name:        groupBlock.GetAttribute("name").AsStringValueOrDefault("", groupBlock),
-			Description: groupBlock.GetAttribute("description").AsStringValueOrDefault("", groupBlock),
+			Name:        groupBlock.GetAttribute("name").AsStringValue(),
+			Description: groupBlock.GetAttribute("description").AsStringValue(),
 			Rules:       nil,
 		}
 		groupMap[groupBlock.ID()] = group
@@ -31,10 +31,10 @@ func adaptSecurityGroups(modules terraform.Modules) []openstack.SecurityGroup {
 			Metadata:  ruleBlock.GetMetadata(),
 			IsIngress: iacTypes.Bool(true, ruleBlock.GetMetadata()),
 			EtherType: iacTypes.IntDefault(4, ruleBlock.GetMetadata()),
-			Protocol:  ruleBlock.GetAttribute("protocol").AsStringValueOrDefault("tcp", ruleBlock),
-			PortMin:   ruleBlock.GetAttribute("port_range_min").AsIntValueOrDefault(0, ruleBlock),
-			PortMax:   ruleBlock.GetAttribute("port_range_max").AsIntValueOrDefault(0, ruleBlock),
-			CIDR:      ruleBlock.GetAttribute("remote_ip_prefix").AsStringValueOrDefault("", ruleBlock),
+			Protocol:  ruleBlock.GetAttribute("protocol").AsStringValue("tcp"),
+			PortMin:   ruleBlock.GetAttribute("port_range_min").AsIntValue(),
+			PortMax:   ruleBlock.GetAttribute("port_range_max").AsIntValue(),
+			CIDR:      ruleBlock.GetAttribute("remote_ip_prefix").AsStringValue(),
 		}
 
 		switch etherType := ruleBlock.GetAttribute("ethertype"); {
