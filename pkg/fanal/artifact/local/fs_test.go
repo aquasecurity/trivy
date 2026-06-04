@@ -1,8 +1,11 @@
 package local
 
 import (
+	"context"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -15,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	trivytypes "github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
@@ -2662,4 +2666,41 @@ func Test_sanitizeRemoteURL(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// userErrorAnalyzer fails every matching file with a *types.UserError,
+// emulating a fatal analyzer error such as a remote Maven 429.
+type userErrorAnalyzer struct{}
+
+func (userErrorAnalyzer) Type() analyzer.Type { return "user-error-test" }
+func (userErrorAnalyzer) Version() int        { return 1 }
+func (userErrorAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	return strings.HasSuffix(filePath, ".usererror")
+}
+
+func (userErrorAnalyzer) Analyze(_ context.Context, _ analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+	return nil, &trivytypes.UserError{Message: "429 Too Many Requests"}
+}
+
+// TestArtifact_Inspect_AnalyzeErrorNotMasked is a regression test for #10790:
+// a fatal analyzer error (a remote Maven 429, as *types.UserError) must be
+// surfaced, not masked by the context.Canceled the walk hits after egCtx cancels.
+func TestArtifact_Inspect_AnalyzeErrorNotMasked(t *testing.T) {
+	dir := t.TempDir()
+	// Parallel=1 with several files: the first file cancels egCtx, so a later
+	// file's semaphore acquire fails with context.Canceled.
+	for i := 0; i < 10; i++ {
+		require.NoError(t, os.WriteFile(
+			filepath.Join(dir, fmt.Sprintf("%d.usererror", i)), []byte("x"), 0o600))
+	}
+
+	analyzer.RegisterAnalyzer(userErrorAnalyzer{})
+	t.Cleanup(func() { analyzer.DeregisterAnalyzer("user-error-test") })
+
+	a, err := NewArtifact(dir, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{Parallel: 1})
+	require.NoError(t, err)
+
+	_, err = a.Inspect(t.Context())
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "429 Too Many Requests")
 }
