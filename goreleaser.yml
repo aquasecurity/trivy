@@ -113,7 +113,7 @@ nfpms:
 
 archives:
   - id: archive
-    format: tar.gz
+    formats: [tar.gz]
     name_template: >-
       {{ .ProjectName }}_{{ .Version }}_
       {{- if eq .Os "darwin" }}macOS
@@ -135,7 +135,7 @@ archives:
       - contrib/*.tpl
     format_overrides:
       - goos: windows
-        format: zip
+        formats: [zip]
 
 
 dockers:
@@ -280,8 +280,6 @@ docker_manifests:
 
 signs:
 - cmd: cosign
-  env:
-  - COSIGN_EXPERIMENTAL=1
   signature: "${artifact}.sigstore.json"
   args:
     - "sign-blob"
@@ -293,8 +291,6 @@ signs:
 
 docker_signs:
 - cmd: cosign
-  env:
-  - COSIGN_EXPERIMENTAL=1
   artifacts: manifests
   output: true
   args:
