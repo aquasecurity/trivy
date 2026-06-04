@@ -6,7 +6,9 @@ import (
 
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1593,4 +1595,157 @@ func TestApplyLayers(t *testing.T) {
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
+}
+
+func TestApplyLayersDeduplicatesSBOMApplications(t *testing.T) {
+	t.Run("same application from SBOM and file is merged", func(t *testing.T) {
+		got := applier.ApplyLayers([]types.BlobInfo{
+			{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/.spdx-app.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "1.22.11",
+								FilePath:   "opt/app/bin/app",
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
+					},
+				},
+			},
+			{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/bin/app",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "v1.22.11",
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		require.Len(t, got.Applications, 1)
+		app := got.Applications[0]
+		assert.Equal(t, types.GoBinary, app.Type)
+		assert.Equal(t, "opt/app/bin/app", app.FilePath)
+		require.Len(t, app.Packages, 1)
+		assert.Equal(t, "stdlib", app.Packages[0].Name)
+		assert.Equal(t, "v1.22.11", app.Packages[0].Version)
+		assert.Equal(t, analyzer.TypeGoBinary, app.Packages[0].AnalyzedBy)
+	})
+
+	t.Run("different applications with same type remain separate", func(t *testing.T) {
+		got := applier.ApplyLayers([]types.BlobInfo{
+			{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/.spdx-api.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "github.com/acme/api@v1.0.0",
+								Name:       "github.com/acme/api",
+								Version:    "v1.0.0",
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/bin/worker",
+						Packages: types.Packages{
+							{
+								ID:         "github.com/acme/worker@v1.0.0",
+								Name:       "github.com/acme/worker",
+								Version:    "v1.0.0",
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		require.Len(t, got.Applications, 2)
+		assert.Equal(t, "opt/app/.spdx-api.spdx", got.Applications[0].FilePath)
+		assert.Equal(t, "opt/app/bin/worker", got.Applications[1].FilePath)
+	})
+
+	t.Run("overlapping package sets are merged without duplicate packages", func(t *testing.T) {
+		got := applier.ApplyLayers([]types.BlobInfo{
+			{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/.spdx-app.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "1.22.11",
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+							{
+								ID:         "github.com/acme/shared@v1.0.0",
+								Name:       "github.com/acme/shared",
+								Version:    "v1.0.0",
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/bin/app",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "v1.22.11",
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		require.Len(t, got.Applications, 1)
+		app := got.Applications[0]
+		assert.Equal(t, "opt/app/bin/app", app.FilePath)
+		require.Len(t, app.Packages, 2)
+		assert.ElementsMatch(t, []string{"github.com/acme/shared", "stdlib"}, packageNames(app.Packages))
+
+		var stdlibCount int
+		for _, pkg := range app.Packages {
+			if pkg.Name == "stdlib" {
+				stdlibCount++
+				assert.Equal(t, analyzer.TypeGoBinary, pkg.AnalyzedBy)
+			}
+		}
+		assert.Equal(t, 1, stdlibCount)
+	})
+
+	t.Run("empty layer does not panic", func(t *testing.T) {
+		got := applier.ApplyLayers([]types.BlobInfo{{}})
+		assert.Equal(t, types.ArtifactDetail{}, got)
+	})
+}
+
+func packageNames(pkgs types.Packages) []string {
+	names := make([]string, 0, len(pkgs))
+	for _, pkg := range pkgs {
+		names = append(names, pkg.Name)
+	}
+	return names
 }
