@@ -735,7 +735,7 @@ func localImageTestWithNamespace(t *testing.T, namespace string) {
 			if *update {
 				b, err := json.MarshalIndent(got.Packages, "", "  ")
 				require.NoError(t, err)
-				err = os.WriteFile(goldenFile, b, 0o666)
+				err = os.WriteFile(goldenFile, b, 0666)
 				require.NoError(t, err)
 			}
 
@@ -803,11 +803,11 @@ func TestContainerd_PullImage(t *testing.T) {
 					},
 					History: []v1.History{
 						{
-							Created:   v1.Time{Time: time.Date(2019, 8, 20, 20, 19, 55, 62606894, time.UTC)},
+							Created:   v1.Time{time.Date(2019, 8, 20, 20, 19, 55, 62606894, time.UTC)},
 							CreatedBy: "/bin/sh -c #(nop) ADD file:fe64057fbb83dccb960efabbf1cd8777920ef279a7fa8dbca0a8801c651bdf7c in / ",
 						},
 						{
-							Created:    v1.Time{Time: time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC)},
+							Created:    v1.Time{time.Date(2019, 8, 20, 20, 19, 55, 211423266, time.UTC)},
 							CreatedBy:  "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
 							EmptyLayer: true,
 						},
