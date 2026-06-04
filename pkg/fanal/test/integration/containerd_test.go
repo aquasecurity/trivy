@@ -52,7 +52,7 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *clien
 
 	startContainerd(t, ctx, tmpDir)
 
-	// Retry up to 5 times until containerd is ready.
+	// Retry until containerd is ready.
 	// client.New uses lazy gRPC dialing, so we verify actual connectivity with
 	// a real RPC call (Version) to catch "permission denied" on the socket before
 	// returning the client to callers.
