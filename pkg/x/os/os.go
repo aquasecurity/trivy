@@ -22,7 +22,7 @@ var (
 // multiple processes share the same /tmp (e.g. Kubernetes emptyDir volumes
 // where all containers run as PID 1).
 func initTempDir() (string, error) {
-	tempDir, err := os.MkdirTemp(os.TempDir(), "trivy-")
+	tempDir, err := os.MkdirTemp(os.TempDir(), "trivy-") //nolint: gocritic
 	if err != nil {
 		return "", xerrors.Errorf("failed to create temp dir: %w", err)
 	}
