@@ -1280,6 +1280,38 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 0,
 	}
+	openAIFinding := func(ruleID, title, severity string, length int) types.SecretFinding {
+		masked := strings.Repeat("*", length)
+		return types.SecretFinding{
+			RuleID:    ruleID,
+			Category:  secret.CategoryOpenAI,
+			Title:     title,
+			Severity:  severity,
+			StartLine: 1,
+			EndLine:   1,
+			Match:     masked,
+			Code: types.Code{
+				Lines: []types.Line{
+					{
+						Number:      1,
+						Content:     masked,
+						Highlighted: masked,
+						IsCause:     true,
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+			Offset: 0,
+		}
+	}
+	wantFindingOpenAIProjectAPIKey := openAIFinding("openai-project-api-key", "OpenAI Project API Key", "CRITICAL", 56)
+	wantFindingOpenAIServiceAccountKey := openAIFinding("openai-service-account-key", "OpenAI Service Account Key", "CRITICAL", 59)
+	wantFindingOpenAIAdminAPIKey := openAIFinding("openai-admin-api-key", "OpenAI Admin API Key", "CRITICAL", 57)
+	wantFindingOpenAILegacyAPIKey := openAIFinding("openai-legacy-api-key", "OpenAI Legacy User API Key", "HIGH", 51)
+	wantFindingOpenAIServiceAPIKey := openAIFinding("openai-service-api-key", "OpenAI Service API Key", "HIGH", 68)
+	wantFindingOpenAIRealtimeClientSecret := openAIFinding("openai-realtime-client-secret", "OpenAI Realtime Client Secret", "MEDIUM", 35)
+
 	wantFindingMavenSettingsPassword := types.SecretFinding{
 		RuleID:    "maven-settings-password",
 		Category:  secret.CategoryMaven,
@@ -1934,6 +1966,69 @@ func TestSecretScanner(t *testing.T) {
 				FilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
 				Findings: []types.SecretFinding{wantFindingAzureAIServicesKey},
 			},
+		},
+		{
+			name:          "find OpenAI Project API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-project-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-project-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIProjectAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Service Account Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-service-account-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-service-account-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIServiceAccountKey},
+			},
+		},
+		{
+			name:          "find OpenAI Admin API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-admin-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-admin-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIAdminAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Legacy User API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-legacy-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-legacy-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAILegacyAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Service API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-service-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-service-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIServiceAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Realtime Client Secret",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-realtime-client-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-realtime-client-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIRealtimeClientSecret},
+			},
+		},
+		{
+			// Cross-vendor `sk-` prefixes (Anthropic, OpenRouter), too-short segments,
+			// and a missing watermark must all be ignored — even when the `T3BlbkFJ`
+			// keyword is present, the prefix isolation and length anchors reject them.
+			name:          "invalid OpenAI tokens",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-invalid.txt"),
+			want:          types.Secret{},
 		},
 		{
 			name:          "find Maven settings.xml password and passphrase",
