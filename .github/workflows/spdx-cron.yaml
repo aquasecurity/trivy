@@ -30,7 +30,7 @@ jobs:
           fi
 
       - name: Microsoft Teams Notification
-        uses: Skitionek/notify-microsoft-teams@b65dda7f5e6fd0960b97f923629b911890dc60b1 # main
+        uses: Skitionek/notify-microsoft-teams@152ef2e109ed09cfcead307699d367dab4515ea7 # main
         if: steps.exceptions_check.outputs.send_notify == 'true'
         with:
           webhook_url: ${{ secrets.TRIVY_MSTEAMS_WEBHOOK }}
