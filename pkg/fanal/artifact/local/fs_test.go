@@ -2689,7 +2689,7 @@ func TestArtifact_Inspect_AnalyzeErrorNotMasked(t *testing.T) {
 	dir := t.TempDir()
 	// Parallel=1 with several files: the first file cancels egCtx, so a later
 	// file's semaphore acquire fails with context.Canceled.
-	for i := 0; i < 10; i++ {
+	for i := range 10 {
 		require.NoError(t, os.WriteFile(
 			filepath.Join(dir, fmt.Sprintf("%d.usererror", i)), []byte("x"), 0o600))
 	}
