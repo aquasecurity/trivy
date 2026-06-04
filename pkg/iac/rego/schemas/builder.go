@@ -76,7 +76,7 @@ func sanitize(s string) string {
 }
 
 func (b *builder) readProperty(name string, parent, inputType reflect.Type, indent int) (*Property, error) {
-	if inputType.Kind() == reflect.Ptr {
+	if inputType.Kind() == reflect.Pointer {
 		inputType = inputType.Elem()
 	}
 
@@ -183,7 +183,7 @@ func (b *builder) readStruct(name string, parent, inputType reflect.Type, indent
 
 	if inputType.Implements(converterInterface) ||
 		inputType.String() == "types.Metadata" {
-		if inputType.Kind() == reflect.Ptr {
+		if inputType.Kind() == reflect.Pointer {
 			inputType = inputType.Elem()
 		}
 		returns := reflect.New(inputType).MethodByName("ToRego").Call(nil)

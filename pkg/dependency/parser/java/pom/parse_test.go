@@ -17,6 +17,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/pom"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var (
@@ -132,6 +133,7 @@ func TestPom_Parse(t *testing.T) {
 		local                     bool
 		enableRepoForSettingsRepo bool // use another repo for repository from settings.xml
 		offline                   bool
+		serverHandler             http.Handler // overrides the default file-server when set
 		want                      []ftypes.Package
 		wantDeps                  []ftypes.Dependency
 		wantErr                   string
@@ -231,6 +233,24 @@ func TestPom_Parse(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name:      "remote repository returns 429 Too Many Requests",
+			inputFile: filepath.Join("testdata", "happy", "pom.xml"),
+			serverHandler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Retry-After", "1800")
+				w.WriteHeader(http.StatusTooManyRequests)
+			}),
+			wantErr: "429 Too Many Requests for http://",
+		},
+		{
+			name:      "snapshot repository returns 429 Too Many Requests on maven-metadata.xml",
+			inputFile: filepath.Join("testdata", "snapshot", "with-maven-metadata", "pom.xml"),
+			serverHandler: http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Retry-After", "1800")
+				w.WriteHeader(http.StatusTooManyRequests)
+			}),
+			wantErr: "429 Too Many Requests for http://",
 		},
 		{
 			name:      "snapshot dependency",
@@ -2480,13 +2500,16 @@ func TestPom_Parse(t *testing.T) {
 			defer f.Close()
 
 			var defaultRepo string
-			var settingsRepos []string
+			var settingsRepos []pom.SettingsRepo
 			if tt.local {
 				// for local repository
 				t.Setenv("MAVEN_HOME", "testdata/settings/global")
 			} else {
 				// for remote repository
 				h := http.FileServer(http.Dir(filepath.Join("testdata", "repository")))
+				if tt.serverHandler != nil {
+					h = tt.serverHandler
+				}
 				ts := httptest.NewServer(h)
 				defaultRepo = ts.URL
 
@@ -2494,7 +2517,7 @@ func TestPom_Parse(t *testing.T) {
 				if tt.enableRepoForSettingsRepo {
 					ch := http.FileServer(http.Dir(filepath.Join("testdata", "repository-for-settings-repo")))
 					cts := httptest.NewServer(ch)
-					settingsRepos = []string{cts.URL}
+					settingsRepos = []pom.SettingsRepo{{URL: cts.URL}}
 				}
 			}
 
@@ -2504,6 +2527,9 @@ func TestPom_Parse(t *testing.T) {
 			gotPkgs, gotDeps, err := p.Parse(t.Context(), f)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
+				var ue *types.UserError
+				require.ErrorAs(t, err, &ue, "expected error to unwrap to *types.UserError")
+				assert.Contains(t, ue.Message, "Retry-After: 1800")
 				return
 			}
 			require.NoError(t, err)

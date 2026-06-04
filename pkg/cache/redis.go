@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/go-multierror"
+	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -139,6 +139,7 @@ func (c RedisCache) PutBlob(ctx context.Context, blobID string, blobInfo types.B
 	}
 	return nil
 }
+
 func (c RedisCache) DeleteBlobs(ctx context.Context, blobIDs []string) error {
 	var errs error
 	for _, blobID := range blobIDs {

@@ -1,9 +1,10 @@
 package rpc
 
 import (
+	"context"
 	"time"
 
-	"github.com/cenkalti/backoff/v4"
+	"github.com/cenkalti/backoff/v5"
 	"github.com/twitchtv/twirp"
 
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -14,29 +15,31 @@ const (
 )
 
 // Retry executes the function again using backoff until maxRetries or success
-func Retry(f func() error) error {
-	operation := func() error {
-		err := f()
+func Retry[T any](ctx context.Context, f func() (T, error)) (T, error) {
+	operation := func() (T, error) {
+		res, err := f()
 		if err != nil {
+			var zero T
 			twerr, ok := err.(twirp.Error)
 			if !ok {
-				return backoff.Permanent(err)
+				return zero, backoff.Permanent(err)
 			}
 			if twerr.Code() == twirp.Unavailable {
-				return err
+				return zero, err
 			}
-			return backoff.Permanent(err)
+			return zero, backoff.Permanent(err)
 		}
-		return nil
+		return res, nil
 	}
 
-	b := backoff.WithMaxRetries(backoff.NewExponentialBackOff(), maxRetries)
-	err := backoff.RetryNotify(operation, b, func(err error, _ time.Duration) {
-		log.Warn("HTTP error", log.Err(err))
-		log.Info("Retrying HTTP request...")
-	})
-	if err != nil {
-		return err
-	}
-	return nil
+	return backoff.Retry(
+		ctx,
+		operation,
+		backoff.WithBackOff(backoff.NewExponentialBackOff()),
+		backoff.WithMaxTries(maxRetries),
+		backoff.WithNotify(func(err error, _ time.Duration) {
+			log.Warn("HTTP error", log.Err(err))
+			log.Info("Retrying HTTP request...")
+		}),
+	)
 }

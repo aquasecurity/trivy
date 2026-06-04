@@ -3,6 +3,7 @@ package applier
 import (
 	"cmp"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -11,6 +12,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -240,6 +242,29 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 	// Filter OS packages with mismatched PURL namespace
 	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
+
+	// If an image contains embedded per-package SBOMs (e.g. Chainguard/Wolfi
+	// /var/lib/db/sbom/*.spdx.json), both the OS package-DB analyzer (apk/dpkg/rpm) and
+	// the SBOM analyzer report the same OS package, colliding on the same dedup key.
+	// To get a deterministic result, we sort packages before the deduplication below,
+	// giving packages from the OS package managers priority, because:
+	//   1. SBOM-derived packages may carry less complete metadata (e.g. missing source
+	//      info, so SrcName falls back to Name).
+	//   2. package-manager DB files are standardized and hold authoritative package
+	//      info (e.g. source/origin from apk o: / dpkg Source: / rpm source RPM).
+	// cf. https://github.com/aquasecurity/trivy/issues/10778
+	slices.SortStableFunc(mergedLayer.Packages, func(a, b ftypes.Package) int {
+		switch {
+		case a.AnalyzedBy == b.AnalyzedBy:
+			return 0
+		case a.AnalyzedBy == analyzer.TypeSBOM:
+			return 1
+		case b.AnalyzedBy == analyzer.TypeSBOM:
+			return -1
+		default:
+			return 0
+		}
+	})
 
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297

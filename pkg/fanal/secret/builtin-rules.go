@@ -72,6 +72,7 @@ var (
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
 	CategoryAzure                = types.SecretRuleCategory("Azure")
+	CategoryMaven                = types.SecretRuleCategory("Maven")
 )
 
 // Reusable regex patterns
@@ -881,7 +882,9 @@ var builtinRules = []Rule{
 		Severity:        "HIGH",
 		Regex:           MustCompile(`(?i)(?:azure[_\-]?devops|ado)[_\-]?(?:pat|token|personal.?access.?token)\s*[:=]\s*["']?(?P<secret>[a-z2-7]{52})["']?`),
 		SecretGroupName: "secret",
-		Keywords:        []string{"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token"},
+		Keywords: []string{
+			"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token",
+		},
 	},
 	{
 		ID:              "azure-entra-client-secret",
@@ -927,5 +930,50 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?P<secret>[A-Za-z0-9+/]{52}JQQJ99C[A-Z][A-Za-z0-9+/]{7}XJ3w3[A-Za-z0-9+/]{4}ACOG[A-Za-z0-9+/]{4})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"XJ3w3"},
+	},
+	// Maven secrets for settings.xml and settings-security.xml — common storage for
+	// repository/server credentials baked into images.
+	//
+	// Path matches any settings.xml on the filesystem (not anchored to ~/.m2 or
+	// /etc/maven) because Maven settings ship in many locations and a narrower
+	// filter would miss legitimate cases. The XML tag combined with file name is
+	// already specific enough to keep false positives low.
+	//
+	// `password` and `passphrase` exclude `{` from the secret value, which skips
+	// both Maven-encrypted values (`{...}`, see
+	// plexus-cipher.DefaultPlexusCipher#ENCRYPTED_STRING_PATTERN) and Maven
+	// property substitution (`${env.X}`, `${prop.Y}`). Encrypted values are
+	// useless without the master from settings-security.xml (detected by a
+	// separate rule), and property placeholders are references rather than
+	// literal secrets.
+	{
+		ID:              "maven-settings-password",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*password\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*password\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"password"},
+	},
+	{
+		ID:              "maven-settings-passphrase",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml passphrase",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*passphrase\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*passphrase\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"passphrase"},
+	},
+	{
+		ID:              "maven-settings-security-master",
+		Category:        CategoryMaven,
+		Title:           "Maven settings-security.xml master password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*master\s*>\s*(?P<secret>[^<\s][^<]+[^<\s])\s*<\s*/\s*master\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings-security\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"master"},
 	},
 }

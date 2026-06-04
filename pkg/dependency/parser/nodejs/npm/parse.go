@@ -268,8 +268,8 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 	//    - "node_modules/body-parser/node_modules/debug/node_modules/ms"
 	//    - "node_modules/body-parser/node_modules/ms"
 	//    - "node_modules/ms"
-	for i := len(paths) - 1; i >= 0; i-- {
-		if paths[i] != nodeModulesDir {
+	for i, v := range slices.Backward(paths) {
+		if v != nodeModulesDir {
 			continue
 		}
 		modulePath := joinPaths(paths[:i+1]...)
