@@ -57,7 +57,7 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *clien
 	// a real RPC call (Version) to catch "permission denied" on the socket before
 	// returning the client to callers.
 	var c *client.Client
-	iteration, _, err := lo.AttemptWhileWithDelay(5, 1*time.Second, func(int, time.Duration) (error, bool) {
+	iteration, _, err := lo.AttemptWhileWithDelay(3, 1*time.Second, func(int, time.Duration) (error, bool) {
 		c, err = client.New(socketPath)
 		if err != nil {
 			if !errors.Is(err, os.ErrPermission) {
