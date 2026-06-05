@@ -1657,6 +1657,7 @@ func TestApplyLayersDeduplicatesSBOMApplications(t *testing.T) {
 								ID:         "github.com/acme/api@v1.0.0",
 								Name:       "github.com/acme/api",
 								Version:    "v1.0.0",
+								FilePath:   "opt/app/bin/api",
 								AnalyzedBy: analyzer.TypeSBOM,
 							},
 						},
@@ -1678,8 +1679,7 @@ func TestApplyLayersDeduplicatesSBOMApplications(t *testing.T) {
 		})
 
 		require.Len(t, got.Applications, 2)
-		assert.Equal(t, "opt/app/.spdx-api.spdx", got.Applications[0].FilePath)
-		assert.Equal(t, "opt/app/bin/worker", got.Applications[1].FilePath)
+		assert.ElementsMatch(t, []string{"opt/app/.spdx-api.spdx", "opt/app/bin/worker"}, applicationFilePaths(got.Applications))
 	})
 
 	t.Run("overlapping package sets are merged without duplicate packages", func(t *testing.T) {
@@ -1694,6 +1694,7 @@ func TestApplyLayersDeduplicatesSBOMApplications(t *testing.T) {
 								ID:         "stdlib@v1.22.11",
 								Name:       "stdlib",
 								Version:    "1.22.11",
+								FilePath:   "opt/app/bin/app",
 								AnalyzedBy: analyzer.TypeSBOM,
 							},
 							{
@@ -1736,10 +1737,54 @@ func TestApplyLayersDeduplicatesSBOMApplications(t *testing.T) {
 		assert.Equal(t, 1, stdlibCount)
 	})
 
+	t.Run("shared dependency without matching file path remains separate", func(t *testing.T) {
+		got := applier.ApplyLayers([]types.BlobInfo{
+			{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/sbom.spdx",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "1.22.11",
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/app/bin/app",
+						Packages: types.Packages{
+							{
+								ID:         "stdlib@v1.22.11",
+								Name:       "stdlib",
+								Version:    "v1.22.11",
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		})
+
+		require.Len(t, got.Applications, 2)
+		assert.ElementsMatch(t, []string{"opt/app/bin/app", "opt/app/sbom.spdx"}, applicationFilePaths(got.Applications))
+	})
+
 	t.Run("empty layer does not panic", func(t *testing.T) {
 		got := applier.ApplyLayers([]types.BlobInfo{{}})
 		assert.Equal(t, types.ArtifactDetail{}, got)
 	})
+}
+
+func applicationFilePaths(apps types.Applications) []string {
+	filePaths := make([]string, 0, len(apps))
+	for _, app := range apps {
+		filePaths = append(filePaths, app.FilePath)
+	}
+	return filePaths
 }
 
 func packageNames(pkgs types.Packages) []string {

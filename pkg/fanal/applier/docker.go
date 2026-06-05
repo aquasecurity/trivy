@@ -101,6 +101,9 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
+	applications := make(map[string]ftypes.Application)
+	applicationKeysByFilePath := make(map[string]map[string]struct{})
+	sbomApplicationKeysByPackageFilePath := make(map[string]map[string]struct{})
 	secretsMap := make(map[string]ftypes.Secret)
 	var mergedLayer ftypes.ArtifactDetail
 
@@ -108,9 +111,11 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		for _, opqDir := range layer.OpaqueDirs {
 			opqDir = strings.TrimSuffix(opqDir, sep)  // this is necessary so that an empty element is not contribute into the array of the DeleteByString function
 			_ = nestedMap.DeleteByString(opqDir, sep) // nolint
+			deleteApplications(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, opqDir, sep)
 		}
 		for _, whFile := range layer.WhiteoutFiles {
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
+			deleteApplications(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, whFile, sep)
 		}
 
 		mergedLayer.OS.Merge(layer.OS)
@@ -127,7 +132,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 		// Apply language-specific packages
 		for _, app := range layer.Applications {
-			setApplication(nestedMap, app, sep)
+			setApplication(nestedMap, applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, app, sep)
 		}
 
 		// Apply misconfigurations
@@ -299,58 +304,155 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	return mergedLayer
 }
 
-func setApplication(nestedMap nested.Nested, app ftypes.Application, sep string) {
-	key := applicationKey(app)
-	existingKey, existing, ok := findMergeableApplication(nestedMap, app, sep)
+func setApplication(nestedMap nested.Nested, applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, app ftypes.Application, sep string) {
+	existingKey, existing, ok := findMergeableApplication(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, app)
 	if !ok {
-		nestedMap.SetByString(key, sep, app)
+		setApplicationByKey(nestedMap, applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, app, sep)
 		return
 	}
 
 	merged := mergeApplications(existing, app)
 	mergedKey := applicationKey(merged)
 	if existingKey != mergedKey {
-		_ = nestedMap.DeleteByString(existingKey, sep) // nolint
+		deleteApplicationByKey(nestedMap, applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, existingKey, sep)
 	}
-	nestedMap.SetByString(mergedKey, sep, merged)
+	setApplicationByKey(nestedMap, applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, merged, sep)
 }
 
 func applicationKey(app ftypes.Application) string {
 	return fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
 }
 
-func findMergeableApplication(nestedMap nested.Nested, app ftypes.Application, sep string) (string, ftypes.Application, bool) {
-	var appKey string
-	var matched ftypes.Application
-
-	// nolint
-	_ = nestedMap.Walk(func(keys []string, value any) error {
-		existing, ok := value.(ftypes.Application)
-		if !ok || !shouldMergeApplications(existing, app) {
-			return nil
-		}
-
-		appKey = strings.Join(keys, sep)
-		matched = existing
-		return nil
-	})
-
-	return appKey, matched, appKey != ""
+func findMergeableApplication(applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, app ftypes.Application) (string, ftypes.Application, bool) {
+	if isSBOMApplication(app) {
+		return findApplicationCoveredBySBOM(applications, applicationKeysByFilePath, app)
+	}
+	return findSBOMApplicationCoveringFilePath(applications, sbomApplicationKeysByPackageFilePath, app.FilePath)
 }
 
-func shouldMergeApplications(a, b ftypes.Application) bool {
-	if a.Type != b.Type || a.FilePath == b.FilePath {
-		return false
+func findApplicationCoveredBySBOM(applications map[string]ftypes.Application, applicationKeysByFilePath map[string]map[string]struct{},
+	app ftypes.Application) (string, ftypes.Application, bool) {
+	for _, pkg := range app.Packages {
+		if pkg.FilePath == "" {
+			continue
+		}
+		if appKey, app, ok := findApplicationByFilePath(applications, applicationKeysByFilePath, pkg.FilePath, false); ok {
+			return appKey, app, true
+		}
 	}
+	return "", ftypes.Application{}, false
+}
 
-	aSBOM, bSBOM := isSBOMApplication(a), isSBOMApplication(b)
-	if aSBOM == bSBOM {
-		return false
+func findSBOMApplicationCoveringFilePath(applications map[string]ftypes.Application, sbomApplicationKeysByPackageFilePath map[string]map[string]struct{},
+	filePath string) (string, ftypes.Application, bool) {
+	if filePath == "" {
+		return "", ftypes.Application{}, false
 	}
-	if !applicationPathsMatch(a, b, bSBOM) {
-		return false
+	appKeys := sortedApplicationKeys(sbomApplicationKeysByPackageFilePath[filePath])
+	for _, appKey := range appKeys {
+		app, ok := applications[appKey]
+		if ok && isSBOMApplication(app) {
+			return appKey, app, true
+		}
 	}
-	return compatiblePackageSets(a.Type, a.Packages, b.Packages)
+	return "", ftypes.Application{}, false
+}
+
+func findApplicationByFilePath(applications map[string]ftypes.Application, applicationKeysByFilePath map[string]map[string]struct{},
+	filePath string, sbom bool) (string, ftypes.Application, bool) {
+	appKeys := sortedApplicationKeys(applicationKeysByFilePath[filePath])
+	for _, appKey := range appKeys {
+		app, ok := applications[appKey]
+		if ok && isSBOMApplication(app) == sbom {
+			return appKey, app, true
+		}
+	}
+	return "", ftypes.Application{}, false
+}
+
+func sortedApplicationKeys(applicationKeys map[string]struct{}) []string {
+	keys := make([]string, 0, len(applicationKeys))
+	for key := range applicationKeys {
+		keys = append(keys, key)
+	}
+	slices.Sort(keys)
+	return keys
+}
+
+func setApplicationByKey(nestedMap nested.Nested, applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, app ftypes.Application, sep string) {
+	appKey := applicationKey(app)
+	if existing, ok := applications[appKey]; ok {
+		deleteApplicationIndexes(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, appKey, existing)
+	}
+	nestedMap.SetByString(appKey, sep, app)
+	applications[appKey] = app
+	addApplicationIndexes(applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, appKey, app)
+}
+
+func deleteApplications(applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, filePath, sep string) {
+	if filePath == "" {
+		return
+	}
+	for appKey, app := range applications {
+		if appKey == filePath || strings.HasPrefix(appKey, filePath+sep) {
+			deleteApplicationIndexes(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, appKey, app)
+		}
+	}
+}
+
+func deleteApplicationByKey(nestedMap nested.Nested, applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, appKey, sep string) {
+	if app, ok := applications[appKey]; ok {
+		deleteApplicationIndexes(applications, applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath, appKey, app)
+	}
+	_ = nestedMap.DeleteByString(appKey, sep) // nolint
+}
+
+func addApplicationIndexes(applicationKeysByFilePath, sbomApplicationKeysByPackageFilePath map[string]map[string]struct{},
+	appKey string, app ftypes.Application) {
+	addApplicationIndex(applicationKeysByFilePath, app.FilePath, appKey)
+	if !isSBOMApplication(app) {
+		return
+	}
+	for _, pkg := range app.Packages {
+		addApplicationIndex(sbomApplicationKeysByPackageFilePath, pkg.FilePath, appKey)
+	}
+}
+
+func deleteApplicationIndexes(applications map[string]ftypes.Application, applicationKeysByFilePath,
+	sbomApplicationKeysByPackageFilePath map[string]map[string]struct{}, appKey string, app ftypes.Application) {
+	delete(applications, appKey)
+	deleteApplicationIndex(applicationKeysByFilePath, app.FilePath, appKey)
+	if !isSBOMApplication(app) {
+		return
+	}
+	for _, pkg := range app.Packages {
+		deleteApplicationIndex(sbomApplicationKeysByPackageFilePath, pkg.FilePath, appKey)
+	}
+}
+
+func addApplicationIndex(index map[string]map[string]struct{}, filePath, appKey string) {
+	if filePath == "" {
+		return
+	}
+	if index[filePath] == nil {
+		index[filePath] = make(map[string]struct{})
+	}
+	index[filePath][appKey] = struct{}{}
+}
+
+func deleteApplicationIndex(index map[string]map[string]struct{}, filePath, appKey string) {
+	if filePath == "" {
+		return
+	}
+	delete(index[filePath], appKey)
+	if len(index[filePath]) == 0 {
+		delete(index, filePath)
+	}
 }
 
 func mergeApplications(a, b ftypes.Application) ftypes.Application {
@@ -383,33 +485,6 @@ func mergeApplicationPackages(appType ftypes.LangType, pkgs, extra ftypes.Packag
 		}
 	}
 	return xslices.ZeroToNil(merged)
-}
-
-func compatiblePackageSets(appType ftypes.LangType, a, b ftypes.Packages) bool {
-	aSet, bSet := packageIdentitySet(appType, a), packageIdentitySet(appType, b)
-	if len(aSet) == 0 || len(bSet) == 0 {
-		return false
-	}
-	return packageIdentitySetContains(aSet, bSet) || packageIdentitySetContains(bSet, aSet)
-}
-
-func packageIdentitySet(appType ftypes.LangType, pkgs ftypes.Packages) map[string]struct{} {
-	ids := make(map[string]struct{})
-	for _, pkg := range pkgs {
-		if id := packageIdentity(appType, pkg); id != "" {
-			ids[id] = struct{}{}
-		}
-	}
-	return ids
-}
-
-func packageIdentitySetContains(superset, subset map[string]struct{}) bool {
-	for id := range subset {
-		if _, ok := superset[id]; !ok {
-			return false
-		}
-	}
-	return true
 }
 
 func packageIdentity(appType ftypes.LangType, pkg ftypes.Package) string {
@@ -452,64 +527,6 @@ func isSBOMFilePath(filePath string) bool {
 		strings.HasSuffix(filePath, ".spdx.json") ||
 		strings.HasSuffix(filePath, ".cdx") ||
 		strings.HasSuffix(filePath, ".cdx.json")
-}
-
-func applicationPathsMatch(a, b ftypes.Application, bSBOM bool) bool {
-	sbomApp, otherApp := a, b
-	if bSBOM {
-		sbomApp, otherApp = b, a
-	}
-
-	if pathReferencesApplication(sbomApp.FilePath, otherApp.FilePath) {
-		return true
-	}
-	for _, pkg := range sbomApp.Packages {
-		if pathReferencesApplication(pkg.FilePath, otherApp.FilePath) {
-			return true
-		}
-	}
-	return !hasApplicationPathEvidence(sbomApp)
-}
-
-func hasApplicationPathEvidence(app ftypes.Application) bool {
-	if pathToken(app.FilePath) != "" {
-		return true
-	}
-	return slices.ContainsFunc(app.Packages, func(pkg ftypes.Package) bool {
-		return pkg.FilePath != ""
-	})
-}
-
-func pathReferencesApplication(sbomPath, appPath string) bool {
-	if sbomPath == "" || appPath == "" {
-		return false
-	}
-	if strings.Trim(sbomPath, "/") == strings.Trim(appPath, "/") {
-		return true
-	}
-	sbomToken, appToken := pathToken(sbomPath), pathToken(appPath)
-	return sbomToken != "" && appToken != "" && strings.Contains(sbomToken, appToken)
-}
-
-func pathToken(filePath string) string {
-	base := filePath
-	if i := strings.LastIndex(base, "/"); i >= 0 {
-		base = base[i+1:]
-	}
-	for _, suffix := range []string{".spdx.json", ".cdx.json", ".spdx", ".cdx"} {
-		base = strings.TrimSuffix(base, suffix)
-	}
-	for _, prefix := range []string{".spdx-", ".cdx-", "spdx-", "cdx-"} {
-		base = strings.TrimPrefix(base, prefix)
-	}
-	base = strings.ToLower(base)
-	base = strings.NewReplacer("-", "", "_", "", ".", "").Replace(base)
-	switch base {
-	case "", "sbom", "bom":
-		return ""
-	default:
-		return base
-	}
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
