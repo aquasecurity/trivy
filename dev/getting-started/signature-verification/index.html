@@ -637,10 +637,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#verifying-binary" class="md-nav__link">
+  <a href="#verifying-release-assets" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verifying binary
+        Verifying release assets
       
     </span>
   </a>
@@ -8452,10 +8452,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#verifying-binary" class="md-nav__link">
+  <a href="#verifying-release-assets" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Verifying binary
+        Verifying release assets
       
     </span>
   </a>
@@ -8532,24 +8532,29 @@ The following checks were performed on each of these signatures:
 
    ....
 </code></pre></div>
-<h2 id="verifying-binary">Verifying binary<a class="headerlink" href="#verifying-binary" title="Permanent link">&para;</a></h2>
-<p>Since Trivy v0.68.1, GitHub Releases provide <a href="https://docs.sigstore.dev/cosign/bundle/">sigstore signature bundles</a>. Separate <code>.sig</code> and certificate (<code>.pem</code>) files are no longer published.</p>
-<p>Download the required tarball and its associated <code>.sigstore.json</code> bundle file from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
+<h2 id="verifying-release-assets">Verifying release assets<a class="headerlink" href="#verifying-release-assets" title="Permanent link">&para;</a></h2>
+<p>Since Trivy v0.68.1, GitHub Releases provide <a href="https://docs.sigstore.dev/cosign/bundle/">sigstore signature bundles</a>. Separate <code>.sig</code> and certificate (<code>.pem</code>) files are no longer published. Every release asset has a corresponding <code>.sigstore.json</code> bundle file.</p>
+<p>Download the release asset and its associated <code>.sigstore.json</code> bundle file from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The commands below assume <a href="https://github.com/sigstore/cosign">cosign v3.0.0+</a>. With cosign v2 (≥ 2.4.0), add the <code>--new-bundle-format</code> flag.</p>
+</div>
 <p>Use the following command for keyless verification:</p>
-<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob-attestation<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>tarball&gt;<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--bundle<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>tarball&gt;.sigstore.json<span class="w"> </span><span class="se">\</span>
+<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>asset&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--bundle<span class="w"> </span>&lt;path<span class="w"> </span>to<span class="w"> </span>asset&gt;.sigstore.json<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--certificate-oidc-issuer<span class="o">=</span>https://token.actions.githubusercontent.com<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--certificate-identity<span class="w"> </span><span class="s1">&#39;https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/&lt;release tag&gt;&#39;</span>
 </code></pre></div>
-<p>Example for <code>trivy_0.68.1_Linux-64bit.tar.gz</code>:</p>
-<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob-attestation<span class="w"> </span>trivy_0.68.1_Linux-64bit.tar.gz<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--bundle<span class="w"> </span>trivy_0.68.1_Linux-64bit.tar.gz.sigstore.json<span class="w"> </span><span class="se">\</span>
+<p>Example for <code>trivy_0.71.0_Linux-64bit.tar.gz</code>:</p>
+<div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify-blob<span class="w"> </span>trivy_0.71.0_Linux-64bit.tar.gz<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--bundle<span class="w"> </span>trivy_0.71.0_Linux-64bit.tar.gz.sigstore.json<span class="w"> </span><span class="se">\</span>
 <span class="w">    </span>--certificate-oidc-issuer<span class="o">=</span>https://token.actions.githubusercontent.com<span class="w"> </span><span class="se">\</span>
-<span class="w">    </span>--certificate-identity<span class="w"> </span><span class="s1">&#39;https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.68.1&#39;</span>
+<span class="w">    </span>--certificate-identity<span class="w"> </span><span class="s1">&#39;https://github.com/aquasecurity/trivy/.github/workflows/reusable-release.yaml@refs/tags/v0.71.0&#39;</span>
 </code></pre></div>
-<p>You should get the following output</p>
+<p>You should get the following output:</p>
 <div class="highlight"><pre><span></span><code>Verified OK
 </code></pre></div>
+<p>The same command applies to <code>.deb</code>, <code>.rpm</code>, and <code>.zip</code> packages.</p>
 <h2 id="verifying-a-gpg-signature">Verifying a GPG signature<a class="headerlink" href="#verifying-a-gpg-signature" title="Permanent link">&para;</a></h2>
 <p>RPM and Deb packages are also signed by GPG.</p>
 <h3 id="verifying-rpm">Verifying RPM<a class="headerlink" href="#verifying-rpm" title="Permanent link">&para;</a></h3>
