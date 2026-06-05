@@ -1529,6 +1529,92 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "custom resource origin layer lookup",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 1,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "spring4shell",
+							FilePath: "app.jar",
+							Data:     "v1",
+						},
+					},
+				},
+				{
+					// Different Type, same FilePath — must not match spring4shell/app.jar lookup
+					SchemaVersion: 1,
+					Digest:        "sha256:7f8e9d0c1b2a394857463524130211009f8e7d6c5b4a39281716151413121110",
+					DiffID:        "sha256:1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f80",
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "log4shell",
+							FilePath: "app.jar",
+							Data:     "other-type",
+						},
+					},
+				},
+				{
+					// Different FilePath, same Type — must not match spring4shell/app.jar lookup
+					SchemaVersion: 1,
+					Digest:        "sha256:8e9f0d1c2b3a4958675746352413221100af9e8d7c6b5a49392827262524232221",
+					DiffID:        "sha256:2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "spring4shell",
+							FilePath: "other.jar",
+							Data:     "other-path",
+						},
+					},
+				},
+				{
+					SchemaVersion: 1,
+					Digest:        "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					CustomResources: []types.CustomResource{
+						{
+							Type:     "spring4shell",
+							FilePath: "app.jar",
+							Data:     "v2",
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				CustomResources: []types.CustomResource{
+					{
+						Type:     "log4shell",
+						FilePath: "app.jar",
+						Layer: types.Layer{
+							Digest: "sha256:7f8e9d0c1b2a394857463524130211009f8e7d6c5b4a39281716151413121110",
+							DiffID: "sha256:1a2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f80",
+						},
+						Data: "other-type",
+					},
+					{
+						Type:     "spring4shell",
+						FilePath: "app.jar",
+						Layer: types.Layer{
+							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						},
+						Data: "v2",
+					},
+					{
+						Type:     "spring4shell",
+						FilePath: "other.jar",
+						Layer: types.Layer{
+							Digest: "sha256:8e9f0d1c2b3a4958675746352413221100af9e8d7c6b5a49392827262524232221",
+							DiffID: "sha256:2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
+						},
+						Data: "other-path",
+					},
+				},
+			},
+		},
+		{
 			// Duplicate packages with different PURL namespaces, prefer OS-matching PURL
 			name: "prefer OS-matching PURL during deduplication",
 			inputLayers: []types.BlobInfo{
@@ -1590,6 +1676,12 @@ func TestApplyLayers(t *testing.T) {
 			for _, app := range got.Applications {
 				sort.Sort(app.Packages)
 			}
+			sort.Slice(got.CustomResources, func(i, j int) bool {
+				if got.CustomResources[i].FilePath == got.CustomResources[j].FilePath {
+					return got.CustomResources[i].Type < got.CustomResources[j].Type
+				}
+				return got.CustomResources[i].FilePath < got.CustomResources[j].FilePath
+			})
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
