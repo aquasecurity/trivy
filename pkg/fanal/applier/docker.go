@@ -95,6 +95,18 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 	return "", ""
 }
 
+func lookupOriginLayerForCustomResource(customResource ftypes.CustomResource, layers []ftypes.BlobInfo) (string, string) {
+	for _, layer := range layers {
+		for _, layerCR := range layer.CustomResources {
+			if customResource.FilePath != layerCR.FilePath || customResource.Type != layerCR.Type {
+				continue
+			}
+			return layer.Digest, layer.DiffID
+		}
+	}
+	return "", ""
+}
+
 // ApplyLayers returns the merged layer
 // nolint: gocyclo
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
@@ -163,10 +175,6 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
-			customResource.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
-			}
 			nestedMap.SetByString(key, sep, customResource)
 		}
 	}
@@ -288,6 +296,17 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, pkg)
 			}
 			app.Packages[i].Identifier.UID = dependency.UID(app.FilePath, pkg)
+		}
+	}
+
+	for i, customResource := range mergedLayer.CustomResources {
+		// Skip lookup if the layer is already set.
+		if lo.IsEmpty(customResource.Layer) {
+			originLayerDigest, originLayerDiffID := lookupOriginLayerForCustomResource(customResource, layers)
+			mergedLayer.CustomResources[i].Layer = ftypes.Layer{
+				Digest: originLayerDigest,
+				DiffID: originLayerDiffID,
+			}
 		}
 	}
 
