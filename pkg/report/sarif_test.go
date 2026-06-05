@@ -746,6 +746,18 @@ func TestReportWriter_Sarif(t *testing.T) {
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
+
+			// Verify that every run contains exactly one invocation with the
+			// expected execution status and non-empty timestamps, then clear it
+			// so the remainder of the struct can be compared with tt.want.
+			require.Len(t, result.Runs, 1)
+			invocations := result.Runs[0].Invocations
+			require.Len(t, invocations, 1, "expected one invocation in SARIF run")
+			assert.True(t, *invocations[0].ExecutionSuccessful, "invocation must report executionSuccessful=true")
+			assert.NotEmpty(t, invocations[0].StartTimeUTC, "invocation startTimeUtc must not be empty")
+			assert.NotEmpty(t, invocations[0].EndTimeUTC, "invocation endTimeUtc must not be empty")
+			result.Runs[0].Invocations = nil
+
 			assert.Equal(t, tt.want, result)
 		})
 	}
