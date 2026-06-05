@@ -465,8 +465,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	defer composite.Cleanup()
 
 	// Walk a tar layer
-	var analyzeErr error
-	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	opqDirs, whFiles, walkErr := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		if err := a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
@@ -488,9 +487,6 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 
 		return nil
 	})
-	if err != nil {
-		analyzeErr = xerrors.Errorf("walk error: %w", err)
-	}
 
 	// errgroup cancels egCtx when an analysis goroutine fails, so the walk above can
 	// fail with context.Canceled and mask the real cause (e.g. a remote 429).
@@ -498,8 +494,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	if err = eg.Wait(); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
 	}
-	if analyzeErr != nil {
-		return types.BlobInfo{}, analyzeErr
+	if walkErr != nil {
+		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", walkErr)
 	}
 
 	// Post-analysis

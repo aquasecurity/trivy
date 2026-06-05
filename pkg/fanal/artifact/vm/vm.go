@@ -102,8 +102,7 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	defer composite.Cleanup()
 
 	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
-	var analyzeErr error
-	err = a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+	walkErr := a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
 		path := strings.TrimPrefix(filePath, "/")
 		if err := a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "/", path, info, opener, nil, opts); err != nil {
 			return xerrors.Errorf("analyze file (%s): %w", path, err)
@@ -127,9 +126,6 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 
 		return nil
 	})
-	if err != nil {
-		analyzeErr = xerrors.Errorf("walk vm error: %w", err)
-	}
 
 	// errgroup cancels egCtx when an analysis goroutine fails, so the walk above can
 	// fail with context.Canceled and mask the real cause (e.g. a remote 429).
@@ -137,8 +133,8 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	if err = eg.Wait(); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
 	}
-	if analyzeErr != nil {
-		return types.BlobInfo{}, analyzeErr
+	if walkErr != nil {
+		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", walkErr)
 	}
 
 	// Post-analysis
