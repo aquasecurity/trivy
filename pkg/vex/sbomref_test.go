@@ -79,10 +79,11 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 	t.Cleanup(s.Close)
 
 	tests := []struct {
-		name      string
-		input     *types.Report
-		wantVEXes int
-		wantErr   bool
+		name       string
+		input      *types.Report
+		wantVEXes  int
+		wantErr    bool
+		wantErrMsg string
 	}{
 		{
 			name:      "external vex retrieval",
@@ -96,9 +97,10 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 			wantErr: true,
 		},
 		{
-			name:    "vex not found",
-			input:   setupTestReport(s, vexNotFound),
-			wantErr: true,
+			name:       "vex not found",
+			input:      setupTestReport(s, vexNotFound),
+			wantErr:    true,
+			wantErrMsg: "did not receive 2xx status code: 404",
 		},
 		{
 			name:      "no external reference",
@@ -113,6 +115,9 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 			got, err := vex.NewSBOMReferenceSet(tt.input)
 			if tt.wantErr {
 				require.Error(t, err)
+				if tt.wantErrMsg != "" {
+					require.ErrorContains(t, err, tt.wantErrMsg)
+				}
 				return
 			}
 			require.NoError(t, err)
