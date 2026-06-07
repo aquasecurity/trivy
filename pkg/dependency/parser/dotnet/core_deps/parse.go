@@ -82,8 +82,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 		// Skip unsupported library types.
 		// `runtimepack` carries the bundled .NET runtime in self-contained deployments.
-		isRuntimePack := strings.EqualFold(lib.Type, "runtimepack")
-		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") && !isRuntimePack {
+		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") && !strings.EqualFold(lib.Type, "runtimepack") {
 			continue
 		}
 
@@ -96,9 +95,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 		// Strip the prefix so the runtime matches the advisory DB under the same name
 		// framework-dependent apps already use (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
-		if isRuntimePack {
-			name = strings.TrimPrefix(name, runtimePackPrefix)
-		}
+		name = strings.TrimPrefix(name, runtimePackPrefix)
 
 		pkg := ftypes.Package{
 			ID:        packageID(name, version),
@@ -161,6 +158,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			}
 		}
 		if len(dependsOn) > 0 {
+			sort.Strings(dependsOn)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependsOn,
@@ -190,6 +188,10 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 	return !lo.IsEmpty(lib.Runtime) || !lo.IsEmpty(lib.RuntimeTargets) || !lo.IsEmpty(lib.Native)
 }
 
+// packageID builds a package ID from a `.deps.json` name. It strips the synthetic
+// `runtimepack.` prefix the .NET SDK adds to the bundled runtime in self-contained
+// deployments so that runtime packs and the `targets` dependency references that point
+// at them resolve to the same ID (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
 func packageID(name, version string) string {
-	return dependency.ID(ftypes.DotNetCore, name, version)
+	return dependency.ID(ftypes.DotNetCore, strings.TrimPrefix(name, runtimePackPrefix), version)
 }

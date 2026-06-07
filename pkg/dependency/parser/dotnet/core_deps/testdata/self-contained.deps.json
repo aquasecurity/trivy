@@ -8,7 +8,9 @@
       ".NETCoreApp,Version=v8.0/linux-x64": {
         "ExampleApp1/1.0.0": {
           "dependencies": {
-            "Newtonsoft.Json": "13.0.1"
+            "Newtonsoft.Json": "13.0.1",
+            "runtimepack.Microsoft.NETCore.App.Runtime.linux-x64": "8.0.0",
+            "runtimepack.Microsoft.AspNetCore.App.Runtime.linux-x64": "8.0.0"
           },
           "runtime": {
             "ExampleApp1.dll": {}
