@@ -3,6 +3,7 @@ package ospkg
 import (
 	"context"
 	"fmt"
+	"slices"
 	"sort"
 
 	"golang.org/x/xerrors"
@@ -23,7 +24,7 @@ type scanner struct {
 // NewScanner creates a new OS package scanner.
 // The given options are forwarded to ospkgDetector.NewDetector during Scan.
 func NewScanner(opts ...ospkgDetector.Option) Scanner {
-	return &scanner{opts: opts}
+	return &scanner{opts: slices.Clone(opts)} // Clone to avoid sharing the backing array with the caller
 }
 
 func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.ScanOptions) (types.Result, bool, error) {
