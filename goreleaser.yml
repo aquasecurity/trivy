@@ -155,6 +155,16 @@ dockers_v2:
       - linux/ppc64le
     extra_files:
       - contrib/
+    labels:
+      org.opencontainers.image.title: "{{ .ProjectName }}"
+      org.opencontainers.image.description: "A Fast Vulnerability Scanner for Containers"
+      org.opencontainers.image.vendor: "Aqua Security"
+      org.opencontainers.image.version: "{{ .Version }}"
+      org.opencontainers.image.created: "{{ .Date }}"
+      org.opencontainers.image.source: "https://github.com/aquasecurity/trivy"
+      org.opencontainers.image.revision: "{{ .FullCommit }}"
+      org.opencontainers.image.url: "https://www.aquasec.com/products/trivy/"
+      org.opencontainers.image.documentation: "https://trivy.dev/v{{ .Version }}/"
     annotations:
       org.opencontainers.image.title: "{{ .ProjectName }}"
       org.opencontainers.image.description: "A Fast Vulnerability Scanner for Containers"
