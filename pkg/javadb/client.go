@@ -160,7 +160,7 @@ func NewClient() (*DB, error) {
 	return &DB{driver: dbc}, nil
 }
 
-func (d *DB) Exists(groupID, artifactID string) (bool, error) {
+func (d *DB) Exists(_ context.Context, groupID, artifactID string) (bool, error) {
 	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(artifactID, groupID)
 	if err != nil {
 		return false, err
@@ -168,7 +168,7 @@ func (d *DB) Exists(groupID, artifactID string) (bool, error) {
 	return index.ArtifactID != "", nil
 }
 
-func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
+func (d *DB) SearchBySHA1(_ context.Context, sha1 string) (jar.Properties, error) {
 	index, err := d.driver.SelectIndexBySha1(sha1)
 	if err != nil {
 		return jar.Properties{}, xerrors.Errorf("select error: %w", err)
@@ -182,7 +182,7 @@ func (d *DB) SearchBySHA1(sha1 string) (jar.Properties, error) {
 	}, nil
 }
 
-func (d *DB) SearchByArtifactID(artifactID, version string) (string, error) {
+func (d *DB) SearchByArtifactID(_ context.Context, artifactID, version string) (string, error) {
 	indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, version, types.JarType)
 	if err != nil {
 		return "", xerrors.Errorf("select error: %w", err)

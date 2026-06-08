@@ -29,9 +29,9 @@ var (
 )
 
 type Client interface {
-	Exists(groupID, artifactID string) (bool, error)
-	SearchBySHA1(sha1 string) (Properties, error)
-	SearchByArtifactID(artifactID, version string) (string, error)
+	Exists(ctx context.Context, groupID, artifactID string) (bool, error)
+	SearchBySHA1(ctx context.Context, sha1 string) (Properties, error)
+	SearchByArtifactID(ctx context.Context, artifactID, version string) (string, error)
 }
 
 type Parser struct {
@@ -76,15 +76,15 @@ func NewParser(c Client, opts ...Option) *Parser {
 	return p
 }
 
-func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
-	pkgs, deps, err := p.parseArtifact(p.rootFilePath, p.size, r)
+func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs, deps, err := p.parseArtifact(ctx, p.rootFilePath, p.size, r)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to parse %s: %w", p.rootFilePath, err)
 	}
 	return removePackageDuplicates(pkgs), deps, nil
 }
 
-func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseArtifact(ctx context.Context, filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	p.logger.Debug("Parsing Java artifacts...", log.FilePath(filePath))
 
 	// Try to extract artifactId and version from the file name
@@ -92,7 +92,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	fileName := filepath.Base(filePath)
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, err := p.traverseZip(filePath, size, r, fileProps)
+	pkgs, m, foundPomProps, err := p.traverseZip(ctx, filePath, size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
@@ -115,14 +115,14 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	if manifestProps.Valid() {
 		// Even if MANIFEST.MF is found, the groupId and artifactId might not be valid.
 		// We have to make sure that the artifact exists actually.
-		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID); ok {
+		if ok, _ := p.client.Exists(ctx, manifestProps.GroupID, manifestProps.ArtifactID); ok {
 			// If groupId and artifactId are valid, they will be returned.
 			return append(pkgs, manifestProps.Package()), nil, nil
 		}
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r, filePath)
+	props, err := p.searchBySHA1(ctx, r, filePath)
 	if err == nil {
 		return append(pkgs, props.Package()), nil, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
@@ -138,7 +138,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 	// Try to search groupId by artifactId via sonatype API
 	// When some artifacts have the same groupIds, it might result in false detection.
-	fileProps.GroupID, err = p.client.SearchByArtifactID(fileProps.ArtifactID, fileProps.Version)
+	fileProps.GroupID, err = p.client.SearchByArtifactID(ctx, fileProps.ArtifactID, fileProps.Version)
 	if err == nil {
 		p.logger.Debug("POM was determined in a heuristic way", log.String("file", fileName),
 			log.String("artifact", fileProps.String()))
@@ -150,7 +150,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	return pkgs, nil, nil
 }
 
-func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
+func (p *Parser) traverseZip(ctx context.Context, filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
 	[]ftypes.Package, manifest, bool, error) {
 	var pkgs []ftypes.Package
 	var m manifest
@@ -183,7 +183,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
-			innerPkgs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
+			innerPkgs, _, err := p.parseInnerJar(ctx, fileInJar, filePath) // TODO process inner deps
 			if err != nil {
 				p.logger.Debug("Failed to parse", log.String("file", fileInJar.Name), log.Err(err))
 				continue
@@ -194,7 +194,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 	return pkgs, m, foundPomProps, nil
 }
 
-func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
+func (p *Parser) parseInnerJar(ctx context.Context, zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
 	fr, err := zf.Open()
 	if err != nil {
 		return nil, nil, xerrors.Errorf("unable to open %s: %w", zf.Name, err)
@@ -223,7 +223,7 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	}
 
 	// Parse jar/war/ear recursively
-	innerPkgs, innerDeps, err := p.parseArtifact(fullPath, int64(zf.UncompressedSize64), f)
+	innerPkgs, innerDeps, err := p.parseArtifact(ctx, fullPath, int64(zf.UncompressedSize64), f)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("failed to parse %s: %w", zf.Name, err)
 	}
@@ -231,7 +231,7 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	return innerPkgs, innerDeps, nil
 }
 
-func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
+func (p *Parser) searchBySHA1(ctx context.Context, r io.ReadSeeker, filePath string) (Properties, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
 		return Properties{}, xerrors.Errorf("file seek error: %w", err)
 	}
@@ -241,7 +241,7 @@ func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, err
 		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}
 	s := hex.EncodeToString(h.Sum(nil))
-	prop, err := p.client.SearchBySHA1(s)
+	prop, err := p.client.SearchBySHA1(ctx, s)
 	if err != nil {
 		return Properties{}, err
 	}
