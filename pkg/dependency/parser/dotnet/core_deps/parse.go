@@ -68,6 +68,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
 	}
 
+	// Normalize `targets` keys to the prefix-stripped ID space used by `pkgs` so runtime packs resolve in the graph pass below.
+	targetLibs = lo.MapKeys(targetLibs, func(_ TargetLib, key string) string {
+		name, version, _ := strings.Cut(key, "/")
+		return packageID(name, version)
+	})
+
 	// First pass: collect all packages
 	var projectNameVer string
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
@@ -86,19 +92,20 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			continue
 		}
 
-		// Skip non-runtime libraries if target libraries are available
-		if targetLibsFound && !p.isRuntimeLibrary(targetLibs, nameVer) {
+		// Strip the synthetic `runtimepack.` prefix so the runtime is reported under the same name as framework-dependent apps (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
+		name = strings.TrimPrefix(name, runtimePackPrefix)
+		id := packageID(name, version)
+
+		// Skip non-runtime libraries if target libraries are available.
+		// `targetLibs` is keyed by the same stripped ID as `id`.
+		if targetLibsFound && !p.isRuntimeLibrary(targetLibs, id) {
 			// Skip non-runtime libraries
 			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
 			continue
 		}
 
-		// Strip the prefix so the runtime matches the advisory DB under the same name
-		// framework-dependent apps already use (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
-		name = strings.TrimPrefix(name, runtimePackPrefix)
-
 		pkg := ftypes.Package{
-			ID:        packageID(name, version),
+			ID:        id,
 			Name:      name,
 			Version:   version,
 			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
@@ -107,10 +114,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		// Identify root package
 		if strings.EqualFold(lib.Type, "project") {
 			if projectNameVer != "" {
-				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", nameVer))
+				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", id))
 				continue
 			}
-			projectNameVer = nameVer
+			projectNameVer = id
 			pkg.Relationship = ftypes.RelationshipRoot
 		}
 
