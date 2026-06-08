@@ -75,6 +75,32 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	})
 
 	// First pass: collect all packages
+	pkgs, projectNameVer := p.collectPackages(depsFile, targetLibs, targetLibsFound)
+	if len(pkgs) == 0 {
+		return nil, nil, nil
+	}
+
+	// If target libraries are not found, return all collected packages without dependencies
+	if !targetLibsFound {
+		pkgSlice := lo.Values(pkgs)
+		sort.Sort(ftypes.Packages(pkgSlice))
+		return pkgSlice, nil, nil
+	}
+
+	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
+
+	// Second pass: build dependency graph + fill Relationships from targets section
+	deps := p.buildDependencyGraph(pkgs, targetLibs, directDeps)
+
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(deps)
+	return pkgSlice, deps, nil
+}
+
+// collectPackages builds the package map from the `libraries` section, returning the
+// packages keyed by ID and the ID of the root project (empty if none was found).
+func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[string]TargetLib, targetLibsFound bool) (map[string]ftypes.Package, string) {
 	var projectNameVer string
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
 
@@ -124,20 +150,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		pkgs[pkg.ID] = pkg
 	}
 
-	if len(pkgs) == 0 {
-		return nil, nil, nil
-	}
+	return pkgs, projectNameVer
+}
 
-	// If target libraries are not found, return all collected packages without dependencies
-	if !targetLibsFound {
-		pkgSlice := lo.Values(pkgs)
-		sort.Sort(ftypes.Packages(pkgSlice))
-		return pkgSlice, nil, nil
-	}
-
-	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
-
-	// Second pass: build dependency graph + fill Relationships from targets section
+// buildDependencyGraph fills the Relationship field of each package and builds the
+// dependency graph from the `targets` section.
+func (p *Parser) buildDependencyGraph(pkgs map[string]ftypes.Package, targetLibs map[string]TargetLib, directDeps []string) ftypes.Dependencies {
 	var deps ftypes.Dependencies
 	for pkgID, pkg := range pkgs {
 		// Fill relationship field for package
@@ -173,10 +191,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 	}
 
-	pkgSlice := lo.Values(pkgs)
-	sort.Sort(ftypes.Packages(pkgSlice))
-	sort.Sort(deps)
-	return pkgSlice, deps, nil
+	return deps
 }
 
 // isRuntimeLibrary returns true if library contains `runtime`, `runtimeTarget` or `native` sections, or if the library is missing from `targetLibs`.
