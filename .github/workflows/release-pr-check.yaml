@@ -14,7 +14,7 @@ jobs:
         env:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
         run: |
-          if [ "$PR_AUTHOR" != "aqua-bot" ]; then
+          if [ "$PR_AUTHOR" != "repo-trivy-write-33ed3c[bot]" ]; then
             echo "::error::This branch is intended for automated backporting by bot. Please refer to the documentation:"
             echo "::error::https://trivy.dev/docs/latest/community/maintainer/backporting/"
             exit 1
