@@ -17,6 +17,10 @@ import (
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
 
+// runtimePackPrefix is the name prefix the .NET SDK gives the bundled runtime in a
+// self-contained app's deps.json, e.g. "runtimepack.Microsoft.NETCore.App.Runtime.linux-x64".
+const runtimePackPrefix = "runtimepack."
+
 type dotNetDependencies struct {
 	Libraries     map[string]dotNetLibrary        `json:"libraries"`
 	RuntimeTarget RuntimeTarget                   `json:"runtimeTarget"`
@@ -64,50 +68,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		p.logger.Debug("Unable to find `Target` for Runtime Target Name. All dependencies from `libraries` section will be included in the report", log.String("Runtime Target Name", depsFile.RuntimeTarget.Name))
 	}
 
+	// Normalize `targets` keys to the prefix-stripped ID space used by `pkgs` so runtime packs resolve in the graph pass below.
+	targetLibs = lo.MapKeys(targetLibs, func(_ TargetLib, key string) string {
+		name, version, _ := strings.Cut(key, "/")
+		return packageID(name, version)
+	})
+
 	// First pass: collect all packages
-	var projectNameVer string
-	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
-
-	for nameVer, lib := range depsFile.Libraries {
-		name, version, ok := strings.Cut(nameVer, "/")
-		if !ok {
-			// Invalid name
-			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
-			continue
-		}
-
-		// Skip unsupported library types
-		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") {
-			continue
-		}
-
-		// Skip non-runtime libraries if target libraries are available
-		if targetLibsFound && !p.isRuntimeLibrary(targetLibs, nameVer) {
-			// Skip non-runtime libraries
-			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
-			continue
-		}
-
-		pkg := ftypes.Package{
-			ID:        packageID(name, version),
-			Name:      name,
-			Version:   version,
-			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
-		}
-
-		// Identify root package
-		if strings.EqualFold(lib.Type, "project") {
-			if projectNameVer != "" {
-				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", nameVer))
-				continue
-			}
-			projectNameVer = nameVer
-			pkg.Relationship = ftypes.RelationshipRoot
-		}
-
-		pkgs[pkg.ID] = pkg
-	}
-
+	pkgs, projectNameVer := p.collectPackages(depsFile, targetLibs, targetLibsFound)
 	if len(pkgs) == 0 {
 		return nil, nil, nil
 	}
@@ -122,6 +90,72 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
 
 	// Second pass: build dependency graph + fill Relationships from targets section
+	deps := p.buildDependencyGraph(pkgs, targetLibs, directDeps)
+
+	pkgSlice := lo.Values(pkgs)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(deps)
+	return pkgSlice, deps, nil
+}
+
+// collectPackages builds the package map from the `libraries` section, returning the
+// packages keyed by ID and the ID of the root project (empty if none was found).
+func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[string]TargetLib, targetLibsFound bool) (map[string]ftypes.Package, string) {
+	var projectNameVer string
+	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
+
+	for nameVer, lib := range depsFile.Libraries {
+		name, version, ok := strings.Cut(nameVer, "/")
+		if !ok {
+			// Invalid name
+			p.logger.Warn("Cannot parse .NET library version", log.String("library", nameVer))
+			continue
+		}
+
+		// Skip unsupported library types.
+		// `runtimepack` carries the bundled .NET runtime in self-contained deployments.
+		if !strings.EqualFold(lib.Type, "package") && !strings.EqualFold(lib.Type, "project") && !strings.EqualFold(lib.Type, "runtimepack") {
+			continue
+		}
+
+		// Strip the synthetic `runtimepack.` prefix so the runtime is reported under the same name as framework-dependent apps (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
+		name = strings.TrimPrefix(name, runtimePackPrefix)
+		id := packageID(name, version)
+
+		// Skip non-runtime libraries if target libraries are available.
+		// `targetLibs` is keyed by the same stripped ID as `id`.
+		if targetLibsFound && !p.isRuntimeLibrary(targetLibs, id) {
+			// Skip non-runtime libraries
+			// cf. https://github.com/aquasecurity/trivy/pull/7039#discussion_r1674566823
+			continue
+		}
+
+		pkg := ftypes.Package{
+			ID:        id,
+			Name:      name,
+			Version:   version,
+			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
+		}
+
+		// Identify root package
+		if strings.EqualFold(lib.Type, "project") {
+			if projectNameVer != "" {
+				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", id))
+				continue
+			}
+			projectNameVer = id
+			pkg.Relationship = ftypes.RelationshipRoot
+		}
+
+		pkgs[pkg.ID] = pkg
+	}
+
+	return pkgs, projectNameVer
+}
+
+// buildDependencyGraph fills the Relationship field of each package and builds the
+// dependency graph from the `targets` section.
+func (p *Parser) buildDependencyGraph(pkgs map[string]ftypes.Package, targetLibs map[string]TargetLib, directDeps []string) ftypes.Dependencies {
 	var deps ftypes.Dependencies
 	for pkgID, pkg := range pkgs {
 		// Fill relationship field for package
@@ -149,6 +183,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			}
 		}
 		if len(dependsOn) > 0 {
+			sort.Strings(dependsOn)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
 				DependsOn: dependsOn,
@@ -156,10 +191,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 	}
 
-	pkgSlice := lo.Values(pkgs)
-	sort.Sort(ftypes.Packages(pkgSlice))
-	sort.Sort(deps)
-	return pkgSlice, deps, nil
+	return deps
 }
 
 // isRuntimeLibrary returns true if library contains `runtime`, `runtimeTarget` or `native` sections, or if the library is missing from `targetLibs`.
@@ -178,6 +210,10 @@ func (p *Parser) isRuntimeLibrary(targetLibs map[string]TargetLib, library strin
 	return !lo.IsEmpty(lib.Runtime) || !lo.IsEmpty(lib.RuntimeTargets) || !lo.IsEmpty(lib.Native)
 }
 
+// packageID builds a package ID from a `.deps.json` name. It strips the synthetic
+// `runtimepack.` prefix the .NET SDK adds to the bundled runtime in self-contained
+// deployments so that runtime packs and the `targets` dependency references that point
+// at them resolve to the same ID (e.g. Microsoft.NETCore.App.Runtime.linux-x64).
 func packageID(name, version string) string {
-	return dependency.ID(ftypes.DotNetCore, name, version)
+	return dependency.ID(ftypes.DotNetCore, strings.TrimPrefix(name, runtimePackPrefix), version)
 }

@@ -73,6 +73,7 @@ var (
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
 	CategoryAzure                = types.SecretRuleCategory("Azure")
 	CategoryMaven                = types.SecretRuleCategory("Maven")
+	CategoryOpenAI               = types.SecretRuleCategory("OpenAI")
 )
 
 // Reusable regex patterns
@@ -975,5 +976,71 @@ var builtinRules = []Rule{
 		Path:            MustCompile(`(?i)(^|[/\\])settings-security\.xml$`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"master"},
+	},
+	// OpenAI API credentials. Every sk-* key embeds the watermark "T3BlbkFJ"
+	// (base64 of "OpenAI") between two random segments of equal length, used as the
+	// pre-filter keyword. The watermark is the real discriminator, so the wide
+	// {20,100} length range does not raise false-positive risk and the rules do not
+	// clash with other vendors that reuse the `sk-` prefix (Anthropic `sk-ant-`,
+	// OpenRouter `sk-or-v1-`), which carry no watermark.
+	//
+	// The active-key rules (proj/svcacct/admin) and the service-key rule carry
+	// distinct literal prefixes, so they never overlap with each other. The legacy
+	// rule is restricted to `[A-Za-z0-9]` (no `-`/`_`) so its {20,42} run cannot
+	// bridge the hyphen in `sk-proj-`, `sk-svcacct-`, `sk-admin-` or `sk-service-`;
+	// this keeps a typed key from also matching the bare legacy pattern.
+	{
+		ID:              "openai-project-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Project API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-proj-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-service-account-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Service Account Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-svcacct-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-admin-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Admin API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-admin-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-legacy-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Legacy User API Key",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-(?:None-)?[A-Za-z0-9]{20,42}T3BlbkFJ[A-Za-z0-9]{20,42}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-service-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Service API Key",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-realtime-client-secret",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Realtime Client Secret",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithBoundaries(`?P<secret>ek_[a-f0-9]{32}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ek_"},
 	},
 }

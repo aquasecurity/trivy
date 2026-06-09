@@ -465,8 +465,8 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 	defer composite.Cleanup()
 
 	// Walk a tar layer
-	opqDirs, whFiles, err := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
-		if err = a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
+	opqDirs, whFiles, walkErr := a.walker.Walk(cr, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		if err := a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "", filePath, info, opener, disabled, opts); err != nil {
 			return xerrors.Errorf("failed to analyze %s: %w", filePath, err)
 		}
 
@@ -487,13 +487,15 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 
 		return nil
 	})
-	if err != nil {
-		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", err)
-	}
 
-	// Wait for all the goroutine to finish and check errors
+	// errgroup cancels egCtx when an analysis goroutine fails, so the walk above can
+	// fail with context.Canceled and mask the real cause (e.g. a remote 429).
+	// Surface eg.Wait()'s error first; fall back to the walk error only when the group is clean.
 	if err = eg.Wait(); err != nil {
 		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
+	}
+	if walkErr != nil {
+		return types.BlobInfo{}, xerrors.Errorf("walk error: %w", walkErr)
 	}
 
 	// Post-analysis

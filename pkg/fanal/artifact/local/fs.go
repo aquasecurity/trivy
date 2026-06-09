@@ -212,22 +212,28 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 
 	// Use static paths instead of traversing the filesystem when all analyzers implement StaticPathAnalyzer
 	// so that we can analyze files faster
+	var walkErr error
 	if paths, canUseStaticPaths := a.analyzer.StaticPaths(a.artifactOption.DisabledAnalyzers); canUseStaticPaths {
 		// Analyze files in static paths
 		a.logger.Debug("Analyzing files in static paths")
 		if err = a.analyzeWithStaticPaths(egCtx, eg, limit, result, composite, opts, paths); err != nil {
-			return artifact.Reference{}, xerrors.Errorf("analyze with static paths: %w", err)
+			walkErr = xerrors.Errorf("analyze with static paths: %w", err)
 		}
 	} else {
 		// Analyze files by traversing the root directory
 		if err = a.analyzeWithRootDir(egCtx, eg, limit, result, composite, opts); err != nil {
-			return artifact.Reference{}, xerrors.Errorf("analyze with traversal: %w", err)
+			walkErr = xerrors.Errorf("analyze with traversal: %w", err)
 		}
 	}
 
-	// Wait for all the goroutine to finish.
+	// errgroup cancels egCtx when an analysis goroutine fails, so the walk above can
+	// fail with context.Canceled and mask the real cause (e.g. a remote 429).
+	// Surface eg.Wait()'s error first; fall back to the walk error only when the group is clean.
 	if err = eg.Wait(); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
+	}
+	if walkErr != nil {
+		return artifact.Reference{}, walkErr
 	}
 
 	// Post-analysis
