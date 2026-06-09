@@ -1,0 +1,15 @@
+{
+  "name": "Test VEX Repository",
+  "description": "VEX Repository for Testing",
+  "versions": [
+    {
+      "spec_version": "0.1",
+      "locations": [
+        {
+          "url": "never used"
+        }
+      ],
+      "update_interval": "24h"
+    }
+  ]
+}
