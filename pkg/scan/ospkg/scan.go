@@ -3,7 +3,6 @@ package ospkg
 import (
 	"context"
 	"fmt"
-	"slices"
 	"sort"
 
 	"golang.org/x/xerrors"
