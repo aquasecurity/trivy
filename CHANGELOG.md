@@ -1,5 +1,15 @@
 # Changelog
 
+## [0.71.1](https://github.com/aquasecurity/trivy/compare/v0.71.0...v0.71.1) (2026-06-10)
+
+
+### Bug Fixes
+
+* forward ospkg detector options through ospkg.NewScanner [backport: release/v0.71] ([#10825](https://github.com/aquasecurity/trivy/issues/10825)) ([3dd9847](https://github.com/aquasecurity/trivy/commit/3dd98471dfbbc4a95edd5cd866468d3a8c87fd17))
+* **oci:** validate artifact filename ([a72d9a4](https://github.com/aquasecurity/trivy/commit/a72d9a4d997c25fbb6534e231b4e206c9b202b31))
+* surface the original analysis error instead of context cancellation [backport: release/v0.71] ([#10812](https://github.com/aquasecurity/trivy/issues/10812)) ([43d1d26](https://github.com/aquasecurity/trivy/commit/43d1d2628725e913db110b89419f0bebd36f58a8))
+* **vex:** load VEX documents from within the repository directory [backport: release/v0.71] ([#10821](https://github.com/aquasecurity/trivy/issues/10821)) ([a62cbe4](https://github.com/aquasecurity/trivy/commit/a62cbe40a240d3a3f568401b8a5f86e14114e371))
+
 ## [0.71.0](https://github.com/aquasecurity/trivy/compare/v0.70.0...v0.71.0) (2026-06-01)
 
 
