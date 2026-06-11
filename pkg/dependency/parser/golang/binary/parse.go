@@ -206,7 +206,7 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
 	// This prevents the flag set from erroring out if other flags were provided.
 	// This helps keep the implementation small, so that only the -X flag is needed.
-	fset.ParseErrorsWhitelist.UnknownFlags = true
+	fset.ParseErrorsAllowlist.UnknownFlags = true
 	// The shorthand name is needed here because setting the full name
 	// to `X` will cause the flag set to look for `--X` instead of `-X`.
 	// The flag can also be set multiple times, so a string slice is needed
