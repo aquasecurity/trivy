@@ -146,7 +146,7 @@ Pass a `--branch` argument with a valid branch name on the remote repository pro
 $ trivy repo --branch <branch-name> <repo-name>
 ```
 
-### Scanning upto a Commit
+### Scanning up to a Commit
 
 Pass a `--commit` argument with a valid commit hash on the remote repository provided:
 
