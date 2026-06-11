@@ -268,6 +268,15 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+	// Record the scan time as an invocation so consumers can tell when the
+	// report was produced. Trivy tracks a single report timestamp, so it is
+	// reported as both the start and end of the invocation.
+	if !report.CreatedAt.IsZero() {
+		sw.run.AddInvocation(true).
+			WithStartTimeUTC(report.CreatedAt).
+			WithEndTimeUTC(report.CreatedAt)
+	}
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/stretchr/testify/assert"
@@ -747,6 +748,46 @@ func TestReportWriter_Sarif(t *testing.T) {
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+func TestReportWriter_SarifInvocation(t *testing.T) {
+	createdAt := time.Date(2024, 1, 2, 3, 4, 5, 0, time.UTC)
+
+	tests := []struct {
+		name  string
+		input types.Report
+		want  []*sarif.Invocation
+	}{
+		{
+			name:  "report with a creation time",
+			input: types.Report{CreatedAt: createdAt},
+			want: []*sarif.Invocation{
+				{
+					ExecutionSuccessful: new(true),
+					StartTimeUTC:        new(createdAt),
+					EndTimeUTC:          new(createdAt),
+				},
+			},
+		},
+		{
+			name:  "report without a creation time",
+			input: types.Report{},
+			want:  nil,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{Output: sarifWritten}
+			require.NoError(t, w.Write(t.Context(), tt.input))
+
+			result := &sarif.Report{}
+			require.NoError(t, json.Unmarshal(sarifWritten.Bytes(), result))
+			require.Len(t, result.Runs, 1)
+			assert.Equal(t, tt.want, result.Runs[0].Invocations)
 		})
 	}
 }
