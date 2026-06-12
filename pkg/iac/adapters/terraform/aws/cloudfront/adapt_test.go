@@ -89,6 +89,72 @@ func Test_adaptDistribution(t *testing.T) {
 	}
 }
 
+func Test_adaptDistributionV2(t *testing.T) {
+	tests := []struct {
+		name      string
+		terraform string
+		expected  cloudfront.Distribution
+	}{
+		{
+			name: "v2 logging configured",
+			terraform: `
+			resource "aws_cloudfront_distribution" "example" {}
+
+			resource "aws_cloudwatch_log_delivery_source" "example" {
+				log_type     = "ACCESS_LOGS"
+				resource_arn = aws_cloudfront_distribution.example.arn
+			}
+
+			resource "aws_cloudwatch_log_delivery" "example" {
+				delivery_source_name = aws_cloudwatch_log_delivery_source.example.name
+			}
+`,
+			expected: cloudfront.Distribution{
+				Logging: cloudfront.Logging{
+					V2: cloudfront.LoggingV2{
+						Enabled: iacTypes.BoolTest(true),
+					},
+				},
+				DefaultCacheBehaviour: cloudfront.CacheBehaviour{},
+				ViewerCertificate: cloudfront.ViewerCertificate{
+					MinimumProtocolVersion: iacTypes.StringTest("TLSv1"),
+				},
+			},
+		},
+		{
+			name: "v2 logging source exists but no delivery",
+			terraform: `
+			resource "aws_cloudfront_distribution" "example" {}
+
+			resource "aws_cloudwatch_log_delivery_source" "example" {
+				log_type     = "ACCESS_LOGS"
+				resource_arn = aws_cloudfront_distribution.example.arn
+			}
+`,
+			expected: cloudfront.Distribution{
+				Logging: cloudfront.Logging{
+					V2: cloudfront.LoggingV2{
+						Enabled: iacTypes.BoolTest(false),
+					},
+				},
+				DefaultCacheBehaviour: cloudfront.CacheBehaviour{},
+				ViewerCertificate: cloudfront.ViewerCertificate{
+					MinimumProtocolVersion: iacTypes.StringTest("TLSv1"),
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			adapted := Adapt(modules)
+			require.Len(t, adapted.Distributions, 1)
+			testutil.AssertDefsecEqual(t, test.expected, adapted.Distributions[0])
+		})
+	}
+}
+
 func TestLines(t *testing.T) {
 	src := `
 	resource "aws_cloudfront_distribution" "example" {
