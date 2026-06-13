@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path/filepath"
 	"sync/atomic"
@@ -70,8 +71,12 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		return err
 	}
 
+	// Clone the global map so that it will not be accessed concurrently.
+	// cf. pkg/downloader/download.go
+	getters := maps.Clone(getter.Getters)
+
 	// Overwrite the file getter so that a file will be copied
-	getter.Getters["file"] = &getter.FileGetter{Copy: true}
+	getters["file"] = &getter.FileGetter{Copy: true}
 
 	opt.Logger.Debug("Downloading module", log.String("source", opt.Source))
 
@@ -81,7 +86,7 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		Src:     opt.Source,
 		Dst:     dst,
 		Pwd:     opt.WorkingDir,
-		Getters: getter.Getters,
+		Getters: getters,
 		Mode:    getter.ClientModeAny,
 	}
 
