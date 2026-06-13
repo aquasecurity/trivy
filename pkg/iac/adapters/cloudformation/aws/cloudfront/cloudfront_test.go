@@ -58,6 +58,82 @@ Resources:
 				Distributions: []cloudfront.Distribution{{}},
 			},
 		},
+
+		{
+			name: "v2 logging configured",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: "redirect-to-https"
+
+  CloudFrontAccessLogsDeliverySource:
+    Type: AWS::Logs::DeliverySource
+    Properties:
+      LogType: ACCESS_LOGS
+      Name: cloudfront-log-delivery-source
+      ResourceArn: !Sub
+        - arn:aws:cloudfront::${AWS::AccountId}:distribution/${D}
+        - D: !GetAtt CloudFrontDistribution.Id
+
+  CloudFrontAccessLogsDelivery:
+    Type: AWS::Logs::Delivery
+    Properties:
+      DeliverySourceName: cloudfront-log-delivery-source
+`,
+			expected: cloudfront.Cloudfront{
+				Distributions: []cloudfront.Distribution{
+					{
+						Logging: cloudfront.Logging{
+							V2: cloudfront.LoggingV2{
+								Enabled: types.BoolTest(true),
+							},
+						},
+						DefaultCacheBehaviour: cloudfront.CacheBehaviour{
+							ViewerProtocolPolicy: types.StringTest("redirect-to-https"),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "v2 logging source exists but no delivery",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  CloudFrontDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        DefaultCacheBehavior:
+          ViewerProtocolPolicy: "redirect-to-https"
+
+  CloudFrontAccessLogsDeliverySource:
+    Type: AWS::Logs::DeliverySource
+    Properties:
+      LogType: ACCESS_LOGS
+      Name: cloudfront-log-delivery-source
+      ResourceArn: !Sub
+        - arn:aws:cloudfront::${AWS::AccountId}:distribution/${D}
+        - D: !GetAtt CloudFrontDistribution.Id
+`,
+			expected: cloudfront.Cloudfront{
+				Distributions: []cloudfront.Distribution{
+					{
+						Logging: cloudfront.Logging{
+							V2: cloudfront.LoggingV2{
+								Enabled: types.BoolTest(false),
+							},
+						},
+						DefaultCacheBehaviour: cloudfront.CacheBehaviour{
+							ViewerProtocolPolicy: types.StringTest("redirect-to-https"),
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
