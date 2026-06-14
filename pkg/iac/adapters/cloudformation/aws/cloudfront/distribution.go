@@ -53,7 +53,7 @@ func getDefaultCacheBehaviour(r *parser.Resource) cloudfront.CacheBehaviour {
 	}
 }
 
-func hasV2Logging(distribution *parser.Resource, deliverySources []*parser.Resource, deliveries []*parser.Resource) iacTypes.BoolValue {
+func hasV2Logging(distribution *parser.Resource, deliverySources, deliveries []*parser.Resource) iacTypes.BoolValue {
 
 	for _, source := range deliverySources {
 		logType := source.GetStringProperty("LogType")
