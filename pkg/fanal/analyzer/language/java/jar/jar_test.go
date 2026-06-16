@@ -37,6 +37,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.glassfish:javax.el",
 								FilePath: "testdata/test.war/WEB-INF/lib/javax.el-3.0.0.jar",
 								Version:  "3.0.0",
+								Licenses: []string{"CDDL + GPLv2 with classpath exception"},
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
@@ -62,6 +63,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.cronutils:cron-utils",
 								FilePath: "testdata/test.war/WEB-INF/lib/cron-utils-9.1.2.jar",
 								Version:  "9.1.2",
+								Licenses: []string{"Apache 2.0"},
 							},
 							{
 								Name:     "org.apache.commons:commons-lang3",

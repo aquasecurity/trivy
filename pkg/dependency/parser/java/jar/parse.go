@@ -6,6 +6,7 @@ import (
 	"context"
 	"crypto/sha1" // nolint:gosec
 	"encoding/hex"
+	"encoding/xml"
 	"errors"
 	"io"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"strings"
 
 	mavenversion "github.com/masahiro331/go-mvn-version"
+	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -89,27 +91,53 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
-	fileName := filepath.Base(filePath)
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, err := p.traverseZip(filePath, size, r, fileProps)
+	pkgs, m, foundPomProps, licenses, err := p.traverseZip(filePath, size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
-	if foundPomProps {
-		return pkgs, nil, nil
+	// Otherwise, resolve the artifact of the jar itself from MANIFEST.MF / SHA-1 / file name.
+	if !foundPomProps {
+		props, found, err := p.resolveArtifact(filePath, r, m, fileProps)
+		if err != nil {
+			return nil, nil, err
+		}
+		if found {
+			pkgs = append(pkgs, props.Package())
+		}
 	}
+
+	// Attach licenses from embedded pom.xml, matched by "groupID:artifactID".
+	for i := range pkgs {
+		pkg := &pkgs[i]
+		// Keep licenses already set by a nested jar from its own pom.xml.
+		if len(pkg.Licenses) > 0 {
+			continue
+		}
+		if names, ok := licenses[pkg.Name]; ok {
+			pkg.Licenses = names
+		}
+	}
+
+	return pkgs, nil, nil
+}
+
+// resolveArtifact determines the artifact of the jar itself when pom.properties is absent,
+// trying MANIFEST.MF, then Maven Central by SHA-1, then a heuristic search by file name.
+func (p *Parser) resolveArtifact(filePath string, r xio.ReadSeekerAt, m manifest, fileProps Properties) (Properties, bool, error) {
+	fileName := filepath.Base(filePath)
 
 	manifestProps := m.properties(filePath)
 	if p.offline {
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
 			p.logger.Debug("Unable to identify POM in offline mode", log.String("file", fileName))
-			return pkgs, nil, nil
+			return Properties{}, false, nil
 		}
-		return append(pkgs, manifestProps.Package()), nil, nil
+		return manifestProps, true, nil
 	}
 
 	if manifestProps.Valid() {
@@ -117,23 +145,23 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 		// We have to make sure that the artifact exists actually.
 		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID); ok {
 			// If groupId and artifactId are valid, they will be returned.
-			return append(pkgs, manifestProps.Package()), nil, nil
+			return manifestProps, true, nil
 		}
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
 	props, err := p.searchBySHA1(r, filePath)
 	if err == nil {
-		return append(pkgs, props.Package()), nil, nil
+		return props, true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
+		return Properties{}, false, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
 
 	p.logger.Debug("No such POM in the central repositories", log.String("file", fileName))
 
 	// Return when artifactId or version from the file name are empty
 	if fileProps.ArtifactID == "" || fileProps.Version == "" {
-		return pkgs, nil, nil
+		return Properties{}, false, nil
 	}
 
 	// Try to search groupId by artifactId via sonatype API
@@ -142,31 +170,49 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	if err == nil {
 		p.logger.Debug("POM was determined in a heuristic way", log.String("file", fileName),
 			log.String("artifact", fileProps.String()))
-		pkgs = append(pkgs, fileProps.Package())
+		return fileProps, true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by artifact id: %w", err)
+		return Properties{}, false, xerrors.Errorf("failed to search by artifact id: %w", err)
 	}
 
-	return pkgs, nil, nil
+	return Properties{}, false, nil
 }
 
 func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
-	[]ftypes.Package, manifest, bool, error) {
+	[]ftypes.Package, manifest, bool, map[string][]string, error) {
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool
 
+	// Licenses declared in embedded META-INF/maven/<g>/<a>/pom.xml, keyed by "groupID:artifactID".
+	// The path carries no version, so packages are matched by G:A after the loop
+	// (file order in the zip is not guaranteed).
+	licenses := make(map[string][]string)
+
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
-		return nil, manifest{}, false, xerrors.Errorf("zip error: %w", err)
+		return nil, manifest{}, false, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	for _, fileInJar := range zr.File {
+		// Collect licenses declared in the embedded META-INF/maven/<g>/<a>/pom.xml.
+		if groupID, artifactID, ok := embeddedPomGAV(fileInJar.Name); ok {
+			names, err := parsePomLicenses(fileInJar)
+			if err != nil {
+				p.logger.Debug("Failed to parse licenses", log.String("file", fileInJar.Name), log.Err(err))
+				continue
+			}
+			if len(names) > 0 {
+				licenses[packageName(groupID, artifactID)] = names
+			}
+			continue
+		}
+
 		switch {
 		case filepath.Base(fileInJar.Name) == "pom.properties":
 			props, err := parsePomProperties(fileInJar, filePath)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
+				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
 			// Validation of props to avoid getting packages with empty Name/Version
 			if props.Valid() {
@@ -180,7 +226,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
 			m, err = parseManifest(fileInJar)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
+				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
 			innerPkgs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
@@ -191,7 +237,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 			pkgs = append(pkgs, innerPkgs...)
 		}
 	}
-	return pkgs, m, foundPomProps, nil
+	return pkgs, m, foundPomProps, licenses, nil
 }
 
 func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -298,6 +344,64 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 		return Properties{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return p, nil
+}
+
+// embeddedPom is a minimal view of an embedded pom.xml: only the license names are needed.
+type embeddedPom struct {
+	Licenses struct {
+		License []struct {
+			Name string `xml:"name"`
+		} `xml:"license"`
+	} `xml:"licenses"`
+}
+
+// embeddedPomGAV extracts groupId and artifactId from a path of the form
+// META-INF/maven/<groupId>/<artifactId>/pom.xml. The version is not part of the path.
+// ok is false when the path is not a Maven descriptor pom.xml.
+func embeddedPomGAV(name string) (groupID, artifactID string, ok bool) {
+	rel, found := strings.CutPrefix(name, "META-INF/maven/")
+	if !found {
+		return "", "", false
+	}
+	rel, found = strings.CutSuffix(rel, "/pom.xml")
+	if !found {
+		return "", "", false
+	}
+	groupID, artifactID, found = strings.Cut(rel, "/")
+	if !found || groupID == "" || artifactID == "" {
+		return "", "", false
+	}
+	return groupID, artifactID, true
+}
+
+// parsePomLicenses returns the raw <license><name> values from an embedded pom.xml.
+func parsePomLicenses(f *zip.File) ([]string, error) {
+	file, err := f.Open()
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open %s: %w", f.Name, err)
+	}
+	defer file.Close()
+
+	return decodePomLicenses(file)
+}
+
+// decodePomLicenses decodes a pom.xml and returns the raw <license><name> values.
+// Names are kept as-is; normalization happens downstream.
+func decodePomLicenses(r io.Reader) ([]string, error) {
+	var pom embeddedPom
+	decoder := xml.NewDecoder(r)
+	decoder.CharsetReader = charset.NewReaderLabel
+	if err := decoder.Decode(&pom); err != nil {
+		return nil, xerrors.Errorf("xml decode error: %w", err)
+	}
+
+	var names []string
+	for _, lic := range pom.Licenses.License {
+		if name := strings.TrimSpace(lic.Name); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names, nil
 }
 
 type manifest struct {

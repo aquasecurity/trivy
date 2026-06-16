@@ -48,6 +48,7 @@ var (
 			Name:     "com.cronutils:cron-utils",
 			Version:  "9.1.2",
 			FilePath: "testdata/maven.war/WEB-INF/lib/cron-utils-9.1.2.jar",
+			Licenses: []string{"Apache 2.0"},
 		},
 		{
 			Name:     "org.slf4j:slf4j-api",
@@ -58,6 +59,7 @@ var (
 			Name:     "org.glassfish:javax.el",
 			Version:  "3.0.0",
 			FilePath: "testdata/maven.war/WEB-INF/lib/javax.el-3.0.0.jar",
+			Licenses: []string{"CDDL + GPLv2 with classpath exception"},
 		},
 		{
 			Name:     "org.apache.commons:commons-lang3",
@@ -85,6 +87,7 @@ var (
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "org.apache.commons:commons-compress",
@@ -141,6 +144,7 @@ var (
 			Name:     "com.google.j2objc:j2objc-annotations",
 			Version:  "1.3",
 			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
@@ -196,16 +200,19 @@ var (
 			Name:     "io.quarkus.gizmo:gizmo",
 			Version:  "1.1",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.16",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-databind",

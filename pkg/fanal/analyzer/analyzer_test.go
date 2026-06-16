@@ -655,6 +655,7 @@ func TestAnalyzerGroup_PostAnalyze(t *testing.T) {
 							{
 								Name:       "com.fasterxml.jackson.core:jackson-annotations",
 								Version:    "2.15.0-rc2",
+								Licenses:   []string{"Apache-2.0"},
 								FilePath:   "testdata/post-apps/jar/jackson-annotations-2.15.0-rc2.jar",
 								AnalyzedBy: analyzer.TypeJar,
 							},
