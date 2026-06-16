@@ -68,7 +68,7 @@ func hasV2Logging(distribution *parser.Resource, deliverySources, deliveries []*
 		for _, delivery := range deliveries {
 			deliverySourceName := delivery.GetStringProperty("DeliverySourceName")
 			if deliverySourceName.Value() == sourceName.Value() || deliverySourceName.Value() == source.ID() {
-				return iacTypes.Bool(true, distribution.Metadata())
+				return iacTypes.Bool(true, delivery.Metadata())
 			}
 		}
 
