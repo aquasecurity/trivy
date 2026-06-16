@@ -143,6 +143,33 @@ func Test_adaptDistributionV2(t *testing.T) {
 				},
 			},
 		},
+
+		{
+			name: "v2 logging with non-access log_type",
+			terraform: `
+            resource "aws_cloudfront_distribution" "example" {}
+
+            resource "aws_cloudwatch_log_delivery_source" "example" {
+                log_type     = "ERROR_LOGS"
+                resource_arn = aws_cloudfront_distribution.example.arn
+            }
+
+            resource "aws_cloudwatch_log_delivery" "example" {
+                delivery_source_name = aws_cloudwatch_log_delivery_source.example.name
+            }
+`,
+			expected: cloudfront.Distribution{
+				Logging: cloudfront.Logging{
+					V2: cloudfront.LoggingV2{
+						Enabled: iacTypes.BoolTest(false),
+					},
+				},
+				DefaultCacheBehaviour: cloudfront.CacheBehaviour{},
+				ViewerCertificate: cloudfront.ViewerCertificate{
+					MinimumProtocolVersion: iacTypes.StringTest("TLSv1"),
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
