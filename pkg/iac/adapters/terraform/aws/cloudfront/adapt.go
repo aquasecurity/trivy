@@ -90,8 +90,7 @@ func hasV2Logging(modules terraform.Modules, distributionBlock *terraform.Block)
 
 	sources := modules.GetReferencingResources(distributionBlock, "aws_cloudwatch_log_delivery_source", "resource_arn")
 	for _, source := range sources {
-		logType := source.GetAttribute("log_type").AsStringValueOrDefault("", source)
-		if logType.Value() != "ACCESS_LOGS" {
+		if !source.GetAttribute("log_type").Equals("ACCESS_LOGS") {
 			continue
 		}
 
