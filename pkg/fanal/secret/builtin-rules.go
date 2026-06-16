@@ -620,7 +620,7 @@ var builtinRules = []Rule{
 		SecretGroupName: "secret",
 		AllowRules: AllowRules{
 			{
-				ID:          "github-app-token",
+				ID:          "stateless-ghs-jwt",
 				Description: "Avoid double-reporting the JWT embedded in a stateless ghs_ GitHub App token",
 				Regex:       MustCompile(`^ghs_`),
 			},
