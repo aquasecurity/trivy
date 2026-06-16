@@ -326,6 +326,28 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 13,
 	}
+	wantFindingGitHubAppToken := types.SecretFinding{
+		RuleID:    "github-app-token",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub App Token",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GITHUB_TOKEN=**********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_TOKEN=**********************************************************************************************",
+					Highlighted: "GITHUB_TOKEN=**********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 13,
+	}
 	wantFindingMyAwsAccessKey := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
 		Category:  secret.CategoryAWS,
@@ -1687,6 +1709,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/github-token.txt",
 				Findings: []types.SecretFinding{wantFindingGitHubPAT},
+			},
+		},
+		{
+			name:          "should find GitHub App installation token (stateless format)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/github-app-token.txt",
+			want: types.Secret{
+				FilePath: "testdata/github-app-token.txt",
+				Findings: []types.SecretFinding{wantFindingGitHubAppToken},
 			},
 		},
 		{

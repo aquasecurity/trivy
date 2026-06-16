@@ -140,11 +140,17 @@ var builtinRules = []Rule{
 		Keywords:        []string{"gho_"},
 	},
 	{
+		// `ghu_` user-to-server tokens keep the legacy fixed format: exactly
+		// 36 alphanumeric chars. Since 2026-04-27 `ghs_` installation
+		// tokens use a new stateless format `ghs_<APPID>_<JWT>` (~520 chars,
+		// base64url + dot-separated), so they contain `.`, `-` and `_`.
+		// GitHub recommends `ghs_[A-Za-z0-9.\-_]{36,}`. See
+		// https://github.com/aquasecurity/trivy/issues/10591.
 		ID:              "github-app-token",
 		Category:        CategoryGitHub,
 		Title:           "GitHub App Token",
 		Severity:        "CRITICAL",
-		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(ghu|ghs)_[0-9a-zA-Z]{36}`),
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(?:ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z._-]{36,})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ghu_", "ghs_"},
 	},
@@ -608,7 +614,20 @@ var builtinRules = []Rule{
 		Category: CategoryJWT,
 		Title:    "JWT token",
 		Severity: "MEDIUM",
-		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		// The optional `ghs_<APPID>_` prefix is part of the full match (which the
+		// allow-rule below inspects) but not of the `secret` group (which is
+		// reported). This drops the JWT embedded in a stateless GitHub App token
+		// so it is reported only once, by the `github-app-token` rule, while
+		// standalone JWTs keep matching and are reported exactly as before.
+		Regex:           MustCompile(`(?:ghs_[0-9]+_)?(?P<secret>ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?)`),
+		SecretGroupName: "secret",
+		AllowRules: AllowRules{
+			{
+				ID:          "stateless-ghs-jwt",
+				Description: "Avoid double-reporting the JWT embedded in a stateless ghs_ GitHub App token",
+				Regex:       MustCompile(`^ghs_`),
+			},
+		},
 		Keywords: []string{".eyJ"},
 	},
 	{
