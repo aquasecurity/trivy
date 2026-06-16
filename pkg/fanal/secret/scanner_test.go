@@ -348,28 +348,6 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 13,
 	}
-	wantFindingGitHubAppTokenJWT := types.SecretFinding{
-		RuleID:    "jwt-token",
-		Category:  secret.CategoryJWT,
-		Title:     "JWT token",
-		Severity:  "MEDIUM",
-		StartLine: 1,
-		EndLine:   1,
-		Match:     "GITHUB_TOKEN=******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************",
-		Code: types.Code{
-			Lines: []types.Line{
-				{
-					Number:      1,
-					Content:     "GITHUB_TOKEN=******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************",
-					Highlighted: "GITHUB_TOKEN=******************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************************",
-					IsCause:     true,
-					FirstCause:  true,
-					LastCause:   true,
-				},
-			},
-		},
-		Offset: 23,
-	}
 	wantFindingMyAwsAccessKey := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
 		Category:  secret.CategoryAWS,
@@ -1426,7 +1404,7 @@ func TestSecretScanner(t *testing.T) {
 			inputFilePath: "testdata/github-app-token.txt",
 			want: types.Secret{
 				FilePath: "testdata/github-app-token.txt",
-				Findings: []types.SecretFinding{wantFindingGitHubAppToken, wantFindingGitHubAppTokenJWT},
+				Findings: []types.SecretFinding{wantFindingGitHubAppToken},
 			},
 		},
 		{

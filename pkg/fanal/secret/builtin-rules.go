@@ -611,7 +611,20 @@ var builtinRules = []Rule{
 		Category: CategoryJWT,
 		Title:    "JWT token",
 		Severity: "MEDIUM",
-		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		// The optional `ghs_<APPID>_` prefix is part of the full match (which the
+		// allow-rule below inspects) but not of the `secret` group (which is
+		// reported). This drops the JWT embedded in a stateless GitHub App token
+		// so it is reported only once, by the `github-app-token` rule, while
+		// standalone JWTs keep matching and are reported exactly as before.
+		Regex:           MustCompile(`(?:ghs_[0-9]+_)?(?P<secret>ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?)`),
+		SecretGroupName: "secret",
+		AllowRules: AllowRules{
+			{
+				ID:          "github-app-token",
+				Description: "Avoid double-reporting the JWT embedded in a stateless ghs_ GitHub App token",
+				Regex:       MustCompile(`^ghs_`),
+			},
+		},
 		Keywords: []string{".eyJ"},
 	},
 	{
