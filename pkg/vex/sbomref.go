@@ -84,7 +84,7 @@ func retrieveExternalVEXDocument(ctx context.Context, vexUrl *url.URL, report *t
 	defer res.Body.Close()
 
 	if res.StatusCode != http.StatusOK {
-		return nil, xerrors.Errorf("did not receive 2xx status code: %d", res.StatusCode)
+		return nil, xerrors.Errorf("unexpected status code %d from %s", res.StatusCode, vexUrl.Redacted())
 	}
 
 	val, err := io.ReadAll(res.Body)
