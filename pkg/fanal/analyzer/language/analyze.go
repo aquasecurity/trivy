@@ -101,7 +101,11 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 			pkgs[i].FilePath = libFilePath
 		}
 		pkgs[i].DependsOn = deps[pkg.ID]
-		pkgs[i].Digest = d
+		// Save the digest only if it has not been calculated for the package yet.
+		// For example, the digest for JAR files is calculated inside the parser.
+		if pkgs[i].Digest == "" {
+			pkgs[i].Digest = d
+		}
 		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 	}
 

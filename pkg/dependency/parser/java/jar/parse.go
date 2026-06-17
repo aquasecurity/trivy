@@ -4,8 +4,6 @@ import (
 	"archive/zip"
 	"bufio"
 	"context"
-	"crypto/sha1" // nolint:gosec
-	"encoding/hex"
 	"errors"
 	"io"
 	"os"
@@ -18,6 +16,7 @@ import (
 	mavenversion "github.com/masahiro331/go-mvn-version"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
@@ -38,6 +37,7 @@ type Parser struct {
 	logger       *log.Logger
 	rootFilePath string
 	offline      bool
+	checksum     bool
 	size         int64
 
 	client Client
@@ -54,6 +54,14 @@ func WithFilePath(filePath string) Option {
 func WithOffline(offline bool) Option {
 	return func(p *Parser) {
 		p.offline = offline
+	}
+}
+
+// WithChecksum enables calculation of the SHA-1 digest for every archive
+// (not only the ones that are looked up by SHA-1) and saving it to Package.Digest.
+func WithChecksum(checksum bool) Option {
+	return func(p *Parser) {
+		p.checksum = checksum
 	}
 }
 
@@ -85,6 +93,25 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 }
 
 func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs, deps, err := p.parsePackages(filePath, size, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// When a checksum is requested, every package must carry the digest of its
+	// own file. Packages from nested archives (and the one resolved by
+	// searchBySHA1) already have it, so fill in this archive's digest only for
+	// the packages that are still missing one.
+	if p.checksum {
+		if err := fillArchiveDigest(pkgs, r); err != nil {
+			return nil, nil, xerrors.Errorf("unable to set digest for %s: %w", filePath, err)
+		}
+	}
+
+	return pkgs, deps, nil
+}
+
+func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	p.logger.Debug("Parsing Java artifacts...", log.FilePath(filePath))
 
 	// Try to extract artifactId and version from the file name
@@ -122,9 +149,9 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r, filePath)
+	pkg, err := p.searchBySHA1(r, filePath)
 	if err == nil {
-		return append(pkgs, props.Package()), nil, nil
+		return append(pkgs, pkg), nil, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
 		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
@@ -148,6 +175,29 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	}
 
 	return pkgs, nil, nil
+}
+
+// fillArchiveDigest sets the SHA-1 digest of the archive (r) on every package
+// that does not have a digest yet. The digest is calculated lazily, so the
+// archive is not read when all packages already carry their own digest.
+func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
+	var d digest.Digest
+	for i := range pkgs {
+		if pkgs[i].Digest != "" {
+			continue
+		}
+		if d == "" {
+			if _, err := r.Seek(0, io.SeekStart); err != nil {
+				return xerrors.Errorf("file seek error: %w", err)
+			}
+			var err error
+			if d, err = digest.CalcSHA1(r); err != nil {
+				return xerrors.Errorf("unable to calculate SHA-1: %w", err)
+			}
+		}
+		pkgs[i].Digest = d
+	}
+	return nil
 }
 
 func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
@@ -231,22 +281,28 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	return innerPkgs, innerDeps, nil
 }
 
-func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
+func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (ftypes.Package, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return Properties{}, xerrors.Errorf("file seek error: %w", err)
+		return ftypes.Package{}, xerrors.Errorf("file seek error: %w", err)
+	}
+	d, err := digest.CalcSHA1(r)
+	if err != nil {
+		return ftypes.Package{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}
 
-	h := sha1.New() // nolint:gosec
-	if _, err := io.Copy(h, r); err != nil {
-		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
-	}
-	s := hex.EncodeToString(h.Sum(nil))
-	prop, err := p.client.SearchBySHA1(s)
+	prop, err := p.client.SearchBySHA1(d.Encoded())
 	if err != nil {
-		return Properties{}, err
+		return ftypes.Package{}, err
 	}
 	prop.FilePath = filePath
-	return prop, nil
+
+	pkg := prop.Package()
+	// searchBySHA1 has already calculated the archive's SHA-1, so stamp it on the
+	// resolved package to avoid recalculating it in fillArchiveDigest.
+	if p.checksum {
+		pkg.Digest = d
+	}
+	return pkg, nil
 }
 
 func isArtifact(name string) bool {

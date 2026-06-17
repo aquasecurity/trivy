@@ -79,6 +79,47 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			// The top-level WAR and each inner JAR must have the digest of
+			// their own file, not the digest of the enclosing WAR.
+			// `repackaged-app` is the WAR itself (resolved via its pom.properties),
+			// `inner-lib-1.2.3.jar` is resolved via its pom.properties,
+			// `tomcat-embed-websocket-9.0.65.jar` is resolved by SHA-1 in trivy-java-db.
+			// cf. https://github.com/aquasecurity/trivy/discussions/10847
+			name:            "happy path (repackaged WAR with checksum)",
+			inputFile:       "testdata/repackaged.war",
+			includeChecksum: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Jar,
+						FilePath: "testdata/repackaged.war",
+						Packages: types.Packages{
+							{
+								Name:     "com.example:repackaged-app",
+								FilePath: "testdata/repackaged.war",
+								Version:  "2.0.0",
+								Digest:   "sha1:5ea8e9906f162e5287e788cf464ec96a8a815bcc",
+							},
+							{
+								Name:     "com.example:inner-lib",
+								FilePath: "testdata/repackaged.war/WEB-INF/lib/inner-lib-1.2.3.jar",
+								Version:  "1.2.3",
+								Digest:   "sha1:a22f48b888dd3b7ed9f6fea047e968479eac736f",
+							},
+							{
+								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
+								FilePath: "testdata/repackaged.war/WEB-INF/lib/tomcat-embed-websocket-9.0.65.jar",
+								Version:  "9.0.65",
+								Digest:   "sha1:bd70dfeb39cc83c6934be24fa377b21e541dbe76",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			// The PAR itself (resolved via its pom.properties) and the nested
+			// `jackson-core` JAR must each carry the digest of their own file.
 			name:            "happy path (PAR file)",
 			inputFile:       "testdata/test.par",
 			includeChecksum: true,
@@ -89,10 +130,16 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/test.par",
 						Packages: types.Packages{
 							{
+								Name:     "com.example:par-app",
+								FilePath: "testdata/test.par",
+								Version:  "3.0.0",
+								Digest:   "sha1:bdce3e13cc5d39960ab7f7644ae24d82becd2ba2",
+							},
+							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
-								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
+								Digest:   "sha1:66b715dec9dd8b0f39f3296e67e05913bf422d0c",
 							},
 						},
 					},
