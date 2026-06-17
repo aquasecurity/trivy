@@ -69,6 +69,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.commons:commons-lang3",
 								FilePath: "testdata/test.war/WEB-INF/lib/commons-lang3-3.11.jar",
 								Version:  "3.11",
+								Licenses: []string{"Apache-2.0"},
 							},
 							{
 								Name:     "com.example:web-app",
@@ -114,6 +115,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
 								Version:  "9.0.65",
+								Licenses: []string{"Apache-2.0"},
 							},
 						},
 					},

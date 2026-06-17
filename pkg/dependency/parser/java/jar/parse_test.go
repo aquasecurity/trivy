@@ -65,6 +65,7 @@ var (
 			Name:     "org.apache.commons:commons-lang3",
 			Version:  "3.11",
 			FilePath: "testdata/maven.war/WEB-INF/lib/commons-lang3-3.11.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 	}
 
@@ -77,11 +78,13 @@ var (
 			Name:     "commons-dbcp:commons-dbcp",
 			Version:  "1.4",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-dbcp-1.4.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 		{
 			Name:     "commons-pool:commons-pool",
 			Version:  "1.6",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-pool-1.6.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
@@ -93,6 +96,7 @@ var (
 			Name:     "org.apache.commons:commons-compress",
 			Version:  "1.19",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-compress-1.19.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 	}
 

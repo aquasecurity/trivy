@@ -38,9 +38,15 @@ To find information about these JARs[^2], the same logic is used as for the base
 `table` format only contains the name of root JAR[^2] . To get the full path to inner JARs[^2] use the `json` format.
 
 ### Licenses
-Trivy detects licenses declared in the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml` and attaches them to the matching package.
+Trivy detects licenses for a JAR[^2] from two sources, in this order:
 
-Coverage is limited: many JARs declare a license only in a parent POM (which is not expanded in the embedded `pom.xml`) or ship no Maven descriptor at all.
+1. **Embedded POM** — the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml`, matched to the package by `groupId:artifactId`.
+2. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
+
+Notes and limitations:
+
+- Coverage is limited: many JARs[^2] declare a license only in a parent POM (which is not expanded in the embedded `pom.xml`) or ship no Maven descriptor at all.
+- A single license file may bundle the texts of third-party components (e.g. Spring or Tomcat artifacts), so a package can be reported with several licenses found in that file, not only its own.
 
 ## pom.xml
 Trivy parses your `pom.xml` file and tries to find files with dependencies from these local locations.
