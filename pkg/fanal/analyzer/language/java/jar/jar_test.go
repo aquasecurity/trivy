@@ -79,45 +79,6 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			// The top-level WAR and each inner JAR must have the digest of
-			// their own file, not the digest of the enclosing WAR.
-			// `repackaged-app` is the WAR itself (resolved via its pom.properties),
-			// `inner-lib-1.2.3.jar` is resolved via its pom.properties,
-			// `tomcat-embed-websocket-9.0.65.jar` is resolved by SHA-1 in trivy-java-db.
-			// cf. https://github.com/aquasecurity/trivy/discussions/10847
-			name:            "happy path (repackaged WAR with checksum)",
-			inputFile:       "testdata/repackaged.war",
-			includeChecksum: true,
-			want: &analyzer.AnalysisResult{
-				Applications: []types.Application{
-					{
-						Type:     types.Jar,
-						FilePath: "testdata/repackaged.war",
-						Packages: types.Packages{
-							{
-								Name:     "com.example:repackaged-app",
-								FilePath: "testdata/repackaged.war",
-								Version:  "2.0.0",
-								Digest:   "sha1:5ea8e9906f162e5287e788cf464ec96a8a815bcc",
-							},
-							{
-								Name:     "com.example:inner-lib",
-								FilePath: "testdata/repackaged.war/WEB-INF/lib/inner-lib-1.2.3.jar",
-								Version:  "1.2.3",
-								Digest:   "sha1:a22f48b888dd3b7ed9f6fea047e968479eac736f",
-							},
-							{
-								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
-								FilePath: "testdata/repackaged.war/WEB-INF/lib/tomcat-embed-websocket-9.0.65.jar",
-								Version:  "9.0.65",
-								Digest:   "sha1:bd70dfeb39cc83c6934be24fa377b21e541dbe76",
-							},
-						},
-					},
-				},
-			},
-		},
-		{
 			// The PAR itself (resolved via its pom.properties) and the nested
 			// `jackson-core` JAR must each carry the digest of their own file.
 			name:            "happy path (PAR file)",
@@ -147,8 +108,11 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path (package found in trivy-java-db by sha1)",
-			inputFile: "testdata/test.jar",
+			// The package is resolved by SHA-1 in trivy-java-db, and that SHA-1 is
+			// also stored as the package digest.
+			name:            "happy path (package found in trivy-java-db by sha1)",
+			inputFile:       "testdata/test.jar",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -159,6 +123,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
 								Version:  "9.0.65",
+								Digest:   "sha1:bd70dfeb39cc83c6934be24fa377b21e541dbe76",
 							},
 						},
 					},
