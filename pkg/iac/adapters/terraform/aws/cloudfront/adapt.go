@@ -96,7 +96,7 @@ func hasV2Logging(modules terraform.Modules, distributionBlock *terraform.Block)
 
 		deliveries := modules.GetReferencingResources(source, "aws_cloudwatch_log_delivery", "delivery_source_name")
 		if len(deliveries) > 0 {
-			return types.Bool(true, metadata)
+			return types.Bool(true, deliveries[0].GetMetadata())
 		}
 	}
 
