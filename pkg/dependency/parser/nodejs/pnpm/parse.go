@@ -2,7 +2,9 @@ package pnpm
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,9 +32,29 @@ func NewParser() *Parser {
 }
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	// pnpm 11+ stores the env lockfile (config and package manager dependencies)
+	// as a separate YAML document in pnpm-lock.yaml, separated by `---`.
+	// Decode all documents and use the project lockfile, skipping the env one.
+	dec := yaml.NewDecoder(r)
 	var lockFile LockFile
-	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+	var found bool
+	for {
+		var doc LockFile
+		if err := dec.Decode(&doc); err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return nil, nil, xerrors.Errorf("decode error: %w", err)
+		}
+		if doc.isEnvLockfile() {
+			continue
+		}
+		lockFile = doc
+		found = true
+		break
+	}
+	if !found {
+		return nil, nil, nil
 	}
 
 	lockVer := p.parseLockfileVersion(lockFile)

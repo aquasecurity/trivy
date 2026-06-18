@@ -1069,4 +1069,82 @@ var (
 			},
 		},
 	}
+
+	// pnpm 11 stores the env lockfile (config and package manager dependencies)
+	// as the first YAML document, separated by `---`. Only the project
+	// dependencies from the second document must be parsed; the package manager
+	// environment (pnpm, @pnpm/exe, etc.) is skipped.
+	//
+	// docker run --rm node@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203 sh -c '
+	//   npm install -g pnpm@11.7.0
+	//   mkdir /app && cd /app
+	//   pnpm init
+	//   pnpm add is-even@1.0.0
+	//   pnpm add -D left-pad@1.3.0
+	//   cat pnpm-lock.yaml'
+	pnpmV9MultipleDocuments = []ftypes.Package{
+		{
+			ID:           "is-buffer@1.1.6",
+			Name:         "is-buffer",
+			Version:      "1.1.6",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "is-even@1.0.0",
+			Name:         "is-even",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "is-number@3.0.0",
+			Name:         "is-number",
+			Version:      "3.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "is-odd@0.1.2",
+			Name:         "is-odd",
+			Version:      "0.1.2",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "kind-of@3.2.2",
+			Name:         "kind-of",
+			Version:      "3.2.2",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "left-pad@1.3.0",
+			Name:         "left-pad",
+			Version:      "1.3.0",
+			Dev:          true,
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9MultipleDocumentsDeps = []ftypes.Dependency{
+		{
+			ID: "is-even@1.0.0",
+			DependsOn: []string{
+				"is-odd@0.1.2",
+			},
+		},
+		{
+			ID: "is-number@3.0.0",
+			DependsOn: []string{
+				"kind-of@3.2.2",
+			},
+		},
+		{
+			ID: "is-odd@0.1.2",
+			DependsOn: []string{
+				"is-number@3.0.0",
+			},
+		},
+		{
+			ID: "kind-of@3.2.2",
+			DependsOn: []string{
+				"is-buffer@1.1.6",
+			},
+		},
+	}
 )
