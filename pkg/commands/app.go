@@ -10,6 +10,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
@@ -209,6 +210,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
+			// Disable colored output globally if requested
+			color.NoColor = opts.NoColor
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
