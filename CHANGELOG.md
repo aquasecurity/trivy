@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.71.2](https://github.com/aquasecurity/trivy/compare/v0.71.1...v0.71.2) (2026-06-19)
+
+
+### Bug Fixes
+
+* **deps:** bump alpine to 3.24.1 [backport: release/v0.71] ([#10870](https://github.com/aquasecurity/trivy/issues/10870)) ([875328a](https://github.com/aquasecurity/trivy/commit/875328a4138f26e8559cfee80adaef82b6693076))
+
 ## [0.71.1](https://github.com/aquasecurity/trivy/compare/v0.71.0...v0.71.1) (2026-06-10)
 
 
