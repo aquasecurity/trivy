@@ -737,11 +737,14 @@ func TestReportWriter_Sarif(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			startedAt := time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC)
+			endedAt := time.Date(2021, 8, 25, 12, 20, 35, 0, time.UTC)
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
 				Output:    sarifWritten,
 				Target:    tt.target,
-				StartedAt: time.Now(),
+				StartedAt: startedAt,
+				EndedAt:   endedAt,
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
@@ -750,15 +753,14 @@ func TestReportWriter_Sarif(t *testing.T) {
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 
-			// Verify invocation timestamps are present before clearing them for structural comparison.
+			// Invocation timestamps are deterministic, so assert them exactly.
 			require.Len(t, result.Runs, 1)
-			require.Len(t, result.Runs[0].Invocations, 1)
-			inv := result.Runs[0].Invocations[0]
-			assert.NotNil(t, inv.StartTimeUTC, "invocation startTimeUtc should be set")
-			assert.NotNil(t, inv.EndTimeUTC, "invocation endTimeUtc should be set")
-			require.NotNil(t, inv.ExecutionSuccessful)
-			assert.True(t, *inv.ExecutionSuccessful)
-			// Clear dynamic invocations before structural comparison.
+			wantInvocation := sarif.NewInvocation().
+				WithStartTimeUTC(startedAt).
+				WithEndTimeUTC(endedAt).
+				WithExecutionSuccess(true)
+			assert.Equal(t, []*sarif.Invocation{wantInvocation}, result.Runs[0].Invocations)
+			// Clear them before the structural comparison of the rest of the report.
 			result.Runs[0].Invocations = nil
 
 			assert.Equal(t, tt.want, result)
