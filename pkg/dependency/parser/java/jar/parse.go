@@ -93,13 +93,15 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, licenses, err := p.traverseZip(size, r, fileProps)
+	pkgs, m, foundPomProps, err := p.traverseZip(size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
 	// Otherwise, resolve the artifact of the jar itself from MANIFEST.MF / SHA-1 / file name.
+	// Such an artifact has no embedded pom.xml (maven-archiver writes pom.xml and
+	// pom.properties together), so it carries no license.
 	if !foundPomProps {
 		props, found, err := p.resolveArtifact(r, m, fileProps)
 		if err != nil {
@@ -107,18 +109,6 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 		}
 		if found {
 			pkgs = append(pkgs, props.Package())
-		}
-	}
-
-	// Attach licenses from embedded pom.xml, matched by "groupID:artifactID".
-	for i := range pkgs {
-		pkg := &pkgs[i]
-		// Keep licenses already set by a nested jar from its own pom.xml.
-		if len(pkg.Licenses) > 0 {
-			continue
-		}
-		if names, ok := licenses[pkg.Name]; ok {
-			pkg.Licenses = names
 		}
 	}
 
@@ -179,7 +169,7 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 }
 
 func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Properties) (
-	[]ftypes.Package, manifest, bool, map[string][]string, error) {
+	[]ftypes.Package, manifest, bool, error) {
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool
@@ -191,7 +181,7 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
-		return nil, manifest{}, false, nil, xerrors.Errorf("zip error: %w", err)
+		return nil, manifest{}, false, xerrors.Errorf("zip error: %w", err)
 	}
 
 	for _, fileInJar := range zr.File {
@@ -212,7 +202,7 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 		case filepath.Base(fileInJar.Name) == "pom.properties":
 			props, err := parsePomProperties(fileInJar, fileProps.FilePath)
 			if err != nil {
-				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
+				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
 			// Validation of props to avoid getting packages with empty Name/Version
 			if props.Valid() {
@@ -226,7 +216,7 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
 			m, err = parseManifest(fileInJar)
 			if err != nil {
-				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
+				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
 			innerPkgs, _, err := p.parseInnerJar(fileInJar, fileProps.FilePath) // TODO process inner deps
@@ -237,7 +227,20 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 			pkgs = append(pkgs, innerPkgs...)
 		}
 	}
-	return pkgs, m, foundPomProps, licenses, nil
+
+	// Attach licenses from embedded pom.xml, matched by "groupID:artifactID".
+	for i := range pkgs {
+		pkg := &pkgs[i]
+		// Keep licenses already set by a nested jar from its own pom.xml.
+		if len(pkg.Licenses) > 0 {
+			continue
+		}
+		if names, ok := licenses[pkg.Name]; ok {
+			pkg.Licenses = names
+		}
+	}
+
+	return pkgs, m, foundPomProps, nil
 }
 
 func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
