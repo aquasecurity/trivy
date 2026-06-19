@@ -86,7 +86,8 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			writer = &SarifWriter{
 				Output:    output,
 				Version:   option.AppVersion,
-				StartedAt: option.ScanStartedAt,
+				StartedAt: report.ScanStartedAt,
+				EndedAt:   report.CreatedAt,
 			}
 			break
 		}
@@ -102,7 +103,8 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			Output:    output,
 			Version:   option.AppVersion,
 			Target:    target,
-			StartedAt: option.ScanStartedAt,
+			StartedAt: report.ScanStartedAt,
+			EndedAt:   report.CreatedAt,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)

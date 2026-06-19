@@ -47,6 +47,7 @@ type SarifWriter struct {
 	Output        io.Writer
 	Version       string
 	StartedAt     time.Time
+	EndedAt       time.Time
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
@@ -274,7 +275,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 		sw.run.Invocations = []*sarif.Invocation{
 			sarif.NewInvocation().
 				WithStartTimeUTC(sw.StartedAt).
-				WithEndTimeUTC(time.Now().UTC()).
+				WithEndTimeUTC(sw.EndedAt.UTC()).
 				WithExecutionSuccess(true),
 		}
 	}

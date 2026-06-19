@@ -10,7 +10,6 @@ import (
 	"os"
 	"slices"
 	"strings"
-	"time"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
@@ -421,8 +420,6 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 }
 
 func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.Report, error) {
-	opts.ScanStartedAt = time.Now().UTC()
-
 	// Perform validation checks
 	checkOptions(ctx, opts, targetKind)
 
