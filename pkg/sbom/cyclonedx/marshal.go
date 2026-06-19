@@ -394,23 +394,48 @@ func (*Marshaler) affects(ref, version string) cdx.Affects {
 }
 
 func (*Marshaler) advisories(refs []string) *[]cdx.Advisory {
-	refs = lo.Uniq(refs)
-	advs := lo.FilterMap(refs, func(ref string, _ int) (cdx.Advisory, bool) {
-		// There are cases when `ref` contains extra info
-		// But we need to use only URL.
-		// cf. https://github.com/aquasecurity/trivy/issues/6801
+	canonical := make([]string, 0, len(refs))
+	for _, ref := range refs {
 		ref = trimNonUrlInfo(ref)
-		return cdx.Advisory{URL: ref}, ref != ""
-	})
+		if ref == "" {
+			continue
+		}
+		c, ok := canonicalizeAdvisoryURL(ref)
+		if !ok {
+			continue
+		}
+		canonical = append(canonical, c)
+	}
+	canonical = lo.Uniq(canonical)
 
 	// cyclonedx converts link to empty `[]cdx.Advisory` to `null`
 	// `bom-1.5.schema.json` doesn't support this - `Invalid type. Expected: array, given: null`
 	// we need to explicitly set `nil` for empty `refs` slice
-	if len(advs) == 0 {
+	if len(canonical) == 0 {
 		return nil
 	}
 
+	advs := lo.Map(canonical, func(ref string, _ int) cdx.Advisory {
+		return cdx.Advisory{URL: ref}
+	})
 	return &advs
+}
+
+func canonicalizeAdvisoryURL(raw string) (string, bool) {
+	u, err := url.Parse(raw)
+	if err != nil || u.Scheme == "" || u.Host == "" {
+		return "", false
+	}
+
+	out := &url.URL{
+		Scheme:   u.Scheme,
+		Host:     u.Host,
+		Path:     u.Path,
+		RawQuery: u.RawQuery,
+		Fragment: u.Fragment,
+	}
+
+	return out.String(), true
 }
 
 // trimNonUrlInfo returns first valid URL.
