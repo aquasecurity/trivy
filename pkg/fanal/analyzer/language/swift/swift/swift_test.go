@@ -87,3 +87,34 @@ func Test_swiftLockAnalyzer_Analyze(t *testing.T) {
 		})
 	}
 }
+
+func Test_swiftLockAnalyzer_Required(t *testing.T) {
+	tests := []struct {
+		name     string
+		filePath string
+		want     bool
+	}{
+		{
+			name:     "Package.resolved",
+			filePath: "path/to/Package.resolved",
+			want:     true,
+		},
+		{
+			name:     ".package.resolved (Tuist)",
+			filePath: "path/to/.package.resolved",
+			want:     true,
+		},
+		{
+			name:     "unrelated file",
+			filePath: "path/to/Package.swift",
+			want:     false,
+		},
+	}
+
+	a := swiftLockAnalyzer{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, a.Required(tt.filePath, nil))
+		})
+	}
+}

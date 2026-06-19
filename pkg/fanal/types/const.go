@@ -224,8 +224,9 @@ const (
 
 	ConanLock = "conan.lock"
 
-	CocoaPodsLock = "Podfile.lock"
-	SwiftResolved = "Package.resolved"
+	CocoaPodsLock      = "Podfile.lock"
+	SwiftResolved      = "Package.resolved"
+	SwiftTuistResolved = ".package.resolved"
 
 	PubSpecLock = "pubspec.lock"
 

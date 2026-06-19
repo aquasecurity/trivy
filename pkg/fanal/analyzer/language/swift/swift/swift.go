@@ -34,7 +34,8 @@ func (a swiftLockAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisI
 }
 
 func (a swiftLockAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return path.Base(filePath) == types.SwiftResolved
+	base := path.Base(filePath)
+	return base == types.SwiftResolved || base == types.SwiftTuistResolved
 }
 
 func (a swiftLockAnalyzer) Type() analyzer.Type {
