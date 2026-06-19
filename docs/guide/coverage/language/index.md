@@ -49,7 +49,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Elixir](elixir.md)  | mix.lock[^8]                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Dart](dart.md)      | pubspec.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 | [Swift](swift.md)    | Podfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
-|                      | Package.resolved                                                                           |     -     |     -      |       ✅        |       ✅        |
+|                      | Package.resolved[^10]                                                                      |     -     |     -      |       ✅        |       ✅        |
 | [Julia](julia.md)    | Manifest.toml                                                                              |     ✅     |     ✅      |       ✅        |       ✅        |
 
 The path of these files does not matter.
@@ -69,3 +69,4 @@ Example: [Dockerfile](https://github.com/aquasecurity/trivy-ci-test/blob/main/Do
 [^7]: ✅ means "enabled" and `-` means "disabled" in the git repository scanning
 [^8]: To scan a filename other than the default filename use [file-patterns](../../configuration/skipping.md#customizing-file-handling)
 [^9]: `Directory.Packages.props` and  legacy `Packages.props` file names are supported
+[^10]: `.package.resolved` (used by [Tuist](https://tuist.dev/)) is also supported

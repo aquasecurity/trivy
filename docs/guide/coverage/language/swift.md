@@ -23,6 +23,8 @@ See [here](./index.md) for the detail.
 Trivy parses [Package.resolved][package-resolved] file to find dependencies.
 Don't forget to update (`swift package update` command) this file before scanning.
 
+Trivy also recognizes `.package.resolved` (the variant emitted by [Tuist][tuist]); the file format is identical.
+
 ## CocoaPods
 CocoaPods uses package names in `PodFile.lock`, but [GitHub Advisory Database (GHSA)][ghsa] Trivy relies on uses Git URLs. 
 We parse [the CocoaPods Specs][cocoapods-specs] to match package names and links.
@@ -33,6 +35,7 @@ We parse [the CocoaPods Specs][cocoapods-specs] to match package names and links
     For example, [SwiftNIOHTTP1][niohttp1] and [SwiftNIOWebSocket][niowebsocket] both are maintained under `github.com/apple/swift-nio`,
     and Trivy detect CVE-2022-3215 for both of them, even though only [SwiftNIOHTTP1][niohttp1] is actually affected.
 
+[tuist]: https://tuist.dev/
 [cocoapods]: https://cocoapods.org/
 [cocoapods-specs]: https://github.com/CocoaPods/Specs
 [ghsa]: https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aswift
