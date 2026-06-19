@@ -93,7 +93,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, licenses, err := p.traverseZip(filePath, size, r, fileProps)
+	pkgs, m, foundPomProps, licenses, err := p.traverseZip(size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
@@ -101,7 +101,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
 	// Otherwise, resolve the artifact of the jar itself from MANIFEST.MF / SHA-1 / file name.
 	if !foundPomProps {
-		props, found, err := p.resolveArtifact(filePath, r, m, fileProps)
+		props, found, err := p.resolveArtifact(r, m, fileProps)
 		if err != nil {
 			return nil, nil, err
 		}
@@ -127,10 +127,10 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 // resolveArtifact determines the artifact of the jar itself when pom.properties is absent,
 // trying MANIFEST.MF, then Maven Central by SHA-1, then a heuristic search by file name.
-func (p *Parser) resolveArtifact(filePath string, r xio.ReadSeekerAt, m manifest, fileProps Properties) (Properties, bool, error) {
-	fileName := filepath.Base(filePath)
+func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Properties) (Properties, bool, error) {
+	fileName := filepath.Base(fileProps.FilePath)
 
-	manifestProps := m.properties(filePath)
+	manifestProps := m.properties(fileProps.FilePath)
 	if p.offline {
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
@@ -150,7 +150,7 @@ func (p *Parser) resolveArtifact(filePath string, r xio.ReadSeekerAt, m manifest
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r, filePath)
+	props, err := p.searchBySHA1(r, fileProps.FilePath)
 	if err == nil {
 		return props, true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
@@ -178,7 +178,7 @@ func (p *Parser) resolveArtifact(filePath string, r xio.ReadSeekerAt, m manifest
 	return Properties{}, false, nil
 }
 
-func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
+func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Properties) (
 	[]ftypes.Package, manifest, bool, map[string][]string, error) {
 	var pkgs []ftypes.Package
 	var m manifest
@@ -210,7 +210,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 
 		switch {
 		case filepath.Base(fileInJar.Name) == "pom.properties":
-			props, err := parsePomProperties(fileInJar, filePath)
+			props, err := parsePomProperties(fileInJar, fileProps.FilePath)
 			if err != nil {
 				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
@@ -229,7 +229,7 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
-			innerPkgs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
+			innerPkgs, _, err := p.parseInnerJar(fileInJar, fileProps.FilePath) // TODO process inner deps
 			if err != nil {
 				p.logger.Debug("Failed to parse", log.String("file", fileInJar.Name), log.Err(err))
 				continue
@@ -307,7 +307,7 @@ func parseFileName(filePath string) Properties {
 	fileName := filepath.Base(filePath)
 	packageVersion := jarFileRegEx.FindStringSubmatch(fileName)
 	if len(packageVersion) != 3 {
-		return Properties{}
+		return Properties{FilePath: filePath}
 	}
 
 	return Properties{
