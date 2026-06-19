@@ -1,4 +1,4 @@
-FROM alpine:3.23.4
+FROM alpine:3.24.1
 RUN apk --no-cache add ca-certificates git
 COPY trivy /usr/local/bin/trivy
 COPY contrib/*.tpl contrib/
