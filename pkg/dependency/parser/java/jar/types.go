@@ -19,10 +19,15 @@ type Properties struct {
 
 func (p Properties) Package() ftypes.Package {
 	return ftypes.Package{
-		Name:     fmt.Sprintf("%s:%s", p.GroupID, p.ArtifactID),
+		Name:     packageName(p.GroupID, p.ArtifactID),
 		Version:  p.Version,
 		FilePath: p.FilePath,
 	}
+}
+
+// packageName returns the package name in "groupID:artifactID" format.
+func packageName(groupID, artifactID string) string {
+	return groupID + ":" + artifactID
 }
 
 func (p Properties) Valid() bool {
