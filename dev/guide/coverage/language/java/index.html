@@ -3577,6 +3577,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="JAR/WAR/PAR/EAR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licenses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -3664,7 +3681,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#licenses" class="md-nav__link">
+  <a href="#licenses_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Licenses
@@ -8552,6 +8569,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="JAR/WAR/PAR/EAR">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#licenses" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Licenses
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -8639,7 +8673,7 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
-  <a href="#licenses" class="md-nav__link">
+  <a href="#licenses_1" class="md-nav__link">
     <span class="md-ellipsis">
       
         Licenses
@@ -8707,7 +8741,7 @@ You're not viewing the latest version of the documentation.
 <td>JAR/WAR/PAR/EAR</td>
 <td style="text-align: center;">✓</td>
 <td style="text-align: center;">✓</td>
-<td style="text-align: center;">-</td>
+<td style="text-align: center;">✓<sup id="fnref:9"><a class="footnote-ref" href="#fn:9">9</a></sup></td>
 </tr>
 <tr>
 <td>pom.xml</td>
@@ -8790,6 +8824,9 @@ It is stored in <a href="../../../configuration/cache/#cache-directory">the cach
 <p>Base JAR<sup id="fnref5:2"><a class="footnote-ref" href="#fn:2">2</a></sup> may contain inner JARs<sup id="fnref6:2"><a class="footnote-ref" href="#fn:2">2</a></sup> within itself.
 To find information about these JARs<sup id="fnref7:2"><a class="footnote-ref" href="#fn:2">2</a></sup>, the same logic is used as for the base JAR<sup id="fnref8:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
 <p><code>table</code> format only contains the name of root JAR<sup id="fnref9:2"><a class="footnote-ref" href="#fn:2">2</a></sup> . To get the full path to inner JARs<sup id="fnref10:2"><a class="footnote-ref" href="#fn:2">2</a></sup> use the <code>json</code> format.</p>
+<h3 id="licenses">Licenses<a class="headerlink" href="#licenses" title="Permanent link">&para;</a></h3>
+<p>Trivy detects licenses declared in the <code>&lt;licenses&gt;</code> block of the embedded <code>META-INF/maven/&lt;groupId&gt;/&lt;artifactId&gt;/pom.xml</code> and attaches them to the matching package.</p>
+<p>Coverage is limited: many JARs declare a license only in a parent POM (which is not expanded in the embedded <code>pom.xml</code>) or ship no Maven descriptor at all.</p>
 <h2 id="pomxml">pom.xml<a class="headerlink" href="#pomxml" title="Permanent link">&para;</a></h2>
 <p>Trivy parses your <code>pom.xml</code> file and tries to find files with dependencies from these local locations.</p>
 <ul>
@@ -8860,7 +8897,7 @@ Use the <code>--include-dev-deps</code> flag to include them in the results.</p>
 <p>Trivy finds child dependencies from <code>*.pom</code> files in the cache<sup id="fnref:8"><a class="footnote-ref" href="#fn:8">8</a></sup> directory.</p>
 <p>But there is no reliable way to determine direct dependencies (even using other files).
 Therefore, we mark all dependencies as indirect to use logic to guess direct dependencies and build a dependency tree.</p>
-<h3 id="licenses">Licenses<a class="headerlink" href="#licenses" title="Permanent link">&para;</a></h3>
+<h3 id="licenses_1">Licenses<a class="headerlink" href="#licenses_1" title="Permanent link">&para;</a></h3>
 <p>Trivy also can detect licenses for dependencies.</p>
 <p>Make sure that you have cache<sup id="fnref2:8"><a class="footnote-ref" href="#fn:8">8</a></sup> directory to find licenses from <code>*.pom</code> dependency files.</p>
 <h2 id="sbt">SBT<a class="headerlink" href="#sbt" title="Permanent link">&para;</a></h2>
@@ -8896,6 +8933,9 @@ Therefore, we mark all dependencies as indirect to use logic to guess direct dep
 </li>
 <li id="fn:8">
 <p>The supported directories are <code>$GRADLE_USER_HOME/caches</code> and <code>$HOME/.gradle/caches</code> (<code>%HOMEPATH%\.gradle\caches</code> for Windows).&#160;<a class="footnote-backref" href="#fnref:8" title="Jump back to footnote 8 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:8" title="Jump back to footnote 8 in the text">&#8617;</a></p>
+</li>
+<li id="fn:9">
+<p>License detection is limited. See <a href="#licenses">Licenses</a> for details.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
