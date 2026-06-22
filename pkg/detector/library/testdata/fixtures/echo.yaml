@@ -8,3 +8,13 @@
               - "2.14.2+echo.999"
             VulnerableVersions:
               - ">= 2.14.2+echo.1, < 2.14.2+echo.999"
+- bucket: "echo maven::Echo OSV"
+  pairs:
+    - bucket: "org.apache.commons:commons-lang3"
+      pairs:
+        - key: CVE-2024-88888
+          value:
+            PatchedVersions:
+              - "3.14.0+echo.999"
+            VulnerableVersions:
+              - ">= 3.14.0+echo.1, < 3.14.0+echo.999"

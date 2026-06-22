@@ -392,6 +392,31 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "echo maven package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Jar,
+			args: args{
+				pkgName: "org.apache.commons:commons-lang3",
+				pkgVer:  "3.14.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-88888",
+					PkgName:          "org.apache.commons:commons-lang3",
+					InstalledVersion: "3.14.0+echo.1",
+					FixedVersion:     "3.14.0+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

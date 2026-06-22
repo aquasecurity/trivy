@@ -66,10 +66,24 @@ func TestEchoVendor_Match(t *testing.T) {
 			want:    false,
 		},
 		{
-			name:    "maven package is not supported",
+			name:    "maven package with +echo.1 suffix",
 			eco:     ecosystem.Maven,
 			pkgName: "org.apache.logging.log4j:log4j-core",
 			pkgVer:  "2.13.3+echo.1",
+			want:    true,
+		},
+		{
+			name:    "maven package with +echo.999 suffix",
+			eco:     ecosystem.Maven,
+			pkgName: "org.apache.commons:commons-lang3",
+			pkgVer:  "3.14.0+echo.999",
+			want:    true,
+		},
+		{
+			name:    "maven package without echo suffix",
+			eco:     ecosystem.Maven,
+			pkgName: "org.apache.commons:commons-lang3",
+			pkgVer:  "3.14.0",
 			want:    false,
 		},
 		{

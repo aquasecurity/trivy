@@ -9,8 +9,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// echoLocalSegmentRe matches the Echo-specific PEP 440 local version segment,
-// e.g. "+echo.1" in "2.14.2+echo.1".
+// echoLocalSegmentRe matches the Echo-specific version segment "+echo.N",
+// e.g. "+echo.1" in "2.14.2+echo.1". This appears both as a PEP 440 local
+// version (pip) and as a Maven build suffix (maven).
 var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+`)
 
 func init() {
@@ -19,10 +20,10 @@ func init() {
 	})
 }
 
-// echoVendor matches pip packages patched by Echo.
-// Echo provides patched versions of Python packages with their own vulnerability
-// advisories. Their packages are identified by a PEP 440 local version suffix
-// of the form "+echo.N" (e.g. "2.14.2+echo.1").
+// echoVendor matches language packages patched by Echo.
+// Echo provides patched versions of Python (pip) and Java (maven) packages with
+// their own vulnerability advisories. Their packages are identified by a version
+// suffix of the form "+echo.N" (e.g. "2.14.2+echo.1").
 type echoVendor struct {
 	pipComparer compare.Comparer
 }
@@ -34,12 +35,15 @@ func (echoVendor) Name() string {
 // Match determines whether a package is provided by Echo.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
 // Echo packages are identified by a "+echo.N" segment in the version string,
-// where N is a numeric revision (e.g. "2.14.2+echo.1").
+// where N is a numeric revision (e.g. "2.14.2+echo.1"). Echo patches both
+// Python (pip) and Java (maven) packages using this same suffix convention.
 func (echoVendor) Match(eco ecosystem.Type, _, pkgVer string) bool {
-	if eco != ecosystem.Pip {
+	switch eco {
+	case ecosystem.Pip, ecosystem.Maven:
+		return echoLocalSegmentRe.MatchString(pkgVer)
+	default:
 		return false
 	}
-	return echoLocalSegmentRe.MatchString(pkgVer)
 }
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.
@@ -48,9 +52,10 @@ func (e echoVendor) BucketPrefix(eco ecosystem.Type) string {
 }
 
 // Comparer returns a version comparer for the given ecosystem.
-// For pip (Python), it enables local version specifiers to correctly handle
-// Echo version suffixes (e.g. "2.14.2+echo.1").
-// For other ecosystems, it returns the default comparer unchanged.
+// For pip (Python), it enables local version specifiers so PEP 440 ordering
+// keeps the Echo suffix (e.g. "2.14.2+echo.1") instead of discarding it.
+// For maven (and other ecosystems) the default comparer already orders the
+// "+echo.N" suffix correctly, so it is returned unchanged.
 func (e echoVendor) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	if eco == ecosystem.Pip {
 		return e.pipComparer
