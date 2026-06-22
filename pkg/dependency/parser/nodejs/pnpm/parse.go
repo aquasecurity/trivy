@@ -2,7 +2,9 @@ package pnpm
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -31,8 +33,64 @@ func NewParser() *Parser {
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	var lockFile LockFile
-	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+	decoder := yaml.NewDecoder(r)
+	for {
+		var doc LockFile
+		if err := decoder.Decode(&doc); err != nil {
+			if errors.Is(err, io.EOF) {
+				break
+			}
+			return nil, nil, xerrors.Errorf("decode error: %w", err)
+		}
+
+		if doc.LockfileVersion != nil {
+			lockFile.LockfileVersion = doc.LockfileVersion
+		}
+
+		if doc.Dependencies != nil {
+			if lockFile.Dependencies == nil {
+				lockFile.Dependencies = make(map[string]any)
+			}
+			for k, v := range doc.Dependencies {
+				lockFile.Dependencies[k] = v
+			}
+		}
+
+		if doc.DevDependencies != nil {
+			if lockFile.DevDependencies == nil {
+				lockFile.DevDependencies = make(map[string]any)
+			}
+			for k, v := range doc.DevDependencies {
+				lockFile.DevDependencies[k] = v
+			}
+		}
+
+		if doc.Packages != nil {
+			if lockFile.Packages == nil {
+				lockFile.Packages = make(map[PackageKey]PackageInfo)
+			}
+			for k, v := range doc.Packages {
+				lockFile.Packages[k] = v
+			}
+		}
+
+		if doc.Importers != nil {
+			if lockFile.Importers == nil {
+				lockFile.Importers = make(map[string]Importer)
+			}
+			for k, v := range doc.Importers {
+				lockFile.Importers[k] = v
+			}
+		}
+
+		if doc.Snapshots != nil {
+			if lockFile.Snapshots == nil {
+				lockFile.Snapshots = make(map[SnapshotKey]Snapshot)
+			}
+			for k, v := range doc.Snapshots {
+				lockFile.Snapshots[k] = v
+			}
+		}
 	}
 
 	lockVer := p.parseLockfileVersion(lockFile)
