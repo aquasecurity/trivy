@@ -86,6 +86,15 @@ func Test_lookupSupplier(t *testing.T) {
 			wantDefaultComparer: false,
 		},
 		{
+			name:                "echo maven package returns supplier prefix and default comparer",
+			eco:                 ecosystem.Maven,
+			pkgName:             "org.apache.commons:commons-lang3",
+			pkgVer:              "3.14.0+echo.1",
+			wantMatch:           library.Matched,
+			wantPrefix:          "echo maven::",
+			wantDefaultComparer: true,
+		},
+		{
 			name:      "non-supplier pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
