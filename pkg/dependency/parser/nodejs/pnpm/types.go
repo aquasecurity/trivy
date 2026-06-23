@@ -55,7 +55,7 @@ type Importer struct {
 // environment, not the project dependencies, so it must be skipped.
 func (l LockFile) isEnvLockfile() bool {
 	for _, importer := range l.Importers {
-		if len(importer.ConfigDependencies) > 0 || len(importer.PackageManagerDependencies) > 0 {
+		if importer.ConfigDependencies != nil || importer.PackageManagerDependencies != nil {
 			return true
 		}
 	}
