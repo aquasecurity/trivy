@@ -11,6 +11,8 @@
 [📖 Documentation][docs]
 </div>
 
+![Demo: trivy image python:3.4-alpine reports CVEs by severity with fix versions, the coverage matrix shows 5 targets (Container Image, Filesystem, Git Repository, VM Image, Kubernetes) × 5 scanners (SBOM, Vulnerabilities, Misconfigurations, Secrets, Licenses), trivy fs finds a committed AWS key and a root container, and Trivy runs in GitHub Actions, the Kubernetes Operator, VS Code and Docker Desktop.](docs/imgs/hero.gif)
+
 Trivy ([pronunciation][pronunciation]) is a comprehensive and versatile security scanner.
 Trivy has *scanners* that look for security issues, and *targets* where it can find those issues.
 
