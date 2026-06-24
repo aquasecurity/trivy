@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
@@ -172,7 +173,7 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 	tag := strings.ReplaceAll(digest.DigestStr(), ":", "-") + ".att"
 	ref := digest.Context().Tag(tag)
 
-	blob, err := fetchAttestationBlob(ctx, ref, registryOptions)
+	layers, err := fetchAttestationLayers(ctx, ref, registryOptions)
 	if err != nil {
 		if isNotFound(err) {
 			return nil, nil
@@ -180,10 +181,43 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 		return nil, err
 	}
 
-	return decodeOpenVEXAttestation(blob, dsseEnvelopeMediaType)
+	// A legacy cosign `.att` tag accumulates one layer per `cosign attest` call, so
+	// an image may carry several attestations (e.g. an SBOM and an OpenVEX document)
+	// as separate layers. Return the first layer that decodes to an OpenVEX document
+	// and skip the rest; rejecting malformed layers is left to a follow-up.
+	logger := log.WithPrefix("vex").With(log.String("type", "oci"))
+	for _, layer := range layers {
+		blob, err := readLayer(layer)
+		if err != nil {
+			return nil, err
+		}
+		// Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
+		// bundle format is only used for OCI 1.1 referrers.
+		vexDoc, err := decodeOpenVEXAttestation(blob, dsseEnvelopeMediaType)
+		if err != nil {
+			logger.Debug("Skipping legacy attestation layer", log.Err(err))
+			continue
+		}
+		return vexDoc, nil
+	}
+	return nil, nil
 }
 
+// fetchAttestationBlob returns the content of a single-layer attestation
+// artifact (an OCI 1.1 referrer manifest).
 func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptions ftypes.RegistryOptions) ([]byte, error) {
+	layers, err := fetchAttestationLayers(ctx, ref, registryOptions)
+	if err != nil {
+		return nil, err
+	}
+	if len(layers) != 1 {
+		return nil, xerrors.Errorf("OCI artifact must be a single layer")
+	}
+	return readLayer(layers[0])
+}
+
+// fetchAttestationLayers returns the layers of the attestation image referenced by ref.
+func fetchAttestationLayers(ctx context.Context, ref name.Reference, registryOptions ftypes.RegistryOptions) ([]v1.Layer, error) {
 	desc, err := remote.Get(ctx, ref, registryOptions)
 	if err != nil {
 		return nil, err
@@ -198,11 +232,11 @@ func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptio
 	if err != nil {
 		return nil, xerrors.Errorf("layers error: %w", err)
 	}
-	if len(layers) != 1 {
-		return nil, xerrors.Errorf("OCI artifact must be a single layer")
-	}
+	return layers, nil
+}
 
-	rc, err := layers[0].Uncompressed()
+func readLayer(layer v1.Layer) ([]byte, error) {
+	rc, err := layer.Uncompressed()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to fetch the layer: %w", err)
 	}

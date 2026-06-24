@@ -83,6 +83,26 @@ func setUpVEXAttestationWithVulnerability(t *testing.T, vulnerabilityID string) 
 	return newImage
 }
 
+// setUpMultiLayerVEXAttestation builds a legacy `.att` image whose layers stack
+// a non-OpenVEX attestation (e.g. an SBOM) ahead of the OpenVEX one, mirroring
+// an image that was attested with `cosign attest` more than once.
+func setUpMultiLayerVEXAttestation(t *testing.T, vulnerabilityID string) v1.Image {
+	sbomEnvelope := createVEXAttestationWithPredicateType(t, vulnerabilityID, "https://spdx.dev/Document")
+	sbomBytes, err := json.Marshal(sbomEnvelope)
+	require.NoError(t, err)
+	sbomLayer := static.NewLayer(sbomBytes, dsseEnvelopeMediaType)
+
+	vexEnvelope := createVEXAttestation(t, vulnerabilityID)
+	vexBytes, err := json.Marshal(vexEnvelope)
+	require.NoError(t, err)
+	vexLayer := static.NewLayer(vexBytes, dsseEnvelopeMediaType)
+
+	newImage, err := mutate.AppendLayers(empty.Image, sbomLayer, vexLayer)
+	require.NoError(t, err)
+
+	return newImage
+}
+
 func createVEXAttestation(t *testing.T, vulnerabilityID string) dsse.Envelope {
 	return createVEXAttestationWithPredicateType(t, vulnerabilityID, "https://openvex.dev/ns")
 }
@@ -371,6 +391,19 @@ func TestRetrieveVEXAttestationPrefersReferrer(t *testing.T) {
 	require.NoError(t, err)
 	requireOpenVEXMatch(t, got, "CVE-2022-REFERRER")
 	requireNoOpenVEXMatch(t, got, "CVE-2022-LEGACY")
+}
+
+func TestRetrieveVEXAttestationLegacyMultiLayer(t *testing.T) {
+	_, registryHost := setUpReferrerRegistry(t)
+
+	repo := "debian/multi-layer"
+	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+	pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
+		setUpMultiLayerVEXAttestation(t, "CVE-2022-3715"))
+
+	got, err := vex.RetrieveVEXAttestation(purlFromRepositoryURL(registryHost + "/" + repo + ":latest"))
+	require.NoError(t, err)
+	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
 
 func TestRetrieveVEXAttestationMalformedBundle(t *testing.T) {
