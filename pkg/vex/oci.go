@@ -3,15 +3,16 @@ package vex
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
+	"net/http"
 	"slices"
 	"strings"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
-	"github.com/hashicorp/go-multierror"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
 	"golang.org/x/xerrors"
@@ -280,52 +281,29 @@ func isOpenVEXPredicateType(predicateType string) bool {
 	return predicateType == openvex.TypeURI || strings.HasPrefix(predicateType, openvex.TypeURI+"/")
 }
 
+// isReferrersUnsupported reports whether err means the registry has no OCI 1.1
+// referrers for the digest (the API is not implemented or nothing is attached).
 func isReferrersUnsupported(err error) bool {
-	if isNotFound(err) {
-		return true
-	}
-
-	var terr *transport.Error
-	if !errorsAs(err, &terr) {
-		return false
-	}
-	for _, diagnostic := range terr.Errors {
-		if diagnostic.Code == transport.UnsupportedErrorCode {
-			return true
-		}
-	}
-	return false
+	return isNotFound(err) || hasErrorCode(err, transport.UnsupportedErrorCode)
 }
 
 func isNotFound(err error) bool {
 	var terr *transport.Error
-	if !errorsAs(err, &terr) {
+	if !errors.As(err, &terr) {
 		return false
 	}
-	if terr.StatusCode == 404 {
-		return true
-	}
-	for _, diagnostic := range terr.Errors {
-		if diagnostic.Code == transport.ManifestUnknownErrorCode || diagnostic.Code == transport.NameUnknownErrorCode {
-			return true
-		}
-	}
-	return false
+	return terr.StatusCode == http.StatusNotFound ||
+		hasErrorCode(err, transport.ManifestUnknownErrorCode, transport.NameUnknownErrorCode)
 }
 
-func errorsAs(err error, target any) bool {
-	if xerrors.As(err, target) {
-		return true
-	}
-
-	var multiErr *multierror.Error
-	if !xerrors.As(err, &multiErr) {
+// hasErrorCode reports whether err (or anything it wraps, including a
+// multierror) is a registry transport error carrying one of the given codes.
+func hasErrorCode(err error, codes ...transport.ErrorCode) bool {
+	var terr *transport.Error
+	if !errors.As(err, &terr) {
 		return false
 	}
-	for _, e := range multiErr.Errors {
-		if xerrors.As(e, target) {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(terr.Errors, func(d transport.Diagnostic) bool {
+		return slices.Contains(codes, d.Code)
+	})
 }
