@@ -205,25 +205,23 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 	}
 
 	for _, fileInJar := range zr.File {
-		// Collect licenses declared in the embedded META-INF/maven/<g>/<a>/pom.xml.
-		if groupID, artifactID, ok := embeddedPomGAV(fileInJar.Name); ok {
+		switch {
+		case filepath.Base(fileInJar.Name) == "pom.xml":
+			// Collect licenses declared in the embedded META-INF/maven/<g>/<a>/pom.xml.
+			groupID, artifactID, ok := embeddedPomGAV(fileInJar.Name)
+			if !ok {
+				break
+			}
 			names, err := parsePomLicenses(fileInJar)
 			if err != nil {
 				p.logger.Debug("Failed to parse licenses", log.String("file", fileInJar.Name), log.Err(err))
-				continue
+				break
 			}
 			if len(names) > 0 {
 				pomLicenses[packageName(groupID, artifactID)] = names
 			}
-			continue
-		}
-
-		if isJarLicenseFile(fileInJar.Name) {
+		case isJarLicenseFile(fileInJar.Name):
 			licenseFiles = append(licenseFiles, fileInJar)
-			continue
-		}
-
-		switch {
 		case filepath.Base(fileInJar.Name) == "pom.properties":
 			props, err := parsePomProperties(fileInJar, fileProps.FilePath)
 			if err != nil {
