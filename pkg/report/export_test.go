@@ -1,6 +1,18 @@
 package report
 
+import (
+	"context"
+
+	"github.com/aquasecurity/trivy/pkg/clock"
+)
+
 // Bridge to expose report internals to tests in the report_test package.
+
+// SetFakeStartTime overrides the package-level process start time so that
+// SARIF invocation timestamps are deterministic in tests.
+func SetFakeStartTime(ctx context.Context) {
+	processStartTime = clock.Now(ctx)
+}
 
 // ClearURI exports clearURI for testing.
 var ClearURI = clearURI
