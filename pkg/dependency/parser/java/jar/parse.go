@@ -285,17 +285,22 @@ func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, lice
 		return
 	}
 
-	var own []int
+	var pkg *ftypes.Package
+
 	for i := range pkgs {
-		if pkgs[i].FilePath == filePath {
-			own = append(own, i)
+		if pkgs[i].FilePath != filePath {
+			continue
 		}
-	}
-	if len(own) != 1 {
-		return
+		if pkg != nil {
+			return // more than one package belongs to this jar
+		}
+		pkg = &pkgs[i]
 	}
 
-	pkg := &pkgs[own[0]]
+	if pkg == nil {
+		return // no package belongs to this jar
+	}
+
 	if len(pkg.Licenses) > 0 {
 		return
 	}
