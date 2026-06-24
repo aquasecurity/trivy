@@ -1,9 +1,7 @@
 package vex
 
 import (
-	"bytes"
 	"context"
-	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -13,12 +11,11 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/hashicorp/go-multierror"
-	"github.com/in-toto/in-toto-golang/in_toto"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
-	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/attestation"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -218,57 +215,31 @@ func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptio
 	return blob, nil
 }
 
-type sigstoreBundle struct {
-	MediaType    string          `json:"mediaType"`
-	DSSEEnvelope json.RawMessage `json:"dsseEnvelope"`
-}
-
+// decodeOpenVEXAttestation decodes an OpenVEX predicate from an attestation blob.
+// The blob is either a Sigstore bundle (Cosign v3+ new format) wrapping a DSSE
+// envelope, or a bare DSSE envelope (legacy `.att` / OCI 1.1 referrer). In both
+// cases the DSSE payload is an in-toto Statement whose predicate is the OpenVEX
+// document.
 func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, error) {
+	// Decode the in-toto predicate directly into the typed OpenVEX struct.
+	var predicate openvex.VEX
+	statement := attestation.Statement{Predicate: &predicate}
+
 	if artifactType == sigstoreBundleMediaType {
-		var bundle sigstoreBundle
-		if err := json.NewDecoder(bytes.NewReader(blob)).Decode(&bundle); err != nil {
+		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
+		if err := json.Unmarshal(blob, &bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)
 		}
-		if bundle.MediaType != "" && bundle.MediaType != sigstoreBundleMediaType {
-			return nil, xerrors.Errorf("unexpected Sigstore bundle media type: %s", bundle.MediaType)
-		}
-		if len(bundle.DSSEEnvelope) == 0 {
-			return nil, xerrors.New("Sigstore bundle is missing dsseEnvelope")
-		}
-		blob = bundle.DSSEEnvelope
+		statement = bundle.DSSEEnvelope
+	} else if err := json.Unmarshal(blob, &statement); err != nil {
+		return nil, xerrors.Errorf("failed to decode DSSE envelope: %w", err)
 	}
 
-	return decodeDSSEOpenVEX(blob)
-}
-
-type openVEXStatement struct {
-	in_toto.StatementHeader
-	Predicate openvex.VEX `json:"predicate"`
-}
-
-func decodeDSSEOpenVEX(blob []byte) (*openvex.VEX, error) {
-	var envelope dsse.Envelope
-	if err := json.NewDecoder(bytes.NewReader(blob)).Decode(&envelope); err != nil {
-		return nil, xerrors.Errorf("failed to decode as a DSSE envelope: %w", err)
-	}
-	if envelope.PayloadType != in_toto.PayloadType {
-		return nil, xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
-	}
-
-	decoded, err := base64.StdEncoding.DecodeString(envelope.Payload)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to decode attestation payload: %w", err)
-	}
-
-	var statement openVEXStatement
-	if err = json.NewDecoder(bytes.NewReader(decoded)).Decode(&statement); err != nil {
-		return nil, xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
-	}
 	if !isOpenVEXPredicateType(statement.PredicateType) {
 		return nil, xerrors.Errorf("unsupported predicate type: %s", statement.PredicateType)
 	}
 
-	return &statement.Predicate, nil
+	return &predicate, nil
 }
 
 func isOpenVEXPredicateType(predicateType string) bool {
