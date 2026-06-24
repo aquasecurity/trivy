@@ -48,6 +48,7 @@ var (
 			Name:     "com.cronutils:cron-utils",
 			Version:  "9.1.2",
 			FilePath: "testdata/maven.war/WEB-INF/lib/cron-utils-9.1.2.jar",
+			Licenses: []string{"Apache 2.0"},
 		},
 		{
 			Name:     "org.slf4j:slf4j-api",
@@ -58,6 +59,7 @@ var (
 			Name:     "org.glassfish:javax.el",
 			Version:  "3.0.0",
 			FilePath: "testdata/maven.war/WEB-INF/lib/javax.el-3.0.0.jar",
+			Licenses: []string{"CDDL + GPLv2 with classpath exception"},
 		},
 		{
 			Name:     "org.apache.commons:commons-lang3",
@@ -85,6 +87,7 @@ var (
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "org.apache.commons:commons-compress",
@@ -141,6 +144,7 @@ var (
 			Name:     "com.google.j2objc:j2objc-annotations",
 			Version:  "1.3",
 			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
@@ -196,16 +200,19 @@ var (
 			Name:     "io.quarkus.gizmo:gizmo",
 			Version:  "1.1",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.16",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
 			Version:  "1.2.17",
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-databind",
@@ -355,6 +362,88 @@ func TestParse(t *testing.T) {
 			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
+		})
+	}
+}
+
+func TestEmbeddedPomGAV(t *testing.T) {
+	tests := []struct {
+		name      string
+		path      string
+		wantGroup string
+		wantArt   string
+		wantOK    bool
+	}{
+		{
+			name:      "valid path",
+			path:      "META-INF/maven/com.example/demo/pom.xml",
+			wantGroup: "com.example",
+			wantArt:   "demo",
+			wantOK:    true,
+		},
+		{
+			name:   "wrong prefix",
+			path:   "BOOT-INF/classes/pom.xml",
+			wantOK: false,
+		},
+		{
+			name:   "not pom.xml",
+			path:   "META-INF/maven/com.example/demo/pom.properties",
+			wantOK: false,
+		},
+		{
+			name:   "missing artifactId",
+			path:   "META-INF/maven/com.example/pom.xml",
+			wantOK: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			groupID, artifactID, ok := jar.EmbeddedPomGAV(tt.path)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.wantGroup, groupID)
+			assert.Equal(t, tt.wantArt, artifactID)
+		})
+	}
+}
+
+func TestDecodePomLicenses(t *testing.T) {
+	tests := []struct {
+		name string
+		xml  string
+		want []string
+	}{
+		{
+			name: "single license",
+			xml:  `<project><licenses><license><name>Apache-2.0</name></license></licenses></project>`,
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "multiple licenses",
+			xml:  `<project><licenses><license><name>MIT</name></license><license><name>Apache-2.0</name></license></licenses></project>`,
+			want: []string{"MIT", "Apache-2.0"},
+		},
+		{
+			name: "name with surrounding whitespace",
+			xml:  "<project><licenses><license><name>  Apache-2.0\n  </name></license></licenses></project>",
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "empty name is skipped",
+			xml:  `<project><licenses><license><name></name></license></licenses></project>`,
+			want: nil,
+		},
+		{
+			name: "no licenses block (parent only)",
+			xml:  `<project><parent><groupId>com.example</groupId></parent></project>`,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.DecodePomLicenses(strings.NewReader(tt.xml))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

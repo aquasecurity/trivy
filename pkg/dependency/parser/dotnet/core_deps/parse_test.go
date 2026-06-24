@@ -151,6 +151,73 @@ func TestParse(t *testing.T) {
 			wantDeps: nil,
 		},
 		{
+			// Self-contained deployments bundle the runtime into the app's deps.json as
+			// `runtimepack.<name>` libraries. They must be reported with the prefix stripped
+			// so the name matches the advisory DB (Microsoft.NETCore.App.Runtime.<rid>).
+			name: "self-contained with bundled runtime",
+			file: "testdata/self-contained.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 46,
+							EndLine:   50,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.AspNetCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.AspNetCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 63,
+							EndLine:   67,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.NETCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 58,
+							EndLine:   62,
+						},
+					},
+				},
+				{
+					ID:           "Newtonsoft.Json/13.0.1",
+					Name:         "Newtonsoft.Json",
+					Version:      "13.0.1",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 51,
+							EndLine:   57,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "ExampleApp1/1.0.0",
+					DependsOn: []string{
+						"Microsoft.AspNetCore.App.Runtime.linux-x64/8.0.0",
+						"Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+						"Newtonsoft.Json/13.0.1",
+					},
+				},
+			},
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",

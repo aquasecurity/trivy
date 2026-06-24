@@ -5,7 +5,7 @@ Each artifact supports the following scanners:
 
 | Artifact         | SBOM | Vulnerability | License |
 |------------------|:----:|:-------------:|:-------:|
-| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    -    |
+| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    ✓[^9]    |
 | pom.xml          |  ✓   |       ✓       |    ✓    |
 | *gradle.lockfile |  ✓   |       ✓       |    ✓    |
 | *.sbt.lock       |  ✓   |       ✓       |    -    |
@@ -36,6 +36,11 @@ Base JAR[^2] may contain inner JARs[^2] within itself.
 To find information about these JARs[^2], the same logic is used as for the base JAR[^2].
 
 `table` format only contains the name of root JAR[^2] . To get the full path to inner JARs[^2] use the `json` format.
+
+### Licenses
+Trivy detects licenses declared in the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml` and attaches them to the matching package.
+
+Coverage is limited: many JARs declare a license only in a parent POM (which is not expanded in the embedded `pom.xml`) or ship no Maven descriptor at all.
 
 ## pom.xml
 Trivy parses your `pom.xml` file and tries to find files with dependencies from these local locations.
@@ -129,6 +134,7 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
 [^7]: To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.
 [^8]: The supported directories are `$GRADLE_USER_HOME/caches` and `$HOME/.gradle/caches` (`%HOMEPATH%\.gradle\caches` for Windows).
+[^9]: License detection is limited. See [Licenses](#licenses) for details.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html

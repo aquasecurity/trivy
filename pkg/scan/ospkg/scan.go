@@ -16,10 +16,14 @@ type Scanner interface {
 	Scan(ctx context.Context, target types.ScanTarget, options types.ScanOptions) (types.Result, bool, error)
 }
 
-type scanner struct{}
+type scanner struct {
+	opts []ospkgDetector.Option
+}
 
-func NewScanner() Scanner {
-	return &scanner{}
+// NewScanner creates a new OS package scanner.
+// The given options are forwarded to ospkgDetector.NewDetector during Scan.
+func NewScanner(opts ...ospkgDetector.Option) Scanner {
+	return &scanner{opts: opts}
 }
 
 func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.ScanOptions) (types.Result, bool, error) {
@@ -55,7 +59,7 @@ func (s *scanner) Scan(ctx context.Context, target types.ScanTarget, opts types.
 		return result, false, nil
 	}
 
-	detector, err := ospkgDetector.NewDetector(target)
+	detector, err := ospkgDetector.NewDetector(target, s.opts...)
 	if err != nil {
 		return result, false, xerrors.Errorf("unable to initialize Detector for OS packages: %w", err)
 	}

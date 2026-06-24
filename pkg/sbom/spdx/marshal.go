@@ -523,7 +523,7 @@ func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
 		case digest.MD5:
 			alg = spdx.MD5
 		default:
-			m.logger.Warn("Unsupported hash algorithm", log.String("algorithm", string(alg)))
+			m.logger.Warn("Unsupported hash algorithm", log.String("algorithm", d.Algorithm().String()))
 			continue
 		}
 		checksums = append(checksums, spdx.Checksum{
