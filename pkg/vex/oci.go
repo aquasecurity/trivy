@@ -7,7 +7,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"net/url"
 	"slices"
 	"strings"
 
@@ -69,7 +68,7 @@ func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOpt
 	logger := log.WithPrefix("vex").With(log.String("type", "oci"),
 		log.String("purl", purlString))
 
-	digest, registryOptions, err := resolveDigest(ctx, p, registryOptions)
+	digest, err := resolveDigest(ctx, p, registryOptions)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to resolve OCI digest: %w", err)
 	}
@@ -96,63 +95,41 @@ func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOpt
 	}, nil
 }
 
-func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (name.Digest, ftypes.RegistryOptions, error) {
+func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (name.Digest, error) {
 	ociPURL := p.Unwrap()
 	if ociPURL == nil {
-		return name.Digest{}, registryOptions, xerrors.New("package URL is nil")
+		return name.Digest{}, xerrors.New("package URL is nil")
 	}
 	if ociPURL.Type != packageurl.TypeOCI {
-		return name.Digest{}, registryOptions, xerrors.Errorf("unsupported package URL type: %s", ociPURL.Type)
+		return name.Digest{}, xerrors.Errorf("unsupported package URL type: %s", ociPURL.Type)
 	}
 
 	repoURL := ociPURL.Qualifiers.Map()["repository_url"]
 	if repoURL == "" {
-		return name.Digest{}, registryOptions, xerrors.New("repository_url qualifier is missing")
+		return name.Digest{}, xerrors.New("repository_url qualifier is missing")
 	}
 
-	var insecure bool
-	repoURL, insecure = normalizeRepositoryURL(repoURL)
-	if insecure {
-		registryOptions.Insecure = true
-	}
-
-	nameOpts := nameOptions(registryOptions)
-	ref, err := name.ParseReference(repoURL, nameOpts...)
+	ref, err := name.ParseReference(repoURL)
 	if err != nil {
-		return name.Digest{}, registryOptions, xerrors.Errorf("repository URL parse error: %w", err)
+		return name.Digest{}, xerrors.Errorf("repository URL parse error: %w", err)
 	}
 
+	// For an OCI purl the version, when set, is the image digest.
 	if ociPURL.Version != "" {
-		return ref.Context().Digest(ociPURL.Version), registryOptions, nil
+		return ref.Context().Digest(ociPURL.Version), nil
 	}
 
+	// Otherwise resolve the reference to a digest: it may already be one, or a
+	// tag that needs a registry lookup.
 	if digest, ok := ref.(name.Digest); ok {
-		return digest, registryOptions, nil
+		return digest, nil
 	}
 
 	desc, err := remote.Get(ctx, ref, registryOptions)
 	if err != nil {
-		return name.Digest{}, registryOptions, xerrors.Errorf("image get error: %w", err)
+		return name.Digest{}, xerrors.Errorf("image get error: %w", err)
 	}
-	return ref.Context().Digest(desc.Digest.String()), registryOptions, nil
-}
-
-func normalizeRepositoryURL(repoURL string) (string, bool) {
-	u, err := url.Parse(repoURL)
-	if err != nil || u.Scheme == "" || u.Host == "" {
-		return repoURL, false
-	}
-
-	normalized := u.Host + u.EscapedPath()
-	return normalized, u.Scheme == "http"
-}
-
-func nameOptions(registryOptions ftypes.RegistryOptions) []name.Option {
-	var opts []name.Option
-	if registryOptions.Insecure {
-		opts = append(opts, name.Insecure)
-	}
-	return opts
+	return ref.Context().Digest(desc.Digest.String()), nil
 }
 
 func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
