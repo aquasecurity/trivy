@@ -108,7 +108,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, licenseFiles, err := p.traverseZip(size, r, fileProps)
+	pkgs, m, foundPomProps, licenseFile, err := p.traverseZip(size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
@@ -129,7 +129,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 	// Classify and attach the LICENSE file now that the jar's own artifact is resolved
 	// (it may have been added above from MANIFEST.MF / SHA-1 / file name).
-	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFiles)
+	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
 	return pkgs, nil, nil
 }
@@ -188,7 +188,7 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 }
 
 func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Properties) (
-	[]ftypes.Package, manifest, bool, []*zip.File, error) {
+	[]ftypes.Package, manifest, bool, *zip.File, error) {
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool
@@ -254,7 +254,12 @@ func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Propertie
 	// Attach licenses from embedded pom.xml, matched by "groupID:artifactID".
 	attachPomLicenses(pkgs, pomLicenses)
 
-	return pkgs, m, foundPomProps, licenseFiles, nil
+	var licenseFile *zip.File
+	if len(licenseFiles) == 1 {
+		licenseFile = licenseFiles[0]
+	}
+
+	return pkgs, m, foundPomProps, licenseFile, nil
 }
 
 // attachPomLicenses attaches licenses declared in embedded pom.xml files to packages,
@@ -275,8 +280,8 @@ func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
 // jar's own package, but only when the owner is unambiguous: a single LICENSE file, a
 // single package belonging to this jar, and no license from its pom.xml yet.
-func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, licenseFiles []*zip.File) {
-	if len(licenseFiles) != 1 {
+func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, licenseFile *zip.File) {
+	if licenseFile == nil {
 		return
 	}
 
@@ -295,9 +300,9 @@ func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, lice
 		return
 	}
 
-	names, err := p.classifyPackedLicense(licenseFiles[0])
+	names, err := p.classifyPackedLicense(licenseFile)
 	if err != nil {
-		p.logger.Debug("Failed to classify license file", log.String("file", licenseFiles[0].Name), log.Err(err))
+		p.logger.Debug("Failed to classify license file", log.FilePath(licenseFile.Name), log.Err(err))
 		return
 	}
 	if len(names) > 0 {
