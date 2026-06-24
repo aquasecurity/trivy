@@ -20,19 +20,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-const (
-	sigstoreBundleMediaType = "application/vnd.dev.sigstore.bundle.v0.3+json"
-	dsseEnvelopeMediaType   = "application/vnd.dsse.envelope.v1+json"
-)
-
 var supportedVEXArtifactTypes = []string{
-	sigstoreBundleMediaType,
-	dsseEnvelopeMediaType,
+	oci.SigstoreBundleArtifactType,
+	oci.DSSEEnvelopeArtifactType,
 }
 
 type OCI struct{}
@@ -197,7 +193,7 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 		}
 		// Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
 		// bundle format is only used for OCI 1.1 referrers.
-		vexDoc, err := decodeOpenVEXAttestation(blob, dsseEnvelopeMediaType)
+		vexDoc, err := decodeOpenVEXAttestation(blob, oci.DSSEEnvelopeArtifactType)
 		if err != nil {
 			logger.Debug("Skipping legacy attestation layer", log.Err(err))
 			continue
@@ -263,7 +259,7 @@ func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, e
 	var predicate openvex.VEX
 	statement := attestation.Statement{Predicate: &predicate}
 
-	if artifactType == sigstoreBundleMediaType {
+	if artifactType == oci.SigstoreBundleArtifactType {
 		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
 		if err := json.Unmarshal(blob, &bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)

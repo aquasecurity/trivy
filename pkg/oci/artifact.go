@@ -33,6 +33,9 @@ const (
 	// Sigstore bundle artifact type for Cosign attestations in "new bundle format" > 2.5.0
 	SigstoreBundleArtifactType = "application/vnd.dev.sigstore.bundle.v0.3+json"
 
+	// DSSE envelope artifact type for legacy Cosign attestations (.att tag)
+	DSSEEnvelopeArtifactType = "application/vnd.dsse.envelope.v1+json"
+
 	// Media types
 	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
 
