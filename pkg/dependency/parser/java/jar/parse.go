@@ -490,6 +490,9 @@ func isJarLicenseFile(name string) bool {
 		return false
 	}
 	base := path.Base(name)
+	if isArtifact(base) {
+		return false // e.g. license.jar is a nested archive, not a license file
+	}
 	stem := strings.TrimSuffix(base, path.Ext(base))
 	return licenseFileStems.Contains(stem)
 }
