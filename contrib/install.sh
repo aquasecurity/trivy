@@ -8,10 +8,11 @@ usage() {
   cat <<EOF
 $this: download go binaries for aquasecurity/trivy
 
-Usage: $this [-b] bindir [-c] client [-d] [tag]
+Usage: $this [-b] bindir [-c] client [-d] [-s] checksum [tag]
   -b sets bindir or installation directory, Defaults to ./bin
   -c sets client identifier for download tracking (letters, digits, and '-' characters are allowed), Defaults to install-script
   -d turns on debug logging
+  -s sets expected sha256 checksum of the tarball, skips downloading checksum from GitHub
   -x turns on verbose logging
    [tag] is a tag from
    https://github.com/aquasecurity/trivy/releases
@@ -30,7 +31,8 @@ parse_args() {
 
   BINDIR=${BINDIR:-./bin}
   CLIENT=${CLIENT:-install-script}
-  while getopts "b:c:dh?x" arg; do
+  EXPECTED_CHECKSUM=${EXPECTED_CHECKSUM:-}
+  while getopts "b:c:dh?s:x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
       c)
@@ -43,6 +45,14 @@ parse_args() {
         ;;
       d) log_set_priority 10 ;;
       h | \?) usage "$0" ;;
+      s)
+        if printf '%s' "$OPTARG" | grep -Eq '^[A-Fa-f0-9]{64}$'; then
+          EXPECTED_CHECKSUM="$OPTARG"
+        else
+          log_crit "invalid checksum '${OPTARG}'; expected 64 character hex string (sha256)"
+          exit 1
+        fi
+        ;;
       x) set -x ;;
     esac
   done
@@ -57,8 +67,18 @@ execute() {
   tmpdir=$(mktemp -d)
   log_debug "downloading files into ${tmpdir}"
   http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
-  http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
-  hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  if [ -n "${EXPECTED_CHECKSUM}" ]; then
+    log_info "verifying tarball checksum against user-provided checksum"
+    got=$(hash_sha256 "${tmpdir}/${TARBALL}")
+    if [ "${EXPECTED_CHECKSUM}" != "${got}" ]; then
+      log_err "checksum for '${TARBALL}' did not verify ${EXPECTED_CHECKSUM} vs ${got}"
+      rm -rf "${tmpdir}"
+      exit 1
+    fi
+  else
+    http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
+    hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  fi
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   test ! -d "${BINDIR}" && install -d "${BINDIR}"
