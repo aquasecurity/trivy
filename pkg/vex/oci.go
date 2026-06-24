@@ -276,6 +276,10 @@ func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, e
 	return &predicate, nil
 }
 
+// isOpenVEXPredicateType reports whether predicateType identifies an OpenVEX
+// document. Besides the bare type URI, OpenVEX uses versioned namespaces such as
+// "https://openvex.dev/ns/v0.2.0", so the prefix is accepted too. The trailing
+// "/" keeps look-alikes like "https://openvex.dev/nsx" from matching.
 func isOpenVEXPredicateType(predicateType string) bool {
 	return predicateType == openvex.TypeURI || strings.HasPrefix(predicateType, openvex.TypeURI+"/")
 }
