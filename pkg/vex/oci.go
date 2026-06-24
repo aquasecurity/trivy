@@ -56,6 +56,9 @@ func NewOCI(report *types.Report) (*OpenVEX, error) {
 }
 
 func RetrieveVEXAttestation(p *purl.PackageURL) (*OpenVEX, error) {
+	// TODO(#8916): thread the caller's RegistryOptions through so registry
+	// credentials, --insecure and TLS settings reach the attestation fetch
+	// instead of using an empty config.
 	return retrieveVEXAttestation(context.Background(), p, ftypes.RegistryOptions{})
 }
 
