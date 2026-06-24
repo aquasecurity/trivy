@@ -13,6 +13,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -737,27 +738,26 @@ func TestReportWriter_Sarif(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			startedAt := time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC)
-			endedAt := time.Date(2021, 8, 25, 12, 20, 35, 0, time.UTC)
+			fakeTime := time.Date(2021, 8, 25, 12, 20, 30, 0, time.UTC)
+			ctx := clock.With(t.Context(), fakeTime)
+			report.SetFakeStartTime(ctx)
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
-				Output:    sarifWritten,
-				Target:    tt.target,
-				StartedAt: startedAt,
-				EndedAt:   endedAt,
+				Output: sarifWritten,
+				Target: tt.target,
 			}
-			err := w.Write(t.Context(), tt.input)
+			err := w.Write(ctx, tt.input)
 			require.NoError(t, err)
 
 			result := &sarif.Report{}
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 
-			// Invocation timestamps are deterministic, so assert them exactly.
+			// Invocation timestamps are deterministic via the injected clock.
 			require.Len(t, result.Runs, 1)
 			wantInvocation := sarif.NewInvocation().
-				WithStartTimeUTC(startedAt).
-				WithEndTimeUTC(endedAt).
+				WithStartTimeUTC(fakeTime).
+				WithEndTimeUTC(fakeTime).
 				WithExecutionSuccess(true)
 			assert.Equal(t, []*sarif.Invocation{wantInvocation}, result.Runs[0].Invocations)
 			// Clear them before the structural comparison of the rest of the report.

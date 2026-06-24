@@ -14,10 +14,17 @@ import (
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+// processStartTime is the time the Trivy process started.
+// It is captured once at package initialization and used as the default
+// SARIF invocation startTimeUtc, so the reported interval covers the whole
+// utility run (including DB download and analysis), not just report writing.
+var processStartTime = clock.Now(context.Background())
 
 const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
@@ -44,10 +51,13 @@ var (
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
-	Output        io.Writer
-	Version       string
+	Output  io.Writer
+	Version string
+	// StartedAt overrides the invocation startTimeUtc. When zero, the process
+	// start time is used, which is correct for the CLI (one scan per process).
+	// Long-running library consumers that reuse the process across scans should
+	// set this per scan.
 	StartedAt     time.Time
-	EndedAt       time.Time
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
@@ -128,7 +138,7 @@ func pathToFileURI(path string) string {
 	return fmt.Sprintf("file://%s/", slashPath)
 }
 
-func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
+func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -271,13 +281,15 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
-	if !sw.StartedAt.IsZero() {
-		sw.run.Invocations = []*sarif.Invocation{
-			sarif.NewInvocation().
-				WithStartTimeUTC(sw.StartedAt).
-				WithEndTimeUTC(sw.EndedAt.UTC()).
-				WithExecutionSuccess(true),
-		}
+	startedAt := sw.StartedAt
+	if startedAt.IsZero() {
+		startedAt = processStartTime
+	}
+	sw.run.Invocations = []*sarif.Invocation{
+		sarif.NewInvocation().
+			WithStartTimeUTC(startedAt).
+			WithEndTimeUTC(clock.Now(ctx)).
+			WithExecutionSuccess(true),
 	}
 
 	sarifReport.AddRun(sw.run)

@@ -84,10 +84,8 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
 			log.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			writer = &SarifWriter{
-				Output:    output,
-				Version:   option.AppVersion,
-				StartedAt: report.ScanStartedAt,
-				EndedAt:   report.CreatedAt,
+				Output:  output,
+				Version: option.AppVersion,
 			}
 			break
 		}
@@ -100,11 +98,9 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 			target = option.Target
 		}
 		writer = &SarifWriter{
-			Output:    output,
-			Version:   option.AppVersion,
-			Target:    target,
-			StartedAt: report.ScanStartedAt,
-			EndedAt:   report.CreatedAt,
+			Output:  output,
+			Version: option.AppVersion,
+			Target:  target,
 		}
 	case types.FormatCosignVuln:
 		writer = predicate.NewVulnWriter(output, option.AppVersion)
