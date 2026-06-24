@@ -23,16 +23,9 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
-
-// licenseFileStems are the base names (without extension) of files treated as
-// license files inside a jar, matched case-insensitively. It mirrors the set used
-// by the standalone license file analyzer (its acceptedFileNames), but matching is
-// done on the stem so common variants like LICENSE.txt are also recognized.
-var licenseFileStems = set.NewCaseInsensitive("license", "licence", "copyright")
 
 var (
 	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
@@ -494,7 +487,7 @@ func isJarLicenseFile(name string) bool {
 		return false // e.g. license.jar is a nested archive, not a license file
 	}
 	stem := strings.TrimSuffix(base, path.Ext(base))
-	return licenseFileStems.Contains(stem)
+	return licensing.LicenseFileNames.Contains(stem)
 }
 
 // classifyPackedLicense classifies a LICENSE file packed in a jar and returns the
