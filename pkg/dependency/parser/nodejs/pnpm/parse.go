@@ -36,27 +36,24 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	// as a separate YAML document in pnpm-lock.yaml, separated by `---`.
 	// Decode all documents and use the project lockfile, skipping the env one.
 	dec := yaml.NewDecoder(r)
-	var lockFile LockFile
-	var found bool
 	for {
-		var doc LockFile
-		if err := dec.Decode(&doc); err != nil {
+		var lockFile LockFile
+		if err := dec.Decode(&lockFile); err != nil {
 			if errors.Is(err, io.EOF) {
-				break
+				// No project document (empty file or env-only lockfile).
+				p.logger.Debug("No project lockfile document found")
+				return nil, nil, nil
 			}
 			return nil, nil, xerrors.Errorf("decode error: %w", err)
 		}
-		if doc.isEnvLockfile() {
+		if lockFile.isEnvLockfile() {
 			continue
 		}
-		lockFile = doc
-		found = true
-		break
+		return p.parseLockFile(lockFile)
 	}
-	if !found {
-		return nil, nil, nil
-	}
+}
 
+func (p *Parser) parseLockFile(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lockVer := p.parseLockfileVersion(lockFile)
 	if lockVer < 0 {
 		return nil, nil, nil
