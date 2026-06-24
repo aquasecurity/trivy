@@ -31,6 +31,13 @@ var supportedVEXArtifactTypes = []string{
 	oci.DSSEEnvelopeArtifactType,
 }
 
+// maxAttestationLayers bounds how many layers a legacy `.att` tag may stack
+// before we refuse to process it. cosign caps the number of attestations per
+// image at 100; mirror that to avoid unbounded layer fetches from a hostile
+// registry. The referrer path needs no such cap: it fetches at most one
+// candidate (it returns on the first supported referrer).
+const maxAttestationLayers = 100
+
 type OCI struct{}
 
 func NewOCI(report *types.Report) (*OpenVEX, error) {
@@ -179,6 +186,9 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 			return nil, nil
 		}
 		return nil, err
+	}
+	if len(layers) > maxAttestationLayers {
+		return nil, xerrors.Errorf("legacy attestation has too many layers: %d (max %d)", len(layers), maxAttestationLayers)
 	}
 
 	// A legacy cosign `.att` tag accumulates one layer per `cosign attest` call, so
