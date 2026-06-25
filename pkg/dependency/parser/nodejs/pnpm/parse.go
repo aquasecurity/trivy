@@ -133,14 +133,20 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	// The "importers" section contains the dependencies defined in package.json files.
 	// We need to identify which packages are direct dependencies (vs transitive)
 	// and which are development dependencies (vs production dependencies).
-	devDeps := make(map[string]string) // name -> version for dev dependencies
-	deps := make(map[string]string)    // name -> version for production dependencies
+	//
+	// Keys are packageID(name, version) so that every (name, version) pair from
+	// every importer is recorded independently. Using name alone would cause the
+	// last importer to silently overwrite earlier ones, producing non-deterministic
+	// dev/prod classification when multiple workspaces pin different versions of the
+	// same package.
+	devDeps := make(map[string]bool) // packageID -> true for dev dependencies
+	deps := make(map[string]bool)    // packageID -> true for production dependencies
 	for _, importer := range lockFile.Importers {
 		for n, v := range importer.DevDependencies {
-			devDeps[n] = v.Version
+			devDeps[packageID(n, p.trimPeerDeps(v.Version, lockVer))] = true
 		}
 		for n, v := range importer.Dependencies {
-			deps[n] = v.Version
+			deps[packageID(n, p.trimPeerDeps(v.Version, lockVer))] = true
 		}
 	}
 
@@ -167,12 +173,11 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		dev := true
 		relationship := ftypes.RelationshipIndirect // Assume transitive by default
 
-		// Check if this package matches a direct dev dependency
-		if v, ok := devDeps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
+		// Check if this package matches a direct dev or production dependency.
+		if devDeps[string(pkgKey)] {
 			relationship = ftypes.RelationshipDirect
 		}
-		// Check if this package matches a direct production dependency
-		if v, ok := deps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
+		if deps[string(pkgKey)] {
 			relationship = ftypes.RelationshipDirect
 			dev = false // This is a production dependency, not a dev dependency
 		}
