@@ -40,6 +40,7 @@ trivy vm [flags] VM_IMAGE
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --download-checks-bundle-only       download/update checks bundle but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
@@ -181,4 +182,3 @@ trivy vm [flags] VM_IMAGE
 ### SEE ALSO
 
 * [trivy](trivy.md)	 - Unified security scanner
-

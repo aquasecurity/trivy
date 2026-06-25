@@ -42,6 +42,7 @@ trivy filesystem [flags] PATH
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --download-checks-bundle-only       download/update checks bundle but don't run a scan
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
@@ -196,4 +197,3 @@ trivy filesystem [flags] PATH
 ### SEE ALSO
 
 * [trivy](trivy.md)	 - Unified security scanner
-

@@ -98,14 +98,13 @@ You can ask `Trivy` to only update the database without performing a scan. This 
 
 - `--download-db-only`
 - `--download-java-db-only`
+- `--download-checks-bundle-only`
 
 For example:
 
 ```
 trivy image --download-db-only
 ```
-
-Note that currently there is no option to download only the Checks Bundle.
 
 ### Remove Databases
 

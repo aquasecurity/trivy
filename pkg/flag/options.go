@@ -478,6 +478,15 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
+	switch {
+	case o.DownloadChecksBundleOnly && o.DownloadDBOnly:
+		return xerrors.New("--download-db-only and --download-checks-bundle-only options can not be specified both")
+	case o.DownloadChecksBundleOnly && o.DownloadJavaDBOnly:
+		return xerrors.New("--download-java-db-only and --download-checks-bundle-only options can not be specified both")
+	case o.DownloadChecksBundleOnly && o.SkipCheckUpdate:
+		return xerrors.New("--skip-check-update and --download-checks-bundle-only options can not be specified both")
+	}
+
 	return nil
 }
 

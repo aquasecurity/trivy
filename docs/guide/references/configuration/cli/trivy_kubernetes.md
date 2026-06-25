@@ -59,6 +59,7 @@ trivy kubernetes [flags] [CONTEXT]
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
+      --download-checks-bundle-only       download/update checks bundle but don't run a scan
       --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
       --exclude-namespaces strings        indicate the namespaces excluded from scanning (example: kube-system)
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
@@ -205,4 +206,3 @@ trivy kubernetes [flags] [CONTEXT]
 ### SEE ALSO
 
 * [trivy](trivy.md)	 - Unified security scanner
-
