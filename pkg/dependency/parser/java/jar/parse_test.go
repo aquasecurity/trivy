@@ -229,6 +229,17 @@ var (
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 	}
+
+	// Manually created: a jar that packs more than one LICENSE file
+	// (root LICENSE + META-INF/LICENSE.txt) and declares no license in pom.xml.
+	// The owner of the license is ambiguous, so no license is attached.
+	wantMultiLicense = []ftypes.Package{
+		{
+			Name:     "com.example:multi-license",
+			Version:  "1.0.0",
+			FilePath: "testdata/multi-license-1.0.0.jar",
+		},
+	}
 )
 
 type apiResponse struct {
@@ -296,6 +307,11 @@ func TestParse(t *testing.T) {
 			name: "duplicate libraries",
 			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 			want: wantDuplicatesJar,
+		},
+		{
+			name: "multiple packed license files",
+			file: "testdata/multi-license-1.0.0.jar",
+			want: wantMultiLicense,
 		},
 	}
 
