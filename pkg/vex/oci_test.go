@@ -241,8 +241,8 @@ func setUpDockerConfig(t *testing.T, registryHost, user, password string) {
 	configDir := t.TempDir()
 	t.Setenv("DOCKER_CONFIG", configDir)
 
-	encoded := base64.StdEncoding.EncodeToString([]byte(fmt.Sprintf("%s:%s", user, password)))
-	config := fmt.Sprintf(`{"auths":{"%s":{"auth":"%s"}}}`, registryHost, encoded)
+	encoded := base64.StdEncoding.EncodeToString(fmt.Appendf(nil, "%s:%s", user, password))
+	config := fmt.Sprintf(`{"auths":{%q:{"auth":%q}}}`, registryHost, encoded)
 	require.NoError(t, os.WriteFile(filepath.Join(configDir, "config.json"), []byte(config), 0o600))
 }
 
@@ -319,7 +319,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 		},
 		{
 			name: "image not found",
-			setup: func(t *testing.T) string {
+			setup: func(_ *testing.T) string {
 				return registryHost + "/debian/missing:latest"
 			},
 			wantErr: "failed to resolve OCI digest",
