@@ -26,6 +26,12 @@ var (
 		Default:    []string{},
 		Usage:      "specify the files or glob patterns to skip",
 	}
+	FollowSymlinksFlag = Flag[bool]{
+		Name:          "follow-symlinks",
+		ConfigName:    "scan.follow-symlinks",
+		Usage:         "follow symlinks that resolve to regular files and scan their targets (symlinks to directories are not followed)",
+		TelemetrySafe: true,
+	}
 	OfflineScanFlag = Flag[bool]{
 		Name:          "offline-scan",
 		ConfigName:    "scan.offline",
@@ -140,6 +146,7 @@ var (
 type ScanFlagGroup struct {
 	SkipDirs          *Flag[[]string]
 	SkipFiles         *Flag[[]string]
+	FollowSymlinks    *Flag[bool]
 	OfflineScan       *Flag[bool]
 	Scanners          *Flag[[]string]
 	FilePatterns      *Flag[[]string]
@@ -157,6 +164,7 @@ type ScanOptions struct {
 	Target            string
 	SkipDirs          []string
 	SkipFiles         []string
+	FollowSymlinks    bool
 	OfflineScan       bool
 	Scanners          types.Scanners
 	FilePatterns      []string
@@ -173,6 +181,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 	return &ScanFlagGroup{
 		SkipDirs:          SkipDirsFlag.Clone(),
 		SkipFiles:         SkipFilesFlag.Clone(),
+		FollowSymlinks:    FollowSymlinksFlag.Clone(),
 		OfflineScan:       OfflineScanFlag.Clone(),
 		Scanners:          ScannersFlag.Clone(),
 		FilePatterns:      FilePatternsFlag.Clone(),
@@ -195,6 +204,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 	return []Flagger{
 		f.SkipDirs,
 		f.SkipFiles,
+		f.FollowSymlinks,
 		f.OfflineScan,
 		f.Scanners,
 		f.FilePatterns,
@@ -237,6 +247,7 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 		Target:            target,
 		SkipDirs:          f.SkipDirs.Value(),
 		SkipFiles:         f.SkipFiles.Value(),
+		FollowSymlinks:    f.FollowSymlinks.Value(),
 		OfflineScan:       f.OfflineScan.Value(),
 		Scanners:          xstrings.ToTSlice[types.Scanner](f.Scanners.Value()),
 		FilePatterns:      f.FilePatterns.Value(),
