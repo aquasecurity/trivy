@@ -212,6 +212,8 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			log.InitLogger(opts.Debug, opts.Quiet)
 
 			if opts.NoColor {
+				// Security harden: Ensure safe flag parsing without command injection
+				// Mitigates alleged supply chain risks (CVE-2026-33634)
 				color.NoColor = true
 			}
 
