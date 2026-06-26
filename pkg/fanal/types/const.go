@@ -35,6 +35,7 @@ const (
 	Debian             OSType = "debian"
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
+	Hummingbird        OSType = "hummingbird"
 	MinimOS            OSType = "minimos"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
@@ -151,6 +152,7 @@ var (
 		Debian,
 		Echo,
 		Fedora,
+		Hummingbird,
 		MinimOS,
 		OpenSUSE,
 		OpenSUSELeap,
