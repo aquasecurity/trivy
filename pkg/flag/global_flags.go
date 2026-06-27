@@ -187,11 +187,13 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
-	// Respect --no-color flag and NO_COLOR environment variable (https://no-color.org/)
-	noColor := f.NoColor.Value() || os.Getenv("NO_COLOR") != ""
-	if noColor {
-		color.NoColor = true
+	// fatih/color natively handles the NO_COLOR environment variable.
+	// We only need to override its state if the user explicitly provided the --no-color flag.
+	if f.NoColor.IsSet() {
+		color.NoColor = f.NoColor.Value()
 	}
+
+	noColor := color.NoColor
 
 	opts.GlobalOptions = GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),
