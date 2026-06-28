@@ -1,0 +1,13 @@
+repos:
+  - repo: local
+    hooks:
+      - id: trivy-fs
+        name: trivy filesystem scan
+        entry: bash -c 'trivy fs --config examples/workflows/trivy.yaml --ignorefile examples/workflows/.trivyignore --scanners vuln,secret .'
+        language: system
+        pass_filenames: false
+      - id: trivy-config
+        name: trivy config scan
+        entry: bash -c 'trivy config --severity HIGH,CRITICAL --exit-code 1 .'
+        language: system
+        pass_filenames: false
