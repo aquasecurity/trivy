@@ -1,7 +1,6 @@
 package echo
 
 import (
-	"fmt"
 	"regexp"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
@@ -45,7 +44,7 @@ func (echoVendor) Match(eco ecosystem.Type, _, pkgVer string) bool {
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.
 func (e echoVendor) BucketPrefix(eco ecosystem.Type) string {
-	return fmt.Sprintf("%s %s::", e.Name(), eco)
+	return e.Name() + " " + string(eco) + "::"
 }
 
 // Comparer returns a version comparer for the given ecosystem.
