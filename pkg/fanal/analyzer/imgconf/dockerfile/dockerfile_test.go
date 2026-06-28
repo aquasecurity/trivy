@@ -459,6 +459,24 @@ ENTRYPOINT ["/bin/sh"]
 `,
 		},
 		{
+			// A HEALTHCHECK history line whose resolved config carries no
+			// Healthcheck object (Config.Healthcheck == nil). This happens with
+			// `HEALTHCHECK NONE` and with buildah/buildkit images that record a
+			// HEALTHCHECK history line without materializing the config object.
+			// Before the nil guard in buildHealthcheckInstruction this panicked
+			// the misconfig scanner with a nil pointer dereference.
+			name: "healthcheck history without resolved config",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK NONE",
+					},
+				},
+				// Config.Healthcheck deliberately nil
+			},
+			expected: "HEALTHCHECK NONE\n",
+		},
+		{
 			name: "legacy env format",
 			input: &v1.ConfigFile{
 				History: []v1.History{
