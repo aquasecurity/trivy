@@ -2,6 +2,7 @@ package echo
 
 import (
 	"regexp"
+	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -40,7 +41,7 @@ func (echoVendor) Name() string {
 func (echoVendor) Match(eco ecosystem.Type, _, pkgVer string) bool {
 	switch eco {
 	case ecosystem.Pip, ecosystem.Maven:
-		return echoLocalSegmentRe.MatchString(pkgVer)
+		return strings.Contains(pkgVer, "+echo.") && echoLocalSegmentRe.MatchString(pkgVer)
 	default:
 		return false
 	}
