@@ -3,6 +3,7 @@ package echo
 import (
 	"fmt"
 	"regexp"
+	"strings"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
@@ -41,7 +42,7 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 	default:
 		return library.NoMatch
 	}
-	if echoLocalSegmentRe.MatchString(pkgVer) {
+	if strings.Contains(pkgVer, "+echo.") && echoLocalSegmentRe.MatchString(pkgVer) {
 		return library.Matched
 	}
 	return library.NoMatch
