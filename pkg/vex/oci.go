@@ -23,13 +23,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/remote"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-var supportedVEXArtifactTypes = []string{
+var supportedVEXArtifactTypes = set.New(
 	oci.SigstoreBundleArtifactType,
 	oci.DSSEEnvelopeArtifactType,
-}
+)
 
 // maxAttestationLayers bounds how many layers a legacy `.att` tag may stack
 // before we refuse to process it. cosign caps the number of attestations per
@@ -152,7 +153,7 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	}
 
 	for _, desc := range manifest.Manifests {
-		if !slices.Contains(supportedVEXArtifactTypes, desc.ArtifactType) {
+		if !supportedVEXArtifactTypes.Contains(desc.ArtifactType) {
 			continue
 		}
 
