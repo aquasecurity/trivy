@@ -65,6 +65,7 @@ var (
 			Name:     "org.apache.commons:commons-lang3",
 			Version:  "3.11",
 			FilePath: "testdata/maven.war/WEB-INF/lib/commons-lang3-3.11.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 	}
 
@@ -77,11 +78,13 @@ var (
 			Name:     "commons-dbcp:commons-dbcp",
 			Version:  "1.4",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-dbcp-1.4.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 		{
 			Name:     "commons-pool:commons-pool",
 			Version:  "1.6",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-pool-1.6.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 		{
 			Name:     "log4j:log4j",
@@ -93,6 +96,7 @@ var (
 			Name:     "org.apache.commons:commons-compress",
 			Version:  "1.19",
 			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-compress-1.19.jar",
+			Licenses: []string{"Apache-2.0"},
 		},
 	}
 
@@ -225,6 +229,17 @@ var (
 			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 		},
 	}
+
+	// Manually created: a jar that packs more than one LICENSE file
+	// (root LICENSE + META-INF/LICENSE.txt) and declares no license in pom.xml.
+	// The owner of the license is ambiguous, so no license is attached.
+	wantMultiLicense = []ftypes.Package{
+		{
+			Name:     "com.example:multi-license",
+			Version:  "1.0.0",
+			FilePath: "testdata/multi-license-1.0.0.jar",
+		},
+	}
 )
 
 type apiResponse struct {
@@ -292,6 +307,11 @@ func TestParse(t *testing.T) {
 			name: "duplicate libraries",
 			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
 			want: wantDuplicatesJar,
+		},
+		{
+			name: "multiple packed license files",
+			file: "testdata/multi-license-1.0.0.jar",
+			want: wantMultiLicense,
 		},
 	}
 
@@ -444,6 +464,65 @@ func TestDecodePomLicenses(t *testing.T) {
 			got, err := jar.DecodePomLicenses(strings.NewReader(tt.xml))
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestIsJarLicenseFile(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want bool
+	}{
+		{
+			name: "LICENSE at root",
+			path: "LICENSE",
+			want: true,
+		},
+		{
+			name: "LICENSE.txt at root",
+			path: "LICENSE.txt",
+			want: true,
+		},
+		{
+			name: "license under META-INF",
+			path: "META-INF/LICENSE",
+			want: true,
+		},
+		{
+			name: "copyright at root",
+			path: "COPYRIGHT",
+			want: true,
+		},
+		{
+			name: "nested archive named license.jar",
+			path: "license.jar",
+			want: false,
+		},
+		{
+			name: "nested archive named copyright.war under META-INF",
+			path: "META-INF/copyright.war",
+			want: false,
+		},
+		{
+			name: "vendored license with prefix",
+			path: "META-INF/FastDoubleParser-LICENSE",
+			want: false,
+		},
+		{
+			name: "license in subdirectory",
+			path: "META-INF/licenses/LICENSE",
+			want: false,
+		},
+		{
+			name: "unrelated file",
+			path: "com/example/Main.class",
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, jar.IsJarLicenseFile(tt.path))
 		})
 	}
 }

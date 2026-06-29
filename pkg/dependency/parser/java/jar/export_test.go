@@ -5,4 +5,5 @@ package jar
 var (
 	EmbeddedPomGAV    = embeddedPomGAV
 	DecodePomLicenses = decodePomLicenses
+	IsJarLicenseFile  = isJarLicenseFile
 )

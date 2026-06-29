@@ -57,6 +57,12 @@ message Package {
   string maintainer = 21;
   int32 relationship = 22;
   string analyzed_by = 23;
+  PackageRepository repository = 24;
+}
+
+// PackageRepository indicates where the package was distributed from.
+message PackageRepository {
+  string class = 1;
 }
 
 message PkgIdentifier {
