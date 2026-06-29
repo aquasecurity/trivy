@@ -193,6 +193,7 @@ trivy image [flags] IMAGE_NAME
                                             - bitnami
                                             - govulndb
                                             - julia
+                                            - bottlerocket
                                             - echo
                                             - minimos
                                             - rootio
