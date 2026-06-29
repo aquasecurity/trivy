@@ -52,6 +52,7 @@ jobs:
             # OS
             activestate
             alpine
+            bottlerocket
             wolfi
             chainguard
             redhat

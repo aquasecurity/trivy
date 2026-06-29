@@ -181,6 +181,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - bitnami
                                             - govulndb
                                             - julia
+                                            - bottlerocket
                                             - echo
                                             - minimos
                                             - rootio
