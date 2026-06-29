@@ -39,6 +39,12 @@ var supportedVEXArtifactTypes = set.New(
 // candidate (it returns on the first supported referrer).
 const maxAttestationLayers = 100
 
+// maxAttestationSize bounds the uncompressed size of a single attestation layer
+// read into memory, guarding against decompression bombs (CWE-409) served by a
+// hostile registry. OpenVEX documents are small (KiB-MiB). It is a var only so
+// tests can lower it.
+var maxAttestationSize = 50 << 20 // 50 MiB
+
 type OCI struct{}
 
 func NewOCI(ctx context.Context, report *types.Report) (*OpenVEX, error) {
@@ -249,9 +255,12 @@ func readLayer(layer v1.Layer) ([]byte, error) {
 	}
 	defer rc.Close()
 
-	blob, err := io.ReadAll(rc)
+	blob, err := io.ReadAll(io.LimitReader(rc, int64(maxAttestationSize)+1))
 	if err != nil {
 		return nil, xerrors.Errorf("read layer error: %w", err)
+	}
+	if len(blob) > maxAttestationSize {
+		return nil, xerrors.Errorf("attestation layer exceeds the size limit of %d bytes", maxAttestationSize)
 	}
 	return blob, nil
 }

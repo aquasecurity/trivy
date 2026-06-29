@@ -508,6 +508,19 @@ func TestRetrieveVEXAttestationWithRegistryAuth(t *testing.T) {
 	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
 
+func TestRetrieveVEXAttestationLayerTooLarge(t *testing.T) {
+	vex.SetMaxAttestationSize(t, 16)
+
+	_, registryHost := setUpReferrerRegistry(t, "", "")
+	repo := "debian/oversized"
+	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+	pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType,
+		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"))
+
+	_, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"))
+	require.ErrorContains(t, err, "exceeds the size limit")
+}
+
 func TestIsReferrersUnsupported(t *testing.T) {
 	tests := []struct {
 		name string
