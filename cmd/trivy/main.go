@@ -4,9 +4,11 @@ import (
 	"context"
 	"errors"
 	"os"
+	"time"
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/commands"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/plugin"
@@ -14,6 +16,12 @@ import (
 
 	_ "modernc.org/sqlite" // sqlite driver for RPM DB and Java DB
 )
+
+func init() {
+	// Record the process start time as early as possible so the SARIF
+	// invocation startTimeUtc covers the whole run (DB download, analysis, etc.).
+	clock.SetProcessStart(time.Now())
+}
 
 func main() {
 	if err := run(); err != nil {
