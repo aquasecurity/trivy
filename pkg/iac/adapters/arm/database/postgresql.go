@@ -20,7 +20,7 @@ func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.P
 func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment) database.PostgreSQLServer {
 	properties := resource.Properties
 	geoRedundantBackup := properties.GetMapValue("storageProfile").GetMapValue("geoRedundantBackup")
-	geoRedundantBackupEnabled := geoRedundantBackup.AsStringValue("Disabled", resource.Metadata)
+	geoRedundantBackupEnabled := geoRedundantBackup.AsStringValue("Disabled")
 
 	threatDetectionPolicy := adaptThreatDetectionPolicy(resource, deployment)
 
@@ -28,9 +28,9 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 		Metadata: resource.Metadata,
 		Server: database.Server{
 			Metadata:                  resource.Metadata,
-			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
-			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
-			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
+			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(),
+			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled"),
+			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(),
 			FirewallRules:             addFirewallRule(resource),
 		},
 		Config:                    adaptPostgreSQLConfiguration(resource, deployment),
@@ -57,19 +57,19 @@ func adaptPostgreSQLConfiguration(resource azure.Resource, deployment azure.Depl
 		}
 		val := configuration.Properties.GetMapValue("value")
 		if strings.HasSuffix(configuration.Name.AsString(), "log_checkpoints") {
-			config.LogCheckpoints = val.AsBoolValue(false, configuration.Metadata)
+			config.LogCheckpoints = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "log_connections") {
-			config.LogConnections = val.AsBoolValue(false, configuration.Metadata)
+			config.LogConnections = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "connection_throttling") {
-			config.ConnectionThrottling = val.AsBoolValue(false, configuration.Metadata)
+			config.ConnectionThrottling = val.AsBoolValue()
 			continue
 		}
 		if strings.HasSuffix(configuration.Name.AsString(), "log_disconnections") {
-			config.LogDisconnections = val.AsBoolValue(false, configuration.Metadata)
+			config.LogDisconnections = val.AsBoolValue()
 			continue
 		}
 	}
@@ -91,7 +91,7 @@ func adaptThreatDetectionPolicy(resource azure.Resource, deployment azure.Deploy
 			continue
 		}
 		// Found the security alert policy for this server
-		state := policy.Properties.GetMapValue("state").AsStringValue("Disabled", policy.Metadata)
+		state := policy.Properties.GetMapValue("state").AsStringValue("Disabled")
 		enabled = state.EqualTo("Enabled")
 		metadata = policy.Properties.GetMapValue("state").GetMetadata()
 		break

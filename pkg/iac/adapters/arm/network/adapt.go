@@ -42,8 +42,8 @@ func adaptSecurityGroupRules(deployment azure.Deployment) (rules []network.Secur
 }
 
 func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
-	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
-	if prefix := resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList()
+	if prefix := resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue(); prefix.IsNotEmpty() {
 		sourceAddressPrefixes = append(sourceAddressPrefixes, prefix)
 	}
 
@@ -58,8 +58,8 @@ func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 		sourcePortRanges = append(sourcePortRanges, rng)
 	}
 
-	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
-	if prefix := resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList()
+	if prefix := resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue(); prefix.IsNotEmpty() {
 		destinationAddressPrefixes = append(destinationAddressPrefixes, prefix)
 	}
 
@@ -92,7 +92,7 @@ func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
 		SourcePorts:          sourcePortRanges,
 		DestinationAddresses: destinationAddressPrefixes,
 		DestinationPorts:     destinationPortRanges,
-		Protocol:             resource.Properties.GetMapValue("protocol").AsStringValue("", resource.Metadata),
+		Protocol:             resource.Properties.GetMapValue("protocol").AsStringValue(),
 	}
 }
 
@@ -104,7 +104,7 @@ func adaptNetworkWatcherFlowLogs(deployment azure.Deployment) (flowLogs []networ
 }
 
 func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherFlowLog {
-	enabled := resource.Properties.GetMapValue("enabled").AsBoolValue(false, resource.Metadata)
+	enabled := resource.Properties.GetMapValue("enabled").AsBoolValue()
 	retentionPolicy := resource.Properties.GetMapValue("retentionPolicy")
 
 	return network.NetworkWatcherFlowLog{
@@ -112,8 +112,8 @@ func adaptNetworkWatcherFlowLog(resource azure.Resource) network.NetworkWatcherF
 		Enabled:  enabled,
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.Metadata,
-			Enabled:  retentionPolicy.GetMapValue("enabled").AsBoolValue(false, resource.Metadata),
-			Days:     retentionPolicy.GetMapValue("days").AsIntValue(0, resource.Metadata),
+			Enabled:  retentionPolicy.GetMapValue("enabled").AsBoolValue(),
+			Days:     retentionPolicy.GetMapValue("days").AsIntValue(),
 		},
 	}
 }
@@ -129,7 +129,7 @@ func adaptNetworkInterfaces(deployment azure.Deployment) []network.NetworkInterf
 func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.NetworkInterface {
 	ni := network.NetworkInterface{
 		Metadata:           resource.Metadata,
-		EnableIPForwarding: resource.Properties.GetMapValue("enableIPForwarding").AsBoolValue(false, resource.Metadata),
+		EnableIPForwarding: resource.Properties.GetMapValue("enableIPForwarding").AsBoolValue(),
 		HasPublicIP:        iacTypes.BoolDefault(false, resource.Metadata),
 		PublicIPAddress:    iacTypes.StringDefault("", resource.Metadata),
 		SubnetID:           iacTypes.StringDefault("", resource.Metadata),
@@ -146,10 +146,10 @@ func adaptNetworkInterface(resource azure.Resource, _ azure.Deployment) network.
 		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
 			Metadata: resource.Metadata,
 			PublicIPAddress: ipConfigProps.GetMapValue("publicIPAddress").
-				GetMapValue("id").AsStringValue("", resource.Metadata),
+				GetMapValue("id").AsStringValue(),
 			SubnetID: ipConfigProps.GetMapValue("subnet").
-				GetMapValue("id").AsStringValue("", resource.Metadata),
-			Primary: ipConfigProps.GetMapValue("primary").AsBoolValue(false, resource.Metadata),
+				GetMapValue("id").AsStringValue(),
+			Primary: ipConfigProps.GetMapValue("primary").AsBoolValue(),
 		})
 	}
 	ni.Setup()
