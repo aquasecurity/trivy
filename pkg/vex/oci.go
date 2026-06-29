@@ -40,7 +40,7 @@ const maxAttestationLayers = 100
 
 type OCI struct{}
 
-func NewOCI(report *types.Report) (*OpenVEX, error) {
+func NewOCI(ctx context.Context, report *types.Report) (*OpenVEX, error) {
 	if report.ArtifactType != ftypes.TypeContainerImage || len(report.Metadata.RepoDigests) == 0 {
 		return nil, xerrors.New("'--vex oci' can be used only when scanning OCI artifacts stored in registries")
 	}
@@ -51,18 +51,18 @@ func NewOCI(report *types.Report) (*OpenVEX, error) {
 		return nil, xerrors.Errorf("failed to create a package URL: %w", err)
 	}
 
-	v, err := RetrieveVEXAttestation(p)
+	v, err := RetrieveVEXAttestation(ctx, p)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to retrieve VEX attestation: %w", err)
 	}
 	return v, nil
 }
 
-func RetrieveVEXAttestation(p *purl.PackageURL) (*OpenVEX, error) {
+func RetrieveVEXAttestation(ctx context.Context, p *purl.PackageURL) (*OpenVEX, error) {
 	// TODO(#8916): thread the caller's RegistryOptions through so registry
 	// credentials, --insecure and TLS settings reach the attestation fetch
 	// instead of using an empty config.
-	return retrieveVEXAttestation(context.Background(), p, ftypes.RegistryOptions{})
+	return retrieveVEXAttestation(ctx, p, ftypes.RegistryOptions{})
 }
 
 func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (*OpenVEX, error) {

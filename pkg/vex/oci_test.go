@@ -429,7 +429,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repoURL := tt.setup(t)
-			got, err := vex.RetrieveVEXAttestation(purlFromRepositoryURL(repoURL))
+			got, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(repoURL))
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -479,7 +479,7 @@ func TestRetrieveVEXAttestationInvalidPURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := vex.RetrieveVEXAttestation(tt.purl)
+			_, err := vex.RetrieveVEXAttestation(t.Context(), tt.purl)
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}
@@ -503,7 +503,7 @@ func TestRetrieveVEXAttestationWithRegistryAuth(t *testing.T) {
 		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"), auth)
 	setUpDockerConfig(t, registryHost, user, password)
 
-	got, err := vex.RetrieveVEXAttestation(purlFromRepositoryURL(registryHost + "/" + repo + ":latest"))
+	got, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"))
 	require.NoError(t, err)
 	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
