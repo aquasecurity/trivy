@@ -20,12 +20,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// processStartTime is the time the Trivy process started.
-// It is captured once at package initialization and used as the default
-// SARIF invocation startTimeUtc, so the reported interval covers the whole
-// utility run (including DB download and analysis), not just report writing.
-var processStartTime = clock.Now(context.Background())
-
 const (
 	sarifOsPackageVulnerability        = "OsPackageVulnerability"
 	sarifLanguageSpecificVulnerability = "LanguageSpecificPackageVulnerability"
@@ -283,7 +277,7 @@ func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	}
 	startedAt := sw.StartedAt
 	if startedAt.IsZero() {
-		startedAt = processStartTime
+		startedAt = clock.ProcessStart()
 	}
 	sw.run.Invocations = []*sarif.Invocation{
 		sarif.NewInvocation().
