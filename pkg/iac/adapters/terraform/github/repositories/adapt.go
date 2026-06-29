@@ -30,9 +30,8 @@ func adaptRepository(modules terraform.Modules, resource *terraform.Block) githu
 
 	// The standalone github_repository_vulnerability_alerts resource is the recommended
 	// approach (vulnerability_alerts on github_repository is deprecated). If present, it takes precedence.
-	for _, alertsBlock := range modules.GetReferencingResources(resource, "github_repository_vulnerability_alerts", "repository") {
-		repo.VulnerabilityAlerts = alertsBlock.GetAttribute("enabled").AsBoolValueOrDefault(true, alertsBlock)
-		break
+	if blocks := modules.GetReferencingResources(resource, "github_repository_vulnerability_alerts", "repository"); len(blocks) > 0 {
+		repo.VulnerabilityAlerts = blocks[0].GetAttribute("enabled").AsBoolValueOrDefault(true, blocks[0])
 	}
 
 	privateAttr := resource.GetAttribute("private")
