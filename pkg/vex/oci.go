@@ -66,12 +66,11 @@ func RetrieveVEXAttestation(p *purl.PackageURL) (*OpenVEX, error) {
 }
 
 func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (*OpenVEX, error) {
-	var purlString string
-	if p != nil {
-		purlString = p.String()
+	if p == nil {
+		return nil, xerrors.New("package URL is nil")
 	}
 	logger := log.WithPrefix("vex").With(log.String("type", "oci"),
-		log.String("purl", purlString))
+		log.String("purl", p.String()))
 
 	digest, err := resolveDigest(ctx, p, registryOptions)
 	if err != nil {
@@ -102,9 +101,6 @@ func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOpt
 
 func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (name.Digest, error) {
 	ociPURL := p.Unwrap()
-	if ociPURL == nil {
-		return name.Digest{}, xerrors.New("package URL is nil")
-	}
 	if ociPURL.Type != packageurl.TypeOCI {
 		return name.Digest{}, xerrors.Errorf("unsupported package URL type: %s", ociPURL.Type)
 	}
