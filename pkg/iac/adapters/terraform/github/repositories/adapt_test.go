@@ -136,7 +136,7 @@ resource "github_repository_vulnerability_alerts" "my-repo" {
 			},
 		},
 		{
-			name: "standalone resource overrides deprecated",
+			name: "disabled standalone resource overrides enabled deprecated field",
 			src: `
 resource "github_repository" "my-repo" {
 	name                 = "my-repo"
@@ -150,6 +150,23 @@ resource "github_repository_vulnerability_alerts" "my-repo" {
 			expected: github.Repository{
 				Public:              iacTypes.BoolTest(true),
 				VulnerabilityAlerts: iacTypes.BoolTest(true),
+			},
+		},
+		{
+			name: "enabled standalone resource overrides disabled deprecated field",
+			src: `
+resource "github_repository" "my-repo" {
+	name                 = "my-repo"
+	vulnerability_alerts = true
+}
+resource "github_repository_vulnerability_alerts" "my-repo" {
+	repository = github_repository.my-repo.name
+	enabled    = false
+}
+`,
+			expected: github.Repository{
+				Public:              iacTypes.BoolTest(true),
+				VulnerabilityAlerts: iacTypes.BoolTest(false),
 			},
 		},
 	}
