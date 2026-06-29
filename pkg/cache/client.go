@@ -21,6 +21,7 @@ type Type string
 type Options struct {
 	Backend     string
 	CacheDir    string
+	LockTimeout time.Duration
 	RedisCACert string
 	RedisCert   string
 	RedisKey    string
@@ -59,7 +60,11 @@ func New(opts Options) (Cache, func(), error) {
 		cache = redisCache
 	case TypeFS:
 		// standalone mode
-		fsCache, err := NewFSCache(opts.CacheDir)
+		var fsOpts []FSCacheOption
+		if opts.LockTimeout > 0 {
+			fsOpts = append(fsOpts, WithLockTimeout(opts.LockTimeout))
+		}
+		fsCache, err := NewFSCache(opts.CacheDir, fsOpts...)
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to initialize fs cache: %w", err)
 		}

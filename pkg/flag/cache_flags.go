@@ -33,6 +33,11 @@ var (
 		ConfigName: "cache.ttl",
 		Usage:      "cache TTL when using redis as cache backend",
 	}
+	CacheLockTimeoutFlag = Flag[time.Duration]{
+		Name:       "cache-lock-timeout",
+		ConfigName: "cache.lock-timeout",
+		Usage:      "fs cache backend: timeout when acquiring the cache file lock (default 5s; 0 keeps the default)",
+	}
 	RedisTLSFlag = Flag[bool]{
 		Name:          "redis-tls",
 		ConfigName:    "cache.redis.tls",
@@ -58,9 +63,10 @@ var (
 
 // CacheFlagGroup composes common printer flag structs used for commands requiring cache logic.
 type CacheFlagGroup struct {
-	ClearCache   *Flag[bool]
-	CacheBackend *Flag[string]
-	CacheTTL     *Flag[time.Duration]
+	ClearCache       *Flag[bool]
+	CacheBackend     *Flag[string]
+	CacheTTL         *Flag[time.Duration]
+	CacheLockTimeout *Flag[time.Duration]
 
 	RedisTLS    *Flag[bool]
 	RedisCACert *Flag[string]
@@ -71,24 +77,26 @@ type CacheFlagGroup struct {
 type CacheOptions struct {
 	ClearCache bool
 
-	CacheBackend string
-	CacheTTL     time.Duration
-	RedisTLS     bool
-	RedisCACert  string
-	RedisCert    string
-	RedisKey     string
+	CacheBackend     string
+	CacheTTL         time.Duration
+	CacheLockTimeout time.Duration
+	RedisTLS         bool
+	RedisCACert      string
+	RedisCert        string
+	RedisKey         string
 }
 
 // NewCacheFlagGroup returns a default CacheFlagGroup
 func NewCacheFlagGroup() *CacheFlagGroup {
 	return &CacheFlagGroup{
-		ClearCache:   ClearCacheFlag.Clone(),
-		CacheBackend: CacheBackendFlag.Clone(),
-		CacheTTL:     CacheTTLFlag.Clone(),
-		RedisTLS:     RedisTLSFlag.Clone(),
-		RedisCACert:  RedisCACertFlag.Clone(),
-		RedisCert:    RedisCertFlag.Clone(),
-		RedisKey:     RedisKeyFlag.Clone(),
+		ClearCache:       ClearCacheFlag.Clone(),
+		CacheBackend:     CacheBackendFlag.Clone(),
+		CacheTTL:         CacheTTLFlag.Clone(),
+		CacheLockTimeout: CacheLockTimeoutFlag.Clone(),
+		RedisTLS:         RedisTLSFlag.Clone(),
+		RedisCACert:      RedisCACertFlag.Clone(),
+		RedisCert:        RedisCertFlag.Clone(),
+		RedisKey:         RedisKeyFlag.Clone(),
 	}
 }
 
@@ -101,6 +109,7 @@ func (fg *CacheFlagGroup) Flags() []Flagger {
 		fg.ClearCache,
 		fg.CacheBackend,
 		fg.CacheTTL,
+		fg.CacheLockTimeout,
 		fg.RedisTLS,
 		fg.RedisCACert,
 		fg.RedisCert,
@@ -110,13 +119,14 @@ func (fg *CacheFlagGroup) Flags() []Flagger {
 
 func (fg *CacheFlagGroup) ToOptions(opts *Options) error {
 	opts.CacheOptions = CacheOptions{
-		ClearCache:   fg.ClearCache.Value(),
-		CacheBackend: fg.CacheBackend.Value(),
-		CacheTTL:     fg.CacheTTL.Value(),
-		RedisTLS:     fg.RedisTLS.Value(),
-		RedisCACert:  fg.RedisCACert.Value(),
-		RedisCert:    fg.RedisCert.Value(),
-		RedisKey:     fg.RedisKey.Value(),
+		ClearCache:       fg.ClearCache.Value(),
+		CacheBackend:     fg.CacheBackend.Value(),
+		CacheTTL:         fg.CacheTTL.Value(),
+		CacheLockTimeout: fg.CacheLockTimeout.Value(),
+		RedisTLS:         fg.RedisTLS.Value(),
+		RedisCACert:      fg.RedisCACert.Value(),
+		RedisCert:        fg.RedisCert.Value(),
+		RedisKey:         fg.RedisKey.Value(),
 	}
 	return nil
 }
