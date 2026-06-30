@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo vendor
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 
@@ -21,6 +22,7 @@ func Test_lookupVendor(t *testing.T) {
 		name                string
 		eco                 ecosystem.Type
 		pkgName             string
+		pkgVer              string
 		wantMatch           bool
 		wantPrefix          string
 		wantDefaultComparer bool
@@ -66,6 +68,29 @@ func Test_lookupVendor(t *testing.T) {
 			wantDefaultComparer: true,
 		},
 		{
+			name:                "echo pip package returns vendor prefix and pep440 comparer",
+			eco:                 ecosystem.Pip,
+			pkgName:             "requests",
+			pkgVer:              "2.14.2+echo.1",
+			wantMatch:           true,
+			wantPrefix:          "echo pip::",
+			wantDefaultComparer: false,
+		},
+		{
+			name:      "non-echo pip package without version suffix returns no match",
+			eco:       ecosystem.Pip,
+			pkgName:   "requests",
+			pkgVer:    "2.14.2",
+			wantMatch: false,
+		},
+		{
+			name:      "echo version suffix on non-pip ecosystem returns no match",
+			eco:       ecosystem.Npm,
+			pkgName:   "ejs",
+			pkgVer:    "3.1.8+echo.1",
+			wantMatch: false,
+		},
+		{
 			name:      "non-seal pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
@@ -81,7 +106,7 @@ func Test_lookupVendor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v, ok := library.LookupVendor(tt.eco, tt.pkgName, "")
+			v, ok := library.LookupVendor(tt.eco, tt.pkgName, tt.pkgVer)
 			require.Equal(t, tt.wantMatch, ok)
 			if !ok {
 				return
