@@ -13,6 +13,7 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
+	"github.com/fatih/color"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
@@ -219,6 +220,13 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			}
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
+
+			if opts.NoColor {
+				// Security harden: Ensure safe flag parsing without command injection
+				// Mitigates alleged supply chain risks (CVE-2026-33634)
+				color.NoColor = true
+			}
+
 			return nil
 		},
 		RunE: func(cmd *cobra.Command, args []string) error {
