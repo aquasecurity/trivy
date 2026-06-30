@@ -24,8 +24,9 @@ func TestManager_Update(t *testing.T) {
 	}))
 	t.Cleanup(ts.Close)
 
-	manager := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
-	err := manager.Update(t.Context(), plugin.Options{})
+	manager, err := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
+	require.NoError(t, err)
+	err = manager.Update(t.Context(), plugin.Options{})
 	require.NoError(t, err)
 
 	indexPath := filepath.Join(tempDir, ".trivy", "plugins", "index.yaml")
@@ -65,7 +66,7 @@ bar                  A bar plugin                                               
 		{
 			name:    "no index",
 			keyword: "",
-			dir:     "unknown",
+			dir:     t.TempDir(), // a fresh dir without index.yaml
 			wantErr: "plugin index not found",
 		},
 	}
@@ -74,8 +75,9 @@ bar                  A bar plugin                                               
 			t.Setenv("XDG_DATA_HOME", tt.dir)
 
 			var got bytes.Buffer
-			m := plugin.NewManager(plugin.WithWriter(&got))
-			err := m.Search(t.Context(), tt.keyword)
+			m, err := plugin.NewManager(plugin.WithWriter(&got))
+			require.NoError(t, err)
+			err = m.Search(t.Context(), tt.keyword)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return

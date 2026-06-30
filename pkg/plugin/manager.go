@@ -2,8 +2,10 @@ package plugin
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -17,16 +19,13 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const configFile = "plugin.yaml"
 
-var (
-	pluginsDir = "plugins"
-
-	_defaultManager *Manager
-)
+var pluginsDir = "plugins"
 
 type ManagerOption func(indexer *Manager)
 
@@ -50,50 +49,69 @@ func WithIndexURL(indexURL string) ManagerOption {
 
 // Manager manages the plugins
 type Manager struct {
-	w          io.Writer
-	indexURL   string
-	logger     *log.Logger
-	pluginRoot string
-	indexPath  string
+	w         io.Writer
+	indexURL  string
+	logger    *log.Logger
+	indexPath string
+	// root confines all plugin-name-derived file access to the plugin root.
+	root *xos.Root
 }
 
-func NewManager(opts ...ManagerOption) *Manager {
-	root := filepath.Join(fsutils.TrivyHomeDir(), pluginsDir)
+// dir returns the plugin root directory (e.g. ~/.trivy/plugins).
+func dir() string {
+	return filepath.Join(fsutils.TrivyHomeDir(), pluginsDir)
+}
+
+// DirExists reports whether the plugin root directory exists. It lets callers
+// skip creating a Manager (which creates the directory) when no plugin is
+// installed, e.g. on every Trivy run while building the command tree.
+func DirExists() bool {
+	return fsutils.DirExists(dir())
+}
+
+func NewManager(opts ...ManagerOption) (*Manager, error) {
+	root, err := xos.NewRoot(dir())
+	if err != nil {
+		return nil, xerrors.Errorf("failed to open the plugin root: %w", err)
+	}
 	m := &Manager{
-		w:          os.Stdout,
-		indexURL:   indexURL,
-		logger:     log.WithPrefix("plugin"),
-		pluginRoot: root,
-		indexPath:  filepath.Join(root, "index.yaml"),
+		w:         os.Stdout,
+		indexURL:  indexURL,
+		logger:    log.WithPrefix("plugin"),
+		root:      root,
+		indexPath: filepath.Join(root.Name(), "index.yaml"),
 	}
 	for _, opt := range opts {
 		opt(m)
 	}
-	return m
+	return m, nil
 }
 
-func defaultManager() *Manager {
-	if _defaultManager == nil {
-		_defaultManager = NewManager()
-	}
-	return _defaultManager
+// Close releases the plugin root handle.
+func (m *Manager) Close() error {
+	return m.root.Close()
 }
 
-func Install(ctx context.Context, name string, opts Options) (Plugin, error) {
-	return defaultManager().Install(ctx, name, opts)
-}
-func Start(ctx context.Context, name string, opts Options) (Wait, error) {
-	return defaultManager().Start(ctx, name, opts)
-}
+// Run installs and runs the plugin with a one-off manager. It is a convenience
+// for callers outside the plugin subcommands (e.g. run-as-plugin, output plugins).
 func Run(ctx context.Context, name string, opts Options) error {
-	return defaultManager().Run(ctx, name, opts)
+	m, err := NewManager()
+	if err != nil {
+		return xerrors.Errorf("plugin manager init error: %w", err)
+	}
+	defer m.Close()
+	return m.Run(ctx, name, opts)
 }
-func Upgrade(ctx context.Context, names []string) error { return defaultManager().Upgrade(ctx, names) }
-func Uninstall(ctx context.Context, name string) error  { return defaultManager().Uninstall(ctx, name) }
-func Information(name string) error                     { return defaultManager().Information(name) }
-func List(ctx context.Context) error                    { return defaultManager().List(ctx) }
-func Update(ctx context.Context, opts Options) error    { return defaultManager().Update(ctx, opts) }
-func Search(ctx context.Context, keyword string) error  { return defaultManager().Search(ctx, keyword) }
+
+// Start starts the plugin with a one-off manager. See Run.
+func Start(ctx context.Context, name string, opts Options) (Wait, error) {
+	m, err := NewManager()
+	if err != nil {
+		return nil, xerrors.Errorf("plugin manager init error: %w", err)
+	}
+	defer m.Close()
+	return m.Start(ctx, name, opts)
+}
 
 // Install installs a plugin
 func (m *Manager) Install(ctx context.Context, arg string, opts Options) (Plugin, error) {
@@ -120,29 +138,42 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 	if entries, err := os.ReadDir(tempDir); err != nil {
 		return Plugin{}, xerrors.Errorf("failed to read %s: %w", tempDir, err)
 	} else if len(entries) == 1 && entries[0].IsDir() {
-		//　A single directory may be contained within an archive file.
+		// A single directory may be contained within an archive file.
 		// e.g. https://github.com/aquasecurity/trivy-plugin-referrer/archive/refs/heads/main.zip
 		tempDir = filepath.Join(tempDir, entries[0].Name())
 	}
 
 	m.logger.DebugContext(ctx, "Loading the plugin metadata...")
-	plugin, err := m.loadMetadata(tempDir)
+	// tempDir is our own download dir, so a plain read is fine.
+	mf, err := os.Open(filepath.Join(tempDir, configFile))
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("file open error: %w", err)
+	}
+	plugin, err := decodeMetadata(mf)
+	_ = mf.Close()
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("failed to load the plugin metadata: %w", err)
 	}
 
-	if err = plugin.install(ctx, plugin.Dir(), tempDir, opts); err != nil {
+	// Resolve the destination; the downloader creates it.
+	dst, err := m.root.Join(plugin.Name)
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("failed to create the plugin directory %q: %w", plugin.Name, err)
+	}
+	plugin.dir = dst
+
+	if err = plugin.install(ctx, dst, tempDir, opts); err != nil {
 		return Plugin{}, xerrors.Errorf("failed to install the plugin: %w", err)
 	}
 
-	// Copy plugin.yaml into the plugin dir
-	f, err := os.Create(filepath.Join(plugin.Dir(), configFile))
+	// Copy plugin.yaml into the plugin directory.
+	out, err := m.root.Create(filepath.Join(plugin.Name, configFile))
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("failed to create plugin.yaml: %w", err)
 	}
-	defer f.Close()
+	defer out.Close()
 
-	if err = yaml.NewEncoder(f).Encode(plugin); err != nil {
+	if err = yaml.NewEncoder(out).Encode(plugin); err != nil {
 		return Plugin{}, xerrors.Errorf("yaml encode error: %w", err)
 	}
 
@@ -152,14 +183,15 @@ func (m *Manager) install(ctx context.Context, src string, opts Options) (Plugin
 	return plugin, nil
 }
 
-// Uninstall installs the plugin
+// Uninstall uninstalls the plugin
 func (m *Manager) Uninstall(ctx context.Context, name string) error {
-	pluginDir := filepath.Join(m.pluginRoot, name)
-	if !fsutils.DirExists(pluginDir) {
+	if _, err := m.root.Stat(name); errors.Is(err, fs.ErrNotExist) {
 		m.logger.ErrorContext(ctx, "No such plugin")
 		return nil
+	} else if err != nil {
+		return xerrors.Errorf("failed to check the plugin %q: %w", name, err)
 	}
-	if err := os.RemoveAll(pluginDir); err != nil {
+	if err := m.root.RemoveAll(name); err != nil {
 		return xerrors.Errorf("failed to uninstall the plugin: %w", err)
 	}
 	m.logger.InfoContext(ctx, "Plugin successfully uninstalled", log.String("name", name))
@@ -194,7 +226,7 @@ func (m *Manager) List(ctx context.Context) error {
 }
 
 func (m *Manager) list(ctx context.Context) (string, error) {
-	if _, err := os.Stat(m.pluginRoot); err != nil {
+	if _, err := os.Stat(m.root.Name()); err != nil {
 		if os.IsNotExist(err) {
 			return "No Installed Plugins", nil
 		}
@@ -266,9 +298,9 @@ func (m *Manager) upgrade(ctx context.Context, name string) error {
 
 // LoadAll loads all plugins
 func (m *Manager) LoadAll(ctx context.Context) ([]Plugin, error) {
-	dirs, err := os.ReadDir(m.pluginRoot)
+	dirs, err := os.ReadDir(m.root.Name())
 	if err != nil {
-		return nil, xerrors.Errorf("failed to read %s: %w", m.pluginRoot, err)
+		return nil, xerrors.Errorf("failed to read %s: %w", m.root.Name(), err)
 	}
 
 	var plugins []Plugin
@@ -276,7 +308,7 @@ func (m *Manager) LoadAll(ctx context.Context) ([]Plugin, error) {
 		if !d.IsDir() {
 			continue
 		}
-		plugin, err := m.loadMetadata(filepath.Join(m.pluginRoot, d.Name()))
+		plugin, err := m.loadMetadata(d.Name())
 		if err != nil {
 			m.logger.WarnContext(ctx, "Plugin load error", log.Err(err))
 			continue
@@ -314,47 +346,36 @@ func (m *Manager) Run(ctx context.Context, name string, opts Options) error {
 }
 
 func (m *Manager) load(name string) (Plugin, error) {
-	pluginDir := filepath.Join(m.pluginRoot, name)
-	if _, err := os.Stat(pluginDir); err != nil {
-		if os.IsNotExist(err) {
-			return Plugin{}, xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
-		}
+	if _, err := m.root.Stat(name); errors.Is(err, fs.ErrNotExist) {
+		return Plugin{}, xerrors.Errorf("could not find a plugin called '%s', did you install it?", name)
+	} else if err != nil {
 		return Plugin{}, xerrors.Errorf("plugin stat error: %w", err)
 	}
-
-	plugin, err := m.loadMetadata(pluginDir)
+	plugin, err := m.loadMetadata(name)
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("unable to load plugin metadata: %w", err)
 	}
-
 	return plugin, nil
 }
 
-func (m *Manager) loadMetadata(dir string) (Plugin, error) {
-	filePath := filepath.Join(dir, configFile)
-	f, err := os.Open(filePath)
+// loadMetadata reads an installed plugin's metadata and records its directory.
+// Both reads go through m.root, so name is confined to the root here.
+func (m *Manager) loadMetadata(name string) (Plugin, error) {
+	f, err := m.root.Open(filepath.Join(name, configFile))
 	if err != nil {
 		return Plugin{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()
 
-	var plugin Plugin
-	if err = yaml.NewDecoder(f).Decode(&plugin); err != nil {
-		return Plugin{}, xerrors.Errorf("yaml decode error: %w", err)
+	plugin, err := decodeMetadata(f)
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("metadata decode error: %w", err)
 	}
-
-	if plugin.Name == "" {
-		return Plugin{}, xerrors.Errorf("'name' is empty")
-	}
-
 	// e.g. ~/.trivy/plugins/kubectl
-	plugin.dir = filepath.Join(m.pluginRoot, plugin.Name)
-
-	if plugin.Summary == "" && plugin.Usage != "" {
-		plugin.Summary = plugin.Usage // For backward compatibility
-		plugin.Usage = ""
+	plugin.dir, err = m.root.Join(name)
+	if err != nil {
+		return Plugin{}, xerrors.Errorf("failed to resolve the plugin directory: %w", err)
 	}
-
 	return plugin, nil
 }
 
@@ -399,4 +420,20 @@ func (m *Manager) parseArg(ctx context.Context, arg string) Input {
 		name:    before,
 		version: after,
 	}
+}
+
+// decodeMetadata decodes a plugin.yaml stream into a Plugin.
+func decodeMetadata(r io.Reader) (Plugin, error) {
+	var plugin Plugin
+	if err := yaml.NewDecoder(r).Decode(&plugin); err != nil {
+		return Plugin{}, xerrors.Errorf("yaml decode error: %w", err)
+	}
+	if plugin.Name == "" {
+		return Plugin{}, xerrors.Errorf("'name' is empty")
+	}
+	if plugin.Summary == "" && plugin.Usage != "" {
+		plugin.Summary = plugin.Usage // For backward compatibility
+		plugin.Usage = ""
+	}
+	return plugin, nil
 }
