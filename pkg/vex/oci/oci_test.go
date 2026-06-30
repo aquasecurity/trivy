@@ -323,6 +323,19 @@ func TestDiscover(t *testing.T) {
 			wantMatch: []string{"CVE-2022-3715"},
 		},
 		{
+			name: "referrer with versioned OpenVEX predicate",
+			setup: func(t *testing.T) string {
+				repo := "debian/versioned-predicate"
+				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				// OpenVEX uses versioned namespaces such as ".../ns/v0.2.0"; the
+				// prefix must still be recognized as OpenVEX.
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
+					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/ns/v0.2.0"))
+				return registryHost + "/" + repo + ":latest"
+			},
+			wantMatch: []string{"CVE-2022-3715"},
+		},
+		{
 			name: "referrer preferred over legacy",
 			setup: func(t *testing.T) string {
 				repo := "debian/prefer-referrer"
@@ -440,6 +453,28 @@ func TestDiscover(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestDiscoverByDigest(t *testing.T) {
+	_, registryHost := setUpReferrerRegistry(t, "", "")
+
+	repo := "debian/by-digest"
+	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+	pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
+
+	// For an OCI purl the version, when set, is the image digest.
+	p := &purl.PackageURL{
+		Type:    packageurl.TypeOCI,
+		Name:    "debian",
+		Version: subjectDesc.Digest.String(),
+		Qualifiers: packageurl.Qualifiers{
+			{Key: "repository_url", Value: registryHost + "/" + repo},
+		},
+	}
+
+	got, err := Discover(t.Context(), p, ftypes.RegistryOptions{})
+	require.NoError(t, err)
+	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
 
 func TestDiscoverWithRegistryAuth(t *testing.T) {
