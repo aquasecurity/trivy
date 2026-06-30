@@ -1,10 +1,9 @@
-package vex
+package oci
 
 import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"slices"
@@ -20,16 +19,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	coreoci "github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/set"
-	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 var supportedVEXArtifactTypes = set.New(
-	oci.SigstoreBundleArtifactType,
-	oci.DSSEEnvelopeArtifactType,
+	coreoci.SigstoreBundleArtifactType,
+	coreoci.DSSEEnvelopeArtifactType,
 )
 
 // maxAttestationLayers bounds how many layers a legacy `.att` tag may stack
@@ -45,51 +43,29 @@ const maxAttestationLayers = 100
 // tests can lower it.
 var maxAttestationSize = 50 << 20 // 50 MiB
 
-type OCI struct{}
-
-func NewOCI(ctx context.Context, report *types.Report) (*OpenVEX, error) {
-	if report.ArtifactType != ftypes.TypeContainerImage || len(report.Metadata.RepoDigests) == 0 {
-		return nil, xerrors.New("'--vex oci' can be used only when scanning OCI artifacts stored in registries")
-	}
-
-	// TODO(knqyf263): Add the PURL field to Report.Metadata
-	p, err := purl.New(purl.TypeOCI, report.Metadata, ftypes.Package{})
-	if err != nil {
-		return nil, xerrors.Errorf("failed to create a package URL: %w", err)
-	}
-
-	v, err := RetrieveVEXAttestation(ctx, p)
-	if err != nil {
-		return nil, xerrors.Errorf("failed to retrieve VEX attestation: %w", err)
-	}
-	return v, nil
-}
-
-func RetrieveVEXAttestation(ctx context.Context, p *purl.PackageURL) (*OpenVEX, error) {
-	// TODO(#8916): thread the caller's RegistryOptions through so registry
-	// credentials, --insecure and TLS settings reach the attestation fetch
-	// instead of using an empty config.
-	return retrieveVEXAttestation(ctx, p, ftypes.RegistryOptions{})
-}
-
-func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (*OpenVEX, error) {
+// Discover fetches the OpenVEX document attached to an OCI artifact, addressed by
+// its package URL, using the given registry options for authentication and
+// transport. It looks for a Cosign v3 attestation stored as an OCI 1.1 referrer
+// first, then falls back to the legacy Cosign v2 `.att` tag, and returns nil when
+// no VEX attestation is found.
+func Discover(ctx context.Context, p *purl.PackageURL, opts ftypes.RegistryOptions) (*openvex.VEX, error) {
 	if p == nil {
 		return nil, xerrors.New("package URL is nil")
 	}
 	logger := log.WithPrefix("vex").With(log.String("type", "oci"),
 		log.String("purl", p.String()))
 
-	digest, err := resolveDigest(ctx, p, registryOptions)
+	digest, err := resolveDigest(ctx, p, opts)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to resolve OCI digest: %w", err)
 	}
 
-	vexDoc, err := retrieveReferrerVEX(ctx, digest, registryOptions)
+	vexDoc, err := retrieveReferrerVEX(ctx, digest, opts)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to retrieve VEX attestation from OCI referrers: %w", err)
 	}
 	if vexDoc == nil {
-		vexDoc, err = retrieveLegacyVEX(ctx, digest, registryOptions)
+		vexDoc, err = retrieveLegacyVEX(ctx, digest, opts)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to retrieve VEX attestation from legacy tag: %w", err)
 		}
@@ -100,10 +76,7 @@ func retrieveVEXAttestation(ctx context.Context, p *purl.PackageURL, registryOpt
 	}
 
 	logger.Debug("VEX attestation found")
-	return &OpenVEX{
-		vex:    *vexDoc,
-		source: fmt.Sprintf("VEX attestation in OCI registry (%s)", p.String()),
-	}, nil
+	return vexDoc, nil
 }
 
 func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftypes.RegistryOptions) (name.Digest, error) {
@@ -206,7 +179,7 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 		}
 		// Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
 		// bundle format is only used for OCI 1.1 referrers.
-		vexDoc, err := decodeOpenVEXAttestation(blob, oci.DSSEEnvelopeArtifactType)
+		vexDoc, err := decodeOpenVEXAttestation(blob, coreoci.DSSEEnvelopeArtifactType)
 		if err != nil {
 			logger.Debug("Skipping legacy attestation layer", log.Err(err))
 			continue
@@ -229,7 +202,7 @@ func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptio
 	return readLayer(layers[0])
 }
 
-// fetchAttestationLayers returns the layers of the attestation image referenced by ref.
+// fetchAttestationLayers returns the layers of the attestation image at the given reference.
 func fetchAttestationLayers(ctx context.Context, ref name.Reference, registryOptions ftypes.RegistryOptions) ([]v1.Layer, error) {
 	desc, err := remote.Get(ctx, ref, registryOptions)
 	if err != nil {
@@ -275,7 +248,7 @@ func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, e
 	var predicate openvex.VEX
 	statement := attestation.Statement{Predicate: &predicate}
 
-	if artifactType == oci.SigstoreBundleArtifactType {
+	if artifactType == coreoci.SigstoreBundleArtifactType {
 		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
 		if err := json.Unmarshal(blob, &bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)

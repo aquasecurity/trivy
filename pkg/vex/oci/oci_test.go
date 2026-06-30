@@ -1,6 +1,7 @@
-package vex_test
+package oci
 
 import (
+	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -33,26 +34,9 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/oci"
+	coreoci "github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
-	"github.com/aquasecurity/trivy/pkg/sbom/core"
-	ttypes "github.com/aquasecurity/trivy/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/vex"
 )
-
-func setUpRegistry(t *testing.T) (*httptest.Server, v1.Hash) {
-	tr, registryHost := setUpReferrerRegistry(t, "", "")
-
-	imgWithVEX := setUpImage(t)
-	d, err := imgWithVEX.Digest()
-	require.NoError(t, err)
-
-	pushImage(t, registryHost, "debian", "latest", imgWithVEX)
-	pushImage(t, registryHost, "debian", "no-vex", setUpImageWithSeed(t, 1))
-	pushLegacyAttestation(t, registryHost, "debian", d, setUpVEXAttestation(t))
-
-	return tr, d
-}
 
 func setUpImage(t *testing.T) v1.Image {
 	return setUpImageWithSeed(t, 0)
@@ -74,7 +58,7 @@ func setUpVEXAttestationWithVulnerability(t *testing.T, vulnerabilityID string) 
 	b, err := json.Marshal(envelope)
 	require.NoError(t, err)
 
-	layer := static.NewLayer(b, oci.DSSEEnvelopeArtifactType)
+	layer := static.NewLayer(b, coreoci.DSSEEnvelopeArtifactType)
 	newImage, err := mutate.AppendLayers(empty.Image, layer)
 	require.NoError(t, err)
 
@@ -88,12 +72,12 @@ func setUpMultiLayerVEXAttestation(t *testing.T, vulnerabilityID string) v1.Imag
 	sbomEnvelope := createVEXAttestationWithPredicateType(t, vulnerabilityID, "https://spdx.dev/Document")
 	sbomBytes, err := json.Marshal(sbomEnvelope)
 	require.NoError(t, err)
-	sbomLayer := static.NewLayer(sbomBytes, oci.DSSEEnvelopeArtifactType)
+	sbomLayer := static.NewLayer(sbomBytes, coreoci.DSSEEnvelopeArtifactType)
 
 	vexEnvelope := createVEXAttestation(t, vulnerabilityID)
 	vexBytes, err := json.Marshal(vexEnvelope)
 	require.NoError(t, err)
-	vexLayer := static.NewLayer(vexBytes, oci.DSSEEnvelopeArtifactType)
+	vexLayer := static.NewLayer(vexBytes, coreoci.DSSEEnvelopeArtifactType)
 
 	newImage, err := mutate.AppendLayers(empty.Image, sbomLayer, vexLayer)
 	require.NoError(t, err)
@@ -107,7 +91,7 @@ func createVEXAttestation(t *testing.T, vulnerabilityID string) dsse.Envelope {
 
 func createVEXAttestationWithPredicateType(t *testing.T, vulnerabilityID, predicateType string) dsse.Envelope {
 	var v openvex.VEX
-	testutil.MustReadJSON(t, "testdata/openvex-oci.json", &v)
+	testutil.MustReadJSON(t, "../testdata/openvex-oci.json", &v)
 	v.Statements[0].Vulnerability.Name = openvex.VulnerabilityID(vulnerabilityID)
 
 	// in-toto Statement
@@ -158,7 +142,7 @@ func createSigstoreBundleVEXAttestation(t *testing.T, vulnerabilityID string) []
 		MediaType    string        `json:"mediaType"`
 		DSSEEnvelope dsse.Envelope `json:"dsseEnvelope"`
 	}{
-		MediaType:    oci.SigstoreBundleArtifactType,
+		MediaType:    coreoci.SigstoreBundleArtifactType,
 		DSSEEnvelope: createVEXAttestation(t, vulnerabilityID),
 	}
 	b, err := json.Marshal(bundle)
@@ -166,8 +150,8 @@ func createSigstoreBundleVEXAttestation(t *testing.T, vulnerabilityID string) []
 	return b
 }
 
-// setUpReferrerRegistry starts an OCI registry with referrers support. When user
-// is non-empty the registry requires the given basic-auth credentials.
+// setUpReferrerRegistry starts an OCI registry with referrers support. If
+// credentials are provided, the registry requires them via basic auth.
 func setUpReferrerRegistry(t *testing.T, user, password string) (*httptest.Server, string) {
 	handler := registry.New(registry.WithReferrersSupport(true))
 	if user != "" {
@@ -259,35 +243,23 @@ func purlFromRepositoryURL(repositoryURL string) *purl.PackageURL {
 	}
 }
 
-func componentWithPURL(t *testing.T, purlString string) *core.Component {
-	p, err := packageurl.FromString(purlString)
-	require.NoError(t, err)
-	return &core.Component{
-		PkgIdentifier: ftypes.PkgIdentifier{
-			PURL: &p,
-		},
-	}
-}
-
-func requireOpenVEXMatch(t *testing.T, got *vex.OpenVEX, vulnerabilityID string) {
+func requireOpenVEXMatch(t *testing.T, got *openvex.VEX, vulnerabilityID string) {
 	t.Helper()
 	require.NotNil(t, got)
 
-	matches := got.Matches(ttypes.DetectedVulnerability{VulnerabilityID: vulnerabilityID},
-		componentWithPURL(t, "pkg:oci/debian"), componentWithPURL(t, "pkg:deb/debian/bash"))
+	matches := got.Matches(vulnerabilityID, "pkg:oci/debian", []string{"pkg:deb/debian/bash"})
 	require.Len(t, matches, 1)
 }
 
-func requireNoOpenVEXMatch(t *testing.T, got *vex.OpenVEX, vulnerabilityID string) {
+func requireNoOpenVEXMatch(t *testing.T, got *openvex.VEX, vulnerabilityID string) {
 	t.Helper()
 	require.NotNil(t, got)
 
-	matches := got.Matches(ttypes.DetectedVulnerability{VulnerabilityID: vulnerabilityID},
-		componentWithPURL(t, "pkg:oci/debian"), componentWithPURL(t, "pkg:deb/debian/bash"))
+	matches := got.Matches(vulnerabilityID, "pkg:oci/debian", []string{"pkg:deb/debian/bash"})
 	require.Empty(t, matches)
 }
 
-func TestRetrieveVEXAttestation(t *testing.T) {
+func TestDiscover(t *testing.T) {
 	_, registryHost := setUpReferrerRegistry(t, "", "")
 
 	tests := []struct {
@@ -329,7 +301,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 			setup: func(t *testing.T) string {
 				repo := "debian/sigstore-bundle"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType,
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 					createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"))
 				return registryHost + "/" + repo + ":latest"
 			},
@@ -340,7 +312,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 			setup: func(t *testing.T) string {
 				repo := "debian/dsse-envelope"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, oci.DSSEEnvelopeArtifactType,
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlob(t, "CVE-2022-3715"))
 				return registryHost + "/" + repo + ":latest"
 			},
@@ -351,7 +323,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 			setup: func(t *testing.T) string {
 				repo := "debian/prefer-referrer"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType,
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 					createSigstoreBundleVEXAttestation(t, "CVE-2022-REFERRER"))
 				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
 					setUpVEXAttestationWithVulnerability(t, "CVE-2022-LEGACY"))
@@ -380,7 +352,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 				envelope := createVEXAttestationWithPredicateType(t, "CVE-2022-3715", "https://spdx.dev/Document")
 				b, err := json.Marshal(envelope)
 				require.NoError(t, err)
-				img, err := mutate.AppendLayers(empty.Image, static.NewLayer(b, oci.DSSEEnvelopeArtifactType))
+				img, err := mutate.AppendLayers(empty.Image, static.NewLayer(b, coreoci.DSSEEnvelopeArtifactType))
 				require.NoError(t, err)
 				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, img)
 				return registryHost + "/" + repo + ":latest"
@@ -394,7 +366,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
 				layers := make([]v1.Layer, 0, 101)
 				for range 101 {
-					layers = append(layers, static.NewLayer([]byte("x"), oci.DSSEEnvelopeArtifactType))
+					layers = append(layers, static.NewLayer([]byte("x"), coreoci.DSSEEnvelopeArtifactType))
 				}
 				img, err := mutate.AppendLayers(empty.Image, layers...)
 				require.NoError(t, err)
@@ -408,7 +380,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 			setup: func(t *testing.T) string {
 				repo := "debian/malformed"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType, []byte("{"))
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType, []byte("{"))
 				return registryHost + "/" + repo + ":latest"
 			},
 			wantErr: "failed to decode Sigstore bundle",
@@ -418,7 +390,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 			setup: func(t *testing.T) string {
 				repo := "debian/bad-predicate"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, oci.DSSEEnvelopeArtifactType,
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/nsx"))
 				return registryHost + "/" + repo + ":latest"
 			},
@@ -429,7 +401,7 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repoURL := tt.setup(t)
-			got, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(repoURL))
+			got, err := Discover(t.Context(), purlFromRepositoryURL(repoURL), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
@@ -449,7 +421,30 @@ func TestRetrieveVEXAttestation(t *testing.T) {
 	}
 }
 
-func TestRetrieveVEXAttestationInvalidPURL(t *testing.T) {
+func TestDiscoverWithRegistryAuth(t *testing.T) {
+	const (
+		user     = "test"
+		password = "testpass"
+	)
+
+	_, registryHost := setUpReferrerRegistry(t, user, password)
+	auth := ggcrremote.WithAuth(&authn.Basic{
+		Username: user,
+		Password: password,
+	})
+
+	repo := "debian/private"
+	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest", auth)
+	pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"), auth)
+	setUpDockerConfig(t, registryHost, user, password)
+
+	got, err := Discover(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"), ftypes.RegistryOptions{})
+	require.NoError(t, err)
+	requireOpenVEXMatch(t, got, "CVE-2022-3715")
+}
+
+func TestDiscoverInvalidPURL(t *testing.T) {
 	tests := []struct {
 		name    string
 		purl    *purl.PackageURL
@@ -471,53 +466,33 @@ func TestRetrieveVEXAttestationInvalidPURL(t *testing.T) {
 			wantErr: "repository_url qualifier is missing",
 		},
 		{
-			name:    "invalid repository_url",
-			purl:    purlFromRepositoryURL("not a valid reference"),
+			name: "invalid repository_url",
+			purl: &purl.PackageURL{
+				Type: packageurl.TypeOCI,
+				Name: "debian",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "repository_url", Value: "not a valid reference"},
+				},
+			},
 			wantErr: "repository URL parse error",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := vex.RetrieveVEXAttestation(t.Context(), tt.purl)
+			_, err := Discover(t.Context(), tt.purl, ftypes.RegistryOptions{})
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}
 }
 
-func TestRetrieveVEXAttestationWithRegistryAuth(t *testing.T) {
-	const (
-		user     = "test"
-		password = "testpass"
-	)
+func TestReadLayerSizeLimit(t *testing.T) {
+	old := maxAttestationSize
+	maxAttestationSize = 16
+	t.Cleanup(func() { maxAttestationSize = old })
 
-	_, registryHost := setUpReferrerRegistry(t, user, password)
-	auth := ggcrremote.WithAuth(&authn.Basic{
-		Username: user,
-		Password: password,
-	})
-
-	repo := "debian/private"
-	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest", auth)
-	pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType,
-		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"), auth)
-	setUpDockerConfig(t, registryHost, user, password)
-
-	got, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"))
-	require.NoError(t, err)
-	requireOpenVEXMatch(t, got, "CVE-2022-3715")
-}
-
-func TestRetrieveVEXAttestationLayerTooLarge(t *testing.T) {
-	vex.SetMaxAttestationSize(t, 16)
-
-	_, registryHost := setUpReferrerRegistry(t, "", "")
-	repo := "debian/oversized"
-	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-	pushReferrer(t, registryHost, repo, subjectDesc, oci.SigstoreBundleArtifactType,
-		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"))
-
-	_, err := vex.RetrieveVEXAttestation(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"))
+	layer := static.NewLayer(bytes.Repeat([]byte("x"), maxAttestationSize+1), "application/octet-stream")
+	_, err := readLayer(layer)
 	require.ErrorContains(t, err, "exceeds the size limit")
 }
 
@@ -577,7 +552,7 @@ func TestIsReferrersUnsupported(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.want, vex.IsReferrersUnsupported(tt.err))
+			require.Equal(t, tt.want, isReferrersUnsupported(tt.err))
 		})
 	}
 }

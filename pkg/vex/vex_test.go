@@ -1,11 +1,8 @@
 package vex_test
 
 import (
-	"fmt"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
-	"strings"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/v1"
@@ -182,9 +179,6 @@ func TestMain(m *testing.M) {
 }
 
 func TestFilter(t *testing.T) {
-	// Set up the OCI registry
-	tr, d := setUpRegistry(t)
-
 	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
 
@@ -540,34 +534,6 @@ repositories:
 			}),
 		},
 		{
-			name: "VEX attestation from OCI registry",
-			args: args{
-				// - oci:debian?tag=12
-				//     - pkg:deb/debian/bash@5.3
-				report: imageReportWithAttestation([]types.Result{
-					bashResult(types.Result{
-						Vulnerabilities: []types.DetectedVulnerability{
-							vuln3, // filtered by VEX
-						},
-					}),
-				}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
-				opts: vex.Options{
-					Sources: []vex.Source{
-						{Type: vex.TypeOCI},
-					},
-				},
-			},
-			want: imageReportWithAttestation([]types.Result{
-				bashResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{
-						modifiedFinding(vuln3, vulnerableCodeNotInExecutePath,
-							fmt.Sprintf("VEX attestation in OCI registry (%s)", ociPURLString(tr, d))),
-					},
-				}),
-			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
-		},
-		{
 			name: "infinity loop for OS packages",
 			args: args{
 				// - oci:debian?tag=12
@@ -681,29 +647,30 @@ func imageReport(results types.Results) *types.Report {
 	}
 }
 
-func imageReportWithAttestation(results types.Results, repoDigest string) *types.Report {
-	report := imageReport(results)
-	report.Metadata.RepoDigests[0] = repoDigest
-	return report
-}
-
-func ociPURLString(ts *httptest.Server, d v1.Hash) string {
-	p := &packageurl.PackageURL{
-		Type:    packageurl.TypeOCI,
-		Name:    "debian",
-		Version: d.String(),
-		Qualifiers: packageurl.Qualifiers{
-			{
-				Key:   "arch",
-				Value: "amd64",
-			},
-			{
-				Key:   "repository_url",
-				Value: strings.TrimPrefix(ts.URL, "http://") + "/debian",
-			},
+func TestNewOCI(t *testing.T) {
+	tests := []struct {
+		name    string
+		report  types.Report
+		wantErr string
+	}{
+		{
+			name:    "not a container image",
+			report:  types.Report{ArtifactType: ftypes.TypeFilesystem},
+			wantErr: "'--vex oci' can be used only when scanning OCI artifacts",
+		},
+		{
+			name:    "container image without repo digests",
+			report:  types.Report{ArtifactType: ftypes.TypeContainerImage},
+			wantErr: "'--vex oci' can be used only when scanning OCI artifacts",
 		},
 	}
-	return p.String()
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := vex.NewOCI(t.Context(), &tt.report)
+			require.ErrorContains(t, err, tt.wantErr)
+		})
+	}
 }
 
 func createCycloneDXBOMWithSpringComponent() *core.BOM {
