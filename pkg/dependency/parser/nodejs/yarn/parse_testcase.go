@@ -157,4 +157,18 @@ var (
 			DependsOn: []string{"ms@2.1.2"},
 		},
 	}
+
+	yarnWithAliases = []ftypes.Package{
+		{ID: "@rootio/braces@3.0.2-root.io.1", Name: "@rootio/braces", Version: "3.0.2-root.io.1", Locations: []ftypes.Location{{StartLine: 3, EndLine: 8}}},
+		{ID: "@rootio/ip@2.0.0-root.io.1", Name: "@rootio/ip", Version: "2.0.0-root.io.1", Locations: []ftypes.Location{{StartLine: 15, EndLine: 18}}},
+		{ID: "fill-range@7.0.1", Name: "fill-range", Version: "7.0.1", Locations: []ftypes.Location{{StartLine: 10, EndLine: 13}}},
+		{ID: "lodash-es@4.17.21", Name: "lodash-es", Version: "4.17.21", Locations: []ftypes.Location{{StartLine: 20, EndLine: 23}}},
+	}
+
+	yarnWithAliasesDeps = []ftypes.Dependency{
+		{
+			ID:        "@rootio/braces@3.0.2-root.io.1",
+			DependsOn: []string{"fill-range@7.0.1"},
+		},
+	}
 )
