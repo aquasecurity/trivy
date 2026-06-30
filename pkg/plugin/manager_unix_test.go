@@ -226,6 +226,8 @@ func TestManager_Install(t *testing.T) {
 
 			manager, err := plugin.NewManager(plugin.WithLogger(logger))
 			require.NoError(t, err)
+			t.Cleanup(func() { _ = manager.Close() })
+
 			got, err := manager.Install(ctx, tt.pluginName, plugin.Options{
 				Platform: ftypes.Platform{
 					Platform: &v1.Platform{

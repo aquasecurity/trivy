@@ -253,6 +253,7 @@ func TestManager_Uninstall(t *testing.T) {
 		// Uninstall the plugin
 		m, err := plugin.NewManager()
 		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
 		err = m.Uninstall(ctx, pluginName)
 		require.NoError(t, err)
 		assert.NoDirExists(t, pluginDir)
@@ -265,6 +266,7 @@ func TestManager_Uninstall(t *testing.T) {
 
 		m, err := plugin.NewManager()
 		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
 		err = m.Uninstall(ctx, pluginName)
 		require.NoError(t, err)
 		assert.Equal(t, "2021-08-25T12:20:30Z\tERROR\t[plugin] No such plugin\n", buf.String())
@@ -281,6 +283,7 @@ func TestManager_Uninstall(t *testing.T) {
 		// surfaces the error (not "No such plugin") and removes nothing.
 		m, err := plugin.NewManager()
 		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
 		err = m.Uninstall(ctx, "../secret")
 		require.Error(t, err)
 		assert.FileExists(t, sentinel)
@@ -312,6 +315,7 @@ description: A simple test plugin`
 	var got bytes.Buffer
 	manager, err := plugin.NewManager(plugin.WithWriter(&got))
 	require.NoError(t, err)
+	t.Cleanup(func() { _ = manager.Close() })
 
 	// Get Information for the plugin
 	err = manager.Information(pluginName)
@@ -365,6 +369,7 @@ func TestManager_LoadAll(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tt.dir)
 			m, err := plugin.NewManager()
 			require.NoError(t, err)
+			t.Cleanup(func() { _ = m.Close() })
 			got, err := m.LoadAll(t.Context())
 			require.NoError(t, err)
 			require.Len(t, got, len(tt.want))
@@ -394,6 +399,7 @@ func TestManager_Upgrade(t *testing.T) {
 	ctx := t.Context()
 	m, err := plugin.NewManager()
 	require.NoError(t, err)
+	t.Cleanup(func() { _ = m.Close() })
 
 	// verify initial version
 	verifyVersion(t, ctx, m, pluginName, pluginVersion)

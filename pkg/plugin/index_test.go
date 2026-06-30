@@ -26,6 +26,7 @@ func TestManager_Update(t *testing.T) {
 
 	manager, err := plugin.NewManager(plugin.WithIndexURL(ts.URL + "/index.yaml"))
 	require.NoError(t, err)
+	t.Cleanup(func() { _ = manager.Close() })
 	err = manager.Update(t.Context(), plugin.Options{})
 	require.NoError(t, err)
 
@@ -77,6 +78,7 @@ bar                  A bar plugin                                               
 			var got bytes.Buffer
 			m, err := plugin.NewManager(plugin.WithWriter(&got))
 			require.NoError(t, err)
+			t.Cleanup(func() { _ = m.Close() })
 			err = m.Search(t.Context(), tt.keyword)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
