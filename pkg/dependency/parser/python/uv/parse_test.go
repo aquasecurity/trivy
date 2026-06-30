@@ -25,6 +25,18 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: uvNormalDeps,
 		},
 		{
+			name:     "workspace without root package",
+			file:     "testdata/uv_workspace_virtual.lock",
+			wantPkgs: uvWorkspaceVirtual,
+			wantDeps: uvWorkspaceVirtualDeps,
+		},
+		{
+			name:     "workspace with root package",
+			file:     "testdata/uv_workspace_rooted.lock",
+			wantPkgs: uvWorkspaceRooted,
+			wantDeps: uvWorkspaceRootedDeps,
+		},
+		{
 			name:    "lockfile without root",
 			file:    "testdata/uv_without_root.lock",
 			wantErr: "uv lockfile must contain 1 root package",
