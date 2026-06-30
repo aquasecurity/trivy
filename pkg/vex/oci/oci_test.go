@@ -138,12 +138,16 @@ func createVEXAttestationBlob(t *testing.T, vulnerabilityID string) []byte {
 }
 
 func createSigstoreBundleVEXAttestation(t *testing.T, vulnerabilityID string) []byte {
+	return createSigstoreBundleAttestationWithPredicateType(t, vulnerabilityID, "https://openvex.dev/ns")
+}
+
+func createSigstoreBundleAttestationWithPredicateType(t *testing.T, vulnerabilityID, predicateType string) []byte {
 	bundle := struct {
 		MediaType    string        `json:"mediaType"`
 		DSSEEnvelope dsse.Envelope `json:"dsseEnvelope"`
 	}{
 		MediaType:    coreoci.SigstoreBundleArtifactType,
-		DSSEEnvelope: createVEXAttestation(t, vulnerabilityID),
+		DSSEEnvelope: createVEXAttestationWithPredicateType(t, vulnerabilityID, predicateType),
 	}
 	b, err := json.Marshal(bundle)
 	require.NoError(t, err)
@@ -386,15 +390,32 @@ func TestDiscover(t *testing.T) {
 			wantErr: "failed to decode Sigstore bundle",
 		},
 		{
-			name: "lookalike predicate type",
+			name: "non-OpenVEX referrer is skipped",
 			setup: func(t *testing.T) string {
-				repo := "debian/bad-predicate"
+				repo := "debian/sbom-referrer"
 				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				// A VEX artifact type is shared by every Cosign attestation, so a
+				// non-OpenVEX predicate (here a lookalike namespace) must be skipped,
+				// not treated as an error, and yield no VEX document.
 				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/nsx"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantErr: "unsupported predicate type",
+			wantNil: true,
+		},
+		{
+			name: "non-OpenVEX referrer falls back to legacy",
+			setup: func(t *testing.T) string {
+				repo := "debian/sbom-referrer-then-legacy"
+				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				// A Cosign v3 SBOM attestation shares the Sigstore bundle artifact
+				// type; it must be skipped and discovery must fall back to legacy.
+				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+					createSigstoreBundleAttestationWithPredicateType(t, "CVE-2022-3715", "https://spdx.dev/Document"))
+				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
+				return registryHost + "/" + repo + ":latest"
+			},
+			wantMatch: []string{"CVE-2022-3715"},
 		},
 	}
 
