@@ -211,6 +211,8 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 // that does not have a digest yet. The digest is calculated lazily, so the
 // archive is not read when all packages already carry their own digest.
 func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
+	// d is computed lazily on the first package that needs it and then reused.
+	// An empty d means the archive digest has not been calculated yet.
 	var d digest.Digest
 	for i := range pkgs {
 		if pkgs[i].Digest != "" {
