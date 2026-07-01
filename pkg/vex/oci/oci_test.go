@@ -1,4 +1,4 @@
-package oci
+package oci_test
 
 import (
 	"bytes"
@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"math/rand"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -15,16 +14,12 @@ import (
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/authn"
-	"github.com/google/go-containerregistry/pkg/name"
-	"github.com/google/go-containerregistry/pkg/registry"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
-	"github.com/google/go-containerregistry/pkg/v1/random"
 	ggcrremote "github.com/google/go-containerregistry/pkg/v1/remote"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/google/go-containerregistry/pkg/v1/static"
-	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"github.com/hashicorp/go-multierror"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	openvex "github.com/openvex/go-vex/pkg/vex"
@@ -32,22 +27,13 @@ import (
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/registrytest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	coreoci "github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
+	"github.com/aquasecurity/trivy/pkg/vex/oci"
 )
-
-func setUpImage(t *testing.T) v1.Image {
-	return setUpImageWithSeed(t, 0)
-}
-
-func setUpImageWithSeed(t *testing.T, seed int64) v1.Image {
-	img, err := random.Image(100, 1, random.WithSource(rand.NewSource(seed)))
-	require.NoError(t, err)
-
-	return img
-}
 
 func setUpVEXAttestation(t *testing.T) v1.Image {
 	return setUpVEXAttestationWithVulnerability(t, "CVE-2022-3715")
@@ -154,75 +140,21 @@ func createSigstoreBundleAttestationWithPredicateType(t *testing.T, vulnerabilit
 	return b
 }
 
-// setUpReferrerRegistry starts an OCI registry with referrers support. If
-// credentials are provided, the registry requires them via basic auth.
-func setUpReferrerRegistry(t *testing.T, user, password string) (*httptest.Server, string) {
-	handler := registry.New(registry.WithReferrersSupport(true))
-	if user != "" {
-		registryHandler := handler
-		handler = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			gotUser, gotPassword, ok := r.BasicAuth()
-			if !ok || gotUser != user || gotPassword != password {
-				w.Header().Set("WWW-Authenticate", `Basic realm="test"`)
-				http.Error(w, "Unauthorized", http.StatusUnauthorized)
-				return
-			}
-			registryHandler.ServeHTTP(w, r)
-		})
+// setUpReferrerRegistry starts an OCI registry with referrers support and
+// returns its host. If credentials are provided, the registry requires them via
+// basic auth.
+func setUpReferrerRegistry(t *testing.T, user, password string) string {
+	var ts *httptest.Server
+	if user == "" {
+		ts = registrytest.NewServer(t)
+	} else {
+		ts = registrytest.NewServerWithAuth(t, user, password)
 	}
+	t.Cleanup(ts.Close)
 
-	tr := httptest.NewServer(handler)
-	t.Cleanup(tr.Close)
-
-	u, err := url.Parse(tr.URL)
+	u, err := url.Parse(ts.URL)
 	require.NoError(t, err)
-	return tr, u.Host
-}
-
-func pushRandomImage(t *testing.T, registryHost, repo, tag string, opts ...ggcrremote.Option) (name.Reference, v1.Descriptor) {
-	return pushImage(t, registryHost, repo, tag, setUpImage(t), opts...)
-}
-
-func pushImage(t *testing.T, registryHost, repo, tag string, img v1.Image, opts ...ggcrremote.Option) (name.Reference, v1.Descriptor) {
-	ref, err := name.ParseReference(fmt.Sprintf("%s/%s:%s", registryHost, repo, tag))
-	require.NoError(t, err)
-	require.NoError(t, ggcrremote.Write(ref, img, opts...))
-	digest, err := img.Digest()
-	require.NoError(t, err)
-	size, err := img.Size()
-	require.NoError(t, err)
-	mediaType, err := img.MediaType()
-	require.NoError(t, err)
-
-	return ref, v1.Descriptor{
-		Digest:    digest,
-		Size:      size,
-		MediaType: mediaType,
-	}
-}
-
-func pushReferrer(t *testing.T, registryHost, repo string, subjectDesc v1.Descriptor, artifactType string, content []byte, opts ...ggcrremote.Option) {
-	layer := static.NewLayer(content, v1types.MediaType(artifactType))
-
-	img := mutate.MediaType(empty.Image, v1types.OCIManifestSchema1)
-	img = mutate.ConfigMediaType(img, v1types.MediaType(artifactType))
-	img, err := mutate.AppendLayers(img, layer)
-	require.NoError(t, err)
-	img = mutate.Subject(img, subjectDesc).(v1.Image)
-
-	digest, err := img.Digest()
-	require.NoError(t, err)
-	ref, err := name.ParseReference(fmt.Sprintf("%s/%s@%s", registryHost, repo, digest.String()))
-	require.NoError(t, err)
-
-	require.NoError(t, ggcrremote.Write(ref, img, opts...))
-}
-
-func pushLegacyAttestation(t *testing.T, registryHost, repo string, subjectDigest v1.Hash, img v1.Image, opts ...ggcrremote.Option) {
-	ref, err := name.ParseReference(fmt.Sprintf("%s/%s:sha256-%s.att", registryHost, repo, subjectDigest.Hex))
-	require.NoError(t, err)
-
-	require.NoError(t, ggcrremote.Write(ref, img, opts...))
+	return u.Host
 }
 
 func setUpDockerConfig(t *testing.T, registryHost, user, password string) {
@@ -264,34 +196,32 @@ func requireNoOpenVEXMatch(t *testing.T, got *openvex.VEX, vulnerabilityID strin
 }
 
 func TestDiscover(t *testing.T) {
-	_, registryHost := setUpReferrerRegistry(t, "", "")
+	registryHost := setUpReferrerRegistry(t, "", "")
 
 	tests := []struct {
-		name        string
-		setup       func(t *testing.T) string // pushes fixtures and returns the repository_url to query
-		wantErr     string
-		wantNil     bool
-		wantMatch   []string
-		wantNoMatch []string
+		name    string
+		setup   func(t *testing.T) string // pushes fixtures and returns the repository_url to query
+		wantErr string
+		want    map[string]bool // vulnerability ID -> whether it should match; nil means no VEX document is expected
 	}{
 		{
 			name: "legacy attestation",
 			setup: func(t *testing.T) string {
 				repo := "debian/legacy"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
 			name: "no attestation",
 			setup: func(t *testing.T) string {
 				repo := "debian/no-vex"
-				pushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantNil: true,
+			want: nil,
 		},
 		{
 			name: "image not found",
@@ -304,90 +234,92 @@ func TestDiscover(t *testing.T) {
 			name: "referrer sigstore bundle",
 			setup: func(t *testing.T) string {
 				repo := "debian/sigstore-bundle"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 					createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
 			name: "referrer DSSE envelope",
 			setup: func(t *testing.T) string {
 				repo := "debian/dsse-envelope"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlob(t, "CVE-2022-3715"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
 			name: "referrer with versioned OpenVEX predicate",
 			setup: func(t *testing.T) string {
 				repo := "debian/versioned-predicate"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				// OpenVEX uses versioned namespaces such as ".../ns/v0.2.0"; the
 				// prefix must still be recognized as OpenVEX.
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/ns/v0.2.0"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
 			name: "referrer preferred over legacy",
 			setup: func(t *testing.T) string {
 				repo := "debian/prefer-referrer"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 					createSigstoreBundleVEXAttestation(t, "CVE-2022-REFERRER"))
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
 					setUpVEXAttestationWithVulnerability(t, "CVE-2022-LEGACY"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch:   []string{"CVE-2022-REFERRER"},
-			wantNoMatch: []string{"CVE-2022-LEGACY"},
+			want: map[string]bool{
+				"CVE-2022-REFERRER": true,
+				"CVE-2022-LEGACY":   false,
+			},
 		},
 		{
 			name: "legacy multi-layer attestation",
 			setup: func(t *testing.T) string {
 				repo := "debian/multi-layer"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest,
 					setUpMultiLayerVEXAttestation(t, "CVE-2022-3715"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
 			name: "legacy with no OpenVEX layer",
 			setup: func(t *testing.T) string {
 				repo := "debian/legacy-no-vex"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				// A `.att` whose only layer is a non-OpenVEX (e.g. SBOM) attestation.
 				envelope := createVEXAttestationWithPredicateType(t, "CVE-2022-3715", "https://spdx.dev/Document")
 				b, err := json.Marshal(envelope)
 				require.NoError(t, err)
 				img, err := mutate.AppendLayers(empty.Image, static.NewLayer(b, coreoci.DSSEEnvelopeArtifactType))
 				require.NoError(t, err)
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, img)
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, img)
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantNil: true,
+			want: nil,
 		},
 		{
 			name: "legacy with too many layers",
 			setup: func(t *testing.T) string {
 				repo := "debian/too-many-layers"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				layers := make([]v1.Layer, 0, 101)
 				for range 101 {
 					layers = append(layers, static.NewLayer([]byte("x"), coreoci.DSSEEnvelopeArtifactType))
 				}
 				img, err := mutate.AppendLayers(empty.Image, layers...)
 				require.NoError(t, err)
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, img)
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, img)
 				return registryHost + "/" + repo + ":latest"
 			},
 			wantErr: "too many layers",
@@ -396,8 +328,8 @@ func TestDiscover(t *testing.T) {
 			name: "malformed sigstore bundle",
 			setup: func(t *testing.T) string {
 				repo := "debian/malformed"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType, []byte("{"))
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType, []byte("{"))
 				return registryHost + "/" + repo + ":latest"
 			},
 			wantErr: "failed to decode Sigstore bundle",
@@ -406,61 +338,63 @@ func TestDiscover(t *testing.T) {
 			name: "non-OpenVEX referrer is skipped",
 			setup: func(t *testing.T) string {
 				repo := "debian/sbom-referrer"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				// A VEX artifact type is shared by every Cosign attestation, so a
 				// non-OpenVEX predicate (here a lookalike namespace) must be skipped,
 				// not treated as an error, and yield no VEX document.
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
 					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/nsx"))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantNil: true,
+			want: nil,
 		},
 		{
 			name: "non-OpenVEX referrer falls back to legacy",
 			setup: func(t *testing.T) string {
 				repo := "debian/sbom-referrer-then-legacy"
-				_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				// A Cosign v3 SBOM attestation shares the Sigstore bundle artifact
 				// type; it must be skipped and discovery must fall back to legacy.
-				pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 					createSigstoreBundleAttestationWithPredicateType(t, "CVE-2022-3715", "https://spdx.dev/Document"))
-				pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
+				registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantMatch: []string{"CVE-2022-3715"},
+			want: map[string]bool{"CVE-2022-3715": true},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			repoURL := tt.setup(t)
-			got, err := Discover(t.Context(), purlFromRepositoryURL(repoURL), ftypes.RegistryOptions{})
+			got, err := oci.Discover(t.Context(), purlFromRepositoryURL(repoURL), ftypes.RegistryOptions{})
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
-			if tt.wantNil {
+			if tt.want == nil {
 				require.Nil(t, got)
 				return
 			}
-			for _, id := range tt.wantMatch {
-				requireOpenVEXMatch(t, got, id)
-			}
-			for _, id := range tt.wantNoMatch {
-				requireNoOpenVEXMatch(t, got, id)
+			require.NotNil(t, got)
+			for id, shouldMatch := range tt.want {
+				if shouldMatch {
+					requireOpenVEXMatch(t, got, id)
+				} else {
+					requireNoOpenVEXMatch(t, got, id)
+				}
 			}
 		})
 	}
 }
 
 func TestDiscoverByDigest(t *testing.T) {
-	_, registryHost := setUpReferrerRegistry(t, "", "")
+	registryHost := setUpReferrerRegistry(t, "", "")
 
 	repo := "debian/by-digest"
-	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest")
-	pushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
+	_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+	registrytest.PushLegacyAttestation(t, registryHost, repo, subjectDesc.Digest, setUpVEXAttestation(t))
 
 	// For an OCI purl the version, when set, is the image digest.
 	p := &purl.PackageURL{
@@ -472,7 +406,7 @@ func TestDiscoverByDigest(t *testing.T) {
 		},
 	}
 
-	got, err := Discover(t.Context(), p, ftypes.RegistryOptions{})
+	got, err := oci.Discover(t.Context(), p, ftypes.RegistryOptions{})
 	require.NoError(t, err)
 	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
@@ -483,19 +417,19 @@ func TestDiscoverWithRegistryAuth(t *testing.T) {
 		password = "testpass"
 	)
 
-	_, registryHost := setUpReferrerRegistry(t, user, password)
+	registryHost := setUpReferrerRegistry(t, user, password)
 	auth := ggcrremote.WithAuth(&authn.Basic{
 		Username: user,
 		Password: password,
 	})
 
 	repo := "debian/private"
-	_, subjectDesc := pushRandomImage(t, registryHost, repo, "latest", auth)
-	pushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
+	_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest", auth)
+	registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType,
 		createSigstoreBundleVEXAttestation(t, "CVE-2022-3715"), auth)
 	setUpDockerConfig(t, registryHost, user, password)
 
-	got, err := Discover(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"), ftypes.RegistryOptions{})
+	got, err := oci.Discover(t.Context(), purlFromRepositoryURL(registryHost+"/"+repo+":latest"), ftypes.RegistryOptions{})
 	require.NoError(t, err)
 	requireOpenVEXMatch(t, got, "CVE-2022-3715")
 }
@@ -536,23 +470,22 @@ func TestDiscoverInvalidPURL(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := Discover(t.Context(), tt.purl, ftypes.RegistryOptions{})
+			_, err := oci.Discover(t.Context(), tt.purl, ftypes.RegistryOptions{})
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}
 }
 
 func TestReadLayerSizeLimit(t *testing.T) {
-	old := maxAttestationSize
-	maxAttestationSize = 16
-	t.Cleanup(func() { maxAttestationSize = old })
+	limit := 16
+	oci.SetMaxAttestationSize(t, limit)
 
-	layer := static.NewLayer(bytes.Repeat([]byte("x"), maxAttestationSize+1), "application/octet-stream")
-	_, err := readLayer(layer)
+	layer := static.NewLayer(bytes.Repeat([]byte("x"), limit+1), "application/octet-stream")
+	_, err := oci.ReadLayer(layer)
 	require.ErrorContains(t, err, "exceeds the size limit")
 }
 
-func TestIsReferrersUnsupported(t *testing.T) {
+func TestIsReferrersUnavailable(t *testing.T) {
 	tests := []struct {
 		name string
 		err  error
@@ -601,14 +534,17 @@ func TestIsReferrersUnsupported(t *testing.T) {
 		},
 		{
 			name: "unauthorized is not 'unsupported'",
-			err:  &transport.Error{StatusCode: http.StatusUnauthorized, Errors: []transport.Diagnostic{{Code: transport.UnauthorizedErrorCode}}},
+			err: &transport.Error{
+				StatusCode: http.StatusUnauthorized,
+				Errors:     []transport.Diagnostic{{Code: transport.UnauthorizedErrorCode}},
+			},
 			want: false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.want, isReferrersUnsupported(tt.err))
+			require.Equal(t, tt.want, oci.IsReferrersUnavailable(tt.err))
 		})
 	}
 }
