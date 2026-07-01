@@ -39,8 +39,7 @@ const maxAttestations = 100
 
 // maxAttestationSize bounds the uncompressed size of a single attestation layer
 // read into memory, guarding against decompression bombs (CWE-409) served by a
-// hostile registry. OpenVEX documents are small (KiB-MiB). It is a var only so
-// tests can lower it.
+// hostile registry. OpenVEX documents are small (KiB-MiB).
 var maxAttestationSize = 50 << 20 // 50 MiB
 
 // Discover fetches the OpenVEX document attached to an OCI artifact, addressed by
@@ -116,7 +115,7 @@ func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftyp
 func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
 	index, err := remote.Referrers(ctx, digest, registryOptions)
 	if err != nil {
-		if isReferrersUnsupported(err) {
+		if isReferrersUnavailable(err) {
 			log.WithPrefix("vex").Debug("OCI referrers are not available", log.Err(err))
 			return nil, nil
 		}
@@ -294,9 +293,9 @@ func isOpenVEXPredicateType(predicateType string) bool {
 	return predicateType == openvex.TypeURI || strings.HasPrefix(predicateType, openvex.TypeURI+"/")
 }
 
-// isReferrersUnsupported reports whether err means the registry has no OCI 1.1
+// isReferrersUnavailable reports whether err means the registry has no OCI 1.1
 // referrers for the digest (the API is not implemented or nothing is attached).
-func isReferrersUnsupported(err error) bool {
+func isReferrersUnavailable(err error) bool {
 	return isNotFound(err) || hasErrorCode(err, transport.UnsupportedErrorCode)
 }
 
