@@ -12,10 +12,24 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// sealVersionSuffix matches the Seal Security patch-level version suffix, i.e.
-// "sp" followed by a number preceded by a separator (e.g. "+sp1" on Maven/PyPI,
-// "-sp1" on npm/Go). Seal appends this suffix to the upstream package version.
-var sealVersionSuffix = regexp.MustCompile(`[-.+]sp\d+$`)
+// Seal Security appends an ecosystem-specific patch-level suffix to the upstream
+// version of a no-prefix package. Each ecosystem uses its own separator, so the
+// suffix is matched per ecosystem rather than with a single shared pattern.
+// See https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
+var (
+	// Maven: "$version+spN" (e.g. "9.4.48+sp1").
+	mavenSealSuffix = regexp.MustCompile(`\+sp\d+$`)
+	// PyPI: "$version+spN" (e.g. "4.2.8+sp1").
+	pipSealSuffix = regexp.MustCompile(`\+sp\d+$`)
+	// npm: "$version-spN" (e.g. "3.1.8-sp1").
+	npmSealSuffix = regexp.MustCompile(`-sp\d+$`)
+	// Go: "$version-spN", optionally followed by the "+incompatible" build
+	// metadata Go adds to major-version-2+ modules without a /vN path
+	// (e.g. "v1.1.1-sp1", "v2.0.0-sp1+incompatible").
+	goSealSuffix = regexp.MustCompile(`-sp\d+(?:\+incompatible)?$`)
+	// RubyGems: "$version.0.1.spN" (e.g. "2.0.7.0.1.sp1").
+	rubySealSuffix = regexp.MustCompile(`\.0\.1\.sp\d+$`)
+)
 
 func init() {
 	library.RegisterVendor(sealSecurity{
@@ -61,7 +75,16 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 			return library.Matched
 		}
 		// No-prefix: the "+spN" version suffix cannot collide with real Maven versions.
-		if hasSealVersionSuffix(pkgVer) {
+		if mavenSealSuffix.MatchString(pkgVer) {
+			return library.Matched
+		}
+	case ecosystem.Pip:
+		// Renamed: e.g. seal-django
+		if strings.HasPrefix(pkgName, "seal-") {
+			return library.Matched
+		}
+		// No-prefix: the "+spN" version suffix cannot collide with real PyPI versions.
+		if pipSealSuffix.MatchString(pkgVer) {
 			return library.Matched
 		}
 	case ecosystem.Npm:
@@ -71,17 +94,8 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 		}
 		// No-prefix: the "-spN" version suffix can also appear on real npm
 		// packages, so confirm it against the Seal advisory bucket.
-		if hasSealVersionSuffix(pkgVer) {
+		if npmSealSuffix.MatchString(pkgVer) {
 			return library.Candidate
-		}
-	case ecosystem.Pip:
-		// Renamed: e.g. seal-django
-		if strings.HasPrefix(pkgName, "seal-") {
-			return library.Matched
-		}
-		// No-prefix: the "+spN" version suffix cannot collide with real PyPI versions.
-		if hasSealVersionSuffix(pkgVer) {
-			return library.Matched
 		}
 	case ecosystem.Go:
 		// Renamed: e.g. sealsecurity.io/github.com/Masterminds/goutils
@@ -90,7 +104,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 		}
 		// No-prefix: the "-spN" version suffix can also appear on real Go
 		// modules, so confirm it against the Seal advisory bucket.
-		if hasSealVersionSuffix(pkgVer) {
+		if goSealSuffix.MatchString(pkgVer) {
 			return library.Candidate
 		}
 	case ecosystem.RubyGems:
@@ -98,20 +112,14 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 		if strings.HasPrefix(pkgName, "seal-") {
 			return library.Matched
 		}
-		// No-prefix: the ".spN" version suffix (e.g. 2.0.7.0.1.sp1) can also
-		// appear on real gems as a prerelease segment, so confirm it against
-		// the Seal advisory bucket.
-		if hasSealVersionSuffix(pkgVer) {
+		// No-prefix: the ".0.1.spN" version suffix (e.g. 2.0.7.0.1.sp1) can
+		// also appear on real gems as prerelease segments, so confirm it
+		// against the Seal advisory bucket.
+		if rubySealSuffix.MatchString(pkgVer) {
 			return library.Candidate
 		}
 	}
 	return library.NoMatch
-}
-
-// hasSealVersionSuffix reports whether the version carries a Seal Security
-// patch-level suffix (e.g. "+sp1", "-sp1").
-func hasSealVersionSuffix(pkgVer string) bool {
-	return sealVersionSuffix.MatchString(pkgVer)
 }
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.

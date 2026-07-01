@@ -54,6 +54,14 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "9.4.48.v20220622+sp1",
 			want:    library.Matched,
 		},
+		{
+			// Maven uses "+spN", not "-spN": a "-spN" version must not match.
+			name:    "maven package with npm-style -spN suffix is not matched",
+			eco:     ecosystem.Maven,
+			pkgName: "org.eclipse.jetty:jetty-http",
+			pkgVer:  "9.4.48.v20220622-sp1",
+			want:    library.NoMatch,
+		},
 		// npm - renamed name prefix @seal-security/
 		{
 			name:    "npm seal package",
@@ -129,6 +137,22 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgName: "github.com/Masterminds/goutils",
 			pkgVer:  "v1.1.1-sp1",
 			want:    library.Candidate,
+		},
+		{
+			// Go appends "+incompatible" to major-version-2+ modules without a /vN path.
+			name:    "go seal package with no-prefix name and +incompatible suffix",
+			eco:     ecosystem.Go,
+			pkgName: "github.com/Masterminds/goutils",
+			pkgVer:  "v2.0.0-sp1+incompatible",
+			want:    library.Candidate,
+		},
+		{
+			// Go uses "-spN", not "+spN": a "+spN" version must not match.
+			name:    "go package with maven-style +spN suffix is not matched",
+			eco:     ecosystem.Go,
+			pkgName: "github.com/Masterminds/goutils",
+			pkgVer:  "v1.1.1+sp1",
+			want:    library.NoMatch,
 		},
 		// Ruby - renamed name prefix seal-
 		{
