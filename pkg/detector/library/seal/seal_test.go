@@ -62,6 +62,14 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "9.4.48.v20220622-sp1",
 			want:    library.NoMatch,
 		},
+		{
+			// Private version: "spN" carries an extra "pM" iteration.
+			name:    "maven seal package with private version suffix",
+			eco:     ecosystem.Maven,
+			pkgName: "org.eclipse.jetty:jetty-http",
+			pkgVer:  "9.4.48.v20220622+sp1p1",
+			want:    library.Matched,
+		},
 		// npm - renamed name prefix @seal-security/
 		{
 			name:    "npm seal package",
@@ -92,6 +100,14 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "3.1.8-sp1",
 			want:    library.Candidate,
 		},
+		{
+			// Private version: "spN" carries an extra "pM" iteration.
+			name:    "npm seal package with private version suffix",
+			eco:     ecosystem.Npm,
+			pkgName: "ejs",
+			pkgVer:  "2.7.4-sp2p1",
+			want:    library.Candidate,
+		},
 		// Python - renamed name prefix seal-
 		{
 			name:    "python seal package",
@@ -113,6 +129,14 @@ func TestSealSecurity_Match(t *testing.T) {
 			eco:     ecosystem.Pip,
 			pkgName: "django",
 			pkgVer:  "4.2.8+sp1",
+			want:    library.Matched,
+		},
+		{
+			// Private version: "spN" carries an extra "pM" iteration.
+			name:    "python seal package with private version suffix",
+			eco:     ecosystem.Pip,
+			pkgName: "django",
+			pkgVer:  "4.2.8+sp1p1",
 			want:    library.Matched,
 		},
 		// Go - renamed name prefix sealsecurity.io/
@@ -154,6 +178,21 @@ func TestSealSecurity_Match(t *testing.T) {
 			pkgVer:  "v1.1.1+sp1",
 			want:    library.NoMatch,
 		},
+		{
+			// Private version: "spN" carries an extra "pM" iteration.
+			name:    "go seal package with private version suffix",
+			eco:     ecosystem.Go,
+			pkgName: "github.com/Masterminds/goutils",
+			pkgVer:  "v1.1.1-sp2p1",
+			want:    library.Candidate,
+		},
+		{
+			name:    "go seal package with private version and +incompatible suffix",
+			eco:     ecosystem.Go,
+			pkgName: "github.com/Masterminds/goutils",
+			pkgVer:  "v2.0.0-sp2p1+incompatible",
+			want:    library.Candidate,
+		},
 		// Ruby - renamed name prefix seal-
 		{
 			name:    "ruby seal package",
@@ -175,6 +214,14 @@ func TestSealSecurity_Match(t *testing.T) {
 			eco:     ecosystem.RubyGems,
 			pkgName: "rack",
 			pkgVer:  "2.0.7.0.1.sp1",
+			want:    library.Candidate,
+		},
+		{
+			// Private version: "spN" carries an extra "pM" iteration.
+			name:    "ruby seal package with private version suffix",
+			eco:     ecosystem.RubyGems,
+			pkgName: "rack",
+			pkgVer:  "2.0.7.0.1.sp1p1",
 			want:    library.Candidate,
 		},
 		// Unsupported ecosystem

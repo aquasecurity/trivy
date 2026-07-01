@@ -15,20 +15,27 @@ import (
 // Seal Security appends an ecosystem-specific patch-level suffix to the upstream
 // version of a no-prefix package. Each ecosystem uses its own separator, so the
 // suffix is matched per ecosystem rather than with a single shared pattern.
-// See https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
+//
+// Both public ("spN") and private ("spNpM") sealed versions are matched: a
+// private version carries an extra "pM" iteration on top of the sealed version
+// (e.g. "2.7.4-sp2p1"). See
+// https://docs.sealsecurity.io/reference/naming-and-versioning/sp-model and
+// https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
+//
+// The shared "spN[pM]" tail is `sp\d+(?:p\d+)?`.
 var (
-	// Maven: "$version+spN" (e.g. "9.4.48+sp1").
-	mavenSealSuffix = regexp.MustCompile(`\+sp\d+$`)
-	// PyPI: "$version+spN" (e.g. "4.2.8+sp1").
-	pipSealSuffix = regexp.MustCompile(`\+sp\d+$`)
-	// npm: "$version-spN" (e.g. "3.1.8-sp1").
-	npmSealSuffix = regexp.MustCompile(`-sp\d+$`)
-	// Go: "$version-spN", optionally followed by the "+incompatible" build
+	// Maven: "$version+spN[pM]" (e.g. "9.4.48+sp1", "9.4.48+sp1p1").
+	mavenSealSuffix = regexp.MustCompile(`\+sp\d+(?:p\d+)?$`)
+	// PyPI: "$version+spN[pM]" (e.g. "4.2.8+sp1", "4.2.8+sp1p1").
+	pipSealSuffix = regexp.MustCompile(`\+sp\d+(?:p\d+)?$`)
+	// npm: "$version-spN[pM]" (e.g. "3.1.8-sp1", "3.1.8-sp1p1").
+	npmSealSuffix = regexp.MustCompile(`-sp\d+(?:p\d+)?$`)
+	// Go: "$version-spN[pM]", optionally followed by the "+incompatible" build
 	// metadata Go adds to major-version-2+ modules without a /vN path
-	// (e.g. "v1.1.1-sp1", "v2.0.0-sp1+incompatible").
-	goSealSuffix = regexp.MustCompile(`-sp\d+(?:\+incompatible)?$`)
-	// RubyGems: "$version.0.1.spN" (e.g. "2.0.7.0.1.sp1").
-	rubySealSuffix = regexp.MustCompile(`\.0\.1\.sp\d+$`)
+	// (e.g. "v1.1.1-sp1", "v2.0.0-sp1p1+incompatible").
+	goSealSuffix = regexp.MustCompile(`-sp\d+(?:p\d+)?(?:\+incompatible)?$`)
+	// RubyGems: "$version.0.1.spN[pM]" (e.g. "2.0.7.0.1.sp1", "2.0.7.0.1.sp1p1").
+	rubySealSuffix = regexp.MustCompile(`\.0\.1\.sp\d+(?:p\d+)?$`)
 )
 
 func init() {

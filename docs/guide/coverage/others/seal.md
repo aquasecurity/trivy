@@ -57,6 +57,8 @@ Some Seal packages keep their upstream (no-prefix) name and only add a patch-lev
 | Go | `-spN` | `golang.org/x/crypto` `0.26.0-sp1` |
 | Ruby (RubyGems) | `.spN` | `rack` `2.0.7.0.1.sp1` |
 
+Both public (`spN`) and private (`spNpM`) sealed versions are recognized. A private version carries an extra `pM` iteration on top of the sealed version, for example `ejs` `3.1.8-sp2p1`.
+
 For Maven and pip, the `+spN` suffix cannot collide with real package versions, so the match is authoritative.
 For npm, Go, and Ruby, the `-spN` / `.spN` suffix can also appear on real packages, so Trivy confirms the match by looking the package up in the Seal advisory database; if the package is not found there, it falls back to the standard ecosystem advisories.
 
