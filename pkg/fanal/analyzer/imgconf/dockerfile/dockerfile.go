@@ -147,12 +147,8 @@ func buildRunInstruction(s string) string {
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
-	// A history entry's CreatedBy can start with "HEALTHCHECK" while the
-	// resolved config carries no Healthcheck object — e.g. `HEALTHCHECK NONE`,
-	// or images built by buildah/buildkit that record a HEALTHCHECK history
-	// line without materializing cfg.Config.Healthcheck. Dereferencing the nil
-	// pointer below would crash the image-config (misconfig) scanner, so treat
-	// the absent config as the disabled form.
+	// Config.Healthcheck can be null even when a HEALTHCHECK history line exists
+	// if the image was re-committed by a tool that normalizes HEALTHCHECK NONE to null.
 	if health == nil {
 		return "HEALTHCHECK NONE"
 	}
