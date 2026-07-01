@@ -126,6 +126,14 @@ var (
 		Values:     xstrings.ToStringSlice(types.SupportedTableModes),
 		Usage:      "[EXPERIMENTAL] tables that will be displayed in 'table' format",
 	}
+	ColorFlag = Flag[string]{
+		Name:          "color",
+		ConfigName:    "color",
+		Default:       string(types.ColorAuto),
+		Values:        xstrings.ToStringSlice(types.SupportedColorModes),
+		Usage:         "control colored output (only for 'table' format)",
+		TelemetrySafe: true,
+	}
 )
 
 // ReportFlagGroup composes common printer flag structs
@@ -146,6 +154,7 @@ type ReportFlagGroup struct {
 	Compliance      *Flag[string]
 	ShowSuppressed  *Flag[bool]
 	TableMode       *Flag[[]string]
+	Color           *Flag[string]
 }
 
 type ReportOptions struct {
@@ -164,6 +173,7 @@ type ReportOptions struct {
 	Compliance       spec.ComplianceSpec
 	ShowSuppressed   bool
 	TableModes       []types.TableMode
+	Color            types.ColorMode
 }
 
 func NewReportFlagGroup() *ReportFlagGroup {
@@ -183,6 +193,7 @@ func NewReportFlagGroup() *ReportFlagGroup {
 		Compliance:      ComplianceFlag.Clone(),
 		ShowSuppressed:  ShowSuppressedFlag.Clone(),
 		TableMode:       TableModeFlag.Clone(),
+		Color:           ColorFlag.Clone(),
 	}
 }
 
@@ -207,6 +218,7 @@ func (f *ReportFlagGroup) Flags() []Flagger {
 		f.Compliance,
 		f.ShowSuppressed,
 		f.TableMode,
+		f.Color,
 	}
 }
 
@@ -257,6 +269,8 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		return xerrors.New(`"--table-mode" can be used only with "--format table".`)
 	}
 
+	f.warnColorOnlyForTable(format)
+
 	cs, err := loadComplianceTypes(f.Compliance.Value())
 	if err != nil {
 		return xerrors.Errorf("unable to load compliance spec: %w", err)
@@ -290,8 +304,17 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		Compliance:       cs,
 		ShowSuppressed:   f.ShowSuppressed.Value(),
 		TableModes:       xstrings.ToTSlice[types.TableMode](tableModes),
+		Color:            types.ColorMode(f.Color.Value()),
 	}
 	return nil
+}
+
+// warnColorOnlyForTable warns when "--color" is set with a non-table format,
+// where it has no effect.
+func (f *ReportFlagGroup) warnColorOnlyForTable(format types.Format) {
+	if f.Color.IsSet() && format != types.FormatTable {
+		log.Warn(`"--color" is ignored because it can be used only with "--format table".`)
+	}
 }
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
