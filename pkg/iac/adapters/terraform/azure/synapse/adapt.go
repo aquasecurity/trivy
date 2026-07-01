@@ -23,7 +23,7 @@ func adaptWorkspaces(modules terraform.Modules) []synapse.Workspace {
 
 func adaptWorkspace(resource *terraform.Block) synapse.Workspace {
 	enableManagedVNAttr := resource.GetAttribute("managed_virtual_network_enabled")
-	enableManagedVNVal := enableManagedVNAttr.AsBoolValueOrDefault(false, resource)
+	enableManagedVNVal := enableManagedVNAttr.AsBoolValue()
 
 	return synapse.Workspace{
 		Metadata:                    resource.GetMetadata(),

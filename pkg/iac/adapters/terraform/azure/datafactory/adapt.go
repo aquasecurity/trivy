@@ -24,7 +24,7 @@ func adaptFactories(modules terraform.Modules) []datafactory.Factory {
 
 func adaptFactory(resource *terraform.Block) datafactory.Factory {
 	enablePublicNetworkAttr := resource.GetAttribute("public_network_enabled")
-	enablePublicNetworkVal := enablePublicNetworkAttr.AsBoolValueOrDefault(true, resource)
+	enablePublicNetworkVal := enablePublicNetworkAttr.AsBoolValue(true)
 
 	return datafactory.Factory{
 		Metadata:            resource.GetMetadata(),

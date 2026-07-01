@@ -29,10 +29,10 @@ func adaptMariaDBServer(resource *terraform.Block, module *terraform.Module) dat
 		Server: database.Server{
 			Metadata: resource.GetMetadata(),
 			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
-				AsBoolValueOrDefault(false, resource),
+				AsBoolValue(false),
 			MinimumTLSVersion: iacTypes.StringDefault("", resource.GetMetadata()),
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
-				AsBoolValueOrDefault(true, resource),
+				AsBoolValue(true),
 			FirewallRules: firewallRules,
 		},
 	}

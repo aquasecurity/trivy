@@ -18,10 +18,10 @@ func adaptVolumes(modules terraform.Modules) []ec2.Volume {
 
 func adaptVolume(resource *terraform.Block, module *terraform.Module) ec2.Volume {
 	encryptedAttr := resource.GetAttribute("encrypted")
-	encryptedVal := encryptedAttr.AsBoolValueOrDefault(false, resource)
+	encryptedVal := encryptedAttr.AsBoolValue()
 
 	kmsKeyAttr := resource.GetAttribute("kms_key_id")
-	kmsKeyVal := kmsKeyAttr.AsStringValueOrDefault("", resource)
+	kmsKeyVal := kmsKeyAttr.AsStringValue()
 
 	if kmsKeyAttr.IsResourceBlockReference("aws_kms_key") {
 		if kmsKeyBlock, err := module.GetReferencedBlock(kmsKeyAttr, resource); err == nil {

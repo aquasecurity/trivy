@@ -17,7 +17,7 @@ func adaptSubnets(modules terraform.Modules) []ec2.Subnet {
 
 func adaptSubnet(resource *terraform.Block) ec2.Subnet {
 	mapPublicIpOnLaunchAttr := resource.GetAttribute("map_public_ip_on_launch")
-	mapPublicIpOnLaunchVal := mapPublicIpOnLaunchAttr.AsBoolValueOrDefault(false, resource)
+	mapPublicIpOnLaunchVal := mapPublicIpOnLaunchAttr.AsBoolValue()
 
 	return ec2.Subnet{
 		Metadata:            resource.GetMetadata(),

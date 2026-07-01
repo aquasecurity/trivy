@@ -49,24 +49,24 @@ func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
 		},
 	}
 
-	distribution.WAFID = resource.GetAttribute("web_acl_id").AsStringValueOrDefault("", resource)
+	distribution.WAFID = resource.GetAttribute("web_acl_id").AsStringValue()
 
 	if loggingBlock := resource.GetBlock("logging_config"); loggingBlock.IsNotNil() {
 		distribution.Logging.Metadata = loggingBlock.GetMetadata()
 		bucketAttr := loggingBlock.GetAttribute("bucket")
-		distribution.Logging.Bucket = bucketAttr.AsStringValueOrDefault("", loggingBlock)
+		distribution.Logging.Bucket = bucketAttr.AsStringValue()
 	}
 
 	if defaultCacheBlock := resource.GetBlock("default_cache_behavior"); defaultCacheBlock.IsNotNil() {
 		distribution.DefaultCacheBehaviour.Metadata = defaultCacheBlock.GetMetadata()
 		viewerProtocolPolicyAttr := defaultCacheBlock.GetAttribute("viewer_protocol_policy")
-		distribution.DefaultCacheBehaviour.ViewerProtocolPolicy = viewerProtocolPolicyAttr.AsStringValueOrDefault("", defaultCacheBlock)
+		distribution.DefaultCacheBehaviour.ViewerProtocolPolicy = viewerProtocolPolicyAttr.AsStringValue()
 	}
 
 	orderedCacheBlocks := resource.GetBlocks("ordered_cache_behavior")
 	for _, orderedCacheBlock := range orderedCacheBlocks {
 		viewerProtocolPolicyAttr := orderedCacheBlock.GetAttribute("viewer_protocol_policy")
-		viewerProtocolPolicyVal := viewerProtocolPolicyAttr.AsStringValueOrDefault("", orderedCacheBlock)
+		viewerProtocolPolicyVal := viewerProtocolPolicyAttr.AsStringValue()
 		distribution.OrdererCacheBehaviours = append(distribution.OrdererCacheBehaviours, cloudfront.CacheBehaviour{
 			Metadata:             orderedCacheBlock.GetMetadata(),
 			ViewerProtocolPolicy: viewerProtocolPolicyVal,
@@ -76,9 +76,9 @@ func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
 	if viewerCertBlock := resource.GetBlock("viewer_certificate"); viewerCertBlock.IsNotNil() {
 		distribution.ViewerCertificate = cloudfront.ViewerCertificate{
 			Metadata:                     viewerCertBlock.GetMetadata(),
-			MinimumProtocolVersion:       viewerCertBlock.GetAttribute("minimum_protocol_version").AsStringValueOrDefault("TLSv1", viewerCertBlock),
-			SSLSupportMethod:             viewerCertBlock.GetAttribute("ssl_support_method").AsStringValueOrDefault("", viewerCertBlock),
-			CloudfrontDefaultCertificate: viewerCertBlock.GetAttribute("cloudfront_default_certificate").AsBoolValueOrDefault(false, viewerCertBlock),
+			MinimumProtocolVersion:       viewerCertBlock.GetAttribute("minimum_protocol_version").AsStringValue("TLSv1"),
+			SSLSupportMethod:             viewerCertBlock.GetAttribute("ssl_support_method").AsStringValue(),
+			CloudfrontDefaultCertificate: viewerCertBlock.GetAttribute("cloudfront_default_certificate").AsBoolValue(),
 		}
 	}
 

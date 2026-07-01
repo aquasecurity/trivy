@@ -24,16 +24,16 @@ func adaptTrails(modules terraform.Modules) []cloudtrail.Trail {
 
 func adaptTrail(resource *terraform.Block) cloudtrail.Trail {
 	nameAttr := resource.GetAttribute("name")
-	nameVal := nameAttr.AsStringValueOrDefault("", resource)
+	nameVal := nameAttr.AsStringValue()
 
 	enableLogFileValidationAttr := resource.GetAttribute("enable_log_file_validation")
-	enableLogFileValidationVal := enableLogFileValidationAttr.AsBoolValueOrDefault(false, resource)
+	enableLogFileValidationVal := enableLogFileValidationAttr.AsBoolValue()
 
 	isMultiRegionAttr := resource.GetAttribute("is_multi_region_trail")
-	isMultiRegionVal := isMultiRegionAttr.AsBoolValueOrDefault(false, resource)
+	isMultiRegionVal := isMultiRegionAttr.AsBoolValue()
 
 	KMSKeyIDAttr := resource.GetAttribute("kms_key_id")
-	KMSKeyIDVal := KMSKeyIDAttr.AsStringValueOrDefault("", resource)
+	KMSKeyIDVal := KMSKeyIDAttr.AsStringValue()
 
 	var selectors []cloudtrail.EventSelector
 	for _, selBlock := range resource.GetBlocks("event_selector") {
@@ -41,14 +41,14 @@ func adaptTrail(resource *terraform.Block) cloudtrail.Trail {
 		for _, resBlock := range selBlock.GetBlocks("data_resource") {
 			resources = append(resources, cloudtrail.DataResource{
 				Metadata: resBlock.GetMetadata(),
-				Type:     resBlock.GetAttribute("type").AsStringValueOrDefault("", resBlock),
+				Type:     resBlock.GetAttribute("type").AsStringValue(),
 				Values:   resBlock.GetAttribute("values").AsStringValues(),
 			})
 		}
 		selector := cloudtrail.EventSelector{
 			Metadata:      selBlock.GetMetadata(),
 			DataResources: resources,
-			ReadWriteType: selBlock.GetAttribute("read_write_type").AsStringValueOrDefault("All", selBlock),
+			ReadWriteType: selBlock.GetAttribute("read_write_type").AsStringValue("All"),
 		}
 		selectors = append(selectors, selector)
 	}
@@ -59,9 +59,9 @@ func adaptTrail(resource *terraform.Block) cloudtrail.Trail {
 		EnableLogFileValidation:   enableLogFileValidationVal,
 		IsMultiRegion:             isMultiRegionVal,
 		KMSKeyID:                  KMSKeyIDVal,
-		CloudWatchLogsLogGroupArn: resource.GetAttribute("cloud_watch_logs_group_arn").AsStringValueOrDefault("", resource),
-		IsLogging:                 resource.GetAttribute("enable_logging").AsBoolValueOrDefault(true, resource),
-		BucketName:                resource.GetAttribute("s3_bucket_name").AsStringValueOrDefault("", resource),
+		CloudWatchLogsLogGroupArn: resource.GetAttribute("cloud_watch_logs_group_arn").AsStringValue(),
+		IsLogging:                 resource.GetAttribute("enable_logging").AsBoolValue(true),
+		BucketName:                resource.GetAttribute("s3_bucket_name").AsStringValue(),
 		EventSelectors:            selectors,
 	}
 }

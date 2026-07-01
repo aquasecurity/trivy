@@ -81,13 +81,13 @@ func adaptLoadBalancers(module terraform.Modules) (loadBalancers []compute.LoadB
 		for _, fRule := range forwardingRules {
 			rule := compute.ForwardingRule{
 				Metadata:      fRule.GetMetadata(),
-				EntryProtocol: fRule.GetAttribute("entry_protocol").AsStringValueOrDefault("", fRule),
+				EntryProtocol: fRule.GetAttribute("entry_protocol").AsStringValue(),
 			}
 			fRules = append(fRules, rule)
 		}
 		loadBalancers = append(loadBalancers, compute.LoadBalancer{
 			Metadata:            block.GetMetadata(),
-			RedirectHttpToHttps: block.GetAttribute("redirect_http_to_https").AsBoolValueOrDefault(false, block),
+			RedirectHttpToHttps: block.GetAttribute("redirect_http_to_https").AsBoolValue(),
 			ForwardingRules:     fRules,
 		})
 	}
@@ -99,8 +99,8 @@ func adaptKubernetesClusters(module terraform.Modules) (kubernetesClusters []com
 	for _, block := range module.GetResourcesByType("digitalocean_kubernetes_cluster") {
 		kubernetesClusters = append(kubernetesClusters, compute.KubernetesCluster{
 			Metadata:     block.GetMetadata(),
-			AutoUpgrade:  block.GetAttribute("auto_upgrade").AsBoolValueOrDefault(false, block),
-			SurgeUpgrade: block.GetAttribute("surge_upgrade").AsBoolValueOrDefault(false, block),
+			AutoUpgrade:  block.GetAttribute("auto_upgrade").AsBoolValue(),
+			SurgeUpgrade: block.GetAttribute("surge_upgrade").AsBoolValue(),
 		})
 	}
 	return kubernetesClusters

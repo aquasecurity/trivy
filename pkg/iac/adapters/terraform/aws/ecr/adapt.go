@@ -44,7 +44,7 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 	if imageScanningBlock := resource.GetBlock("image_scanning_configuration"); imageScanningBlock.IsNotNil() {
 		repo.ImageScanning.Metadata = imageScanningBlock.GetMetadata()
 		scanOnPushAttr := imageScanningBlock.GetAttribute("scan_on_push")
-		repo.ImageScanning.ScanOnPush = scanOnPushAttr.AsBoolValueOrDefault(false, imageScanningBlock)
+		repo.ImageScanning.ScanOnPush = scanOnPushAttr.AsBoolValue()
 	}
 
 	mutabilityAttr := resource.GetAttribute("image_tag_mutability")
@@ -98,10 +98,10 @@ func adaptRepository(resource *terraform.Block, module *terraform.Module, module
 	if encryptBlock := resource.GetBlock("encryption_configuration"); encryptBlock.IsNotNil() {
 		repo.Encryption.Metadata = encryptBlock.GetMetadata()
 		encryptionTypeAttr := encryptBlock.GetAttribute("encryption_type")
-		repo.Encryption.Type = encryptionTypeAttr.AsStringValueOrDefault("AES256", encryptBlock)
+		repo.Encryption.Type = encryptionTypeAttr.AsStringValue("AES256")
 
 		kmsKeyAttr := encryptBlock.GetAttribute("kms_key")
-		repo.Encryption.KMSKeyID = kmsKeyAttr.AsStringValueOrDefault("", encryptBlock)
+		repo.Encryption.KMSKeyID = kmsKeyAttr.AsStringValue()
 		if kmsKeyAttr.IsResourceBlockReference("aws_kms_key") {
 			if keyBlock, err := module.GetReferencedBlock(kmsKeyAttr, encryptBlock); err == nil {
 				repo.Encryption.KMSKeyID = iacTypes.String(keyBlock.FullName(), keyBlock.GetMetadata())

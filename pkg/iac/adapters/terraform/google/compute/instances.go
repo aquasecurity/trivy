@@ -12,7 +12,7 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 
 		instance := compute.Instance{
 			Metadata: instanceBlock.GetMetadata(),
-			Name:     instanceBlock.GetAttribute("name").AsStringValueOrDefault("", instanceBlock),
+			Name:     instanceBlock.GetAttribute("name").AsStringValue(),
 			ShieldedVM: compute.ShieldedVMConfig{
 				Metadata:                   instanceBlock.GetMetadata(),
 				SecureBootEnabled:          iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
@@ -25,7 +25,7 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 				IsDefault: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 				Scopes:    nil,
 			},
-			CanIPForward:                instanceBlock.GetAttribute("can_ip_forward").AsBoolValueOrDefault(false, instanceBlock),
+			CanIPForward:                instanceBlock.GetAttribute("can_ip_forward").AsBoolValue(),
 			OSLoginEnabled:              iacTypes.BoolDefault(true, instanceBlock.GetMetadata()),
 			EnableProjectSSHKeyBlocking: iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
 			EnableSerialPort:            iacTypes.BoolDefault(false, instanceBlock.GetMetadata()),
@@ -49,9 +49,9 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 		// vm shielding
 		if shieldedBlock := instanceBlock.GetBlock("shielded_instance_config"); shieldedBlock.IsNotNil() {
 			instance.ShieldedVM.Metadata = shieldedBlock.GetMetadata()
-			instance.ShieldedVM.IntegrityMonitoringEnabled = shieldedBlock.GetAttribute("enable_integrity_monitoring").AsBoolValueOrDefault(true, shieldedBlock)
-			instance.ShieldedVM.VTPMEnabled = shieldedBlock.GetAttribute("enable_vtpm").AsBoolValueOrDefault(true, shieldedBlock)
-			instance.ShieldedVM.SecureBootEnabled = shieldedBlock.GetAttribute("enable_secure_boot").AsBoolValueOrDefault(false, shieldedBlock)
+			instance.ShieldedVM.IntegrityMonitoringEnabled = shieldedBlock.GetAttribute("enable_integrity_monitoring").AsBoolValue(true)
+			instance.ShieldedVM.VTPMEnabled = shieldedBlock.GetAttribute("enable_vtpm").AsBoolValue(true)
+			instance.ShieldedVM.SecureBootEnabled = shieldedBlock.GetAttribute("enable_secure_boot").AsBoolValue()
 		}
 
 		// metadata
@@ -66,11 +66,11 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 		for _, diskBlock := range instanceBlock.GetBlocks("boot_disk") {
 			disk := compute.Disk{
 				Metadata: diskBlock.GetMetadata(),
-				Name:     diskBlock.GetAttribute("device_name").AsStringValueOrDefault("", diskBlock),
+				Name:     diskBlock.GetAttribute("device_name").AsStringValue(),
 				Encryption: compute.DiskEncryption{
 					Metadata:   diskBlock.GetMetadata(),
-					RawKey:     diskBlock.GetAttribute("disk_encryption_key_raw").AsBytesValueOrDefault(nil, diskBlock),
-					KMSKeyLink: diskBlock.GetAttribute("kms_key_self_link").AsStringValueOrDefault("", diskBlock),
+					RawKey:     diskBlock.GetAttribute("disk_encryption_key_raw").AsBytesValue(nil),
+					KMSKeyLink: diskBlock.GetAttribute("kms_key_self_link").AsStringValue(),
 				},
 			}
 			instance.BootDisks = append(instance.BootDisks, disk)
@@ -78,11 +78,11 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 		for _, diskBlock := range instanceBlock.GetBlocks("attached_disk") {
 			disk := compute.Disk{
 				Metadata: diskBlock.GetMetadata(),
-				Name:     diskBlock.GetAttribute("device_name").AsStringValueOrDefault("", diskBlock),
+				Name:     diskBlock.GetAttribute("device_name").AsStringValue(),
 				Encryption: compute.DiskEncryption{
 					Metadata:   diskBlock.GetMetadata(),
-					RawKey:     diskBlock.GetAttribute("disk_encryption_key_raw").AsBytesValueOrDefault(nil, diskBlock),
-					KMSKeyLink: diskBlock.GetAttribute("kms_key_self_link").AsStringValueOrDefault("", diskBlock),
+					RawKey:     diskBlock.GetAttribute("disk_encryption_key_raw").AsBytesValue(nil),
+					KMSKeyLink: diskBlock.GetAttribute("kms_key_self_link").AsStringValue(),
 				},
 			}
 			instance.AttachedDisks = append(instance.AttachedDisks, disk)
@@ -90,7 +90,7 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 
 		if serviceAccountBlock := instanceBlock.GetBlock("service_account"); serviceAccountBlock.IsNotNil() {
 			emailAttr := serviceAccountBlock.GetAttribute("email")
-			instance.ServiceAccount.Email = emailAttr.AsStringValueOrDefault("", serviceAccountBlock)
+			instance.ServiceAccount.Email = emailAttr.AsStringValue()
 
 			if instance.ServiceAccount.Email.IsEmpty() || instance.ServiceAccount.Email.EndsWith("-compute@developer.gserviceaccount.com") {
 				instance.ServiceAccount.IsDefault = iacTypes.Bool(true, serviceAccountBlock.GetMetadata())
@@ -99,7 +99,7 @@ func adaptInstances(modules terraform.Modules) (instances []compute.Instance) {
 			if emailAttr.IsResourceBlockReference("google_service_account") {
 				if accBlock, err := modules.GetReferencedBlock(emailAttr, instanceBlock); err == nil {
 					instance.ServiceAccount.IsDefault = iacTypes.Bool(false, serviceAccountBlock.GetMetadata())
-					instance.ServiceAccount.Email = accBlock.GetAttribute("email").AsStringValueOrDefault("", accBlock)
+					instance.ServiceAccount.Email = accBlock.GetAttribute("email").AsStringValue()
 				}
 			}
 

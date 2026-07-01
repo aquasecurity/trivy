@@ -75,7 +75,7 @@ resource "aws_s3_bucket" "my-bucket" {
 			modules := createModulesFromSource(t, test.source, ".tf")
 			for _, module := range modules {
 				for _, block := range module.GetBlocks() {
-					assert.Nil(t, block.GetAttribute(test.expectedAttribute))
+					assert.True(t, block.GetAttribute(test.expectedAttribute).IsNil())
 				}
 			}
 		})

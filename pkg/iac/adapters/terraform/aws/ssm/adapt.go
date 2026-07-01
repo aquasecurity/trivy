@@ -24,7 +24,7 @@ func adaptSecrets(modules terraform.Modules) []ssm.Secret {
 
 func adaptSecret(resource *terraform.Block, module *terraform.Module) ssm.Secret {
 	KMSKeyIDAttr := resource.GetAttribute("kms_key_id")
-	KMSKeyIDVal := KMSKeyIDAttr.AsStringValueOrDefault("alias/aws/secretsmanager", resource)
+	KMSKeyIDVal := KMSKeyIDAttr.AsStringValue("alias/aws/secretsmanager")
 
 	if KMSKeyIDAttr.IsResourceBlockReference("aws_kms_key") {
 		kmsBlock, err := module.GetReferencedBlock(KMSKeyIDAttr, resource)

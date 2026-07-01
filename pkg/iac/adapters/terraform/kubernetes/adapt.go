@@ -50,10 +50,10 @@ func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy
 			policy.Spec.Egress.Metadata = egressBlock.GetMetadata()
 			for _, port := range egressBlock.GetBlocks("ports") {
 				numberAttr := port.GetAttribute("number")
-				numberVal := numberAttr.AsStringValueOrDefault("", port)
+				numberVal := numberAttr.AsStringValue()
 
 				protocolAttr := port.GetAttribute("protocol")
-				protocolVal := protocolAttr.AsStringValueOrDefault("", port)
+				protocolVal := protocolAttr.AsStringValue()
 
 				policy.Spec.Egress.Ports = append(policy.Spec.Egress.Ports, kubernetes.Port{
 					Metadata: port.GetMetadata(),
@@ -64,7 +64,7 @@ func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy
 
 			for _, to := range egressBlock.GetBlocks("to") {
 				cidrAtrr := to.GetBlock("ip_block").GetAttribute("cidr")
-				cidrVal := cidrAtrr.AsStringValueOrDefault("", to)
+				cidrVal := cidrAtrr.AsStringValue()
 
 				policy.Spec.Egress.DestinationCIDRs = append(policy.Spec.Egress.DestinationCIDRs, cidrVal)
 			}
@@ -74,10 +74,10 @@ func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy
 			policy.Spec.Ingress.Metadata = ingressBlock.GetMetadata()
 			for _, port := range ingressBlock.GetBlocks("ports") {
 				numberAttr := port.GetAttribute("number")
-				numberVal := numberAttr.AsStringValueOrDefault("", port)
+				numberVal := numberAttr.AsStringValue()
 
 				protocolAttr := port.GetAttribute("protocol")
-				protocolVal := protocolAttr.AsStringValueOrDefault("", port)
+				protocolVal := protocolAttr.AsStringValue()
 
 				policy.Spec.Ingress.Ports = append(policy.Spec.Ingress.Ports, kubernetes.Port{
 					Metadata: port.GetMetadata(),
@@ -88,7 +88,7 @@ func adaptNetworkPolicy(resourceBlock *terraform.Block) kubernetes.NetworkPolicy
 
 			for _, from := range ingressBlock.GetBlocks("from") {
 				cidrAtrr := from.GetBlock("ip_block").GetAttribute("cidr")
-				cidrVal := cidrAtrr.AsStringValueOrDefault("", from)
+				cidrVal := cidrAtrr.AsStringValue()
 
 				policy.Spec.Ingress.SourceCIDRs = append(policy.Spec.Ingress.SourceCIDRs, cidrVal)
 			}

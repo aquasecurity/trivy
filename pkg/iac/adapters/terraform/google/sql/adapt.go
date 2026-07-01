@@ -28,7 +28,7 @@ func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
 
 	instance := sql.DatabaseInstance{
 		Metadata:        resource.GetMetadata(),
-		DatabaseVersion: resource.GetAttribute("database_version").AsStringValueOrDefault("", resource),
+		DatabaseVersion: resource.GetAttribute("database_version").AsStringValue(),
 		IsReplica:       iacTypes.BoolDefault(false, resource.GetMetadata()),
 		Settings: sql.Settings{
 			Metadata: resource.GetMetadata(),
@@ -71,7 +71,7 @@ func adaptInstance(resource *terraform.Block) sql.DatabaseInstance {
 		if backupBlock := settingsBlock.GetBlock("backup_configuration"); backupBlock.IsNotNil() {
 			instance.Settings.Backups.Metadata = backupBlock.GetMetadata()
 			backupConfigEnabledAttr := backupBlock.GetAttribute("enabled")
-			instance.Settings.Backups.Enabled = backupConfigEnabledAttr.AsBoolValueOrDefault(false, backupBlock)
+			instance.Settings.Backups.Enabled = backupConfigEnabledAttr.AsBoolValue()
 		}
 		if ipConfBlock := settingsBlock.GetBlock("ip_configuration"); ipConfBlock.IsNotNil() {
 			instance.Settings.IPConfiguration = adaptIPConfig(ipConfBlock)
@@ -97,7 +97,7 @@ func adaptFlags(resources terraform.Blocks, flags *sql.Flags) {
 				flags.LogTempFileSize = iacTypes.Int(logTempInt, nameAttr.GetMetadata())
 			}
 		case "log_min_messages":
-			flags.LogMinMessages = valueAttr.AsStringValueOrDefault("", resource)
+			flags.LogMinMessages = valueAttr.AsStringValue()
 		case "log_min_duration_statement":
 			if logMinDS, err := strconv.Atoi(valueAttr.Value().AsString()); err == nil {
 				flags.LogMinDurationStatement = iacTypes.Int(logMinDS, nameAttr.GetMetadata())
@@ -128,8 +128,8 @@ func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 
 	authNetworksBlocks := resource.GetBlocks("authorized_networks")
 	for _, authBlock := range authNetworksBlocks {
-		nameVal := authBlock.GetAttribute("name").AsStringValueOrDefault("", authBlock)
-		cidrVal := authBlock.GetAttribute("value").AsStringValueOrDefault("", authBlock)
+		nameVal := authBlock.GetAttribute("name").AsStringValue()
+		cidrVal := authBlock.GetAttribute("value").AsStringValue()
 
 		authorizedNetworks = append(authorizedNetworks, struct {
 			Name iacTypes.StringValue
@@ -142,9 +142,9 @@ func adaptIPConfig(resource *terraform.Block) sql.IPConfiguration {
 
 	return sql.IPConfiguration{
 		Metadata:           resource.GetMetadata(),
-		RequireTLS:         resource.GetAttribute("require_ssl").AsBoolValueOrDefault(false, resource),
-		SSLMode:            resource.GetAttribute("ssl_mode").AsStringValueOrDefault("", resource),
-		EnableIPv4:         resource.GetAttribute("ipv4_enabled").AsBoolValueOrDefault(true, resource),
+		RequireTLS:         resource.GetAttribute("require_ssl").AsBoolValue(),
+		SSLMode:            resource.GetAttribute("ssl_mode").AsStringValue(),
+		EnableIPv4:         resource.GetAttribute("ipv4_enabled").AsBoolValue(true),
 		AuthorizedNetworks: authorizedNetworks,
 	}
 }

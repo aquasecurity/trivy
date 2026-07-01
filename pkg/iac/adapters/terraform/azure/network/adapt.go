@@ -93,7 +93,7 @@ func (a *adapter) adaptSecurityGroup(resource *terraform.Block) {
 func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 	flowLog := network.NetworkWatcherFlowLog{
 		Metadata: resource.GetMetadata(),
-		Enabled:  resource.GetAttribute("enabled").AsBoolValueOrDefault(false, resource),
+		Enabled:  resource.GetAttribute("enabled").AsBoolValue(),
 		RetentionPolicy: network.RetentionPolicy{
 			Metadata: resource.GetMetadata(),
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -105,9 +105,9 @@ func adaptWatcherLog(resource *terraform.Block) network.NetworkWatcherFlowLog {
 		flowLog.RetentionPolicy = network.RetentionPolicy{
 			Metadata: retentionPolicyBlock.GetMetadata(),
 			Enabled: retentionPolicyBlock.GetAttribute("enabled").
-				AsBoolValueOrDefault(false, retentionPolicyBlock),
+				AsBoolValue(false),
 			Days: retentionPolicyBlock.GetAttribute("days").
-				AsIntValueOrDefault(0, retentionPolicyBlock),
+				AsIntValue(0),
 		}
 	}
 	return flowLog
@@ -130,7 +130,7 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 		Metadata: resource.GetMetadata(),
 		// Support both ip_forwarding_enabled (new) and enable_ip_forwarding (old) attributes
 		EnableIPForwarding: resource.GetFirstAttributeOf("ip_forwarding_enabled", "enable_ip_forwarding").
-			AsBoolValueOrDefault(false, resource),
+			AsBoolValue(false),
 		HasPublicIP:     iacTypes.BoolDefault(false, resource.GetMetadata()),
 		PublicIPAddress: iacTypes.StringDefault("", resource.GetMetadata()),
 		SubnetID:        iacTypes.StringDefault("", resource.GetMetadata()),
@@ -143,9 +143,9 @@ func AdaptNetworkInterface(resource *terraform.Block, modules terraform.Modules)
 	for _, ipConfig := range ipConfigs {
 		ni.IPConfigurations = append(ni.IPConfigurations, network.IPConfiguration{
 			Metadata:        ipConfig.GetMetadata(),
-			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValueOrDefault("", ipConfig),
-			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValueOrDefault("", ipConfig),
-			Primary:         ipConfig.GetAttribute("primary").AsBoolValueOrDefault(false, ipConfig),
+			PublicIPAddress: ipConfig.GetAttribute("public_ip_address_id").AsStringValue(),
+			SubnetID:        ipConfig.GetAttribute("subnet_id").AsStringValue(),
+			Primary:         ipConfig.GetAttribute("primary").AsBoolValue(),
 		})
 	}
 
