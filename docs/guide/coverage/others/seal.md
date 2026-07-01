@@ -31,9 +31,11 @@ For details on supported scanners, features, and behavior for each base OS, refe
 
 ## Application Dependencies
 
-Seal also provides patched versions of application dependencies with their own vulnerability advisories. Trivy automatically detects Seal-patched packages based on special naming patterns specific to each ecosystem.
+Seal also provides patched versions of application dependencies with their own vulnerability advisories. Seal ships these packages under two naming schemes, and Trivy detects both.
 
-### Supported Ecosystems
+### Renamed packages
+
+Renamed packages carry an ecosystem-specific name prefix:
 
 | Ecosystem | Package Pattern | Example |
 |-----------|----------------|---------|
@@ -43,5 +45,19 @@ Seal also provides patched versions of application dependencies with their own v
 | Java (Maven) | `seal.sp*` | `seal.sp1.org.eclipse.jetty:jetty-http` |
 | Ruby (RubyGems) | `seal-*` | `seal-rack` |
 
-When Trivy detects packages matching these patterns, it automatically uses Seal Security advisories for vulnerability scanning.
+### No-prefix packages
 
+Some Seal packages keep their upstream (no-prefix) name and only add a patch-level version suffix (`+spN` / `-spN`). Trivy detects these by the version suffix:
+
+| Ecosystem | Version Suffix | Example |
+|-----------|----------------|---------|
+| Java (Maven) | `+spN` | `org.eclipse.jetty:jetty-http` `9.4.48+sp1` |
+| Python (pip) | `+spN` | `requests` `2.14.2+sp1` |
+| Node.js (npm) | `-spN` | `ejs` `3.1.8-sp1` |
+| Go | `-spN` | `golang.org/x/crypto` `0.26.0-sp1` |
+| Ruby (RubyGems) | `.spN` | `rack` `2.0.7.0.1.sp1` |
+
+For Maven and pip, the `+spN` suffix cannot collide with real package versions, so the match is authoritative.
+For npm, Go, and Ruby, the `-spN` / `.spN` suffix can also appear on real packages, so Trivy confirms the match by looking the package up in the Seal advisory database; if the package is not found there, it falls back to the standard ecosystem advisories.
+
+When Trivy detects a Seal-patched package by either scheme, it automatically uses Seal Security advisories for vulnerability scanning.

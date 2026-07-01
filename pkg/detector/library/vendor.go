@@ -8,6 +8,26 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
 
+// MatchResult describes how strongly a package matches a vendor.
+type MatchResult int
+
+const (
+	// NoMatch indicates the package does not belong to the vendor.
+	NoMatch MatchResult = iota
+
+	// Matched indicates the package definitely belongs to the vendor, e.g. by a
+	// name prefix or by a version suffix that cannot collide with real packages.
+	// The vendor advisory bucket is authoritative for such packages.
+	Matched
+
+	// Candidate indicates the package might belong to the vendor, e.g. a version
+	// suffix that can also appear on real packages (`-spN` on Go/npm packages).
+	// The vendor bucket is preferred only when it actually contains advisories
+	// for the package; otherwise detection falls back to the default ecosystem
+	// bucket.
+	Candidate
+)
+
 // Vendor represents a third-party security vendor that provides patched packages
 // with their own vulnerability advisories. These vendors (e.g., Seal Security)
 // offer patched versions of open source packages and maintain separate advisory
@@ -24,7 +44,7 @@ type Vendor interface {
 	// Match determines whether a package is provided by this vendor.
 	// It receives the ecosystem type, a normalized package name
 	// (see vulnerability.NormalizePkgName), and version to make the determination.
-	Match(eco ecosystem.Type, pkgName, pkgVer string) bool
+	Match(eco ecosystem.Type, pkgName, pkgVer string) MatchResult
 
 	// BucketPrefix returns the advisory bucket prefix for the given ecosystem.
 	// For example, "seal pip::" for Seal Security pip packages.
@@ -56,15 +76,15 @@ func DeregisterVendor(name string) {
 }
 
 // lookupVendor finds the matching vendor for the given package.
-// If a vendor matches, it is returned with ok=true.
-// If no vendor matches, ok is false.
-func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string) (Vendor, bool) {
+// If a vendor matches, it is returned together with its match result
+// (Matched or Candidate). If no vendor matches, it returns nil and NoMatch.
+func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string) (Vendor, MatchResult) {
 	for _, v := range vendors {
-		if v.Match(eco, pkgName, pkgVer) {
-			return v, true
+		if res := v.Match(eco, pkgName, pkgVer); res != NoMatch {
+			return v, res
 		}
 	}
-	return nil, false
+	return nil, NoMatch
 }
 
 // defaultBucketPrefix returns the standard ecosystem bucket prefix (e.g. "pip::").

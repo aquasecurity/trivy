@@ -2,6 +2,7 @@ package seal
 
 import (
 	"fmt"
+	"regexp"
 	"strings"
 	"unicode"
 
@@ -11,6 +12,11 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
+// sealVersionSuffix matches the Seal Security patch-level version suffix, i.e.
+// "sp" followed by a number preceded by a separator (e.g. "+sp1" on Maven/PyPI,
+// "-sp1" on npm/Go). Seal appends this suffix to the upstream package version.
+var sealVersionSuffix = regexp.MustCompile(`[-.+]sp\d+$`)
+
 func init() {
 	library.RegisterVendor(sealSecurity{
 		pipComparer: pep440.NewComparer(pep440.AllowLocalSpecifier()),
@@ -19,13 +25,22 @@ func init() {
 
 // sealSecurity matches packages patched by Seal Security.
 // Seal Security provides patched versions of open source packages with their own
-// vulnerability advisories. Their packages are identified by ecosystem-specific
-// naming patterns:
+// vulnerability advisories. Seal ships packages under two naming schemes:
+//
+// Renamed packages carry an ecosystem-specific name prefix:
 //   - Maven:   seal.sp*.$groupId:$artifactId (e.g. seal.sp1, seal.sp2)
 //   - npm:     @seal-security/$name
 //   - Python:  seal-$name
 //   - Go:      sealsecurity.io/$name
 //   - Ruby:    seal-$name
+//
+// No-prefix packages keep the upstream name and only add a version suffix
+// (e.g. "+sp1"/"-sp1"/".sp1"). They are detected by that suffix:
+//   - Maven/PyPI: the "+spN" suffix cannot collide with real versions, so a
+//     suffix match is authoritative (Matched).
+//   - Go/npm/Ruby: the "-spN"/".spN" suffix can also appear on real packages,
+//     so a suffix match is only a Candidate, confirmed against the Seal
+//     advisory bucket (see library.Driver.advisories).
 //
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
 type sealSecurity struct {
@@ -38,23 +53,65 @@ func (sealSecurity) Name() string {
 
 // Match determines whether a package is provided by Seal Security.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
-func (sealSecurity) Match(eco ecosystem.Type, pkgName, _ string) bool {
+func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.MatchResult {
 	switch eco {
 	case ecosystem.Maven:
-		// e.g. seal.sp1.org.eclipse.jetty:jetty-http
-		rest, ok := strings.CutPrefix(pkgName, "seal.sp")
-		return ok && rest != "" && unicode.IsDigit(rune(rest[0]))
+		// Renamed: e.g. seal.sp1.org.eclipse.jetty:jetty-http
+		if rest, ok := strings.CutPrefix(pkgName, "seal.sp"); ok && rest != "" && unicode.IsDigit(rune(rest[0])) {
+			return library.Matched
+		}
+		// No-prefix: the "+spN" version suffix cannot collide with real Maven versions.
+		if hasSealVersionSuffix(pkgVer) {
+			return library.Matched
+		}
 	case ecosystem.Npm:
-		// e.g. @seal-security/ejs
-		return strings.HasPrefix(pkgName, "@seal-security/")
-	case ecosystem.Pip, ecosystem.RubyGems:
-		// e.g. seal-django (pip), seal-rack (rubygems)
-		return strings.HasPrefix(pkgName, "seal-")
+		// Renamed: e.g. @seal-security/ejs
+		if strings.HasPrefix(pkgName, "@seal-security/") {
+			return library.Matched
+		}
+		// No-prefix: the "-spN" version suffix can also appear on real npm
+		// packages, so confirm it against the Seal advisory bucket.
+		if hasSealVersionSuffix(pkgVer) {
+			return library.Candidate
+		}
+	case ecosystem.Pip:
+		// Renamed: e.g. seal-django
+		if strings.HasPrefix(pkgName, "seal-") {
+			return library.Matched
+		}
+		// No-prefix: the "+spN" version suffix cannot collide with real PyPI versions.
+		if hasSealVersionSuffix(pkgVer) {
+			return library.Matched
+		}
 	case ecosystem.Go:
-		// e.g. sealsecurity.io/github.com/Masterminds/goutils
-		return strings.HasPrefix(pkgName, "sealsecurity.io/")
+		// Renamed: e.g. sealsecurity.io/github.com/Masterminds/goutils
+		if strings.HasPrefix(pkgName, "sealsecurity.io/") {
+			return library.Matched
+		}
+		// No-prefix: the "-spN" version suffix can also appear on real Go
+		// modules, so confirm it against the Seal advisory bucket.
+		if hasSealVersionSuffix(pkgVer) {
+			return library.Candidate
+		}
+	case ecosystem.RubyGems:
+		// Renamed: e.g. seal-rack
+		if strings.HasPrefix(pkgName, "seal-") {
+			return library.Matched
+		}
+		// No-prefix: the ".spN" version suffix (e.g. 2.0.7.0.1.sp1) can also
+		// appear on real gems as a prerelease segment, so confirm it against
+		// the Seal advisory bucket.
+		if hasSealVersionSuffix(pkgVer) {
+			return library.Candidate
+		}
 	}
-	return false
+	return library.NoMatch
+}
+
+// hasSealVersionSuffix reports whether the version carries a Seal Security
+// patch-level suffix (e.g. "+sp1", "-sp1").
+func hasSealVersionSuffix(pkgVer string) bool {
+	return sealVersionSuffix.MatchString(pkgVer)
 }
 
 // BucketPrefix returns the vendor-specific advisory bucket prefix.
