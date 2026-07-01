@@ -36,6 +36,15 @@ var (
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
+	LogFormatFlag = Flag[string]{
+		Name:          "log-format",
+		ConfigName:    "log.format",
+		Default:       "text",
+		Values:        []string{"text", "json"},
+		Usage:         "log format (text, json)",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
 	DebugFlag = Flag[bool]{
 		Name:          "debug",
 		ConfigName:    "debug",
@@ -93,6 +102,7 @@ type GlobalFlagGroup struct {
 	ConfigFile            *Flag[string]
 	ShowVersion           *Flag[bool] // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
 	Quiet                 *Flag[bool]
+	LogFormat             *Flag[string]
 	Debug                 *Flag[bool]
 	Insecure              *Flag[bool]
 	CACert                *Flag[string]
@@ -107,6 +117,7 @@ type GlobalOptions struct {
 	ConfigFile            string
 	ShowVersion           bool
 	Quiet                 bool
+	LogFormat             string
 	Debug                 bool
 	Insecure              bool
 	CACerts               *x509.CertPool
@@ -121,6 +132,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		ConfigFile:            ConfigFileFlag.Clone(),
 		ShowVersion:           ShowVersionFlag.Clone(),
 		Quiet:                 QuietFlag.Clone(),
+		LogFormat:             LogFormatFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
 		CACert:                CACertFlag.Clone(),
@@ -140,6 +152,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.ConfigFile,
 		f.ShowVersion,
 		f.Quiet,
+		f.LogFormat,
 		f.Debug,
 		f.Insecure,
 		f.CACert,
@@ -179,6 +192,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		ConfigFile:            f.ConfigFile.Value(),
 		ShowVersion:           f.ShowVersion.Value(),
 		Quiet:                 f.Quiet.Value(),
+		LogFormat:             f.LogFormat.Value(),
 		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
 		CACerts:               caCerts,
