@@ -1,0 +1,56 @@
+name: trivy-sbom-audit
+
+on:
+  workflow_dispatch:
+    inputs:
+      sbom_path:
+        description: Path to a CycloneDX or SPDX SBOM checked into the repository
+        required: true
+        default: sbom.cdx.json
+  schedule:
+    - cron: '43 2 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  sbom-audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          trivy --version
+
+      - name: Scan SBOM for vulnerabilities and licenses
+        env:
+          SBOM_PATH: ${{ github.event.inputs.sbom_path || 'sbom.cdx.json' }}
+        run: |
+          test -f "$SBOM_PATH"
+          trivy sbom \
+            --scanners vuln,license \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-sbom.json \
+            "$SBOM_PATH"
+          trivy convert \
+            --format sarif \
+            --output trivy-sbom.sarif \
+            trivy-sbom.json
+          trivy sbom \
+            --scanners vuln,license \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            "$SBOM_PATH"
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-sbom-artifacts
+          path: |
+            trivy-sbom.json
+            trivy-sbom.sarif
