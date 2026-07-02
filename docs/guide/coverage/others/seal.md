@@ -43,15 +43,15 @@ For details on Seal's naming and versioning, see the Seal documentation:
 
 ### Renamed packages
 
-Renamed packages carry an ecosystem-specific name prefix. Except for Maven, the version also carries the `spN` patch-level suffix:
+Renamed packages carry an ecosystem-specific name prefix. See the [Seal documentation](https://docs.sealsecurity.io/reference/naming-and-versioning/renamed-packages) for the full naming and versioning details.
 
 | Ecosystem | Package Pattern | Example |
 |-----------|----------------|---------|
-| Python (pip) | `seal-*` | `seal-requests` `2.14.2+sp1` |
-| Node.js (npm) | `@seal-security/*` | `@seal-security/ejs` `3.1.8-sp1` |
-| Go | `sealsecurity.io/*` | `sealsecurity.io/github.com/Masterminds/goutils` `1.1.1-sp1` |
+| Python (pip) | `seal-*` | `seal-requests` |
+| Node.js (npm) | `@seal-security/*` | `@seal-security/ejs` |
+| Go | `sealsecurity.io/*` | `sealsecurity.io/github.com/Masterminds/goutils` |
 | Java (Maven) | `seal.sp*` | `seal.sp1.org.eclipse.jetty:jetty-http` |
-| Ruby (RubyGems) | `seal-*` | `seal-rack` `2.0.7.0.1.sp1` |
+| Ruby (RubyGems) | `seal-*` | `seal-rack` |
 
 ### No-prefix packages
 
