@@ -48,7 +48,7 @@ require (
 	github.com/gocsaf/csaf/v3 v3.5.1
 	github.com/golang-jwt/jwt/v5 v5.3.1
 	github.com/google/go-containerregistry v0.21.6
-	github.com/google/go-github/v62 v62.0.0
+	github.com/google/go-github/v88 v88.0.0
 	github.com/google/jsonschema-go v0.4.3
 	github.com/google/licenseclassifier/v2 v2.0.0
 	github.com/google/uuid v1.6.0
@@ -297,7 +297,7 @@ require (
 	github.com/google/gnostic-models v0.7.0 // indirect
 	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/go-github/v31 v31.0.0 // indirect
-	github.com/google/go-querystring v1.1.0 // indirect
+	github.com/google/go-querystring v1.2.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/safetext v0.0.0-20220905092116-b49f7bc46da2 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.14 // indirect
