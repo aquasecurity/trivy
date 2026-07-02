@@ -21,13 +21,9 @@ import (
 // (e.g. "2.7.4-sp2p1"). See
 // https://docs.sealsecurity.io/reference/naming-and-versioning/sp-model and
 // https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
-//
-// The shared "spN[pM]" tail is `sp\d+(?:p\d+)?`.
 var (
-	// Maven: "$version+spN[pM]" (e.g. "9.4.48+sp1", "9.4.48+sp1p1").
-	mavenSealSuffix = regexp.MustCompile(`\+sp\d+(?:p\d+)?$`)
-	// PyPI: "$version+spN[pM]" (e.g. "4.2.8+sp1", "4.2.8+sp1p1").
-	pipSealSuffix = regexp.MustCompile(`\+sp\d+(?:p\d+)?$`)
+	// Maven and PyPI: "$version+spN[pM]" (e.g. "9.4.48+sp1", "4.2.8+sp1p1").
+	plusSealSuffix = regexp.MustCompile(`\+sp\d+(?:p\d+)?$`)
 	// npm: "$version-spN[pM]" (e.g. "3.1.8-sp1", "3.1.8-sp1p1").
 	npmSealSuffix = regexp.MustCompile(`-sp\d+(?:p\d+)?$`)
 	// Go: "$version-spN[pM]", optionally followed by the "+incompatible" build
@@ -75,6 +71,16 @@ func (sealSecurity) Name() string {
 // Match determines whether a package is provided by Seal Security.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
 func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.MatchResult {
+	// A Seal package is marked either in the name (renamed packages) or in the
+	// version by the "spN" patch-level suffix (no-prefix packages). If neither
+	// marker is present, it cannot be a Seal package, so skip the per-ecosystem
+	// regexes. See
+	//   - https://docs.sealsecurity.io/reference/naming-and-versioning/renamed-packages
+	//   - https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
+	if !strings.Contains(pkgName, "seal") && !strings.Contains(pkgVer, "sp") {
+		return library.NoMatch
+	}
+
 	switch eco {
 	case ecosystem.Maven:
 		// Renamed: e.g. seal.sp1.org.eclipse.jetty:jetty-http
@@ -82,7 +88,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 			return library.Matched
 		}
 		// No-prefix: the "+spN" version suffix cannot collide with real Maven versions.
-		if mavenSealSuffix.MatchString(pkgVer) {
+		if plusSealSuffix.MatchString(pkgVer) {
 			return library.Matched
 		}
 	case ecosystem.Pip:
@@ -91,7 +97,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 			return library.Matched
 		}
 		// No-prefix: the "+spN" version suffix cannot collide with real PyPI versions.
-		if pipSealSuffix.MatchString(pkgVer) {
+		if plusSealSuffix.MatchString(pkgVer) {
 			return library.Matched
 		}
 	case ecosystem.Npm:

@@ -15,16 +15,13 @@ const (
 	// NoMatch indicates the package does not belong to the vendor.
 	NoMatch MatchResult = iota
 
-	// Matched indicates the package definitely belongs to the vendor, e.g. by a
-	// name prefix or by a version suffix that cannot collide with real packages.
-	// The vendor advisory bucket is authoritative for such packages.
+	// Matched indicates the package definitely belongs to the vendor.
 	Matched
 
 	// Candidate indicates the package might belong to the vendor, e.g. a version
 	// suffix that can also appear on real packages (`-spN` on Go/npm packages).
-	// The vendor bucket is preferred only when it actually contains advisories
-	// for the package; otherwise detection falls back to the default ecosystem
-	// bucket.
+	// Callers should confirm a Candidate before relying on it, and otherwise fall
+	// back to default (non-vendor) handling.
 	Candidate
 )
 
