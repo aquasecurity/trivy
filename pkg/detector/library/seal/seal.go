@@ -71,16 +71,6 @@ func (sealSecurity) Name() string {
 // Match determines whether a package is provided by Seal Security.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
 func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.MatchResult {
-	// A Seal package is marked either in the name (renamed packages) or in the
-	// version by the "spN" patch-level suffix (no-prefix packages). If neither
-	// marker is present, it cannot be a Seal package, so skip the per-ecosystem
-	// regexes. See
-	//   - https://docs.sealsecurity.io/reference/naming-and-versioning/renamed-packages
-	//   - https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem
-	if !strings.Contains(pkgName, "seal") && !strings.Contains(pkgVer, "sp") {
-		return library.NoMatch
-	}
-
 	switch eco {
 	case ecosystem.Maven:
 		// Renamed: e.g. seal.sp1.org.eclipse.jetty:jetty-http
