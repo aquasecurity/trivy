@@ -210,14 +210,19 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 // fillArchiveDigest sets the SHA-1 digest of the archive (r) on every package
 // that does not have a digest yet. The digest is calculated lazily, so the
 // archive is not read when all packages already carry their own digest.
+//
+// Packages that have no file of their own — e.g. dependencies flattened into a
+// shaded/uber JAR, which only leave a bundled pom.properties behind — all share
+// this archive's digest. That is consistent with their FilePath, which is also
+// the enclosing archive, so the digest stays aligned with the file it refers to.
 func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
-	// d is computed lazily on the first package that needs it and then reused.
-	// An empty d means the archive digest has not been calculated yet.
 	var d digest.Digest
 	for i := range pkgs {
 		if pkgs[i].Digest != "" {
 			continue
 		}
+		// Compute the archive digest at most once and reuse it afterwards.
+		// An empty d means it has not been calculated yet.
 		if d == "" {
 			if _, err := r.Seek(0, io.SeekStart); err != nil {
 				return xerrors.Errorf("file seek error: %w", err)
