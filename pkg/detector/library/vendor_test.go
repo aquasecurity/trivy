@@ -84,10 +84,19 @@ func Test_lookupVendor(t *testing.T) {
 			wantMatch: false,
 		},
 		{
-			name:      "echo version suffix on non-pip ecosystem returns no match",
-			eco:       ecosystem.Npm,
-			pkgName:   "ejs",
-			pkgVer:    "3.1.8+echo.1",
+			name:                "echo npm package returns vendor prefix and echo npm comparer",
+			eco:                 ecosystem.Npm,
+			pkgName:             "@babel/traverse",
+			pkgVer:              "7.23.2+echo.1",
+			wantMatch:           true,
+			wantPrefix:          "echo npm::",
+			wantDefaultComparer: false,
+		},
+		{
+			name:      "echo version suffix on unsupported ecosystem returns no match",
+			eco:       ecosystem.Go,
+			pkgName:   "golang.org/x/crypto",
+			pkgVer:    "0.26.0+echo.1",
 			wantMatch: false,
 		},
 		{
@@ -117,8 +126,13 @@ func Test_lookupVendor(t *testing.T) {
 				// When no custom comparer is needed, the default should be returned unchanged.
 				assert.Equal(t, defaultComparer, comparer)
 			} else {
-				// For seal pip, a custom pep440 comparer with AllowLocalSpecifier should be returned.
-				assert.IsType(t, pep440.Comparer{}, comparer)
+				// A vendor-specific comparer should replace the default one,
+				// e.g. pep440 with AllowLocalSpecifier for pip, the Echo npm
+				// comparer for npm.
+				assert.NotEqual(t, defaultComparer, comparer)
+				if tt.eco == ecosystem.Pip {
+					assert.IsType(t, pep440.Comparer{}, comparer)
+				}
 			}
 		})
 	}

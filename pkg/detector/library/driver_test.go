@@ -417,6 +417,44 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "echo npm package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "@babel/traverse",
+				pkgVer:  "7.23.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-66666",
+					PkgName:          "@babel/traverse",
+					InstalledVersion: "7.23.2+echo.1",
+					FixedVersion:     "7.23.2+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
+					},
+				},
+			},
+		},
+		{
+			name: "echo npm package at the fixed echo build",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "@babel/traverse",
+				pkgVer:  "7.23.2+echo.999",
+			},
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

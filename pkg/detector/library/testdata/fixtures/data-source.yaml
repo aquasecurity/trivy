@@ -70,3 +70,8 @@
         ID: "echo-osv"
         Name: "Echo OSV"
         URL: "https://advisory.echohq.com/osv"
+    - key: "echo npm::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv"

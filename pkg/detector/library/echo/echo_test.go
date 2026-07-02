@@ -52,10 +52,24 @@ func TestEchoVendor_Match(t *testing.T) {
 			want:    false,
 		},
 		{
-			name:    "npm package is not supported",
+			name:    "npm package with +echo.1 suffix",
 			eco:     ecosystem.Npm,
 			pkgName: "ejs",
 			pkgVer:  "3.1.8+echo.1",
+			want:    true,
+		},
+		{
+			name:    "scoped npm package with +echo.2 suffix",
+			eco:     ecosystem.Npm,
+			pkgName: "@babel/traverse",
+			pkgVer:  "7.23.2+echo.2",
+			want:    true,
+		},
+		{
+			name:    "npm package without echo suffix",
+			eco:     ecosystem.Npm,
+			pkgName: "ejs",
+			pkgVer:  "3.1.8",
 			want:    false,
 		},
 		{
