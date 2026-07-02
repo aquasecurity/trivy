@@ -102,6 +102,10 @@ type ScanTarget struct {
 	Secrets           []types.Secret
 	Licenses          []types.LicenseFile
 
+	// ImageLabels holds the container image config labels.
+	// Used to detect specialised image environments (e.g. RapidFort curated images).
+	ImageLabels map[string]string
+
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
 	CustomResources []types.CustomResource

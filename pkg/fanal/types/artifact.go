@@ -162,6 +162,9 @@ type ArtifactInfo struct {
 
 	// HistoryPackages are packages extracted from RUN instructions
 	HistoryPackages Packages `json:",omitempty"`
+
+	// Labels holds the container image config labels (e.g. "maintainer")
+	Labels map[string]string `json:",omitempty"`
 }
 
 // BlobInfo is stored in cache
@@ -276,6 +279,9 @@ type ImageConfigDetail struct {
 
 	// Secret holds secrets in container image config
 	Secret *Secret `json:",omitempty"`
+
+	// Labels holds the container image config labels (e.g. "maintainer")
+	Labels map[string]string `json:",omitempty"`
 }
 
 // CustomResource holds the analysis result from a custom analyzer.

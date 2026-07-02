@@ -119,6 +119,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
 		Secrets:           mergeSecrets(targetName, detail),
 		Licenses:          detail.Licenses,
+		ImageLabels:       detail.ImageConfig.Labels,
 		CustomResources:   detail.CustomResources,
 	}
 

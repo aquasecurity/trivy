@@ -599,6 +599,7 @@ func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound typ
 		Misconfiguration: result.Misconfiguration,
 		Secret:           result.Secret,
 		HistoryPackages:  result.HistoryPackages,
+		Labels:           config.Config.Labels,
 	}
 
 	if err := a.cache.PutArtifact(ctx, imageID, info); err != nil {
