@@ -82,6 +82,8 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			// The PAR itself (resolved via its pom.properties) and the nested
+			// `jackson-core` JAR must each carry the digest of their own file.
 			name:            "happy path (PAR file)",
 			inputFile:       "testdata/test.par",
 			includeChecksum: true,
@@ -92,10 +94,16 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 						FilePath: "testdata/test.par",
 						Packages: types.Packages{
 							{
+								Name:     "com.example:par-app",
+								FilePath: "testdata/test.par",
+								Version:  "3.0.0",
+								Digest:   "sha1:bdce3e13cc5d39960ab7f7644ae24d82becd2ba2",
+							},
+							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
-								Digest:   "sha1:d40913470259cfba6dcc90f96bcaa9bcff1b72e0",
+								Digest:   "sha1:66b715dec9dd8b0f39f3296e67e05913bf422d0c",
 							},
 						},
 					},
@@ -103,8 +111,11 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:      "happy path (package found in trivy-java-db by sha1)",
-			inputFile: "testdata/test.jar",
+			// The package is resolved by SHA-1 in trivy-java-db, and that SHA-1 is
+			// also stored as the package digest.
+			name:            "happy path (package found in trivy-java-db by sha1)",
+			inputFile:       "testdata/test.jar",
+			includeChecksum: true,
 			want: &analyzer.AnalysisResult{
 				Applications: []types.Application{
 					{
@@ -115,6 +126,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "org.apache.tomcat.embed:tomcat-embed-websocket",
 								FilePath: "testdata/test.jar",
 								Version:  "9.0.65",
+								Digest:   "sha1:bd70dfeb39cc83c6934be24fa377b21e541dbe76",
 								Licenses: []string{"Apache-2.0"},
 							},
 						},

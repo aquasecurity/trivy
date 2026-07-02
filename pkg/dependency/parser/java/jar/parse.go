@@ -4,8 +4,6 @@ import (
 	"archive/zip"
 	"bufio"
 	"context"
-	"crypto/sha1" // nolint:gosec
-	"encoding/hex"
 	"encoding/xml"
 	"errors"
 	"io"
@@ -20,6 +18,7 @@ import (
 	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -41,6 +40,7 @@ type Parser struct {
 	logger                 *log.Logger
 	rootFilePath           string
 	offline                bool
+	checksum               bool
 	size                   int64
 	licenseConfidenceLevel float64
 
@@ -58,6 +58,14 @@ func WithFilePath(filePath string) Option {
 func WithOffline(offline bool) Option {
 	return func(p *Parser) {
 		p.offline = offline
+	}
+}
+
+// WithChecksum enables calculation of the SHA-1 digest for every archive
+// (not only the ones that are looked up by SHA-1) and saving it to Package.Digest.
+func WithChecksum(checksum bool) Option {
+	return func(p *Parser) {
+		p.checksum = checksum
 	}
 }
 
@@ -95,6 +103,25 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 }
 
 func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs, deps, err := p.parsePackages(filePath, size, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// When a checksum is requested, every package must carry the digest of its
+	// own file. Packages from nested archives (and the one resolved by
+	// searchBySHA1) already have it, so fill in this archive's digest only for
+	// the packages that are still missing one.
+	if p.checksum {
+		if err := fillArchiveDigest(pkgs, r); err != nil {
+			return nil, nil, xerrors.Errorf("unable to set digest for %s: %w", filePath, err)
+		}
+	}
+
+	return pkgs, deps, nil
+}
+
+func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	p.logger.Debug("Parsing Java artifacts...", log.FilePath(filePath))
 
 	// Try to extract artifactId and version from the file name
@@ -111,12 +138,12 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	// Such an artifact has no embedded pom.xml (maven-archiver writes pom.xml and
 	// pom.properties together), so it carries no pom.xml license.
 	if !foundPomProps {
-		props, found, err := p.resolveArtifact(r, m, fileProps)
+		pkg, found, err := p.resolveArtifact(r, m, fileProps)
 		if err != nil {
 			return nil, nil, err
 		}
 		if found {
-			pkgs = append(pkgs, props.Package())
+			pkgs = append(pkgs, pkg)
 		}
 	}
 
@@ -129,7 +156,7 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 
 // resolveArtifact determines the artifact of the jar itself when pom.properties is absent,
 // trying MANIFEST.MF, then Maven Central by SHA-1, then a heuristic search by file name.
-func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Properties) (Properties, bool, error) {
+func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Properties) (ftypes.Package, bool, error) {
 	fileName := filepath.Base(fileProps.FilePath)
 
 	manifestProps := m.properties(fileProps.FilePath)
@@ -137,9 +164,9 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
 			p.logger.Debug("Unable to identify POM in offline mode", log.String("file", fileName))
-			return Properties{}, false, nil
+			return ftypes.Package{}, false, nil
 		}
-		return manifestProps, true, nil
+		return manifestProps.Package(), true, nil
 	}
 
 	if manifestProps.Valid() {
@@ -147,23 +174,23 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 		// We have to make sure that the artifact exists actually.
 		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID); ok {
 			// If groupId and artifactId are valid, they will be returned.
-			return manifestProps, true, nil
+			return manifestProps.Package(), true, nil
 		}
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r, fileProps.FilePath)
+	pkg, err := p.searchBySHA1(r, fileProps.FilePath)
 	if err == nil {
-		return props, true, nil
+		return pkg, true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return Properties{}, false, xerrors.Errorf("failed to search by SHA1: %w", err)
+		return ftypes.Package{}, false, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
 
 	p.logger.Debug("No such POM in the central repositories", log.String("file", fileName))
 
 	// Return when artifactId or version from the file name are empty
 	if fileProps.ArtifactID == "" || fileProps.Version == "" {
-		return Properties{}, false, nil
+		return ftypes.Package{}, false, nil
 	}
 
 	// Try to search groupId by artifactId via sonatype API
@@ -172,12 +199,42 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 	if err == nil {
 		p.logger.Debug("POM was determined in a heuristic way", log.String("file", fileName),
 			log.String("artifact", fileProps.String()))
-		return fileProps, true, nil
+		return fileProps.Package(), true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return Properties{}, false, xerrors.Errorf("failed to search by artifact id: %w", err)
+		return ftypes.Package{}, false, xerrors.Errorf("failed to search by artifact id: %w", err)
 	}
 
-	return Properties{}, false, nil
+	return ftypes.Package{}, false, nil
+}
+
+// fillArchiveDigest sets the SHA-1 digest of the archive (r) on every package
+// that does not have a digest yet. The digest is calculated lazily, so the
+// archive is not read when all packages already carry their own digest.
+//
+// Packages that have no file of their own — e.g. dependencies flattened into a
+// shaded/uber JAR, which only leave a bundled pom.properties behind — all share
+// this archive's digest. That is consistent with their FilePath, which is also
+// the enclosing archive, so the digest stays aligned with the file it refers to.
+func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
+	var d digest.Digest
+	for i := range pkgs {
+		if pkgs[i].Digest != "" {
+			continue
+		}
+		// Compute the archive digest at most once and reuse it afterwards.
+		// An empty d means it has not been calculated yet.
+		if d == "" {
+			if _, err := r.Seek(0, io.SeekStart); err != nil {
+				return xerrors.Errorf("file seek error: %w", err)
+			}
+			var err error
+			if d, err = digest.CalcSHA1(r); err != nil {
+				return xerrors.Errorf("unable to calculate SHA-1: %w", err)
+			}
+		}
+		pkgs[i].Digest = d
+	}
+	return nil
 }
 
 func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Properties) (
@@ -345,22 +402,28 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	return innerPkgs, innerDeps, nil
 }
 
-func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
+func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (ftypes.Package, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return Properties{}, xerrors.Errorf("file seek error: %w", err)
+		return ftypes.Package{}, xerrors.Errorf("file seek error: %w", err)
+	}
+	d, err := digest.CalcSHA1(r)
+	if err != nil {
+		return ftypes.Package{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}
 
-	h := sha1.New() // nolint:gosec
-	if _, err := io.Copy(h, r); err != nil {
-		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
-	}
-	s := hex.EncodeToString(h.Sum(nil))
-	prop, err := p.client.SearchBySHA1(s)
+	prop, err := p.client.SearchBySHA1(d.Encoded())
 	if err != nil {
-		return Properties{}, err
+		return ftypes.Package{}, err
 	}
 	prop.FilePath = filePath
-	return prop, nil
+
+	pkg := prop.Package()
+	// searchBySHA1 has already calculated the archive's SHA-1, so stamp it on the
+	// resolved package to avoid recalculating it in fillArchiveDigest.
+	if p.checksum {
+		pkg.Digest = d
+	}
+	return pkg, nil
 }
 
 func isArtifact(name string) bool {
