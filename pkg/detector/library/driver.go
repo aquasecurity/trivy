@@ -115,17 +115,9 @@ func (d *Driver) Type() string {
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	normalizedName := vulnerability.NormalizePkgName(d.ecosystem, pkgName)
 
-	// Resolve advisory prefix and comparer based on package info.
-	// For vendor packages (e.g. Seal Security), uses a vendor-specific prefix and comparer.
-	prefix := defaultBucketPrefix(d.ecosystem)
-	comparer := d.comparer
-	if v, ok := lookupVendor(d.ecosystem, normalizedName, pkgVer); ok {
-		prefix = v.BucketPrefix(d.ecosystem)
-		comparer = v.Comparer(d.ecosystem, d.comparer)
-	}
-	advisories, err := d.dbc.GetAdvisories(prefix, normalizedName)
+	advisories, comparer, err := d.advisories(normalizedName, pkgVer)
 	if err != nil {
-		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+		return nil, err
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -148,6 +140,33 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 	}
 
 	return vulns, nil
+}
+
+// advisories resolves the advisory bucket for the package and returns the
+// matching advisories together with the version comparer to use.
+//
+// For vendor packages (e.g. Seal Security), it prefers the vendor-specific
+// bucket and comparer. When the vendor match is only a candidate (a version
+// suffix that can also appear on real packages, e.g. `-spN` on Go/npm), the
+// vendor bucket is used only if it actually contains advisories for the
+// package; otherwise it falls back to the default ecosystem bucket.
+func (d *Driver) advisories(normalizedName, pkgVer string) ([]dbTypes.Advisory, compare.Comparer, error) {
+	if v, res := lookupVendor(d.ecosystem, normalizedName, pkgVer); res != NoMatch {
+		advisories, err := d.dbc.GetAdvisories(v.BucketPrefix(d.ecosystem), normalizedName)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+		}
+		if res == Matched || len(advisories) > 0 {
+			return advisories, v.Comparer(d.ecosystem, d.comparer), nil
+		}
+		// Candidate match without vendor advisories: fall back to the default bucket.
+	}
+
+	advisories, err := d.dbc.GetAdvisories(defaultBucketPrefix(d.ecosystem), normalizedName)
+	if err != nil {
+		return nil, nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+	}
+	return advisories, d.comparer, nil
 }
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
