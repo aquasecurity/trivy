@@ -40,6 +40,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Hadron Linux",
+			inputFile: "testdata/hadron",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Hadron,
+					Name:   "main",
+				},
+			},
+		},
+		{
 			name:      "Red Hat Enterprise Linux",
 			inputFile: "testdata/rhel",
 			want: &analyzer.AnalysisResult{
