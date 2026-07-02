@@ -32,3 +32,15 @@
               - "3.14.0+echo.999"
             VulnerableVersions:
               - ">=3.14.0+echo.1, <3.14.0+echo.999"
+- bucket: "echo npm::Echo OSV"
+  pairs:
+    - bucket: "@babel/traverse"
+      pairs:
+        - key: CVE-2024-66666
+          value:
+            VendorIDs:
+              - ECHO-npm1-0000-0001
+            PatchedVersions:
+              - "7.23.2+echo.999"
+            VulnerableVersions:
+              - ">=7.23.2+echo.1, <7.23.2+echo.999"

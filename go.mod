@@ -488,3 +488,5 @@ tool (
 	golang.org/x/tools/cmd/goyacc
 	sigs.k8s.io/kind
 )
+
+replace github.com/aquasecurity/go-npm-version => github.com/DmitriyLewen/go-npm-version v0.0.0-20260921133346-2f96961ba5a7

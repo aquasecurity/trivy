@@ -15,9 +15,10 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 		advisory       dbTypes.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name              string
+		withBuildMetadata bool
+		args              args
+		want              bool
 	}{
 		{
 			name: "happy path",
@@ -142,10 +143,171 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			// Without WithBuildMetadata, build metadata is ignored,
+			// so ">= 1.2.3+build.1, < 1.2.3+build.2" turns into ">= 1.2.3, < 1.2.3" and matches nothing.
+			name:              "without WithBuildMetadata: build metadata ignored",
+			withBuildMetadata: false,
+			args: args{
+				currentVersion: "1.2.3+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "without WithBuildMetadata: metadata-only versions remain equal",
+			withBuildMetadata: false,
+			args: args{
+				currentVersion: "1.2.3+build.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"1.2.3+build.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: release is below first Echo build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3+echo.1"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: Echo patched version does not suppress release",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.4"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: exact Echo patched version is suppressed",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+echo.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.4"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: later Echo build is above first Echo build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+echo.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3+echo.1"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: build below the patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+build.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			// Numeric identifiers are compared numerically, so build.10 > build.2.
+			name:              "with WithBuildMetadata: build above the patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+build.10",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: build of an older release",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.2+build.5",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3+build.1"},
+					PatchedVersions:    []string{"1.2.3+build.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: build of a newer release",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.4+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.3+build.1"},
+					PatchedVersions:    []string{"1.2.3+build.1"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: build of a pre-release below the patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "19.0.0-next.3+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<19.0.0-next.3+build.2"},
+					PatchedVersions:    []string{"19.0.0-next.3+build.2"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: build of a pre-release equal to the patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "19.0.0-next.3+build.2",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<19.0.0-next.3+build.2"},
+					PatchedVersions:    []string{"19.0.0-next.3+build.2"},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := npm.Comparer{}
+			var c npm.Comparer
+			if tt.withBuildMetadata {
+				c = npm.NewComparer(npm.WithBuildMetadata())
+			}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
