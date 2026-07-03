@@ -164,6 +164,51 @@ check "cats_mittens_is_special" {
 	require.NotNil(t, checkBlocks[0].GetBlock("assert"))
 }
 
+// Test_OpenTofuLanguageBlock reproduces aquasecurity/trivy#10906.
+//
+// Given a .tofu file using the OpenTofu v1.12 top-level `language` block
+// (https://opentofu.org/docs/language/settings/#language-compatibility)
+// When the parser reads the file
+// Then it must not fail with "Unsupported block type", and the nested
+// `compatible_with.opentofu` constraint must be readable.
+func Test_OpenTofuLanguageBlock(t *testing.T) {
+	fs := testutil.CreateFS(map[string]string{
+		"main.tofu": `
+language {
+  compatible_with {
+    opentofu = ">= 1.12"
+  }
+}
+
+resource "cats_cat" "mittens" {
+	name = "mittens"
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	err := parser.ParseFS(t.Context(), ".")
+	require.NoError(t, err, "parser must accept the OpenTofu `language` block")
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.NotEmpty(t, modules)
+
+	blocks := modules[0].GetBlocks()
+
+	languageBlocks := blocks.OfType("language")
+	require.Len(t, languageBlocks, 1)
+
+	compatibleWith := languageBlocks[0].GetBlock("compatible_with")
+	require.NotNil(t, compatibleWith)
+	require.NotNil(t, compatibleWith.GetAttribute("opentofu"))
+	assert.Equal(t, ">= 1.12", compatibleWith.GetAttribute("opentofu").Value().AsString())
+
+	// sanity: the rest of the file still parses normally
+	resourceBlocks := blocks.OfType("resource")
+	require.Len(t, resourceBlocks, 1)
+}
+
 func Test_Modules(t *testing.T) {
 
 	fs := testutil.CreateFS(map[string]string{

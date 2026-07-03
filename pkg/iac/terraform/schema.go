@@ -9,6 +9,11 @@ var Schema = &hcl.BodySchema{
 			Type: "terraform",
 		},
 		{
+			// language declares OpenTofu/language compatibility constraints.
+			// Introduced in OpenTofu v1.12: https://opentofu.org/docs/language/settings/#language-compatibility
+			Type: "language",
+		},
+		{
 			Type: "required_providers",
 		},
 		{
