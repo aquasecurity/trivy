@@ -1,0 +1,10 @@
+- bucket: "echo pip::Echo OSV"
+  pairs:
+    - bucket: requests
+      pairs:
+        - key: CVE-2023-32681
+          value:
+            PatchedVersions:
+              - "2.14.2+echo.999"
+            VulnerableVersions:
+              - ">= 2.14.2+echo.1, < 2.14.2+echo.999"

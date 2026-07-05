@@ -14,6 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo vendor
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 
@@ -362,6 +363,31 @@ func TestDriver_Detect(t *testing.T) {
 						ID:   vulnerability.Seal,
 						Name: "Seal Security Database",
 						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "requests",
+				pkgVer:  "2.14.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-32681",
+					PkgName:          "requests",
+					InstalledVersion: "2.14.2+echo.1",
+					FixedVersion:     "2.14.2+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
 					},
 				},
 			},
