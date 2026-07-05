@@ -60,3 +60,18 @@
         ID: "seal"
         Name: "Seal Security Database"
         URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "echo pip::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv"
+    - key: "echo maven::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv"
+    - key: "echo npm::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv"

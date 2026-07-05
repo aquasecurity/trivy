@@ -14,6 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo vendor
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
 )
 
@@ -365,6 +366,94 @@ func TestDriver_Detect(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "echo pip package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "requests",
+				pkgVer:  "2.14.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-32681",
+					PkgName:          "requests",
+					InstalledVersion: "2.14.2+echo.1",
+					FixedVersion:     "2.14.2+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
+					},
+				},
+			},
+		},
+		{
+			name: "echo maven package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Jar,
+			args: args{
+				pkgName: "org.apache.commons:commons-lang3",
+				pkgVer:  "3.14.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-88888",
+					PkgName:          "org.apache.commons:commons-lang3",
+					InstalledVersion: "3.14.0+echo.1",
+					FixedVersion:     "3.14.0+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
+					},
+				},
+			},
+		},
+		{
+			name: "echo npm package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "@babel/traverse",
+				pkgVer:  "7.23.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-66666",
+					PkgName:          "@babel/traverse",
+					InstalledVersion: "7.23.2+echo.1",
+					FixedVersion:     "7.23.2+echo.999",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv",
+					},
+				},
+			},
+		},
+		{
+			name: "echo npm package at the fixed echo build",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "@babel/traverse",
+				pkgVer:  "7.23.2+echo.999",
+			},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {
