@@ -51,15 +51,6 @@
               - "0.26.0-sp2"
             VulnerableVersions:
               - ">= 0.26.0-sp1, < 0.26.0-sp2"
-    # No-prefix package: "-spN" candidate confirmed against this bucket
-    - bucket: "golang.org/x/crypto"
-      pairs:
-        - key: "CVE-2025-22869"
-          value:
-            PatchedVersions:
-              - "0.26.0-sp2"
-            VulnerableVersions:
-              - ">= 0.26.0-sp1, < 0.26.0-sp2"
 
 - bucket: "seal rubygems::Seal Security Database"
   pairs:
@@ -72,29 +63,11 @@
               - "2.0.7.0.1.sp999"
             VulnerableVersions:
               - ">= 2.0.7.0.1.sp1, < 2.0.7.0.1.sp999"
-    # No-prefix package: ".spN" candidate confirmed against this bucket
-    - bucket: "rack"
-      pairs:
-        - key: "CVE-2025-61780"
-          value:
-            PatchedVersions:
-              - "2.0.7.0.1.sp999"
-            VulnerableVersions:
-              - ">= 2.0.7.0.1.sp1, < 2.0.7.0.1.sp999"
 
 - bucket: "seal maven::Seal Security Database"
   pairs:
     # Renamed package: seal.sp$N.$groupId:$artifactId
     - bucket: "seal.sp1.org.apache.logging.log4j:log4j-core"
-      pairs:
-        - key: "CVE-2025-68161"
-          value:
-            PatchedVersions:
-              - "2.13.3+sp999"
-            VulnerableVersions:
-              - ">= 2.13.3, < 2.13.3+sp999"
-    # No-prefix package: detected by the "+spN" version suffix
-    - bucket: "org.apache.logging.log4j:log4j-core"
       pairs:
         - key: "CVE-2025-68161"
           value:

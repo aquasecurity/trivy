@@ -31,7 +31,7 @@ For details on supported scanners, features, and behavior for each base OS, refe
 
 ## Application Dependencies
 
-Seal also provides patched versions of application dependencies with their own vulnerability advisories. Seal ships these packages under two naming schemes, and Trivy detects both. When Trivy detects a Seal-patched package by either scheme, it automatically uses Seal Security advisories for vulnerability scanning.
+Seal also provides patched versions of application dependencies, shipped under two naming schemes: [renamed](#renamed-packages) and [no-prefix](#no-prefix-packages). Trivy detects both and uses Seal Security's own advisories for vulnerability scanning instead of the upstream ones.
 
 Both public (`spN`) and private (`spNpM`) sealed versions are recognized. A private version carries an extra `pM` iteration on top of the sealed version, for example `ejs` `3.1.8-sp2p1`.
 
@@ -65,5 +65,6 @@ Some Seal packages keep their upstream (no-prefix) name and only add a patch-lev
 | Go | `-spN` | `golang.org/x/crypto` `0.26.0-sp1` |
 | Ruby (RubyGems) | `.0.1.spN` | `rack` `2.0.7.0.1.sp1` |
 
-For Maven and pip, the `+spN` suffix cannot collide with real package versions, so the match is authoritative.
-For npm, Go, and Ruby, the `-spN` / `.0.1.spN` suffix can also appear on real packages, so Trivy confirms the match by looking the package up in the Seal advisory database; if the package is not found there, it falls back to the standard ecosystem advisories.
+!!! note
+    For Maven and pip, the `+spN` suffix cannot collide with real package versions, so the match is authoritative.
+    For npm, Go, and Ruby, the `-spN` / `.0.1.spN` suffix can also appear on real packages, so Trivy confirms the match by looking the package up in the Seal advisory database; if the package is not found there, it falls back to the standard ecosystem advisories.
