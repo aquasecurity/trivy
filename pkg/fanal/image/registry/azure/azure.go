@@ -12,7 +12,6 @@ import (
 	"github.com/Azure/azure-sdk-for-go/sdk/azcore/policy"
 	"github.com/Azure/azure-sdk-for-go/sdk/azidentity"
 	"github.com/Azure/azure-sdk-for-go/sdk/containers/azcontainerregistry"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/image/registry/intf"
@@ -86,8 +85,8 @@ func refreshToken(ctx context.Context, accessToken, domain string) (azcontainerr
 		azcontainerregistry.PostContentSchemaGrantTypeAccessToken,
 		domain,
 		&azcontainerregistry.AuthenticationClientExchangeAADAccessTokenForACRRefreshTokenOptions{
-			AccessToken: lo.ToPtr(accessToken),
-			Tenant:      lo.ToPtr(tenantID),
+			AccessToken: new(accessToken),
+			Tenant:      new(tenantID),
 		},
 	)
 	if err != nil {

@@ -77,9 +77,20 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
 			AnalyzedBy:   string(pkg.AnalyzedBy),
+			Repository:   ConvertToRPCPackageRepository(pkg.Repository),
 		})
 	}
 	return rpcPkgs
+}
+
+// ConvertToRPCPackageRepository converts ftypes.PackageRepository to common.PackageRepository
+func ConvertToRPCPackageRepository(repo ftypes.PackageRepository) *common.PackageRepository {
+	if repo.Class == "" {
+		return nil
+	}
+	return &common.PackageRepository{
+		Class: string(repo.Class),
+	}
 }
 
 func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
@@ -233,9 +244,20 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Indirect:     pkg.Indirect,
 			Maintainer:   pkg.Maintainer,
 			AnalyzedBy:   ftypes.AnalyzerType(pkg.AnalyzedBy),
+			Repository:   ConvertFromRPCPackageRepository(pkg.Repository),
 		})
 	}
 	return pkgs
+}
+
+// ConvertFromRPCPackageRepository converts common.PackageRepository to ftypes.PackageRepository
+func ConvertFromRPCPackageRepository(repo *common.PackageRepository) ftypes.PackageRepository {
+	if repo == nil {
+		return ftypes.PackageRepository{}
+	}
+	return ftypes.PackageRepository{
+		Class: ftypes.RepositoryClass(repo.GetClass()),
+	}
 }
 
 func ConvertFromRPCPkgIdentifier(pkg *common.PkgIdentifier) ftypes.PkgIdentifier {
@@ -602,10 +624,10 @@ func ConvertFromRPCVulns(rpcVulns []*common.Vulnerability) []types.DetectedVulne
 
 		var lastModifiedDate, publishedDate *time.Time
 		if vuln.LastModifiedDate != nil {
-			lastModifiedDate = lo.ToPtr(vuln.LastModifiedDate.AsTime())
+			lastModifiedDate = new(vuln.LastModifiedDate.AsTime())
 		}
 		if vuln.PublishedDate != nil {
-			publishedDate = lo.ToPtr(vuln.PublishedDate.AsTime())
+			publishedDate = new(vuln.PublishedDate.AsTime())
 		}
 
 		// Handle custom data conversion from protobuf.Value

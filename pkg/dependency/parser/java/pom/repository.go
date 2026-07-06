@@ -7,9 +7,15 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+// mavenCentralRepoID is the conventional <id> for the default Maven Central
+// repository. <mirror> rules use it (e.g. <mirrorOf>central</mirrorOf>), so
+// it must be the same wherever we construct a repository pointing at Central.
+const mavenCentralRepoID = "central"
+
 var centralURL, _ = url.Parse("https://repo.maven.apache.org/maven2/")
 
 type repository struct {
+	id              string // <id> from settings.xml/pom.xml; used for <mirror> matching
 	url             url.URL
 	releaseEnabled  bool
 	snapshotEnabled bool
@@ -21,6 +27,7 @@ type repositories struct {
 }
 
 var mavenCentralRepo = repository{
+	id:             mavenCentralRepoID,
 	url:            *centralURL,
 	releaseEnabled: true,
 }
@@ -30,6 +37,7 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	var repos []repository
 	for _, rep := range pomRepos {
 		r := repository{
+			id: rep.ID,
 			// "<enabled>: true or false for whether this repository is enabled for the respective type (releases or snapshots). By default, this is true."
 			// cf. https://maven.apache.org/pom.html#Repositories
 			releaseEnabled:  rep.ReleasesEnabled == trueString || rep.ReleasesEnabled == "",

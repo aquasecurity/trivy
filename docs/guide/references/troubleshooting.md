@@ -120,6 +120,25 @@ $ GITHUB_TOKEN=XXXXXXXXXX trivy image --vex repo [YOUR_IMAGE]
     `GITHUB_TOKEN` doesn't help with the rate limit for the vulnerability database and other assets.
     See https://github.com/aquasecurity/trivy/discussions/8009
 
+### Maven Central rate limiting (HTTP 429)
+
+When scanning Java projects, Trivy resolves transitive dependencies by downloading POM files from Maven Central (or any other configured remote Maven repository) when they are missing from the local `~/.m2` cache. Remote Maven repositories typically rate-limit per IP and return `429 Too Many Requests` once the limit is exceeded; scans of large projects with an empty local cache routinely run into this.
+
+!!! error
+    ```
+    FATAL Error remote Maven repository returned 429 Too Many Requests for https://repo.maven.apache.org/maven2/.../<artifact>-<version>.pom. Retry-After: 1800.
+    The repository blocks all subsequent requests from this IP until the block clears.
+    To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).
+    ```
+
+The block applies to *all* subsequent requests from the affected IP for the duration indicated by `Retry-After`, regardless of whether the artifact would otherwise be served from a cache layer. The wait depends on the repository's policy — for Maven Central it is typically tens of minutes on the first violation and grows on repeat — so Trivy fails fast on the first `429` rather than retrying and risking an extended block.
+
+Recommended mitigations:
+
+- **Populate `~/.m2` before scanning.** Run `mvn dependency:resolve` (or any build step that resolves dependencies) so that every POM is cached locally. In CI, cache the `~/.m2` directory between runs (e.g. keyed on `pom.xml` checksums) so subsequent runs reuse the artifacts.
+- **Wait for the block to expire.** The `Retry-After` value in the error tells you the minimum wait. Repeated scans during the block will extend it.
+- **Use `--offline-scan`** to skip remote lookups entirely and rely only on the local `~/.m2` cache. Be careful: any transitive POM missing from the cache is silently skipped, so populate `~/.m2` first (see above) — otherwise the dependency tree will be incomplete.
+
 ### Unable to open JAR files
 
 !!! error
@@ -302,46 +321,6 @@ or
 ```shell
 unset GITHUB_TOKEN
 ```
-
-## Homebrew
-### Scope error
-!!! error
-    Error: Your macOS keychain GitHub credentials do not have sufficient scope!
-
-```
-$ brew tap aquasecurity/trivy
-Error: Your macOS keychain GitHub credentials do not have sufficient scope!
-Scopes they need: none
-Scopes they have:
-Create a personal access token:
-https://github.com/settings/tokens/new?scopes=gist,public_repo&description=Homebrew
-echo 'export HOMEBREW_GITHUB_API_TOKEN=your_token_here' >> ~/.zshrc
-```
-
-Try:
-
-```
-$ printf "protocol=https\nhost=github.com\n" | git credential-osxkeychain erase
-```
-
-### Already installed
-!!! error
-    Error: aquasecurity/trivy/trivy 64 already installed
-
-```
-$ brew upgrade
-...
-Error: aquasecurity/trivy/trivy 64 already installed
-```
-
-Try:
-
-```
-$ brew unlink trivy && brew uninstall trivy
-($ rm -rf /usr/local/Cellar/trivy/64)
-$ brew install aquasecurity/trivy/trivy
-```
-
 
 ## Debugging
 ### HTTP Request/Response Tracing

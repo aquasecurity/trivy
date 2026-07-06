@@ -1,0 +1,39 @@
+Chart with an embedded subchart (nginx). Verifies that the subchart is scanned exactly once.
+
+-- Chart.yaml --
+apiVersion: v2
+name: test
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+
+-- charts/nginx/Chart.yaml --
+apiVersion: v2
+name: nginx
+description: A Helm chart for Kubernetes
+type: application
+version: 0.1.0
+appVersion: "1.16.0"
+
+-- charts/nginx/templates/pod.yaml --
+apiVersion: v1
+kind: Pod
+metadata:
+  name: nginx
+spec:
+  containers:
+  - name: nginx
+    image: nginx:1.14.2
+    ports:
+    - containerPort: 8080
+    securityContext:
+      readOnlyRootFilesystem: {{ .Values.readOnlyFs }}
+
+-- charts/nginx/values.yaml --
+readOnlyFs: false
+
+-- values.yaml --
+nginx:
+  readOnlyFs: true
+

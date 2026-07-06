@@ -17,10 +17,11 @@ import (
 	"golang.org/x/xerrors"
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
-	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
+	"github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -47,7 +48,7 @@ type AnalyzerOptions struct {
 	Parallel             int
 	FilePatterns         []string
 	DisabledAnalyzers    []Type
-	DetectionPriority    types.DetectionPriority
+	DetectionPriority    ftypes.DetectionPriority
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  SecretScannerOption
 	LicenseScannerOption LicenseScannerOption
@@ -135,7 +136,7 @@ type AnalyzerGroup struct {
 	analyzers         []analyzer
 	postAnalyzers     []PostAnalyzer
 	filePatterns      map[Type]FilePatterns
-	detectionPriority types.DetectionPriority
+	detectionPriority ftypes.DetectionPriority
 }
 
 ///////////////////////////
@@ -175,13 +176,13 @@ type AnalysisOptions struct {
 
 type AnalysisResult struct {
 	m                    sync.Mutex
-	OS                   types.OS
-	Repository           *types.Repository
-	PackageInfos         []types.PackageInfo
-	Applications         []types.Application
-	Misconfigurations    []types.Misconfiguration
-	Secrets              []types.Secret
-	Licenses             []types.LicenseFile
+	OS                   ftypes.OS
+	Repository           *ftypes.Repository
+	PackageInfos         []ftypes.PackageInfo
+	Applications         []ftypes.Application
+	Misconfigurations    []ftypes.Misconfiguration
+	Secrets              []ftypes.Secret
+	Licenses             []ftypes.LicenseFile
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Digests contains SHA-256 digests of unpackaged files
@@ -189,11 +190,11 @@ type AnalysisResult struct {
 	Digests map[string]string
 
 	// For Red Hat
-	BuildInfo *types.BuildInfo
+	BuildInfo *ftypes.BuildInfo
 
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.
-	CustomResources []types.CustomResource
+	CustomResources []ftypes.CustomResource
 }
 
 func NewAnalysisResult() *AnalysisResult {
@@ -374,7 +375,7 @@ func belongToGroup(groupName Group, analyzerType Type, disabledAnalyzers []Type,
 	return true
 }
 
-func normalizeApplicationsLicenses(applications []types.Application) {
+func normalizeApplicationsLicenses(applications []ftypes.Application) {
 	for i, app := range applications {
 		for j, pkg := range app.Packages {
 			applications[i].Packages[j].Licenses = licensing.NormalizeLicenses(pkg.Licenses)
@@ -489,6 +490,9 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
+			// The goroutine below (which closes rc) is not started on this path,
+			// so close the opened file here to avoid leaking the handle.
+			_ = rc.Close()
 			return xerrors.Errorf("semaphore acquire: %w", err)
 		}
 
@@ -504,13 +508,19 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 				Options:  opts,
 			})
 			if analyzeErr != nil {
+				var userErr *types.UserError
 				switch {
 				case errors.Is(analyzeErr, fos.AnalyzeOSError):
 					// The OS could not be detected.
 				case errors.Is(analyzeErr, context.DeadlineExceeded):
 					return xerrors.Errorf("analyzer timed out: %w", analyzeErr)
+				case errors.As(analyzeErr, &userErr):
+					// User-facing errors (e.g. remote rate limit) should abort the scan
+					// rather than be silently swallowed, since continuing would yield
+					// incomplete results without the user noticing.
+					return analyzeErr
 				default:
-					ag.logger.Debug("Analysis error", log.Err(err))
+					ag.logger.Debug("Analysis error", log.Err(analyzeErr))
 					return nil
 				}
 			}
@@ -549,7 +559,7 @@ func (ag AnalyzerGroup) PostAnalyze(ctx context.Context, compositeFS *CompositeF
 		}
 
 		skippedFiles := result.SystemInstalledFiles
-		if ag.detectionPriority == types.PriorityComprehensive {
+		if ag.detectionPriority == ftypes.PriorityComprehensive {
 			// If the detection priority is comprehensive, system files installed by the OS package manager will not be skipped.
 			// It can lead to false positives and duplicates, but it may be necessary to detect all possible vulnerabilities.
 			skippedFiles = nil

@@ -12,6 +12,33 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
+func TestPyProject_MainDeps(t *testing.T) {
+	tests := []struct {
+		name string
+		file string
+		want set.Set[string]
+	}{
+		{
+			name: "with optional dependencies only",
+			file: "testdata/happy_with_optional_only.toml",
+			want: set.New[string]("pytest", "ruff"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := &pyproject.Parser{}
+			got, err := p.Parse(f)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.want, got.MainDeps())
+		})
+	}
+}
+
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name    string

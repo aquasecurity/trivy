@@ -45,7 +45,9 @@ type Dependencies struct {
 func (p PyProject) MainDeps() set.Set[string] {
 	deps := set.New[string]()
 	if p.Project.Dependencies.Set != nil || p.Project.OptionalDependencies != nil {
-		deps.Append(p.Project.Dependencies.Items()...)
+		if p.Project.Dependencies.Set != nil {
+			deps.Append(p.Project.Dependencies.Items()...)
+		}
 		// Add dependencies installed to extras
 		// cf. https://packaging.python.org/en/latest/guides/writing-pyproject-toml/#dependencies-optional-dependencies
 		for _, extraDeps := range p.Project.OptionalDependencies {
@@ -60,7 +62,7 @@ func (p PyProject) MainDeps() set.Set[string] {
 func (d *Dependencies) UnmarshalTOML(data any) error {
 	switch deps := data.(type) {
 	case map[string]any: // For Poetry v1
-		d.Set = set.New[string](lo.MapToSlice(deps, func(pkgName string, _ any) string {
+		d.Set = set.New(lo.MapToSlice(deps, func(pkgName string, _ any) string {
 			return python.NormalizePkgName(pkgName, true)
 		})...)
 	case []any: // For Poetry v2

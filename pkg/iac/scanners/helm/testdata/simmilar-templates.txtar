@@ -1,0 +1,38 @@
+Chart with two nearly identical templates. Used to verify that failed scan results 
+include the correct source code snippet.
+
+-- Chart.yaml --
+apiVersion: v2
+name: test-license-manager
+version: 1.10.0
+type: application
+appVersion: 1.10.0
+deprecated: false
+
+-- templates/deployment.yaml --
+apiVersion: apps/v1
+kind: Deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: myapp
+  template:
+    metadata:
+      labels:
+        app: myapp
+    spec:
+      containers:
+      - name: myapp
+        image: test:latest
+        resources:
+          limits:
+            memory: "128Mi"
+            cpu: "500m"
+        ports:
+        - containerPort: 80
+
+-- templates/manifest.yaml --
+apiVersion: apps/v1
+kind: Deployment
+

@@ -94,7 +94,7 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 		}
 	case types.FormatSarif:
 		target := ""
-		if report.ArtifactType == ftypes.TypeFilesystem {
+		if report.ArtifactType == ftypes.TypeFilesystem || report.ArtifactType == ftypes.TypeRepository {
 			target = option.Target
 		}
 		writer = &SarifWriter{

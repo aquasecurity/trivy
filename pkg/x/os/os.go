@@ -1,9 +1,7 @@
 package os
 
 import (
-	"fmt"
 	"os"
-	"path/filepath"
 	"sync"
 	"sync/atomic"
 
@@ -19,12 +17,13 @@ var (
 	initialized atomic.Bool
 )
 
-// initTempDir initializes the process-specific temp directory
+// initTempDir initializes a unique temp directory for this process.
+// Uses os.MkdirTemp to generate a random suffix, avoiding collisions when
+// multiple processes share the same /tmp (e.g. Kubernetes emptyDir volumes
+// where all containers run as PID 1).
 func initTempDir() (string, error) {
-	pid := os.Getpid()
-	tempDir := filepath.Join(os.TempDir(), fmt.Sprintf("trivy-%d", pid))
-
-	if err := os.MkdirAll(tempDir, 0o755); err != nil {
+	tempDir, err := os.MkdirTemp(os.TempDir(), "trivy-") //nolint: gocritic
+	if err != nil {
 		return "", xerrors.Errorf("failed to create temp dir: %w", err)
 	}
 
@@ -71,8 +70,10 @@ func TempDir() string {
 	return tempDir
 }
 
-// Cleanup removes the entire process-specific temp directory
-// Note: On Windows, directory deletion may fail if files are still open
+// Cleanup removes the entire process-specific temp directory.
+// Note: After Cleanup(), TempDir() will still return the deleted path.
+// Callers should not use TempDir() after Cleanup().
+// Note: On Windows, directory deletion may fail if files are still open.
 func Cleanup() error {
 	// If temp dir was never initialized, nothing to clean up
 	if !initialized.Load() {

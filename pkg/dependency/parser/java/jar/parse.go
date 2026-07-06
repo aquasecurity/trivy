@@ -4,8 +4,7 @@ import (
 	"archive/zip"
 	"bufio"
 	"context"
-	"crypto/sha1" // nolint:gosec
-	"encoding/hex"
+	"encoding/xml"
 	"errors"
 	"io"
 	"os"
@@ -16,9 +15,12 @@ import (
 	"strings"
 
 	mavenversion "github.com/masahiro331/go-mvn-version"
+	"golang.org/x/net/html/charset"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -35,10 +37,12 @@ type Client interface {
 }
 
 type Parser struct {
-	logger       *log.Logger
-	rootFilePath string
-	offline      bool
-	size         int64
+	logger                 *log.Logger
+	rootFilePath           string
+	offline                bool
+	checksum               bool
+	size                   int64
+	licenseConfidenceLevel float64
 
 	client Client
 }
@@ -57,9 +61,23 @@ func WithOffline(offline bool) Option {
 	}
 }
 
+// WithChecksum enables calculation of the SHA-1 digest for every archive
+// (not only the ones that are looked up by SHA-1) and saving it to Package.Digest.
+func WithChecksum(checksum bool) Option {
+	return func(p *Parser) {
+		p.checksum = checksum
+	}
+}
+
 func WithSize(size int64) Option {
 	return func(p *Parser) {
 		p.size = size
+	}
+}
+
+func WithLicenseClassifierConfidenceLevel(level float64) Option {
+	return func(p *Parser) {
+		p.licenseConfidenceLevel = level
 	}
 }
 
@@ -85,31 +103,70 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 }
 
 func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	pkgs, deps, err := p.parsePackages(filePath, size, r)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	// When a checksum is requested, every package must carry the digest of its
+	// own file. Packages from nested archives (and the one resolved by
+	// searchBySHA1) already have it, so fill in this archive's digest only for
+	// the packages that are still missing one.
+	if p.checksum {
+		if err := fillArchiveDigest(pkgs, r); err != nil {
+			return nil, nil, xerrors.Errorf("unable to set digest for %s: %w", filePath, err)
+		}
+	}
+
+	return pkgs, deps, nil
+}
+
+func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
 	p.logger.Debug("Parsing Java artifacts...", log.FilePath(filePath))
 
 	// Try to extract artifactId and version from the file name
 	// e.g. spring-core-5.3.4-SNAPSHOT.jar => sprint-core, 5.3.4-SNAPSHOT
-	fileName := filepath.Base(filePath)
 	fileProps := parseFileName(filePath)
 
-	pkgs, m, foundPomProps, err := p.traverseZip(filePath, size, r, fileProps)
+	pkgs, m, foundPomProps, licenseFile, err := p.traverseZip(size, r, fileProps)
 	if err != nil {
 		return nil, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	// If pom.properties is found, it should be preferred than MANIFEST.MF.
-	if foundPomProps {
-		return pkgs, nil, nil
+	// Otherwise, resolve the artifact of the jar itself from MANIFEST.MF / SHA-1 / file name.
+	// Such an artifact has no embedded pom.xml (maven-archiver writes pom.xml and
+	// pom.properties together), so it carries no pom.xml license.
+	if !foundPomProps {
+		pkg, found, err := p.resolveArtifact(r, m, fileProps)
+		if err != nil {
+			return nil, nil, err
+		}
+		if found {
+			pkgs = append(pkgs, pkg)
+		}
 	}
 
-	manifestProps := m.properties(filePath)
+	// Classify and attach the LICENSE file now that the jar's own artifact is resolved
+	// (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
+
+	return pkgs, nil, nil
+}
+
+// resolveArtifact determines the artifact of the jar itself when pom.properties is absent,
+// trying MANIFEST.MF, then Maven Central by SHA-1, then a heuristic search by file name.
+func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Properties) (ftypes.Package, bool, error) {
+	fileName := filepath.Base(fileProps.FilePath)
+
+	manifestProps := m.properties(fileProps.FilePath)
 	if p.offline {
 		// In offline mode, we will not check if the artifact information is correct.
 		if !manifestProps.Valid() {
 			p.logger.Debug("Unable to identify POM in offline mode", log.String("file", fileName))
-			return pkgs, nil, nil
+			return ftypes.Package{}, false, nil
 		}
-		return append(pkgs, manifestProps.Package()), nil, nil
+		return manifestProps.Package(), true, nil
 	}
 
 	if manifestProps.Valid() {
@@ -117,23 +174,23 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 		// We have to make sure that the artifact exists actually.
 		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID); ok {
 			// If groupId and artifactId are valid, they will be returned.
-			return append(pkgs, manifestProps.Package()), nil, nil
+			return manifestProps.Package(), true, nil
 		}
 	}
 
 	// If groupId and artifactId are not found, call Maven Central's search API with SHA-1 digest.
-	props, err := p.searchBySHA1(r, filePath)
+	pkg, err := p.searchBySHA1(r, fileProps.FilePath)
 	if err == nil {
-		return append(pkgs, props.Package()), nil, nil
+		return pkg, true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by SHA1: %w", err)
+		return ftypes.Package{}, false, xerrors.Errorf("failed to search by SHA1: %w", err)
 	}
 
 	p.logger.Debug("No such POM in the central repositories", log.String("file", fileName))
 
 	// Return when artifactId or version from the file name are empty
 	if fileProps.ArtifactID == "" || fileProps.Version == "" {
-		return pkgs, nil, nil
+		return ftypes.Package{}, false, nil
 	}
 
 	// Try to search groupId by artifactId via sonatype API
@@ -142,31 +199,83 @@ func (p *Parser) parseArtifact(filePath string, size int64, r xio.ReadSeekerAt) 
 	if err == nil {
 		p.logger.Debug("POM was determined in a heuristic way", log.String("file", fileName),
 			log.String("artifact", fileProps.String()))
-		pkgs = append(pkgs, fileProps.Package())
+		return fileProps.Package(), true, nil
 	} else if !errors.Is(err, ArtifactNotFoundErr) {
-		return nil, nil, xerrors.Errorf("failed to search by artifact id: %w", err)
+		return ftypes.Package{}, false, xerrors.Errorf("failed to search by artifact id: %w", err)
 	}
 
-	return pkgs, nil, nil
+	return ftypes.Package{}, false, nil
 }
 
-func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fileProps Properties) (
-	[]ftypes.Package, manifest, bool, error) {
+// fillArchiveDigest sets the SHA-1 digest of the archive (r) on every package
+// that does not have a digest yet. The digest is calculated lazily, so the
+// archive is not read when all packages already carry their own digest.
+//
+// Packages that have no file of their own — e.g. dependencies flattened into a
+// shaded/uber JAR, which only leave a bundled pom.properties behind — all share
+// this archive's digest. That is consistent with their FilePath, which is also
+// the enclosing archive, so the digest stays aligned with the file it refers to.
+func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
+	var d digest.Digest
+	for i := range pkgs {
+		if pkgs[i].Digest != "" {
+			continue
+		}
+		// Compute the archive digest at most once and reuse it afterwards.
+		// An empty d means it has not been calculated yet.
+		if d == "" {
+			if _, err := r.Seek(0, io.SeekStart); err != nil {
+				return xerrors.Errorf("file seek error: %w", err)
+			}
+			var err error
+			if d, err = digest.CalcSHA1(r); err != nil {
+				return xerrors.Errorf("unable to calculate SHA-1: %w", err)
+			}
+		}
+		pkgs[i].Digest = d
+	}
+	return nil
+}
+
+func (p *Parser) traverseZip(size int64, r xio.ReadSeekerAt, fileProps Properties) (
+	[]ftypes.Package, manifest, bool, *zip.File, error) {
 	var pkgs []ftypes.Package
 	var m manifest
 	var foundPomProps bool
+	var licenseFiles []*zip.File
+
+	// Licenses declared in embedded META-INF/maven/<g>/<a>/pom.xml, keyed by "groupID:artifactID".
+	// The path carries no version, so packages are matched by G:A after the loop
+	// (file order in the zip is not guaranteed).
+	pomLicenses := make(map[string][]string)
 
 	zr, err := zip.NewReader(r, size)
 	if err != nil {
-		return nil, manifest{}, false, xerrors.Errorf("zip error: %w", err)
+		return nil, manifest{}, false, nil, xerrors.Errorf("zip error: %w", err)
 	}
 
 	for _, fileInJar := range zr.File {
 		switch {
-		case filepath.Base(fileInJar.Name) == "pom.properties":
-			props, err := parsePomProperties(fileInJar, filePath)
+		case filepath.Base(fileInJar.Name) == "pom.xml":
+			// Collect licenses declared in the embedded META-INF/maven/<g>/<a>/pom.xml.
+			groupID, artifactID, ok := embeddedPomGAV(fileInJar.Name)
+			if !ok {
+				break
+			}
+			names, err := parsePomLicenses(fileInJar)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
+				p.logger.Debug("Failed to parse licenses", log.String("file", fileInJar.Name), log.Err(err))
+				break
+			}
+			if len(names) > 0 {
+				pomLicenses[packageName(groupID, artifactID)] = names
+			}
+		case isJarLicenseFile(fileInJar.Name):
+			licenseFiles = append(licenseFiles, fileInJar)
+		case filepath.Base(fileInJar.Name) == "pom.properties":
+			props, err := parsePomProperties(fileInJar, fileProps.FilePath)
+			if err != nil {
+				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse %s: %w", fileInJar.Name, err)
 			}
 			// Validation of props to avoid getting packages with empty Name/Version
 			if props.Valid() {
@@ -180,10 +289,10 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 		case filepath.Base(fileInJar.Name) == "MANIFEST.MF":
 			m, err = parseManifest(fileInJar)
 			if err != nil {
-				return nil, manifest{}, false, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
+				return nil, manifest{}, false, nil, xerrors.Errorf("failed to parse MANIFEST.MF: %w", err)
 			}
 		case isArtifact(fileInJar.Name):
-			innerPkgs, _, err := p.parseInnerJar(fileInJar, filePath) // TODO process inner deps
+			innerPkgs, _, err := p.parseInnerJar(fileInJar, fileProps.FilePath) // TODO process inner deps
 			if err != nil {
 				p.logger.Debug("Failed to parse", log.String("file", fileInJar.Name), log.Err(err))
 				continue
@@ -191,7 +300,69 @@ func (p *Parser) traverseZip(filePath string, size int64, r xio.ReadSeekerAt, fi
 			pkgs = append(pkgs, innerPkgs...)
 		}
 	}
-	return pkgs, m, foundPomProps, nil
+
+	// Attach licenses from embedded pom.xml, matched by "groupID:artifactID".
+	attachPomLicenses(pkgs, pomLicenses)
+
+	var licenseFile *zip.File
+	if len(licenseFiles) == 1 {
+		licenseFile = licenseFiles[0]
+	}
+
+	return pkgs, m, foundPomProps, licenseFile, nil
+}
+
+// attachPomLicenses attaches licenses declared in embedded pom.xml files to packages,
+// matched by "groupID:artifactID". Packages that already have a license (e.g. set by a
+// nested jar from its own pom.xml) are left untouched.
+func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
+	for i := range pkgs {
+		pkg := &pkgs[i]
+		if len(pkg.Licenses) > 0 {
+			continue
+		}
+		if names, ok := pomLicenses[pkg.Name]; ok {
+			pkg.Licenses = names
+		}
+	}
+}
+
+// attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
+// jar's own package, but only when the owner is unambiguous: a single LICENSE file, a
+// single package belonging to this jar, and no license from its pom.xml yet.
+func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, licenseFile *zip.File) {
+	if licenseFile == nil {
+		return
+	}
+
+	var pkg *ftypes.Package
+
+	for i := range pkgs {
+		if pkgs[i].FilePath != filePath {
+			continue
+		}
+		if pkg != nil {
+			return // more than one package belongs to this jar
+		}
+		pkg = &pkgs[i]
+	}
+
+	if pkg == nil {
+		return // no package belongs to this jar
+	}
+
+	if len(pkg.Licenses) > 0 {
+		return
+	}
+
+	names, err := p.classifyPackedLicense(licenseFile)
+	if err != nil {
+		p.logger.Debug("Failed to classify license file", log.FilePath(licenseFile.Name), log.Err(err))
+		return
+	}
+	if len(names) > 0 {
+		pkg.Licenses = names
+	}
 }
 
 func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -231,22 +402,28 @@ func (p *Parser) parseInnerJar(zf *zip.File, rootPath string) ([]ftypes.Package,
 	return innerPkgs, innerDeps, nil
 }
 
-func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (Properties, error) {
+func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (ftypes.Package, error) {
 	if _, err := r.Seek(0, io.SeekStart); err != nil {
-		return Properties{}, xerrors.Errorf("file seek error: %w", err)
+		return ftypes.Package{}, xerrors.Errorf("file seek error: %w", err)
+	}
+	d, err := digest.CalcSHA1(r)
+	if err != nil {
+		return ftypes.Package{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
 	}
 
-	h := sha1.New() // nolint:gosec
-	if _, err := io.Copy(h, r); err != nil {
-		return Properties{}, xerrors.Errorf("unable to calculate SHA-1: %w", err)
-	}
-	s := hex.EncodeToString(h.Sum(nil))
-	prop, err := p.client.SearchBySHA1(s)
+	prop, err := p.client.SearchBySHA1(d.Encoded())
 	if err != nil {
-		return Properties{}, err
+		return ftypes.Package{}, err
 	}
 	prop.FilePath = filePath
-	return prop, nil
+
+	pkg := prop.Package()
+	// searchBySHA1 has already calculated the archive's SHA-1, so stamp it on the
+	// resolved package to avoid recalculating it in fillArchiveDigest.
+	if p.checksum {
+		pkg.Digest = d
+	}
+	return pkg, nil
 }
 
 func isArtifact(name string) bool {
@@ -261,7 +438,7 @@ func parseFileName(filePath string) Properties {
 	fileName := filepath.Base(filePath)
 	packageVersion := jarFileRegEx.FindStringSubmatch(fileName)
 	if len(packageVersion) != 3 {
-		return Properties{}
+		return Properties{FilePath: filePath}
 	}
 
 	return Properties{
@@ -298,6 +475,101 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 		return Properties{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return p, nil
+}
+
+// embeddedPom is a minimal view of an embedded pom.xml: only the license names are needed.
+type embeddedPom struct {
+	Licenses struct {
+		License []struct {
+			Name string `xml:"name"`
+		} `xml:"license"`
+	} `xml:"licenses"`
+}
+
+// embeddedPomGAV extracts groupId and artifactId from a path of the form
+// META-INF/maven/<groupId>/<artifactId>/pom.xml. The version is not part of the path.
+// ok is false when the path is not a Maven descriptor pom.xml.
+func embeddedPomGAV(name string) (groupID, artifactID string, ok bool) {
+	rel, found := strings.CutPrefix(name, "META-INF/maven/")
+	if !found {
+		return "", "", false
+	}
+	rel, found = strings.CutSuffix(rel, "/pom.xml")
+	if !found {
+		return "", "", false
+	}
+	groupID, artifactID, found = strings.Cut(rel, "/")
+	if !found || groupID == "" || artifactID == "" {
+		return "", "", false
+	}
+	return groupID, artifactID, true
+}
+
+// parsePomLicenses returns the raw <license><name> values from an embedded pom.xml.
+func parsePomLicenses(f *zip.File) ([]string, error) {
+	file, err := f.Open()
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open %s: %w", f.Name, err)
+	}
+	defer file.Close()
+
+	return decodePomLicenses(file)
+}
+
+// decodePomLicenses decodes a pom.xml and returns the raw <license><name> values.
+// Names are kept as-is; normalization happens downstream.
+func decodePomLicenses(r io.Reader) ([]string, error) {
+	var pom embeddedPom
+	decoder := xml.NewDecoder(r)
+	decoder.CharsetReader = charset.NewReaderLabel
+	if err := decoder.Decode(&pom); err != nil {
+		return nil, xerrors.Errorf("xml decode error: %w", err)
+	}
+
+	var names []string
+	for _, lic := range pom.Licenses.License {
+		if name := strings.TrimSpace(lic.Name); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names, nil
+}
+
+// isJarLicenseFile reports whether a zip entry is a license file eligible for
+// classification: located at the jar root or directly under META-INF/ (not in a subdirectory),
+// with a base name whose stem is license/licence/copyright (e.g. LICENSE, LICENSE.txt).
+// Vendored licenses use prefixed names (e.g. FastDoubleParser-LICENSE) or nested
+// paths, so they are intentionally excluded.
+func isJarLicenseFile(name string) bool {
+	dir := path.Dir(name)
+	if dir != "." && dir != "META-INF" {
+		return false
+	}
+	base := path.Base(name)
+	if isArtifact(base) {
+		return false // e.g. license.jar is a nested archive, not a license file
+	}
+	stem := strings.TrimSuffix(base, path.Ext(base))
+	return licensing.LicenseFileNames.Contains(stem)
+}
+
+// classifyPackedLicense classifies a LICENSE file packed in a jar and returns the
+// detected license names.
+func (p *Parser) classifyPackedLicense(f *zip.File) ([]string, error) {
+	file, err := f.Open()
+	if err != nil {
+		return nil, xerrors.Errorf("unable to open %s: %w", f.Name, err)
+	}
+	defer file.Close()
+
+	lf, err := licensing.Classify(f.Name, file, p.licenseConfidenceLevel)
+	if err != nil {
+		return nil, xerrors.Errorf("license classification error: %w", err)
+	}
+	if lf == nil {
+		return nil, nil
+	}
+	return lf.Findings.Names(), nil
 }
 
 type manifest struct {

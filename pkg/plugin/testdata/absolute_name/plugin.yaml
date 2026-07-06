@@ -1,0 +1,5 @@
+name: "/escaped_abs"
+repository: testdata/absolute_name
+version: "0.1.0"
+summary: test
+description: test

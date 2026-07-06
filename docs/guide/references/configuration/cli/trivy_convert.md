@@ -52,7 +52,7 @@ trivy convert [flags] RESULT_JSON
                                     (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --show-suppressed            [EXPERIMENTAL] show suppressed vulnerabilities
       --table-mode strings         [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
-  -t, --template string            output template
+  -t, --template string            output template (file path must have .tpl extension)
 ```
 
 ### Options inherited from parent commands

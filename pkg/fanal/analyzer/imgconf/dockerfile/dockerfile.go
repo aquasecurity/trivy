@@ -26,7 +26,7 @@ var (
 	reason         = "See " + doc.URL("guide/target/container_image", "disabled-checks")
 )
 
-const analyzerVersion = 1
+const analyzerVersion = 2
 
 func init() {
 	analyzer.RegisterConfigAnalyzer(analyzer.TypeHistoryDockerfile, newHistoryAnalyzer)
@@ -89,7 +89,7 @@ func imageConfigToDockerfile(cfg *v1.ConfigFile) []byte {
 			}
 		case strings.HasPrefix(h.CreatedBy, "/bin/sh -c"):
 			// RUN instruction
-			createdBy = buildRunInstruction(createdBy)
+			createdBy = buildRunInstruction(h.CreatedBy)
 		case strings.HasSuffix(h.CreatedBy, "# buildkit"):
 			// buildkit instructions
 			// COPY ./foo /foo # buildkit
@@ -147,6 +147,11 @@ func buildRunInstruction(s string) string {
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
+	// Config.Healthcheck can be null even when a HEALTHCHECK history line exists
+	// if the image was re-committed by a tool that normalizes HEALTHCHECK NONE to null.
+	if health == nil {
+		return "HEALTHCHECK NONE"
+	}
 	var interval, timeout, startPeriod, retries, command string
 	if health.Interval != 0 {
 		interval = fmt.Sprintf("--interval=%s ", health.Interval)

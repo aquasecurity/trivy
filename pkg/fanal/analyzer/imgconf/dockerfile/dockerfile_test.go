@@ -459,6 +459,17 @@ ENTRYPOINT ["/bin/sh"]
 `,
 		},
 		{
+			name: "healthcheck history without resolved config",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK NONE",
+					},
+				},
+			},
+			expected: "HEALTHCHECK NONE\n",
+		},
+		{
 			name: "legacy env format",
 			input: &v1.ConfigFile{
 				History: []v1.History{
@@ -468,6 +479,27 @@ ENTRYPOINT ["/bin/sh"]
 				},
 			},
 			expected: "ENV TEST=\"foo bar\"\n",
+		},
+		// To reproduce test data:
+		// DOCKER_BUILDKIT=0 docker build -t test-legacy - <<'EOF'
+		// FROM alpine:3.21
+		// RUN echo hello
+		// RUN apk add --no-cache curl
+		// EOF
+		// docker history --no-trunc --format '{{json .}}' test-legacy
+		{
+			name: "legacy builder RUN instruction",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "/bin/sh -c echo hello",
+					},
+					{
+						CreatedBy: "/bin/sh -c apk add --no-cache curl",
+					},
+				},
+			},
+			expected: "RUN echo hello\nRUN apk add --no-cache curl\n",
 		},
 	}
 

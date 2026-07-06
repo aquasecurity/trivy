@@ -333,7 +333,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
 		// Use license.name for everything else (invalid SPDX ID, SPDX expression, etc.)
 		return cdx.LicenseChoice{License: &cdx.License{Name: expr.String()}}
 	})
-	return lo.ToPtr(cdx.Licenses(choices))
+	return new(cdx.Licenses(choices))
 }
 
 func (m *Marshaler) normalizeLicense(license string) expression.Expression {
@@ -488,6 +488,9 @@ func (m *Marshaler) ratings(vuln core.Vulnerability) *[]cdx.VulnerabilityRating 
 			if cvss.V3Score != 0 || cvss.V3Vector != "" {
 				rates = append(rates, m.ratingV3(sourceID, severity, cvss))
 			}
+			if cvss.V40Score != 0 || cvss.V40Vector != "" {
+				rates = append(rates, m.ratingV4(sourceID, severity, cvss))
+			}
 		} else { // When the vendor provides only severity
 			rate := cdx.VulnerabilityRating{
 				Source: &cdx.Source{
@@ -548,6 +551,18 @@ func (m *Marshaler) ratingV3(sourceID dtypes.SourceID, severity dtypes.Severity,
 		rate.Method = cdx.ScoringMethodCVSSv31
 	}
 	return rate
+}
+
+func (m *Marshaler) ratingV4(sourceID dtypes.SourceID, severity dtypes.Severity, cvss dtypes.CVSS) cdx.VulnerabilityRating {
+	return cdx.VulnerabilityRating{
+		Source: &cdx.Source{
+			Name: string(sourceID),
+		},
+		Score:    &cvss.V40Score,
+		Method:   cdx.ScoringMethodCVSSv4,
+		Severity: m.severity(severity),
+		Vector:   cvss.V40Vector,
+	}
 }
 
 // severity converts the Trivy severity to the CycloneDX severity

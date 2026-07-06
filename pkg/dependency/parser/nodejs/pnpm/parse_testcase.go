@@ -1069,4 +1069,25 @@ var (
 			},
 		},
 	}
+
+	// pnpm 11 stores the env lockfile (config and package manager dependencies)
+	// as the first YAML document, separated by `---`. Only the project
+	// dependencies from the second document must be parsed; the package manager
+	// environment (pnpm, @pnpm/exe, etc.) is skipped.
+	//
+	// docker run --rm node@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203 sh -c '
+	//   npm install -g pnpm@11.7.0
+	//   mkdir /app && cd /app
+	//   pnpm init
+	//   pnpm add is-number@7.0.0
+	//   cat pnpm-lock.yaml'
+	pnpmV9MultipleDocuments = []ftypes.Package{
+		{
+			ID:           "is-number@7.0.0",
+			Name:         "is-number",
+			Version:      "7.0.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9MultipleDocumentsDeps = []ftypes.Dependency{}
 )

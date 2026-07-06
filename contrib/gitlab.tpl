@@ -88,20 +88,17 @@
         }
       ],
       "links": [
-        {{- $l_first := true -}}
+        {{- $links := list -}}
         {{- range .References -}}
-        {{- if $l_first -}}
-          {{- $l_first = false }}
-        {{- else -}}
-          ,
+          {{- if . | regexMatch "^(https?|ftp)://.+" -}}
+            {{- $links = append $links . -}}
+          {{- end -}}
         {{- end -}}
-        {{- if . | regexMatch "^(https?|ftp)://.+" -}}
+        {{- range $i, $url := $links }}
+        {{- if $i }},{{ end }}
         {
-          "url": "{{ . }}"
+          "url": "{{ $url }}"
         }
-        {{- else -}}
-          {{- $l_first = true }}
-        {{- end -}}
         {{- end }}
       ]
     }

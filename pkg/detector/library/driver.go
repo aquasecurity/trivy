@@ -1,7 +1,6 @@
 package library
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/samber/lo"
@@ -114,16 +113,24 @@ func (d *Driver) Type() string {
 // It allows us to add a new data source with the ecosystem prefix (e.g. pip::new-data-source)
 // and detect vulnerabilities without specifying a specific bucket name.
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
-	// e.g. "pip::", "npm::"
-	prefix := fmt.Sprintf("%s::", d.ecosystem)
-	advisories, err := d.dbc.GetAdvisories(prefix, vulnerability.NormalizePkgName(d.ecosystem, pkgName))
+	normalizedName := vulnerability.NormalizePkgName(d.ecosystem, pkgName)
+
+	// Resolve advisory prefix and comparer based on package info.
+	// For vendor packages (e.g. Seal Security), uses a vendor-specific prefix and comparer.
+	prefix := defaultBucketPrefix(d.ecosystem)
+	comparer := d.comparer
+	if v, ok := lookupVendor(d.ecosystem, normalizedName, pkgVer); ok {
+		prefix = v.BucketPrefix(d.ecosystem)
+		comparer = v.Comparer(d.ecosystem, d.comparer)
+	}
+	advisories, err := d.dbc.GetAdvisories(prefix, normalizedName)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
 
 	var vulns []types.DetectedVulnerability
 	for _, adv := range advisories {
-		if !d.comparer.IsVulnerable(pkgVer, adv) {
+		if !comparer.IsVulnerable(pkgVer, adv) {
 			continue
 		}
 

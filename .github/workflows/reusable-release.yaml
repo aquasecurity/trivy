@@ -11,6 +11,19 @@ on:
         default: ''
         required: false
         type: string
+    secrets:
+      DOCKERHUB_USER:
+        required: true
+      DOCKERHUB_TOKEN:
+        required: true
+      ECR_ACCESS_KEY_ID:
+        required: true
+      ECR_SECRET_ACCESS_KEY:
+        required: true
+      GPG_KEY:
+        required: true
+      GPG_PASSPHRASE:
+        required: true
 
 env:
   GH_USER: "aqua-bot"
@@ -18,42 +31,46 @@ env:
 jobs:
   release:
     name: Release
-    runs-on: ubuntu-latest-m
+    runs-on: ubuntu-2404-4core
     env:
       DOCKER_CLI_EXPERIMENTAL: "enabled"
     permissions:
       id-token: write # For cosign
       packages: write # For GHCR
-      contents: read  # Not required for public repositories, but for clarity
+      contents: write # For GoReleaser to create the GitHub Release
+      discussions: write # For GoReleaser to attach the release to a Discussion (discussion_category_name)
+      attestations: write # For build provenance attestations
     steps:
       - name: Cosign install
-        uses: sigstore/cosign-installer@faadad0cce49287aee09b3a48701e75088a2c6ad # v4.0.0
+        uses: sigstore/cosign-installer@6f9f17788090df1f26f669e9d70d6ae9567deba6 # v4.1.2
 
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@c7c53464625b32c7a7e944ae62b3e17d2b600130 # v3.7.0
+        uses: docker/setup-qemu-action@06116385d9baf250c9f4dcb4858b16962ea869c3 # v4.1.0
 
       - name: Set up Docker Buildx
         id: buildx
-        uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3.12.0
+        uses: docker/setup-buildx-action@d7f5e7f509e45cec5c76c4d5afdd7de93d0b3df5 # v4.1.0
 
       - name: Show available Docker Buildx platforms
-        run: echo ${{ steps.buildx.outputs.platforms }}
+        env:
+          PLATFORMS: ${{ steps.buildx.outputs.platforms }}
+        run: echo "${PLATFORMS}"
 
       - name: Login to docker.io registry
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           username: ${{ secrets.DOCKERHUB_USER }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Login to ghcr.io registry
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: ghcr.io
           username: ${{ env.GH_USER }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Login to ECR
-        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: public.ecr.aws
           username: ${{ secrets.ECR_ACCESS_KEY_ID }}
@@ -63,6 +80,7 @@ jobs:
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - name: Setup Go
         uses: ./.github/actions/setup-go
@@ -85,12 +103,13 @@ jobs:
           mkdir tmp    
 
       - name: GoReleaser
-        uses: goreleaser/goreleaser-action@ec59f474b9834571250b370d4735c50f8e2d1e29 # v7.0.0
+        id: goreleaser
+        uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
         with:
-          version: v2.1.0
+          version: v2.16.0
           args: release -f=${{ inputs.goreleaser_config}} ${{ inputs.goreleaser_options}}
         env:
-          GITHUB_TOKEN: ${{ secrets.ORG_REPO_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           NFPM_DEFAULT_RPM_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           GPG_FILE: "gpg.key"
           TMPDIR: "tmp"
@@ -104,7 +123,7 @@ jobs:
       # because GoReleaser Free doesn't support pushing images with the `--snapshot` flag.
       - name: Build and push
         if: ${{ inputs.goreleaser_config == 'goreleaser-canary.yml' }}
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6.19.2
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           platforms: linux/amd64, linux/arm64
           file: ./Dockerfile.canary # path to Dockerfile
@@ -115,8 +134,18 @@ jobs:
             ghcr.io/aquasecurity/trivy:canary
             public.ecr.aws/aquasecurity/trivy:canary
 
+      - name: Generate build provenance attestations
+        if: ${{ inputs.goreleaser_config != 'goreleaser-canary.yml' }}
+        uses: actions/attest@59d89421af93a897026c735860bf21b6eb4f7b26 # v4.1.0
+        with:
+          subject-checksums: dist/trivy_${{ fromJSON(steps.goreleaser.outputs.metadata).version }}_checksums.txt
+
+      # This workflow is only triggered by tag pushes (release.yaml: on.push.tags), which require
+      # maintainer access. Fork PRs cannot reach this code path, so the cache cannot be poisoned
+      # by external contributors. The key is scoped to github.sha, making cross-run collisions
+      # impossible. Cache is written here and read only by the deploy-packages job in release.yaml.
       - name: Cache Trivy binaries
-        uses: actions/cache@cdf6c1fa76f9f475f3d7449005a359c84ca0f306 # v5.0.3
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # zizmor: ignore[cache-poisoning] # v5.0.5
         with:
           path: dist/
           # use 'github.sha' to create a unique cache folder for each run.
