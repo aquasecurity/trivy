@@ -366,6 +366,92 @@ func TestDriver_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			// No-prefix name (no seal- prefix) detected by the "+spN" version
+			// suffix. Also exercises the pip AllowLocalSpecifier comparer on the
+			// Matched-by-suffix path.
+			name: "seal security pip no-prefix package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "django",
+				pkgVer:  "4.2.8+sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "django",
+					InstalledVersion: "4.2.8+sp1",
+					FixedVersion:     "4.2.8+sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			// No-prefix candidate ("-spN") confirmed against the seal bucket.
+			name: "seal security npm no-prefix package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Npm,
+			args: args{
+				pkgName: "ejs",
+				pkgVer:  "3.1.8-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-33883",
+					PkgName:          "ejs",
+					InstalledVersion: "3.1.8-sp1",
+					FixedVersion:     "3.1.8-sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			// A "-spN" Go package that is NOT in the seal bucket falls back to the
+			// default ecosystem bucket (e.g. a real package that happens to use the
+			// same suffix). Confirms the candidate fallback behavior.
+			name: "go package with sp suffix falls back to default bucket",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "github.com/Masterminds/vcs",
+				pkgVer:  "v1.13.1-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2022-21235",
+					VendorIDs: []string{
+						"GHSA-6635-c626-vj4r",
+					},
+					PkgName:          "github.com/Masterminds/vcs",
+					InstalledVersion: "v1.13.1-sp1",
+					FixedVersion:     "v1.13.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
+						Name: "GitLab Advisory Database Community",
+						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
