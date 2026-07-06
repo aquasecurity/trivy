@@ -2,6 +2,26 @@
 Trivy provides built-in checks to detect configuration issues in popular Infrastructure as Code files, such as: Docker, Kubernetes, Terraform, CloudFormation, and more. 
 In addition to built-in checks, you can write your own custom checks, as you can see [here][custom].
 
+## When to Use Misconfiguration Scanning
+
+Misconfiguration scanning complements vulnerability scanning by focusing on infrastructure and application configuration issues rather than software vulnerabilities.
+
+| Scenario | Recommended Scanner |
+|----------|---------------------|
+| Detect known CVEs in dependencies | [Vulnerability Scanner](vulnerability.md) |
+| Find insecure Dockerfile practices | **Misconfiguration Scanner** |
+| Check Kubernetes security best practices | **Misconfiguration Scanner** |
+| Audit Terraform/CloudFormation configs | **Misconfiguration Scanner** |
+| Scan for hardcoded secrets | [Secret Scanner](secret.md) |
+| Comprehensive security audit | Use `--scanners vuln,misconfig,secret` |
+
+**Key differences from vulnerability scanning:**
+
+- **Vulnerability scanning** detects known security issues in software packages (CVEs)
+- **Misconfiguration scanning** detects security anti-patterns in configuration files and infrastructure code
+
+You can combine multiple scanners in a single scan using `--scanners vuln,misconfig,secret` to get comprehensive coverage.
+
 ## Quick start
 
 Simply specify a directory containing IaC files such as Terraform, CloudFormation, Azure ARM templates, Helm Charts and Dockerfile.
