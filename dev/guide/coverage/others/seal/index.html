@@ -4300,10 +4300,21 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#supported-ecosystems" class="md-nav__link">
+  <a href="#renamed-packages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Supported Ecosystems
+        Renamed packages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-prefix-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No-prefix packages
       
     </span>
   </a>
@@ -8484,10 +8495,21 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#supported-ecosystems" class="md-nav__link">
+  <a href="#renamed-packages" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Supported Ecosystems
+        Renamed packages
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#no-prefix-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        No-prefix packages
       
     </span>
   </a>
@@ -8553,8 +8575,16 @@ Seal provides security advisories and patched versions for both OS packages and 
 <li><a href="../../os/azure/">Azure Linux (CBL‑Mariner)</a></li>
 </ul>
 <h2 id="application-dependencies">Application Dependencies<a class="headerlink" href="#application-dependencies" title="Permanent link">&para;</a></h2>
-<p>Seal also provides patched versions of application dependencies with their own vulnerability advisories. Trivy automatically detects Seal-patched packages based on special naming patterns specific to each ecosystem.</p>
-<h3 id="supported-ecosystems">Supported Ecosystems<a class="headerlink" href="#supported-ecosystems" title="Permanent link">&para;</a></h3>
+<p>Seal also provides patched versions of application dependencies, shipped under two naming schemes: <a href="#renamed-packages">renamed</a> and <a href="#no-prefix-packages">no-prefix</a>. Trivy detects both and uses Seal Security's own advisories for vulnerability scanning instead of the upstream ones.</p>
+<p>Both public (<code>spN</code>) and private (<code>spNpM</code>) sealed versions are recognized. A private version carries an extra <code>pM</code> iteration on top of the sealed version, for example <code>ejs</code> <code>3.1.8-sp2p1</code>.</p>
+<p>For details on Seal's naming and versioning, see the Seal documentation:</p>
+<ul>
+<li><a href="https://docs.sealsecurity.io/reference/naming-and-versioning/sp-model">The <code>-sp[N]</code> model</a></li>
+<li><a href="https://docs.sealsecurity.io/reference/naming-and-versioning/per-ecosystem">Per-ecosystem nuances</a></li>
+<li><a href="https://docs.sealsecurity.io/reference/naming-and-versioning/renamed-packages">Renamed packages</a></li>
+</ul>
+<h3 id="renamed-packages">Renamed packages<a class="headerlink" href="#renamed-packages" title="Permanent link">&para;</a></h3>
+<p>Renamed packages carry an ecosystem-specific name prefix and, except for Maven, also carry the <code>spN</code> version suffix. See the <a href="https://docs.sealsecurity.io/reference/naming-and-versioning/renamed-packages">Seal documentation</a> for the full naming and versioning details.</p>
 <table>
 <thead>
 <tr>
@@ -8567,17 +8597,17 @@ Seal provides security advisories and patched versions for both OS packages and 
 <tr>
 <td>Python (pip)</td>
 <td><code>seal-*</code></td>
-<td><code>seal-requests</code></td>
+<td><code>seal-requests</code> <code>2.14.2+sp1</code></td>
 </tr>
 <tr>
 <td>Node.js (npm)</td>
 <td><code>@seal-security/*</code></td>
-<td><code>@seal-security/ejs</code></td>
+<td><code>@seal-security/ejs</code> <code>3.1.8-sp1</code></td>
 </tr>
 <tr>
 <td>Go</td>
 <td><code>sealsecurity.io/*</code></td>
-<td><code>sealsecurity.io/github.com/Masterminds/goutils</code></td>
+<td><code>sealsecurity.io/github.com/Masterminds/goutils</code> <code>1.1.1-sp1</code></td>
 </tr>
 <tr>
 <td>Java (Maven)</td>
@@ -8587,11 +8617,53 @@ Seal provides security advisories and patched versions for both OS packages and 
 <tr>
 <td>Ruby (RubyGems)</td>
 <td><code>seal-*</code></td>
-<td><code>seal-rack</code></td>
+<td><code>seal-rack</code> <code>2.0.7.0.1.sp1</code></td>
 </tr>
 </tbody>
 </table>
-<p>When Trivy detects packages matching these patterns, it automatically uses Seal Security advisories for vulnerability scanning.</p>
+<h3 id="no-prefix-packages">No-prefix packages<a class="headerlink" href="#no-prefix-packages" title="Permanent link">&para;</a></h3>
+<p>Some Seal packages keep their upstream (no-prefix) name and only add a patch-level version suffix. Trivy detects these by the version suffix:</p>
+<table>
+<thead>
+<tr>
+<th>Ecosystem</th>
+<th>Version Suffix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Java (Maven)</td>
+<td><code>+spN</code></td>
+<td><code>org.eclipse.jetty:jetty-http</code> <code>9.4.48+sp1</code></td>
+</tr>
+<tr>
+<td>Python (pip)</td>
+<td><code>+spN</code></td>
+<td><code>requests</code> <code>2.14.2+sp1</code></td>
+</tr>
+<tr>
+<td>Node.js (npm)</td>
+<td><code>-spN</code></td>
+<td><code>ejs</code> <code>3.1.8-sp1</code></td>
+</tr>
+<tr>
+<td>Go</td>
+<td><code>-spN</code></td>
+<td><code>golang.org/x/crypto</code> <code>0.26.0-sp1</code></td>
+</tr>
+<tr>
+<td>Ruby (RubyGems)</td>
+<td><code>.0.1.spN</code></td>
+<td><code>rack</code> <code>2.0.7.0.1.sp1</code></td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>For Maven and pip, the <code>+spN</code> suffix cannot collide with real package versions, so the match is authoritative.
+For npm, Go, and Ruby, the <code>-spN</code> / <code>.0.1.spN</code> suffix can also appear on real packages, so Trivy confirms the match by looking the package up in the Seal advisory database; if the package is not found there, it falls back to the standard ecosystem advisories.</p>
+</div>
 
 
 
