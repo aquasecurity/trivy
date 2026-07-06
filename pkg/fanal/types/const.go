@@ -143,6 +143,7 @@ var (
 		Alpine,
 		Amazon,
 		Azure,
+		Bottlerocket,
 		CBLMariner,
 		CentOS,
 		CentOSStream,

@@ -172,6 +172,7 @@ trivy filesystem [flags] PATH
                                             - bitnami
                                             - govulndb
                                             - julia
+                                            - bottlerocket
                                             - echo
                                             - minimos
                                             - rootio

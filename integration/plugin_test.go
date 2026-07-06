@@ -44,8 +44,8 @@ func TestPlugin(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// We can overwrite stdout for `_default_Manager` only once.
-			// So we need to clear the temporary stdout file before each test case.
+			// The output plugin appends to os.Stdout (redirected to tempStdOut),
+			// so clear it before each test case.
 			clearFile(t, tempStdOut)
 
 			t.Setenv("XDG_DATA_HOME", t.TempDir())

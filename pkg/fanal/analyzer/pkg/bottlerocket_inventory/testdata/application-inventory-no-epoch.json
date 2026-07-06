@@ -1,0 +1,26 @@
+{
+  "Content": [
+    {
+      "Name": "acpid",
+      "Publisher": "Bottlerocket",
+      "Version": "1.19.2",
+      "Release": "29cc92cc",
+      "InstalledTime": "2024-02-23T02:40:40Z",
+      "ApplicationType": "Unspecified",
+      "Architecture": "x86_64",
+      "Url": "http://sourceforge.net/projects/acpid2/",
+      "Summary": "ACPI event daemon"
+    },
+    {
+      "Name": "systemd",
+      "Publisher": "Bottlerocket",
+      "Version": "1.19.2",
+      "Release": "29cc92cc",
+      "InstalledTime": "2024-02-23T02:40:40Z",
+      "ApplicationType": "Unspecified",
+      "Architecture": "x86_64",
+      "Url": "https://www.freedesktop.org/wiki/Software/systemd",
+      "Summary": "System and Service Manager"
+    }
+  ]
+}
