@@ -478,10 +478,8 @@ func TestDiscoverInvalidPURL(t *testing.T) {
 
 func TestReadLayerSizeLimit(t *testing.T) {
 	limit := 16
-	oci.SetMaxAttestationSize(t, limit)
-
 	layer := static.NewLayer(bytes.Repeat([]byte("x"), limit+1), "application/octet-stream")
-	_, err := oci.ReadLayer(layer)
+	_, err := oci.ReadLayer(layer, limit)
 	require.ErrorContains(t, err, "exceeds the size limit")
 }
 

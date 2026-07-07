@@ -30,17 +30,19 @@ var supportedVEXArtifactTypes = set.New(
 	coreoci.DSSEEnvelopeArtifactType,
 )
 
-// maxAttestations bounds how many attestations we will fetch and decode for a
-// single image before giving up, applied to both legacy `.att` layers and OCI
-// 1.1 referrers carrying a VEX artifact type. cosign caps the number of
-// attestations per image at 100; mirror that to avoid unbounded fetches from a
-// hostile registry that attaches many non-OpenVEX attestations.
-const maxAttestations = 100
+const (
+	// maxAttestations bounds how many attestations we will fetch and decode for a
+	// single image before giving up, applied to both legacy `.att` layers and OCI
+	// 1.1 referrers carrying a VEX artifact type. cosign caps the number of
+	// attestations per image at 100; mirror that to avoid unbounded fetches from a
+	// hostile registry that attaches many non-OpenVEX attestations.
+	maxAttestations = 100
 
-// maxAttestationSize bounds the uncompressed size of a single attestation layer
-// read into memory, guarding against decompression bombs (CWE-409) served by a
-// hostile registry. OpenVEX documents are small (KiB-MiB).
-var maxAttestationSize = 50 << 20 // 50 MiB
+	// maxAttestationSize bounds the uncompressed size of a single attestation layer
+	// read into memory, guarding against decompression bombs (CWE-409) served by a
+	// hostile registry. OpenVEX documents are small (KiB-MiB).
+	maxAttestationSize = 50 << 20 // 50 MiB
+)
 
 // Discover fetches the OpenVEX document attached to an OCI artifact, addressed by
 // its package URL, using the given registry options for authentication and
@@ -185,7 +187,7 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 	// skip layers that are not OpenVEX or that fail to decode.
 	logger := log.WithPrefix("vex").With(log.String("type", "oci"))
 	for _, layer := range layers {
-		blob, err := readLayer(layer)
+		blob, err := readLayer(layer, maxAttestationSize)
 		if err != nil {
 			return nil, err
 		}
@@ -214,7 +216,7 @@ func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptio
 	if len(layers) != 1 {
 		return nil, xerrors.New("OCI artifact must be a single layer")
 	}
-	return readLayer(layers[0])
+	return readLayer(layers[0], maxAttestationSize)
 }
 
 // fetchAttestationLayers returns the layers of the attestation image at the given reference.
@@ -236,19 +238,19 @@ func fetchAttestationLayers(ctx context.Context, ref name.Reference, registryOpt
 	return layers, nil
 }
 
-func readLayer(layer v1.Layer) ([]byte, error) {
+func readLayer(layer v1.Layer, maxSize int) ([]byte, error) {
 	rc, err := layer.Uncompressed()
 	if err != nil {
 		return nil, xerrors.Errorf("failed to fetch the layer: %w", err)
 	}
 	defer rc.Close()
 
-	blob, err := io.ReadAll(io.LimitReader(rc, int64(maxAttestationSize)+1))
+	blob, err := io.ReadAll(io.LimitReader(rc, int64(maxSize)+1))
 	if err != nil {
 		return nil, xerrors.Errorf("read layer error: %w", err)
 	}
-	if len(blob) > maxAttestationSize {
-		return nil, xerrors.Errorf("attestation layer exceeds the size limit of %d bytes", maxAttestationSize)
+	if len(blob) > maxSize {
+		return nil, xerrors.Errorf("attestation layer exceeds the size limit of %d bytes", maxSize)
 	}
 	return blob, nil
 }
