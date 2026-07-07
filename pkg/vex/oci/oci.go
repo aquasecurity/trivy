@@ -14,20 +14,21 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/attestation"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	coreoci "github.com/aquasecurity/trivy/pkg/oci"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var supportedVEXArtifactTypes = set.New(
-	coreoci.SigstoreBundleArtifactType,
-	coreoci.DSSEEnvelopeArtifactType,
+	oci.SigstoreBundleArtifactType,
+	oci.DSSEEnvelopeArtifactType,
 )
 
 const (
@@ -115,7 +116,10 @@ func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftyp
 }
 
 func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
-	index, err := remote.Referrers(ctx, digest, registryOptions)
+	// A VEX artifact type (Sigstore bundle / DSSE envelope) is shared by every
+	// Cosign attestation, not just VEX, so an image may expose SBOM or SLSA
+	// provenance referrers alongside (or instead of) a VEX one.
+	descs, err := oci.Referrers(ctx, digest, registryOptions, supportedVEXArtifactTypes)
 	if err != nil {
 		if isReferrersUnavailable(err) {
 			log.WithPrefix("vex").Debug("OCI referrers are not available", log.Err(err))
@@ -124,29 +128,10 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 		return nil, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
 
-	manifest, err := index.IndexManifest()
-	if err != nil {
-		return nil, xerrors.Errorf("unable to get referrers manifest: %w", err)
-	}
-	if manifest == nil {
-		return nil, nil
-	}
-
-	// A VEX artifact type (Sigstore bundle / DSSE envelope) is shared by every
-	// Cosign attestation, not just VEX, so an image may expose SBOM or SLSA
-	// provenance referrers alongside (or instead of) a VEX one. Decode each
-	// candidate and return the first OpenVEX document, skipping the rest; cap the
-	// number processed so a hostile registry cannot make us fetch unboundedly.
-	processed := 0
-	for _, desc := range manifest.Manifests {
-		if !supportedVEXArtifactTypes.Contains(desc.ArtifactType) {
-			continue
-		}
-		if processed >= maxAttestations {
-			return nil, xerrors.Errorf("too many VEX referrers: processed %d (max %d)", processed, maxAttestations)
-		}
-		processed++
-
+	// Decode each candidate and return the first OpenVEX document, skipping the
+	// rest; cap the number processed so a hostile registry cannot make us fetch
+	// unboundedly.
+	for _, desc := range lo.Slice(descs, 0, maxAttestations) {
 		ref := digest.Context().Digest(desc.Digest.String())
 		blob, err := fetchAttestationBlob(ctx, ref, registryOptions)
 		if err != nil {
@@ -193,7 +178,7 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 		}
 		// Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
 		// bundle format is only used for OCI 1.1 referrers.
-		vexDoc, err := decodeOpenVEXAttestation(blob, coreoci.DSSEEnvelopeArtifactType)
+		vexDoc, err := decodeOpenVEXAttestation(blob, oci.DSSEEnvelopeArtifactType)
 		if err != nil {
 			logger.Debug("Skipping malformed legacy attestation layer", log.Err(err))
 			continue
@@ -270,7 +255,7 @@ func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, e
 	var predicate openvex.VEX
 	statement := attestation.Statement{Predicate: &predicate}
 
-	if artifactType == coreoci.SigstoreBundleArtifactType {
+	if artifactType == oci.SigstoreBundleArtifactType {
 		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
 		if err := json.Unmarshal(blob, &bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)
