@@ -120,12 +120,12 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	// A VEX artifact type (Sigstore bundle / DSSE envelope) is shared by every
 	// Cosign attestation, not just VEX, so an image may expose SBOM or SLSA
 	// provenance referrers alongside (or instead of) a VEX one.
+	//
+	// A registry with no referrers (API unsupported or nothing attached) yields an
+	// empty descs that falls through to the legacy path below, so an error here is
+	// a genuine failure worth surfacing.
 	descs, err := oci.Referrers(ctx, digest, registryOptions, supportedVEXArtifactTypes)
 	if err != nil {
-		if isReferrersUnavailable(err) {
-			log.WithPrefix("vex").Debug("OCI referrers are not available", log.Err(err))
-			return nil, nil
-		}
 		return nil, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
 
@@ -272,12 +272,6 @@ func decodeOpenVEXAttestation(r io.Reader, artifactType string) (*openvex.VEX, e
 // "/" keeps look-alikes like "https://openvex.dev/nsx" from matching.
 func isOpenVEXPredicateType(predicateType string) bool {
 	return predicateType == openvex.TypeURI || strings.HasPrefix(predicateType, openvex.TypeURI+"/")
-}
-
-// isReferrersUnavailable reports whether err means the registry has no OCI 1.1
-// referrers for the digest (the API is not implemented or nothing is attached).
-func isReferrersUnavailable(err error) bool {
-	return isNotFound(err) || hasErrorCode(err, transport.UnsupportedErrorCode)
 }
 
 func isNotFound(err error) bool {

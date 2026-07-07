@@ -3,9 +3,7 @@ package oci_test
 import (
 	"encoding/base64"
 	"encoding/json"
-	"errors"
 	"fmt"
-	"net/http"
 	"net/http/httptest"
 	"net/url"
 	"os"
@@ -18,9 +16,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/v1/empty"
 	"github.com/google/go-containerregistry/pkg/v1/mutate"
 	ggcrremote "github.com/google/go-containerregistry/pkg/v1/remote"
-	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
 	"github.com/google/go-containerregistry/pkg/v1/static"
-	"github.com/hashicorp/go-multierror"
 	"github.com/in-toto/in-toto-golang/in_toto"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
@@ -487,70 +483,6 @@ func TestDiscoverInvalidPURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := oci.Discover(t.Context(), tt.purl, ftypes.RegistryOptions{})
 			require.ErrorContains(t, err, tt.wantErr)
-		})
-	}
-}
-
-func TestIsReferrersUnavailable(t *testing.T) {
-	tests := []struct {
-		name string
-		err  error
-		want bool
-	}{
-		{
-			name: "nil error",
-			err:  nil,
-			want: false,
-		},
-		{
-			name: "non-transport error",
-			err:  errors.New("boom"),
-			want: false,
-		},
-		{
-			name: "404 Not Found",
-			err:  &transport.Error{StatusCode: http.StatusNotFound},
-			want: true,
-		},
-		{
-			name: "MANIFEST_UNKNOWN code",
-			err:  &transport.Error{Errors: []transport.Diagnostic{{Code: transport.ManifestUnknownErrorCode}}},
-			want: true,
-		},
-		{
-			name: "NAME_UNKNOWN code",
-			err:  &transport.Error{Errors: []transport.Diagnostic{{Code: transport.NameUnknownErrorCode}}},
-			want: true,
-		},
-		{
-			name: "UNSUPPORTED code (referrers API not implemented)",
-			err:  &transport.Error{Errors: []transport.Diagnostic{{Code: transport.UnsupportedErrorCode}}},
-			want: true,
-		},
-		{
-			name: "UNSUPPORTED wrapped in a multierror",
-			err: multierror.Append(errors.New("auth attempt failed"),
-				&transport.Error{Errors: []transport.Diagnostic{{Code: transport.UnsupportedErrorCode}}}),
-			want: true,
-		},
-		{
-			name: "other transport error",
-			err:  &transport.Error{StatusCode: http.StatusInternalServerError},
-			want: false,
-		},
-		{
-			name: "unauthorized is not 'unsupported'",
-			err: &transport.Error{
-				StatusCode: http.StatusUnauthorized,
-				Errors:     []transport.Diagnostic{{Code: transport.UnauthorizedErrorCode}},
-			},
-			want: false,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.want, oci.IsReferrersUnavailable(tt.err))
 		})
 	}
 }
