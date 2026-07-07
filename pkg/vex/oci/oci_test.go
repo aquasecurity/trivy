@@ -1,7 +1,6 @@
 package oci_test
 
 import (
-	"bytes"
 	"encoding/base64"
 	"encoding/json"
 	"errors"
@@ -11,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/google/go-containerregistry/pkg/authn"
@@ -362,6 +362,21 @@ func TestDiscover(t *testing.T) {
 			},
 			want: map[string]bool{"CVE-2022-3715": true},
 		},
+		{
+			name: "oversized attestation exceeds size limit",
+			setup: func(t *testing.T) string {
+				repo := "debian/oversized"
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				// A syntactically valid DSSE envelope whose payload exceeds
+				// maxAttestationSize, generated on the fly (no fixture). Decoding must be
+				// bounded and fail rather than read it all into memory.
+				envelope := fmt.Appendf(nil, `{"payloadType":%q,"payload":%q,"signatures":null}`,
+					"application/vnd.in-toto+json", strings.Repeat("A", 21<<20))
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType, envelope)
+				return registryHost + "/" + repo + ":latest"
+			},
+			wantErr: "unexpected EOF", // truncated by the size limit
+		},
 	}
 
 	for _, tt := range tests {
@@ -474,13 +489,6 @@ func TestDiscoverInvalidPURL(t *testing.T) {
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}
-}
-
-func TestReadLayerSizeLimit(t *testing.T) {
-	limit := 16
-	layer := static.NewLayer(bytes.Repeat([]byte("x"), limit+1), "application/octet-stream")
-	_, err := oci.ReadLayer(layer, limit)
-	require.ErrorContains(t, err, "exceeds the size limit")
 }
 
 func TestIsReferrersUnavailable(t *testing.T) {

@@ -41,8 +41,9 @@ const (
 
 	// maxAttestationSize bounds the uncompressed size of a single attestation layer
 	// read into memory, guarding against decompression bombs (CWE-409) served by a
-	// hostile registry. OpenVEX documents are small (KiB-MiB).
-	maxAttestationSize = 50 << 20 // 50 MiB
+	// hostile registry. Real-world OpenVEX documents are a few MB at most, so 20 MiB
+	// leaves ample headroom.
+	maxAttestationSize = 20 << 20 // 20 MiB
 )
 
 // Discover fetches the OpenVEX document attached to an OCI artifact, addressed by
@@ -132,15 +133,9 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	// rest; cap the number processed so a hostile registry cannot make us fetch
 	// unboundedly.
 	for _, desc := range lo.Slice(descs, 0, maxAttestations) {
-		ref := digest.Context().Digest(desc.Digest.String())
-		blob, err := fetchAttestationBlob(ctx, ref, registryOptions)
+		vexDoc, err := fetchReferrerVEX(ctx, digest, desc, registryOptions)
 		if err != nil {
-			return nil, xerrors.Errorf("referrer blob error (%s): %w", desc.Digest.String(), err)
-		}
-
-		vexDoc, err := decodeOpenVEXAttestation(blob, desc.ArtifactType)
-		if err != nil {
-			return nil, xerrors.Errorf("referrer decode error (%s): %w", desc.Digest.String(), err)
+			return nil, err
 		}
 		if vexDoc == nil {
 			continue // a valid attestation, but not OpenVEX (e.g. SBOM); try the next referrer
@@ -170,38 +165,54 @@ func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions 
 	// an image may carry several attestations (e.g. an SBOM and an OpenVEX document)
 	// as separate layers. Return the first layer that decodes to an OpenVEX document;
 	// skip layers that are not OpenVEX or that fail to decode.
-	logger := log.WithPrefix("vex").With(log.String("type", "oci"))
 	for _, layer := range layers {
-		blob, err := readLayer(layer, maxAttestationSize)
+		vexDoc, err := decodeLegacyLayer(layer)
 		if err != nil {
 			return nil, err
 		}
-		// Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
-		// bundle format is only used for OCI 1.1 referrers.
-		vexDoc, err := decodeOpenVEXAttestation(blob, oci.DSSEEnvelopeArtifactType)
-		if err != nil {
-			logger.Debug("Skipping malformed legacy attestation layer", log.Err(err))
-			continue
-		}
 		if vexDoc == nil {
-			continue // a valid attestation, but not OpenVEX (e.g. SBOM); try the next layer
+			continue // not OpenVEX, malformed, or an SBOM; try the next layer
 		}
 		return vexDoc, nil
 	}
 	return nil, nil
 }
 
-// fetchAttestationBlob returns the content of a single-layer attestation
-// artifact (an OCI 1.1 referrer manifest).
-func fetchAttestationBlob(ctx context.Context, ref name.Reference, registryOptions ftypes.RegistryOptions) ([]byte, error) {
-	layers, err := fetchAttestationLayers(ctx, ref, registryOptions)
+// fetchReferrerVEX fetches a single OCI 1.1 referrer artifact and decodes its
+// OpenVEX attestation. It returns nil when the referrer is a valid attestation
+// but not an OpenVEX document (e.g. an SBOM sharing the artifact type).
+func fetchReferrerVEX(ctx context.Context, digest name.Digest, desc v1.Descriptor, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
+	ref := digest.Context().Digest(desc.Digest.String())
+	rc, err := oci.NewArtifact(ref.String(), registryOptions).Blob(ctx)
 	if err != nil {
-		return nil, err
+		return nil, xerrors.Errorf("referrer blob error (%s): %w", desc.Digest.String(), err)
 	}
-	if len(layers) != 1 {
-		return nil, xerrors.New("OCI artifact must be a single layer")
+	defer rc.Close()
+
+	vexDoc, err := decodeOpenVEXAttestation(io.LimitReader(rc, int64(maxAttestationSize)+1), desc.ArtifactType)
+	if err != nil {
+		return nil, xerrors.Errorf("referrer decode error (%s): %w", desc.Digest.String(), err)
 	}
-	return readLayer(layers[0], maxAttestationSize)
+	return vexDoc, nil
+}
+
+// decodeLegacyLayer decodes a single legacy `.att` layer into an OpenVEX
+// document. Legacy `.att` layers are always bare DSSE envelopes; the Sigstore
+// bundle format is only used for OCI 1.1 referrers. A layer that fails to decode
+// is skipped (returns nil, nil) rather than failing the whole scan.
+func decodeLegacyLayer(layer v1.Layer) (*openvex.VEX, error) {
+	rc, err := layer.Uncompressed()
+	if err != nil {
+		return nil, xerrors.Errorf("failed to fetch the layer: %w", err)
+	}
+	defer rc.Close()
+
+	vexDoc, err := decodeOpenVEXAttestation(io.LimitReader(rc, int64(maxAttestationSize)+1), oci.DSSEEnvelopeArtifactType)
+	if err != nil {
+		log.WithPrefix("vex").Debug("Skipping malformed legacy attestation layer", log.Err(err))
+		return nil, nil
+	}
+	return vexDoc, nil
 }
 
 // fetchAttestationLayers returns the layers of the attestation image at the given reference.
@@ -223,45 +234,28 @@ func fetchAttestationLayers(ctx context.Context, ref name.Reference, registryOpt
 	return layers, nil
 }
 
-func readLayer(layer v1.Layer, maxSize int) ([]byte, error) {
-	rc, err := layer.Uncompressed()
-	if err != nil {
-		return nil, xerrors.Errorf("failed to fetch the layer: %w", err)
-	}
-	defer rc.Close()
-
-	blob, err := io.ReadAll(io.LimitReader(rc, int64(maxSize)+1))
-	if err != nil {
-		return nil, xerrors.Errorf("read layer error: %w", err)
-	}
-	if len(blob) > maxSize {
-		return nil, xerrors.Errorf("attestation layer exceeds the size limit of %d bytes", maxSize)
-	}
-	return blob, nil
-}
-
-// decodeOpenVEXAttestation decodes an OpenVEX predicate from an attestation blob.
-// The blob is either a Sigstore bundle (Cosign v3+ new format) wrapping a DSSE
-// envelope, or a bare DSSE envelope (legacy `.att` / OCI 1.1 referrer). In both
-// cases the DSSE payload is an in-toto Statement whose predicate is the OpenVEX
-// document.
+// decodeOpenVEXAttestation decodes an OpenVEX predicate from an attestation
+// stream. The stream is either a Sigstore bundle (Cosign v3+ new format)
+// wrapping a DSSE envelope, or a bare DSSE envelope (legacy `.att` / OCI 1.1
+// referrer). In both cases the DSSE payload is an in-toto Statement whose
+// predicate is the OpenVEX document.
 //
 // It returns (nil, nil) when the attestation is well-formed but its predicate is
 // not OpenVEX (e.g. an SBOM or SLSA provenance attestation sharing the same
 // artifact type), so callers can skip it. An error is returned only when the
-// blob itself cannot be decoded.
-func decodeOpenVEXAttestation(blob []byte, artifactType string) (*openvex.VEX, error) {
+// stream itself cannot be decoded.
+func decodeOpenVEXAttestation(r io.Reader, artifactType string) (*openvex.VEX, error) {
 	// Decode the in-toto predicate directly into the typed OpenVEX struct.
 	var predicate openvex.VEX
 	statement := attestation.Statement{Predicate: &predicate}
 
 	if artifactType == oci.SigstoreBundleArtifactType {
 		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
-		if err := json.Unmarshal(blob, &bundle); err != nil {
+		if err := json.NewDecoder(r).Decode(&bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)
 		}
 		statement = bundle.DSSEEnvelope
-	} else if err := json.Unmarshal(blob, &statement); err != nil {
+	} else if err := json.NewDecoder(r).Decode(&statement); err != nil {
 		return nil, xerrors.Errorf("failed to decode DSSE envelope: %w", err)
 	}
 
