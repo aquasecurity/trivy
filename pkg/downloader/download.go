@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v88/github"
+	"github.com/google/go-github/v89/github"
 	"github.com/hashicorp/go-getter"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
