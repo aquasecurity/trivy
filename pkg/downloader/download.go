@@ -188,8 +188,17 @@ func (t *GitHubContentTransport) RoundTrip(req *http.Request) (*http.Response, e
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get the file content: %w", err)
 	}
-	if rc != nil && res != nil && res.Response != nil {
-		res.Response.Body = rc
+
+	if res != nil && res.Response != nil {
+		if err := github.CheckResponse(res.Response); err != nil {
+			if rc != nil {
+				rc.Close()
+			}
+			return nil, xerrors.Errorf("failed to download the file: %w", err)
+		}
+		if rc != nil {
+			res.Response.Body = rc
+		}
 	}
 	return res.Response, nil
 }
