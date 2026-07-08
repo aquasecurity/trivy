@@ -41,7 +41,16 @@ func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
 func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 	return func(filePath string, d fs.DirEntry, err error) error {
 		if err != nil {
-			return err
+			// An error with the root itself must be returned as the scan cannot continue,
+			// but permission errors are still handled in `onError`.
+			if filePath == root {
+				return err
+			}
+			// Skip unreadable files and directories instead of aborting the whole scan
+			// as they cannot be analyzed anyway (e.g. "lstat: input/output error" on special files).
+			// cf. https://github.com/aquasecurity/trivy/issues/3259
+			log.Debug("Skipping unreadable path", log.FilePath(filePath), log.Err(err))
+			return nil
 		}
 
 		// For exported rootfs (e.g. images/alpine/etc/alpine-release)
@@ -66,7 +75,11 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 
 		info, err := d.Info()
 		if err != nil {
-			return xerrors.Errorf("file info error: %w", err)
+			// Skip unreadable files instead of aborting the whole scan
+			// (e.g. "lstat: input/output error" on special files).
+			// cf. https://github.com/aquasecurity/trivy/issues/3259
+			log.Debug("Skipping unreadable file", log.FilePath(filePath), log.Err(err))
+			return nil
 		}
 
 		if err = fn(relPath, info, fileOpener(filePath)); err != nil {
