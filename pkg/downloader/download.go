@@ -184,17 +184,23 @@ type GitHubContentTransport struct {
 
 // RoundTrip calls the GitHub API to download the content.
 func (t *GitHubContentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	_, res, err := t.client.Repositories.DownloadContents(req.Context(), t.owner, t.repo, t.filePath, nil)
+	rc, res, err := t.client.Repositories.DownloadContents(req.Context(), t.owner, t.repo, t.filePath, nil)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get the file content: %w", err)
+	}
+	if rc != nil && res != nil && res.Response != nil {
+		res.Response.Body = rc
 	}
 	return res.Response, nil
 }
 
 func newGitHubClient(token string) (*github.Client, error) {
+	opts := []github.ClientOptionsFunc{
+		github.WithHTTPClient(xhttp.Client()),
+	}
 	token = cmp.Or(token, os.Getenv("GITHUB_TOKEN"))
 	if token != "" {
-		return github.NewClient(github.WithHTTPClient(xhttp.Client()), github.WithAuthToken(token))
+		opts = append(opts, github.WithAuthToken(token))
 	}
-	return github.NewClient(github.WithHTTPClient(xhttp.Client()))
+	return github.NewClient(opts...)
 }
