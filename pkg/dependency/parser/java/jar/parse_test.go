@@ -405,42 +405,42 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParseManifestLicenses(t *testing.T) {
+func TestParsePluginLicenseName(t *testing.T) {
 	tests := []struct {
 		name string
 		line string
-		want []string
+		want string
 	}{
 		{
 			name: "plugin license name",
 			line: "Plugin-License-Name: Apache License, Version 2.0",
-			want: []string{"Apache License, Version 2.0"},
+			want: "Apache License, Version 2.0",
 		},
 		{
 			name: "suffixed plugin license name",
 			line: "Plugin-License-Name-2: MIT License",
-			want: []string{"MIT License"},
+			want: "MIT License",
 		},
 		{
 			name: "trims license name",
 			line: "Plugin-License-Name:  MIT License  ",
-			want: []string{"MIT License"},
+			want: "MIT License",
 		},
 		{
 			name: "empty license name",
 			line: "Plugin-License-Name: ",
-			want: nil,
+			want: "",
 		},
 		{
 			name: "non license line",
 			line: "Plugin-License-Url: https://opensource.org/licenses/MIT",
-			want: nil,
+			want: "",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := jar.ParseManifestLicenses(tt.line)
+			got := jar.ParsePluginLicenseName(tt.line)
 			assert.Equal(t, tt.want, got)
 		})
 	}

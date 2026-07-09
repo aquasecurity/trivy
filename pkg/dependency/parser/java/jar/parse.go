@@ -151,7 +151,7 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
 	// name). Manifest attributes are cheap to parse, so try them before falling
 	// back to classifying packed LICENSE files.
-	attachManifestLicenses(pkgs, fileProps.FilePath, m.pluginLicenseNames)
+	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenseNames())
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
 	return pkgs, nil, nil
@@ -653,7 +653,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
 		case strings.HasPrefix(line, "Plugin-License-Name"):
-			m.pluginLicenseNames = append(m.pluginLicenseNames, parseManifestLicenses(line)...)
+			m.pluginLicenseNames = append(m.pluginLicenseNames, line)
 		}
 	}
 
@@ -663,21 +663,31 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return m, nil
 }
 
-func parseManifestLicenses(line string) []string {
+// parsePluginLicenseName extracts the license name from a single Jenkins
+// Plugin-License-Name[-N] manifest line, or an empty string when the line is not
+// such an attribute or carries no value.
+func parsePluginLicenseName(line string) string {
 	key, value, ok := strings.Cut(line, ":")
 	if !ok {
-		return nil
+		return ""
 	}
 	if key != "Plugin-License-Name" {
 		if _, ok = strings.CutPrefix(key, "Plugin-License-Name-"); !ok {
-			return nil
+			return ""
 		}
 	}
-	name := strings.TrimSpace(value)
-	if name == "" {
-		return nil
+	return strings.TrimSpace(value)
+}
+
+// licenseNames returns the license names declared in the manifest.
+func (m manifest) licenseNames() []string {
+	var names []string
+	for _, line := range m.pluginLicenseNames {
+		if name := parsePluginLicenseName(line); name != "" {
+			names = append(names, name)
+		}
 	}
-	return []string{name}
+	return names
 }
 
 func (m manifest) properties(filePath string) Properties {
