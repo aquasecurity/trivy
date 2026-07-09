@@ -1,6 +1,8 @@
 package jar_test
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -384,6 +386,102 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, v.want, got)
 		})
 	}
+}
+
+func TestParseJenkinsPluginManifestLicenses(t *testing.T) {
+	tests := []struct {
+		name    string
+		entries map[string]string
+		want    []ftypes.Package
+	}{
+		{
+			name: "uses plugin license names from manifest",
+			entries: map[string]string{
+				"META-INF/MANIFEST.MF": strings.Join([]string{
+					"Manifest-Version: 1.0",
+					"Implementation-Vendor-Id: com.example",
+					"Implementation-Title: jenkins-plugin",
+					"Implementation-Version: 1.0.0",
+					"Plugin-License-Name: Apache License, Version 2.0",
+					"Plugin-License-Name-2: MIT License",
+					"",
+				}, "\n"),
+			},
+			want: []ftypes.Package{
+				{
+					Name:     "com.example:jenkins-plugin",
+					Version:  "1.0.0",
+					FilePath: "jenkins-plugin-1.0.0.jpi",
+					Licenses: []string{
+						"Apache License, Version 2.0",
+						"MIT License",
+					},
+				},
+			},
+		},
+		{
+			name: "keeps embedded pom license precedence",
+			entries: map[string]string{
+				"META-INF/MANIFEST.MF": strings.Join([]string{
+					"Manifest-Version: 1.0",
+					"Implementation-Vendor-Id: com.example",
+					"Implementation-Title: jenkins-plugin",
+					"Implementation-Version: 1.0.0",
+					"Plugin-License-Name: MIT License",
+					"",
+				}, "\n"),
+				"META-INF/maven/com.example/jenkins-plugin/pom.properties": strings.Join([]string{
+					"groupId=com.example",
+					"artifactId=jenkins-plugin",
+					"version=1.0.0",
+					"",
+				}, "\n"),
+				"META-INF/maven/com.example/jenkins-plugin/pom.xml": strings.Join([]string{
+					"<project>",
+					"  <licenses>",
+					"    <license><name>Apache-2.0</name></license>",
+					"  </licenses>",
+					"</project>",
+				}, "\n"),
+			},
+			want: []ftypes.Package{
+				{
+					Name:     "com.example:jenkins-plugin",
+					Version:  "1.0.0",
+					FilePath: "jenkins-plugin-1.0.0.jpi",
+					Licenses: []string{"Apache-2.0"},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			r := newZipReader(t, tt.entries)
+			p := jar.NewParser(nil, jar.WithFilePath("jenkins-plugin-1.0.0.jpi"), jar.WithOffline(true), jar.WithSize(int64(r.Len())))
+
+			got, _, err := p.Parse(t.Context(), r)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func newZipReader(t *testing.T, entries map[string]string) *bytes.Reader {
+	t.Helper()
+
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	for name, contents := range entries {
+		w, err := zw.Create(name)
+		require.NoError(t, err)
+		_, err = w.Write([]byte(contents))
+		require.NoError(t, err)
+	}
+	require.NoError(t, zw.Close())
+
+	return bytes.NewReader(buf.Bytes())
 }
 
 func TestEmbeddedPomGAV(t *testing.T) {

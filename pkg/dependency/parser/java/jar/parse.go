@@ -149,6 +149,7 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 
 	// Classify and attach the LICENSE file now that the jar's own artifact is resolved
 	// (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenses)
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
 	return pkgs, nil, nil
@@ -325,6 +326,32 @@ func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
 			pkg.Licenses = names
 		}
 	}
+}
+
+// attachManifestLicenses attaches Jenkins plugin licenses declared in MANIFEST.MF
+// to the jar's own package when a single unambiguous package belongs to this jar.
+func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []string) {
+	if len(licenses) == 0 {
+		return
+	}
+
+	var pkg *ftypes.Package
+
+	for i := range pkgs {
+		if pkgs[i].FilePath != filePath {
+			continue
+		}
+		if pkg != nil {
+			return // more than one package belongs to this jar
+		}
+		pkg = &pkgs[i]
+	}
+
+	if pkg == nil || len(pkg.Licenses) > 0 {
+		return
+	}
+
+	pkg.Licenses = licenses
 }
 
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
@@ -583,6 +610,7 @@ type manifest struct {
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
+	licenses               []string
 }
 
 func parseManifest(f *zip.File) (manifest, error) {
@@ -626,6 +654,14 @@ func parseManifest(f *zip.File) (manifest, error) {
 			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
+		default:
+			key, value, ok := strings.Cut(line, ":")
+			if !ok || !isPluginLicenseNameKey(key) {
+				continue
+			}
+			if name := strings.TrimSpace(value); name != "" {
+				m.licenses = append(m.licenses, name)
+			}
 		}
 	}
 
@@ -633,6 +669,22 @@ func parseManifest(f *zip.File) (manifest, error) {
 		return manifest{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return m, nil
+}
+
+func isPluginLicenseNameKey(key string) bool {
+	if key == "Plugin-License-Name" {
+		return true
+	}
+	suffix, ok := strings.CutPrefix(key, "Plugin-License-Name-")
+	if !ok || suffix == "" {
+		return false
+	}
+	for _, r := range suffix {
+		if r < '0' || r > '9' {
+			return false
+		}
+	}
+	return true
 }
 
 func (m manifest) properties(filePath string) Properties {
