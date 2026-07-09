@@ -151,7 +151,7 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
 	// name). Manifest attributes are cheap to parse, so try them before falling
 	// back to classifying packed LICENSE files.
-	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenses)
+	attachManifestLicenses(pkgs, fileProps.FilePath, m.pluginLicenseNames)
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
 	return pkgs, nil, nil
@@ -608,7 +608,7 @@ type manifest struct {
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
-	licenses               []string
+	pluginLicenseNames     []string
 }
 
 func parseManifest(f *zip.File) (manifest, error) {
@@ -653,7 +653,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
 		case strings.HasPrefix(line, "Plugin-License-Name"):
-			m.licenses = append(m.licenses, parseManifestLicenses(line)...)
+			m.pluginLicenseNames = append(m.pluginLicenseNames, parseManifestLicenses(line)...)
 		}
 	}
 
