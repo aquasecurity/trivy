@@ -630,6 +630,68 @@ func BenchmarkIsType_BigFile(b *testing.B) {
 	}
 }
 
+// largeOpenAPIYAML returns a valid YAML document that is not a Kubernetes manifest.
+func largeOpenAPIYAML(repeat int) []byte {
+	chunk := `openapi: "3.0.0"
+info:
+  title: Sample API
+  version: 1.0.0
+paths:
+  /items:
+    get:
+      summary: List items
+      responses:
+        "200":
+          description: OK
+`
+	return bytes.Repeat([]byte(chunk), repeat)
+}
+
+func benchmarkIsTypeKubernetesYAML(b *testing.B, repeat int) {
+	data := largeOpenAPIYAML(repeat)
+	b.SetBytes(int64(len(data)))
+	b.ReportAllocs()
+	for b.Loop() {
+		_ = IsType("openapi.yaml", bytes.NewReader(data), FileTypeKubernetes)
+	}
+}
+
+func BenchmarkIsType_Kubernetes_YAML_1x(b *testing.B) {
+	benchmarkIsTypeKubernetesYAML(b, 1)
+}
+
+func BenchmarkIsType_Kubernetes_YAML_100x(b *testing.B) {
+	benchmarkIsTypeKubernetesYAML(b, 100)
+}
+
+func benchmarkIsTypeCloudFormationYAML(b *testing.B, repeat int) {
+	data := largeOpenAPIYAML(repeat)
+	b.SetBytes(int64(len(data)))
+	b.ReportAllocs()
+	for b.Loop() {
+		_ = IsType("template.yaml", bytes.NewReader(data), FileTypeCloudFormation)
+	}
+}
+
+func BenchmarkIsType_CloudFormation_YAML_1x(b *testing.B) {
+	benchmarkIsTypeCloudFormationYAML(b, 1)
+}
+
+func BenchmarkIsType_CloudFormation_YAML_100x(b *testing.B) {
+	benchmarkIsTypeCloudFormationYAML(b, 100)
+}
+
+func BenchmarkIsType_TerraformPlanJSON_LargeJSON(b *testing.B) {
+	chunk := []byte(`{"format_version":"0.2","terraform_version":"1.0.0","planned_values":{}}`)
+	data := bytes.Repeat(chunk, 100)
+	b.SetBytes(int64(len(data)))
+
+	b.ReportAllocs()
+	for b.Loop() {
+		_ = IsType("plan.json", bytes.NewReader(data), FileTypeTerraformPlanJSON)
+	}
+}
+
 func Test_IsFileMatchesSchemas(t *testing.T) {
 
 	schema := `{
