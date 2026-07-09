@@ -137,12 +137,15 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	pkgs := d.target.Packages
-
-	// Skip third-party filtering when the driver explicitly opts in
-	if tp, ok := d.driver.(driver.ThirdPartyAware); !ok || !tp.IncludesThirdParty() {
-		pkgs = filterPkgs(ctx, pkgs)
+	// includeThirdParty reports whether the driver wants third-party packages
+	// passed through to Detect (e.g. RapidFort curates advisories for them).
+	// Note: this only affects third-party filtering — gpg-pubkey is still dropped
+	// unconditionally inside filterPkgs because it has no scannable version.
+	includeThirdParty := false
+	if tp, ok := d.driver.(driver.ThirdPartyAware); ok {
+		includeThirdParty = tp.IncludesThirdParty()
 	}
+	pkgs := filterPkgs(ctx, d.target.Packages, includeThirdParty)
 	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
@@ -152,15 +155,19 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 }
 
 // filterPkgs filters out packages that should not be scanned:
-//   - gpg-pubkey: doesn't use the correct version
-//   - Third-party packages: not covered by official OS security advisories
-func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+//   - gpg-pubkey: has no valid version — always dropped regardless of driver.
+//   - Third-party packages: not covered by official OS security advisories, so
+//     they are dropped by default. A driver can opt out via ThirdPartyAware
+//     (e.g. RapidFort curates its own advisories for third-party packages);
+//     when includeThirdParty is true they are passed through untouched, but
+//     gpg-pubkey is still stripped above.
+func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bool) []ftypes.Package {
 	var skipped []string
 	filtered := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 		if pkg.Name == "gpg-pubkey" {
 			return false
 		}
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+		if !includeThirdParty && pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
 			skipped = append(skipped, pkg.Name)
 			return false
 		}

@@ -28,6 +28,17 @@ func (m *mockDriver) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ st
 	return true
 }
 
+// mockThirdPartyDriver implements both Driver and driver.ThirdPartyAware.
+// It is used to verify that filterPkgs still drops gpg-pubkey even when the
+// driver opts to receive third-party packages.
+type mockThirdPartyDriver struct {
+	mockDriver
+}
+
+func (m *mockThirdPartyDriver) IncludesThirdParty() bool {
+	return true
+}
+
 func TestDetector_Detect(t *testing.T) {
 	tests := []struct {
 		name     string
@@ -157,6 +168,59 @@ func TestDetector_Detect(t *testing.T) {
 			assert.Equal(t, tt.wantPkgs, mockDrv.receivedPkgs)
 		})
 	}
+}
+
+// TestDetector_Detect_ThirdPartyAware verifies that when the driver opts in via
+// ThirdPartyAware, third-party packages reach Detect but gpg-pubkey is still
+// filtered out (gpg-pubkey has no scannable version and is dropped for every
+// driver regardless of the opt-in).
+func TestDetector_Detect_ThirdPartyAware(t *testing.T) {
+	target := types.ScanTarget{
+		OS: ftypes.OS{
+			Family: ftypes.CentOS,
+			Name:   "7",
+		},
+		Packages: []ftypes.Package{
+			{
+				Name: "vim",
+				Repository: ftypes.PackageRepository{
+					Class: ftypes.RepositoryClassOfficial,
+				},
+			},
+			{Name: "gpg-pubkey"},
+			{
+				Name: "php",
+				Repository: ftypes.PackageRepository{
+					Class: ftypes.RepositoryClassThirdParty,
+				},
+			},
+		},
+	}
+
+	// Expected: gpg-pubkey stripped; the third-party php package passes through
+	// because the driver opted in.
+	wantPkgs := []ftypes.Package{
+		{
+			Name: "vim",
+			Repository: ftypes.PackageRepository{
+				Class: ftypes.RepositoryClassOfficial,
+			},
+		},
+		{
+			Name: "php",
+			Repository: ftypes.PackageRepository{
+				Class: ftypes.RepositoryClassThirdParty,
+			},
+		},
+	}
+
+	mockDrv := &mockThirdPartyDriver{}
+	d, err := ospkg.NewDetector(target, ospkg.WithDriver(target.OS.Family, mockDrv))
+	require.NoError(t, err)
+
+	_, _, err = d.Detect(t.Context())
+	require.NoError(t, err)
+	assert.Equal(t, wantPkgs, mockDrv.receivedPkgs)
 }
 
 func TestNewDetector(t *testing.T) {
