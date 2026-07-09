@@ -147,8 +147,10 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 		}
 	}
 
-	// Classify and attach the LICENSE file now that the jar's own artifact is resolved
-	// (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	// Attach license sources that depend on the jar's own artifact after it has
+	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
+	// name). Manifest attributes are cheap to parse, so try them before falling
+	// back to classifying packed LICENSE files.
 	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenses)
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
@@ -335,6 +337,18 @@ func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []s
 		return
 	}
 
+	pkg := ownJarPackage(pkgs, filePath)
+	if pkg == nil {
+		return
+	}
+
+	pkg.Licenses = licenses
+}
+
+// ownJarPackage returns the single package that belongs to filePath and still
+// needs a license, or nil when there is none, the owner already has a license,
+// or the owner is ambiguous.
+func ownJarPackage(pkgs []ftypes.Package, filePath string) *ftypes.Package {
 	var pkg *ftypes.Package
 
 	for i := range pkgs {
@@ -342,16 +356,15 @@ func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []s
 			continue
 		}
 		if pkg != nil {
-			return // more than one package belongs to this jar
+			return nil // more than one package belongs to this jar
 		}
 		pkg = &pkgs[i]
 	}
 
 	if pkg == nil || len(pkg.Licenses) > 0 {
-		return
+		return nil
 	}
-
-	pkg.Licenses = licenses
+	return pkg
 }
 
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
@@ -362,23 +375,8 @@ func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, lice
 		return
 	}
 
-	var pkg *ftypes.Package
-
-	for i := range pkgs {
-		if pkgs[i].FilePath != filePath {
-			continue
-		}
-		if pkg != nil {
-			return // more than one package belongs to this jar
-		}
-		pkg = &pkgs[i]
-	}
-
+	pkg := ownJarPackage(pkgs, filePath)
 	if pkg == nil {
-		return // no package belongs to this jar
-	}
-
-	if len(pkg.Licenses) > 0 {
 		return
 	}
 
@@ -654,14 +652,8 @@ func parseManifest(f *zip.File) (manifest, error) {
 			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
-		default:
-			key, value, ok := strings.Cut(line, ":")
-			if !ok || !isPluginLicenseNameKey(key) {
-				continue
-			}
-			if name := strings.TrimSpace(value); name != "" {
-				m.licenses = append(m.licenses, name)
-			}
+		case strings.HasPrefix(line, "Plugin-License-Name"):
+			m.licenses = append(m.licenses, parseManifestLicenses(line)...)
 		}
 	}
 
@@ -671,20 +663,21 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return m, nil
 }
 
-func isPluginLicenseNameKey(key string) bool {
-	if key == "Plugin-License-Name" {
-		return true
+func parseManifestLicenses(line string) []string {
+	key, value, ok := strings.Cut(line, ":")
+	if !ok {
+		return nil
 	}
-	suffix, ok := strings.CutPrefix(key, "Plugin-License-Name-")
-	if !ok || suffix == "" {
-		return false
-	}
-	for _, r := range suffix {
-		if r < '0' || r > '9' {
-			return false
+	if key != "Plugin-License-Name" {
+		if _, ok = strings.CutPrefix(key, "Plugin-License-Name-"); !ok {
+			return nil
 		}
 	}
-	return true
+	name := strings.TrimSpace(value)
+	if name == "" {
+		return nil
+	}
+	return []string{name}
 }
 
 func (m manifest) properties(filePath string) Properties {
