@@ -246,7 +246,7 @@ var (
 		{
 			Name:     "com.example:jenkins-plugin",
 			Version:  "1.0.0",
-			FilePath: "testdata/jenkins-plugin-1.0.0.jpi",
+			FilePath: "testdata/license-from-jenkins-plugin.jar",
 			Licenses: []string{
 				"Apache License, Version 2.0",
 				"MIT License",
@@ -328,7 +328,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:    "jenkins plugin manifest license",
-			file:    "testdata/jenkins-plugin-1.0.0.jpi",
+			file:    "testdata/license-from-jenkins-plugin.jar",
 			offline: true,
 			want:    wantJenkinsPlugin,
 		},
