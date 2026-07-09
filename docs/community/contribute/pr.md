@@ -240,4 +240,3 @@ Trivy is composed of several repositories that work together:
 - [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerability database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo**
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
 - [trivy-db](https://github.com/aquasecurity/trivy-db) maintains the vulnerability database pulled by Trivy CLI.
-- [go-dep-parser](https://github.com/aquasecurity/go-dep-parser) is a library for parsing lock files such as package-lock.json and Gemfile.lock.
