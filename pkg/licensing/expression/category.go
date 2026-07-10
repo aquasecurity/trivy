@@ -1,7 +1,6 @@
 package expression
 
 import (
-	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
@@ -10,6 +9,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+
+	_ "embed"
 )
 
 // Canonical names of the licenses.

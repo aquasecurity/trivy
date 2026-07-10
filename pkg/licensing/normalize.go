@@ -589,8 +589,8 @@ func NormalizeLicenseURL(u string) string {
 
 	// Drop a common document extension.
 	for _, ext := range docExtensions {
-		if strings.HasSuffix(s, ext) {
-			s = strings.TrimSuffix(s, ext)
+		if after, ok := strings.CutSuffix(s, ext); ok {
+			s = after
 			break
 		}
 	}

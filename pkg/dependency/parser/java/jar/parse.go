@@ -654,7 +654,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 	unfolded = strings.ReplaceAll(unfolded, "\n ", "")
 
 	var m manifest
-	for _, line := range strings.Split(unfolded, "\n") {
+	for line := range strings.SplitSeq(unfolded, "\n") {
 		line = strings.TrimSuffix(line, "\r")
 
 		// Skip variables. e.g. Bundle-Name: %bundleName
@@ -702,7 +702,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 // resolve to neither (free text, "<<EXTERNAL>>") are skipped.
 func parseBundleLicense(header string) []string {
 	var names []string
-	for _, entry := range strings.Split(header, ",") {
+	for entry := range strings.SplitSeq(header, ",") {
 		name, link := parseBundleLicenseEntry(entry)
 		if id, ok := resolveBundleLicense(name, link); ok {
 			names = append(names, id)
