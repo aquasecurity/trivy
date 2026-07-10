@@ -1,6 +1,7 @@
 package expression
 
 import (
+	_ "embed"
 	"encoding/json"
 	"strings"
 	"sync"
@@ -9,8 +10,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
-
-	_ "embed"
 )
 
 // Canonical names of the licenses.
@@ -373,35 +372,32 @@ var (
 //go:embed licenses.json
 var licenses []byte
 
-// spdxLicensesData parses the embedded licenses.json once. It maps each SPDX
-// license ID to its normalized seeAlso URLs. Both the validation set and the URL
-// index are derived from it, so the file is unmarshaled at most once.
-var spdxLicensesData = sync.OnceValue(func() map[string][]string {
+// parseLicenses unmarshals the embedded licenses.json into a map of each SPDX
+// license ID to its normalized seeAlso URLs.
+func parseLicenses() map[string][]string {
 	var lics map[string][]string
 	if err := json.Unmarshal(licenses, &lics); err != nil {
 		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX license file", log.Err(err))
-		return nil
 	}
 	return lics
-})
+}
 
 // spdxLicenses is the set of valid SPDX license IDs (case-insensitive).
 var spdxLicenses = set.NewCaseInsensitive()
 
 var initSpdxLicenses = sync.OnceFunc(func() {
-	for id := range spdxLicensesData() {
+	for id := range parseLicenses() {
 		spdxLicenses.Append(id)
 	}
 })
 
-// spdxLicenseURLs maps a normalized upstream license URL to its canonical SPDX
-// license ID, built by inverting the seeAlso references (keys are already
-// normalized; see licensing.NormalizeLicenseURL). URL-valued licenses only occur
-// for Java, so this index is built lazily and independently of the validation set.
+// spdxLicenseURLs maps a normalized upstream license URL (see
+// licensing.NormalizeLicenseURL) to its canonical SPDX license ID, inverted from
+// the seeAlso references and built lazily.
 var spdxLicenseURLs = make(map[string]string)
 
 var initSpdxLicenseURLs = sync.OnceFunc(func() {
-	for id, urls := range spdxLicensesData() {
+	for id, urls := range parseLicenses() {
 		for _, u := range urls {
 			// URLs are de-duplicated and de-collided at generation time,
 			// so no ambiguity is possible here.
