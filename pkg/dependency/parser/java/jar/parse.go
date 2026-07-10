@@ -729,25 +729,17 @@ func resolveBundleLicense(name, link string) (string, bool) {
 }
 
 // parseBundleLicenseEntry splits one Bundle-License entry into its license name
-// and the value of its optional ;link attribute.
+// and the value of its optional ;link attribute. Surrounding spaces and double
+// quotes are trimmed from both.
 func parseBundleLicenseEntry(entry string) (name, link string) {
 	fields := strings.Split(entry, ";")
-	name = trimBundleLicenseValue(fields[0])
+	name = strings.Trim(fields[0], ` "`)
 	for _, attr := range fields[1:] {
 		if v, ok := strings.CutPrefix(strings.TrimSpace(attr), "link="); ok {
-			link = trimBundleLicenseValue(v)
+			link = strings.Trim(v, ` "`)
 		}
 	}
 	return name, link
-}
-
-// trimBundleLicenseValue trims surrounding spaces and double quotes.
-func trimBundleLicenseValue(s string) string {
-	s = strings.TrimSpace(s)
-	if len(s) >= 2 && s[0] == '"' && s[len(s)-1] == '"' {
-		s = s[1 : len(s)-1]
-	}
-	return strings.TrimSpace(s)
 }
 
 // parsePluginLicenseName extracts the license name from a single Jenkins
@@ -766,8 +758,9 @@ func parsePluginLicenseName(line string) string {
 	return strings.TrimSpace(value)
 }
 
-// licenseNames returns the license names declared in the manifest: Jenkins
-// Plugin-License-Name attributes and OSGi Bundle-License entries resolved to SPDX IDs.
+// licenseNames returns the license names declared in the manifest: the Jenkins
+// Plugin-License-Name attributes if present, otherwise the OSGi Bundle-License
+// entries resolved to SPDX IDs.
 func (m manifest) licenseNames() []string {
 	var names []string
 	for _, line := range m.pluginLicenseNames {
@@ -775,7 +768,10 @@ func (m manifest) licenseNames() []string {
 			names = append(names, name)
 		}
 	}
-	names = append(names, parseBundleLicense(m.bundleLicense)...)
+	if len(names) == 0 {
+		names = append(names, parseBundleLicense(m.bundleLicense)...)
+	}
+
 	return names
 }
 func (m manifest) properties(filePath string) Properties {
