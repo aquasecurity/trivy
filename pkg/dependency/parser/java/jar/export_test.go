@@ -7,4 +7,9 @@ var (
 	DecodePomLicenses      = decodePomLicenses
 	IsJarLicenseFile       = isJarLicenseFile
 	ParsePluginLicenseName = parsePluginLicenseName
+	ParseBundleLicense     = parseBundleLicense
+	ParseManifest          = parseManifest
 )
+
+// BundleLicense exposes the unexported bundleLicense field to tests.
+func (m manifest) BundleLicense() string { return m.bundleLicense }
