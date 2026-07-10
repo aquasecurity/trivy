@@ -13,6 +13,8 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -128,8 +130,22 @@ func (p *pom) artifact() artifact {
 
 func (p *pom) licenses() []string {
 	return xslices.ZeroToNil(lo.FilterMap(p.content.Licenses.License, func(lic pomLicense, _ int) (string, bool) {
-		return lic.Name, lic.Name != ""
+		name := pomLicenseName(lic.Name, lic.URL)
+		return name, name != ""
 	}))
+}
+
+// pomLicenseName resolves a single pom <license> to a license value: the <name>
+// if present, otherwise the <url> mapped to its SPDX ID via the seeAlso index.
+// An unresolved URL returns "" so it is skipped rather than reported as-is.
+func pomLicenseName(name, url string) string {
+	if name = strings.TrimSpace(name); name != "" {
+		return name
+	}
+	if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(url)); ok {
+		return id
+	}
+	return ""
 }
 
 func (p *pom) repositories(servers []Server) []repository {
@@ -169,6 +185,7 @@ type pomLicenses struct {
 
 type pomLicense struct {
 	Name string `xml:"name"`
+	URL  string `xml:"url"`
 }
 
 type pomDependencies struct {
