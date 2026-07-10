@@ -8825,9 +8825,10 @@ It is stored in <a href="../../../configuration/cache/#cache-directory">the cach
 To find information about these JARs<sup id="fnref7:2"><a class="footnote-ref" href="#fn:2">2</a></sup>, the same logic is used as for the base JAR<sup id="fnref8:2"><a class="footnote-ref" href="#fn:2">2</a></sup>.</p>
 <p><code>table</code> format only contains the name of root JAR<sup id="fnref9:2"><a class="footnote-ref" href="#fn:2">2</a></sup> . To get the full path to inner JARs<sup id="fnref10:2"><a class="footnote-ref" href="#fn:2">2</a></sup> use the <code>json</code> format.</p>
 <h3 id="licenses">Licenses<a class="headerlink" href="#licenses" title="Permanent link">&para;</a></h3>
-<p>Trivy detects licenses for a JAR<sup id="fnref11:2"><a class="footnote-ref" href="#fn:2">2</a></sup> from two sources, in this order:</p>
+<p>Trivy detects licenses for a JAR<sup id="fnref11:2"><a class="footnote-ref" href="#fn:2">2</a></sup> from three sources, in this order:</p>
 <ol>
 <li><strong>Embedded POM</strong> — the <code>&lt;licenses&gt;</code> block of the embedded <code>META-INF/maven/&lt;groupId&gt;/&lt;artifactId&gt;/pom.xml</code>, matched to the package by <code>groupId:artifactId</code>.</li>
+<li><strong>Jenkins plugin manifest</strong> — <code>Plugin-License-Name</code> attributes in <code>META-INF/MANIFEST.MF</code>, including suffixed variants such as <code>Plugin-License-Name-2</code>.</li>
 <li><strong>License files</strong> — <code>LICENSE</code>, <code>LICENCE</code> or <code>COPYRIGHT</code> files (including variants like <code>LICENSE.txt</code>) located at the JAR<sup id="fnref13:2"><a class="footnote-ref" href="#fn:2">2</a></sup> root or directly under <code>META-INF/</code>. Their content is classified with the <a href="../../../scanner/license/">license classifier</a>. A license file carries no <code>groupId:artifactId</code>, so it is attached only when the JAR<sup id="fnref14:2"><a class="footnote-ref" href="#fn:2">2</a></sup> contains a single artifact; in uber/shaded JARs<sup id="fnref15:2"><a class="footnote-ref" href="#fn:2">2</a></sup> (multiple artifacts) the owner is ambiguous and such files are skipped.</li>
 </ol>
 <p>Notes and limitations:</p>
