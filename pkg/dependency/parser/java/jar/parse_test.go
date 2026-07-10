@@ -240,6 +240,19 @@ var (
 			FilePath: "testdata/multi-license-1.0.0.jar",
 		},
 	}
+
+	// Manually created: a Jenkins plugin with license information in MANIFEST.MF.
+	wantJenkinsPlugin = []ftypes.Package{
+		{
+			Name:     "com.example:jenkins-plugin",
+			Version:  "1.0.0",
+			FilePath: "testdata/license-from-jenkins-plugin.jar",
+			Licenses: []string{
+				"Apache License, Version 2.0",
+				"MIT License",
+			},
+		},
+	}
 )
 
 type apiResponse struct {
@@ -313,6 +326,12 @@ func TestParse(t *testing.T) {
 			file: "testdata/multi-license-1.0.0.jar",
 			want: wantMultiLicense,
 		},
+		{
+			name:    "jenkins plugin manifest license",
+			file:    "testdata/license-from-jenkins-plugin.jar",
+			offline: true,
+			want:    wantJenkinsPlugin,
+		},
 	}
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -382,6 +401,47 @@ func TestParse(t *testing.T) {
 			sort.Sort(ftypes.Packages(v.want))
 
 			assert.Equal(t, v.want, got)
+		})
+	}
+}
+
+func TestParsePluginLicenseName(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want string
+	}{
+		{
+			name: "plugin license name",
+			line: "Plugin-License-Name: Apache License, Version 2.0",
+			want: "Apache License, Version 2.0",
+		},
+		{
+			name: "suffixed plugin license name",
+			line: "Plugin-License-Name-2: MIT License",
+			want: "MIT License",
+		},
+		{
+			name: "trims license name",
+			line: "Plugin-License-Name:  MIT License  ",
+			want: "MIT License",
+		},
+		{
+			name: "empty license name",
+			line: "Plugin-License-Name: ",
+			want: "",
+		},
+		{
+			name: "non license line",
+			line: "Plugin-License-Url: https://opensource.org/licenses/MIT",
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := jar.ParsePluginLicenseName(tt.line)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

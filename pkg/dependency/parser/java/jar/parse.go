@@ -147,8 +147,11 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 		}
 	}
 
-	// Classify and attach the LICENSE file now that the jar's own artifact is resolved
-	// (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	// Attach license sources that depend on the jar's own artifact after it has
+	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
+	// name). Manifest attributes are cheap to parse, so try them before falling
+	// back to classifying packed LICENSE files.
+	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenseNames())
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
 	return pkgs, nil, nil
@@ -327,6 +330,43 @@ func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
 	}
 }
 
+// attachManifestLicenses attaches Jenkins plugin licenses declared in MANIFEST.MF
+// to the jar's own package when a single unambiguous package belongs to this jar.
+func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []string) {
+	if len(licenses) == 0 {
+		return
+	}
+
+	pkg := ownJarPackage(pkgs, filePath)
+	if pkg == nil {
+		return
+	}
+
+	pkg.Licenses = licenses
+}
+
+// ownJarPackage returns the single package that belongs to filePath and still
+// needs a license, or nil when there is none, the owner already has a license,
+// or the owner is ambiguous.
+func ownJarPackage(pkgs []ftypes.Package, filePath string) *ftypes.Package {
+	var pkg *ftypes.Package
+
+	for i := range pkgs {
+		if pkgs[i].FilePath != filePath {
+			continue
+		}
+		if pkg != nil {
+			return nil // more than one package belongs to this jar
+		}
+		pkg = &pkgs[i]
+	}
+
+	if pkg == nil || len(pkg.Licenses) > 0 {
+		return nil
+	}
+	return pkg
+}
+
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
 // jar's own package, but only when the owner is unambiguous: a single LICENSE file, a
 // single package belonging to this jar, and no license from its pom.xml yet.
@@ -335,23 +375,8 @@ func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, lice
 		return
 	}
 
-	var pkg *ftypes.Package
-
-	for i := range pkgs {
-		if pkgs[i].FilePath != filePath {
-			continue
-		}
-		if pkg != nil {
-			return // more than one package belongs to this jar
-		}
-		pkg = &pkgs[i]
-	}
-
+	pkg := ownJarPackage(pkgs, filePath)
 	if pkg == nil {
-		return // no package belongs to this jar
-	}
-
-	if len(pkg.Licenses) > 0 {
 		return
 	}
 
@@ -583,6 +608,7 @@ type manifest struct {
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
+	pluginLicenseNames     []string
 }
 
 func parseManifest(f *zip.File) (manifest, error) {
@@ -626,6 +652,8 @@ func parseManifest(f *zip.File) (manifest, error) {
 			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
+		case strings.HasPrefix(line, "Plugin-License-Name"):
+			m.pluginLicenseNames = append(m.pluginLicenseNames, line)
 		}
 	}
 
@@ -633,6 +661,33 @@ func parseManifest(f *zip.File) (manifest, error) {
 		return manifest{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return m, nil
+}
+
+// parsePluginLicenseName extracts the license name from a single Jenkins
+// Plugin-License-Name[-N] manifest line, or an empty string when the line is not
+// such an attribute or carries no value.
+func parsePluginLicenseName(line string) string {
+	key, value, ok := strings.Cut(line, ":")
+	if !ok {
+		return ""
+	}
+	if key != "Plugin-License-Name" {
+		if _, ok = strings.CutPrefix(key, "Plugin-License-Name-"); !ok {
+			return ""
+		}
+	}
+	return strings.TrimSpace(value)
+}
+
+// licenseNames returns the license names declared in the manifest.
+func (m manifest) licenseNames() []string {
+	var names []string
+	for _, line := range m.pluginLicenseNames {
+		if name := parsePluginLicenseName(line); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names
 }
 
 func (m manifest) properties(filePath string) Properties {
