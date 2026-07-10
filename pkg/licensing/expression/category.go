@@ -370,24 +370,46 @@ var (
 	}
 )
 
-var spdxLicenses = set.NewCaseInsensitive()
-
 //go:embed licenses.json
 var licenses []byte
 
-var initSpdxLicenses = sync.OnceFunc(func() {
-	if spdxLicenses.Size() > 0 {
-		return
-	}
-
-	var lics []string
+// spdxLicensesData parses the embedded licenses.json once. It maps each SPDX
+// license ID to its normalized seeAlso URLs. Both the validation set and the URL
+// index are derived from it, so the file is unmarshaled at most once regardless
+// of which of them is needed.
+var spdxLicensesData = sync.OnceValue(func() map[string][]string {
+	var lics map[string][]string
 	if err := json.Unmarshal(licenses, &lics); err != nil {
 		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX license file", log.Err(err))
-		return
+		return nil
 	}
+	return lics
+})
 
-	// SPDX license list is case-insensitive.
-	spdxLicenses.Append(lics...)
+// spdxLicenses is the set of valid SPDX license IDs (case-insensitive).
+var spdxLicenses = set.NewCaseInsensitive()
+
+var initSpdxLicenses = sync.OnceFunc(func() {
+	for id := range spdxLicensesData() {
+		spdxLicenses.Append(id)
+	}
+})
+
+// spdxLicenseURLs maps a normalized upstream license URL to its canonical SPDX
+// license ID, built by inverting the seeAlso references. Keys are already
+// normalized (see NormalizeLicenseURL), so a lookup only needs to normalize its
+// input. URL-valued licenses only occur for Java, so this index is built lazily
+// and independently of the validation set.
+var spdxLicenseURLs = make(map[string]string)
+
+var initSpdxLicenseURLs = sync.OnceFunc(func() {
+	for id, urls := range spdxLicensesData() {
+		for _, u := range urls {
+			// URLs are de-duplicated and de-collided at generation time,
+			// so no ambiguity is possible here.
+			spdxLicenseURLs[u] = id
+		}
+	}
 })
 
 //go:embed exceptions.json
@@ -422,6 +444,17 @@ func ValidateSPDXLicense(license string) bool {
 func SPDXLicenseID(license string) (string, bool) {
 	initSpdxLicenses()
 	return spdxLicenses.Find(license)
+}
+
+// SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi
+// Bundle-License header or a pom <url>) to its canonical SPDX license ID via the
+// SPDX seeAlso references. Like SPDXLicenseID, it does not normalize its input:
+// the URL must already be normalized with licensing.NormalizeLicenseURL, the same
+// function used to build the index. Returns false if the URL is unknown.
+func SPDXLicenseIDByURL(normalizedURL string) (string, bool) {
+	initSpdxLicenseURLs()
+	id, ok := spdxLicenseURLs[normalizedURL]
+	return id, ok
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID
