@@ -137,7 +137,7 @@ func (p *pom) licenses() []string {
 
 // pomLicenseName resolves a single pom <license> to a license value: the <name>
 // if present, otherwise the <url> mapped to its SPDX ID via the seeAlso index.
-// An unresolved URL returns "" so it is skipped rather than reported as-is.
+// An unresolved URL returns "".
 func pomLicenseName(name, url string) string {
 	if name = strings.TrimSpace(name); name != "" {
 		return name

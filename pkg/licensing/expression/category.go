@@ -375,8 +375,7 @@ var licenses []byte
 
 // spdxLicensesData parses the embedded licenses.json once. It maps each SPDX
 // license ID to its normalized seeAlso URLs. Both the validation set and the URL
-// index are derived from it, so the file is unmarshaled at most once regardless
-// of which of them is needed.
+// index are derived from it, so the file is unmarshaled at most once.
 var spdxLicensesData = sync.OnceValue(func() map[string][]string {
 	var lics map[string][]string
 	if err := json.Unmarshal(licenses, &lics); err != nil {
@@ -396,10 +395,9 @@ var initSpdxLicenses = sync.OnceFunc(func() {
 })
 
 // spdxLicenseURLs maps a normalized upstream license URL to its canonical SPDX
-// license ID, built by inverting the seeAlso references. Keys are already
-// normalized (see NormalizeLicenseURL), so a lookup only needs to normalize its
-// input. URL-valued licenses only occur for Java, so this index is built lazily
-// and independently of the validation set.
+// license ID, built by inverting the seeAlso references (keys are already
+// normalized; see licensing.NormalizeLicenseURL). URL-valued licenses only occur
+// for Java, so this index is built lazily and independently of the validation set.
 var spdxLicenseURLs = make(map[string]string)
 
 var initSpdxLicenseURLs = sync.OnceFunc(func() {
@@ -448,9 +446,9 @@ func SPDXLicenseID(license string) (string, bool) {
 
 // SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi
 // Bundle-License header or a pom <url>) to its canonical SPDX license ID via the
-// SPDX seeAlso references. Like SPDXLicenseID, it does not normalize its input:
-// the URL must already be normalized with licensing.NormalizeLicenseURL, the same
-// function used to build the index. Returns false if the URL is unknown.
+// SPDX seeAlso references. Like SPDXLicenseID it does not normalize its input: the
+// URL must already be normalized with licensing.NormalizeLicenseURL. Returns false
+// if the URL is unknown.
 func SPDXLicenseIDByURL(normalizedURL string) (string, bool) {
 	initSpdxLicenseURLs()
 	id, ok := spdxLicenseURLs[normalizedURL]

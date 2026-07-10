@@ -569,10 +569,8 @@ func NormalizeLicenseURL(u string) string {
 		return ""
 	}
 
-	// Unwrap archive/proxy URLs that embed the real license URL (e.g.
-	// web.archive.org snapshots ".../web/<timestamp>/http://real/url"). The
-	// embedded URL may still be used in older scanned files and is often still
-	// valid (or redirects to the current license page).
+	// Unwrap archive/proxy URLs that embed the real license URL, e.g.
+	// web.archive.org snapshots ".../web/<timestamp>/http://real/url".
 	s = unwrapArchiveURL(s)
 
 	// Drop the scheme so http and https compare equal.
@@ -600,11 +598,10 @@ func NormalizeLicenseURL(u string) string {
 	return s
 }
 
-// unwrapArchiveURL strips an archive/proxy prefix down to the embedded target
-// URL by keeping everything from the last "http://" or "https://" occurrence
-// (e.g. ".../web/<timestamp>/http://real/url" -> "http://real/url"). A URL that
-// is not wrapped (the only scheme is at the start, or there is none) is returned
-// unchanged.
+// unwrapArchiveURL strips an archive/proxy prefix down to the embedded URL by
+// keeping everything from the last "http://" or "https://" occurrence
+// (".../web/<timestamp>/http://real/url" -> "http://real/url"). An unwrapped URL
+// (only scheme at the start, or none) is returned unchanged.
 func unwrapArchiveURL(s string) string {
 	i := strings.LastIndex(s, "http://")
 	if j := strings.LastIndex(s, "https://"); j > i {

@@ -95,8 +95,7 @@ func updateLicenses() error {
 
 	// result maps each SPDX license ID to its normalized seeAlso URLs. Every ID is
 	// added up front (even with no URL) so the map doubles as the SPDX license ID
-	// list used for validation, and so a collapsed base can be confirmed to be a
-	// real license ID below.
+	// list used for validation.
 	result := make(map[string][]string, len(licenses.Licenses))
 	for _, l := range licenses.Licenses {
 		if l.ID != "" {
@@ -105,10 +104,9 @@ func updateLicenses() error {
 	}
 
 	// Resolve each normalized URL to a single license ID:
-	//   - first license to reference the URL -> its ID
-	//   - another ID of the same only/or-later/+ family (equal stem) -> the shared
-	//     base license (e.g. GPL-3.0-only + GPL-3.0-or-later -> GPL-3.0)
-	//   - a genuinely different license -> "" (ambiguous; the URL is dropped)
+	//   - the first license to reference it -> its ID
+	//   - more IDs of the same only/or-later/+ family -> the smallest of them (see below)
+	//   - genuinely different licenses -> "" (ambiguous; the URL is dropped)
 	urlToID := make(map[string]string)
 	for _, l := range licenses.Licenses {
 		if l.ID == "" {
@@ -131,13 +129,9 @@ func updateLicenses() error {
 			case existing == "":
 				// Already marked ambiguous; keep it dropped.
 			case licenseStem(existing) == licenseStem(l.ID):
-				// The URL is shared by only/or-later/+ variants of one license
-				// family (e.g. GPL-3.0-only and GPL-3.0-or-later). A bare license
-				// URL cannot tell the variants apart, so keep the lexicographically
-				// smallest referencing license. This is deterministic (independent
-				// of SPDX ordering) and prefers the bare base when it is present
-				// ("GPL-3.0" < "GPL-3.0+" < "GPL-3.0-only" < "GPL-3.0-or-later"),
-				// without inventing a base that does not list this URL.
+				// Same only/or-later/+ family: keep the lexicographically smallest
+				// referencing ID — deterministic, and the bare base when it is in the
+				// group ("GPL-3.0" < "GPL-3.0+" < "GPL-3.0-only" < ...).
 				if l.ID < existing {
 					urlToID[u] = l.ID
 				}

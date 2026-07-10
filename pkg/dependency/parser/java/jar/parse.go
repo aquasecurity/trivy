@@ -696,12 +696,10 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return m, nil
 }
 
-// parseBundleLicense resolves the OSGi Bundle-License manifest header to SPDX
-// license IDs. The header is a comma-separated list; each entry is a name (an SPDX
-// ID, a URL, or free text) optionally followed by ;attr=value parameters such as
-// ;link="<url>". Each entry is resolved by first validating the name as an SPDX ID,
-// then trying the name and the link as a license URL. Entries that resolve to
-// neither (free text, the "<<EXTERNAL>>" token) are skipped.
+// parseBundleLicense resolves the OSGi Bundle-License header (a comma-separated
+// list of "name;attr=value" entries) to SPDX license IDs. Each entry's name is
+// tried as an SPDX ID then as a URL, and its ;link= value as a URL; entries that
+// resolve to neither (free text, "<<EXTERNAL>>") are skipped.
 func parseBundleLicense(header string) []string {
 	var names []string
 	for _, entry := range strings.Split(header, ",") {
