@@ -119,6 +119,7 @@ const (
 	CondaEnv       LangType = "conda-environment"
 	PythonPkg      LangType = "python-pkg"
 	NodePkg        LangType = "node-pkg"
+	Node           LangType = "node"
 	Yarn           LangType = "yarn"
 	Pnpm           LangType = "pnpm"
 	Jar            LangType = "jar"
