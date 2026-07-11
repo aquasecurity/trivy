@@ -713,11 +713,10 @@ func TestProvider(t *testing.T) {
 }
 
 func TestScanner_IsVulnerable(t *testing.T) {
-	// Note: the distro identifier is no longer a test input — it's derived
-	// internally from installedVersion inside isRPMVulnerable. Each RedHat
-	// test case's installedVersion is chosen so that the derived identifier
-	// matches the scenario being exercised (e.g. ".el9" → "el9", ".rf1" →
-	// "rf", no distro tag → defaults to "el").
+	// For RedHat test cases, isRPMVulnerable derives the distro identifier
+	// from installedVersion. Choose an installedVersion whose suffix matches
+	// the identifier you want to exercise: ".el9" → "el9", ".rf1"/".rf" →
+	// "rf", no distro tag → defaults to "el".
 	tests := []struct {
 		name             string
 		baseOS           ftypes.OSType

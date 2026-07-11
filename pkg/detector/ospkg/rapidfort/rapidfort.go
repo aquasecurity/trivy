@@ -9,6 +9,9 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	// rfvulnsrc is trivy-db's RapidFort vulnsrc — aliased because this
+	// scanner package is also named "rapidfort". We import it so the scanner
+	// can query the DB through the getter it exposes (see Scanner.vs).
 	rfvulnsrc "github.com/aquasecurity/trivy-db/pkg/vulnsrc/rapidfort"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -45,10 +48,11 @@ type Scanner struct {
 	// that RapidFort advisories are keyed on (e.g. "22.04.1" → "22.04" for Ubuntu,
 	// "9.2" → "9" for RedHat).
 	versionTrimmer func(string) string
-	// vs is the RapidFort advisory getter from trivy-db. We go through this
-	// helper rather than calling db.Config.GetAdvisories directly so the bucket
-	// key format ("rapidfort <baseOS> <version>") stays owned by trivy-db and
-	// cannot drift between the two repos.
+	// vs is the RapidFort advisory getter exposed by trivy-db. The scanner
+	// queries through this helper rather than db.Config.GetAdvisories so the
+	// bucket-key format ("rapidfort <baseOS> <version>") lives entirely on
+	// the trivy-db side. The scanner supplies (release, package) and never
+	// composes the platform string itself.
 	vs     rfvulnsrc.VulnSrcGetter
 	logger *log.Logger
 }
@@ -110,6 +114,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		// isRPMVulnerable, since that's the only place it is consumed.)
 		isRFPackage := strings.HasPrefix(pkg.Name, "rf-")
 
+		// Route DB queries through trivy-db's RapidFort getter (see the vs
+		// field docstring). It builds the platform key from (baseOS, release)
+		// on the trivy-db side, so this scanner just hands over the release
+		// and package name and lets the getter compose the bucket lookup.
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,
 			PkgName: srcName,
@@ -250,8 +258,8 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 	//     tag them "rf" so they match advisory ranges built for RapidFort.
 	//   - Otherwise default to the "el" family so we still match el9/el8/…
 	//     advisory ranges rather than skipping them entirely.
-	// (No baseOS guard on the .rf branch: isRPMVulnerable is only reached when
-	// baseOS == "redhat", so the guard from the previous call site is redundant.)
+	// (No baseOS guard on the .rf branch: isRPMVulnerable is only called when
+	// baseOS == "redhat".)
 	identifier := extractRPMIdentifier(installedVersion)
 	if identifier == "" && rfVersionSuffixRe.MatchString(installedVersion) {
 		identifier = "rf"
