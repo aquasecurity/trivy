@@ -241,3 +241,20 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestCollectPackagesDeterministicRoot(t *testing.T) {
+	depsFile := dotNetDependencies{
+		Libraries: map[string]dotNetLibrary{
+			"Zebra/1.0.0": {Type: "project"},
+			"Mango/1.0.0": {Type: "project"},
+			"Alpha/1.0.0": {Type: "project"},
+		},
+	}
+
+	// The lexicographically first project library must win regardless of
+	// map iteration order.
+	pkgs, root := NewParser().collectPackages(depsFile, nil, false)
+
+	assert.Equal(t, "Alpha/1.0.0", root)
+	assert.Equal(t, ftypes.RelationshipRoot, pkgs[root].Relationship)
+}

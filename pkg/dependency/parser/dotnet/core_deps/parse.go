@@ -2,6 +2,7 @@ package core_deps
 
 import (
 	"context"
+	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -104,7 +105,8 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 	var projectNameVer string
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
 
-	for nameVer, lib := range depsFile.Libraries {
+	for _, nameVer := range slices.Sorted(maps.Keys(depsFile.Libraries)) {
+		lib := depsFile.Libraries[nameVer]
 		name, version, ok := strings.Cut(nameVer, "/")
 		if !ok {
 			// Invalid name
