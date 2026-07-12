@@ -78,6 +78,13 @@ var (
 		Usage:      "write the default config to trivy-default.yaml",
 		Persistent: true,
 	}
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Usage:         "disable colored output",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
 	TraceHTTPFlag = Flag[bool]{
 		Name:          "trace-http",
 		ConfigName:    "trace.http",
@@ -99,6 +106,7 @@ type GlobalFlagGroup struct {
 	Timeout               *Flag[time.Duration]
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
+	NoColor               *Flag[bool]
 	TraceHTTP             *Flag[bool]
 }
 
@@ -113,6 +121,7 @@ type GlobalOptions struct {
 	Timeout               time.Duration
 	CacheDir              string
 	GenerateDefaultConfig bool
+	NoColor               bool
 	TraceHTTP             bool
 }
 
@@ -127,6 +136,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		Timeout:               TimeoutFlag.Clone(),
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
+		NoColor:               NoColorFlag.Clone(),
 		TraceHTTP:             TraceHTTPFlag.Clone(),
 	}
 }
@@ -146,6 +156,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.Timeout,
 		f.CacheDir,
 		f.GenerateDefaultConfig,
+		f.NoColor,
 		f.TraceHTTP,
 	}
 }
@@ -185,6 +196,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
+		NoColor:               f.NoColor.Value() || os.Getenv("NO_COLOR") != "",
 		TraceHTTP:             f.TraceHTTP.Value(),
 	}
 	return nil

@@ -14,6 +14,8 @@ import (
 	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
+	"github.com/fatih/color"
+
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/commands/artifact"
 	"github.com/aquasecurity/trivy/pkg/commands/auth"
@@ -216,6 +218,10 @@ func NewRootCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 			opts, err := flags.ToOptions(args)
 			if err != nil {
 				return err
+			}
+			// Disable colored output when --no-color flag or NO_COLOR env is set.
+			if opts.NoColor {
+				color.NoColor = true
 			}
 			// Initialize logger
 			log.InitLogger(opts.Debug, opts.Quiet)
