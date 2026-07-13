@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -186,6 +187,13 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 
 	log.Debug("Cache dir", log.String("dir", f.CacheDir.Value()))
 
+	// --no-color flag takes priority over NO_COLOR env var.
+	// If the flag was explicitly set, use its value; otherwise fall back to env.
+	noColor := f.NoColor.Value()
+	if !viper.IsSet(f.NoColor.ConfigName) {
+		noColor = os.Getenv("NO_COLOR") != ""
+	}
+
 	opts.GlobalOptions = GlobalOptions{
 		ConfigFile:            f.ConfigFile.Value(),
 		ShowVersion:           f.ShowVersion.Value(),
@@ -196,7 +204,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		Timeout:               f.Timeout.Value(),
 		CacheDir:              f.CacheDir.Value(),
 		GenerateDefaultConfig: f.GenerateDefaultConfig.Value(),
-		NoColor:               f.NoColor.Value() || os.Getenv("NO_COLOR") != "",
+		NoColor:               noColor,
 		TraceHTTP:             f.TraceHTTP.Value(),
 	}
 	return nil
