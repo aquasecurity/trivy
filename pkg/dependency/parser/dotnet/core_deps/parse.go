@@ -102,8 +102,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 // collectPackages builds the package map from the `libraries` section, returning the
 // packages keyed by ID and the ID of the root project (empty if none was found).
 func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[string]TargetLib, targetLibsFound bool) (map[string]ftypes.Package, string) {
-	var projectNameVer string
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
+	var projects []string
 
 	for _, nameVer := range slices.Sorted(maps.Keys(depsFile.Libraries)) {
 		lib := depsFile.Libraries[nameVer]
@@ -139,20 +139,44 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		}
 
-		// Identify root package
 		if strings.EqualFold(lib.Type, "project") {
-			if projectNameVer != "" {
-				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", id))
-				continue
-			}
-			projectNameVer = id
-			pkg.Relationship = ftypes.RelationshipRoot
+			projects = append(projects, id)
 		}
 
 		pkgs[pkg.ID] = pkg
 	}
 
+	projectNameVer := rootProject(projects, targetLibs)
+	if projectNameVer != "" {
+		pkg := pkgs[projectNameVer]
+		pkg.Relationship = ftypes.RelationshipRoot
+		pkgs[projectNameVer] = pkg
+	}
+
 	return pkgs, projectNameVer
+}
+
+func rootProject(projects []string, targetLibs map[string]TargetLib) string {
+	referenced := make(map[string]struct{})
+	for _, lib := range targetLibs {
+		for name, version := range lib.Dependencies {
+			referenced[packageID(name, version)] = struct{}{}
+		}
+	}
+
+	var roots []string
+	for _, project := range projects {
+		if _, ok := referenced[project]; !ok {
+			roots = append(roots, project)
+		}
+	}
+	if len(roots) == 1 {
+		return roots[0]
+	}
+	if len(projects) > 0 {
+		return projects[0]
+	}
+	return ""
 }
 
 // buildDependencyGraph fills the Relationship field of each package and builds the

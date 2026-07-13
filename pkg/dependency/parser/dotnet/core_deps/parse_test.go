@@ -242,19 +242,59 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestCollectPackagesDeterministicRoot(t *testing.T) {
-	depsFile := dotNetDependencies{
-		Libraries: map[string]dotNetLibrary{
-			"Zebra/1.0.0": {Type: "project"},
-			"Mango/1.0.0": {Type: "project"},
-			"Alpha/1.0.0": {Type: "project"},
+func TestParseMultiProject(t *testing.T) {
+	f, err := os.Open("testdata/multi-project/Web.deps.json")
+	require.NoError(t, err)
+
+	got, gotDeps, err := NewParser().Parse(t.Context(), f)
+	require.NoError(t, err)
+
+	assert.Equal(t, []ftypes.Package{
+		{
+			ID:           "Web/1.0.0",
+			Name:         "Web",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipRoot,
+			Locations: []ftypes.Location{
+				{StartLine: 48, EndLine: 52},
+			},
 		},
-	}
-
-	// The lexicographically first project library must win regardless of
-	// map iteration order.
-	pkgs, root := NewParser().collectPackages(depsFile, nil, false)
-
-	assert.Equal(t, "Alpha/1.0.0", root)
-	assert.Equal(t, ftypes.RelationshipRoot, pkgs[root].Relationship)
+		{
+			ID:           "Api/1.0.0",
+			Name:         "Api",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{StartLine: 60, EndLine: 64},
+			},
+		},
+		{
+			ID:           "Newtonsoft.Json/13.0.3",
+			Name:         "Newtonsoft.Json",
+			Version:      "13.0.3",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{StartLine: 53, EndLine: 59},
+			},
+		},
+		{
+			ID:           "Data/1.0.0",
+			Name:         "Data",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{StartLine: 65, EndLine: 69},
+			},
+		},
+	}, got)
+	assert.Equal(t, []ftypes.Dependency{
+		{
+			ID:        "Api/1.0.0",
+			DependsOn: []string{"Data/1.0.0"},
+		},
+		{
+			ID:        "Web/1.0.0",
+			DependsOn: []string{"Api/1.0.0", "Newtonsoft.Json/13.0.3"},
+		},
+	}, gotDeps)
 }
