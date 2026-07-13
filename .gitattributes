@@ -2,3 +2,4 @@
 pkg/dependency/parser/dotnet/core_deps/testdata/multi-project/Web.deps.json linguist-generated=true
 pkg/dependency/parser/dotnet/core_deps/testdata/multi-project/**/*.cs linguist-generated=true
 pkg/dependency/parser/dotnet/core_deps/testdata/multi-project/**/*.csproj linguist-generated=true
+pkg/dependency/parser/dotnet/core_deps/testdata/multi-project/**/*.sln linguist-generated=true

@@ -1,6 +1,7 @@
 # Multi-project fixture
 
-This fixture verifies parsing a published application with project references:
+This fixture contains a real multi-project solution for verifying a published
+application with project references:
 
 ```text
 Web -> Api -> Data
@@ -15,7 +16,7 @@ with the .NET 10 SDK, run from this directory:
   tmp_dir="$(mktemp -d)"
   trap 'rm -rf "$tmp_dir"' EXIT
 
-  cp -R Web Api Data "$tmp_dir"
+  cp -R MultiProject.sln Web Api Data "$tmp_dir"
   dotnet publish "$tmp_dir/Web/Web.csproj" \
     --output "$tmp_dir/publish" \
     -m:1 \

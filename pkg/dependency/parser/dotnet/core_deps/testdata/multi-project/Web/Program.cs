@@ -1,1 +1,1 @@
-System.Console.WriteLine("Hello, World!");
+System.Console.WriteLine(Api.Message.Get());
