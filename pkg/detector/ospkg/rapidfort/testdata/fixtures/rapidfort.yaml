@@ -36,7 +36,7 @@
             PatchedVersions:
               - "3.1.4-r1"
             Severity: 2
-- bucket: rapidfort redhat 9
+- bucket: rapidfort Red Hat 9
   pairs:
     - bucket: rf-curl
       pairs:

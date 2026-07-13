@@ -713,11 +713,14 @@ func TestProvider(t *testing.T) {
 }
 
 func TestScanner_IsVulnerable(t *testing.T) {
+	// For RedHat test cases, isRPMVulnerable derives the distro identifier
+	// from installedVersion. Choose an installedVersion whose suffix matches
+	// the identifier you want to exercise: ".el9" → "el9", ".rf1"/".rf" →
+	// "rf", no distro tag → defaults to "el".
 	tests := []struct {
 		name             string
 		baseOS           ftypes.OSType
 		installedVersion string
-		identifier       string
 		isRFPackage      bool
 		vulnerableRanges []string
 		patchedVersions  []string
@@ -780,7 +783,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM el9: vulnerable — el9 range matches installed identifier",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.el9",
-			identifier:       "el9",
 			vulnerableRanges: []string{
 				">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3",
 				">= 7.76.1-14.fc39, < 7.76.1-26.fc39",
@@ -792,7 +794,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM el9: not vulnerable — fc39 range skipped, el9 range not satisfied",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-26.el9_3.3",
-			identifier:       "el9",
 			vulnerableRanges: []string{
 				">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3",
 				">= 7.76.1-14.fc39, < 7.76.1-26.fc39",
@@ -805,7 +806,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM el9: fc39 range must not cause false positive for el9 package",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.el9",
-			identifier:       "el9",
 			// Only fc39 ranges present — el9 package must not be flagged.
 			vulnerableRanges: []string{">= 7.76.1-14.fc39, < 7.76.1-26.fc39"},
 			custom:           map[string]any{"identifiers": []any{"fc39"}},
@@ -815,7 +815,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM fc39: vulnerable — fc39 range matches installed identifier",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.fc39",
-			identifier:       "fc39",
 			vulnerableRanges: []string{
 				">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3",
 				">= 7.76.1-14.fc39, < 7.76.1-26.fc39",
@@ -824,22 +823,22 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			want:   true,
 		},
 		{
-			// No identifier in version → defaults to "el".
-			// "el" prefix-matches "el9", so the el9 advisory range is checked.
-			name:             "RPM: no identifier — defaults to 'el', matches el9 advisory range",
+			// installedVersion has no el/fc tag and no .rf suffix, so the derived
+			// identifier is "" and defaults to "el". "el" prefix-matches "el9",
+			// so the el9 advisory range is checked.
+			name:             "RPM: no identifier in version — defaults to 'el', matches el9 advisory range",
 			baseOS:           ftypes.RedHat,
-			installedVersion: "7.76.1-20.rf1",
-			identifier:       "",
+			installedVersion: "7.76.1-20",
 			vulnerableRanges: []string{">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"},
 			custom:           map[string]any{"identifiers": []any{"el9"}},
 			want:             true,
 		},
 		{
-			// No identifier → defaults to "el". Must NOT match an fc-only advisory range.
-			name:             "RPM: no identifier — defaults to 'el', fc39 range must be skipped",
+			// Same as above: derived identifier defaults to "el" and must NOT
+			// prefix-match an fc-only advisory range.
+			name:             "RPM: no identifier in version — defaults to 'el', fc39 range must be skipped",
 			baseOS:           ftypes.RedHat,
-			installedVersion: "7.76.1-20.rf1",
-			identifier:       "",
+			installedVersion: "7.76.1-20",
 			vulnerableRanges: []string{">= 7.76.1-14.fc39, < 7.76.1-26.fc39"},
 			custom:           map[string]any{"identifiers": []any{"fc39"}},
 			want:             false,
@@ -848,7 +847,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM: open-ended vulnerability (no fix) with el9 identifier",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.el9",
-			identifier:       "el9",
 			vulnerableRanges: []string{">=7.76.1-14.el9"},
 			custom:           map[string]any{"identifiers": []any{"el9"}},
 			want:             true,
@@ -858,7 +856,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM rf: .rf version matches 'rf' advisory range",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.rf1",
-			identifier:       "rf",
 			vulnerableRanges: []string{
 				">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3",
 				">= 7.76.1-14.fc39, < 7.76.1-26.fc39",
@@ -871,7 +868,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM rf: .rf version must not match el9/fc39-only ranges",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "7.76.1-20.rf1",
-			identifier:       "rf",
 			vulnerableRanges: []string{
 				">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3",
 				">= 7.76.1-14.fc39, < 7.76.1-26.fc39",
@@ -886,7 +882,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM rf- fallback: fc43 package matches 'rf' range when no fc43 range exists",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "2.7.3-1.fc43",
-			identifier:       "fc43",
 			isRFPackage:      true,
 			vulnerableRanges: []string{">= 2.7.0-1.rf, < 2.7.4-1.rf1"},
 			custom:           map[string]any{"identifiers": []any{"rf"}},
@@ -898,7 +893,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM rf- fallback: fc43 range present, primary match used — no fallback",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "2.7.3-1.fc43",
-			identifier:       "fc43",
 			isRFPackage:      true,
 			vulnerableRanges: []string{
 				">= 2.7.0-1.fc43, < 2.7.4-1.fc43",
@@ -913,7 +907,6 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			name:             "RPM rf- fallback: non-rf package must not match 'rf'-only range",
 			baseOS:           ftypes.RedHat,
 			installedVersion: "2.7.3-1.fc43",
-			identifier:       "fc43",
 			isRFPackage:      false,
 			vulnerableRanges: []string{">= 2.7.0-1.rf, < 2.7.4-1.rf1"},
 			custom:           map[string]any{"identifiers": []any{"rf"}},
@@ -929,7 +922,7 @@ func TestScanner_IsVulnerable(t *testing.T) {
 				PatchedVersions:    tt.patchedVersions,
 				Custom:             tt.custom,
 			}
-			result := scanner.IsVulnerable(t.Context(), tt.installedVersion, tt.identifier, tt.isRFPackage, adv)
+			result := scanner.IsVulnerable(t.Context(), tt.installedVersion, tt.isRFPackage, adv)
 			assert.Equal(t, tt.want, result)
 		})
 	}
