@@ -2,7 +2,6 @@ package core_deps
 
 import (
 	"context"
-	"maps"
 	"slices"
 	"sort"
 	"strings"
@@ -14,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -105,8 +105,7 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
 	var projects []string
 
-	for _, nameVer := range slices.Sorted(maps.Keys(depsFile.Libraries)) {
-		lib := depsFile.Libraries[nameVer]
+	for nameVer, lib := range depsFile.Libraries {
 		name, version, ok := strings.Cut(nameVer, "/")
 		if !ok {
 			// Invalid name
@@ -141,6 +140,7 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 
 		if strings.EqualFold(lib.Type, "project") {
 			projects = append(projects, id)
+			pkg.Relationship = ftypes.RelationshipWorkspace
 		}
 
 		pkgs[pkg.ID] = pkg
@@ -157,24 +157,21 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 }
 
 func rootProject(projects []string, targetLibs map[string]TargetLib) string {
-	referenced := make(map[string]struct{})
+	referenced := set.New[string]()
 	for _, lib := range targetLibs {
 		for name, version := range lib.Dependencies {
-			referenced[packageID(name, version)] = struct{}{}
+			referenced.Append(packageID(name, version))
 		}
 	}
 
 	var roots []string
 	for _, project := range projects {
-		if _, ok := referenced[project]; !ok {
+		if !referenced.Contains(project) {
 			roots = append(roots, project)
 		}
 	}
 	if len(roots) == 1 {
 		return roots[0]
-	}
-	if len(projects) > 0 {
-		return projects[0]
 	}
 	return ""
 }
@@ -185,10 +182,10 @@ func (p *Parser) buildDependencyGraph(pkgs map[string]ftypes.Package, targetLibs
 	var deps ftypes.Dependencies
 	for pkgID, pkg := range pkgs {
 		// Fill relationship field for package
-		// If Root package didn't find or don't have dependencies, skip setting Relationship,
+		// If Root package wasn't found or doesn't have dependencies, skip setting Relationship,
 		// because most likely file is broken.
-		// Root package Relationship is already set
-		if len(directDeps) > 0 && pkg.Relationship != ftypes.RelationshipRoot {
+		// Root and workspace package relationships are already set.
+		if len(directDeps) > 0 && pkg.Relationship == ftypes.RelationshipUnknown {
 			pkg.Relationship = lo.Ternary(slices.Contains(directDeps, pkgID), ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
 			pkgs[pkgID] = pkg
 		}

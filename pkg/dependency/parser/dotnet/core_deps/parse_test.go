@@ -263,9 +263,18 @@ func TestParseMultiProject(t *testing.T) {
 			ID:           "Api/1.0.0",
 			Name:         "Api",
 			Version:      "1.0.0",
-			Relationship: ftypes.RelationshipDirect,
+			Relationship: ftypes.RelationshipWorkspace,
 			Locations: []ftypes.Location{
 				{StartLine: 60, EndLine: 64},
+			},
+		},
+		{
+			ID:           "Data/1.0.0",
+			Name:         "Data",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipWorkspace,
+			Locations: []ftypes.Location{
+				{StartLine: 65, EndLine: 69},
 			},
 		},
 		{
@@ -275,15 +284,6 @@ func TestParseMultiProject(t *testing.T) {
 			Relationship: ftypes.RelationshipDirect,
 			Locations: []ftypes.Location{
 				{StartLine: 53, EndLine: 59},
-			},
-		},
-		{
-			ID:           "Data/1.0.0",
-			Name:         "Data",
-			Version:      "1.0.0",
-			Relationship: ftypes.RelationshipIndirect,
-			Locations: []ftypes.Location{
-				{StartLine: 65, EndLine: 69},
 			},
 		},
 	}, got)
@@ -297,4 +297,77 @@ func TestParseMultiProject(t *testing.T) {
 			DependsOn: []string{"Api/1.0.0", "Newtonsoft.Json/13.0.3"},
 		},
 	}, gotDeps)
+}
+
+func TestRootProject(t *testing.T) {
+	tests := []struct {
+		name       string
+		projects   []string
+		targetLibs map[string]TargetLib
+		want       string
+	}{
+		{
+			name:     "unique root",
+			projects: []string{"Web/1.0.0", "Api/1.0.0", "Data/1.0.0"},
+			targetLibs: map[string]TargetLib{
+				"Web/1.0.0":  {Dependencies: map[string]string{"Api": "1.0.0"}},
+				"Api/1.0.0":  {Dependencies: map[string]string{"Data": "1.0.0"}},
+				"Data/1.0.0": {},
+			},
+			want: "Web/1.0.0",
+		},
+		{
+			name:     "multiple unreferenced projects",
+			projects: []string{"Web/1.0.0", "Worker/1.0.0"},
+			targetLibs: map[string]TargetLib{
+				"Web/1.0.0":    {},
+				"Worker/1.0.0": {},
+			},
+		},
+		{
+			name:     "cyclic projects",
+			projects: []string{"Web/1.0.0", "Api/1.0.0"},
+			targetLibs: map[string]TargetLib{
+				"Web/1.0.0": {Dependencies: map[string]string{"Api": "1.0.0"}},
+				"Api/1.0.0": {Dependencies: map[string]string{"Web": "1.0.0"}},
+			},
+		},
+		{
+			name:       "no projects",
+			targetLibs: map[string]TargetLib{"Newtonsoft.Json/13.0.3": {}},
+		},
+		{
+			name:     "single project without target references",
+			projects: []string{"Web/1.0.0"},
+			want:     "Web/1.0.0",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, rootProject(tt.projects, tt.targetLibs))
+		})
+	}
+}
+
+func TestCollectPackagesWithAmbiguousRoot(t *testing.T) {
+	depsFile := dotNetDependencies{
+		Libraries: map[string]dotNetLibrary{
+			"Web/1.0.0":              {Type: "project"},
+			"Worker/1.0.0":           {Type: "project"},
+			"Newtonsoft.Json/13.0.3": {Type: "package"},
+		},
+	}
+	targetLibs := map[string]TargetLib{
+		"Web/1.0.0":              {Runtime: map[string]any{"Web.dll": struct{}{}}},
+		"Worker/1.0.0":           {Runtime: map[string]any{"Worker.dll": struct{}{}}},
+		"Newtonsoft.Json/13.0.3": {Runtime: map[string]any{"Newtonsoft.Json.dll": struct{}{}}},
+	}
+
+	pkgs, root := NewParser().collectPackages(depsFile, targetLibs, true)
+
+	assert.Empty(t, root)
+	assert.Equal(t, ftypes.RelationshipWorkspace, pkgs["Web/1.0.0"].Relationship)
+	assert.Equal(t, ftypes.RelationshipWorkspace, pkgs["Worker/1.0.0"].Relationship)
+	assert.Equal(t, ftypes.RelationshipUnknown, pkgs["Newtonsoft.Json/13.0.3"].Relationship)
 }
