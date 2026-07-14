@@ -1,6 +1,6 @@
 module github.com/aquasecurity/trivy
 
-go 1.26.3
+go 1.26.5
 
 require (
 	github.com/Azure/azure-sdk-for-go/sdk/azcore v1.22.0
