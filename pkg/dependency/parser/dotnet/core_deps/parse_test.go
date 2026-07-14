@@ -219,7 +219,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name: "multi-project solution",
-			file: "testdata/multi-project/Web.deps.json",
+			file: "testdata/multi-project.deps.json",
 			want: []ftypes.Package{
 				{
 					ID:           "Web/1.0.0",
