@@ -100,7 +100,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		defaultRepo: mavenCentralRepo,
 	}
 
-	s := readSettings()
+	s := readSettings(filepath.Dir(filepath.Clean(filePath)))
 	o.settingsRepos = s.effectiveRepositories()
 	localRepository := s.LocalRepository
 	if localRepository == "" {
