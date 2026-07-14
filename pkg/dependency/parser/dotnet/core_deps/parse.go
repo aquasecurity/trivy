@@ -76,7 +76,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	})
 
 	// First pass: collect all packages
-	pkgs, projectNameVer := p.collectPackages(depsFile, targetLibs, targetLibsFound)
+	pkgs, rootPkgID := p.collectPackages(depsFile, targetLibs, targetLibsFound)
 	if len(pkgs) == 0 {
 		return nil, nil, nil
 	}
@@ -88,7 +88,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return pkgSlice, nil, nil
 	}
 
-	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
+	directDeps := lo.MapToSlice(targetLibs[rootPkgID].Dependencies, packageID)
 
 	// Second pass: build dependency graph + fill Relationships from targets section
 	deps := p.buildDependencyGraph(pkgs, targetLibs, directDeps)
@@ -140,20 +140,21 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 
 		if strings.EqualFold(lib.Type, "project") {
 			projects = append(projects, id)
-			pkg.Relationship = ftypes.RelationshipWorkspace
 		}
 
 		pkgs[pkg.ID] = pkg
 	}
 
-	projectNameVer := rootProject(projects, targetLibs)
-	if projectNameVer != "" {
-		pkg := pkgs[projectNameVer]
-		pkg.Relationship = ftypes.RelationshipRoot
-		pkgs[projectNameVer] = pkg
+	rootPkgID := rootProject(projects, targetLibs)
+	if rootPkgID != "" {
+		for _, project := range projects {
+			pkg := pkgs[project]
+			pkg.Relationship = lo.Ternary(project == rootPkgID, ftypes.RelationshipRoot, ftypes.RelationshipWorkspace)
+			pkgs[project] = pkg
+		}
 	}
 
-	return pkgs, projectNameVer
+	return pkgs, rootPkgID
 }
 
 func rootProject(projects []string, targetLibs map[string]TargetLib) string {
