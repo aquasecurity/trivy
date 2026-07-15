@@ -81,6 +81,15 @@ func (fs FSCache) GetBlob(_ context.Context, blobID string) (types.BlobInfo, err
 	return blobInfo, nil
 }
 
+// GetBlobOS retrieves OS information from a blob in the filesystem cache.
+func (fs FSCache) GetBlobOS(ctx context.Context, blobID string) (types.OS, error) {
+	blobInfo, err := fs.GetBlob(ctx, blobID)
+	if err != nil {
+		return types.OS{}, err
+	}
+	return blobInfo.OS, nil
+}
+
 func (fs FSCache) getBlob(blobBucket *bolt.Bucket, diffID string) (types.BlobInfo, error) {
 	b := blobBucket.Get([]byte(diffID))
 
