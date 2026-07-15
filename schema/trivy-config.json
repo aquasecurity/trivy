@@ -929,6 +929,7 @@
     }
   },
   "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://www.schemastore.org/trivy-config.json",
   "title": "Trivy Configuration",
   "description": "Configuration file for Trivy security scanner (trivy.yaml)"
 }
