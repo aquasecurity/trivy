@@ -16,6 +16,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -183,6 +184,7 @@ type AnalysisResult struct {
 	Misconfigurations    []ftypes.Misconfiguration
 	Secrets              []ftypes.Secret
 	Licenses             []ftypes.LicenseFile
+	CryptoAssets         []crypto.Asset
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Digests contains SHA-256 digests of unpackaged files
@@ -204,7 +206,7 @@ func NewAnalysisResult() *AnalysisResult {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CryptoAssets) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
@@ -267,6 +269,16 @@ func (r *AnalysisResult) Sort() {
 
 		return r.Licenses[i].Type < r.Licenses[j].Type
 	})
+
+	// Cryptographic assets
+	sort.SliceStable(r.CryptoAssets, func(i, j int) bool {
+		left := r.CryptoAssets[i].Descriptor().String()
+		right := r.CryptoAssets[j].Descriptor().String()
+		if left != right {
+			return left < right
+		}
+		return r.CryptoAssets[i].FilePath < r.CryptoAssets[j].FilePath
+	})
 }
 
 func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
@@ -301,6 +313,7 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	r.Misconfigurations = append(r.Misconfigurations, newResult.Misconfigurations...)
 	r.Secrets = append(r.Secrets, newResult.Secrets...)
 	r.Licenses = append(r.Licenses, newResult.Licenses...)
+	r.CryptoAssets = append(r.CryptoAssets, newResult.CryptoAssets...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, newResult.SystemInstalledFiles...)
 
 	if newResult.BuildInfo != nil {
