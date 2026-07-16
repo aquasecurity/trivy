@@ -144,6 +144,12 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 		fileName = v
 	}
 
+	// Reject filenames that are not local relative paths to prevent path traversal
+	// (e.g., "../foo", "/foo", or "C:\foo" on Windows).
+	if !filepath.IsLocal(fileName) {
+		return xerrors.Errorf("invalid filename %q: must be a local relative path", fileName)
+	}
+
 	layerMediaType, err := layer.MediaType()
 	if err != nil {
 		return xerrors.Errorf("media type error: %w", err)

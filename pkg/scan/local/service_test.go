@@ -852,6 +852,10 @@ func TestScanner_Scan(t *testing.T) {
 								Layer: ftypes.Layer{
 									DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 								},
+								// Severity falls back to UNKNOWN when vulnerability details are missing.
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: dbTypes.SeverityUnknown.String(),
+								},
 							},
 						},
 					},

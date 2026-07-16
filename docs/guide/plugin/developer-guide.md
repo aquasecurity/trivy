@@ -114,7 +114,7 @@ The `plugin.yaml` field should contain the following information:
 - summary: A short usage description. (required)
 - description: A long description of the plugin. This is where you could provide a helpful documentation of your plugin. (required)
 - platforms: (required)
-    - selector: The OS/Architecture specific variations of a execution file. (optional)
+    - selector: The OS/Architecture specific variations of an execution file. (optional)
         - os: OS information based on GOOS (linux, darwin, etc.) (optional)
         - arch: The architecture information based on GOARCH (amd64, arm64, etc.) (optional)
     - uri: Where the executable file is. Relative path from the root directory of the plugin or remote URL such as HTTP and S3. (required)

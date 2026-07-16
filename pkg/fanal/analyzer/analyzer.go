@@ -490,6 +490,9 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
+			// The goroutine below (which closes rc) is not started on this path,
+			// so close the opened file here to avoid leaking the handle.
+			_ = rc.Close()
 			return xerrors.Errorf("semaphore acquire: %w", err)
 		}
 

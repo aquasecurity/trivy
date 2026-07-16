@@ -43,8 +43,23 @@ type LockFile struct {
 }
 
 type Importer struct {
-	Dependencies    map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
-	DevDependencies map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
+	Dependencies               map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
+	DevDependencies            map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
+	ConfigDependencies         map[string]any                `yaml:"configDependencies,omitempty"`
+	PackageManagerDependencies map[string]any                `yaml:"packageManagerDependencies,omitempty"`
+}
+
+// isEnvLockfile reports whether this YAML document is the pnpm env lockfile
+// (config and package manager dependencies), which pnpm 11 stores as a
+// separate document in pnpm-lock.yaml. It holds the package manager
+// environment, not the project dependencies, so it must be skipped.
+func (l LockFile) isEnvLockfile() bool {
+	for _, importer := range l.Importers {
+		if importer.ConfigDependencies != nil || importer.PackageManagerDependencies != nil {
+			return true
+		}
+	}
+	return false
 }
 
 type ImporterDepVersion struct {

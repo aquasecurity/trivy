@@ -1,5 +1,44 @@
 # Changelog
 
+## [0.72.0](https://github.com/aquasecurity/trivy/compare/v0.71.0...v0.72.0) (2026-06-30)
+
+
+### ⚠ BREAKING CHANGES
+
+* migrate docker config to dockers_v2 ([#10783](https://github.com/aquasecurity/trivy/issues/10783))
+
+### Features
+
+* **bottlerocket:** add vulnerability matching for Bottlerocket OS ([#10893](https://github.com/aquasecurity/trivy/issues/10893)) ([246ee3c](https://github.com/aquasecurity/trivy/commit/246ee3ca56b666e3c6e6462bf7c0ecd6f059341a))
+* **dotnet:** detect bundled runtime in self-contained deployments ([#10786](https://github.com/aquasecurity/trivy/issues/10786)) ([bd78842](https://github.com/aquasecurity/trivy/commit/bd788423970f08ea64ad7bc7638dd16bc7e9e43b))
+* **java:** detect JAR licenses from packaged LICENSE files ([#10856](https://github.com/aquasecurity/trivy/issues/10856)) ([b8a1ccd](https://github.com/aquasecurity/trivy/commit/b8a1ccd68a6e06e101de618dbc97b564d902e2f2))
+* **java:** detect JAR licenses from the embedded pom.xml ([#10851](https://github.com/aquasecurity/trivy/issues/10851)) ([0a166c3](https://github.com/aquasecurity/trivy/commit/0a166c3fd42e941f37f524cc3905ad3f07062438))
+* **misconf:** Adds CloudFront standard logging v2 support to AVD-AWS-0010 ([#10848](https://github.com/aquasecurity/trivy/issues/10848)) ([a848925](https://github.com/aquasecurity/trivy/commit/a848925c613a3308524cbbcff98fa258c89fe3e3))
+* **secret:** add OpenAI secret detection rules ([#10798](https://github.com/aquasecurity/trivy/issues/10798)) ([65e5128](https://github.com/aquasecurity/trivy/commit/65e51285de53aa1cfb430cde59001c244fc5f0fd))
+* **secret:** support new stateless format for GitHub App installation tokens ([#10826](https://github.com/aquasecurity/trivy/issues/10826)) ([e68f3d2](https://github.com/aquasecurity/trivy/commit/e68f3d2d3476b59c57de2ef2c2806edb001147ee))
+
+
+### Bug Fixes
+
+* correct format verbs in diagnostic messages ([#10805](https://github.com/aquasecurity/trivy/issues/10805)) ([859a933](https://github.com/aquasecurity/trivy/commit/859a933cd05e6cb0e06d80e47a6e96f96d337567))
+* forward ospkg detector options through ospkg.NewScanner ([#10811](https://github.com/aquasecurity/trivy/issues/10811)) ([28d44d3](https://github.com/aquasecurity/trivy/commit/28d44d3af5e7c6ba56edbfd53e178fa613fbd94b))
+* **image:** deterministic OS package deduplication for images with embedded SBOMs ([#10777](https://github.com/aquasecurity/trivy/issues/10777)) ([888911b](https://github.com/aquasecurity/trivy/commit/888911bcd3d0fdcd0cccbb2d45b9cb4cc267d926))
+* **image:** lookup origin layer for custom resources in merged layers ([#10788](https://github.com/aquasecurity/trivy/issues/10788)) ([dccb128](https://github.com/aquasecurity/trivy/commit/dccb12835679d01930574ecb53be7686cee607fb))
+* **misconf:** support github_repository_vulnerability_alerts resource ([#10680](https://github.com/aquasecurity/trivy/issues/10680)) ([abb5174](https://github.com/aquasecurity/trivy/commit/abb5174b7e6932ffcee88ccd35c5c8cf7c55df12))
+* **nodejs:** parse project dependencies from multi-document pnpm-lock.yaml ([#10861](https://github.com/aquasecurity/trivy/issues/10861)) ([a10291b](https://github.com/aquasecurity/trivy/commit/a10291be6f44a512977e887180faab3f3dd240c5))
+* **server:** propagate package repository class in client/server mode ([#10874](https://github.com/aquasecurity/trivy/issues/10874)) ([a2777ae](https://github.com/aquasecurity/trivy/commit/a2777aed340e4bb11c6cea6d7cf5d4bf137587ec))
+* **spdx:** guard against nil root component in SPDX marshaler ([#10771](https://github.com/aquasecurity/trivy/issues/10771)) ([c0654e1](https://github.com/aquasecurity/trivy/commit/c0654e17eb27a222bada78e22384c86039430d94))
+* surface the original analysis error instead of context cancellation ([#10793](https://github.com/aquasecurity/trivy/issues/10793)) ([3054b3b](https://github.com/aquasecurity/trivy/commit/3054b3b953a59d536d5e13ab7210501dbfc55a40))
+* **terraform:** avoid data race on global getter.Getters in remote module resolver ([#10843](https://github.com/aquasecurity/trivy/issues/10843)) ([0aff3fd](https://github.com/aquasecurity/trivy/commit/0aff3fdf3b8924fe6b9ee69b05276db37a68d0d8))
+* use random suffix for process temp directory instead of PID ([#10431](https://github.com/aquasecurity/trivy/issues/10431)) ([c8d1d0d](https://github.com/aquasecurity/trivy/commit/c8d1d0d113b0bd3a058f566ede786b18ff94f75e))
+* **vex:** load VEX documents from within the repository directory ([#10820](https://github.com/aquasecurity/trivy/issues/10820)) ([1f56a34](https://github.com/aquasecurity/trivy/commit/1f56a3450a4e0a7d42c273b4acfeec1f584979ab))
+* **vuln:** fall back to UNKNOWN severity when vulnerability details are missing ([#10795](https://github.com/aquasecurity/trivy/issues/10795)) ([dfd53cf](https://github.com/aquasecurity/trivy/commit/dfd53cfcb6888d8af57bec63d6c33f648ba87380))
+
+
+### Continuous Integration
+
+* migrate docker config to dockers_v2 ([#10783](https://github.com/aquasecurity/trivy/issues/10783)) ([848d135](https://github.com/aquasecurity/trivy/commit/848d13595fea770c2f6488957cd0771654eb2659))
+
 ## [0.71.0](https://github.com/aquasecurity/trivy/compare/v0.70.0...v0.71.0) (2026-06-01)
 
 

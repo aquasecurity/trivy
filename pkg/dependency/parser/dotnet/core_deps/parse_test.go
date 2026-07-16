@@ -151,6 +151,162 @@ func TestParse(t *testing.T) {
 			wantDeps: nil,
 		},
 		{
+			// Self-contained deployments bundle the runtime into the app's deps.json as
+			// `runtimepack.<name>` libraries. They must be reported with the prefix stripped
+			// so the name matches the advisory DB (Microsoft.NETCore.App.Runtime.<rid>).
+			name: "self-contained with bundled runtime",
+			file: "testdata/self-contained.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "ExampleApp1/1.0.0",
+					Name:         "ExampleApp1",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 46,
+							EndLine:   50,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.AspNetCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.AspNetCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 63,
+							EndLine:   67,
+						},
+					},
+				},
+				{
+					ID:           "Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+					Name:         "Microsoft.NETCore.App.Runtime.linux-x64",
+					Version:      "8.0.0",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 58,
+							EndLine:   62,
+						},
+					},
+				},
+				{
+					ID:           "Newtonsoft.Json/13.0.1",
+					Name:         "Newtonsoft.Json",
+					Version:      "13.0.1",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 51,
+							EndLine:   57,
+						},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "ExampleApp1/1.0.0",
+					DependsOn: []string{
+						"Microsoft.AspNetCore.App.Runtime.linux-x64/8.0.0",
+						"Microsoft.NETCore.App.Runtime.linux-x64/8.0.0",
+						"Newtonsoft.Json/13.0.1",
+					},
+				},
+			},
+		},
+		{
+			name: "multi-project solution",
+			file: "testdata/multi-project.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:           "Web/1.0.0",
+					Name:         "Web",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+					Locations: []ftypes.Location{
+						{StartLine: 48, EndLine: 52},
+					},
+				},
+				{
+					ID:           "Api/1.0.0",
+					Name:         "Api",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+					Locations: []ftypes.Location{
+						{StartLine: 60, EndLine: 64},
+					},
+				},
+				{
+					ID:           "Data/1.0.0",
+					Name:         "Data",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipWorkspace,
+					Locations: []ftypes.Location{
+						{StartLine: 65, EndLine: 69},
+					},
+				},
+				{
+					ID:           "Newtonsoft.Json/13.0.3",
+					Name:         "Newtonsoft.Json",
+					Version:      "13.0.3",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{StartLine: 53, EndLine: 59},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "Api/1.0.0",
+					DependsOn: []string{"Data/1.0.0"},
+				},
+				{
+					ID:        "Web/1.0.0",
+					DependsOn: []string{"Api/1.0.0", "Newtonsoft.Json/13.0.3"},
+				},
+			},
+		},
+		// A synthetic case (not possible when using dotnet) for when we have 2 (or more) candidates for the root package.
+		{
+			name: "ambiguous root",
+			file: "testdata/ambiguous-root.deps.json",
+			want: []ftypes.Package{
+				{
+					ID:      "Newtonsoft.Json/13.0.3",
+					Name:    "Newtonsoft.Json",
+					Version: "13.0.3",
+					Locations: []ftypes.Location{
+						{StartLine: 40, EndLine: 46},
+					},
+				},
+				{
+					ID:      "Web/1.0.0",
+					Name:    "Web",
+					Version: "1.0.0",
+					Locations: []ftypes.Location{
+						{StartLine: 30, EndLine: 34},
+					},
+				},
+				{
+					ID:      "Worker/1.0.0",
+					Name:    "Worker",
+					Version: "1.0.0",
+					Locations: []ftypes.Location{
+						{StartLine: 35, EndLine: 39},
+					},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "Web/1.0.0",
+					DependsOn: []string{"Newtonsoft.Json/13.0.3"},
+				},
+			},
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/invalid.deps.json",
 			wantErr: "failed to decode .deps.json file: jsontext: unexpected EOF within",

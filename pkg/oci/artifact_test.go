@@ -1,6 +1,7 @@
 package oci_test
 
 import (
+	"cmp"
 	"errors"
 	"os"
 	"path/filepath"
@@ -42,6 +43,7 @@ func TestArtifact_Download(t *testing.T) {
 		name          string
 		input         string
 		mediaType     string
+		annotation    string
 		layersReturns layersReturns
 		want          string
 		wantErr       string
@@ -90,6 +92,33 @@ func TestArtifact_Download(t *testing.T) {
 			},
 			wantErr: "unacceptable media type",
 		},
+		{
+			name:       "sad: filename with parent traversal",
+			mediaType:  "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
+			annotation: "../../../etc/passwd",
+			layersReturns: layersReturns{
+				layers: []v1.Layer{flayer},
+			},
+			wantErr: `invalid filename "../../../etc/passwd"`,
+		},
+		{
+			name:       "sad: filename with absolute path",
+			mediaType:  "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
+			annotation: "/etc/passwd",
+			layersReturns: layersReturns{
+				layers: []v1.Layer{flayer},
+			},
+			wantErr: `invalid filename "/etc/passwd"`,
+		},
+		{
+			name:       "sad: filename with subdirectory traversal",
+			mediaType:  "application/vnd.cncf.openpolicyagent.layer.v1.tar+gzip",
+			annotation: "foo/../../bar",
+			layersReturns: layersReturns{
+				layers: []v1.Layer{flayer},
+			},
+			wantErr: `invalid filename "foo/../../bar"`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -109,7 +138,7 @@ func TestArtifact_Download(t *testing.T) {
 							Hex:       "cba33656188782852f58993f45b68bfb8577f64cdcf02a604e3fc2afbeb5f2d8",
 						},
 						Annotations: map[string]string{
-							"org.opencontainers.image.title": "bundle.tar.gz",
+							"org.opencontainers.image.title": cmp.Or(tt.annotation, "bundle.tar.gz"),
 						},
 					},
 				},
