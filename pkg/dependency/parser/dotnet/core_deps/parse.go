@@ -99,8 +99,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, nil
 }
 
-// collectPackages builds the package map from the `libraries` section, returning the
-// packages keyed by ID and the ID of the root project (empty if none was found).
+// collectPackages builds the package map from the `libraries` section. It returns
+// the packages keyed by ID and the ID of the root project ("" if it couldn't be
+// determined). When a root is found, the root project is marked `RelationshipRoot`
+// and the other project libraries `RelationshipWorkspace`.
 func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[string]TargetLib, targetLibsFound bool) (map[string]ftypes.Package, string) {
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
 	var projects []string
@@ -145,7 +147,7 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 		pkgs[pkg.ID] = pkg
 	}
 
-	rootPkgID := rootProject(projects, targetLibs)
+	rootPkgID := p.rootProject(projects, targetLibs)
 	if rootPkgID != "" {
 		for _, project := range projects {
 			pkg := pkgs[project]
@@ -157,7 +159,10 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 	return pkgs, rootPkgID
 }
 
-func rootProject(projects []string, targetLibs map[string]TargetLib) string {
+// rootProject returns the pkgID of the root application project:
+// the only `type: project` that no other library depends on in the `targets` graph.
+// It returns "" when there isn't exactly one such project, so we don't guess the root on a non-standard file.
+func (p *Parser) rootProject(projects []string, targetLibs map[string]TargetLib) string {
 	referenced := set.New[string]()
 	for _, lib := range targetLibs {
 		for name, version := range lib.Dependencies {
@@ -174,6 +179,8 @@ func rootProject(projects []string, targetLibs map[string]TargetLib) string {
 	if len(roots) == 1 {
 		return roots[0]
 	}
+
+	p.logger.Debug("Unable to determine the root project in .deps.json", log.Int("candidates", len(roots)))
 	return ""
 }
 

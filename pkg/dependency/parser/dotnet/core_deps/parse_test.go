@@ -269,6 +269,7 @@ func TestParse(t *testing.T) {
 				},
 			},
 		},
+		// A synthetic case (not possible when using dotnet) for when we have 2 (or more) candidates for the root package.
 		{
 			name: "ambiguous root",
 			file: "testdata/ambiguous-root.deps.json",
