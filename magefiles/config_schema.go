@@ -30,6 +30,7 @@ const configSchemaPath = "schema/trivy-config.json"
 func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) error {
 	root := &jsonschema.Schema{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
+		ID: 		 "https://www.schemastore.org/trivy-config.json",
 		Type:        schemaTypeObject,
 		Title:       "Trivy Configuration",
 		Description: "Configuration file for Trivy security scanner (trivy.yaml)",
