@@ -17,6 +17,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -48,11 +49,9 @@ type Scanner struct {
 	// that RapidFort advisories are keyed on (e.g. "22.04.1" → "22.04" for Ubuntu,
 	// "9.2" → "9" for RedHat).
 	versionTrimmer func(string) string
-	// vs is the RapidFort advisory getter exposed by trivy-db. The scanner
-	// queries through this helper rather than db.Config.GetAdvisories so the
-	// bucket-key format ("rapidfort <baseOS> <version>") lives entirely on
-	// the trivy-db side. The scanner supplies (release, package) and never
-	// composes the platform string itself.
+	// vs queries RapidFort advisories via trivy-db's getter. The getter owns
+	// the bucket-key format ("rapidfort <baseOS> <version>"), so the scanner
+	// just supplies (release, package) and never composes the platform string.
 	vs     rfvulnsrc.VulnSrcGetter
 	logger *log.Logger
 }
@@ -107,17 +106,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		installedVer := utils.FormatSrcVersion(pkg)
 
-		// isRFPackage is true when the package name carries the RapidFort "rf-" prefix
-		// (e.g. "rf-curl"). Used as a fallback in isRPMVulnerable: if no advisory range
-		// matches the primary identifier, ranges tagged "rf" are also considered.
-		// (The distro identifier itself is derived from installedVer inside
-		// isRPMVulnerable, since that's the only place it is consumed.)
 		isRFPackage := strings.HasPrefix(pkg.Name, "rf-")
 
-		// Route DB queries through trivy-db's RapidFort getter (see the vs
-		// field docstring). It builds the platform key from (baseOS, release)
-		// on the trivy-db side, so this scanner just hands over the release
-		// and package name and lets the getter compose the bucket lookup.
+
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,
 			PkgName: srcName,
@@ -138,15 +129,17 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", pkg.Name, err)
 			}
 			if len(binAdvisories) > 0 {
-				seen := make(map[string]struct{}, len(advisories))
+				// Seed the set with CVE IDs already returned for the SRPM query so
+				// srcName entries win when the same CVE appears in both feeds.
+				seen := set.New[string]()
 				for _, adv := range advisories {
-					seen[adv.VulnerabilityID] = struct{}{}
+					seen.Append(adv.VulnerabilityID)
 				}
 				for _, adv := range binAdvisories {
-					if _, ok := seen[adv.VulnerabilityID]; ok {
+					if seen.Contains(adv.VulnerabilityID) {
 						continue
 					}
-					seen[adv.VulnerabilityID] = struct{}{}
+					seen.Append(adv.VulnerabilityID)
 					advisories = append(advisories, adv)
 				}
 			}
@@ -238,28 +231,18 @@ func parseCustomIdentifiers(custom any) []string {
 	return result
 }
 
-// isRPMVulnerable checks whether an RPM package is vulnerable by filtering advisory
-// version ranges against the package's distro identifier (e.g. "el9", "fc43").
-// Without this filtering, cross-distro ranges (el9 vs fc39) can produce false positives
-// because RPM version ordering compares release strings without regard to the distro tag.
-//
-// Each range is matched using Advisory.Custom.identifiers[i], where identifiers[i]
-// explicitly names the distro for VulnerableVersions[i]. Falls back to extracting the
-// identifier via regex from the constraint string when no Custom identifier is present.
+// isRPMVulnerable filters advisory ranges by the package's distro identifier
+// ("el9", "fc43", …) before checking the version. Without this filter, RPM's
+// identifier-blind release-string ordering yields cross-distro false positives
+// (e.g. el9 vs fc39). Ranges use Advisory.Custom.identifiers[i] when present,
+// falling back to regex extraction from the constraint string.
 func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, isRFPackage bool, adv dbTypes.Advisory) bool {
-	// Derive the distro identifier from the installed version string. This logic
-	// lives here (rather than being computed once in Detect and passed through)
-	// because isRPMVulnerable is the only consumer — keeping the Detect loop free
-	// of RedHat-specific setup means non-RPM scanners don't pay for a computation
-	// they'd never use.
-	//   - Standard el/fc packages: identifier embedded in version string
+	// Identifier derivation (RedHat-only path — isRPMVulnerable is its sole caller):
+	//   - el/fc packages: identifier is embedded in the version string
 	//     (e.g. "7.76.1-26.el9_3.3" → "el9", "7.76.1-26.fc43" → "fc43").
-	//   - RapidFort rf packages with a bare .rf/.rfN suffix carry no el/fc tag;
-	//     tag them "rf" so they match advisory ranges built for RapidFort.
-	//   - Otherwise default to the "el" family so we still match el9/el8/…
-	//     advisory ranges rather than skipping them entirely.
-	// (No baseOS guard on the .rf branch: isRPMVulnerable is only called when
-	// baseOS == "redhat".)
+	//   - rf packages with a bare .rf/.rfN suffix carry no el/fc tag; tag them
+	//     "rf" to match RapidFort-built advisory ranges.
+	//   - Otherwise default to "el" so el9/el8/… ranges still match.
 	identifier := extractRPMIdentifier(installedVersion)
 	if identifier == "" && rfVersionSuffixRe.MatchString(installedVersion) {
 		identifier = "rf"
@@ -268,17 +251,13 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 		identifier = "el"
 	}
 
-	// Build a filtered slice of constraints that match the installed package's identifier.
-	// Prefer Custom.identifiers[i] for explicit index-based matching; fall back to
-	// regex extraction from the constraint string when no Custom identifier is available.
-	// Prefix matching: "el" matches "el9", "el8", …; "el9" matches "el9" and "el9_3".
-	// Constraints with no identifier are always included (universal ranges).
+	// Filter constraints by identifier using Custom.identifiers[i] when present,
+	// or regex extraction otherwise. Prefix matching: "el" covers "el9"/"el8"/…;
+	// constraints with no identifier are treated as universal and always kept.
 	customIdentifiers := parseCustomIdentifiers(adv.Custom)
 
-	// isRFRange reports whether the range at index i is tagged for RapidFort builds.
-	// With explicit Custom.identifiers: checks identifiers[i] == "rf".
-	// Without: falls back to checking whether the constraint string itself contains
-	// a .rf/.rfN version suffix.
+	// isRFRange reports whether the range at index i is tagged for RapidFort builds
+	// (Custom.identifiers[i] == "rf", or a .rf/.rfN suffix as fallback).
 	isRFRange := func(i int, constraintStr string) bool {
 		if i < len(customIdentifiers) {
 			return customIdentifiers[i] == "rf"
@@ -301,10 +280,8 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 		matchingRanges = append(matchingRanges, constraintStr)
 	}
 
-	// Fallback for rf- prefixed packages: if no range matched the primary identifier
-	// (e.g. package has an fc43 version but the advisory only has "rf" ranges), include
-	// advisory ranges tagged for RapidFort builds. This handles cases where the installed
-	// version doesn't carry a standard el/fc tag due to inconsistent build versioning.
+	// Fallback for rf- packages when no range matched the primary identifier: try
+	// "rf"-tagged ranges. Handles rf- builds that don't carry a standard el/fc tag.
 	if isRFPackage && len(matchingRanges) == 0 {
 		for i, constraintStr := range adv.VulnerableVersions {
 			if isRFRange(i, constraintStr) {

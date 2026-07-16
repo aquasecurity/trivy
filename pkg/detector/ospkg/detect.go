@@ -137,10 +137,8 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	// includeThirdParty reports whether the driver wants third-party packages
-	// passed through to Detect (e.g. RapidFort curates advisories for them).
-	// Note: this only affects third-party filtering — gpg-pubkey is still dropped
-	// unconditionally inside filterPkgs because it has no scannable version.
+	// includeThirdParty passes third-party packages through to Detect when the
+	// driver implements ThirdPartyAware (e.g. RapidFort curates advisories for them).
 	includeThirdParty := false
 	if tp, ok := d.driver.(driver.ThirdPartyAware); ok {
 		includeThirdParty = tp.IncludesThirdParty()
