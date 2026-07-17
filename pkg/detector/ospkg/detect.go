@@ -76,18 +76,19 @@ var (
 		seal.Provider,
 	}
 
-	// labelProviders dynamically generate drivers based on image config labels.
-	// They are tried before providers and standard OS-specific drivers.
-	labelProviders = []driver.LabelProvider{
+	// resourceProviders dynamically generate drivers based on custom resources
+	// emitted by filesystem analyzers (e.g. a sentinel file signalling a
+	// RapidFort curated image). Tried before providers and standard drivers.
+	resourceProviders = []driver.ResourceProvider{
 		rapidfort.Provider,
 	}
 )
 
 // resolver holds the candidate drivers and providers and resolves one for a scan target.
 type resolver struct {
-	drivers        map[ftypes.OSType]driver.Driver
-	providers      []driver.Provider
-	labelProviders []driver.LabelProvider
+	drivers           map[ftypes.OSType]driver.Driver
+	providers         []driver.Provider
+	resourceProviders []driver.ResourceProvider
 }
 
 // Option configures a Detector. Options are provided for extensibility by users
@@ -113,15 +114,15 @@ func WithProvider(provider driver.Provider) Option {
 // NewDetector creates a new Detector for the given scan target
 func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
 	r := &resolver{
-		drivers:        maps.Clone(drivers),
-		providers:      slices.Clone(providers),
-		labelProviders: slices.Clone(labelProviders),
+		drivers:           maps.Clone(drivers),
+		providers:         slices.Clone(providers),
+		resourceProviders: slices.Clone(resourceProviders),
 	}
 	for _, opt := range opts {
 		opt(r)
 	}
 
-	drv, err := r.resolve(target.OS.Family, target.Packages, target.ImageLabels)
+	drv, err := r.resolve(target.OS.Family, target.Packages, target.CustomResources)
 	if err != nil {
 		return nil, err
 	}
@@ -177,10 +178,10 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bo
 	return filtered
 }
 
-func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, labels map[string]string) (driver.Driver, error) {
-	// Try label-aware providers first (e.g. RapidFort curated image detection)
-	for _, provider := range r.labelProviders {
-		if d := provider(osFamily, pkgs, labels); d != nil {
+func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {
+	// Try resource-aware providers first (e.g. RapidFort curated image detection)
+	for _, provider := range r.resourceProviders {
+		if d := provider(osFamily, pkgs, customResources); d != nil {
 			return d, nil
 		}
 	}

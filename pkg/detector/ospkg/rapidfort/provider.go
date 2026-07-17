@@ -1,23 +1,15 @@
 package rapidfort
 
 import (
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
+	rfanalyzer "github.com/aquasecurity/trivy/pkg/fanal/analyzer/rapidfort"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-const (
-	// maintainerLabel is the Docker image config label used by RapidFort curated images.
-	maintainerLabel = "maintainer"
-
-	// rapidfortIdentifier is the string that must appear in the maintainer label value.
-	rapidfortIdentifier = "rapidfort"
-)
-
-// Provider creates a RapidFort driver if the image has a RapidFort maintainer label.
-func Provider(osFamily ftypes.OSType, _ []ftypes.Package, labels map[string]string) driver.Driver {
-	if !isRapidFortImage(labels) {
+// Provider creates a RapidFort driver when the image carries the RapidFort
+// curated-image marker emitted by the rapidfort filesystem analyzer.
+func Provider(osFamily ftypes.OSType, _ []ftypes.Package, customResources []ftypes.CustomResource) driver.Driver {
+	if !isRapidFortImage(customResources) {
 		return nil
 	}
 	switch osFamily {
@@ -27,12 +19,14 @@ func Provider(osFamily ftypes.OSType, _ []ftypes.Package, labels map[string]stri
 	return nil
 }
 
-// isRapidFortImage returns true when the image config labels identify this as a
-// RapidFort curated image (maintainer label contains "rapidfort", case-insensitive).
-func isRapidFortImage(labels map[string]string) bool {
-	val, ok := labels[maintainerLabel]
-	if !ok {
-		return false
+// isRapidFortImage returns true when a RapidFort curated-image marker is
+// present in the analyzer output. The marker is produced by the fanal
+// analyzer for /usr/share/rapidfort/curated.json.
+func isRapidFortImage(customResources []ftypes.CustomResource) bool {
+	for _, r := range customResources {
+		if r.Type == rfanalyzer.CustomResourceType {
+			return true
+		}
 	}
-	return strings.Contains(strings.ToLower(val), rapidfortIdentifier)
+	return false
 }

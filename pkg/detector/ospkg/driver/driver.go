@@ -16,9 +16,11 @@ type Driver interface {
 // Provider creates a specialized driver based on the environment
 type Provider func(osFamily ftypes.OSType, pkgs []ftypes.Package) Driver
 
-// LabelProvider creates a specialized driver based on the environment and image labels.
-// Use this when detection requires access to container image config labels.
-type LabelProvider func(osFamily ftypes.OSType, pkgs []ftypes.Package, labels map[string]string) Driver
+// ResourceProvider creates a specialized driver based on the environment and
+// analyzer-emitted custom resources. Use this when detection requires signals
+// produced by filesystem analyzers (e.g. presence of a sentinel file) rather
+// than image config metadata.
+type ResourceProvider func(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) Driver
 
 // ThirdPartyAware is an optional interface a Driver can implement to indicate
 // it handles third-party packages itself and should receive them unfiltered.
