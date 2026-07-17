@@ -75,20 +75,12 @@ var (
 		rootio.Provider,
 		seal.Provider,
 	}
-
-	// resourceProviders dynamically generate drivers based on custom resources
-	// emitted by filesystem analyzers (e.g. a sentinel file signalling a
-	// RapidFort curated image). Tried before providers and standard drivers.
-	resourceProviders = []driver.ResourceProvider{
-		rapidfort.Provider,
-	}
 )
 
 // resolver holds the candidate drivers and providers and resolves one for a scan target.
 type resolver struct {
-	drivers           map[ftypes.OSType]driver.Driver
-	providers         []driver.Provider
-	resourceProviders []driver.ResourceProvider
+	drivers   map[ftypes.OSType]driver.Driver
+	providers []driver.Provider
 }
 
 // Option configures a Detector. Options are provided for extensibility by users
@@ -114,9 +106,8 @@ func WithProvider(provider driver.Provider) Option {
 // NewDetector creates a new Detector for the given scan target
 func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
 	r := &resolver{
-		drivers:           maps.Clone(drivers),
-		providers:         slices.Clone(providers),
-		resourceProviders: slices.Clone(resourceProviders),
+		drivers:   maps.Clone(drivers),
+		providers: slices.Clone(providers),
 	}
 	for _, opt := range opts {
 		opt(r)
@@ -179,11 +170,11 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bo
 }
 
 func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {
-	// Try resource-aware providers first (e.g. RapidFort curated image detection)
-	for _, provider := range r.resourceProviders {
-		if d := provider(osFamily, pkgs, customResources); d != nil {
-			return d, nil
-		}
+	// RapidFort curated-image detection via the sentinel file marker emitted by
+	// pkg/fanal/analyzer/rapidfort. When the marker is present on a supported
+	// base OS, the RapidFort scanner takes over from the standard OS driver.
+	if d := rapidfort.Provider(osFamily, pkgs, customResources); d != nil {
+		return d, nil
 	}
 
 	// Try package-pattern providers (e.g. rootio, seal)

@@ -7,7 +7,14 @@ import (
 )
 
 // Provider creates a RapidFort driver when the image carries the RapidFort
-// curated-image marker emitted by the rapidfort filesystem analyzer.
+// curated-image marker. The marker is a fanal CustomResource emitted by the
+// rapidfort analyzer (pkg/fanal/analyzer/rapidfort) when it finds the file
+// /usr/share/rapidfort/curated.json in the image filesystem.
+//
+// customResources is the list of CustomResource entries produced by all
+// filesystem analyzers during image analysis; each entry's Type field names
+// the analyzer that emitted it, so we filter on the RapidFort analyzer's
+// type constant to decide whether this is a curated image.
 func Provider(osFamily ftypes.OSType, _ []ftypes.Package, customResources []ftypes.CustomResource) driver.Driver {
 	if !isRapidFortImage(customResources) {
 		return nil
@@ -19,12 +26,15 @@ func Provider(osFamily ftypes.OSType, _ []ftypes.Package, customResources []ftyp
 	return nil
 }
 
-// isRapidFortImage returns true when a RapidFort curated-image marker is
-// present in the analyzer output. The marker is produced by the fanal
-// analyzer for /usr/share/rapidfort/curated.json.
+// isRapidFortImage returns true when the RapidFort curated-image marker is
+// present among the analyzer-emitted CustomResources. Each CustomResource
+// has a Type field identifying its producing analyzer; we match on the
+// constant rfanalyzer.CustomResourceType (the string "rapidfort-curated"),
+// which the rapidfort fanal analyzer sets when it finds the curated.json
+// sentinel file in the image.
 func isRapidFortImage(customResources []ftypes.CustomResource) bool {
-	for _, r := range customResources {
-		if r.Type == rfanalyzer.CustomResourceType {
+	for _, resource := range customResources {
+		if resource.Type == rfanalyzer.CustomResourceType {
 			return true
 		}
 	}
