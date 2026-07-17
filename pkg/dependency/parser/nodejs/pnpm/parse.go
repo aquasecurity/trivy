@@ -2,7 +2,9 @@ package pnpm
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"io"
 	"sort"
 	"strconv"
 	"strings"
@@ -30,11 +32,28 @@ func NewParser() *Parser {
 }
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
-	var lockFile LockFile
-	if err := yaml.NewDecoder(r).Decode(&lockFile); err != nil {
-		return nil, nil, xerrors.Errorf("decode error: %w", err)
+	// pnpm 11+ stores the env lockfile (config and package manager dependencies)
+	// as a separate YAML document in pnpm-lock.yaml, separated by `---`.
+	// Decode all documents and use the project lockfile, skipping the env one.
+	dec := yaml.NewDecoder(r)
+	for {
+		var lockFile LockFile
+		if err := dec.Decode(&lockFile); err != nil {
+			if errors.Is(err, io.EOF) {
+				// No project document (empty file or env-only lockfile).
+				p.logger.Debug("No project lockfile document found")
+				return nil, nil, nil
+			}
+			return nil, nil, xerrors.Errorf("decode error: %w", err)
+		}
+		if lockFile.isEnvLockfile() {
+			continue
+		}
+		return p.parseLockFile(lockFile)
 	}
+}
 
+func (p *Parser) parseLockFile(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependency, error) {
 	lockVer := p.parseLockfileVersion(lockFile)
 	if lockVer < 0 {
 		return nil, nil, nil
@@ -114,14 +133,20 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	// The "importers" section contains the dependencies defined in package.json files.
 	// We need to identify which packages are direct dependencies (vs transitive)
 	// and which are development dependencies (vs production dependencies).
-	devDeps := make(map[string]string) // name -> version for dev dependencies
-	deps := make(map[string]string)    // name -> version for production dependencies
+	//
+	// Sets hold packageID(name, version) so that every (name, version) pair from
+	// every importer is recorded independently. Using name alone would cause the
+	// last importer to silently overwrite earlier ones, producing non-deterministic
+	// dev/prod classification when multiple workspaces pin different versions of the
+	// same package.
+	directDevDeps := set.New[string]()  // packageIDs of direct dev dependencies
+	directProdDeps := set.New[string]() // packageIDs of direct production dependencies
 	for _, importer := range lockFile.Importers {
 		for n, v := range importer.DevDependencies {
-			devDeps[n] = v.Version
+			directDevDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
 		for n, v := range importer.Dependencies {
-			deps[n] = v.Version
+			directProdDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
 	}
 
@@ -137,7 +162,8 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		// Try to get the exact version from the "packages" section if available.
 		// The "packages" section may contain more accurate version information
 		// for packages installed from non-standard sources (git, local files, etc.).
-		pkgKey := PackageKey(packageID(name, version))
+		pkgID := packageID(name, version)
+		pkgKey := PackageKey(pkgID)
 		if pkgInfo, ok := lockFile.Packages[pkgKey]; ok && pkgInfo.Version != "" {
 			parsedVer = pkgInfo.Version
 		}
@@ -148,12 +174,11 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		dev := true
 		relationship := ftypes.RelationshipIndirect // Assume transitive by default
 
-		// Check if this package matches a direct dev dependency
-		if v, ok := devDeps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
+		// Check if this package matches a direct dev or production dependency.
+		if directDevDeps.Contains(pkgID) {
 			relationship = ftypes.RelationshipDirect
 		}
-		// Check if this package matches a direct production dependency
-		if v, ok := deps[name]; ok && p.trimPeerDeps(v, lockVer) == version {
+		if directProdDeps.Contains(pkgID) {
 			relationship = ftypes.RelationshipDirect
 			dev = false // This is a production dependency, not a dev dependency
 		}

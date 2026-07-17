@@ -1,6 +1,7 @@
 package language
 
 import (
+	"cmp"
 	"context"
 	"io"
 
@@ -95,14 +96,15 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		deps[dep.ID] = dep.DependsOn
 	}
 
-	for i, pkg := range pkgs {
+	for i := range pkgs {
+		pkg := &pkgs[i]
 		// This file path is populated for virtual file paths within archives, such as nested JAR files.
-		if pkg.FilePath == "" {
-			pkgs[i].FilePath = libFilePath
-		}
-		pkgs[i].DependsOn = deps[pkg.ID]
-		pkgs[i].Digest = d
-		pkgs[i].Indirect = isIndirect(pkg.Relationship) // For backward compatibility
+		pkg.FilePath = cmp.Or(pkg.FilePath, libFilePath)
+		pkg.DependsOn = deps[pkg.ID]
+		// Save the digest only if it has not been calculated for the package yet.
+		// For example, the digest for JAR files is calculated inside the parser.
+		pkg.Digest = cmp.Or(pkg.Digest, d)
+		pkg.Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 	}
 
 	return &types.Application{

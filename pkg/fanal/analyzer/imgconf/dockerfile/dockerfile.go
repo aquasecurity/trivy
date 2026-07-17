@@ -147,6 +147,11 @@ func buildRunInstruction(s string) string {
 }
 
 func buildHealthcheckInstruction(health *v1.HealthConfig) string {
+	// Config.Healthcheck can be null even when a HEALTHCHECK history line exists
+	// if the image was re-committed by a tool that normalizes HEALTHCHECK NONE to null.
+	if health == nil {
+		return "HEALTHCHECK NONE"
+	}
 	var interval, timeout, startPeriod, retries, command string
 	if health.Interval != 0 {
 		interval = fmt.Sprintf("--interval=%s ", health.Interval)
