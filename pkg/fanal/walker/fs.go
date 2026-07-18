@@ -26,6 +26,9 @@ func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
 	opt.SkipFiles = w.BuildSkipPaths(root, opt.SkipFiles)
 	opt.SkipDirs = w.BuildSkipPaths(root, opt.SkipDirs)
 	opt.SkipDirs = append(opt.SkipDirs, defaultSkipDirs...)
+	if isFilesystemRoot(root) {
+		opt.SkipDirs = append(opt.SkipDirs, systemSkipDirs...)
+	}
 
 	walkDirFunc := w.WalkDirFunc(root, fn, opt)
 	walkDirFunc = w.onError(walkDirFunc)
@@ -151,6 +154,16 @@ func (w *FS) BuildSkipPaths(base string, paths []string) []string {
 
 	relativePaths = utils.CleanSkipPaths(relativePaths)
 	return relativePaths
+}
+
+func isFilesystemRoot(root string) bool {
+	absRoot, err := filepath.Abs(root)
+	if err != nil {
+		return false
+	}
+
+	volumeRoot := filepath.VolumeName(absRoot) + string(filepath.Separator)
+	return filepath.Clean(absRoot) == filepath.Clean(volumeRoot)
 }
 
 // fileOpener returns a function opening a file.
