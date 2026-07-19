@@ -170,9 +170,7 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bo
 }
 
 func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {
-	// RapidFort curated-image detection via the sentinel file marker emitted by
-	// pkg/fanal/analyzer/rapidfort. When the marker is present on a supported
-	// base OS, the RapidFort scanner takes over from the standard OS driver.
+	// Try custom-resource providers (e.g. RapidFort curated-image detection via a sentinel file)
 	if d := rapidfort.Provider(osFamily, pkgs, customResources); d != nil {
 		return d, nil
 	}
