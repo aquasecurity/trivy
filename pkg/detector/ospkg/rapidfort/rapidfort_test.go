@@ -646,63 +646,65 @@ func TestScanner_Detect(t *testing.T) {
 }
 
 func TestProvider(t *testing.T) {
+	curatedMarker := ftypes.CustomResource{
+		Type:     "rapidfort-curated",
+		FilePath: "usr/share/rapidfort/curated.json",
+	}
+	unrelatedMarker := ftypes.CustomResource{Type: "some-other-marker"}
+
 	tests := []struct {
-		name     string
-		osFamily ftypes.OSType
-		labels   map[string]string
-		wantNil  bool
+		name            string
+		osFamily        ftypes.OSType
+		customResources []ftypes.CustomResource
+		wantNil         bool
 	}{
 		{
-			name:     "RapidFort Ubuntu image detected",
-			osFamily: ftypes.Ubuntu,
-			labels: map[string]string{
-				"maintainer": "RapidFort Curation Team <rfcurators@rapidfort.com>",
-			},
-			wantNil: false,
+			name:            "RapidFort Ubuntu image detected",
+			osFamily:        ftypes.Ubuntu,
+			customResources: []ftypes.CustomResource{curatedMarker},
+			wantNil:         false,
 		},
 		{
-			name:     "RapidFort Alpine image detected",
-			osFamily: ftypes.Alpine,
-			labels: map[string]string{
-				"maintainer": "RapidFort Curation Team <rfcurators@rapidfort.com>",
-			},
-			wantNil: false,
+			name:            "RapidFort Alpine image detected",
+			osFamily:        ftypes.Alpine,
+			customResources: []ftypes.CustomResource{curatedMarker},
+			wantNil:         false,
 		},
 		{
-			name:     "Non-RapidFort image: no maintainer label",
-			osFamily: ftypes.Ubuntu,
-			labels:   make(map[string]string),
-			wantNil:  true,
+			name:            "RapidFort RedHat image detected",
+			osFamily:        ftypes.RedHat,
+			customResources: []ftypes.CustomResource{curatedMarker},
+			wantNil:         false,
 		},
 		{
-			name:     "Non-RapidFort image: different maintainer",
-			osFamily: ftypes.Ubuntu,
-			labels: map[string]string{
-				"maintainer": "Ubuntu Developers <ubuntu-devel-discuss@lists.ubuntu.com>",
-			},
-			wantNil: true,
+			name:            "Non-RapidFort image: no custom resources",
+			osFamily:        ftypes.Ubuntu,
+			customResources: nil,
+			wantNil:         true,
 		},
 		{
-			name:     "RapidFort RedHat image detected",
-			osFamily: ftypes.RedHat,
-			labels: map[string]string{
-				"maintainer": "RapidFort Curation Team <rfcurators@rapidfort.com>",
-			},
-			wantNil: false,
+			name:            "Non-RapidFort image: only unrelated markers",
+			osFamily:        ftypes.Ubuntu,
+			customResources: []ftypes.CustomResource{unrelatedMarker},
+			wantNil:         true,
 		},
 		{
-			name:     "Case-insensitive detection",
-			osFamily: ftypes.Ubuntu,
-			labels: map[string]string{
-				"maintainer": "RAPIDFORT curation team",
-			},
-			wantNil: false,
+			name:            "Curated marker mixed with unrelated markers still detected",
+			osFamily:        ftypes.RedHat,
+			customResources: []ftypes.CustomResource{unrelatedMarker, curatedMarker},
+			wantNil:         false,
+		},
+		{
+			name:            "Curated marker on unsupported OS family returns nil",
+			osFamily:        ftypes.Debian,
+			customResources: []ftypes.CustomResource{curatedMarker},
+			wantNil:         true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := rapidfort.Provider(tt.osFamily, nil, tt.labels)
+			d := rapidfort.Provider(tt.osFamily, nil, tt.customResources)
 			if tt.wantNil {
 				assert.Nil(t, d)
 			} else {

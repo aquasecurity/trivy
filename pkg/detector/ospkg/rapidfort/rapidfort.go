@@ -108,7 +108,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		isRFPackage := strings.HasPrefix(pkg.Name, "rf-")
 
-
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,
 			PkgName: srcName,

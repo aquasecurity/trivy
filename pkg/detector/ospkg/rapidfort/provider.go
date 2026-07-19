@@ -1,23 +1,22 @@
 package rapidfort
 
 import (
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
+	rfanalyzer "github.com/aquasecurity/trivy/pkg/fanal/analyzer/rapidfort"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-const (
-	// maintainerLabel is the Docker image config label used by RapidFort curated images.
-	maintainerLabel = "maintainer"
-
-	// rapidfortIdentifier is the string that must appear in the maintainer label value.
-	rapidfortIdentifier = "rapidfort"
-)
-
-// Provider creates a RapidFort driver if the image has a RapidFort maintainer label.
-func Provider(osFamily ftypes.OSType, _ []ftypes.Package, labels map[string]string) driver.Driver {
-	if !isRapidFortImage(labels) {
+// Provider creates a RapidFort driver when the image carries the RapidFort
+// curated-image marker. The marker is a fanal CustomResource emitted by the
+// rapidfort analyzer (pkg/fanal/analyzer/rapidfort) when it finds the file
+// /usr/share/rapidfort/curated.json in the image filesystem.
+//
+// customResources is the list of CustomResource entries produced by all
+// filesystem analyzers during image analysis; each entry's Type field names
+// the analyzer that emitted it, so we filter on the RapidFort analyzer's
+// type constant to decide whether this is a curated image.
+func Provider(osFamily ftypes.OSType, _ []ftypes.Package, customResources []ftypes.CustomResource) driver.Driver {
+	if !isRapidFortImage(customResources) {
 		return nil
 	}
 	switch osFamily {
@@ -27,12 +26,17 @@ func Provider(osFamily ftypes.OSType, _ []ftypes.Package, labels map[string]stri
 	return nil
 }
 
-// isRapidFortImage returns true when the image config labels identify this as a
-// RapidFort curated image (maintainer label contains "rapidfort", case-insensitive).
-func isRapidFortImage(labels map[string]string) bool {
-	val, ok := labels[maintainerLabel]
-	if !ok {
-		return false
+// isRapidFortImage returns true when the RapidFort curated-image marker is
+// present among the analyzer-emitted CustomResources. Each CustomResource
+// has a Type field identifying its producing analyzer; we match on the
+// constant rfanalyzer.CustomResourceType (the string "rapidfort-curated"),
+// which the rapidfort fanal analyzer sets when it finds the curated.json
+// sentinel file in the image.
+func isRapidFortImage(customResources []ftypes.CustomResource) bool {
+	for _, resource := range customResources {
+		if resource.Type == rfanalyzer.CustomResourceType {
+			return true
+		}
 	}
-	return strings.Contains(strings.ToLower(val), rapidfortIdentifier)
+	return false
 }
