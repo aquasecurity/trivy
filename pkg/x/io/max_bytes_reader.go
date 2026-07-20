@@ -2,6 +2,7 @@ package io
 
 import (
 	"errors"
+	"fmt"
 	"io"
 )
 
@@ -13,8 +14,8 @@ type MaxBytesError struct {
 	Limit int64
 }
 
-func (*MaxBytesError) Error() string {
-	return ErrLimitExceeded.Error()
+func (e *MaxBytesError) Error() string {
+	return fmt.Sprintf("%s: %d-byte limit", ErrLimitExceeded, e.Limit)
 }
 
 func (*MaxBytesError) Is(target error) bool {

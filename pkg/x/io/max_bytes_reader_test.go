@@ -48,7 +48,7 @@ func TestMaxBytesReader(t *testing.T) {
 			}
 
 			require.ErrorIs(t, err, xio.ErrLimitExceeded)
-			assert.Equal(t, xio.ErrLimitExceeded.Error(), err.Error())
+			assert.Equal(t, fmt.Sprintf("io: read limit exceeded: %d-byte limit", tt.wantLimit), err.Error())
 
 			wrapped := fmt.Errorf("read input: %w", err)
 			require.ErrorIs(t, wrapped, xio.ErrLimitExceeded)
