@@ -77,7 +77,7 @@ func TestDownloadWithETag(t *testing.T) {
 	// Test server that supports conditional requests:
 	// - If-None-Match matches the current ETag -> 304 Not Modified
 	// - otherwise -> 200 with fresh content and the current ETag
-	server := httptest.NewTLSServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("If-None-Match") == etag {
 			w.WriteHeader(http.StatusNotModified)
 			return
@@ -117,9 +117,9 @@ func TestDownloadWithETag(t *testing.T) {
 			dst := filepath.Join(t.TempDir(), "vex.json")
 			require.NoError(t, os.WriteFile(dst, []byte("cached content"), 0o600))
 
-			ctx := xhttp.WithTransport(t.Context(), xhttp.NewTransport(xhttp.Options{Insecure: true}))
+			_ = xhttp.WithTransport(t.Context(), xhttp.NewTransport(xhttp.Options{Insecure: true}))
 
-			newETag, err := downloader.Download(ctx, server.URL, dst, "", downloader.Options{
+			newETag, err := downloader.Download(t.Context(), server.URL, dst, "", downloader.Options{
 				Insecure: true,
 				ETag:     tt.cachedETag,
 			})
