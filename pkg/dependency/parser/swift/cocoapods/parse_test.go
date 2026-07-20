@@ -2,6 +2,7 @@ package cocoapods_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -93,4 +94,20 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
+}
+
+func TestParseEmptyDirectDependency(t *testing.T) {
+	const input = `PODS:
+  - AppCenter (4.2.0):
+    - ""
+`
+
+	gotPkgs, gotDeps, err := cocoapods.NewParser().Parse(t.Context(), strings.NewReader(input))
+	require.NoError(t, err)
+	assert.Equal(t, []ftypes.Package{{
+		ID:      "AppCenter@4.2.0",
+		Name:    "AppCenter",
+		Version: "4.2.0",
+	}}, gotPkgs)
+	assert.Empty(t, gotDeps)
 }

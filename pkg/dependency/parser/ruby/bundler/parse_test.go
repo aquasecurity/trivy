@@ -3,6 +3,7 @@ package bundler_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -277,4 +278,34 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}
+}
+
+func TestParser_ParseEmptyDependency(t *testing.T) {
+	const input = "GEM\n  specs:\n    first (1.0.0)\n      \n    second (2.0.0)\n"
+
+	gotPkgs, gotDeps, err := bundler.NewParser().Parse(t.Context(), strings.NewReader(input))
+	require.NoError(t, err)
+	assert.Equal(t, []ftypes.Package{
+		{
+			ID:           "first@1.0.0",
+			Name:         "first",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{{
+				StartLine: 3,
+				EndLine:   3,
+			}},
+		},
+		{
+			ID:           "second@2.0.0",
+			Name:         "second",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{{
+				StartLine: 5,
+				EndLine:   5,
+			}},
+		},
+	}, gotPkgs)
+	assert.Empty(t, gotDeps)
 }

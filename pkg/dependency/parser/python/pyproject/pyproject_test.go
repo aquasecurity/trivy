@@ -3,6 +3,7 @@ package pyproject_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -138,4 +139,14 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equalf(t, tt.want, got, "Parse(%v)", tt.file)
 		})
 	}
+}
+
+func TestParser_ParseMalformedDependencies(t *testing.T) {
+	const input = `[project]
+dependencies = ["flask>=1.0", "", " ", "<", "==="]
+`
+
+	got, err := pyproject.NewParser().Parse(strings.NewReader(input))
+	require.NoError(t, err)
+	assert.Equal(t, set.New[string]("flask"), got.MainDeps())
 }
