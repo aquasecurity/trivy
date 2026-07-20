@@ -63,9 +63,15 @@ func Download(ctx context.Context, src, dst, pwd string, opts Options) (string, 
 	// We restore it only on a 304 (ErrSkipDownload).
 	// On any other outcome the backup is dropped,
 	// so a genuine failure never resurrects stale files.
-	restore, err := backupDst(dst)
-	if err != nil {
-		return "", xerrors.Errorf("failed to back up dst: %w", err)
+	restore := func() {}
+	if opts.ETag != "" {
+		var err error
+		restore, err = backupDst(dst)
+		if err != nil {
+			return "", xerrors.Errorf("failed to back up dst: %w", err)
+		}
+	} else {
+		_ = os.RemoveAll(dst)
 	}
 
 	var clientOpts []getter.ClientOption
