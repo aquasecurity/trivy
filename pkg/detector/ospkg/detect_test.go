@@ -195,3 +195,35 @@ func TestNewDetector(t *testing.T) {
 		})
 	}
 }
+
+// TestDriversFilterThirdPartyPackages checks that every registered driver narrows the
+// package set, so a driver whose FilterPackages became a no-op is caught here.
+// Provider-built drivers (Root.io, Seal) are not registered and have their own tests.
+func TestDriversFilterThirdPartyPackages(t *testing.T) {
+	// Drivers whose own advisories describe third-party packages, so they keep them.
+	// Dropping is the default: keeping has to be listed here explicitly.
+	keepsThirdPartyPackages := map[ftypes.OSType]bool{
+		ftypes.Echo: true,
+	}
+
+	thirdParty := ftypes.Package{
+		Name: "nginx",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+
+	for family, drv := range ospkg.Drivers() {
+		t.Run(string(family), func(t *testing.T) {
+			got := drv.FilterPackages(t.Context(), []ftypes.Package{thirdParty})
+
+			if keepsThirdPartyPackages[family] {
+				assert.Equal(t, []ftypes.Package{thirdParty}, got,
+					"%s reads its own advisory feed, so it must keep third-party packages", family)
+				return
+			}
+			assert.Empty(t, got,
+				"%s matches against the OS vendor's advisories, so it must drop third-party packages", family)
+		})
+	}
+}
