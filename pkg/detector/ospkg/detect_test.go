@@ -14,8 +14,21 @@ import (
 )
 
 type mockDriver struct {
-	called       bool
+	called bool
+	// receivedPkgs are the packages passed to Detect.
 	receivedPkgs []ftypes.Package
+	// filteredPkgs are the packages passed to FilterPackages.
+	filteredPkgs []ftypes.Package
+	// filter narrows the package set. A nil filter keeps everything.
+	filter func([]ftypes.Package) []ftypes.Package
+}
+
+func (m *mockDriver) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	m.filteredPkgs = pkgs
+	if m.filter == nil {
+		return pkgs
+	}
+	return m.filter(pkgs)
 }
 
 func (m *mockDriver) Detect(_ context.Context, _ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
@@ -29,132 +42,77 @@ func (m *mockDriver) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ st
 }
 
 func TestDetector_Detect(t *testing.T) {
+	official := ftypes.Package{
+		Name: "vim",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassOfficial,
+		},
+	}
+	thirdParty := ftypes.Package{
+		Name: "php",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+
 	tests := []struct {
-		name     string
-		target   types.ScanTarget
-		wantPkgs []ftypes.Package
+		name string
+		pkgs []ftypes.Package
+		// filter is the driver's own FilterPackages. A nil filter keeps everything.
+		filter func([]ftypes.Package) []ftypes.Package
+		// wantFiltered are the packages the driver's filter must be given.
+		wantFiltered []ftypes.Package
+		// wantDetected are the packages Detect must be given.
+		wantDetected []ftypes.Package
 	}{
 		{
-			name: "filter out gpg-pubkey package",
-			target: types.ScanTarget{
-				OS: ftypes.OS{
-					Family: ftypes.CentOS,
-					Name:   "7",
-				},
-				Packages: []ftypes.Package{
-					{Name: "vim"},
-					{Name: "gpg-pubkey"},
-				},
-			},
-			wantPkgs: []ftypes.Package{
-				{Name: "vim"},
-			},
+			// The detector drops gpg-pubkey itself, before the driver has a say,
+			// because it carries no real version for any driver to match.
+			name:         "gpg-pubkey is dropped before the driver filter",
+			pkgs:         []ftypes.Package{official, {Name: "gpg-pubkey"}},
+			wantFiltered: []ftypes.Package{official},
+			wantDetected: []ftypes.Package{official},
 		},
 		{
-			name: "filter out third-party packages",
-			target: types.ScanTarget{
-				OS: ftypes.OS{
-					Family: ftypes.CentOS,
-					Name:   "7",
-				},
-				Packages: []ftypes.Package{
-					{
-						Name: "vim",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassOfficial,
-						},
-					},
-					{
-						Name: "php",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassThirdParty,
-						},
-					},
-				},
-			},
-			wantPkgs: []ftypes.Package{
-				{
-					Name: "vim",
-					Repository: ftypes.PackageRepository{
-						Class: ftypes.RepositoryClassOfficial,
-					},
-				},
-			},
+			name:         "a driver that keeps everything receives every package",
+			pkgs:         []ftypes.Package{official, thirdParty},
+			wantFiltered: []ftypes.Package{official, thirdParty},
+			wantDetected: []ftypes.Package{official, thirdParty},
 		},
 		{
-			name: "filter out both gpg-pubkey and third-party packages",
-			target: types.ScanTarget{
-				OS: ftypes.OS{
-					Family: ftypes.CentOS,
-					Name:   "7",
-				},
-				Packages: []ftypes.Package{
-					{
-						Name: "vim",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassOfficial,
-						},
-					},
-					{Name: "gpg-pubkey"},
-					{
-						Name: "php",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassThirdParty,
-						},
-					},
-				},
+			name: "the driver filter decides what Detect receives",
+			pkgs: []ftypes.Package{official, thirdParty},
+			filter: func(pkgs []ftypes.Package) []ftypes.Package {
+				return driver.DropThirdPartyPackages(t.Context(), pkgs)
 			},
-			wantPkgs: []ftypes.Package{
-				{
-					Name: "vim",
-					Repository: ftypes.PackageRepository{
-						Class: ftypes.RepositoryClassOfficial,
-					},
-				},
-			},
+			wantFiltered: []ftypes.Package{official, thirdParty},
+			wantDetected: []ftypes.Package{official},
 		},
 		{
-			name: "keep packages with unknown repository class",
-			target: types.ScanTarget{
-				OS: ftypes.OS{
-					Family: ftypes.CentOS,
-					Name:   "7",
-				},
-				Packages: []ftypes.Package{
-					{
-						Name: "vim",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassUnknown,
-						},
-					},
-					{
-						Name: "curl",
-					},
-				},
-			},
-			wantPkgs: []ftypes.Package{
-				{
-					Name: "vim",
-					Repository: ftypes.PackageRepository{
-						Class: ftypes.RepositoryClassUnknown,
-					},
-				},
-				{
-					Name: "curl",
-				},
-			},
+			name:         "no packages",
+			pkgs:         nil,
+			wantFiltered: []ftypes.Package{},
+			wantDetected: []ftypes.Package{},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mockDrv := &mockDriver{}
-			d, err := ospkg.NewDetector(tt.target, ospkg.WithDriver(tt.target.OS.Family, mockDrv))
+			target := types.ScanTarget{
+				OS: ftypes.OS{
+					Family: ftypes.CentOS,
+					Name:   "7",
+				},
+				Packages: tt.pkgs,
+			}
+			mockDrv := &mockDriver{filter: tt.filter}
+			d, err := ospkg.NewDetector(target, ospkg.WithDriver(target.OS.Family, mockDrv))
 			require.NoError(t, err)
 
 			_, _, err = d.Detect(t.Context())
 			require.NoError(t, err)
-			assert.Equal(t, tt.wantPkgs, mockDrv.receivedPkgs)
+			assert.Equal(t, tt.wantFiltered, mockDrv.filteredPkgs)
+			assert.Equal(t, tt.wantDetected, mockDrv.receivedPkgs)
 		})
 	}
 }
