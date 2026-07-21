@@ -8556,6 +8556,12 @@ This feature allows you to automatically use VEX during container image scanning
 <h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>Trivy can automatically discover and utilize VEX attestations for container images during scanning by using the <code>--vex oci</code> flag.
 This process enhances vulnerability detection results by incorporating the information from the VEX attestation.</p>
+<p>Trivy discovers attestations in both layouts produced by Cosign:</p>
+<ul>
+<li>An <strong>OCI 1.1 referrer</strong> holding a Sigstore bundle, which is the default for <code>cosign attest</code> since Cosign v3.</li>
+<li>The <strong>legacy <code>.att</code> tag</strong>, which is the default for Cosign v2.</li>
+</ul>
+<p>The referrer layout takes precedence; Trivy falls back to the legacy <code>.att</code> tag when no VEX referrer is found.</p>
 <p>To use this feature, follow these three steps:</p>
 <ol>
 <li>Create a VEX document</li>
@@ -8634,6 +8640,11 @@ Simply add the <code>--vex oci</code> flag when scanning a container image:</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --vex oci --show-suppressed &lt;IMAGE&gt;
 </code></pre></div>
 <p>The <code>&lt;IMAGE&gt;</code> specified in these commands must be the same as the one to which you attached the VEX attestation.</p>
+<div class="admonition warning">
+<p class="admonition-title">Signatures are not verified</p>
+<p>Trivy does not verify the signature of the discovered VEX attestation.
+Anyone able to push to the image's repository can attach a VEX attestation that suppresses findings, so use <code>--vex oci</code> only with registries you trust.</p>
+</div>
 
 
 
