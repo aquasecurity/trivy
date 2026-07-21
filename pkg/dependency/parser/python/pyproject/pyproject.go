@@ -75,7 +75,11 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 			// There are some formats:
 			// e.g. `Flask == 1.1.4`, `Flask==1.1.4`, `Flask(>= 1.0.0)`, `pluggy[pre-commit,tox] (==0.13.1)`, etc.
 			dep = strings.NewReplacer(">", " ", "<", " ", "=", " ", "(", " ", "[", " ").Replace(dep)
-			d.Set.Append(strings.Fields(dep)[0]) // Save only name
+			fields := strings.Fields(dep)
+			if len(fields) == 0 {
+				continue
+			}
+			d.Set.Append(fields[0]) // Save only name
 		}
 	default:
 		return xerrors.Errorf("dependencies must be map, but got: %T", data)
