@@ -185,6 +185,15 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 	return true
 }
 
+// FilterPackages drops third-party packages from the base OS packages only.
+// Seal packages are left as they are, because the Seal feed may have advisories for them.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	sealPkgs, baseOSPkgs := lo.FilterReject(pkgs, func(pkg ftypes.Package, _ int) bool {
+		return sealPkg(pkg)
+	})
+	return append(sealPkgs, driver.DropThirdPartyPackages(ctx, baseOSPkgs)...)
+}
+
 func sealPkg(pkg ftypes.Package) bool {
 	// Seal packages start with "seal-"
 	return strings.HasPrefix(strings.ToLower(pkg.Name), "seal-") || strings.HasPrefix(strings.ToLower(pkg.SrcName), "seal-")
