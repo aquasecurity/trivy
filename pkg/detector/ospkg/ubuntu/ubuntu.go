@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/ubuntu"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -177,4 +178,9 @@ func (s *Scanner) versionFromEolDates(ctx context.Context, osVer string) string 
 		return ver
 	}
 	return osVer
+}
+
+// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

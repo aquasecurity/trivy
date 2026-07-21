@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rocky"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -97,4 +98,9 @@ func addModularNamespace(name, label string) string {
 		}
 	}
 	return name
+}
+
+// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

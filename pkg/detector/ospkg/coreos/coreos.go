@@ -3,6 +3,7 @@ package coreos
 import (
 	"context"
 
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -10,8 +11,7 @@ import (
 )
 
 // Scanner implements the CoreOS scanner
-type Scanner struct {
-}
+type Scanner struct{}
 
 // NewScanner is the factory method for Scanner
 func NewScanner() *Scanner {
@@ -25,4 +25,9 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, _ 
 
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	return osver.Supported(ctx, nil, osFamily, osver.Minor(osVer))
+}
+
+// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

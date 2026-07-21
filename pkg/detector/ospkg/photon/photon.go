@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/photon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -81,4 +82,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 // IsSupportedVersion checks if the version is supported.
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
 	return osver.Supported(ctx, eolDates, osFamily, osVer)
+}
+
+// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

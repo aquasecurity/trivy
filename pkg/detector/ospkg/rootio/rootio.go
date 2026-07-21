@@ -153,3 +153,9 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
+
+// FilterPackages keeps every package, because Root.io advisories cover the rebuilds it ships.
+// Narrowing the set here could only hide detections.
+func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return pkgs
+}

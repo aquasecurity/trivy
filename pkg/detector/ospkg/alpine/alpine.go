@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/alpine"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -173,4 +174,9 @@ func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
 		release = release[:strings.LastIndex(release, ".")]
 	}
 	return release
+}
+
+// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return driver.DropThirdPartyPackages(ctx, pkgs)
 }
