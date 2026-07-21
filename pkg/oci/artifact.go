@@ -33,6 +33,9 @@ const (
 	// Sigstore bundle artifact type for Cosign attestations in "new bundle format" > 2.5.0
 	SigstoreBundleArtifactType = "application/vnd.dev.sigstore.bundle.v0.3+json"
 
+	// DSSE envelope artifact type for legacy Cosign attestations (.att tag)
+	DSSEEnvelopeArtifactType = "application/vnd.dsse.envelope.v1+json"
+
 	// Media types
 	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
 
@@ -65,6 +68,7 @@ type Artifact struct {
 	types.RegistryOptions
 
 	image v1.Image // For testing
+	layer v1.Layer // resolved once, then reused
 }
 
 // NewArtifact returns a new artifact
@@ -112,31 +116,21 @@ type DownloadOption struct {
 }
 
 func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption) error {
-	if err := a.populate(ctx, a.RegistryOptions); err != nil {
+	layer, err := a.singleLayer(ctx)
+	if err != nil {
 		return err
 	}
 
-	layers, err := a.image.Layers()
-	if err != nil {
-		return xerrors.Errorf("OCI layer error: %w", err)
-	}
-
-	manifest, err := a.image.Manifest()
-	if err != nil {
-		return xerrors.Errorf("OCI manifest error: %w", err)
-	}
-
-	// A single layer is only supported now.
-	if len(layers) != 1 || len(manifest.Layers) != 1 {
-		return xerrors.Errorf("OCI artifact must be a single layer")
-	}
-
-	// Take the first layer
-	layer := layers[0]
-
-	// Take the file name of the first layer if not specified
+	// Take the file name of the layer from the annotation if not specified
 	fileName := opt.Filename
 	if fileName == "" {
+		manifest, err := a.image.Manifest()
+		if err != nil {
+			return xerrors.Errorf("OCI manifest error: %w", err)
+		}
+		if len(manifest.Layers) != 1 {
+			return xerrors.New("OCI artifact must be a single layer")
+		}
 		v, ok := manifest.Layers[0].Annotations[titleAnnotation]
 		if !ok {
 			return xerrors.Errorf("annotation %s is missing", titleAnnotation)
@@ -162,6 +156,40 @@ func (a *Artifact) Download(ctx context.Context, dir string, opt DownloadOption)
 	}
 
 	return nil
+}
+
+// singleLayer resolves the artifact to its single layer, fetching it once and
+// reusing it on later calls.
+func (a *Artifact) singleLayer(ctx context.Context) (v1.Layer, error) {
+	if a.layer != nil {
+		return a.layer, nil
+	}
+	if err := a.populate(ctx, a.RegistryOptions); err != nil {
+		return nil, err
+	}
+	layers, err := a.image.Layers()
+	if err != nil {
+		return nil, xerrors.Errorf("OCI layer error: %w", err)
+	}
+	if len(layers) != 1 {
+		return nil, xerrors.New("OCI artifact must be a single layer")
+	}
+	a.layer = layers[0]
+	return a.layer, nil
+}
+
+// Blob returns the uncompressed content of a single-layer OCI artifact as a
+// stream. The caller must close it.
+func (a *Artifact) Blob(ctx context.Context) (io.ReadCloser, error) {
+	layer, err := a.singleLayer(ctx)
+	if err != nil {
+		return nil, err
+	}
+	rc, err := layer.Uncompressed()
+	if err != nil {
+		return nil, xerrors.Errorf("unable to read the OCI layer: %w", err)
+	}
+	return rc, nil
 }
 
 func (a *Artifact) download(ctx context.Context, layer v1.Layer, fileName, dir string, quiet bool) error {
