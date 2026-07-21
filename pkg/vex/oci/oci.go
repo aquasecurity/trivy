@@ -24,6 +24,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/remote"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var supportedVEXArtifactTypes = set.New(
@@ -189,7 +190,7 @@ func fetchReferrerVEX(ctx context.Context, digest name.Digest, desc v1.Descripto
 	}
 	defer rc.Close()
 
-	vexDoc, err := decodeOpenVEXAttestation(io.LimitReader(rc, int64(maxAttestationSize)+1), desc.ArtifactType)
+	vexDoc, err := decodeOpenVEXAttestation(xio.MaxBytesReader(rc, maxAttestationSize), desc.ArtifactType)
 	if err != nil {
 		return nil, xerrors.Errorf("referrer decode error (%s): %w", desc.Digest.String(), err)
 	}
@@ -207,7 +208,7 @@ func decodeLegacyLayer(layer v1.Layer) (*openvex.VEX, error) {
 	}
 	defer rc.Close()
 
-	vexDoc, err := decodeOpenVEXAttestation(io.LimitReader(rc, int64(maxAttestationSize)+1), oci.DSSEEnvelopeArtifactType)
+	vexDoc, err := decodeOpenVEXAttestation(xio.MaxBytesReader(rc, maxAttestationSize), oci.DSSEEnvelopeArtifactType)
 	if err != nil {
 		log.WithPrefix("vex").Debug("Skipping malformed legacy attestation layer", log.Err(err))
 		return nil, nil

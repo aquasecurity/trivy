@@ -371,7 +371,7 @@ func TestDiscover(t *testing.T) {
 				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType, envelope)
 				return registryHost + "/" + repo + ":latest"
 			},
-			wantErr: "unexpected EOF", // truncated by the size limit
+			wantErr: "read limit exceeded",
 		},
 	}
 
