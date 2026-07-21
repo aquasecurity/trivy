@@ -154,8 +154,9 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 	return true
 }
 
-// FilterPackages keeps every package, because Root.io advisories cover the rebuilds it ships.
-// Narrowing the set here could only hide detections.
+// FilterPackages keeps every package.
+// The Root.io feed covers rebuilds of packages that are classified as third-party, such as gh,
+// so dropping them by repository class would lose detections.
 func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
 	return pkgs
 }
