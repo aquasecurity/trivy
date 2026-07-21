@@ -1,6 +1,7 @@
 Thank you for taking interest in contributing to Trivy!
 
 1. Every Pull Request should have an associated GitHub issue link in the PR description. Note that issues are created by Trivy maintainers based on feedback provided in a GitHub discussion. Please refer to the [issue](./issue.md) and [discussion](./discussion.md) pages for explanation about this process. If you think your change is trivial enough, you can skip the issue and instead add justification and explanation in the PR description.
+1. Once you've picked an issue to work on, please check the existing open PRs to make sure no one is already solving it, and leave a comment on the issue saying you're taking it. This lets maintainers assign the issue to you and tells other contributors it's already being worked on, which helps everyone avoid duplicating the same work.
 1. Your PR is more likely to be accepted if it focuses on just one change.
 1. There's no need to add or tag reviewers.
 1. If a reviewer commented on your code or asked for changes, please remember to respond with a comment. Do not mark the discussion as resolved. It's up to the reviewer to mark it resolved (in case the suggested fix addresses the problem properly). PRs with unresolved issues should not be merged (even if the comment is unclear or requires no action from your side).
@@ -239,4 +240,3 @@ Trivy is composed of several repositories that work together:
 - [vuln-list](https://github.com/aquasecurity/vuln-list) is a vulnerability database, aggregated from different sources, and normalized for easy consumption. Think of this as the "server" side of the trivy command line tool. **There should be no pull requests to this repo**
 - [vuln-list-update](https://github.com/aquasecurity/vuln-list-update) is the code that maintains the vuln-list database.
 - [trivy-db](https://github.com/aquasecurity/trivy-db) maintains the vulnerability database pulled by Trivy CLI.
-- [go-dep-parser](https://github.com/aquasecurity/go-dep-parser) is a library for parsing lock files such as package-lock.json and Gemfile.lock.
