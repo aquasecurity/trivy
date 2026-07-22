@@ -80,6 +80,14 @@ func Test_amazonlinuxOSAnalyzer_Analyze(t *testing.T) {
 			wantErr: fos.AnalyzeOSError.Error(),
 		},
 		{
+			name: "sad path amazon linux without version",
+			input: analyzer.AnalysisInput{
+				FilePath: "etc/system-release",
+				Content:  strings.NewReader(`Amazon Linux`),
+			},
+			wantErr: fos.AnalyzeOSError.Error(),
+		},
+		{
 			name: "sad path",
 			input: analyzer.AnalysisInput{
 				FilePath: "etc/system-release",

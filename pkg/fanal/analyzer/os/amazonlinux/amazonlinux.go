@@ -53,6 +53,9 @@ func (a amazonlinuxOSAnalyzer) parseRelease(r io.Reader) (types.OS, error) {
 				Name:   strings.Join(fields[3:], " "),
 			}, nil
 		} else if strings.HasPrefix(line, "Amazon Linux") {
+			if len(fields) < 3 {
+				continue
+			}
 			return types.OS{
 				Family: types.Amazon,
 				Name:   strings.Join(fields[2:], " "),

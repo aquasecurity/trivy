@@ -2,6 +2,7 @@ package cocoapods_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -93,4 +94,25 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
+}
+
+func TestParseMalformedDirectDependencies(t *testing.T) {
+	const input = `PODS:
+  - AppCenter (4.2.0):
+    - AppCenter/Core (= 4.2.0)
+    - ""
+    - "   "
+  - AppCenter/Core (4.2.0)
+`
+
+	gotPkgs, gotDeps, err := cocoapods.NewParser().Parse(t.Context(), strings.NewReader(input))
+	require.NoError(t, err)
+	require.Len(t, gotPkgs, 2)
+	assert.ElementsMatch(t, []string{"AppCenter", "AppCenter/Core"}, []string{gotPkgs[0].Name, gotPkgs[1].Name})
+	assert.Equal(t, []ftypes.Dependency{
+		{
+			ID:        "AppCenter@4.2.0",
+			DependsOn: []string{"AppCenter/Core@4.2.0"},
+		},
+	}, gotDeps)
 }
