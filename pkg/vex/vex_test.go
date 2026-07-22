@@ -184,6 +184,12 @@ var (
 		InstalledVersion: goTransitivePackage.Version,
 		PkgIdentifier:    goTransitivePackage.Identifier,
 	}
+	vuln6 = types.DetectedVulnerability{
+		VulnerabilityID:  "GHSA-2r2c-cx56-8933",
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -486,6 +492,32 @@ func TestFilter(t *testing.T) {
 				goSinglePathResult(types.Result{
 					Vulnerabilities:  []types.DetectedVulnerability{},
 					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln5, vulnerableCodeNotInExecutePath, "testdata/csaf.json")},
+				}),
+			}),
+		},
+		{
+			name: "CSAF without CVE, not affected",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln6, // filtered by VEX, matched via `ids`
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-no-cve.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln6, vulnerableCodeNotInExecutePath, "testdata/csaf-no-cve.json")},
 				}),
 			}),
 		},
