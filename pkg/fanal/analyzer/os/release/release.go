@@ -91,6 +91,10 @@ func idToOSFamily(id string) types.OSType {
 		return types.OpenSUSETumbleweed
 	case "opensuse-leap", "opensuse": // opensuse for leap:42, opensuse-leap for leap:15
 		return types.OpenSUSELeap
+	case "opensuse-microos":
+		return types.OpenSUSEMicroOS
+	case "opensuse-leap-micro":
+		return types.OpenSUSELeapMicro
 	case "sles":
 		return types.SLES
 	// There are various rebrands of SLE Micro, there is also one brief (and reverted rebrand)
