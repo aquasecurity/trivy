@@ -82,6 +82,7 @@ func TestManager_Config(t *testing.T) {
 				config := repo.Config{
 					Repositories: []repo.Repository{
 						{
+							// dir is t.TempDir(), i.e. an absolute path, so this yields an absolute repository name.
 							Name:    filepath.Join(dir, "outside-target"),
 							URL:     "https://example.com/repo",
 							Enabled: true,
