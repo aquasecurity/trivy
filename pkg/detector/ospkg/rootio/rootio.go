@@ -153,10 +153,3 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
-
-// FilterPackages keeps every package.
-// The Root.io feed covers rebuilds of packages that are classified as third-party, such as gh,
-// so dropping them by repository class would lose detections.
-func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return pkgs
-}

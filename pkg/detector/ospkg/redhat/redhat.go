@@ -14,7 +14,6 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	redhat "github.com/aquasecurity/trivy-db/pkg/vulnsrc/redhat-oval"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -205,9 +204,4 @@ func cleanContentSets(contentSets []string) []string {
 	return xslices.Map(contentSets, func(cs string) string {
 		return genericSuffixPattern.ReplaceAllString(cs, "")
 	})
-}
-
-// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
-func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

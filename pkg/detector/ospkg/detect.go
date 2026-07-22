@@ -134,12 +134,15 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 		return pkg.Name != "gpg-pubkey"
 	})
 
-	// Drop the packages this driver's advisories cannot describe.
-	// Drivers backed by an OS vendor drop packages installed from third-party repositories such as EPEL or Docker.
-	// Drivers with their own curated feed (Echo, Seal) keep them: that feed is built for exactly those packages.
-	pkgs = d.driver.FilterPackages(ctx, pkgs)
+	// By default, drop packages installed from third-party repositories such as EPEL or
+	// Docker: an OS vendor's advisories do not describe them. A driver whose own feed
+	// covers those packages (Echo, Seal) implements packageFilter to keep them instead.
+	filterFunc := driver.DropThirdPartyPackages
+	if f, ok := d.driver.(driver.PackageFilter); ok {
+		filterFunc = f.FilterPackages
+	}
 
-	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, pkgs)
+	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filterFunc(ctx, pkgs))
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}

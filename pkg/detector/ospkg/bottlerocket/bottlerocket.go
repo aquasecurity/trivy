@@ -8,7 +8,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/bottlerocket"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
@@ -72,9 +71,4 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 	// There is no case where a given input yields an unsupported Bottlerocket version.
 
 	return true
-}
-
-// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
-func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

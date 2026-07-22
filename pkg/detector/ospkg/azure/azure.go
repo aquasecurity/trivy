@@ -8,7 +8,6 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/azure"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	osver "github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -90,9 +89,4 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	// EOL is not in public at the moment.
 	return true
-}
-
-// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
-func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

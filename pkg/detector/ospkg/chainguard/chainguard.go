@@ -9,7 +9,6 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/chainguard"
-	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
@@ -91,9 +90,4 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 	// result of an unsupported Chainguard version.
 
 	return true
-}
-
-// FilterPackages drops third-party packages not covered by the OS vendor's advisories.
-func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return driver.DropThirdPartyPackages(ctx, pkgs)
 }

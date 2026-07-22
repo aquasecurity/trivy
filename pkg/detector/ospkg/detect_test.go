@@ -17,18 +17,6 @@ type mockDriver struct {
 	called bool
 	// receivedPkgs are the packages passed to Detect.
 	receivedPkgs []ftypes.Package
-	// filteredPkgs are the packages passed to FilterPackages.
-	filteredPkgs []ftypes.Package
-	// filter narrows the package set. A nil filter keeps everything.
-	filter func([]ftypes.Package) []ftypes.Package
-}
-
-func (m *mockDriver) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	m.filteredPkgs = pkgs
-	if m.filter == nil {
-		return pkgs
-	}
-	return m.filter(pkgs)
 }
 
 func (m *mockDriver) Detect(_ context.Context, _ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
@@ -39,6 +27,17 @@ func (m *mockDriver) Detect(_ context.Context, _ string, _ *ftypes.Repository, p
 
 func (m *mockDriver) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
+}
+
+// filteringMockDriver implements the optional package filter, so the detector uses it
+// instead of the default third-party filter.
+type filteringMockDriver struct {
+	*mockDriver
+	filter func([]ftypes.Package) []ftypes.Package
+}
+
+func (m *filteringMockDriver) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return m.filter(pkgs)
 }
 
 func TestDetector_Detect(t *testing.T) {
@@ -58,40 +57,29 @@ func TestDetector_Detect(t *testing.T) {
 	tests := []struct {
 		name string
 		pkgs []ftypes.Package
-		// filter is the driver's own FilterPackages. A nil filter keeps everything.
+		// filter is the driver's optional FilterPackages. A nil filter means the driver
+		// does not implement it, so the detector applies the default third-party filter.
 		filter func([]ftypes.Package) []ftypes.Package
-		// wantFiltered are the packages the driver's filter must be given.
-		wantFiltered []ftypes.Package
 		// wantDetected are the packages Detect must be given.
 		wantDetected []ftypes.Package
 	}{
 		{
-			// The detector drops gpg-pubkey itself, before the driver has a say,
-			// because it carries no real version for any driver to match.
-			name:         "gpg-pubkey is dropped before the driver filter",
-			pkgs:         []ftypes.Package{official, {Name: "gpg-pubkey"}},
-			wantFiltered: []ftypes.Package{official},
+			// A plain driver gets the default: gpg-pubkey and third-party packages go.
+			name:         "default driver drops gpg-pubkey and third-party packages",
+			pkgs:         []ftypes.Package{official, {Name: "gpg-pubkey"}, thirdParty},
 			wantDetected: []ftypes.Package{official},
 		},
 		{
-			name:         "a driver that keeps everything receives every package",
-			pkgs:         []ftypes.Package{official, thirdParty},
-			wantFiltered: []ftypes.Package{official, thirdParty},
+			// A driver that keeps everything still never sees gpg-pubkey: the detector
+			// drops it before handing the set to the driver's filter.
+			name:         "filtering driver keeps third-party packages but not gpg-pubkey",
+			pkgs:         []ftypes.Package{official, {Name: "gpg-pubkey"}, thirdParty},
+			filter:       func(pkgs []ftypes.Package) []ftypes.Package { return pkgs },
 			wantDetected: []ftypes.Package{official, thirdParty},
-		},
-		{
-			name: "the driver filter decides what Detect receives",
-			pkgs: []ftypes.Package{official, thirdParty},
-			filter: func(pkgs []ftypes.Package) []ftypes.Package {
-				return driver.DropThirdPartyPackages(t.Context(), pkgs)
-			},
-			wantFiltered: []ftypes.Package{official, thirdParty},
-			wantDetected: []ftypes.Package{official},
 		},
 		{
 			name:         "no packages",
 			pkgs:         nil,
-			wantFiltered: []ftypes.Package{},
 			wantDetected: []ftypes.Package{},
 		},
 	}
@@ -105,14 +93,17 @@ func TestDetector_Detect(t *testing.T) {
 				},
 				Packages: tt.pkgs,
 			}
-			mockDrv := &mockDriver{filter: tt.filter}
-			d, err := ospkg.NewDetector(target, ospkg.WithDriver(target.OS.Family, mockDrv))
+			base := &mockDriver{}
+			var drv driver.Driver = base
+			if tt.filter != nil {
+				drv = &filteringMockDriver{mockDriver: base, filter: tt.filter}
+			}
+			d, err := ospkg.NewDetector(target, ospkg.WithDriver(target.OS.Family, drv))
 			require.NoError(t, err)
 
 			_, _, err = d.Detect(t.Context())
 			require.NoError(t, err)
-			assert.Equal(t, tt.wantFiltered, mockDrv.filteredPkgs)
-			assert.Equal(t, tt.wantDetected, mockDrv.receivedPkgs)
+			assert.Equal(t, tt.wantDetected, base.receivedPkgs)
 		})
 	}
 }
@@ -196,34 +187,22 @@ func TestNewDetector(t *testing.T) {
 	}
 }
 
-// TestDriversFilterThirdPartyPackages checks that every registered driver narrows the
-// package set, so a driver whose FilterPackages became a no-op is caught here.
-// Provider-built drivers (Root.io, Seal) are not registered and have their own tests.
-func TestDriversFilterThirdPartyPackages(t *testing.T) {
-	// Drivers whose own advisories describe third-party packages, so they keep them.
-	// Dropping is the default: keeping has to be listed here explicitly.
+// TestDriversPackageFilter checks which registered drivers override the default filter.
+// Only drivers whose own advisories describe third-party packages should, so that a
+// curated-feed driver that forgets the override (and would silently drop those packages)
+// is caught here.
+func TestDriversPackageFilter(t *testing.T) {
+	// Registered drivers that keep third-party packages. Provider-built drivers
+	// (Root.io, Seal) are not registered and have their own tests.
 	keepsThirdPartyPackages := map[ftypes.OSType]bool{
 		ftypes.Echo: true,
 	}
 
-	thirdParty := ftypes.Package{
-		Name: "nginx",
-		Repository: ftypes.PackageRepository{
-			Class: ftypes.RepositoryClassThirdParty,
-		},
-	}
-
 	for family, drv := range ospkg.Drivers() {
 		t.Run(string(family), func(t *testing.T) {
-			got := drv.FilterPackages(t.Context(), []ftypes.Package{thirdParty})
-
-			if keepsThirdPartyPackages[family] {
-				assert.Equal(t, []ftypes.Package{thirdParty}, got,
-					"%s reads its own advisory feed, so it must keep third-party packages", family)
-				return
-			}
-			assert.Empty(t, got,
-				"%s matches against the OS vendor's advisories, so it must drop third-party packages", family)
+			_, ok := drv.(driver.PackageFilter)
+			assert.Equal(t, keepsThirdPartyPackages[family], ok,
+				"%s: whether it overrides the default third-party filter", family)
 		})
 	}
 }

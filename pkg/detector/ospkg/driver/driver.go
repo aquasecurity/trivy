@@ -14,15 +14,16 @@ import (
 type Driver interface {
 	Detect(context.Context, string, *ftypes.Repository, []ftypes.Package) ([]types.DetectedVulnerability, error)
 	IsSupportedVersion(context.Context, ftypes.OSType, string) bool
-
-	// FilterPackages narrows a package set down to what this driver's advisories describe.
-	// Drivers backed by an OS vendor return DropThirdPartyPackages.
-	// Drivers with their own curated feed (Echo, Seal) narrow the set themselves.
-	FilterPackages(context.Context, []ftypes.Package) []ftypes.Package
 }
 
 // Provider creates a specialized driver based on the environment
 type Provider func(osFamily ftypes.OSType, pkgs []ftypes.Package) Driver
+
+// PackageFilter is an optional interface a Driver can implement to narrow the package
+// set before Detect with its own logic instead of the default third-party filtering.
+type PackageFilter interface {
+	FilterPackages(context.Context, []ftypes.Package) []ftypes.Package
+}
 
 // DropThirdPartyPackages removes packages installed from third-party repositories (e.g. EPEL, Docker).
 // An OS vendor's advisories do not describe them, so matching by name reports fixes that do not apply.

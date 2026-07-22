@@ -27,10 +27,6 @@ func (m *mockDriver) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ st
 	return true
 }
 
-func (m *mockDriver) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	return pkgs
-}
-
 // TestScanner_Scan_ForwardsOptions verifies that options passed to NewScanner
 // are forwarded to ospkgDetector.NewDetector during Scan.
 func TestScanner_Scan_ForwardsOptions(t *testing.T) {
