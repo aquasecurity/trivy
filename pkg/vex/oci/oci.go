@@ -12,6 +12,7 @@ import (
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/google/go-containerregistry/pkg/v1/remote/transport"
+	"github.com/in-toto/in-toto-golang/in_toto"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
@@ -30,6 +31,7 @@ import (
 var supportedVEXArtifactTypes = set.New(
 	oci.SigstoreBundleArtifactType,
 	oci.DSSEEnvelopeArtifactType,
+	oci.InTotoArtifactType,
 )
 
 const (
@@ -118,9 +120,9 @@ func resolveDigest(ctx context.Context, p *purl.PackageURL, registryOptions ftyp
 }
 
 func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
-	// A VEX artifact type (Sigstore bundle / DSSE envelope) is shared by every
-	// Cosign attestation, not just VEX, so an image may expose SBOM or SLSA
-	// provenance referrers alongside (or instead of) a VEX one.
+	// Every VEX artifact type is shared by other kinds of attestation, so an image
+	// may expose SBOM or SLSA provenance referrers alongside (or instead of) a VEX
+	// one.
 	//
 	// A registry with no referrers (API unsupported or nothing attached) yields an
 	// empty descs that falls through to the legacy path below, so an error here is
@@ -133,10 +135,19 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	// Decode each candidate and return the first OpenVEX document, skipping the
 	// rest; cap the number processed so a hostile registry cannot make us fetch
 	// unboundedly.
-	for _, desc := range lo.Slice(descs, 0, maxAttestations) {
+	for _, desc := range lo.Slice(vexCandidates(descs), 0, maxAttestations) {
 		vexDoc, err := fetchReferrerVEX(ctx, digest, desc, registryOptions)
 		if err != nil {
-			return nil, err
+			// An oversized attestation is a decompression-bomb signal (CWE-409),
+			// so fail loudly instead of skipping it.
+			if errors.Is(err, xio.ErrLimitExceeded) {
+				return nil, err
+			}
+			// Skip a referrer we cannot download or decode so another may still yield a
+			// VEX document, but log at Warn: a transient error here silently drops one.
+			log.WithPrefix("vex").Warn("Skipping referrer that could not be retrieved or decoded",
+				log.String("digest", desc.Digest.String()), log.Err(err))
+			continue
 		}
 		if vexDoc == nil {
 			continue // a valid attestation, but not OpenVEX (e.g. SBOM); try the next referrer
@@ -145,6 +156,29 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	}
 
 	return nil, nil
+}
+
+// vexCandidates narrows referrers to those that may carry an OpenVEX document,
+// preserving the registry order. Since a single artifact type covers every kind of
+// attestation (SBOM, provenance, VEX), it filters on the optional
+// `in-toto.io/predicate-type` annotation instead, dropping referrers announced as
+// non-OpenVEX without fetching them and keeping unannotated ones as a fallback.
+func vexCandidates(descs []v1.Descriptor) []v1.Descriptor {
+	var openVEX, unannotated []v1.Descriptor
+	for _, desc := range descs {
+		predicateType, ok := desc.Annotations[oci.PredicateTypeAnnotation]
+		switch {
+		case !ok:
+			// No annotation: we cannot tell what it is without fetching it.
+			unannotated = append(unannotated, desc)
+		case isOpenVEXPredicateType(predicateType):
+			// Announced as OpenVEX.
+			openVEX = append(openVEX, desc)
+		default:
+			// Announced as something else (SBOM, provenance, ...): drop it.
+		}
+	}
+	return append(openVEX, unannotated...)
 }
 
 func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {
@@ -236,35 +270,79 @@ func fetchAttestationLayers(ctx context.Context, ref name.Reference, registryOpt
 }
 
 // decodeOpenVEXAttestation decodes an OpenVEX predicate from an attestation
-// stream. The stream is either a Sigstore bundle (Cosign v3+ new format)
-// wrapping a DSSE envelope, or a bare DSSE envelope (legacy `.att` / OCI 1.1
-// referrer). In both cases the DSSE payload is an in-toto Statement whose
-// predicate is the OpenVEX document.
+// stream. The stream is one of three layouts, each wrapping an in-toto statement
+// whose predicate is the OpenVEX document:
+//   - a Sigstore bundle (Cosign v3+ new format) wrapping a DSSE envelope;
+//   - a bare DSSE envelope (legacy `.att` / OCI 1.1 referrer);
+//   - a bare in-toto statement.
 //
-// It returns (nil, nil) when the attestation is well-formed but its predicate is
-// not OpenVEX (e.g. an SBOM or SLSA provenance attestation sharing the same
-// artifact type), so callers can skip it. An error is returned only when the
-// stream itself cannot be decoded.
+// It returns:
+//   - the OpenVEX document, when the predicate is OpenVEX;
+//   - (nil, nil), when the stream is well-formed but its predicate is not OpenVEX
+//     (e.g. an SBOM or SLSA provenance attestation sharing the same artifact type),
+//     so callers can skip it;
+//   - an error, only when the stream itself cannot be decoded.
 func decodeOpenVEXAttestation(r io.Reader, artifactType string) (*openvex.VEX, error) {
 	// Decode the in-toto predicate directly into the typed OpenVEX struct.
 	var predicate openvex.VEX
-	statement := attestation.Statement{Predicate: &predicate}
 
+	var predicateType string
 	if artifactType == oci.SigstoreBundleArtifactType {
-		bundle := attestation.SigstoreBundle{DSSEEnvelope: statement}
+		bundle := attestation.SigstoreBundle{DSSEEnvelope: attestation.Statement{Predicate: &predicate}}
 		if err := json.NewDecoder(r).Decode(&bundle); err != nil {
 			return nil, xerrors.Errorf("failed to decode Sigstore bundle: %w", err)
 		}
-		statement = bundle.DSSEEnvelope
-	} else if err := json.NewDecoder(r).Decode(&statement); err != nil {
-		return nil, xerrors.Errorf("failed to decode DSSE envelope: %w", err)
+		predicateType = bundle.DSSEEnvelope.PredicateType
+	} else {
+		b, err := io.ReadAll(r)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to read attestation: %w", err)
+		}
+		if predicateType, err = decodeInTotoPredicate(b, &predicate); err != nil {
+			return nil, err
+		}
 	}
 
-	if !isOpenVEXPredicateType(statement.PredicateType) {
+	if !isOpenVEXPredicateType(predicateType) {
 		return nil, nil
 	}
 
 	return &predicate, nil
+}
+
+// decodeInTotoPredicate decodes an attestation into predicate and returns the
+// in-toto predicate type it declares. The generic in-toto artifact type covers
+// both DSSE envelopes and bare statements depending on the publishing tool, so the
+// format is detected by content rather than by artifact type: a `payloadType`
+// marks a DSSE envelope, a top-level `_type` marks a bare statement.
+func decodeInTotoPredicate(b []byte, predicate any) (string, error) {
+	var probe struct {
+		Type        string `json:"_type"`
+		PayloadType string `json:"payloadType"`
+	}
+	if err := json.Unmarshal(b, &probe); err != nil {
+		return "", xerrors.Errorf("failed to decode attestation: %w", err)
+	}
+
+	switch {
+	case probe.PayloadType != "":
+		// DSSE envelope: attestation.Statement unwraps the statement from its payload.
+		statement := attestation.Statement{Predicate: predicate}
+		if err := json.Unmarshal(b, &statement); err != nil {
+			return "", xerrors.Errorf("failed to decode DSSE envelope: %w", err)
+		}
+		return statement.PredicateType, nil
+	case probe.Type != "":
+		// Bare in-toto statement: in_toto.Statement decodes the JSON as-is, without
+		// expecting a DSSE envelope around it.
+		statement := in_toto.Statement{Predicate: predicate}
+		if err := json.Unmarshal(b, &statement); err != nil {
+			return "", xerrors.Errorf("failed to decode in-toto statement: %w", err)
+		}
+		return statement.PredicateType, nil
+	default:
+		return "", xerrors.New("unknown attestation format: neither a DSSE envelope nor an in-toto statement")
+	}
 }
 
 // isOpenVEXPredicateType reports whether predicateType identifies an OpenVEX

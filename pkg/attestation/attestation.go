@@ -25,6 +25,9 @@ type SigstoreBundle struct {
 }
 
 // Statement holds in-toto statement headers and the predicate.
+// Its UnmarshalJSON decodes a DSSE envelope and unwraps the statement from the
+// envelope's payload, so decode into it only when the input is a DSSE envelope.
+// For a bare in-toto statement (no envelope), decode into in_toto.Statement.
 type Statement in_toto.Statement
 
 func (s *Statement) UnmarshalJSON(b []byte) error {

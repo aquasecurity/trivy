@@ -72,49 +72,41 @@ func createVEXAttestation(t *testing.T, vulnerabilityID string) dsse.Envelope {
 }
 
 func createVEXAttestationWithPredicateType(t *testing.T, vulnerabilityID, predicateType string) dsse.Envelope {
+	// A DSSE envelope wraps the base64-encoded bare in-toto statement.
+	return dsse.Envelope{
+		PayloadType: "application/vnd.in-toto+json",
+		Payload:     base64.StdEncoding.EncodeToString(createBareInTotoStatement(t, vulnerabilityID, predicateType)),
+		Signatures:  nil,
+	}
+}
+
+func createVEXAttestationBlob(t *testing.T, vulnerabilityID string) []byte {
+	b, err := json.Marshal(createVEXAttestation(t, vulnerabilityID))
+	require.NoError(t, err)
+	return b
+}
+
+// createBareInTotoStatement builds an in-toto statement stored as-is, without a
+// DSSE envelope around it. Docker Scout attaches attestations to Docker Hardened
+// Images this way. Its predicate is the OpenVEX document from the shared fixture.
+func createBareInTotoStatement(t *testing.T, vulnerabilityID, predicateType string) []byte {
 	var v openvex.VEX
 	testutil.MustReadJSON(t, "../testdata/openvex-oci.json", &v)
 	v.Statements[0].Vulnerability.Name = openvex.VulnerabilityID(vulnerabilityID)
 
-	// in-toto Statement
-	statement := in_toto.Statement{
+	b, err := json.Marshal(in_toto.Statement{
 		StatementHeader: in_toto.StatementHeader{
 			Type:          "https://in-toto.io/Statement/v0.1",
 			PredicateType: predicateType,
 			Subject: []in_toto.Subject{
 				{
-					Name: "example",
-					Digest: map[string]string{
-						"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-					},
+					Name:   "example",
+					Digest: map[string]string{"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
 				},
 			},
 		},
 		Predicate: v,
-	}
-
-	attestationJSON, err := json.Marshal(statement)
-	require.NoError(t, err)
-
-	// Base64 encode
-	encodedAttestation := base64.StdEncoding.EncodeToString(attestationJSON)
-
-	// Create a DSSE envelope
-	return dsse.Envelope{
-		PayloadType: "application/vnd.in-toto+json",
-		Payload:     encodedAttestation,
-		Signatures:  nil,
-	}
-}
-
-func createVEXAttestationBlobWithPredicateType(t *testing.T, vulnerabilityID, predicateType string) []byte {
-	b, err := json.Marshal(createVEXAttestationWithPredicateType(t, vulnerabilityID, predicateType))
-	require.NoError(t, err)
-	return b
-}
-
-func createVEXAttestationBlob(t *testing.T, vulnerabilityID string) []byte {
-	b, err := json.Marshal(createVEXAttestation(t, vulnerabilityID))
+	})
 	require.NoError(t, err)
 	return b
 }
@@ -249,14 +241,51 @@ func TestDiscover(t *testing.T) {
 			want: map[string]bool{"CVE-2022-3715": true},
 		},
 		{
-			name: "referrer with versioned OpenVEX predicate",
+			name: "referrer bare in-toto statement",
 			setup: func(t *testing.T) string {
-				repo := "debian/versioned-predicate"
+				repo := "debian/bare-in-toto"
 				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
-				// OpenVEX uses versioned namespaces such as ".../ns/v0.2.0"; the
-				// prefix must still be recognized as OpenVEX.
-				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
-					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/ns/v0.2.0"))
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.InTotoArtifactType,
+					createBareInTotoStatement(t, "CVE-2022-3715", "https://openvex.dev/ns/v0.2.0"))
+				return registryHost + "/" + repo + ":latest"
+			},
+			want: map[string]bool{"CVE-2022-3715": true},
+		},
+		{
+			name: "referrer DSSE envelope under the in-toto artifact type",
+			setup: func(t *testing.T) string {
+				repo := "debian/in-toto-dsse"
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				// The generic in-toto artifact type also carries DSSE envelopes,
+				// depending on the publishing tool, so the format is detected by content.
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.InTotoArtifactType,
+					createVEXAttestationBlob(t, "CVE-2022-3715"))
+				return registryHost + "/" + repo + ":latest"
+			},
+			want: map[string]bool{"CVE-2022-3715": true},
+		},
+		{
+			name: "non-OpenVEX in-toto referrer is skipped",
+			setup: func(t *testing.T) string {
+				repo := "debian/in-toto-sbom"
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.InTotoArtifactType,
+					createBareInTotoStatement(t, "CVE-2022-3715", "https://spdx.dev/Document"))
+				return registryHost + "/" + repo + ":latest"
+			},
+			want: nil,
+		},
+		{
+			name: "undecodable referrer does not fail the scan",
+			setup: func(t *testing.T) string {
+				repo := "debian/undecodable-referrer"
+				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
+				// A referrer Trivy cannot decode - here an unannotated blob in an unknown
+				// format - must be skipped so that the remaining ones are still examined.
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.InTotoArtifactType,
+					[]byte(`{"mediaType":"application/vnd.oci.image.manifest.v1+json"}`))
+				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.InTotoArtifactType,
+					createBareInTotoStatement(t, "CVE-2022-3715", "https://openvex.dev/ns/v0.2.0"))
 				return registryHost + "/" + repo + ":latest"
 			},
 			want: map[string]bool{"CVE-2022-3715": true},
@@ -321,25 +350,11 @@ func TestDiscover(t *testing.T) {
 			wantErr: "too many layers",
 		},
 		{
-			name: "malformed sigstore bundle",
+			name: "malformed sigstore bundle is skipped",
 			setup: func(t *testing.T) string {
 				repo := "debian/malformed"
 				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
 				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.SigstoreBundleArtifactType, []byte("{"))
-				return registryHost + "/" + repo + ":latest"
-			},
-			wantErr: "failed to decode Sigstore bundle",
-		},
-		{
-			name: "non-OpenVEX referrer is skipped",
-			setup: func(t *testing.T) string {
-				repo := "debian/sbom-referrer"
-				_, subjectDesc := registrytest.PushRandomImage(t, registryHost, repo, "latest")
-				// A VEX artifact type is shared by every Cosign attestation, so a
-				// non-OpenVEX predicate (here a lookalike namespace) must be skipped,
-				// not treated as an error, and yield no VEX document.
-				registrytest.PushReferrer(t, registryHost, repo, subjectDesc, coreoci.DSSEEnvelopeArtifactType,
-					createVEXAttestationBlobWithPredicateType(t, "CVE-2022-3715", "https://openvex.dev/nsx"))
 				return registryHost + "/" + repo + ":latest"
 			},
 			want: nil,
@@ -483,6 +498,144 @@ func TestDiscoverInvalidPURL(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			_, err := oci.Discover(t.Context(), tt.purl, ftypes.RegistryOptions{})
 			require.ErrorContains(t, err, tt.wantErr)
+		})
+	}
+}
+
+func TestVEXCandidates(t *testing.T) {
+	desc := func(name string, annotations map[string]string) v1.Descriptor {
+		return v1.Descriptor{
+			Digest:      v1.Hash{Algorithm: "sha256", Hex: name},
+			Annotations: annotations,
+		}
+	}
+	predicate := func(predicateType string) map[string]string {
+		return map[string]string{coreoci.PredicateTypeAnnotation: predicateType}
+	}
+
+	tests := []struct {
+		name  string
+		descs []v1.Descriptor
+		want  []string // digest hexes, in the expected order
+	}{
+		{
+			name: "referrer announcing OpenVEX is kept",
+			descs: []v1.Descriptor{
+				desc("vex", predicate("https://openvex.dev/ns/v0.2.0")),
+			},
+			want: []string{"vex"},
+		},
+		{
+			name: "referrers announcing another predicate are dropped",
+			descs: []v1.Descriptor{
+				desc("sbom", predicate("https://spdx.dev/Document")),
+				desc("provenance", predicate("https://slsa.dev/provenance/v1")),
+				desc("vex", predicate("https://openvex.dev/ns")),
+			},
+			want: []string{"vex"},
+		},
+		{
+			name: "a look-alike namespace is not OpenVEX",
+			descs: []v1.Descriptor{
+				desc("lookalike", predicate("https://openvex.dev/nsx")),
+			},
+			want: nil,
+		},
+		{
+			name: "the annotation is optional, so unannotated referrers are kept",
+			descs: []v1.Descriptor{
+				desc("unannotated", nil),
+				desc("empty-annotations", make(map[string]string)),
+			},
+			want: []string{"unannotated", "empty-annotations"},
+		},
+		{
+			name: "referrers announcing OpenVEX are probed before unannotated ones",
+			descs: []v1.Descriptor{
+				desc("unannotated", nil),
+				desc("sbom", predicate("https://spdx.dev/Document")),
+				desc("vex", predicate("https://openvex.dev/ns/v0.2.0")),
+			},
+			want: []string{"vex", "unannotated"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got []string
+			for _, d := range oci.VEXCandidates(tt.descs) {
+				got = append(got, d.Digest.Hex)
+			}
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestDecodeInTotoPredicate(t *testing.T) {
+	tests := []struct {
+		name              string
+		blob              []byte
+		wantPredicateType string
+		wantErr           string
+		wantMatch         bool // the OpenVEX predicate was decoded into the output
+	}{
+		{
+			name:              "bare in-toto statement",
+			blob:              createBareInTotoStatement(t, "CVE-2022-3715", "https://openvex.dev/ns"),
+			wantPredicateType: "https://openvex.dev/ns",
+			wantMatch:         true,
+		},
+		{
+			name:              "DSSE envelope",
+			blob:              createVEXAttestationBlob(t, "CVE-2022-3715"),
+			wantPredicateType: "https://openvex.dev/ns",
+			wantMatch:         true,
+		},
+		{
+			name:              "bare statement with a non-OpenVEX predicate",
+			blob:              createBareInTotoStatement(t, "CVE-2022-3715", "https://spdx.dev/Document"),
+			wantPredicateType: "https://spdx.dev/Document",
+		},
+		{
+			name:    "malformed JSON",
+			blob:    []byte("{"),
+			wantErr: "failed to decode attestation",
+		},
+		{
+			name:    "neither a DSSE envelope nor an in-toto statement",
+			blob:    []byte(`{"mediaType":"application/vnd.oci.image.manifest.v1+json"}`),
+			wantErr: "unknown attestation format",
+		},
+		{
+			name:    "DSSE envelope with a non-base64 payload",
+			blob:    []byte(`{"payloadType":"application/vnd.in-toto+json","payload":"!!!not-base64!!!"}`),
+			wantErr: "failed to decode DSSE envelope",
+		},
+		{
+			name:    "DSSE envelope with the wrong payload type",
+			blob:    []byte(`{"payloadType":"application/vnd.other+json","payload":"e30="}`),
+			wantErr: "failed to decode DSSE envelope",
+		},
+		{
+			name:    "bare statement with a malformed body",
+			blob:    []byte(`{"_type":"https://in-toto.io/Statement/v0.1","subject":"not-an-array"}`),
+			wantErr: "failed to decode in-toto statement",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var predicate openvex.VEX
+			predicateType, err := oci.DecodeInTotoPredicate(tt.blob, &predicate)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.wantPredicateType, predicateType)
+			if tt.wantMatch {
+				requireOpenVEXMatch(t, &predicate, "CVE-2022-3715")
+			}
 		})
 	}
 }
