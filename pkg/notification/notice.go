@@ -97,7 +97,7 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 			return
 		}
 
-		// enable priting if update allowed and quiet mode is not set
+		// enable printing if update allowed and quiet mode is not set
 		if !v.cliOptions.SkipVersionCheck && !v.cliOptions.Quiet {
 			v.responseReceived = true
 		}

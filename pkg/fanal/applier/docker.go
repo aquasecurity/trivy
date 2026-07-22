@@ -362,7 +362,7 @@ func aggregate(detail *ftypes.ArtifactDetail) {
 	detail.Applications = apps
 }
 
-// We must save secrets from all layers even though they are removed in the uppler layer.
+// We must save secrets from all layers even though they are removed in the upper layer.
 // If the secret was changed at the top level, we need to overwrite it.
 func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, layer ftypes.Layer) map[string]ftypes.Secret {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
