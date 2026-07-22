@@ -1,0 +1,19 @@
+vulnerabilities:
+  - purls:
+      - "pkg:deb/ubuntu/linux-libc-dev"
+    statement: Kernel headers, not exercised at runtime
+  - paths:
+      - "vendor/**"
+    statement: Vendored, not in scope
+  - id: CVE-2024-9999
+    purls:
+      - "pkg:golang/example.com/foo"
+
+misconfigurations:
+  - paths:
+      - "test/fixtures/**"
+    statement: Test fixtures, safe to ignore
+
+secrets:
+  - paths:
+      - "tests/**"
