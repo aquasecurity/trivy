@@ -190,6 +190,27 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// A dependency made up only of operators leaves nothing behind once
+			// they are replaced, so the parser must not index into the empty split.
+			name:  "dependency line contains only operators",
+			input: "testdata/operator-only-dep.yaml",
+			want: environment.Packages{
+				Packages: []ftypes.Package{
+					{
+						Name:    "numpy",
+						Version: "1.26.4",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 7,
+								EndLine:   7,
+							},
+						},
+					},
+				},
+				Prefix: "/opt/conda/envs/test-env",
+			},
+		},
+		{
 			name:    "invalid yaml file",
 			input:   "testdata/invalid.yaml",
 			wantErr: "cannot unmarshal !!str `invalid` into environment.environment",
