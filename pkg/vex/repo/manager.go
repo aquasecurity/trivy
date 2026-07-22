@@ -104,6 +104,11 @@ func (m *Manager) Config(ctx context.Context) (Config, error) {
 	}
 
 	for i, repo := range conf.Repositories {
+		// The repository name is joined onto the cache directory, so reject names that are not
+		// local relative paths to prevent path traversal (e.g., "../foo", "/foo", or "C:\foo" on Windows).
+		if !filepath.IsLocal(repo.Name) {
+			return Config{}, xerrors.Errorf("invalid repository name %q: must be a local relative path", repo.Name)
+		}
 		conf.Repositories[i].dir = filepath.Join(m.cacheDir, repoDir, repo.Name)
 	}
 
