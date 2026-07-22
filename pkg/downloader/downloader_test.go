@@ -117,11 +117,8 @@ func TestDownloadWithETag(t *testing.T) {
 			dst := filepath.Join(t.TempDir(), "vex.json")
 			require.NoError(t, os.WriteFile(dst, []byte("cached content"), 0o600))
 
-			_ = xhttp.WithTransport(t.Context(), xhttp.NewTransport(xhttp.Options{Insecure: true}))
-
 			newETag, err := downloader.Download(t.Context(), server.URL, dst, "", downloader.Options{
-				Insecure: true,
-				ETag:     tt.cachedETag,
+				ETag: tt.cachedETag,
 			})
 
 			if tt.wantErr != nil {
