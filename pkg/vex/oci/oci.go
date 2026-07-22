@@ -159,10 +159,12 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 }
 
 // vexCandidates narrows referrers to those that may carry an OpenVEX document,
-// preserving the registry order. Since a single artifact type covers every kind of
-// attestation (SBOM, provenance, VEX), it filters on the optional
-// `in-toto.io/predicate-type` annotation instead, dropping referrers announced as
-// non-OpenVEX without fetching them and keeping unannotated ones as a fallback.
+// preserving the registry order. A single artifact type covers every kind of
+// attestation (SBOM, provenance, VEX), so it filters on the optional
+// `in-toto.io/predicate-type` annotation instead: referrers announced as OpenVEX
+// are preferred, those announced as anything else are dropped, and unannotated ones
+// are a fallback used only when nothing is announced as OpenVEX (the annotation is
+// optional, so an unannotated referrer may still be the VEX document).
 func vexCandidates(descs []v1.Descriptor) []v1.Descriptor {
 	var openVEX, unannotated []v1.Descriptor
 	for _, desc := range descs {
@@ -178,7 +180,10 @@ func vexCandidates(descs []v1.Descriptor) []v1.Descriptor {
 			// Announced as something else (SBOM, provenance, ...): drop it.
 		}
 	}
-	return append(openVEX, unannotated...)
+	if len(openVEX) > 0 {
+		return openVEX
+	}
+	return unannotated
 }
 
 func retrieveLegacyVEX(ctx context.Context, digest name.Digest, registryOptions ftypes.RegistryOptions) (*openvex.VEX, error) {

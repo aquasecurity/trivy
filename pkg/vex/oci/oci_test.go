@@ -550,13 +550,24 @@ func TestVEXCandidates(t *testing.T) {
 			want: []string{"unannotated", "empty-annotations"},
 		},
 		{
-			name: "referrers announcing OpenVEX are probed before unannotated ones",
+			name: "an announced OpenVEX referrer is trusted over unannotated ones",
 			descs: []v1.Descriptor{
 				desc("unannotated", nil),
 				desc("sbom", predicate("https://spdx.dev/Document")),
 				desc("vex", predicate("https://openvex.dev/ns/v0.2.0")),
 			},
-			want: []string{"vex", "unannotated"},
+			// The publisher annotates its VEX referrer, so the unannotated one is not it.
+			want: []string{"vex"},
+		},
+		{
+			name: "unannotated referrers stand in when nothing is announced as OpenVEX",
+			descs: []v1.Descriptor{
+				desc("sbom", predicate("https://spdx.dev/Document")),
+				desc("unannotated", nil),
+			},
+			// No positive OpenVEX signal, and the annotation is optional, so the
+			// unannotated referrer may still be the VEX document - keep probing it.
+			want: []string{"unannotated"},
 		},
 	}
 
