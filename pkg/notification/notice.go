@@ -48,19 +48,28 @@ func NewVersionChecker(commandName string, cliOptions *flag.Options) *VersionChe
 // RunUpdateCheck makes a best efforts request to determine the
 // latest version and any announcements
 // Logic:
-// 1. if skipUpdateCheck is true AND telemetryDisabled are both true, skip the request
-// 2. if skipUpdateCheck is true AND telemetryDisabled is false, run check with metric details but suppress output
-// 3. if skipUpdateCheck is false AND telemetryDisabled is true, run update check but don't send any metric identifiers
+// 1. if SkipVersionCheck AND DisableTelemetry are both true, skip the request
+// 2. if SkipVersionCheck is true AND DisableTelemetry is false, send the request with telemetry headers but suppress the version check output
+// 3. if SkipVersionCheck is false AND DisableTelemetry is true, run the version check but don't send any telemetry identifiers
 func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 	logger := log.WithPrefix("notification")
 
 	if v.cliOptions.SkipVersionCheck && v.cliOptions.DisableTelemetry {
-		logger.Debug("Skipping update check and metric ping")
+		logger.Debug("Version check and telemetry are disabled, skipping request")
 		return
 	}
 
 	go func() {
-		logger.Debug("Running version check")
+		switch {
+		case v.cliOptions.SkipVersionCheck:
+			// the request is still sent to deliver anonymous telemetry,
+			// but the version check output is suppressed
+			logger.Debug("Version check is disabled, sending anonymous telemetry only")
+		case v.cliOptions.DisableTelemetry:
+			logger.Debug("Telemetry is disabled, running version check only")
+		default:
+			logger.Debug("Running version check and sending anonymous telemetry")
+		}
 		commandParts := v.getFlags()
 		client := xhttp.ClientWithContext(ctx, xhttp.WithTimeout(3*time.Second))
 
@@ -101,7 +110,11 @@ func (v *VersionChecker) RunUpdateCheck(ctx context.Context) {
 		if !v.cliOptions.SkipVersionCheck && !v.cliOptions.Quiet {
 			v.responseReceived = true
 		}
-		logger.Debug("Version check completed", log.String("latest_version", v.latestVersion.Trivy.LatestVersion))
+		if v.cliOptions.SkipVersionCheck {
+			logger.Debug("Telemetry sent")
+		} else {
+			logger.Debug("Version check completed", log.String("latest_version", v.latestVersion.Trivy.LatestVersion))
+		}
 		v.done = true
 	}()
 }
