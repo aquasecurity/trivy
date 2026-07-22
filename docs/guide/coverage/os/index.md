@@ -24,7 +24,9 @@ Trivy supports operating systems for
 | [Azure Linux (CBL-Mariner)](azure.md)          | 1.0, 2.0, 3.0                       | tdnf/dnf/yum/rpm |
 | [Amazon Linux](amazon.md)                      | 1, 2, 2023                          | dnf/yum/rpm      |
 | [openSUSE Leap](suse.md)                       | 42, 15                              | zypper/rpm       |
+| [openSUSE Leap Micro](suse.md)                 | 5, 6 (SBOM only)[^4]                | zypper/rpm       |
 | [openSUSE Tumbleweed](suse.md)                 | (n/a)                               | zypper/rpm       |
+| [openSUSE MicroOS](suse.md)                    | (n/a) (SBOM only)[^4]               | zypper/rpm       |
 | [SUSE Linux Enterprise](suse.md)               | 11, 12, 15                          | zypper/rpm       |
 | [SUSE Linux Enterprise Micro](suse.md)         | 5, 6                                | zypper/rpm       |
 | [Photon OS](photon.md)                         | 1.0, 2.0, 3.0, 4.0, 5.0             | tndf/yum/rpm     |
@@ -47,6 +49,7 @@ Each page gives more details.
 [^1]: CentOS Stream is not supported 
 [^2]: https://github.com/GoogleContainerTools/distroless
 [^3]: Fedora CoreOS and the deprecated CoreOS Container Linux
+[^4]: Vulnerability matching is not available out of the box since the version numbering used by these OSes isn't matched by any advisory source yet. Use `--distro <family>/<version>` to force matching against a supported family/version.
 
 
 [sbom]: ../../supply-chain/sbom.md
