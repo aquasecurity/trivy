@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/minimos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rapidfort"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
@@ -112,7 +113,7 @@ func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
 		opt(r)
 	}
 
-	drv, err := r.resolve(target.OS.Family, target.Packages)
+	drv, err := r.resolve(target.OS.Family, target.Packages, target.CustomResources)
 	if err != nil {
 		return nil, err
 	}
@@ -128,8 +129,14 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	filteredPkgs := filterPkgs(ctx, d.target.Packages)
-	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filteredPkgs)
+	// includeThirdParty passes third-party packages through to Detect when the
+	// driver implements ThirdPartyAware (e.g. RapidFort curates advisories for them).
+	includeThirdParty := false
+	if tp, ok := d.driver.(driver.ThirdPartyAware); ok {
+		includeThirdParty = tp.IncludesThirdParty()
+	}
+	pkgs := filterPkgs(ctx, d.target.Packages, includeThirdParty)
+	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, pkgs)
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
@@ -138,15 +145,19 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 }
 
 // filterPkgs filters out packages that should not be scanned:
-//   - gpg-pubkey: doesn't use the correct version
-//   - Third-party packages: not covered by official OS security advisories
-func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+//   - gpg-pubkey: has no valid version — always dropped regardless of driver.
+//   - Third-party packages: not covered by official OS security advisories, so
+//     they are dropped by default. A driver can opt out via ThirdPartyAware
+//     (e.g. RapidFort curates its own advisories for third-party packages);
+//     when includeThirdParty is true they are passed through untouched, but
+//     gpg-pubkey is still stripped above.
+func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bool) []ftypes.Package {
 	var skipped []string
 	filtered := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
 		if pkg.Name == "gpg-pubkey" {
 			return false
 		}
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+		if !includeThirdParty && pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
 			skipped = append(skipped, pkg.Name)
 			return false
 		}
@@ -158,15 +169,20 @@ func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
 	return filtered
 }
 
-func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
-	// Try providers first
+func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {
+	// Try custom-resource providers (e.g. RapidFort curated-image detection via a sentinel file)
+	if d := rapidfort.Provider(osFamily, pkgs, customResources); d != nil {
+		return d, nil
+	}
+
+	// Try package-pattern providers (e.g. rootio, seal)
 	for _, provider := range r.providers {
 		if d := provider(osFamily, pkgs); d != nil {
 			return d, nil
 		}
 	}
 
-	// Fall back to standard drivers
+	// Fall back to standard OS-specific drivers
 	if d, ok := r.drivers[osFamily]; ok {
 		return d, nil
 	}

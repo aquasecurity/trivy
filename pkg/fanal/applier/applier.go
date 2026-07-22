@@ -45,6 +45,7 @@ func (a *applier) ApplyLayers(ctx context.Context, imageID string, layerKeys []s
 		Packages:         imageInfo.HistoryPackages,
 		Misconfiguration: imageInfo.Misconfiguration,
 		Secret:           imageInfo.Secret,
+		Labels:           imageInfo.Labels,
 	}
 
 	// Fill layers info

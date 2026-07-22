@@ -1,0 +1,20 @@
+- bucket: data-source
+  pairs:
+    - key: rapidfort ubuntu 22.04
+      value:
+        ID: "rapidfort"
+        BaseID: "ubuntu"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort alpine 3.18
+      value:
+        ID: "rapidfort"
+        BaseID: "alpine"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort Red Hat 9
+      value:
+        ID: "rapidfort"
+        BaseID: "redhat"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
