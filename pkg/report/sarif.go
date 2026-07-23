@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"regexp"
+	"sort"
 	"strings"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
@@ -15,6 +16,7 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -47,6 +49,7 @@ type SarifWriter struct {
 	Version       string
 	run           *sarif.Run
 	locationCache map[string][]location
+	rulePurls     map[string]set.Set[string]
 	Target        string
 }
 
@@ -67,6 +70,7 @@ type sarifData struct {
 	cvssScore        string
 	cvssData         map[string]any
 	locations        []location
+	purls            []string
 }
 
 type location struct {
@@ -75,6 +79,7 @@ type location struct {
 }
 
 func (sw *SarifWriter) addSarifRule(data *sarifData) {
+	purls := sw.mergeRulePurls(data.vulnerabilityId, data.purls)
 	r := sw.run.AddRule(data.vulnerabilityId).
 		WithName(toSarifRuleName(data.resourceClass)).
 		WithDescription(data.vulnerabilityId).
@@ -87,10 +92,28 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData))
+		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData, purls))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
+}
+
+// mergeRulePurls aggregates PURLs across multiple calls for the same vulnerability ID
+// and returns the deduplicated, sorted slice. The same rule is shared by every
+// package affected by the vulnerability, so we accumulate all of their PURLs.
+func (sw *SarifWriter) mergeRulePurls(vulnerabilityId string, purls []string) []string {
+	s, ok := sw.rulePurls[vulnerabilityId]
+	if !ok {
+		s = set.New[string]()
+		sw.rulePurls[vulnerabilityId] = s
+	}
+	s.Append(purls...)
+	if s.Size() == 0 {
+		return nil
+	}
+	out := s.Items()
+	sort.Strings(out)
+	return out
 }
 
 func (sw *SarifWriter) addSarifResult(data *sarifData) {
@@ -134,6 +157,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	sw.run.Tool.Driver.WithVersion(sw.Version)
 	sw.run.Tool.Driver.WithFullName("Trivy Vulnerability Scanner")
 	sw.locationCache = make(map[string][]location)
+	sw.rulePurls = make(map[string]set.Set[string])
 	if report.ArtifactType == ftypes.TypeContainerImage {
 		sw.run.Properties = sarif.Properties{
 			"imageName":   report.ArtifactName,
@@ -157,6 +181,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				path = ToPathUri(vuln.PkgPath, res.Class)
 			}
 			cvssData, cvssScore := toCVSSData(vuln)
+			var purls []string
+			if vuln.PkgIdentifier.PURL != nil {
+				purls = []string{vuln.PkgIdentifier.PURL.String()}
+			}
 			sw.addSarifResult(&sarifData{
 				title:            "vulnerability",
 				vulnerabilityId:  vuln.VulnerabilityID,
@@ -171,6 +199,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
 				shortDescription: vuln.Title,
 				fullDescription:  fullDescription,
+				purls:            purls,
 				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
 					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
 				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
@@ -459,7 +488,7 @@ func severityToScore(severity string) string {
 	}
 }
 
-func toProperties(title, severity, cvssScore string, cvssData map[string]any) sarif.Properties {
+func toProperties(title, severity, cvssScore string, cvssData map[string]any, purls []string) sarif.Properties {
 	properties := sarif.Properties{
 		"tags": []string{
 			title,
@@ -482,6 +511,10 @@ func toProperties(title, severity, cvssScore string, cvssData map[string]any) sa
 			}
 		}
 		properties[key] = value
+	}
+
+	if len(purls) > 0 {
+		properties["purls"] = purls
 	}
 
 	return properties
