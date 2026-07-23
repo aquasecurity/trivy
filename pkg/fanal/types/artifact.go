@@ -18,6 +18,7 @@ const (
 	TypeSPDX           ArtifactType = "spdx"
 	TypeAWSAccount     ArtifactType = "aws_account"
 	TypeVM             ArtifactType = "vm"
+	TypeAppImage       ArtifactType = "appimage"
 )
 
 type OS struct {
