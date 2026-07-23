@@ -1005,6 +1005,11 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 	}
 }
 
+// ConvertToRPCGetBlobOSRequest returns GetBlobOSRequest.
+func ConvertToRPCGetBlobOSRequest(blobID string) *cache.GetBlobOSRequest {
+	return &cache.GetBlobOSRequest{BlobId: blobID}
+}
+
 // ConvertToRPCBuildInfo converts *ftypes.BuildInfo to *common.BuildInfo
 func ConvertToRPCBuildInfo(buildInfo *ftypes.BuildInfo) *common.BuildInfo {
 	if buildInfo == nil {

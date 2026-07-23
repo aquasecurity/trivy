@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	rpcCache "github.com/aquasecurity/trivy/rpc/cache"
+	rpcCommon "github.com/aquasecurity/trivy/rpc/common"
 	rpcScanner "github.com/aquasecurity/trivy/rpc/scanner"
 )
 
@@ -37,6 +38,18 @@ func (s *mockCacheServer) PutBlob(_ context.Context, in *rpcCache.PutBlobRequest
 		return &emptypb.Empty{}, xerrors.New("invalid layer ID")
 	}
 	return &emptypb.Empty{}, nil
+}
+
+func (s *mockCacheServer) GetBlobOS(_ context.Context, in *rpcCache.GetBlobOSRequest) (*rpcCache.GetBlobOSResponse, error) {
+	if strings.Contains(in.BlobId, "invalid") {
+		return nil, xerrors.New("invalid layer ID")
+	}
+	return &rpcCache.GetBlobOSResponse{
+		Os: &rpcCommon.OS{
+			Family: string(types.Alpine),
+			Name:   "3.23",
+		},
+	}, nil
 }
 
 func (s *mockCacheServer) MissingBlobs(_ context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
@@ -218,6 +231,43 @@ func TestRemoteCache_PutBlob(t *testing.T) {
 				return
 			}
 			require.NoError(t, err, tt.name)
+		})
+	}
+}
+
+func TestRemoteCache_GetBlobOS(t *testing.T) {
+	mux := http.NewServeMux()
+	layerHandler := rpcCache.NewCacheServer(new(mockCacheServer), nil)
+	mux.Handle(rpcCache.CachePathPrefix, layerHandler)
+	ts := httptest.NewServer(mux)
+
+	tests := []struct {
+		name    string
+		blobID  string
+		want    types.OS
+		wantErr string
+	}{
+		{
+			name:   "happy path",
+			blobID: "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5",
+			want:   types.OS{Family: types.Alpine, Name: "3.23"},
+		},
+		{
+			name:    "sad path",
+			blobID:  "sha256:invalid",
+			wantErr: "twirp error internal",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := cache.NewRemoteCache(t.Context(), cache.RemoteOptions{ServerAddr: ts.URL})
+			got, err := c.GetBlobOS(t.Context(), tt.blobID)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
