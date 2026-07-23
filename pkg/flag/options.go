@@ -551,6 +551,7 @@ func (o *Options) CacheOpts() cache.Options {
 	return cache.Options{
 		Backend:     o.CacheBackend,
 		CacheDir:    o.CacheDir,
+		LockTimeout: o.CacheLockTimeout,
 		RedisCACert: o.RedisCACert,
 		RedisCert:   o.RedisCert,
 		RedisKey:    o.RedisKey,
