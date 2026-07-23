@@ -375,7 +375,52 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
-			name: "container local",
+			name: "container local with latest tag",
+			typ:  purl.TypeOCI,
+			metadata: types.Metadata{
+				RepoTags:    []string{"test:latest"},
+				RepoDigests: []string{},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+				ImageID: "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "test",
+				Version:   "",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "repository_url", Value: "index.docker.io/library/test"},
+					{Key: "arch", Value: "amd64"},
+				},
+			},
+		},
+		{
+			name: "container local with specific tag",
+			typ:  purl.TypeOCI,
+			metadata: types.Metadata{
+				RepoTags:    []string{"test:v1.0"},
+				RepoDigests: []string{},
+				ImageConfig: v1.ConfigFile{
+					Architecture: "amd64",
+				},
+				ImageID: "sha256:8fe1727132b2506c17ba0e1f6a6ed8a016bb1f5735e43b2738cd3fd1979b6260",
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeOCI,
+				Namespace: "",
+				Name:      "test",
+				Version:   "",
+				Qualifiers: packageurl.Qualifiers{
+					{Key: "repository_url", Value: "index.docker.io/library/test"},
+					{Key: "tag", Value: "v1.0"},
+					{Key: "arch", Value: "amd64"},
+				},
+			},
+		},
+		{
+			name: "container local no tags no digests",
 			typ:  purl.TypeOCI,
 			metadata: types.Metadata{
 				RepoTags:    []string{},
