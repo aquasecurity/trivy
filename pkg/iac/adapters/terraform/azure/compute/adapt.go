@@ -64,7 +64,7 @@ func adaptManagedDisk(resource *terraform.Block) compute.ManagedDisk {
 	if encryptionBlock.IsNotNil() {
 		disk.Encryption.Metadata = encryptionBlock.GetMetadata()
 		enabledAttr := encryptionBlock.GetAttribute("enabled")
-		disk.Encryption.Enabled = enabledAttr.AsBoolValueOrDefault(true, encryptionBlock)
+		disk.Encryption.Enabled = enabledAttr.AsBoolValue(true)
 	}
 
 	return disk
@@ -94,7 +94,7 @@ func adaptLinuxVM(resource *terraform.Block, modules terraform.Modules) compute.
 		workingBlock = resource.GetBlock("os_profile_linux_config")
 	}
 	disablePasswordAuthAttr := workingBlock.GetAttribute("disable_password_authentication")
-	disablePasswordAuthVal := disablePasswordAuthAttr.AsBoolValueOrDefault(true, workingBlock)
+	disablePasswordAuthVal := disablePasswordAuthAttr.AsBoolValue(true)
 
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.GetMetadata(),

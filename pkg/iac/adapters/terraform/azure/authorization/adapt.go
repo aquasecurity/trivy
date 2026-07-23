@@ -60,9 +60,9 @@ func adaptRoleAssignment(resource *terraform.Block) authorization.RoleAssignment
 
 	return authorization.RoleAssignment{
 		Metadata:           resource.GetMetadata(),
-		RoleDefinitionId:   roleDefIdAttr.AsStringValueOrDefault("", resource),
-		RoleDefinitionName: roleDefNameAttr.AsStringValueOrDefault("", resource),
-		PrincipalId:        principalIdAttr.AsStringValueOrDefault("", resource),
-		PrincipalType:      principalTypeAttr.AsStringValueOrDefault("", resource),
+		RoleDefinitionId:   roleDefIdAttr.AsStringValue(),
+		RoleDefinitionName: roleDefNameAttr.AsStringValue(),
+		PrincipalId:        principalIdAttr.AsStringValue(),
+		PrincipalType:      principalTypeAttr.AsStringValue(),
 	}
 }

@@ -119,7 +119,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 			for _, queueBlock := range queueResource {
 				queue := storage.Queue{
 					Metadata: queueBlock.GetMetadata(),
-					Name:     queueBlock.GetAttribute("name").AsStringValueOrDefault("", queueBlock),
+					Name:     queueBlock.GetAttribute("name").AsStringValue(),
 				}
 				account.Queues = append(account.Queues, queue)
 			}
@@ -130,15 +130,15 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 				for _, cmkResource := range customerManagedKeyResources {
 					keyVaultKeyIdAttr := cmkResource.GetAttribute("key_vault_key_id")
 					if keyVaultKeyIdAttr.IsNotNil() {
-						account.CustomerManagedKey.KeyVaultKeyId = keyVaultKeyIdAttr.AsStringValueOrDefault("", cmkResource)
+						account.CustomerManagedKey.KeyVaultKeyId = keyVaultKeyIdAttr.AsStringValue()
 						account.CustomerManagedKey.Metadata = cmkResource.GetMetadata()
 					} else {
 						// If key_vault_key_id is not directly set, try to construct from key_vault_id and key_name
 						keyVaultIdAttr := cmkResource.GetAttribute("key_vault_id")
 						keyNameAttr := cmkResource.GetAttribute("key_name")
 						if keyVaultIdAttr.IsNotNil() && keyNameAttr.IsNotNil() {
-							keyVaultId := keyVaultIdAttr.AsStringValueOrDefault("", cmkResource)
-							keyName := keyNameAttr.AsStringValueOrDefault("", cmkResource)
+							keyVaultId := keyVaultIdAttr.AsStringValue()
+							keyName := keyNameAttr.AsStringValue()
 							if !keyVaultId.IsEmpty() && !keyName.IsEmpty() {
 								// Construct the full key ID format: https://{keyVaultId}/keys/{keyName}
 								keyId := keyVaultId.Value() + "/keys/" + keyName.Value()
@@ -149,7 +149,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 					}
 					userAssignedIdentityIdAttr := cmkResource.GetAttribute("user_assigned_identity_id")
 					if userAssignedIdentityIdAttr.IsNotNil() {
-						account.CustomerManagedKey.UserAssignedIdentityId = userAssignedIdentityIdAttr.AsStringValueOrDefault("", cmkResource)
+						account.CustomerManagedKey.UserAssignedIdentityId = userAssignedIdentityIdAttr.AsStringValue()
 					}
 					break // Only process the first matching resource
 				}
@@ -172,7 +172,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			EnableLogging: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		MinimumTLSVersion:   iacTypes.StringDefault(minimumTlsVersionOneTwo, resource.GetMetadata()),
-		PublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").AsBoolValueOrDefault(true, resource),
+		PublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").AsBoolValue(true),
 		BlobProperties: storage.BlobProperties{
 			Metadata: resource.GetMetadata(),
 			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
@@ -180,8 +180,8 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 				Days:     iacTypes.IntDefault(7, resource.GetMetadata()),
 			},
 		},
-		AccountReplicationType:          resource.GetAttribute("account_replication_type").AsStringValueOrDefault("", resource),
-		InfrastructureEncryptionEnabled: resource.GetAttribute("infrastructure_encryption_enabled").AsBoolValueOrDefault(false, resource),
+		AccountReplicationType:          resource.GetAttribute("account_replication_type").AsStringValue(),
+		InfrastructureEncryptionEnabled: resource.GetAttribute("infrastructure_encryption_enabled").AsBoolValue(),
 		CustomerManagedKey: storage.CustomerManagedKey{
 			Metadata:               resource.GetMetadata(),
 			KeyVaultKeyId:          iacTypes.StringDefault("", resource.GetMetadata()),
@@ -197,7 +197,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	account.EnforceHTTPS = resource.GetFirstAttributeOf(
 		"enable_https_traffic_only",
 		"https_traffic_only_enabled", // provider above version 4
-	).AsBoolValueOrDefault(true, resource)
+	).AsBoolValue(true)
 
 	// Adapt blob properties
 	blobPropertiesBlock := resource.GetBlock("blob_properties")
@@ -208,7 +208,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			account.BlobProperties.DeleteRetentionPolicy.Metadata = deleteRetentionPolicyBlock.GetMetadata()
 			daysAttr := deleteRetentionPolicyBlock.GetAttribute("days")
 			if daysAttr.IsNotNil() {
-				account.BlobProperties.DeleteRetentionPolicy.Days = daysAttr.AsIntValueOrDefault(7, deleteRetentionPolicyBlock)
+				account.BlobProperties.DeleteRetentionPolicy.Days = daysAttr.AsIntValue(7)
 			}
 		}
 	}
@@ -219,11 +219,11 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 		account.CustomerManagedKey.Metadata = customerManagedKeyBlock.GetMetadata()
 		keyVaultKeyIdAttr := customerManagedKeyBlock.GetAttribute("key_vault_key_id")
 		if keyVaultKeyIdAttr.IsNotNil() {
-			account.CustomerManagedKey.KeyVaultKeyId = keyVaultKeyIdAttr.AsStringValueOrDefault("", customerManagedKeyBlock)
+			account.CustomerManagedKey.KeyVaultKeyId = keyVaultKeyIdAttr.AsStringValue()
 		}
 		userAssignedIdentityIdAttr := customerManagedKeyBlock.GetAttribute("user_assigned_identity_id")
 		if userAssignedIdentityIdAttr.IsNotNil() {
-			account.CustomerManagedKey.UserAssignedIdentityId = userAssignedIdentityIdAttr.AsStringValueOrDefault("", customerManagedKeyBlock)
+			account.CustomerManagedKey.UserAssignedIdentityId = userAssignedIdentityIdAttr.AsStringValue()
 		}
 	}
 
@@ -236,17 +236,17 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			account.QueueProperties.EnableLogging = iacTypes.Bool(true, loggingBlock.GetMetadata())
 			account.QueueProperties.Logging = storage.QueueLogging{
 				Metadata:            loggingBlock.GetMetadata(),
-				Delete:              loggingBlock.GetAttribute("delete").AsBoolValueOrDefault(false, loggingBlock),
-				Read:                loggingBlock.GetAttribute("read").AsBoolValueOrDefault(false, loggingBlock),
-				Write:               loggingBlock.GetAttribute("write").AsBoolValueOrDefault(false, loggingBlock),
-				Version:             loggingBlock.GetAttribute("version").AsStringValueOrDefault("", loggingBlock),
-				RetentionPolicyDays: loggingBlock.GetAttribute("retention_policy_days").AsIntValueOrDefault(0, loggingBlock),
+				Delete:              loggingBlock.GetAttribute("delete").AsBoolValue(),
+				Read:                loggingBlock.GetAttribute("read").AsBoolValue(),
+				Write:               loggingBlock.GetAttribute("write").AsBoolValue(),
+				Version:             loggingBlock.GetAttribute("version").AsStringValue(),
+				RetentionPolicyDays: loggingBlock.GetAttribute("retention_policy_days").AsIntValue(),
 			}
 		}
 	}
 
 	minTLSVersionAttr := resource.GetAttribute("min_tls_version")
-	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault(minimumTlsVersionOneTwo, resource)
+	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValue(minimumTlsVersionOneTwo)
 	return account
 }
 

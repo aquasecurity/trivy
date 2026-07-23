@@ -95,7 +95,7 @@ func getClassic(modules terraform.Modules) rds.Classic {
 
 func adaptClusterInstance(resource *terraform.Block, modules terraform.Modules) rds.ClusterInstance {
 	clusterIdAttr := resource.GetAttribute("cluster_identifier")
-	clusterId := clusterIdAttr.AsStringValueOrDefault("", resource)
+	clusterId := clusterIdAttr.AsStringValue()
 
 	if clusterIdAttr.IsResourceBlockReference("aws_rds_cluster") {
 		if referenced, err := modules.GetReferencedBlock(clusterIdAttr, resource); err == nil {
@@ -147,21 +147,21 @@ func adaptInstance(resource *terraform.Block, modules terraform.Modules) rds.Ins
 	}
 	return rds.Instance{
 		Metadata:                         resource.GetMetadata(),
-		BackupRetentionPeriodDays:        resource.GetAttribute("backup_retention_period").AsIntValueOrDefault(0, resource),
+		BackupRetentionPeriodDays:        resource.GetAttribute("backup_retention_period").AsIntValue(),
 		ReplicationSourceARN:             iacTypes.StringExplicit(replicaSourceValue, resource.GetMetadata()),
 		PerformanceInsights:              adaptPerformanceInsights(resource),
 		Encryption:                       adaptEncryption(resource),
-		PublicAccess:                     resource.GetAttribute("publicly_accessible").AsBoolValueOrDefault(false, resource),
-		Engine:                           resource.GetAttribute("engine").AsStringValueOrDefault(rds.EngineAurora, resource),
-		IAMAuthEnabled:                   resource.GetAttribute("iam_database_authentication_enabled").AsBoolValueOrDefault(false, resource),
-		DeletionProtection:               resource.GetAttribute("deletion_protection").AsBoolValueOrDefault(false, resource),
-		DBInstanceArn:                    resource.GetAttribute("arn").AsStringValueOrDefault("", resource),
-		StorageEncrypted:                 resource.GetAttribute("storage_encrypted").AsBoolValueOrDefault(true, resource),
-		DBInstanceIdentifier:             resource.GetAttribute("identifier").AsStringValueOrDefault("", resource),
-		EngineVersion:                    resource.GetAttribute("engine_version").AsStringValueOrDefault("", resource),
-		AutoMinorVersionUpgrade:          resource.GetAttribute("auto_minor_version_upgrade").AsBoolValueOrDefault(false, resource),
-		MultiAZ:                          resource.GetAttribute("multi_az").AsBoolValueOrDefault(false, resource),
-		PubliclyAccessible:               resource.GetAttribute("publicly_accessible").AsBoolValueOrDefault(false, resource),
+		PublicAccess:                     resource.GetAttribute("publicly_accessible").AsBoolValue(),
+		Engine:                           resource.GetAttribute("engine").AsStringValue(rds.EngineAurora),
+		IAMAuthEnabled:                   resource.GetAttribute("iam_database_authentication_enabled").AsBoolValue(),
+		DeletionProtection:               resource.GetAttribute("deletion_protection").AsBoolValue(),
+		DBInstanceArn:                    resource.GetAttribute("arn").AsStringValue(),
+		StorageEncrypted:                 resource.GetAttribute("storage_encrypted").AsBoolValue(true),
+		DBInstanceIdentifier:             resource.GetAttribute("identifier").AsStringValue(),
+		EngineVersion:                    resource.GetAttribute("engine_version").AsStringValue(),
+		AutoMinorVersionUpgrade:          resource.GetAttribute("auto_minor_version_upgrade").AsBoolValue(),
+		MultiAZ:                          resource.GetAttribute("multi_az").AsBoolValue(),
+		PubliclyAccessible:               resource.GetAttribute("publicly_accessible").AsBoolValue(),
 		LatestRestorableTime:             iacTypes.TimeUnresolvable(resource.GetMetadata()),
 		ReadReplicaDBInstanceIdentifiers: ReadReplicaDBInstanceIdentifiers,
 		TagList:                          TagList,
@@ -184,8 +184,8 @@ func adaptDBParameterGroups(resource *terraform.Block, _ terraform.Modules) rds.
 
 	return rds.ParameterGroups{
 		Metadata:               resource.GetMetadata(),
-		DBParameterGroupName:   resource.GetAttribute("name").AsStringValueOrDefault("", resource),
-		DBParameterGroupFamily: resource.GetAttribute("family").AsStringValueOrDefault("", resource),
+		DBParameterGroupName:   resource.GetAttribute("name").AsStringValue(),
+		DBParameterGroupFamily: resource.GetAttribute("family").AsStringValue(),
 		Parameters:             Parameters,
 	}
 }
@@ -194,10 +194,10 @@ func adaptDBSnapshots(resource *terraform.Block, _ terraform.Modules) rds.Snapsh
 
 	return rds.Snapshots{
 		Metadata:             resource.GetMetadata(),
-		DBSnapshotIdentifier: resource.GetAttribute("db_snapshot_identifier").AsStringValueOrDefault("", resource),
-		DBSnapshotArn:        resource.GetAttribute("db_snapshot_arn").AsStringValueOrDefault("", resource),
-		Encrypted:            resource.GetAttribute("encrypted").AsBoolValueOrDefault(true, resource),
-		KmsKeyId:             resource.GetAttribute("kms_key_id").AsStringValueOrDefault("", resource),
+		DBSnapshotIdentifier: resource.GetAttribute("db_snapshot_identifier").AsStringValue(),
+		DBSnapshotArn:        resource.GetAttribute("db_snapshot_arn").AsStringValue(),
+		Encrypted:            resource.GetAttribute("encrypted").AsBoolValue(true),
+		KmsKeyId:             resource.GetAttribute("kms_key_id").AsStringValue(),
 		SnapshotAttributes:   nil,
 	}
 }
@@ -216,16 +216,16 @@ func adaptCluster(resource *terraform.Block, modules terraform.Modules) (rds.Clu
 
 	return rds.Cluster{
 		Metadata:                  resource.GetMetadata(),
-		BackupRetentionPeriodDays: resource.GetAttribute("backup_retention_period").AsIntValueOrDefault(1, resource),
-		ReplicationSourceARN:      resource.GetAttribute("replication_source_identifier").AsStringValueOrDefault("", resource),
+		BackupRetentionPeriodDays: resource.GetAttribute("backup_retention_period").AsIntValue(1),
+		ReplicationSourceARN:      resource.GetAttribute("replication_source_identifier").AsStringValue(),
 		PerformanceInsights:       adaptPerformanceInsights(resource),
 		Instances:                 clusterInstances,
 		Encryption:                adaptEncryption(resource),
 		PublicAccess:              iacTypes.Bool(public, resource.GetMetadata()),
-		Engine:                    resource.GetAttribute("engine").AsStringValueOrDefault(rds.EngineAurora, resource),
+		Engine:                    resource.GetAttribute("engine").AsStringValue(rds.EngineAurora),
 		LatestRestorableTime:      iacTypes.TimeUnresolvable(resource.GetMetadata()),
 		AvailabilityZones:         resource.GetAttribute("availability_zones").AsStringValueSliceOrEmpty(),
-		DeletionProtection:        resource.GetAttribute("deletion_protection").AsBoolValueOrDefault(false, resource),
+		DeletionProtection:        resource.GetAttribute("deletion_protection").AsBoolValue(),
 	}, ids
 }
 
@@ -242,15 +242,15 @@ func getClusterInstances(resource *terraform.Block, modules terraform.Modules) (
 func adaptPerformanceInsights(resource *terraform.Block) rds.PerformanceInsights {
 	return rds.PerformanceInsights{
 		Metadata: resource.GetMetadata(),
-		Enabled:  resource.GetAttribute("performance_insights_enabled").AsBoolValueOrDefault(false, resource),
-		KMSKeyID: resource.GetAttribute("performance_insights_kms_key_id").AsStringValueOrDefault("", resource),
+		Enabled:  resource.GetAttribute("performance_insights_enabled").AsBoolValue(),
+		KMSKeyID: resource.GetAttribute("performance_insights_kms_key_id").AsStringValue(),
 	}
 }
 
 func adaptEncryption(resource *terraform.Block) rds.Encryption {
 	return rds.Encryption{
 		Metadata:       resource.GetMetadata(),
-		EncryptStorage: resource.GetAttribute("storage_encrypted").AsBoolValueOrDefault(false, resource),
-		KMSKeyID:       resource.GetAttribute("kms_key_id").AsStringValueOrDefault("", resource),
+		EncryptStorage: resource.GetAttribute("storage_encrypted").AsBoolValue(),
+		KMSKeyID:       resource.GetAttribute("kms_key_id").AsStringValue(),
 	}
 }

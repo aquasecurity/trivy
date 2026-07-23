@@ -23,10 +23,10 @@ func adaptKeys(modules terraform.Modules) []kms.Key {
 
 func adaptKey(resource *terraform.Block) kms.Key {
 	usageAttr := resource.GetAttribute("key_usage")
-	usageVal := usageAttr.AsStringValueOrDefault("ENCRYPT_DECRYPT", resource)
+	usageVal := usageAttr.AsStringValue("ENCRYPT_DECRYPT")
 
 	enableKeyRotationAttr := resource.GetAttribute("enable_key_rotation")
-	enableKeyRotationVal := enableKeyRotationAttr.AsBoolValueOrDefault(false, resource)
+	enableKeyRotationVal := enableKeyRotationAttr.AsBoolValue()
 
 	return kms.Key{
 		Metadata:        resource.GetMetadata(),

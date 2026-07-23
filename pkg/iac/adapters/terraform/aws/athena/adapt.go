@@ -36,7 +36,7 @@ func adaptWorkgroups(modules terraform.Modules) []athena.Workgroup {
 func adaptDatabase(resource *terraform.Block) athena.Database {
 	database := athena.Database{
 		Metadata: resource.GetMetadata(),
-		Name:     resource.GetAttribute("name").AsStringValueOrDefault("", resource),
+		Name:     resource.GetAttribute("name").AsStringValue(),
 		Encryption: athena.EncryptionConfiguration{
 			Metadata: resource.GetMetadata(),
 			Type:     iacTypes.StringDefault("", resource.GetMetadata()),
@@ -45,7 +45,7 @@ func adaptDatabase(resource *terraform.Block) athena.Database {
 	if encryptionConfigBlock := resource.GetBlock("encryption_configuration"); encryptionConfigBlock.IsNotNil() {
 		database.Encryption.Metadata = encryptionConfigBlock.GetMetadata()
 		encryptionOptionAttr := encryptionConfigBlock.GetAttribute("encryption_option")
-		database.Encryption.Type = encryptionOptionAttr.AsStringValueOrDefault("", encryptionConfigBlock)
+		database.Encryption.Type = encryptionOptionAttr.AsStringValue()
 	}
 
 	return database
@@ -54,7 +54,7 @@ func adaptDatabase(resource *terraform.Block) athena.Database {
 func adaptWorkgroup(resource *terraform.Block) athena.Workgroup {
 	workgroup := athena.Workgroup{
 		Metadata: resource.GetMetadata(),
-		Name:     resource.GetAttribute("name").AsStringValueOrDefault("", resource),
+		Name:     resource.GetAttribute("name").AsStringValue(),
 		Encryption: athena.EncryptionConfiguration{
 			Metadata: resource.GetMetadata(),
 			Type:     iacTypes.StringDefault("", resource.GetMetadata()),
@@ -65,13 +65,13 @@ func adaptWorkgroup(resource *terraform.Block) athena.Workgroup {
 	if configBlock := resource.GetBlock("configuration"); configBlock.IsNotNil() {
 
 		enforceWGConfigAttr := configBlock.GetAttribute("enforce_workgroup_configuration")
-		workgroup.EnforceConfiguration = enforceWGConfigAttr.AsBoolValueOrDefault(true, configBlock)
+		workgroup.EnforceConfiguration = enforceWGConfigAttr.AsBoolValue(true)
 
 		if resultConfigBlock := configBlock.GetBlock("result_configuration"); configBlock.IsNotNil() {
 			if encryptionConfigBlock := resultConfigBlock.GetBlock("encryption_configuration"); encryptionConfigBlock.IsNotNil() {
 				encryptionOptionAttr := encryptionConfigBlock.GetAttribute("encryption_option")
 				workgroup.Encryption.Metadata = encryptionConfigBlock.GetMetadata()
-				workgroup.Encryption.Type = encryptionOptionAttr.AsStringValueOrDefault("", encryptionConfigBlock)
+				workgroup.Encryption.Type = encryptionOptionAttr.AsStringValue()
 			}
 		}
 	}

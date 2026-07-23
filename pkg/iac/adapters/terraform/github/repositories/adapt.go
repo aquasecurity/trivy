@@ -24,8 +24,8 @@ func adaptRepository(modules terraform.Modules, resource *terraform.Block) githu
 	repo := github.Repository{
 		Metadata:            resource.GetMetadata(),
 		Public:              types.Bool(true, resource.GetMetadata()),
-		VulnerabilityAlerts: resource.GetAttribute("vulnerability_alerts").AsBoolValueOrDefault(false, resource),
-		Archived:            resource.GetAttribute("archived").AsBoolValueOrDefault(false, resource),
+		VulnerabilityAlerts: resource.GetAttribute("vulnerability_alerts").AsBoolValue(),
+		Archived:            resource.GetAttribute("archived").AsBoolValue(),
 	}
 
 	// The standalone github_repository_vulnerability_alerts resource is the recommended

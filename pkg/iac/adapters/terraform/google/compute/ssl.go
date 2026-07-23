@@ -9,9 +9,9 @@ func adaptSSLPolicies(modules terraform.Modules) (policies []compute.SSLPolicy) 
 	for _, policyBlock := range modules.GetResourcesByType("google_compute_ssl_policy") {
 		policy := compute.SSLPolicy{
 			Metadata:          policyBlock.GetMetadata(),
-			Name:              policyBlock.GetAttribute("name").AsStringValueOrDefault("", policyBlock),
-			Profile:           policyBlock.GetAttribute("profile").AsStringValueOrDefault("", policyBlock),
-			MinimumTLSVersion: policyBlock.GetAttribute("min_tls_version").AsStringValueOrDefault("TLS_1_0", policyBlock),
+			Name:              policyBlock.GetAttribute("name").AsStringValue(),
+			Profile:           policyBlock.GetAttribute("profile").AsStringValue(),
+			MinimumTLSVersion: policyBlock.GetAttribute("min_tls_version").AsStringValue("TLS_1_0"),
 		}
 		policies = append(policies, policy)
 	}

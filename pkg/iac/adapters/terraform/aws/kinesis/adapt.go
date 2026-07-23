@@ -34,8 +34,8 @@ func adaptStream(resource *terraform.Block) kinesis.Stream {
 	}
 
 	encryptionTypeAttr := resource.GetAttribute("encryption_type")
-	stream.Encryption.Type = encryptionTypeAttr.AsStringValueOrDefault("NONE", resource)
+	stream.Encryption.Type = encryptionTypeAttr.AsStringValue("NONE")
 	KMSKeyIDAttr := resource.GetAttribute("kms_key_id")
-	stream.Encryption.KMSKeyID = KMSKeyIDAttr.AsStringValueOrDefault("", resource)
+	stream.Encryption.KMSKeyID = KMSKeyIDAttr.AsStringValue()
 	return stream
 }

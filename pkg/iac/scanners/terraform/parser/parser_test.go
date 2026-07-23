@@ -662,8 +662,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this2" {
 	assert.Len(t, blocks, 2)
 
 	for _, block := range blocks {
-		attr, parent := block.GetNestedAttribute("rule.apply_server_side_encryption_by_default.kms_master_key_id")
-		assert.Equal(t, "apply_server_side_encryption_by_default", parent.Type())
+		attr := block.GetNestedAttribute("rule.apply_server_side_encryption_by_default.kms_master_key_id")
 		assert.NotNil(t, attr)
 		assert.NotEmpty(t, attr.Value().AsString())
 	}
@@ -697,7 +696,7 @@ resource "aws_s3_bucket" "main" {
 
 	block := blocks[0]
 
-	assert.Equal(t, "test_bucket", block.GetAttribute("bucket").AsStringValueOrDefault("", block).Value())
+	assert.Equal(t, "test_bucket", block.GetAttribute("bucket").AsStringValue().Value())
 }
 
 func Test_ForEachRefToLocals(t *testing.T) {
@@ -732,7 +731,7 @@ resource "aws_s3_bucket" "this" {
 	for _, block := range blocks {
 		attr := block.GetAttribute("bucket")
 		require.NotNil(t, attr)
-		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValueOrDefault("", block).Value())
+		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValue().Value())
 	}
 }
 
@@ -766,7 +765,7 @@ resource "aws_s3_bucket" "this" {
 	for _, block := range blocks {
 		attr := block.GetAttribute("bucket")
 		require.NotNil(t, attr)
-		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValueOrDefault("", block).Value())
+		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValue().Value())
 	}
 }
 
@@ -819,10 +818,10 @@ policy_rules = {
 
 	block := blocks[0]
 
-	assert.Equal(t, "secure-tag-1", block.GetAttribute("name").AsStringValueOrDefault("", block).Value())
-	assert.True(t, block.GetAttribute("enabled").AsBoolValueOrDefault(false, block).Value())
-	assert.Equal(t, "host() != 'google.com'", block.GetAttribute("session_matcher").AsStringValueOrDefault("", block).Value())
-	assert.Equal(t, 1001, block.GetAttribute("priority").AsIntValueOrDefault(0, block).Value())
+	assert.Equal(t, "secure-tag-1", block.GetAttribute("name").AsStringValue().Value())
+	assert.True(t, block.GetAttribute("enabled").AsBoolValue().Value())
+	assert.Equal(t, "host() != 'google.com'", block.GetAttribute("session_matcher").AsStringValue().Value())
+	assert.Equal(t, 1001, block.GetAttribute("priority").AsIntValue().Value())
 }
 
 func Test_ForEachRefersToMapThatContainsSameStringValues(t *testing.T) {
@@ -1719,7 +1718,7 @@ resource "test_resource" "this" {
 	resources := modules.GetResourcesByType("test_resource")
 	require.Len(t, resources, 1)
 
-	attr, _ := resources[0].GetNestedAttribute("dynamic_block.some_attr")
+	attr := resources[0].GetNestedAttribute("dynamic_block.some_attr")
 	require.NotNil(t, attr)
 
 	assert.Equal(t, "test_value", attr.GetRawValue())
@@ -1944,7 +1943,7 @@ module "invalid" {
 	require.Len(t, resources, 1)
 
 	for _, res := range resources {
-		attr, _ := res.GetNestedAttribute("names")
+		attr := res.GetNestedAttribute("names")
 		require.NotNil(t, attr, res.FullName())
 		assert.Equal(t, []string{"Brooklyn", "Queens"}, attr.GetRawValue())
 	}
@@ -2145,7 +2144,7 @@ output "test_out" {
 	require.Len(t, resources, 2)
 
 	for _, res := range resources {
-		attr, _ := res.GetNestedAttribute("dynamic_block.some_attr")
+		attr := res.GetNestedAttribute("dynamic_block.some_attr")
 		require.NotNil(t, attr, res.FullName())
 		assert.Equal(t, "test_value", attr.GetRawValue())
 	}

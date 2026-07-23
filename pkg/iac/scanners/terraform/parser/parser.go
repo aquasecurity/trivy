@@ -328,7 +328,7 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
 	var missing []*terraform.Block
 	for _, varBlock := range blocks.OfType("variable") {
-		if varBlock.GetAttribute("default") == nil {
+		if varBlock.GetAttribute("default").IsNil() {
 			if _, ok := inputVars[varBlock.TypeLabel()]; !ok {
 				missing = append(missing, varBlock)
 			}

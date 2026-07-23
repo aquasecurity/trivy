@@ -40,7 +40,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 	var ingressRules, egressRules []computing.SecurityGroupRule
 
 	descriptionAttr := resource.GetAttribute("description")
-	descriptionVal := descriptionAttr.AsStringValueOrDefault("", resource)
+	descriptionVal := descriptionAttr.AsStringValue()
 
 	rulesBlocks := module.GetReferencingResources(resource, "nifcloud_security_group_rule", "security_group_names")
 	for _, ruleBlock := range rulesBlocks {
@@ -63,10 +63,10 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 
 func adaptSGRule(resource *terraform.Block, _ terraform.Modules) computing.SecurityGroupRule {
 	ruleDescAttr := resource.GetAttribute("description")
-	ruleDescVal := ruleDescAttr.AsStringValueOrDefault("", resource)
+	ruleDescVal := ruleDescAttr.AsStringValue()
 
 	cidrAttr := resource.GetAttribute("cidr_ip")
-	cidrVal := cidrAttr.AsStringValueOrDefault("", resource)
+	cidrVal := cidrAttr.AsStringValue()
 
 	return computing.SecurityGroupRule{
 		Metadata:    resource.GetMetadata(),

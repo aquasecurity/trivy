@@ -56,11 +56,11 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	if networkProfileBlock.IsNotNil() {
 		networkPolicyAttr := networkProfileBlock.GetAttribute("network_policy")
 		cluster.NetworkProfile.Metadata = networkProfileBlock.GetMetadata()
-		cluster.NetworkProfile.NetworkPolicy = networkPolicyAttr.AsStringValueOrDefault("", networkProfileBlock)
+		cluster.NetworkProfile.NetworkPolicy = networkPolicyAttr.AsStringValue()
 	}
 
 	privateClusterEnabledAttr := resource.GetAttribute("private_cluster_enabled")
-	cluster.EnablePrivateCluster = privateClusterEnabledAttr.AsBoolValueOrDefault(false, resource)
+	cluster.EnablePrivateCluster = privateClusterEnabledAttr.AsBoolValue()
 
 	if apiServerBlock := resource.GetBlock("api_server_access_profile"); apiServerBlock.IsNotNil() {
 		authorizedIPRangesAttr := apiServerBlock.GetAttribute("authorized_ip_ranges")
@@ -73,14 +73,14 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		if block := addonProfileBlock.GetBlock("oms_agent"); block.IsNotNil() {
 			cluster.AddonProfile.OMSAgent = container.OMSAgent{
 				Metadata: block.GetMetadata(),
-				Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
+				Enabled:  block.GetAttribute("enabled").AsBoolValue(),
 			}
 		}
 
 		if block := addonProfileBlock.GetBlock("azure_policy"); block.IsNotNil() {
 			cluster.AddonProfile.AzurePolicy = container.AzurePolicy{
 				Metadata: block.GetMetadata(),
-				Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
+				Enabled:  block.GetAttribute("enabled").AsBoolValue(),
 			}
 		}
 	}
@@ -97,7 +97,7 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	if attr := resource.GetAttribute("azure_policy_enabled"); attr.IsNotNil() {
 		cluster.AddonProfile.AzurePolicy = container.AzurePolicy{
 			Metadata: attr.GetMetadata(),
-			Enabled:  attr.AsBoolValueOrDefault(false, resource),
+			Enabled:  attr.AsBoolValue(),
 		}
 	}
 
@@ -105,13 +105,13 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 	if rbacBlock := resource.GetBlock("role_based_access_control"); rbacBlock.IsNotNil() {
 		rbEnabledAttr := rbacBlock.GetAttribute("enabled")
 		cluster.RoleBasedAccessControl.Metadata = rbacBlock.GetMetadata()
-		cluster.RoleBasedAccessControl.Enabled = rbEnabledAttr.AsBoolValueOrDefault(false, rbacBlock)
+		cluster.RoleBasedAccessControl.Enabled = rbEnabledAttr.AsBoolValue()
 	}
 
 	if rbacEnabledAttr := resource.GetAttribute("role_based_access_control_enabled"); rbacEnabledAttr.IsNotNil() {
 		// azurerm >= 2.99.0
 		cluster.RoleBasedAccessControl.Metadata = rbacEnabledAttr.GetMetadata()
-		cluster.RoleBasedAccessControl.Enabled = rbacEnabledAttr.AsBoolValueOrDefault(false, resource)
+		cluster.RoleBasedAccessControl.Enabled = rbacEnabledAttr.AsBoolValue()
 	}
 
 	if block := resource.GetBlock("azure_active_directory_role_based_access_control"); block.IsNotNil() {
@@ -119,13 +119,13 @@ func adaptCluster(resource *terraform.Block) container.KubernetesCluster {
 		if enabledAttr.IsNotNil() {
 			if !cluster.RoleBasedAccessControl.Enabled.IsTrue() {
 				cluster.RoleBasedAccessControl.Metadata = block.GetMetadata()
-				cluster.RoleBasedAccessControl.Enabled = enabledAttr.AsBoolValueOrDefault(false, block)
+				cluster.RoleBasedAccessControl.Enabled = enabledAttr.AsBoolValue()
 			}
 		}
 	}
 
 	if diskEncryptionSetIDAttr := resource.GetAttribute("disk_encryption_set_id"); diskEncryptionSetIDAttr.IsNotNil() {
-		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValueOrDefault("", resource)
+		cluster.DiskEncryptionSetID = diskEncryptionSetIDAttr.AsStringValue()
 	}
 
 	cluster.AgentPools = adaptAgentPools(resource)
@@ -146,7 +146,7 @@ func adaptAgentPools(resource *terraform.Block) []container.AgentPool {
 func adaptAgentPool(block *terraform.Block) container.AgentPool {
 	return container.AgentPool{
 		Metadata:            block.GetMetadata(),
-		DiskEncryptionSetID: block.GetAttribute("disk_encryption_set_id").AsStringValueOrDefault("", block),
-		NodeType:            block.GetAttribute("type").AsStringValueOrDefault("VirtualMachineScaleSets", block),
+		DiskEncryptionSetID: block.GetAttribute("disk_encryption_set_id").AsStringValue(),
+		NodeType:            block.GetAttribute("type").AsStringValue("VirtualMachineScaleSets"),
 	}
 }

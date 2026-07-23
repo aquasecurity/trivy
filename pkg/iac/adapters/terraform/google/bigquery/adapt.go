@@ -23,20 +23,20 @@ func adaptDatasets(modules terraform.Modules) []bigquery.Dataset {
 
 func adaptDataset(resource *terraform.Block) bigquery.Dataset {
 	IDAttr := resource.GetAttribute("dataset_id")
-	IDVal := IDAttr.AsStringValueOrDefault("", resource)
+	IDVal := IDAttr.AsStringValue()
 
 	var accessGrants []bigquery.AccessGrant
 
 	accessBlocks := resource.GetBlocks("access")
 	for _, accessBlock := range accessBlocks {
 		roleAttr := accessBlock.GetAttribute("role")
-		roleVal := roleAttr.AsStringValueOrDefault("", accessBlock)
+		roleVal := roleAttr.AsStringValue()
 
 		domainAttr := accessBlock.GetAttribute("domain")
-		domainVal := domainAttr.AsStringValueOrDefault("", accessBlock)
+		domainVal := domainAttr.AsStringValue()
 
 		specialGrAttr := accessBlock.GetAttribute("special_group")
-		specialGrVal := specialGrAttr.AsStringValueOrDefault("", accessBlock)
+		specialGrVal := specialGrAttr.AsStringValue()
 
 		accessGrants = append(accessGrants, bigquery.AccessGrant{
 			Metadata:     accessBlock.GetMetadata(),

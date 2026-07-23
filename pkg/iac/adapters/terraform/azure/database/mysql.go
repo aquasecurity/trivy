@@ -32,11 +32,11 @@ func adaptMySQLServer(resource *terraform.Block, module *terraform.Module) datab
 		Server: database.Server{
 			Metadata: resource.GetMetadata(),
 			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
-				AsBoolValueOrDefault(false, resource),
+				AsBoolValue(false),
 			MinimumTLSVersion: resource.GetAttribute("ssl_minimal_tls_version_enforced").
-				AsStringValueOrDefault("TLS1_2", resource),
+				AsStringValue("TLS1_2"),
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
-				AsBoolValueOrDefault(true, resource),
+				AsBoolValue(true),
 			FirewallRules: firewallRules,
 		},
 	}
@@ -65,7 +65,7 @@ func adaptMySQLFlexibleServer(resource *terraform.Block, module *terraform.Modul
 			EnableSSLEnforcement: params.requireSecureTransport,
 			MinimumTLSVersion:    params.tlsVersion,
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
-				AsBoolValueOrDefault(true, resource),
+				AsBoolValue(true),
 			FirewallRules: firewallRules,
 		},
 	}
