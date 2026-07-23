@@ -37,3 +37,7 @@ For example:
 ```bash
 trivy image --disable-telemetry alpine
 ```
+
+!!! note
+    Disabling telemetry stops the collection of the data described above, but Trivy still connects to `check.trivy.dev` to [check for updates](../configuration/others.md#check-for-updates) unless the `--skip-version-check` flag is specified as well.
+    See [Check updates service](./air-gap.md#check-updates-service) for details.
