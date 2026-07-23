@@ -822,8 +822,44 @@ func Test_separateMisconfigReports(t *testing.T) {
 			},
 		},
 
-		// TODO: add vuln only
-		// TODO: add secret only
+		{
+			name: "Vulnerability Report Only",
+			k8sReport: Report{
+				Resources: []Resource{
+					deployOrionWithVulns,
+				},
+			},
+			scanners: types.Scanners{types.VulnerabilityScanner},
+			expectedReports: []Report{
+				{
+					Resources: []Resource{
+						{Kind: "Deploy"},
+					},
+				},
+				{
+					Resources: []Resource{},
+				},
+			},
+		},
+		{
+			name: "Secret Report Only",
+			k8sReport: Report{
+				Resources: []Resource{
+					deployLuaWithSecrets,
+				},
+			},
+			scanners: types.Scanners{types.SecretScanner},
+			expectedReports: []Report{
+				{
+					Resources: []Resource{
+						{Kind: "Deploy"},
+					},
+				},
+				{
+					Resources: []Resource{},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
