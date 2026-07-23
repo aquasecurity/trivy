@@ -215,13 +215,18 @@ func (c RedisCache) Close() error {
 }
 
 func (c RedisCache) Clear(ctx context.Context) error {
+	var cursor uint64
 	for {
-		keys, cursor, err := c.client.Scan(ctx, 0, redisPrefix+"::*", 100).Result()
+		var keys []string
+		var err error
+		keys, cursor, err = c.client.Scan(ctx, cursor, redisPrefix+"::*", 100).Result()
 		if err != nil {
 			return xerrors.Errorf("failed to perform prefix scanning: %w", err)
 		}
-		if err = c.client.Unlink(ctx, keys...).Err(); err != nil {
-			return xerrors.Errorf("failed to unlink redis keys: %w", err)
+		if len(keys) > 0 {
+			if err = c.client.Unlink(ctx, keys...).Err(); err != nil {
+				return xerrors.Errorf("failed to unlink redis keys: %w", err)
+			}
 		}
 		if cursor == 0 { // We cleared all keys
 			break
