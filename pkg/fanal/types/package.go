@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/uuid"
 )
 
 type Relationship int
@@ -78,6 +79,7 @@ type PkgIdentifier struct {
 	UID    string                 `json:",omitempty"` // Calculated by the package struct
 	PURL   *packageurl.PackageURL `json:"-"`
 	BOMRef string                 `json:",omitempty"` // For CycloneDX
+	BOMID  uuid.UUID              `json:"-"`          // Used to match a package with a decoded BOM component
 }
 
 // MarshalJSON customizes the JSON encoding of PkgIdentifier.
@@ -136,6 +138,8 @@ func (id *PkgIdentifier) Match(s string) bool {
 	}
 
 	switch {
+	case id.BOMID.String() == s:
+		return true
 	case id.BOMRef == s:
 		return true
 	case id.PURL != nil && id.PURL.String() == s:
