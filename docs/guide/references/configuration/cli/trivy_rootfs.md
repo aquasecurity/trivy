@@ -48,6 +48,7 @@ trivy rootfs [flags] ROOTDIR
       --exit-code int                     specify exit code when any security issues are found
       --exit-on-eol int                   exit with the specified code when the OS reaches end of service/life
       --file-patterns strings             specify config file patterns
+      --follow-symlinks                   follow symlinks that resolve to regular files and scan their targets (symlinks to directories are not followed)
   -f, --format string                     format
                                           Allowed values:
                                             - table

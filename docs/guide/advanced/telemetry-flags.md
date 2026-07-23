@@ -6,6 +6,7 @@
 --distro
 --exit-code
 --exit-on-eol
+--follow-symlinks
 --format
 --ignore-status
 --ignore-unfixed

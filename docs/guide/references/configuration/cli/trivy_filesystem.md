@@ -45,6 +45,7 @@ trivy filesystem [flags] PATH
       --enable-modules strings            [EXPERIMENTAL] module names to enable
       --exit-code int                     specify exit code when any security issues are found
       --file-patterns strings             specify config file patterns
+      --follow-symlinks                   follow symlinks that resolve to regular files and scan their targets (symlinks to directories are not followed)
   -f, --format string                     format
                                           Allowed values:
                                             - table

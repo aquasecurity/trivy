@@ -16,6 +16,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 	type fields struct {
 		skipDirs         []string
 		skipFiles        []string
+		followSymlinks   bool
 		offlineScan      bool
 		scanners         string
 		distro           string
@@ -99,6 +100,16 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
+			name: "follow symlinks",
+			fields: fields{
+				followSymlinks: true,
+			},
+			want: flag.ScanOptions{
+				FollowSymlinks: true,
+			},
+			assertion: require.NoError,
+		},
+		{
 			name: "offline scan",
 			fields: fields{
 				offlineScan: true,
@@ -145,6 +156,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			t.Cleanup(viper.Reset)
 			setSliceValue(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
+			setValue(flag.FollowSymlinksFlag.ConfigName, tt.fields.followSymlinks)
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
@@ -154,6 +166,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			f := &flag.ScanFlagGroup{
 				SkipDirs:         flag.SkipDirsFlag.Clone(),
 				SkipFiles:        flag.SkipFilesFlag.Clone(),
+				FollowSymlinks:   flag.FollowSymlinksFlag.Clone(),
 				OfflineScan:      flag.OfflineScanFlag.Clone(),
 				Scanners:         flag.ScannersFlag.Clone(),
 				DistroFlag:       flag.DistroFlag.Clone(),
