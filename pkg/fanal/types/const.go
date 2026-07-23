@@ -22,6 +22,7 @@ const (
 // Operating systems
 const (
 	ActiveState        OSType = "activestate"
+	Alinux             OSType = "alinux"
 	Alma               OSType = "alma"
 	Alpine             OSType = "alpine"
 	Amazon             OSType = "amazon"
@@ -139,6 +140,7 @@ const (
 var (
 	OSTypes = []OSType{
 		ActiveState,
+		Alinux,
 		Alma,
 		Alpine,
 		Amazon,
