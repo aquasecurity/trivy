@@ -15,13 +15,13 @@ func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MS
 
 func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) database.MSSQLServer {
 	properties := resource.Properties
-	administratorLogin := properties.GetMapValue("administratorLogin").AsStringValue("", resource.Metadata)
+	administratorLogin := properties.GetMapValue("administratorLogin").AsStringValue()
 
 	// Support for azureadAdministrator block (ARM uses administrators property)
 	var adAdmins []database.ActiveDirectoryAdministrator
 	administrators := properties.GetMapValue("administrators")
 	if administrators.Kind != azure2.KindNull {
-		login := administrators.GetMapValue("login").AsStringValue("", administrators.GetMetadata())
+		login := administrators.GetMapValue("login").AsStringValue()
 		if !login.IsEmpty() {
 			adAdmins = append(adAdmins, database.ActiveDirectoryAdministrator{
 				Metadata: administrators.GetMetadata(),
@@ -35,9 +35,9 @@ func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) da
 		Server: database.Server{
 			Metadata: resource.Metadata,
 			// TODO: this property doesn't exist.
-			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
-			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
-			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
+			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(),
+			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled"),
+			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(),
 			FirewallRules:             addFirewallRule(resource),
 		},
 		ExtendedAuditingPolicies:      adaptExtendedAuditingPolicies(resource, deployment),
@@ -52,7 +52,7 @@ func adaptExtendedAuditingPolicies(_ azure2.Resource, deployment azure2.Deployme
 	for _, policy := range deployment.GetResourcesByType("Microsoft.Sql/servers/extendedAuditingSettings") {
 		policies = append(policies, database.ExtendedAuditingPolicy{
 			Metadata:        policy.Metadata,
-			RetentionInDays: policy.Properties.GetMapValue("retentionDays").AsIntValue(0, policy.Metadata),
+			RetentionInDays: policy.Properties.GetMapValue("retentionDays").AsIntValue(),
 		})
 	}
 
@@ -65,7 +65,7 @@ func adaptSecurityAlertPolicies(_ azure2.Resource, deployment azure2.Deployment)
 			Metadata:           policy.Metadata,
 			EmailAddresses:     adaptStringList(policy.Properties.GetMapValue("emailAddresses")),
 			DisabledAlerts:     adaptStringList(policy.Properties.GetMapValue("disabledAlerts")),
-			EmailAccountAdmins: policy.Properties.GetMapValue("emailAccountAdmins").AsBoolValue(false, policy.Metadata),
+			EmailAccountAdmins: policy.Properties.GetMapValue("emailAccountAdmins").AsBoolValue(),
 		})
 	}
 	return policies
@@ -74,7 +74,7 @@ func adaptSecurityAlertPolicies(_ azure2.Resource, deployment azure2.Deployment)
 func adaptStringList(value azure2.Value) []iacTypes.StringValue {
 	var list []iacTypes.StringValue
 	for _, v := range value.AsList() {
-		list = append(list, v.AsStringValue("", value.GetMetadata()))
+		list = append(list, v.AsStringValue())
 	}
 	return list
 }
