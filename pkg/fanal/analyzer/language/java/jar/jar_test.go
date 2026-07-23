@@ -43,16 +43,19 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 								Version:  "2.9.10.6",
+								Licenses: []string{"Apache-2.0"},
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-annotations",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 								Version:  "2.9.10",
+								Licenses: []string{"Apache-2.0"},
 							},
 							{
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
+								Licenses: []string{"Apache-2.0"},
 							},
 							{
 								Name:     "org.slf4j:slf4j-api",
@@ -103,6 +106,7 @@ func Test_javaLibraryAnalyzer_Analyze(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-core",
 								FilePath: "testdata/test.par/lib/jackson-core-2.9.10.jar",
 								Version:  "2.9.10",
+								Licenses: []string{"Apache-2.0"},
 								Digest:   "sha1:66b715dec9dd8b0f39f3296e67e05913bf422d0c",
 							},
 						},

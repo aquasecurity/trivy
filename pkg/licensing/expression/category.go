@@ -370,24 +370,41 @@ var (
 	}
 )
 
-var spdxLicenses = set.NewCaseInsensitive()
-
 //go:embed licenses.json
 var licenses []byte
 
-var initSpdxLicenses = sync.OnceFunc(func() {
-	if spdxLicenses.Size() > 0 {
-		return
-	}
-
-	var lics []string
+// parseLicenses unmarshals the embedded licenses.json into a map of each SPDX
+// license ID to its normalized seeAlso URLs.
+func parseLicenses() map[string][]string {
+	var lics map[string][]string
 	if err := json.Unmarshal(licenses, &lics); err != nil {
 		log.WithPrefix(log.PrefixSPDX).Warn("Unable to parse SPDX license file", log.Err(err))
-		return
 	}
+	return lics
+}
 
-	// SPDX license list is case-insensitive.
-	spdxLicenses.Append(lics...)
+// spdxLicenses is the set of valid SPDX license IDs (case-insensitive).
+var spdxLicenses = set.NewCaseInsensitive()
+
+var initSpdxLicenses = sync.OnceFunc(func() {
+	for id := range parseLicenses() {
+		spdxLicenses.Append(id)
+	}
+})
+
+// spdxLicenseURLs maps a normalized upstream license URL (see
+// licensing.NormalizeLicenseURL) to its canonical SPDX license ID, inverted from
+// the seeAlso references and built lazily.
+var spdxLicenseURLs = make(map[string]string)
+
+var initSpdxLicenseURLs = sync.OnceFunc(func() {
+	for id, urls := range parseLicenses() {
+		for _, u := range urls {
+			// URLs are de-duplicated and de-collided at generation time,
+			// so no ambiguity is possible here.
+			spdxLicenseURLs[u] = id
+		}
+	}
 })
 
 //go:embed exceptions.json
@@ -422,6 +439,17 @@ func ValidateSPDXLicense(license string) bool {
 func SPDXLicenseID(license string) (string, bool) {
 	initSpdxLicenses()
 	return spdxLicenses.Find(license)
+}
+
+// SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi
+// Bundle-License header or a pom <url>) to its canonical SPDX license ID via the
+// SPDX seeAlso references. Like SPDXLicenseID it does not normalize its input: the
+// URL must already be normalized with licensing.NormalizeLicenseURL. Returns false
+// if the URL is unknown.
+func SPDXLicenseIDByURL(normalizedURL string) (string, bool) {
+	initSpdxLicenseURLs()
+	id, ok := spdxLicenseURLs[normalizedURL]
+	return id, ok
 }
 
 // ValidateSPDXException returns true if SPDX exception list contain exceptionID

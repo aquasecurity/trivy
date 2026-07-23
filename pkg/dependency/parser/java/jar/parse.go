@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -29,6 +30,10 @@ import (
 var (
 	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
 )
+
+// maxManifestSize caps how much of a (decompressed) MANIFEST.MF is read into
+// memory, guarding against a decompression bomb. Real manifests are a few KB.
+const maxManifestSize = 10 << 20 // 10 MiB
 
 type Client interface {
 	Exists(groupID, artifactID string) (bool, error)
@@ -147,10 +152,11 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 		}
 	}
 
-	// Attach license sources that depend on the jar's own artifact after it has
-	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
-	// name). Manifest attributes are cheap to parse, so try them before falling
-	// back to classifying packed LICENSE files.
+	// Attach licenses that depend on the jar's own artifact after it has been
+	// resolved (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	// Manifest licenses (Jenkins Plugin-License-Name and OSGi Bundle-License) are
+	// cheap to parse, so they come before classifying a packed LICENSE file. Each
+	// step only applies when no license has been set yet.
 	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenseNames())
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
@@ -330,8 +336,9 @@ func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
 	}
 }
 
-// attachManifestLicenses attaches Jenkins plugin licenses declared in MANIFEST.MF
-// to the jar's own package when a single unambiguous package belongs to this jar.
+// attachManifestLicenses attaches license names declared in MANIFEST.MF (Jenkins
+// Plugin-License-Name and OSGi Bundle-License) to the jar's own package when a
+// single unambiguous package belongs to this jar.
 func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []string) {
 	if len(licenses) == 0 {
 		return
@@ -369,7 +376,7 @@ func ownJarPackage(pkgs []ftypes.Package, filePath string) *ftypes.Package {
 
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
 // jar's own package, but only when the owner is unambiguous: a single LICENSE file, a
-// single package belonging to this jar, and no license from its pom.xml yet.
+// single package belonging to this jar, and no license from its pom.xml / manifest yet.
 func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, licenseFile *zip.File) {
 	if licenseFile == nil {
 		return
@@ -502,11 +509,12 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	return p, nil
 }
 
-// embeddedPom is a minimal view of an embedded pom.xml: only the license names are needed.
+// embeddedPom is a minimal view of an embedded pom.xml: only the license name and URL are needed.
 type embeddedPom struct {
 	Licenses struct {
 		License []struct {
 			Name string `xml:"name"`
+			URL  string `xml:"url"`
 		} `xml:"license"`
 	} `xml:"licenses"`
 }
@@ -541,8 +549,9 @@ func parsePomLicenses(f *zip.File) ([]string, error) {
 	return decodePomLicenses(file)
 }
 
-// decodePomLicenses decodes a pom.xml and returns the raw <license><name> values.
-// Names are kept as-is; normalization happens downstream.
+// decodePomLicenses decodes a pom.xml and returns the license values.
+// The <name> is kept as-is (normalization happens downstream); when it is empty,
+// the <url> is used as a fallback but only if it resolves to an SPDX license ID.
 func decodePomLicenses(r io.Reader) ([]string, error) {
 	var pom embeddedPom
 	decoder := xml.NewDecoder(r)
@@ -553,11 +562,25 @@ func decodePomLicenses(r io.Reader) ([]string, error) {
 
 	var names []string
 	for _, lic := range pom.Licenses.License {
-		if name := strings.TrimSpace(lic.Name); name != "" {
+		if name := pomLicenseName(lic.Name, lic.URL); name != "" {
 			names = append(names, name)
 		}
 	}
 	return names, nil
+}
+
+// pomLicenseName resolves a single pom <license> to a license value: the <name>
+// if present, otherwise the <url> mapped to its SPDX ID via the seeAlso index.
+// An unresolved URL returns "" so the caller can fall back to another source
+// (e.g. a packed LICENSE file).
+func pomLicenseName(name, url string) string {
+	if name = strings.TrimSpace(name); name != "" {
+		return name
+	}
+	if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(url)); ok {
+		return id
+	}
+	return ""
 }
 
 // isJarLicenseFile reports whether a zip entry is a license file eligible for
@@ -608,6 +631,7 @@ type manifest struct {
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
+	bundleLicense          string
 	pluginLicenseNames     []string
 }
 
@@ -618,14 +642,24 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 	defer file.Close()
 
+	b, err := io.ReadAll(io.LimitReader(file, maxManifestSize))
+	if err != nil {
+		return manifest{}, xerrors.Errorf("unable to read MANIFEST.MF: %w", err)
+	}
+
+	// MANIFEST.MF folds long values onto continuation lines starting with a space.
+	// Unfold by removing the "line break + space" (both CRLF and LF) without inserting anything, as java.util.jar.Manifest does.
+	// https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
+	unfolded := strings.ReplaceAll(string(b), "\r\n ", "")
+	unfolded = strings.ReplaceAll(unfolded, "\n ", "")
+
 	var m manifest
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	for line := range strings.SplitSeq(unfolded, "\n") {
+		line = strings.TrimSuffix(line, "\r")
 
 		// Skip variables. e.g. Bundle-Name: %bundleName
 		ss := strings.Fields(line)
-		if len(ss) <= 1 || (len(ss) > 1 && strings.HasPrefix(ss[1], "%")) {
+		if len(ss) <= 1 || strings.HasPrefix(ss[1], "%") {
 			continue
 		}
 
@@ -652,15 +686,60 @@ func parseManifest(f *zip.File) (manifest, error) {
 			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
 		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
 			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
+		case strings.HasPrefix(line, "Bundle-License:"):
+			m.bundleLicense = strings.TrimPrefix(line, "Bundle-License:")
 		case strings.HasPrefix(line, "Plugin-License-Name"):
 			m.pluginLicenseNames = append(m.pluginLicenseNames, line)
 		}
 	}
 
-	if err = scanner.Err(); err != nil {
-		return manifest{}, xerrors.Errorf("scan error: %w", err)
-	}
 	return m, nil
+}
+
+// parseBundleLicense resolves the OSGi Bundle-License header (a comma-separated
+// list of "name;attr=value" entries) to SPDX license IDs. Each entry's name is
+// tried as an SPDX ID then as a URL, and its ;link= value as a URL; entries that
+// resolve to neither (free text, "<<EXTERNAL>>") are skipped.
+func parseBundleLicense(header string) []string {
+	var names []string
+	for entry := range strings.SplitSeq(header, ",") {
+		name, link := parseBundleLicenseEntry(entry)
+		if id, ok := resolveBundleLicense(name, link); ok {
+			names = append(names, id)
+		}
+	}
+	return names
+}
+
+func resolveBundleLicense(name, link string) (string, bool) {
+	// The name may be an SPDX license ID.
+	if id, ok := expression.SPDXLicenseID(name); ok {
+		return id, true
+	}
+	// Otherwise the name itself or the link attribute may be a license URL.
+	for _, u := range []string{name, link} {
+		if u == "" {
+			continue
+		}
+		if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(u)); ok {
+			return id, true
+		}
+	}
+	return "", false
+}
+
+// parseBundleLicenseEntry splits one Bundle-License entry into its license name
+// and the value of its optional ;link attribute. Surrounding spaces and double
+// quotes are trimmed from both.
+func parseBundleLicenseEntry(entry string) (name, link string) {
+	fields := strings.Split(entry, ";")
+	name = strings.Trim(fields[0], ` "`)
+	for _, attr := range fields[1:] {
+		if v, ok := strings.CutPrefix(strings.TrimSpace(attr), "link="); ok {
+			link = strings.Trim(v, ` "`)
+		}
+	}
+	return name, link
 }
 
 // parsePluginLicenseName extracts the license name from a single Jenkins
@@ -679,7 +758,9 @@ func parsePluginLicenseName(line string) string {
 	return strings.TrimSpace(value)
 }
 
-// licenseNames returns the license names declared in the manifest.
+// licenseNames returns the license names declared in the manifest: the Jenkins
+// Plugin-License-Name attributes if present, otherwise the OSGi Bundle-License
+// entries resolved to SPDX IDs.
 func (m manifest) licenseNames() []string {
 	var names []string
 	for _, line := range m.pluginLicenseNames {
@@ -687,9 +768,12 @@ func (m manifest) licenseNames() []string {
 			names = append(names, name)
 		}
 	}
+	if len(names) == 0 {
+		names = append(names, parseBundleLicense(m.bundleLicense)...)
+	}
+
 	return names
 }
-
 func (m manifest) properties(filePath string) Properties {
 	groupID, err := m.determineGroupID()
 	if err != nil {
