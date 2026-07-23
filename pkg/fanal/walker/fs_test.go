@@ -89,6 +89,54 @@ func TestFS_Walk(t *testing.T) {
 	}
 }
 
+func TestFS_Walk_GitConfig(t *testing.T) {
+	// .git/config and .git/credentials may contain embedded secrets and must
+	// be scanned. Subdirectories that are either binary-heavy or high-volume
+	// with no secret value must remain skipped:
+	//   objects – packed git object store
+	//   lfs     – Git LFS binary data
+	//   modules – submodule checkouts
+	//   logs    – reflog entries (plaintext but high-volume, low-signal)
+	//
+	// We use t.TempDir() instead of static testdata because git itself ignores
+	// nested .git directories inside a repository.
+	root := t.TempDir()
+
+	// Files that MUST be scanned
+	require.NoError(t, os.WriteFile(filepath.Join(root, ".git", "config"),
+		[]byte("[remote \"origin\"]\n\turl = https://user:token@github.com/org/repo.git\n"), 0o644))
+	require.NoError(t, os.WriteFile(filepath.Join(root, ".git", "credentials"),
+		[]byte("https://user:ghp_secret@github.com\n"), 0o644))
+
+	// Directories that MUST be skipped
+	skippedDirs := []string{"objects", "lfs", "modules", "logs"}
+	for _, d := range skippedDirs {
+		require.NoError(t, os.MkdirAll(filepath.Join(root, ".git", d), 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(root, ".git", d, "file"),
+			[]byte("content"), 0o644))
+	}
+
+	var visitedConfig, visitedCredentials bool
+	w := walker.NewFS()
+	err := w.Walk(root, walker.Option{}, func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
+		for _, d := range skippedDirs {
+			if strings.Contains(filePath, filepath.Join(".git", d)) {
+				assert.Failf(t, "skipped dir was walked", ".git/%s must be skipped, got: %s", d, filePath)
+			}
+		}
+		if strings.HasSuffix(filePath, filepath.Join(".git", "config")) {
+			visitedConfig = true
+		}
+		if strings.HasSuffix(filePath, filepath.Join(".git", "credentials")) {
+			visitedCredentials = true
+		}
+		return nil
+	})
+	require.NoError(t, err)
+	assert.True(t, visitedConfig, ".git/config should be scanned")
+	assert.True(t, visitedCredentials, ".git/credentials should be scanned")
+}
+
 func TestFS_BuildSkipPaths(t *testing.T) {
 	tests := []struct {
 		name  string
