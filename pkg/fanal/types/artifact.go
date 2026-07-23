@@ -5,6 +5,8 @@ import (
 	"time"
 
 	"github.com/samber/lo"
+
+	"github.com/aquasecurity/trivy/pkg/crypto"
 )
 
 // ArtifactType represents a type of artifact
@@ -184,6 +186,7 @@ type BlobInfo struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
+	CryptoAssets      []crypto.Asset     `json:",omitempty"`
 
 	// Red Hat distributions have build info per layer.
 	// This information will be embedded into packages when applying layers.
@@ -213,6 +216,7 @@ type ArtifactDetail struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           Secrets            `json:",omitempty"`
 	Licenses          LicenseFiles       `json:",omitempty"`
+	CryptoAssets      []crypto.Asset     `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail
