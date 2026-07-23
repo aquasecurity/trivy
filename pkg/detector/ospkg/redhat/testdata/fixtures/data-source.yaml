@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: Red Hat
+      value:
+        ID: "redhat"
+        Name: "Red Hat"
+        URL: "https://access.redhat.com/security/cve/"

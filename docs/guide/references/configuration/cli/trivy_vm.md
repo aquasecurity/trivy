@@ -131,7 +131,6 @@ trivy vm [flags] VM_IMAGE
                                           Allowed values:
                                             - nvd
                                             - redhat
-                                            - redhat-oval
                                             - debian
                                             - ubuntu
                                             - alpine
