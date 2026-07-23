@@ -405,6 +405,9 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 		case core.PropertyPkgID:
 			pkg.ID = prop.Value
 		case core.PropertyFilePath:
+			// Trivy no longer outputs this property in CycloneDX
+			// (`evidence.occurrences` is used instead),
+			// but it is kept for backward compatibility with older SBOMs.
 			pkg.FilePath = prop.Value
 		case core.PropertySrcName:
 			pkg.SrcName = prop.Value
