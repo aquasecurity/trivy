@@ -164,6 +164,25 @@ check "cats_mittens_is_special" {
 	require.NotNil(t, checkBlocks[0].GetBlock("assert"))
 }
 
+// Test_OpenTofuLanguageBlock: see https://github.com/aquasecurity/trivy/issues/10906
+func Test_OpenTofuLanguageBlock(t *testing.T) {
+	fs := testutil.CreateFS(map[string]string{
+		"main.tofu": `
+language {
+  compatible_with {
+    opentofu = ">= 1.12"
+  }
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+}
+
 func Test_Modules(t *testing.T) {
 
 	fs := testutil.CreateFS(map[string]string{
