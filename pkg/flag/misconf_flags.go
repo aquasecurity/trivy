@@ -98,6 +98,11 @@ var (
 			},
 		},
 	}
+	DownloadChecksBundleOnlyFlag = Flag[bool]{
+		Name:       "download-checks-bundle-only",
+		ConfigName: "misconfiguration.download-checks-bundle-only",
+		Usage:      "download/update checks bundle but don't run a scan",
+	}
 	MisconfigScannersFlag = Flag[[]string]{
 		Name:       "misconfig-scanners",
 		ConfigName: "misconfiguration.scanners",
@@ -145,9 +150,10 @@ var (
 
 // MisconfFlagGroup composes common printer flag structs used for commands providing misconfiguration scanning.
 type MisconfFlagGroup struct {
-	IncludeNonFailures     *Flag[bool]
-	ResetChecksBundle      *Flag[bool]
-	ChecksBundleRepository *Flag[string]
+	IncludeNonFailures       *Flag[bool]
+	ResetChecksBundle        *Flag[bool]
+	ChecksBundleRepository   *Flag[string]
+	DownloadChecksBundleOnly *Flag[bool]
 
 	// Values Files
 	HelmValues                 *Flag[[]string]
@@ -170,9 +176,10 @@ type MisconfFlagGroup struct {
 }
 
 type MisconfOptions struct {
-	IncludeNonFailures     bool
-	ResetChecksBundle      bool
-	ChecksBundleRepository string
+	IncludeNonFailures       bool
+	ResetChecksBundle        bool
+	ChecksBundleRepository   string
+	DownloadChecksBundleOnly bool
 
 	// Values Files
 	HelmValues              []string
@@ -196,9 +203,10 @@ type MisconfOptions struct {
 
 func NewMisconfFlagGroup() *MisconfFlagGroup {
 	return &MisconfFlagGroup{
-		IncludeNonFailures:     IncludeNonFailuresFlag.Clone(),
-		ResetChecksBundle:      ResetChecksBundleFlag.Clone(),
-		ChecksBundleRepository: ChecksBundleRepositoryFlag.Clone(),
+		IncludeNonFailures:       IncludeNonFailuresFlag.Clone(),
+		ResetChecksBundle:        ResetChecksBundleFlag.Clone(),
+		ChecksBundleRepository:   ChecksBundleRepositoryFlag.Clone(),
+		DownloadChecksBundleOnly: DownloadChecksBundleOnlyFlag.Clone(),
 
 		HelmValues:                 HelmSetFlag.Clone(),
 		HelmFileValues:             HelmSetFileFlag.Clone(),
@@ -229,6 +237,7 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 		f.IncludeNonFailures,
 		f.ResetChecksBundle,
 		f.ChecksBundleRepository,
+		f.DownloadChecksBundleOnly,
 		f.HelmValues,
 		f.HelmValueFiles,
 		f.HelmFileValues,
@@ -250,25 +259,26 @@ func (f *MisconfFlagGroup) Flags() []Flagger {
 
 func (f *MisconfFlagGroup) ToOptions(opts *Options) error {
 	opts.MisconfOptions = MisconfOptions{
-		IncludeNonFailures:      f.IncludeNonFailures.Value(),
-		ResetChecksBundle:       f.ResetChecksBundle.Value(),
-		ChecksBundleRepository:  f.ChecksBundleRepository.Value(),
-		HelmValues:              f.HelmValues.Value(),
-		HelmValueFiles:          f.HelmValueFiles.Value(),
-		HelmFileValues:          f.HelmFileValues.Value(),
-		HelmStringValues:        f.HelmStringValues.Value(),
-		HelmAPIVersions:         f.HelmAPIVersions.Value(),
-		HelmKubeVersion:         f.HelmKubeVersion.Value(),
-		TerraformTFVars:         f.TerraformTFVars.Value(),
-		CloudFormationParamVars: f.CloudformationParamVars.Value(),
-		TfExcludeDownloaded:     f.TerraformExcludeDownloaded.Value(),
-		MisconfigScanners:       xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
-		ConfigFileSchemas:       f.ConfigFileSchemas.Value(),
-		RenderCause:             xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
-		RawConfigScanners:       xstrings.ToTSlice[types.ConfigType](f.RawConfigScanners.Value()),
-		AnsiblePlaybooks:        f.AnsiblePlaybooks.Value(),
-		AnsibleInventories:      f.AnsibleInventories.Value(),
-		AnsibleExtraVars:        f.AnsibleExtraVars.Value(),
+		IncludeNonFailures:       f.IncludeNonFailures.Value(),
+		ResetChecksBundle:        f.ResetChecksBundle.Value(),
+		ChecksBundleRepository:   f.ChecksBundleRepository.Value(),
+		DownloadChecksBundleOnly: f.DownloadChecksBundleOnly.Value(),
+		HelmValues:               f.HelmValues.Value(),
+		HelmValueFiles:           f.HelmValueFiles.Value(),
+		HelmFileValues:           f.HelmFileValues.Value(),
+		HelmStringValues:         f.HelmStringValues.Value(),
+		HelmAPIVersions:          f.HelmAPIVersions.Value(),
+		HelmKubeVersion:          f.HelmKubeVersion.Value(),
+		TerraformTFVars:          f.TerraformTFVars.Value(),
+		CloudFormationParamVars:  f.CloudformationParamVars.Value(),
+		TfExcludeDownloaded:      f.TerraformExcludeDownloaded.Value(),
+		MisconfigScanners:        xstrings.ToTSlice[analyzer.Type](f.MisconfigScanners.Value()),
+		ConfigFileSchemas:        f.ConfigFileSchemas.Value(),
+		RenderCause:              xstrings.ToTSlice[types.ConfigType](f.RenderCause.Value()),
+		RawConfigScanners:        xstrings.ToTSlice[types.ConfigType](f.RawConfigScanners.Value()),
+		AnsiblePlaybooks:         f.AnsiblePlaybooks.Value(),
+		AnsibleInventories:       f.AnsibleInventories.Value(),
+		AnsibleExtraVars:         f.AnsibleExtraVars.Value(),
 	}
 	return nil
 }

@@ -13,12 +13,17 @@ import (
 )
 
 func TestDBFlagGroup_ToOptions(t *testing.T) {
+	t.Cleanup(viper.Reset)
+
 	type fields struct {
-		SkipDBUpdate     bool
-		DownloadDBOnly   bool
-		Light            bool
-		DBRepository     []string
-		JavaDBRepository []string
+		SkipDBUpdate             bool
+		DownloadDBOnly           bool
+		DownloadJavaDBOnly       bool
+		SkipCheckUpdate          bool
+		DownloadChecksBundleOnly bool
+		Light                    bool
+		DBRepository             []string
+		JavaDBRepository         []string
 	}
 	tests := []struct {
 		name     string
@@ -55,6 +60,30 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
 		},
 		{
+			name: "db and checks bundle only",
+			fields: fields{
+				DownloadDBOnly:           true,
+				DownloadChecksBundleOnly: true,
+			},
+			wantErr: "--download-db-only and --download-checks-bundle-only options can not be specified both",
+		},
+		{
+			name: "java db and checks bundle only",
+			fields: fields{
+				DownloadJavaDBOnly:       true,
+				DownloadChecksBundleOnly: true,
+			},
+			wantErr: "--download-java-db-only and --download-checks-bundle-only options can not be specified both",
+		},
+		{
+			name: "skip check update and checks bundle only",
+			fields: fields{
+				SkipCheckUpdate:          true,
+				DownloadChecksBundleOnly: true,
+			},
+			wantErr: "--skip-check-update and --download-checks-bundle-only options can not be specified both",
+		},
+		{
 			name: "invalid repo",
 			fields: fields{
 				SkipDBUpdate:   true,
@@ -88,20 +117,22 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			out := newLogger(log.LevelInfo)
+			t.Cleanup(viper.Reset)
 
 			viper.Set(flag.SkipDBUpdateFlag.ConfigName, tt.fields.SkipDBUpdate)
 			viper.Set(flag.DownloadDBOnlyFlag.ConfigName, tt.fields.DownloadDBOnly)
+			viper.Set(flag.DownloadJavaDBOnlyFlag.ConfigName, tt.fields.DownloadJavaDBOnly)
+			viper.Set(flag.SkipCheckUpdateFlag.ConfigName, tt.fields.SkipCheckUpdate)
+			viper.Set(flag.DownloadChecksBundleOnlyFlag.ConfigName, tt.fields.DownloadChecksBundleOnly)
 			viper.Set(flag.DBRepositoryFlag.ConfigName, tt.fields.DBRepository)
 			viper.Set(flag.JavaDBRepositoryFlag.ConfigName, tt.fields.JavaDBRepository)
 
 			// Assert options
-			f := &flag.DBFlagGroup{
-				DownloadDBOnly:     flag.DownloadDBOnlyFlag.Clone(),
-				SkipDBUpdate:       flag.SkipDBUpdateFlag.Clone(),
-				DBRepositories:     flag.DBRepositoryFlag.Clone(),
-				JavaDBRepositories: flag.JavaDBRepositoryFlag.Clone(),
+			flags := flag.Flags{
+				flag.NewDBFlagGroup(),
+				flag.NewMisconfFlagGroup(),
+				flag.NewRegoFlagGroup(),
 			}
-			flags := flag.Flags{f}
 			got, err := flags.ToOptions(nil)
 			if tt.wantErr != "" {
 				assert.ErrorContains(t, err, tt.wantErr)

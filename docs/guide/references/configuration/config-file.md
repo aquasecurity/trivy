@@ -394,6 +394,9 @@ misconfiguration:
   # Same as '--checks-bundle-repository'
   checks-bundle-repository: "mirror.gcr.io/aquasec/trivy-checks:2"
 
+  # Same as '--download-checks-bundle-only'
+  download-checks-bundle-only: false
+
   cloudformation:
     # Same as '--cf-params'
     params: []
