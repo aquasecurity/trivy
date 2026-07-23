@@ -12,7 +12,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/google/go-github/v62/github"
+	"github.com/google/go-github/v89/github"
 	"github.com/hashicorp/go-getter"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -148,7 +148,11 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	transport := xhttp.RoundTripper(req.Context(), xhttp.WithInsecure(t.insecure))
 	if req.URL.Host == "github.com" {
-		transport = NewGitHubTransport(req.URL, t.auth.Token)
+		var err error
+		transport, err = NewGitHubTransport(req.URL, t.auth.Token)
+		if err != nil {
+			return nil, xerrors.Errorf("failed to create github transport: %w", err)
+		}
 	}
 
 	res, err := transport.RoundTrip(req)
@@ -167,13 +171,16 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return res, nil
 }
 
-func NewGitHubTransport(u *url.URL, token string) http.RoundTripper {
-	client := newGitHubClient(token)
+func NewGitHubTransport(u *url.URL, token string) (http.RoundTripper, error) {
+	client, err := newGitHubClient(token)
+	if err != nil {
+		return nil, err
+	}
 	ss := strings.SplitN(u.Path, "/", 4)
 	if len(ss) < 4 || strings.HasPrefix(ss[3], "archive/") || strings.HasPrefix(ss[3], "releases/") ||
 		strings.HasPrefix(ss[3], "tags/") {
 		// Use the default transport from go-github for authentication
-		return client.Client().Transport
+		return client.Client().Transport, nil
 	}
 
 	return &GitHubContentTransport{
@@ -181,7 +188,7 @@ func NewGitHubTransport(u *url.URL, token string) http.RoundTripper {
 		repo:     ss[2],
 		filePath: ss[3],
 		client:   client,
-	}
+	}, nil
 }
 
 // GitHubContentTransport is a round tripper for downloading the GitHub content.
@@ -194,18 +201,32 @@ type GitHubContentTransport struct {
 
 // RoundTrip calls the GitHub API to download the content.
 func (t *GitHubContentTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	_, res, err := t.client.Repositories.DownloadContents(req.Context(), t.owner, t.repo, t.filePath, nil)
+	rc, res, err := t.client.Repositories.DownloadContents(req.Context(), t.owner, t.repo, t.filePath, nil)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get the file content: %w", err)
+	}
+
+	if res != nil && res.Response != nil {
+		if err := github.CheckResponse(res.Response); err != nil {
+			if rc != nil {
+				rc.Close()
+			}
+			return nil, xerrors.Errorf("failed to download the file: %w", err)
+		}
+		if rc != nil {
+			res.Response.Body = rc
+		}
 	}
 	return res.Response, nil
 }
 
-func newGitHubClient(token string) *github.Client {
-	client := github.NewClient(xhttp.Client())
+func newGitHubClient(token string) (*github.Client, error) {
+	opts := []github.ClientOptionsFunc{
+		github.WithHTTPClient(xhttp.Client()),
+	}
 	token = cmp.Or(token, os.Getenv("GITHUB_TOKEN"))
 	if token != "" {
-		client = client.WithAuthToken(token)
+		opts = append(opts, github.WithAuthToken(token))
 	}
-	return client
+	return github.NewClient(opts...)
 }
