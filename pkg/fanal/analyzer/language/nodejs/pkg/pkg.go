@@ -1,13 +1,17 @@
 package pkg
 
 import (
+	"bufio"
 	"context"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -20,8 +24,9 @@ func init() {
 }
 
 const (
-	version      = 1
-	requiredFile = "package.json"
+	version                 = 2
+	requiredFile            = "package.json"
+	requiredNodeVersionFile = "node_version.h"
 )
 
 type parser struct{}
@@ -42,15 +47,64 @@ func (*parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []
 	return []types.Package{pkg.Package}, nil, nil
 }
 
+type nodeVersionParser struct{}
+
+func (*nodeVersionParser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	var versions [3]int
+	var found [3]bool
+	scanner := bufio.NewScanner(r)
+	for scanner.Scan() {
+		fields := strings.Fields(scanner.Text())
+		if len(fields) != 3 || fields[0] != "#define" {
+			continue
+		}
+
+		var i int
+		switch fields[1] {
+		case "NODE_MAJOR_VERSION":
+			i = 0
+		case "NODE_MINOR_VERSION":
+			i = 1
+		case "NODE_PATCH_VERSION":
+			i = 2
+		default:
+			continue
+		}
+		v, err := strconv.Atoi(fields[2])
+		if err != nil {
+			return nil, nil, err
+		}
+		versions[i], found[i] = v, true
+	}
+	if err := scanner.Err(); err != nil {
+		return nil, nil, err
+	}
+	if !found[0] || !found[1] || !found[2] {
+		return nil, nil, nil
+	}
+
+	version := fmt.Sprintf("%d.%d.%d", versions[0], versions[1], versions[2])
+	return []types.Package{{
+		ID:      dependency.ID(types.NodePkg, "node", version),
+		Name:    "node",
+		Version: version,
+	}}, nil, nil
+}
+
 type nodePkgLibraryAnalyzer struct{}
 
-// Analyze analyzes package.json for node packages
+// Analyze analyzes package.json files and Node.js version headers.
 func (a nodePkgLibraryAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(ctx, types.NodePkg, input.FilePath, input.Content, &parser{}, input.Options.FileChecksum)
+	var p language.Parser = &parser{}
+	if filepath.Base(input.FilePath) == requiredNodeVersionFile {
+		p = &nodeVersionParser{}
+	}
+	return language.AnalyzePackage(ctx, types.NodePkg, input.FilePath, input.Content, p, input.Options.FileChecksum)
 }
 
 func (a nodePkgLibraryAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return requiredFile == filepath.Base(filePath)
+	return filepath.Base(filePath) == requiredFile ||
+		strings.HasSuffix(filepath.ToSlash(filePath), "include/node/"+requiredNodeVersionFile)
 }
 
 func (a nodePkgLibraryAnalyzer) Type() analyzer.Type {
