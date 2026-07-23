@@ -15,6 +15,7 @@ import (
 )
 
 type Lock struct {
+	Manifest Manifest  `toml:"manifest"`
 	Packages []Package `toml:"package"`
 }
 
@@ -24,9 +25,15 @@ func (l Lock) packages() map[string]Package {
 	})
 }
 
-func prodDeps(root Package, packages map[string]Package) set.Set[string] {
+type Manifest struct {
+	Members []string `toml:"members"`
+}
+
+func prodDeps(roots []Package, packages map[string]Package) set.Set[string] {
 	visited := set.New[string]()
-	walkPackageDeps(root, packages, visited)
+	for _, root := range roots {
+		walkPackageDeps(root, packages, visited)
+	}
 	return visited
 }
 
@@ -44,7 +51,7 @@ func walkPackageDeps(pkg Package, packages map[string]Package, visited set.Set[s
 	}
 }
 
-func (l Lock) root() (Package, error) {
+func (l Lock) roots() ([]Package, error) {
 	var pkgs []Package
 	for _, pkg := range l.Packages {
 		if pkg.isRoot() {
@@ -52,13 +59,40 @@ func (l Lock) root() (Package, error) {
 		}
 	}
 
-	// lock file must include root package
-	// cf. https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936
-	if len(pkgs) != 1 {
-		return Package{}, xerrors.New("uv lockfile must contain 1 root package")
+	if len(pkgs) > 1 {
+		return nil, xerrors.New("uv lockfile must contain 1 root package")
 	}
 
-	return pkgs[0], nil
+	return pkgs, nil
+}
+
+func (l Lock) workspaceMembers() []Package {
+	members := set.New[string](l.Manifest.Members...)
+	if members.Size() == 0 {
+		return nil
+	}
+
+	var pkgs []Package
+	for _, pkg := range l.Packages {
+		if members.Contains(pkg.Name) {
+			pkgs = append(pkgs, pkg)
+		}
+	}
+	return pkgs
+}
+
+func (l Lock) entryPackages() ([]Package, error) {
+	roots, err := l.roots()
+	if err != nil {
+		return nil, err
+	}
+
+	entries := roots
+	entries = append(entries, l.workspaceMembers()...)
+	if len(entries) == 0 {
+		return nil, xerrors.New("uv lockfile must contain 1 root package")
+	}
+	return entries, nil
 }
 
 type Package struct {
@@ -125,18 +159,23 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)
 	}
 
-	rootPackage, err := lock.root()
+	entryPackages, err := lock.entryPackages()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	packages := lock.packages()
-	directDeps := rootPackage.directDeps()
+	workspaceMembers := set.New[string](lo.Map(lock.workspaceMembers(), func(pkg Package, _ int) string {
+		return pkg.Name
+	})...)
+	directDeps := set.New[string]()
+	for _, entryPkg := range entryPackages {
+		directDeps.Append(entryPkg.directDeps().Items()...)
+	}
 
-	// Since each lockfile contains a root package with a list of direct dependencies,
-	// we can identify all production dependencies by traversing the dependency graph
-	// and collecting all the dependencies that are reachable from the root.
-	prodDeps := prodDeps(rootPackage, packages)
+	// Production dependencies are the packages reachable from the root package
+	// or, for workspace lockfiles, any workspace member package.
+	prodDeps := prodDeps(entryPackages, packages)
 
 	var (
 		pkgs ftypes.Packages
@@ -146,9 +185,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	for _, pkg := range lock.Packages {
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
-		if pkg.isRoot() {
+		switch {
+		case pkg.isRoot():
 			relationship = ftypes.RelationshipRoot
-		} else if directDeps.Contains(pkg.Name) {
+		case workspaceMembers.Contains(pkg.Name):
+			relationship = ftypes.RelationshipWorkspace
+		case directDeps.Contains(pkg.Name):
 			relationship = ftypes.RelationshipDirect
 		}
 
