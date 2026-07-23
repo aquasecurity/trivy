@@ -7,6 +7,7 @@ import (
 	"maps"
 	"os"
 	"path/filepath"
+	"sync"
 	"sync/atomic"
 
 	"github.com/hashicorp/go-getter"
@@ -19,6 +20,15 @@ type remoteResolver struct {
 }
 
 var Remote = &remoteResolver{}
+
+// Disable git's interactive credential prompt so that downloading a module
+// from a repository that requires authentication fails fast instead of
+// hanging. GIT_TERMINAL_PROMPT is process-global, so it is set once for the
+// lifetime of the process: setting and restoring it around each download
+// races with concurrent downloads. See #10833.
+var disableGitTerminalPrompt = sync.OnceValue(func() error {
+	return os.Setenv("GIT_TERMINAL_PROMPT", "0")
+})
 
 func (r *remoteResolver) incrementCount(o Options) {
 
@@ -89,11 +99,8 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		Mode:    getter.ClientModeAny,
 	}
 
-	terminalPrompt := os.Getenv("GIT_TERMINAL_PROMPT")
-	if err := os.Setenv("GIT_TERMINAL_PROMPT", "0"); err != nil {
+	if err := disableGitTerminalPrompt(); err != nil {
 		opt.Logger.Error("Failed to set env", log.String("name", "GIT_TERMINAL_PROMPT"), log.Err(err))
-	} else {
-		defer os.Setenv("GIT_TERMINAL_PROMPT", terminalPrompt)
 	}
 
 	if err := client.Get(); err != nil {
