@@ -17,6 +17,23 @@ type (
 // other packages.
 type clockKey struct{}
 
+// processStart records when the Trivy process started. It defaults to the time
+// this package is initialized and should be set explicitly via SetProcessStart
+// as early as possible (e.g. from main's init), so it reflects the true process
+// start even when callers that read it are imported lazily.
+var processStart = RealClock{}.Now()
+
+// SetProcessStart records the process start time. It is meant to be called once,
+// before scanning begins.
+func SetProcessStart(t time.Time) {
+	processStart = t
+}
+
+// ProcessStart returns the recorded process start time.
+func ProcessStart() time.Time {
+	return processStart
+}
+
 // With returns a new context with the given time.
 func With(ctx context.Context, t time.Time) context.Context {
 	c := clocktesting.NewFakeClock(t)
