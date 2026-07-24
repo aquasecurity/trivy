@@ -244,6 +244,18 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			// Regression test: /etc/system-release containing only "Amazon Linux"
+			// with no version token yields osVer == "" here, which used to panic
+			// with "index out of range [0] with length 0" in strings.Fields(osVer)[0].
+			name: "empty osVer does not panic and is unsupported",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

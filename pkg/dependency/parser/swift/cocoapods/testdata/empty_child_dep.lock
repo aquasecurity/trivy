@@ -1,0 +1,6 @@
+PODS:
+  - AppCenter (4.2.0):
+    - ""
+  - KeychainAccess (4.2.1)
+
+COCOAPODS: 1.11.2

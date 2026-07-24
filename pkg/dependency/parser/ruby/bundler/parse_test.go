@@ -278,3 +278,32 @@ func TestParser_Parse(t *testing.T) {
 		})
 	}
 }
+
+// TestParser_Parse_EmptyDependencyGraphLine is a regression test: a
+// dependency-graph line of exactly 6 spaces (invalid Gemfile.lock, valid
+// YAML-ish text) used to panic with "index out of range [0] with length 0"
+// in strings.Fields(line)[0]. It must now be skipped instead of crashing.
+func TestParser_Parse_EmptyDependencyGraphLine(t *testing.T) {
+	f, err := os.Open("testdata/Gemfile_empty_dep_line.lock")
+	require.NoError(t, err)
+	defer f.Close()
+
+	p := &bundler.Parser{}
+	pkgs, deps, err := p.Parse(t.Context(), f)
+	require.NoError(t, err)
+
+	names := make([]string, 0, len(pkgs))
+	for _, pkg := range pkgs {
+		names = append(names, pkg.Name)
+	}
+	assert.ElementsMatch(t, []string{"coderay", "concurrent-ruby"}, names,
+		"both real packages should still be parsed despite the blank dependency line")
+
+	// coderay's only dependency-graph line was blank, so it must not carry a
+	// spurious empty-string dependency.
+	for _, dep := range deps {
+		for _, name := range dep.DependsOn {
+			assert.NotEmpty(t, name, "no dependency name should be an empty string")
+		}
+	}
+}

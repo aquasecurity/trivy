@@ -123,6 +123,22 @@ func TestParser_Parse(t *testing.T) {
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
 		},
+		{
+			// Regression test: an empty dependency string in a [project] list
+			// (valid TOML, invalid PEP 508) used to panic with
+			// "index out of range [0] with length 0" in strings.Fields(dep)[0].
+			// It must now be skipped instead of crashing the whole parse.
+			name: "empty dependency entry does not panic and is skipped",
+			file: "testdata/empty_dep_entry.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask"),
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

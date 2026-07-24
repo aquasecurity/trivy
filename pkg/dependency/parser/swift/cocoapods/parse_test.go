@@ -94,3 +94,23 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+// TestParse_EmptyChildDependency is a regression test: an empty-string child
+// dependency entry (valid YAML, invalid Podfile.lock) used to panic with
+// "index out of range [0] with length 0" in strings.Fields(s)[0]. It must
+// now be skipped instead of crashing the whole parse.
+func TestParse_EmptyChildDependency(t *testing.T) {
+	f, err := os.Open("testdata/empty_child_dep.lock")
+	require.NoError(t, err)
+	defer f.Close()
+
+	gotPkgs, _, err := cocoapods.NewParser().Parse(t.Context(), f)
+	require.NoError(t, err)
+
+	names := make([]string, 0, len(gotPkgs))
+	for _, pkg := range gotPkgs {
+		names = append(names, pkg.Name)
+	}
+	assert.ElementsMatch(t, []string{"AppCenter", "KeychainAccess"}, names,
+		"both real packages should still be parsed despite the empty child dependency entry")
+}

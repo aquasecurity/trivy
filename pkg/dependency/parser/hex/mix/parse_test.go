@@ -86,3 +86,23 @@ func TestParser_Parse(t *testing.T) {
 		})
 	}
 }
+
+// TestParser_Parse_EmptyBody is a regression test: a mix.lock entry with an
+// empty body (e.g. `"x":` with nothing after the colon) used to panic with
+// "index out of range [0] with length 0" in strings.Contains(ss[0], ":git")
+// when len(ss) == 0. It must now be skipped instead of crashing.
+func TestParser_Parse_EmptyBody(t *testing.T) {
+	parser := NewParser()
+	f, err := os.Open("testdata/empty_body.mix.lock")
+	require.NoError(t, err)
+	defer f.Close()
+
+	pkgs, _, err := parser.Parse(t.Context(), f)
+	require.NoError(t, err)
+
+	names := make([]string, 0, len(pkgs))
+	for _, pkg := range pkgs {
+		names = append(names, pkg.Name)
+	}
+	assert.Equal(t, []string{"bunt"}, names, "the valid entry should still be parsed; the empty-body entry should be skipped, not panic")
+}
