@@ -42,7 +42,11 @@ func NewScanner() *Scanner {
 
 // Detect scans the packages using amazon scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	osVer = strings.Fields(osVer)[0]
+	// A version-less "/etc/system-release" leaves no fields; keep the version
+	// empty and let the fallback below treat it as Amazon Linux 1.
+	if fields := strings.Fields(osVer); len(fields) > 0 {
+		osVer = fields[0]
+	}
 	// The format `2023.xxx.xxxx` can be used.
 	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
@@ -103,7 +107,12 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 // IsSupportedVersion checks if the version is supported.
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
-	osVer = strings.Fields(osVer)[0]
+	fields := strings.Fields(osVer)
+	if len(fields) == 0 {
+		// No version information (e.g. "/etc/system-release" with no version); cannot determine support.
+		return false
+	}
+	osVer = fields[0]
 	// The format `2023.xxx.xxxx` can be used.
 	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {

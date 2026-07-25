@@ -72,6 +72,13 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty.mix.lock",
 			want:      nil,
 		},
+		{
+			// A dependency with nothing after the colon leaves no fields to
+			// inspect; it must be skipped instead of panicking.
+			name:      "no fields",
+			inputFile: "testdata/no-fields.mix.lock",
+			want:      nil,
+		},
 	}
 
 	for _, tt := range tests {
