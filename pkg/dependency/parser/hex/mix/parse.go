@@ -43,6 +43,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		ss := strings.FieldsFunc(body, func(r rune) bool {
 			return unicode.IsSpace(r) || r == ','
 		})
+		if len(ss) == 0 {
+			// An entry with nothing after the colon, e.g. `"bunt":`
+			// cf. #10976
+			p.logger.Warn("Cannot parse dependency", log.String("line", line))
+			continue
+		}
 		if len(ss) < 8 { // In the case where <required deps> array is empty: s == 8, in other cases s > 8
 			// git repository doesn't have dependency version
 			// skip these dependencies

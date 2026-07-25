@@ -1,0 +1,7 @@
+PODS:
+  - AppCenter (4.2.0):
+    - " "
+    - AppCenter/Core (= 4.2.0)
+  - AppCenter/Core (4.2.0)
+
+COCOAPODS: 1.11.2
