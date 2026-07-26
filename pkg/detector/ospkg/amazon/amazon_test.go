@@ -244,6 +244,17 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			// A version-less "/etc/system-release" (e.g. just "Amazon Linux") must
+			// not panic; it is simply reported as unsupported.
+			name: "empty version",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
