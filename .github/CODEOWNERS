@@ -16,6 +16,8 @@ pkg/iac/                              @nikpivkin
 
 # Helm chart
 helm/trivy/ @afdesk
+# Chart.yaml is bumped automatically by CI, so trivy team may approve it.
+helm/trivy/Chart.yaml @aquasecurity/trivy
 
 # Kubernetes scanning
 pkg/k8s/                         @afdesk

@@ -1,0 +1,276 @@
+name: Test
+on:
+  pull_request:
+      paths-ignore:
+      - '**.md'
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'LICENSE'
+      - '.release-please-manifest.json' ## don't run tests for release-please PRs
+      - 'helm/trivy/Chart.yaml'
+  merge_group:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Test
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: go mod tidy
+        run: |
+          go mod tidy
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'go mod tidy' and push it"
+            exit 1
+          fi
+        if: matrix.operating-system == 'ubuntu-latest'
+
+      - name: Lint
+        id: lint
+        uses: golangci/golangci-lint-action@82606bf257cbaff209d206a39f5134f0cfbfd2ee # v9.2.1
+        with:
+          version: v2.12
+          args: --verbose
+          skip-save-cache: true  # Restore cache from main branch but don't save new cache
+        env:
+          GOEXPERIMENT: jsonv2
+        if: matrix.operating-system == 'ubuntu-latest'
+
+      - name: Check if linter failed
+        run: |
+          echo "Linter failed, running 'mage lint:fix' might help to correct some errors"
+          exit 1
+        if: ${{ failure() && steps.lint.conclusion == 'failure' }}
+
+      - name: Install tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Check if CLI references are up-to-date
+        run: |
+          mage docs:generate
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage docs:generate' and push it"
+            exit 1
+          fi
+        if: matrix.operating-system == 'ubuntu-latest'
+
+      - name: Run unit tests
+        run: mage test:unit
+
+  integration:
+    name: Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      # GitHub runners were rolled back to Docker Engine v28, while tests rely on Docker Engine v29.
+      # This version mismatch leads to differences in image IDs and causes integration tests to fail.
+      # We explicitly install Docker Engine v29 to ensure consistent behavior.
+      # Remove this temporary solution when the issue is resolved.
+      # https://github.com/actions/runner-images/issues/13474
+      - name: Set up Docker
+        uses: docker/setup-docker-action@0234bb73ccb40f0c430b795634f9247e2b5c2d23 # v5.2.0
+        with:
+          version: v29.2.1
+          set-host: true
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags |= sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+
+      - name: Run integration tests
+        run: mage test:integration
+
+  k8s-integration:
+    name: K8s Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out code into the Go module directory
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Run k8s integration tests
+        run: mage test:k8s
+
+  module-test:
+    name: Module Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags += ["containerd"] | .Tags |= sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test images from cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: integration/testdata/fixtures/images
+          key: cache-test-images-${{ steps.image-digest.outputs.digest }}
+
+      - name: Run module integration tests
+        shell: bash
+        run: |
+          mage test:module
+
+  vm-test:
+    name: VM Integration Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Generate image list digest
+        id: image-digest
+        run: |
+          source integration/testimages.ini
+          IMAGE_LIST=$(skopeo list-tags docker://$TEST_VM_IMAGES)
+          DIGEST=$(echo "$IMAGE_LIST" | jq '.Tags |= sort' | sha256sum | cut -d' ' -f1)
+          echo "digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Restore test VM images from cache
+        uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+        with:
+          path: integration/testdata/fixtures/vm-images
+          key: cache-test-vm-images-${{ steps.image-digest.outputs.digest }}
+
+      - name: Run vm integration tests
+        run: |
+          mage test:vm
+
+  e2e-test:
+    name: E2E Test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Run E2E tests
+        run: mage test:e2e
+
+  build-test:
+    name: Build Test
+    runs-on: ${{ matrix.operating-system }}
+    strategy:
+      matrix:
+        operating-system: [ubuntu-latest, windows-latest, macos-latest]
+    env:
+      DOCKER_CLI_EXPERIMENTAL: "enabled"
+    steps:
+    # The go-build (GOCACHE env) directory requires a large amount of free disk space.
+    - name: Free up disk space
+      if: matrix.operating-system == 'ubuntu-latest'
+      run: |
+        sudo rm -rf /usr/local/lib/android
+        sudo rm -rf /usr/share/dotnet
+        sudo rm -rf /opt/ghc
+        sudo rm -rf /opt/hostedtoolcache/CodeQL
+        sudo docker image prune --all --force
+        df -h
+
+    - name: Checkout
+      uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      with:
+        persist-credentials: false
+
+    - name: Set up Go
+      uses: ./.github/actions/setup-go
+
+    - name: Determine GoReleaser ID
+      id: goreleaser_id
+      shell: bash
+      run: |
+        if [ "${{ matrix.operating-system }}" == "windows-latest" ]; then
+          echo "id=--id build-windows" >> $GITHUB_OUTPUT
+        elif [ "${{ matrix.operating-system }}" == "macos-latest" ]; then
+          echo "id=--id build-macos --id build-bsd" >> $GITHUB_OUTPUT
+        else
+          echo "id=--id build-linux" >> $GITHUB_OUTPUT
+        fi
+
+    - name: Run GoReleaser
+      uses: goreleaser/goreleaser-action@5daf1e915a5f0af01ddbcd89a43b8061ff4f1a89 # v7.2.2
+      with:
+        version: v2.16.0
+        args: build --snapshot --clean --timeout 90m ${{ steps.goreleaser_id.outputs.id }}
+
+  # This job intentionally runs on all PRs (not scoped to .github/ path changes)
+  # to keep all checks in one place. The scan itself is scoped to .github/ via the action input.
+  zizmor:
+    name: Lint GitHub Actions
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+      - uses: zizmorcore/zizmor-action@5f14fd08f7cf1cb1609c1e344975f152c7ee938d # v0.5.6
+        with:
+          inputs: .github/
+          advanced-security: true

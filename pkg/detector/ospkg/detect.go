@@ -128,34 +128,26 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	filteredPkgs := filterPkgs(ctx, d.target.Packages)
-	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filteredPkgs)
+	// gpg-pubkey does not carry a real version.
+	// Matching it against any advisory is meaningless, for every driver.
+	pkgs := lo.Filter(d.target.Packages, func(pkg ftypes.Package, _ int) bool {
+		return pkg.Name != "gpg-pubkey"
+	})
+
+	// By default, drop packages installed from third-party repositories such as EPEL or
+	// Docker: an OS vendor's advisories do not describe them. A driver whose own feed
+	// covers those packages (Echo, Seal) implements packageFilter to keep them instead.
+	filterFunc := driver.DropThirdPartyPackages
+	if f, ok := d.driver.(driver.PackageFilter); ok {
+		filterFunc = f.FilterPackages
+	}
+
+	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filterFunc(ctx, pkgs))
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
 
 	return vulns, eosl, nil
-}
-
-// filterPkgs filters out packages that should not be scanned:
-//   - gpg-pubkey: doesn't use the correct version
-//   - Third-party packages: not covered by official OS security advisories
-func filterPkgs(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
-	var skipped []string
-	filtered := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
-		if pkg.Name == "gpg-pubkey" {
-			return false
-		}
-		if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
-			skipped = append(skipped, pkg.Name)
-			return false
-		}
-		return true
-	})
-	if len(skipped) > 0 {
-		log.DebugContext(ctx, "Skipping third-party packages", log.Any("packages", skipped))
-	}
-	return filtered
 }
 
 func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {

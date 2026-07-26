@@ -928,6 +928,7 @@
       }
     }
   },
+  "$id": "https://raw.githubusercontent.com/aquasecurity/trivy/main/schema/trivy-config.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "title": "Trivy Configuration",
   "description": "Configuration file for Trivy security scanner (trivy.yaml)"

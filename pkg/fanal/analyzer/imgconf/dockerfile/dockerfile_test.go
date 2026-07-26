@@ -459,6 +459,17 @@ ENTRYPOINT ["/bin/sh"]
 `,
 		},
 		{
+			name: "healthcheck history without resolved config",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK NONE",
+					},
+				},
+			},
+			expected: "HEALTHCHECK NONE\n",
+		},
+		{
 			name: "legacy env format",
 			input: &v1.ConfigFile{
 				History: []v1.History{

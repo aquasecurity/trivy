@@ -1090,4 +1090,37 @@ var (
 		},
 	}
 	pnpmV9MultipleDocumentsDeps = []ftypes.Dependency{}
+
+	// pnpmV9MultiVersion tests that when multiple workspaces depend on the same
+	// package at different versions, all versions are reported. This guards against
+	// a bug where deps[name]=version (name-only key) caused the last importer
+	// iterated in Go's random map order to silently overwrite earlier versions.
+	//
+	// docker run --rm node@sha256:b46a10d964ad15136ebdf9012142131481caa0697d7a4d4eafe4bbabd818f876 sh -c '
+	// npm install -g pnpm@11.9.0
+	// mkdir /app && cd /app
+	// mkdir app-a app-b
+	// cat > pnpm-workspace.yaml <<EOF
+	// packages:
+	// - app-a
+	// - app-b
+	// EOF
+	// (cd app-a && pnpm init && pnpm add is-number@6.0.0)
+	// (cd app-b && pnpm init && pnpm add is-number@7.0.0)
+	// cat pnpm-lock.yaml'
+	pnpmV9MultiVersion = []ftypes.Package{
+		{
+			ID:           "is-number@6.0.0",
+			Name:         "is-number",
+			Version:      "6.0.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "is-number@7.0.0",
+			Name:         "is-number",
+			Version:      "7.0.0",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9MultiVersionDeps = []ftypes.Dependency{}
 )

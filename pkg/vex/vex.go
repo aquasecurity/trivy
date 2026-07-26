@@ -109,7 +109,7 @@ func New(ctx context.Context, report *types.Report, opts Options) (*Client, erro
 				return nil, xerrors.Errorf("failed to create a vex repository set: %w", err)
 			}
 		case TypeOCI:
-			v, err = NewOCI(report)
+			v, err = NewOCI(ctx, report)
 			if err != nil {
 				return nil, xerrors.Errorf("VEX OCI error: %w", err)
 			} else if lo.IsNil(v) {

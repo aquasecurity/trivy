@@ -101,6 +101,9 @@ func (p *Parser) toPackage(dep Dependency) ftypes.Package {
 func (*Parser) parseDependency(line string) (string, string) {
 	line = strings.NewReplacer(">", " >", "<", " <", "=", " ").Replace(line)
 	parts := strings.Fields(line)
+	if len(parts) == 0 {
+		return "", ""
+	}
 	name := parts[0]
 	if len(parts) == 1 {
 		return name, ""

@@ -38,10 +38,11 @@ To find information about these JARs[^2], the same logic is used as for the base
 `table` format only contains the name of root JAR[^2] . To get the full path to inner JARs[^2] use the `json` format.
 
 ### Licenses
-Trivy detects licenses for a JAR[^2] from two sources, in this order:
+Trivy detects licenses for a JAR[^2] from three sources, in this order:
 
 1. **Embedded POM** — the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml`, matched to the package by `groupId:artifactId`.
-2. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
+2. **Jenkins plugin manifest** — `Plugin-License-Name` attributes in `META-INF/MANIFEST.MF`, including suffixed variants such as `Plugin-License-Name-2`.
+3. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
 
 Notes and limitations:
 
