@@ -1,6 +1,6 @@
-package secret
+        segredo
 
-import (
+      (
 	"fmt"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
