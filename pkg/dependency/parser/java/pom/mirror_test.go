@@ -137,15 +137,19 @@ func Test_mirror_matches(t *testing.T) {
 	}
 }
 
+// Test_resolveMirrors covers resolveMirrors for both sources: settings.xml <mirror>
+// entries (pattern splitting, <server> credentials, dropping bad entries) and
+// config-file mirrors (key normalization, target order, dropping bad entries).
 func Test_resolveMirrors(t *testing.T) {
 	tests := []struct {
-		name    string
-		mirrors []Mirror
-		servers []Server
-		want    []mirror
+		name          string
+		mirrors       []Mirror
+		servers       []Server
+		configMirrors map[string][]string
+		want          mirrors
 	}{
 		{
-			name: "split, trim and drop empty patterns",
+			name: "settings.xml: split, trim and drop empty patterns",
 			mirrors: []Mirror{
 				{
 					ID:       "m1",
@@ -153,16 +157,18 @@ func Test_resolveMirrors(t *testing.T) {
 					MirrorOf: "  central , , !internal ,",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"central", "!internal"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"central", "!internal"},
+						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "credentials embedded from <server> matching mirror id",
+			name: "settings.xml: credentials embedded from <server> matching mirror id",
 			mirrors: []Mirror{
 				{
 					ID:       "m1",
@@ -177,16 +183,18 @@ func Test_resolveMirrors(t *testing.T) {
 					Password: "pass",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://user:pass@mirror.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://user:pass@mirror.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "<server> credentials override userinfo embedded in mirror URL",
+			name: "settings.xml: <server> credentials override userinfo embedded in mirror URL",
 			mirrors: []Mirror{
 				{
 					ID:       "m1",
@@ -201,16 +209,18 @@ func Test_resolveMirrors(t *testing.T) {
 					Password: "server-pass",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://server-user:server-pass@mirror.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://server-user:server-pass@mirror.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "server with non-matching id is ignored",
+			name: "settings.xml: server with non-matching id is ignored",
 			mirrors: []Mirror{
 				{
 					ID:       "m1",
@@ -225,16 +235,18 @@ func Test_resolveMirrors(t *testing.T) {
 					Password: "pass",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "mirror with empty mirrorOf is dropped",
+			name: "settings.xml: mirror with empty mirrorOf is dropped",
 			mirrors: []Mirror{
 				{
 					ID:       "m1",
@@ -247,16 +259,18 @@ func Test_resolveMirrors(t *testing.T) {
 					MirrorOf: "central",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "m2",
-					patterns: []string{"central"},
-					url:      mustParseURL(t, "https://other.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "m2",
+						patterns: []string{"central"},
+						url:      mustParseURL(t, "https://other.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "mirror with unparsable URL is dropped",
+			name: "settings.xml: mirror with unparsable URL is dropped",
 			mirrors: []Mirror{
 				{
 					ID:       "broken",
@@ -269,78 +283,60 @@ func Test_resolveMirrors(t *testing.T) {
 					MirrorOf: "*",
 				},
 			},
-			want: []mirror{
-				{
-					id:       "ok",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+			want: mirrors{
+				settings: []mirror{
+					{
+						id:       "ok",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name:    "no mirrors yields nil",
-			mirrors: nil,
-			want:    nil,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got := resolveMirrors(tt.mirrors, tt.servers, nil)
-			require.Equal(t, tt.want, got.settings)
-		})
-	}
-}
-
-// Test_resolveMirrors_configFile covers the config-file branch of resolveMirrors:
-// key normalization, target order, and dropping of unparsable/empty entries.
-func Test_resolveMirrors_configFile(t *testing.T) {
-	tests := []struct {
-		name  string
-		input map[string][]string
-		want  map[string][]url.URL
-	}{
-		{
-			name:  "nil input yields nil",
-			input: nil,
-			want:  nil,
+			name: "no input yields empty mirrors",
+			want: mirrors{},
 		},
 		{
-			name: "key normalized (trailing slash trimmed), targets kept in order",
-			input: map[string][]string{
+			name: "config file: key normalized (trailing slash trimmed), targets kept in order",
+			configMirrors: map[string][]string{
 				"https://repo.example.com/maven2/": {
 					"https://m1.example.com/maven2",
 					"https://m2.example.com/maven2",
 				},
 			},
-			want: map[string][]url.URL{
-				"https://repo.example.com/maven2": {
-					mustParseURL(t, "https://m1.example.com/maven2"),
-					mustParseURL(t, "https://m2.example.com/maven2"),
+			want: mirrors{
+				configFile: map[string][]url.URL{
+					"https://repo.example.com/maven2": {
+						mustParseURL(t, "https://m1.example.com/maven2"),
+						mustParseURL(t, "https://m2.example.com/maven2"),
+					},
 				},
 			},
 		},
 		{
-			name: "entry with only an unparsable target is dropped",
-			input: map[string][]string{
+			name: "config file: entry with only an unparsable target is dropped",
+			configMirrors: map[string][]string{
 				"https://repo.example.com/maven2": {"http://[::1"},
 			},
-			want: nil,
+			want: mirrors{},
 		},
 		{
-			name: "unparsable target is dropped, valid ones kept",
-			input: map[string][]string{
+			name: "config file: unparsable target is dropped, valid ones kept",
+			configMirrors: map[string][]string{
 				"https://repo.example.com/maven2": {"http://[::1", "https://ok.example.com/maven2"},
 			},
-			want: map[string][]url.URL{
-				"https://repo.example.com/maven2": {mustParseURL(t, "https://ok.example.com/maven2")},
+			want: mirrors{
+				configFile: map[string][]url.URL{
+					"https://repo.example.com/maven2": {mustParseURL(t, "https://ok.example.com/maven2")},
+				},
 			},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			require.Equal(t, tt.want, resolveMirrors(nil, nil, tt.input).configFile)
+			require.Equal(t, tt.want, resolveMirrors(tt.mirrors, tt.servers, tt.configMirrors))
 		})
 	}
 }
