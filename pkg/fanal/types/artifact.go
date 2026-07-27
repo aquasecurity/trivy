@@ -25,6 +25,9 @@ type OS struct {
 	Name   string
 	Eosl   bool `json:"EOSL,omitempty"`
 
+	// Supplier names the third party that rebuilt the OS packages, e.g. Seal Security.
+	Supplier Supplier `json:",omitempty"`
+
 	// This field is used for enhanced security maintenance programs such as Ubuntu ESM, Debian Extended LTS.
 	Extended bool `json:"extended,omitempty"`
 }
@@ -66,6 +69,9 @@ func (o *OS) Merge(newOS OS) {
 		}
 		if o.Name == "" {
 			o.Name = newOS.Name
+		}
+		if o.Supplier == "" {
+			o.Supplier = newOS.Supplier
 		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.

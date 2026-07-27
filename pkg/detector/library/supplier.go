@@ -8,37 +8,37 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
 
-// MatchResult describes how strongly a package matches a vendor.
+// MatchResult describes how strongly a package matches a supplier.
 type MatchResult int
 
 const (
-	// NoMatch indicates the package does not belong to the vendor.
+	// NoMatch indicates the package does not belong to the supplier.
 	NoMatch MatchResult = iota
 
-	// Matched indicates the package definitely belongs to the vendor.
+	// Matched indicates the package definitely belongs to the supplier.
 	Matched
 
-	// Candidate indicates the package might belong to the vendor, e.g. a version
+	// Candidate indicates the package might belong to the supplier, e.g. a version
 	// suffix that can also appear on real packages (`-spN` on Go/npm packages).
 	// Callers should confirm a Candidate before relying on it, and otherwise fall
-	// back to default (non-vendor) handling.
+	// back to default (non-supplier) handling.
 	Candidate
 )
 
-// Vendor represents a third-party security vendor that provides patched packages
-// with their own vulnerability advisories. These vendors (e.g., Seal Security)
+// Supplier represents a third-party security supplier that provides patched packages
+// with their own vulnerability advisories. These suppliers (e.g., Seal Security)
 // offer patched versions of open source packages and maintain separate advisory
 // databases that should be used instead of the standard ecosystem advisories.
 //
-// When a package is identified as coming from a vendor, Trivy queries the
-// vendor-specific advisory bucket (e.g., "seal pip::") rather than the
+// When a package is identified as coming from a supplier, Trivy queries the
+// supplier-specific advisory bucket (e.g., "seal pip::") rather than the
 // standard ecosystem bucket (e.g., "pip::").
-type Vendor interface {
-	// Name returns the vendor identifier used in the advisory bucket prefix.
+type Supplier interface {
+	// Name returns the supplier identifier used in the advisory bucket prefix.
 	// For example, "seal" results in advisory queries to "seal pip::", "seal npm::", etc.
 	Name() string
 
-	// Match determines whether a package is provided by this vendor.
+	// Match determines whether a package is provided by this supplier.
 	// It receives the ecosystem type, a normalized package name
 	// (see vulnerability.NormalizePkgName), and version to make the determination.
 	Match(eco ecosystem.Type, pkgName, pkgVer string) MatchResult
@@ -48,35 +48,35 @@ type Vendor interface {
 	BucketPrefix(eco ecosystem.Type) string
 
 	// Comparer returns a version comparer for the given ecosystem.
-	// The defaultComparer is provided so the vendor can return it unchanged
+	// The defaultComparer is provided so the supplier can return it unchanged
 	// when no custom comparison logic is needed.
 	Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer
 }
 
-// vendors is the list of registered vendors. The first matching vendor wins.
+// suppliers is the list of registered suppliers. The first matching supplier wins.
 // See also: pkg/detector/ospkg/seal/ for the OS package equivalent.
-var vendors []Vendor
+var suppliers []Supplier
 
-// RegisterVendor registers a new vendor for library vulnerability detection.
-// It should be called from an init() function in the vendor's package.
-func RegisterVendor(v Vendor) {
-	vendors = append(vendors, v)
+// RegisterSupplier registers a new supplier for library vulnerability detection.
+// It should be called from an init() function in the supplier's package.
+func RegisterSupplier(v Supplier) {
+	suppliers = append(suppliers, v)
 }
 
-// DeregisterVendor removes a registered vendor by name.
-// Use it to opt out of a vendor that was registered via
-// pkg/detector/library/all (e.g., DeregisterVendor("seal")).
-func DeregisterVendor(name string) {
-	vendors = slices.DeleteFunc(vendors, func(v Vendor) bool {
+// DeregisterSupplier removes a registered supplier by name.
+// Use it to opt out of a supplier that was registered via
+// pkg/detector/library/all (e.g., DeregisterSupplier("seal")).
+func DeregisterSupplier(name string) {
+	suppliers = slices.DeleteFunc(suppliers, func(v Supplier) bool {
 		return v.Name() == name
 	})
 }
 
-// lookupVendor finds the matching vendor for the given package.
-// If a vendor matches, it is returned together with its match result
-// (Matched or Candidate). If no vendor matches, it returns nil and NoMatch.
-func lookupVendor(eco ecosystem.Type, pkgName, pkgVer string) (Vendor, MatchResult) {
-	for _, v := range vendors {
+// lookupSupplier finds the matching supplier for the given package.
+// If a supplier matches, it is returned together with its match result
+// (Matched or Candidate). If no supplier matches, it returns nil and NoMatch.
+func lookupSupplier(eco ecosystem.Type, pkgName, pkgVer string) (Supplier, MatchResult) {
+	for _, v := range suppliers {
 		if res := v.Match(eco, pkgName, pkgVer); res != NoMatch {
 			return v, res
 		}

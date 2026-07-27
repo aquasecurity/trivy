@@ -15,12 +15,12 @@ var (
 	alpineRootIOPattern = regexp.MustCompile(`-r\d007\d`)
 )
 
-// Provider creates a Root.io driver if Root.io packages are detected
-func Provider(osFamily ftypes.OSType, pkgs []ftypes.Package) driver.Driver {
-	if !isRootIOEnvironment(osFamily, pkgs) {
+// Supplier creates a Root.io driver if Root.io packages are detected
+func Supplier(os ftypes.OS, pkgs []ftypes.Package) driver.Driver {
+	if !isRootIOEnvironment(os.Family, pkgs) {
 		return nil
 	}
-	return NewScanner(osFamily)
+	return NewScanner(os.Family)
 }
 
 // isRootIOEnvironment detects if the environment is Root.io based on package suffixes
