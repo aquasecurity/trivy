@@ -50,8 +50,7 @@ func WithOffline(offline bool) option {
 }
 
 // WithConfigFileMirrors injects Maven mirrors from Trivy's config file:
-// each source repository URL maps to an ordered list of
-// fallback mirror URLs, applied on top of the settings.xml mirrors.
+// each source repository URL maps to an ordered list of fallback mirror URLs.
 func WithConfigFileMirrors(mirrors map[string][]string) option {
 	return func(opts *options) {
 		opts.configFileMirrors = mirrors
@@ -174,12 +173,12 @@ func NewParser(filePath string, opts ...option) *Parser {
 //
 //  1. settings.xml <mirror> entries — the first matching mirror replaces repo (Maven
 //     first-match; no chaining within this source).
-//  2. config-file mirrors (scan.maven.mirrors) — if an entry matches the URL from
-//     pass 1, repo expands into one candidate per listed mirror, in order (fallbacks).
+//  2. config-file mirrors — if an entry matches repo's URL, repo expands into one
+//     candidate per listed mirror, in order (fallbacks).
 //
-// The passes chain: pass 2 runs on the URL rewritten by pass 1, so settings.xml
-// repo1->repo2 followed by trivy.yaml repo2->repo3 resolves repo1 to repo3. When both
-// sources match the same repository settings.xml wins (it rewrites first, so pass 2 no
+// The two passes chain: pass 2 runs on the URL rewritten by pass 1, so a settings.xml
+// mapping repo1->repo2 followed by a config-file mapping repo2->repo3 resolves repo1 to
+// repo3. When both map the same repo, settings.xml wins (it rewrites first, so pass 2 no
 // longer matches). With no match, the single element repo is returned unchanged.
 func (p *Parser) mirrorFor(repo repository) []repository {
 	// Pass 1: settings.xml mirrors (a single mirror, Maven first-match).
@@ -196,14 +195,16 @@ func (p *Parser) mirrorFor(repo repository) []repository {
 		break
 	}
 
-	// Pass 2: config-file mirrors, matched by the (possibly rewritten) repository URL.
-	// Each listed mirror becomes a fallback candidate with its URL rewritten.
-	if targets, ok := p.mirrors.configFile[mirrorKey(repo.url)]; ok {
-		return lo.Map(targets, func(target url.URL, _ int) repository {
-			r := repo
-			r.url = target
-			return r
-		})
+	// Pass 2: config-file mirrors, looked up by the current repository URL.
+	// Each listed mirror becomes a fallback candidate.
+	if len(p.mirrors.configFile) > 0 {
+		if targets, ok := p.mirrors.configFile[mirrorKey(repo.url)]; ok {
+			return lo.Map(targets, func(target url.URL, _ int) repository {
+				r := repo
+				r.url = target
+				return r
+			})
+		}
 	}
 
 	return []repository{repo}

@@ -18,10 +18,10 @@ type mirror struct {
 	url      url.URL  // parsed URL with userinfo from the matching <server>
 }
 
-// mirrors holds the two mirror sources the parser applies.
+// mirrors holds the resolved mirrors from settings.xml and from the config file.
 type mirrors struct {
 	settings   []mirror             // settings.xml mirrors
-	configFile map[string][]url.URL // scan.maven.mirrors; key: mirrorKey(source), value: ordered parsed mirror URLs (fallbacks)
+	configFile map[string][]url.URL // config-file mirrors; key: mirrorKey(source), value: ordered parsed mirror URL
 }
 
 // resolveMirrors resolves and validates both mirror sources into their runtime form:
@@ -71,11 +71,9 @@ func resolveMirrors(settingsMirrors []Mirror, servers []Server, configFileMirror
 	}
 
 	for src, targets := range configFileMirrors {
+		// Config-file mirror URLs are validated when the config file is parsed (fail-fast).
 		srcURL, err := url.Parse(src)
 		if err != nil {
-			// Don't log the raw URL: it may carry userinfo. Parsing failed, so
-			// there is no parsed URL to Redacted(); log without the value.
-			logger.Debug("Unable to parse config-file mirror source url")
 			continue
 		}
 
@@ -83,7 +81,6 @@ func resolveMirrors(settingsMirrors []Mirror, servers []Server, configFileMirror
 		for _, target := range targets {
 			mirrorURL, err := url.Parse(target)
 			if err != nil {
-				logger.Debug("Unable to parse config-file mirror url", log.String("source", srcURL.Redacted()))
 				continue
 			}
 			mirrorURLs = append(mirrorURLs, *mirrorURL)
