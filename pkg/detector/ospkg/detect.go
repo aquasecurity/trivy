@@ -129,44 +129,26 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	eosl := !d.driver.IsSupportedVersion(ctx, d.target.OS.Family, d.target.OS.Name)
 
-	// includeThirdParty passes third-party packages through to Detect when the
-	// driver implements ThirdPartyAware (e.g. RapidFort curates advisories for them).
-	includeThirdParty := false
-	if tp, ok := d.driver.(driver.ThirdPartyAware); ok {
-		includeThirdParty = tp.IncludesThirdParty()
+	// gpg-pubkey does not carry a real version.
+	// Matching it against any advisory is meaningless, for every driver.
+	pkgs := lo.Filter(d.target.Packages, func(pkg ftypes.Package, _ int) bool {
+		return pkg.Name != "gpg-pubkey"
+	})
+
+	// By default, drop packages installed from third-party repositories such as EPEL or
+	// Docker: an OS vendor's advisories do not describe them. A driver whose own feed
+	// covers those packages (Echo, Seal, RapidFort) implements PackageFilter to keep them instead.
+	filterFunc := driver.DropThirdPartyPackages
+	if f, ok := d.driver.(driver.PackageFilter); ok {
+		filterFunc = f.FilterPackages
 	}
-	pkgs := filterPkgs(ctx, d.target.Packages, includeThirdParty)
-	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, pkgs)
+
+	vulns, err := d.driver.Detect(ctx, d.target.OS.Name, d.target.Repository, filterFunc(ctx, pkgs))
 	if err != nil {
 		return nil, false, xerrors.Errorf("failed detection: %w", err)
 	}
 
 	return vulns, eosl, nil
-}
-
-// filterPkgs filters out packages that should not be scanned:
-//   - gpg-pubkey: has no valid version — always dropped regardless of driver.
-//   - Third-party packages: not covered by official OS security advisories, so
-//     they are dropped by default. A driver can opt out via ThirdPartyAware
-//     (e.g. RapidFort curates its own advisories for third-party packages);
-//     when includeThirdParty is true they are passed through untouched, but
-//     gpg-pubkey is still stripped above.
-func filterPkgs(ctx context.Context, pkgs []ftypes.Package, includeThirdParty bool) []ftypes.Package {
-	var skipped []string
-	filtered := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
-		if pkg.Name == "gpg-pubkey" {
-			return false
-		}
-		if !includeThirdParty && pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
-			skipped = append(skipped, pkg.Name)
-			return false
-		}
-		return true
-	})
-	if len(skipped) > 0 {
-		log.DebugContext(ctx, "Skipping third-party packages", log.Any("packages", skipped))
-	}
-	return filtered
 }
 
 func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {

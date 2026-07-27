@@ -59,6 +59,58 @@ func TestManager_Config(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "repository name with path traversal",
+			setup: func(t *testing.T, dir string) {
+				config := repo.Config{
+					Repositories: []repo.Repository{
+						{
+							Name:    filepath.Join("..", "..", "outside-target"),
+							URL:     "https://example.com/repo",
+							Enabled: true,
+						},
+					},
+				}
+				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
+				testutil.MustWriteYAML(t, configPath, config)
+			},
+			wantErr: "invalid repository name",
+		},
+		{
+			name: "repository name with absolute path",
+			setup: func(t *testing.T, dir string) {
+				config := repo.Config{
+					Repositories: []repo.Repository{
+						{
+							// dir is t.TempDir(), i.e. an absolute path, so this yields an absolute repository name.
+							Name:    filepath.Join(dir, "outside-target"),
+							URL:     "https://example.com/repo",
+							Enabled: true,
+						},
+					},
+				}
+				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
+				testutil.MustWriteYAML(t, configPath, config)
+			},
+			wantErr: "invalid repository name",
+		},
+		{
+			name: "empty repository name",
+			setup: func(t *testing.T, dir string) {
+				config := repo.Config{
+					Repositories: []repo.Repository{
+						{
+							Name:    "",
+							URL:     "https://example.com/repo",
+							Enabled: true,
+						},
+					},
+				}
+				configPath := filepath.Join(dir, ".trivy", "vex", "repository.yaml")
+				testutil.MustWriteYAML(t, configPath, config)
+			},
+			wantErr: "invalid repository name",
+		},
 	}
 
 	for _, tt := range tests {
