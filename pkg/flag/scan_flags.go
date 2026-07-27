@@ -247,8 +247,8 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 
 	var mavenMirrors map[string][]string
 	if f.MavenMirrors != nil {
-		var err error
-		if mavenMirrors, err = validateMavenMirrors(f.MavenMirrors.Value()); err != nil {
+		mavenMirrors = f.MavenMirrors.Value()
+		if err := validateMavenMirrors(mavenMirrors); err != nil {
 			return err
 		}
 	}
@@ -272,23 +272,28 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 	return nil
 }
 
-// validateMavenMirrors parses and validates the Maven mirror URLs configured via
-// scan.maven.mirrors. Unlike RegistryMirrorsFlag (no validation) and the pom
-// parser's resolveMirrors (silently drops bad URLs), an unparsable URL here is a
-// configuration error the user must learn about at startup (fail-fast).
-// The returned map is the input unchanged; the function only validates.
-func validateMavenMirrors(mirrors map[string][]string) (map[string][]string, error) {
+// validateMavenMirrors returns an error on the first invalid URL in the Maven mirror
+// configuration — either a repository key or a mirror value. URLs must be absolute
+// (scheme and host), so a bare repository id such as "central" is rejected.
+func validateMavenMirrors(mirrors map[string][]string) error {
 	for src, targets := range mirrors {
-		// The key is a plain repository URL (no credentials), so it is safe to echo.
-		if _, err := url.Parse(src); err != nil {
-			return nil, xerrors.Errorf("invalid Maven repository URL %q in 'scan.maven.mirrors'", src)
+		// A URL may carry userinfo, so never echo it raw: redact before pointing at an entry.
+		if !isValidMirrorURL(src) {
+			return xerrors.New("invalid Maven repository URL in 'scan.maven.mirrors'")
 		}
-		// A mirror URL may carry userinfo, so report only which key it belongs to.
 		for _, target := range targets {
-			if _, err := url.Parse(target); err != nil {
-				return nil, xerrors.Errorf("one of the mirror URLs for repository %q in 'scan.maven.mirrors' is invalid", src)
+			if !isValidMirrorURL(target) {
+				s, _ := url.Parse(src)
+				return xerrors.Errorf("invalid Maven mirror URL in 'scan.maven.mirrors' for %s", s.Redacted())
 			}
 		}
 	}
-	return mirrors, nil
+	return nil
+}
+
+// isValidMirrorURL reports whether raw is an absolute URL usable as a Maven repository
+// or mirror: it must parse and have both a scheme and a host.
+func isValidMirrorURL(raw string) bool {
+	u, err := url.Parse(raw)
+	return err == nil && u.Scheme != "" && u.Host != ""
 }
