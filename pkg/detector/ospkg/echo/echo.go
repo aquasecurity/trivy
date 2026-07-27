@@ -81,3 +81,10 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
+
+// FilterPackages keeps every package, because the Echo feed is not tied to a base OS vendor.
+// Echo builds and patches software Debian does not ship at all, such as docker-compose-plugin, gitlab-runner and gh.
+// Dropping packages by repository class here risks losing detections the feed does cover.
+func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return pkgs
+}

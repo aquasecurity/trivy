@@ -330,9 +330,10 @@ func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ strin
 	return true
 }
 
-// IncludesThirdParty implements driver.ThirdPartyAware.
+// FilterPackages implements driver.PackageFilter.
 // RapidFort curated images may include patched versions of third-party packages
-// (e.g. MariaDB, Docker), so we scan them too rather than filtering them out.
-func (s *Scanner) IncludesThirdParty() bool {
-	return true
+// (e.g. MariaDB, Docker), which RapidFort's own feed covers — so we keep every
+// package here rather than letting the default third-party filter drop them.
+func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	return pkgs
 }
