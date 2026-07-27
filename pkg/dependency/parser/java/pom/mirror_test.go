@@ -346,21 +346,16 @@ func Test_resolveMirrors(t *testing.T) {
 // including cross-source chaining and fallback lists.
 func TestParser_mirrorFor(t *testing.T) {
 	tests := []struct {
-		name    string
-		mirrors mirrors
-		repo    repository
-		want    []repository
+		name            string
+		settingsMirrors []Mirror
+		configMirrors   map[string][]string
+		repo            repository
+		want            []repository
 	}{
 		{
 			name: "settings.xml: no match — repository returned unchanged",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "m1",
-						patterns: []string{"internal"},
-						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
-					},
-				},
+			settingsMirrors: []Mirror{
+				{ID: "m1", MirrorOf: "internal", URL: "https://mirror.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -377,14 +372,8 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "settings.xml: match by exact id — release/snapshot flags preserved",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "m1",
-						patterns: []string{"central"},
-						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
-					},
-				},
+			settingsMirrors: []Mirror{
+				{ID: "m1", MirrorOf: "central", URL: "https://mirror.example.com/maven2"},
 			},
 			repo: repository{
 				id:              "central",
@@ -403,14 +392,8 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "settings.xml: mirror credentials (not the original repo's) are kept",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "m1",
-						patterns: []string{"*"},
-						url:      mustParseURL(t, "https://mirror-user:mirror-pass@mirror.example.com/maven2"),
-					},
-				},
+			settingsMirrors: []Mirror{
+				{ID: "m1", MirrorOf: "*", URL: "https://mirror-user:mirror-pass@mirror.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -427,19 +410,9 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "settings.xml: first matching mirror wins",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "first",
-						patterns: []string{"*"},
-						url:      mustParseURL(t, "https://first.example.com/maven2"),
-					},
-					{
-						id:       "second",
-						patterns: []string{"*"},
-						url:      mustParseURL(t, "https://second.example.com/maven2"),
-					},
-				},
+			settingsMirrors: []Mirror{
+				{ID: "first", MirrorOf: "*", URL: "https://first.example.com/maven2"},
+				{ID: "second", MirrorOf: "*", URL: "https://second.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -456,19 +429,9 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "settings.xml: exclusion blocks match, falls through to next mirror",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "first",
-						patterns: []string{"*", "!central"},
-						url:      mustParseURL(t, "https://first.example.com/maven2"),
-					},
-					{
-						id:       "second",
-						patterns: []string{"central"},
-						url:      mustParseURL(t, "https://second.example.com/maven2"),
-					},
-				},
+			settingsMirrors: []Mirror{
+				{ID: "first", MirrorOf: "*,!central", URL: "https://first.example.com/maven2"},
+				{ID: "second", MirrorOf: "central", URL: "https://second.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -485,10 +448,8 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "config file: single mirror — repo1 -> repo3",
-			mirrors: mirrors{
-				configFile: configFileMirrors(map[string][]string{
-					"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
-				}),
+			configMirrors: map[string][]string{
+				"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -505,10 +466,8 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			name: "config file: trailing slash in key still matches",
-			mirrors: mirrors{
-				configFile: configFileMirrors(map[string][]string{
-					"https://repo1.example.com/maven2/": {"https://repo3.example.com/maven2"},
-				}),
+			configMirrors: map[string][]string{
+				"https://repo1.example.com/maven2/": {"https://repo3.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -526,13 +485,11 @@ func TestParser_mirrorFor(t *testing.T) {
 		{
 			// Several mirrors for one repository become ordered fallback candidates.
 			name: "config file: fallback list — repo1 -> [repo3, repo4] in order",
-			mirrors: mirrors{
-				configFile: configFileMirrors(map[string][]string{
-					"https://repo1.example.com/maven2": {
-						"https://repo3.example.com/maven2",
-						"https://repo4.example.com/maven2",
-					},
-				}),
+			configMirrors: map[string][]string{
+				"https://repo1.example.com/maven2": {
+					"https://repo3.example.com/maven2",
+					"https://repo4.example.com/maven2",
+				},
 			},
 			repo: repository{
 				id:             "central",
@@ -556,17 +513,11 @@ func TestParser_mirrorFor(t *testing.T) {
 			// Example 1 from the spec: both sources target repo1; settings.xml wins
 			// because it rewrites the URL first and the config pass no longer matches.
 			name: "cross-source: conflict on the same key — settings.xml wins",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "settings-mirror",
-						patterns: []string{"central"},
-						url:      mustParseURL(t, "https://repo2.example.com/maven2"),
-					},
-				},
-				configFile: configFileMirrors(map[string][]string{
-					"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
-				}),
+			settingsMirrors: []Mirror{
+				{ID: "settings-mirror", MirrorOf: "central", URL: "https://repo2.example.com/maven2"},
+			},
+			configMirrors: map[string][]string{
+				"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -585,17 +536,11 @@ func TestParser_mirrorFor(t *testing.T) {
 			// Example 2 from the spec: cross-source chaining.
 			// settings.xml repo1 -> repo2, trivy.yaml repo2 -> repo3 => repo1 -> repo3.
 			name: "cross-source: chaining — repo1 --settings--> repo2 --trivy.yaml--> repo3",
-			mirrors: mirrors{
-				settings: []mirror{
-					{
-						id:       "settings-mirror",
-						patterns: []string{"central"},
-						url:      mustParseURL(t, "https://repo2.example.com/maven2"),
-					},
-				},
-				configFile: configFileMirrors(map[string][]string{
-					"https://repo2.example.com/maven2": {"https://repo3.example.com/maven2"},
-				}),
+			settingsMirrors: []Mirror{
+				{ID: "settings-mirror", MirrorOf: "central", URL: "https://repo2.example.com/maven2"},
+			},
+			configMirrors: map[string][]string{
+				"https://repo2.example.com/maven2": {"https://repo3.example.com/maven2"},
 			},
 			repo: repository{
 				id:             "central",
@@ -614,16 +559,10 @@ func TestParser_mirrorFor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{mirrors: tt.mirrors}
+			p := &Parser{mirrors: resolveMirrors(tt.settingsMirrors, nil, tt.configMirrors)}
 			require.Equal(t, tt.want, p.mirrorFor(tt.repo))
 		})
 	}
-}
-
-// configFileMirrors resolves raw source->mirror URLs into the runtime config-file
-// mirror map (mirrors.configFile).
-func configFileMirrors(m map[string][]string) map[string][]url.URL {
-	return resolveMirrors(nil, nil, m).configFile
 }
 
 // Test_fetchPOMFromRemoteRepositories_mirror verifies that mirrors substitute
