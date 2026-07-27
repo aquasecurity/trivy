@@ -8,6 +8,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	// rfvulnsrc is trivy-db's RapidFort vulnsrc — aliased because this
 	// scanner package is also named "rapidfort". We import it so the scanner
@@ -73,33 +74,42 @@ type Scanner struct {
 
 // NewScanner creates a RapidFort Scanner for the given base OS type.
 func NewScanner(baseOS ftypes.OSType) *Scanner {
-	var comparer version.Comparer
-	var versionTrimmer func(string) string
+	var (
+		comparer       version.Comparer
+		versionTrimmer func(string) string
+		baseEcosystem  ecosystem.Type
+	)
 
 	switch baseOS {
 	case ftypes.Debian:
 		comparer = version.NewDEBComparer()
 		versionTrimmer = version.Major // "12.0.1" → "12"
+		baseEcosystem = ecosystem.Debian
 	case ftypes.Ubuntu:
 		comparer = version.NewDEBComparer()
 		versionTrimmer = version.Minor // "22.04.1" → "22.04"
+		baseEcosystem = ecosystem.Ubuntu
 	case ftypes.Alpine:
 		comparer = version.NewAPKComparer()
 		versionTrimmer = version.Minor // "3.17.2" → "3.17"
+		baseEcosystem = ecosystem.Alpine
 	case ftypes.RedHat:
 		comparer = version.NewRPMComparer()
 		versionTrimmer = version.Major // "9.2" → "9"
+		baseEcosystem = ecosystem.RedHat
 	default:
+		// Provider only creates scanners for Ubuntu/Alpine/RedHat; the DEB
+		// comparer + minor trimmer here is a safe placeholder for any direct
+		// caller. baseEcosystem stays empty and Get() will error at query time.
 		comparer = version.NewDEBComparer()
 		versionTrimmer = version.Minor
 	}
 
-	baseOSLower := strings.ToLower(string(baseOS))
 	return &Scanner{
-		baseOS:         baseOSLower,
+		baseOS:         strings.ToLower(string(baseOS)),
 		comparer:       comparer,
 		versionTrimmer: versionTrimmer,
-		vs:             rfvulnsrc.NewVulnSrcGetter(baseOSLower),
+		vs:             rfvulnsrc.NewVulnSrcGetter(baseEcosystem),
 		logger:         log.WithPrefix("rapidfort"),
 	}
 }
