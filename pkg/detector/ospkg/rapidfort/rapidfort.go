@@ -228,7 +228,7 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, isR
 
 	// For Ubuntu packages, use identifier-aware check to distinguish RapidFort
 	// rebuilds ("rf") from standard Ubuntu builds ("ubuntu") — the feed now
-	// tags each event so a range for one flavour doesn't false-positive the other.
+	// tags each event so a range for one flavor doesn't false-positive the other.
 	if s.baseOS == "ubuntu" {
 		return s.isDebVulnerable(ctx, installedVersion, isRFPackage, adv)
 	}
@@ -264,7 +264,7 @@ func parseCustomIdentifiers(custom any) []string {
 
 // filterRangesByIdentifier keeps advisory ranges whose distro tag matches
 // `identifier`. Shared between the RedHat and Ubuntu paths; the two callers
-// differ only in how they derive tags from strings and how they recognise an
+// differ only in how they derive tags from strings and how they recognize an
 // "rf" range in the fallback loop.
 //
 //   - extractRange derives a tag from a constraint string when
@@ -337,7 +337,7 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 		identifier = "el"
 	}
 
-	// Note: extractRPMIdentifier only recognises el/fc — rf ranges have no tag
+	// Note: extractRPMIdentifier only recognizes el/fc — rf ranges have no tag
 	// and are kept as universal here, matching pre-annotation feed behaviour.
 	// The rf-package fallback loop inside the helper handles rf ranges explicitly.
 	matchingRanges := filterRangesByIdentifier(adv, identifier, isRFPackage,
