@@ -914,6 +914,137 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			custom:           map[string]any{"identifiers": []any{"rf"}},
 			want:             false,
 		},
+		// ── Ubuntu: identifier-based filtering ──────────────────────────────────
+		{
+			name:             "Ubuntu 'ubuntu' identifier: vulnerable — ubuntu range matches, rf range skipped",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			vulnerableRanges: []string{
+				">= 0:2.39-0ubuntu8.3, < 0:2.39-0ubuntu8.10",
+				">= 0:0, < 0:2.39-1rfubu.5",
+			},
+			custom: map[string]any{"identifiers": []any{"ubuntu", "rf"}},
+			want:   true,
+		},
+		{
+			name:             "Ubuntu 'ubuntu' identifier: patched — ubuntu range not satisfied, rf range skipped",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.10",
+			vulnerableRanges: []string{
+				">= 0:2.39-0ubuntu8.3, < 0:2.39-0ubuntu8.10",
+				">= 0:0, < 0:2.39-1rfubu.5",
+			},
+			patchedVersions: []string{"0:2.39-0ubuntu8.10", "0:2.39-1rfubu.5"},
+			custom:          map[string]any{"identifiers": []any{"ubuntu", "rf"}},
+			want:            false,
+		},
+		{
+			name:             "Ubuntu 'ubuntu' identifier: rf-only range must not cause false positive",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
+			custom:           map[string]any{"identifiers": []any{"rf"}},
+			want:             false,
+		},
+		{
+			name:             "Ubuntu 'rf' identifier: vulnerable — rf range matches, ubuntu range skipped",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:3.12.10-1rfubu.1",
+			vulnerableRanges: []string{
+				">= 0:3.12.9-0ubuntu1, < 0:3.12.10-0ubuntu1",
+				">= 0:0, < 0:3.12.10-1rfubu.5",
+			},
+			custom: map[string]any{"identifiers": []any{"ubuntu", "rf"}},
+			want:   true,
+		},
+		{
+			name:             "Ubuntu 'rf' identifier: ubuntu-only range must not cause false positive for rf build",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:3.12.10-1rfubu.1",
+			vulnerableRanges: []string{">= 0:3.12.9-0ubuntu1, < 0:3.12.10-0ubuntu1"},
+			custom:           map[string]any{"identifiers": []any{"ubuntu"}},
+			want:             false,
+		},
+		{
+			// Legacy/no-tag path: installed version has no distro marker, feed has
+			// no Custom.identifiers, ranges have no identifiable tag either. All
+			// ranges are treated as universal, preserving pre-annotation behaviour.
+			name:             "Ubuntu no identifier: defaults to 'ubuntu', matches untagged range (legacy feed)",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:3.12.10",
+			vulnerableRanges: []string{">= 0:3.12.9, < 0:3.12.11"},
+			want:             true,
+		},
+		{
+			// Same as above but with Custom.identifiers present: default "ubuntu"
+			// tag on installed must prefix-match the "ubuntu"-tagged range.
+			// The installed version has no distro marker but sits inside the
+			// numerically-compared range so the ubuntu-tagged constraint applies.
+			name:             "Ubuntu no identifier: defaults to 'ubuntu', matches ubuntu-tagged range",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39",
+			vulnerableRanges: []string{">= 0:2.38, < 0:2.40"},
+			custom:           map[string]any{"identifiers": []any{"ubuntu"}},
+			want:             true,
+		},
+		{
+			// Same default-to-ubuntu behaviour must NOT match rf-only ranges.
+			name:             "Ubuntu no identifier: defaults to 'ubuntu', rf-only range must be skipped",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39",
+			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
+			custom:           map[string]any{"identifiers": []any{"rf"}},
+			want:             false,
+		},
+		// ── Ubuntu: rf- package fallback ────────────────────────────────────────
+		{
+			// rf- prefixed package installed at a standard ubuntu version;
+			// advisory has only "rf" ranges. Primary "ubuntu" match yields
+			// nothing → fallback picks up the rf range.
+			name:             "Ubuntu rf- fallback: ubuntu-version package matches 'rf' range when no ubuntu range exists",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			isRFPackage:      true,
+			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
+			custom:           map[string]any{"identifiers": []any{"rf"}},
+			want:             true,
+		},
+		{
+			// rf- prefixed package but a ubuntu range IS present → primary
+			// match used, fallback must not fire.
+			name:             "Ubuntu rf- fallback: ubuntu range present, primary match used — no fallback",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			isRFPackage:      true,
+			vulnerableRanges: []string{
+				">= 0:2.39-0ubuntu8.3, < 0:2.39-0ubuntu8.10",
+				">= 0:0, < 0:2.39-1rfubu.5",
+			},
+			custom: map[string]any{"identifiers": []any{"ubuntu", "rf"}},
+			want:   true,
+		},
+		{
+			// Non-rf package on a ubuntu version; advisory has only "rf" ranges.
+			// Fallback must NOT fire for non-rf packages, so no vulnerability.
+			name:             "Ubuntu rf- fallback: non-rf package must not match 'rf'-only range",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			isRFPackage:      false,
+			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
+			custom:           map[string]any{"identifiers": []any{"rf"}},
+			want:             false,
+		},
+		{
+			// No Custom.identifiers on the feed — fallback path derives tag from
+			// the range string itself. "rfubu" in the range text is picked up as
+			// an rf range for the rf- package.
+			name:             "Ubuntu rf- fallback (no Custom.identifiers): range with rf substring matched via string extraction",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "0:2.39-0ubuntu8.3",
+			isRFPackage:      true,
+			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
+			want:             true,
+		},
 	}
 
 	for _, tt := range tests {

@@ -40,6 +40,21 @@ func extractRPMIdentifier(ver string) string {
 	return ""
 }
 
+// extractDebIdentifier applies the RapidFort feed annotator's rule to a Debian/
+// Ubuntu version string: "rf" wins over "ubuntu" when both substrings are
+// present, and "" when neither is. Keeping the scanner rule identical to the
+// annotator (see security-advisories repo) means an installed package and the
+// advisory ranges it matches against use the same tag.
+func extractDebIdentifier(ver string) string {
+	if strings.Contains(ver, "rf") {
+		return "rf"
+	}
+	if strings.Contains(ver, "ubuntu") {
+		return "ubuntu"
+	}
+	return ""
+}
+
 // Scanner detects vulnerabilities for RapidFort curated images by querying
 // the RapidFort advisory data that was ingested by trivy-db.
 type Scanner struct {
@@ -201,6 +216,13 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, isR
 		return s.isRPMVulnerable(ctx, installedVersion, isRFPackage, adv)
 	}
 
+	// For Ubuntu packages, use identifier-aware check to distinguish RapidFort
+	// rebuilds ("rf") from standard Ubuntu builds ("ubuntu") — the feed now
+	// tags each event so a range for one flavour doesn't false-positive the other.
+	if s.baseOS == "ubuntu" {
+		return s.isDebVulnerable(ctx, installedVersion, isRFPackage, adv)
+	}
+
 	// Check if installed version lies in any vulnerable range.
 	return s.checkConstraints(ctx, installedVersion, adv.VulnerableVersions)
 }
@@ -230,11 +252,66 @@ func parseCustomIdentifiers(custom any) []string {
 	return result
 }
 
+// filterRangesByIdentifier keeps advisory ranges whose distro tag matches
+// `identifier`. Shared between the RedHat and Ubuntu paths; the two callers
+// differ only in how they derive tags from strings and how they recognise an
+// "rf" range in the fallback loop.
+//
+//   - extractRange derives a tag from a constraint string when
+//     Custom.identifiers is absent. It may legitimately return "" for tags
+//     the caller wants to treat as universal (e.g. RPM's rf ranges have no
+//     el/fc tag and are kept unless the rf-package fallback fires).
+//   - isRFRangeStr reports whether a constraint string is RF-tagged in the
+//     absence of Custom.identifiers — used only by the rf-package fallback loop.
+//
+// Ranges with no tag at all (both branches see ""/empty) are treated as
+// universal and always kept, matching pre-annotation feed behaviour.
+func filterRangesByIdentifier(
+	adv dbTypes.Advisory,
+	identifier string,
+	isRFPackage bool,
+	extractRange func(string) string,
+	isRFRangeStr func(string) bool,
+) []string {
+	customIdentifiers := parseCustomIdentifiers(adv.Custom)
+
+	isRFRange := func(i int, constraintStr string) bool {
+		if i < len(customIdentifiers) {
+			return customIdentifiers[i] == "rf"
+		}
+		return isRFRangeStr(constraintStr)
+	}
+
+	var matchingRanges []string
+	for i, constraintStr := range adv.VulnerableVersions {
+		if i < len(customIdentifiers) {
+			if !strings.HasPrefix(customIdentifiers[i], identifier) {
+				continue // skip ranges belonging to a different distro identifier
+			}
+		} else if advIdentifier := extractRange(constraintStr); advIdentifier != "" && !strings.HasPrefix(advIdentifier, identifier) {
+			continue // skip ranges belonging to a different distro identifier
+		}
+		matchingRanges = append(matchingRanges, constraintStr)
+	}
+
+	// Fallback for rf- packages when no range matched the primary identifier: try
+	// "rf"-tagged ranges. Handles rf- builds whose installed version doesn't
+	// carry the primary tag (e.g. an rf- package on an fc43 host).
+	if isRFPackage && len(matchingRanges) == 0 {
+		for i, constraintStr := range adv.VulnerableVersions {
+			if isRFRange(i, constraintStr) {
+				matchingRanges = append(matchingRanges, constraintStr)
+			}
+		}
+	}
+
+	return matchingRanges
+}
+
 // isRPMVulnerable filters advisory ranges by the package's distro identifier
 // ("el9", "fc43", …) before checking the version. Without this filter, RPM's
 // identifier-blind release-string ordering yields cross-distro false positives
-// (e.g. el9 vs fc39). Ranges use Advisory.Custom.identifiers[i] when present,
-// falling back to regex extraction from the constraint string.
+// (e.g. el9 vs fc39).
 func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, isRFPackage bool, adv dbTypes.Advisory) bool {
 	// Identifier derivation (RedHat-only path — isRPMVulnerable is its sole caller):
 	//   - el/fc packages: identifier is embedded in the version string
@@ -250,45 +327,32 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 		identifier = "el"
 	}
 
-	// Filter constraints by identifier using Custom.identifiers[i] when present,
-	// or regex extraction otherwise. Prefix matching: "el" covers "el9"/"el8"/…;
-	// constraints with no identifier are treated as universal and always kept.
-	customIdentifiers := parseCustomIdentifiers(adv.Custom)
+	// Note: extractRPMIdentifier only recognises el/fc — rf ranges have no tag
+	// and are kept as universal here, matching pre-annotation feed behaviour.
+	// The rf-package fallback loop inside the helper handles rf ranges explicitly.
+	matchingRanges := filterRangesByIdentifier(adv, identifier, isRFPackage,
+		extractRPMIdentifier, rfVersionSuffixRe.MatchString)
+	return s.checkConstraints(ctx, installedVersion, matchingRanges)
+}
 
-	// isRFRange reports whether the range at index i is tagged for RapidFort builds
-	// (Custom.identifiers[i] == "rf", or a .rf/.rfN suffix as fallback).
-	isRFRange := func(i int, constraintStr string) bool {
-		if i < len(customIdentifiers) {
-			return customIdentifiers[i] == "rf"
-		}
-		return rfVersionSuffixRe.MatchString(constraintStr)
+// isDebVulnerable filters advisory ranges by the package's Ubuntu identifier
+// ("rf" for RapidFort rebuilds, "ubuntu" for standard Ubuntu) before checking
+// the version. Follows the same rule the RapidFort feed annotator applies on
+// the data side: "rf" wins over "ubuntu" as a version-string substring.
+func (s *Scanner) isDebVulnerable(ctx context.Context, installedVersion string, isRFPackage bool, adv dbTypes.Advisory) bool {
+	// Identifier derivation (Ubuntu-only path — isDebVulnerable is its sole caller):
+	//   - Versions containing "rf" (e.g. "0:3.12.10-1rfubu.1") → tag "rf",
+	//     matching RapidFort-built advisory ranges.
+	//   - Versions containing "ubuntu" (e.g. "0:2.39-0ubuntu8.3") → tag "ubuntu".
+	//   - Otherwise default to "ubuntu" so untagged/legacy ranges still match.
+	identifier := extractDebIdentifier(installedVersion)
+	if identifier == "" {
+		identifier = "ubuntu"
 	}
 
-	var matchingRanges []string
-	for i, constraintStr := range adv.VulnerableVersions {
-		if i < len(customIdentifiers) {
-			if !strings.HasPrefix(customIdentifiers[i], identifier) {
-				continue // skip ranges belonging to a different distro identifier
-			}
-		} else {
-			advIdentifier := extractRPMIdentifier(constraintStr)
-			if advIdentifier != "" && !strings.HasPrefix(advIdentifier, identifier) {
-				continue // skip ranges belonging to a different distro identifier
-			}
-		}
-		matchingRanges = append(matchingRanges, constraintStr)
-	}
-
-	// Fallback for rf- packages when no range matched the primary identifier: try
-	// "rf"-tagged ranges. Handles rf- builds that don't carry a standard el/fc tag.
-	if isRFPackage && len(matchingRanges) == 0 {
-		for i, constraintStr := range adv.VulnerableVersions {
-			if isRFRange(i, constraintStr) {
-				matchingRanges = append(matchingRanges, constraintStr)
-			}
-		}
-	}
-
+	matchingRanges := filterRangesByIdentifier(adv, identifier, isRFPackage,
+		extractDebIdentifier,
+		func(s string) bool { return strings.Contains(s, "rf") })
 	return s.checkConstraints(ctx, installedVersion, matchingRanges)
 }
 
