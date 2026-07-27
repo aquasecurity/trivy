@@ -618,7 +618,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hits := map[string]int{}
+			hits := make(map[string]int)
 			var gotBasicAuth string
 
 			// newServer registers an HTTP server for a role. status 200 serves the POM;
@@ -649,7 +649,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
-			configFileMirrors := map[string][]string{}
+			configFileMirrors := make(map[string][]string)
 			for srcRole, dstRoles := range tt.configMirrors {
 				for _, dstRole := range dstRoles {
 					src := servers[srcRole].URL
