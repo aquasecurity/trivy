@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"net/http/httptest"
 	"net/url"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -291,24 +292,78 @@ func Test_resolveMirrors(t *testing.T) {
 	}
 }
 
-// TestParser_mirrorFor covers both passes of mirrorFor: matching settings.xml
-// <mirror> entries, and applying trivy.yaml (scan.maven.mirrors) on top of the
-// result — including cross-source chaining and fallback lists.
-func TestParser_mirrorFor(t *testing.T) {
+// Test_resolveMirrors_configFile covers the config-file branch of resolveMirrors:
+// key normalization, target order, and dropping of unparsable/empty entries.
+func Test_resolveMirrors_configFile(t *testing.T) {
 	tests := []struct {
-		name              string
-		settingsMirrors   []mirror
-		configFileMirrors map[string][]string
-		repo              repository
-		want              []repository
+		name  string
+		input map[string][]string
+		want  map[string][]url.URL
 	}{
 		{
-			name: "no match — repository returned unchanged",
-			settingsMirrors: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"internal"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+			name:  "nil input yields nil",
+			input: nil,
+			want:  nil,
+		},
+		{
+			name: "key normalized (trailing slash trimmed), targets kept in order",
+			input: map[string][]string{
+				"https://repo.example.com/maven2/": {
+					"https://m1.example.com/maven2",
+					"https://m2.example.com/maven2",
+				},
+			},
+			want: map[string][]url.URL{
+				"https://repo.example.com/maven2": {
+					mustParseURL(t, "https://m1.example.com/maven2"),
+					mustParseURL(t, "https://m2.example.com/maven2"),
+				},
+			},
+		},
+		{
+			name: "entry with only an unparsable target is dropped",
+			input: map[string][]string{
+				"https://repo.example.com/maven2": {"http://[::1"},
+			},
+			want: nil,
+		},
+		{
+			name: "unparsable target is dropped, valid ones kept",
+			input: map[string][]string{
+				"https://repo.example.com/maven2": {"http://[::1", "https://ok.example.com/maven2"},
+			},
+			want: map[string][]url.URL{
+				"https://repo.example.com/maven2": {mustParseURL(t, "https://ok.example.com/maven2")},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, resolveMirrors(nil, nil, tt.input).configFile)
+		})
+	}
+}
+
+// TestParser_mirrorFor covers both passes of mirrorFor: matching settings.xml
+// <mirror> entries, and applying the config-file mirrors on top of the result —
+// including cross-source chaining and fallback lists.
+func TestParser_mirrorFor(t *testing.T) {
+	tests := []struct {
+		name    string
+		mirrors mirrors
+		repo    repository
+		want    []repository
+	}{
+		{
+			name: "settings.xml: no match — repository returned unchanged",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"internal"},
+						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+					},
 				},
 			},
 			repo: repository{
@@ -325,12 +380,14 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name: "match by exact id — release/snapshot flags preserved from original repo",
-			settingsMirrors: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"central"},
-					url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+			name: "settings.xml: match by exact id — release/snapshot flags preserved",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"central"},
+						url:      mustParseURL(t, "https://mirror.example.com/maven2"),
+					},
 				},
 			},
 			repo: repository{
@@ -349,12 +406,14 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name: "credentials from mirror (not original repo) are kept",
-			settingsMirrors: []mirror{
-				{
-					id:       "m1",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://mirror-user:mirror-pass@mirror.example.com/maven2"),
+			name: "settings.xml: mirror credentials (not the original repo's) are kept",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "m1",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://mirror-user:mirror-pass@mirror.example.com/maven2"),
+					},
 				},
 			},
 			repo: repository{
@@ -371,17 +430,19 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name: "first matching mirror wins (no chaining)",
-			settingsMirrors: []mirror{
-				{
-					id:       "first",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://first.example.com/maven2"),
-				},
-				{
-					id:       "second",
-					patterns: []string{"*"},
-					url:      mustParseURL(t, "https://second.example.com/maven2"),
+			name: "settings.xml: first matching mirror wins",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "first",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://first.example.com/maven2"),
+					},
+					{
+						id:       "second",
+						patterns: []string{"*"},
+						url:      mustParseURL(t, "https://second.example.com/maven2"),
+					},
 				},
 			},
 			repo: repository{
@@ -398,17 +459,19 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name: "exclusion blocks match and falls through to next mirror",
-			settingsMirrors: []mirror{
-				{
-					id:       "first",
-					patterns: []string{"*", "!central"},
-					url:      mustParseURL(t, "https://first.example.com/maven2"),
-				},
-				{
-					id:       "second",
-					patterns: []string{"central"},
-					url:      mustParseURL(t, "https://second.example.com/maven2"),
+			name: "settings.xml: exclusion blocks match, falls through to next mirror",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "first",
+						patterns: []string{"*", "!central"},
+						url:      mustParseURL(t, "https://first.example.com/maven2"),
+					},
+					{
+						id:       "second",
+						patterns: []string{"central"},
+						url:      mustParseURL(t, "https://second.example.com/maven2"),
+					},
 				},
 			},
 			repo: repository{
@@ -425,25 +488,11 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name:              "empty config map — repository unchanged (backward compatibility)",
-			configFileMirrors: nil,
-			repo: repository{
-				id:             "central",
-				url:            mustParseURL(t, "https://repo1.example.com/maven2"),
-				releaseEnabled: true,
-			},
-			want: []repository{
-				{
-					id:             "central",
-					url:            mustParseURL(t, "https://repo1.example.com/maven2"),
-					releaseEnabled: true,
-				},
-			},
-		},
-		{
-			name: "config-file mirror only — repo1 -> repo3",
-			configFileMirrors: map[string][]string{
-				"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
+			name: "config file: single mirror — repo1 -> repo3",
+			mirrors: mirrors{
+				configFile: configFileMirrors(map[string][]string{
+					"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
+				}),
 			},
 			repo: repository{
 				id:             "central",
@@ -459,9 +508,11 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
-			name: "trailing slash in config key still matches",
-			configFileMirrors: map[string][]string{
-				"https://repo1.example.com/maven2/": {"https://repo3.example.com/maven2"},
+			name: "config file: trailing slash in key still matches",
+			mirrors: mirrors{
+				configFile: configFileMirrors(map[string][]string{
+					"https://repo1.example.com/maven2/": {"https://repo3.example.com/maven2"},
+				}),
 			},
 			repo: repository{
 				id:             "central",
@@ -478,12 +529,14 @@ func TestParser_mirrorFor(t *testing.T) {
 		},
 		{
 			// Several mirrors for one repository become ordered fallback candidates.
-			name: "fallback list — repo1 -> [repo3, repo4] yields both candidates in order",
-			configFileMirrors: map[string][]string{
-				"https://repo1.example.com/maven2": {
-					"https://repo3.example.com/maven2",
-					"https://repo4.example.com/maven2",
-				},
+			name: "config file: fallback list — repo1 -> [repo3, repo4] in order",
+			mirrors: mirrors{
+				configFile: configFileMirrors(map[string][]string{
+					"https://repo1.example.com/maven2": {
+						"https://repo3.example.com/maven2",
+						"https://repo4.example.com/maven2",
+					},
+				}),
 			},
 			repo: repository{
 				id:             "central",
@@ -506,16 +559,18 @@ func TestParser_mirrorFor(t *testing.T) {
 		{
 			// Example 1 from the spec: both sources target repo1; settings.xml wins
 			// because it rewrites the URL first and the config pass no longer matches.
-			name: "conflict on the same key — settings.xml wins over trivy.yaml",
-			settingsMirrors: []mirror{
-				{
-					id:       "settings-mirror",
-					patterns: []string{"central"},
-					url:      mustParseURL(t, "https://repo2.example.com/maven2"),
+			name: "cross-source: conflict on the same key — settings.xml wins",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "settings-mirror",
+						patterns: []string{"central"},
+						url:      mustParseURL(t, "https://repo2.example.com/maven2"),
+					},
 				},
-			},
-			configFileMirrors: map[string][]string{
-				"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
+				configFile: configFileMirrors(map[string][]string{
+					"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
+				}),
 			},
 			repo: repository{
 				id:             "central",
@@ -533,16 +588,18 @@ func TestParser_mirrorFor(t *testing.T) {
 		{
 			// Example 2 from the spec: cross-source chaining.
 			// settings.xml repo1 -> repo2, trivy.yaml repo2 -> repo3 => repo1 -> repo3.
-			name: "cross-source chaining — repo1 --settings--> repo2 --trivy.yaml--> repo3",
-			settingsMirrors: []mirror{
-				{
-					id:       "settings-mirror",
-					patterns: []string{"central"},
-					url:      mustParseURL(t, "https://repo2.example.com/maven2"),
+			name: "cross-source: chaining — repo1 --settings--> repo2 --trivy.yaml--> repo3",
+			mirrors: mirrors{
+				settings: []mirror{
+					{
+						id:       "settings-mirror",
+						patterns: []string{"central"},
+						url:      mustParseURL(t, "https://repo2.example.com/maven2"),
+					},
 				},
-			},
-			configFileMirrors: map[string][]string{
-				"https://repo2.example.com/maven2": {"https://repo3.example.com/maven2"},
+				configFile: configFileMirrors(map[string][]string{
+					"https://repo2.example.com/maven2": {"https://repo3.example.com/maven2"},
+				}),
 			},
 			repo: repository{
 				id:             "central",
@@ -561,15 +618,16 @@ func TestParser_mirrorFor(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{
-				mirrors: mirrors{
-					settings:   tt.settingsMirrors,
-					configFile: resolveMirrors(nil, nil, tt.configFileMirrors).configFile,
-				},
-			}
+			p := &Parser{mirrors: tt.mirrors}
 			require.Equal(t, tt.want, p.mirrorFor(tt.repo))
 		})
 	}
+}
+
+// configFileMirrors resolves raw source->mirror URLs into the runtime config-file
+// mirror map (mirrors.configFile).
+func configFileMirrors(m map[string][]string) map[string][]url.URL {
+	return resolveMirrors(nil, nil, m).configFile
 }
 
 // Test_fetchPOMFromRemoteRepositories_mirror verifies that mirrors substitute
@@ -595,111 +653,93 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 		mirrorPatterns  []string
 		mirrorWithCreds bool
 		wantBasicAuth   string
-		chainToConfig   bool // trivy.yaml mirror: settings-target -> chain-target
-		configFallback  bool // trivy.yaml mirror: settings-target -> [dead, chain]
+		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
+		wantHits        map[string]int      // expected request count per server role
 	}{
 		{
-			name:           "wildcard mirror redirects the fetch to the mirror server",
-			mirrorPatterns: []string{"*"},
-		},
-		{
-			name:            "credentials baked into mirror URL are sent as Basic Auth",
+			name:            "settings.xml <server> credentials reach the mirror as Basic Auth",
 			mirrorPatterns:  []string{"*"},
 			mirrorWithCreds: true,
 			wantBasicAuth:   "mirror-user",
+			wantHits:        map[string]int{"mirror": 1},
 		},
 		{
-			// Example 2 end-to-end: settings.xml rewrites central(repo1) -> repo2, then
-			// trivy.yaml rewrites repo2 -> repo3, so only repo3 must receive the request.
+			// Example 2 end-to-end: settings.xml rewrites central(repo1) -> mirror(repo2),
+			// then trivy.yaml rewrites repo2 -> chain(repo3), so only repo3 is requested.
 			name:           "cross-source chaining: settings.xml then trivy.yaml routes to the final mirror",
 			mirrorPatterns: []string{"*"},
-			chainToConfig:  true,
+			configMirrors:  map[string][]string{"mirror": {"chain"}},
+			wantHits:       map[string]int{"chain": 1},
 		},
 		{
-			// trivy.yaml lists two mirrors for repo2; the first 404s, so the fetch must
-			// fall back to the second and succeed there.
+			// trivy.yaml lists two mirrors for repo2; the first 404s, so the fetch falls
+			// back to the second and succeeds there.
 			name:           "trivy.yaml fallback: first mirror 404s, second one serves",
 			mirrorPatterns: []string{"*"},
-			configFallback: true,
+			configMirrors:  map[string][]string{"mirror": {"dead", "chain"}},
+			wantHits:       map[string]int{"dead": 1, "chain": 1},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var mirrorHits, originalHits, chainHits, deadHits int
+			hits := map[string]int{}
 			var gotBasicAuth string
 
-			// repo2: settings.xml mirror target.
-			mirrorServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				mirrorHits++
-				if u, _, ok := r.BasicAuth(); ok {
-					gotBasicAuth = u
+			// newServer registers an HTTP server for a role. status 200 serves the POM;
+			// any other status (e.g. 404) makes the fetch fall back to the next candidate.
+			newServer := func(role string, status int) *httptest.Server {
+				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					hits[role]++
+					if u, _, ok := r.BasicAuth(); ok {
+						gotBasicAuth = u
+					}
+					if status != http.StatusOK {
+						w.WriteHeader(status)
+						return
+					}
+					_, _ = w.Write([]byte(minimalPOM))
+				}))
+				t.Cleanup(s.Close)
+				return s
+			}
+
+			// repo1: original repository; mirror: settings.xml target; chain/dead:
+			// trivy.yaml targets (dead always 404s).
+			servers := map[string]*httptest.Server{
+				"repo1":  newServer("repo1", http.StatusOK),
+				"mirror": newServer("mirror", http.StatusOK),
+				"chain":  newServer("chain", http.StatusOK),
+				"dead":   newServer("dead", http.StatusNotFound),
+			}
+
+			// trivy.yaml mirrors: resolve role names to server URLs.
+			configFileMirrors := map[string][]string{}
+			for srcRole, dstRoles := range tt.configMirrors {
+				for _, dstRole := range dstRoles {
+					src := servers[srcRole].URL
+					configFileMirrors[src] = append(configFileMirrors[src], servers[dstRole].URL)
 				}
-				_, _ = w.Write([]byte(minimalPOM))
-			}))
-			defer mirrorServer.Close()
+			}
 
-			// repo1: original repository.
-			originalServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				originalHits++
-				_, _ = w.Write([]byte(minimalPOM))
-			}))
-			defer originalServer.Close()
-
-			// repo3: trivy.yaml (config-file) mirror target that serves the POM.
-			chainServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
-				chainHits++
-				_, _ = w.Write([]byte(minimalPOM))
-			}))
-			defer chainServer.Close()
-
-			// A trivy.yaml mirror that always 404s, to exercise fallback to the next one.
-			deadServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-				deadHits++
-				http.NotFound(w, r)
-			}))
-			defer deadServer.Close()
-
-			mirrorURL := mirrorServer.URL
+			// settings.xml mirror central -> "mirror"; creds (if any) come from a <server>.
+			var srvCreds []Server
 			if tt.mirrorWithCreds {
-				u, err := url.Parse(mirrorServer.URL)
-				require.NoError(t, err)
-				u.User = url.UserPassword("mirror-user", "mirror-pass")
-				mirrorURL = u.String()
+				srvCreds = []Server{{ID: "m1", Username: "mirror-user", Password: "mirror-pass"}}
 			}
-			u, err := url.Parse(mirrorURL)
-			require.NoError(t, err)
-			settingsMirrors := []mirror{
-				{
-					id:       "m1",
-					patterns: tt.mirrorPatterns,
-					url:      *u,
-				},
-			}
+			resolved := resolveMirrors(
+				[]Mirror{{ID: "m1", URL: servers["mirror"].URL, MirrorOf: strings.Join(tt.mirrorPatterns, ",")}},
+				srvCreds,
+				configFileMirrors,
+			)
 
-			var configFile map[string][]url.URL
-			switch {
-			case tt.chainToConfig:
-				configFile = resolveMirrors(nil, nil, map[string][]string{
-					mirrorServer.URL: {chainServer.URL},
-				}).configFile
-			case tt.configFallback:
-				configFile = resolveMirrors(nil, nil, map[string][]string{
-					mirrorServer.URL: {deadServer.URL, chainServer.URL},
-				}).configFile
-			}
-
-			origURL, err := url.Parse(originalServer.URL)
+			origURL, err := url.Parse(servers["repo1"].URL)
 			require.NoError(t, err)
-			pomRepo := repository{
-				id:             "central",
-				url:            *origURL,
-				releaseEnabled: true,
-			}
+			pomRepo := repository{id: "central", url: *origURL, releaseEnabled: true}
 
 			p := &Parser{
 				logger:     log.WithPrefix("pom"),
-				mirrors:    mirrors{settings: settingsMirrors, configFile: configFile},
+				mirrors:    resolved,
 				httpClient: http.DefaultClient,
 			}
 
@@ -708,21 +748,10 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			require.NoError(t, err)
 			require.NotNil(t, got)
 
-			require.Equal(t, 0, originalHits, "original repo must not be hit")
-			switch {
-			case tt.chainToConfig:
-				require.Equal(t, 0, mirrorHits, "settings.xml mirror must not be hit (rewritten by trivy.yaml)")
-				require.Equal(t, 1, chainHits, "config-file mirror hits")
-				require.Equal(t, 0, deadHits, "dead mirror must not be hit")
-			case tt.configFallback:
-				require.Equal(t, 0, mirrorHits, "settings.xml mirror must not be hit (rewritten by trivy.yaml)")
-				require.Equal(t, 1, deadHits, "first (dead) config-file mirror is tried")
-				require.Equal(t, 1, chainHits, "fetch falls back to the second config-file mirror")
-			default:
-				require.Equal(t, 1, mirrorHits, "mirror hits")
-				require.Equal(t, 0, chainHits, "config-file mirror must not be hit")
-				require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
+			for role := range servers {
+				require.Equal(t, tt.wantHits[role], hits[role], "request count for %q", role)
 			}
+			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
 		})
 	}
 }

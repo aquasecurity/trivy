@@ -154,10 +154,19 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.NoError,
 		},
 		{
-			name: "unparsable maven mirror URL is rejected (fail-fast)",
+			name: "unparsable maven mirror URL is rejected",
 			fields: fields{
 				mavenMirrors: map[string][]string{
 					"https://repo.maven.apache.org/maven2/": {"http://[::1"},
+				},
+			},
+			assertion: require.Error,
+		},
+		{
+			name: "unparsable maven repository URL (map key) is rejected",
+			fields: fields{
+				mavenMirrors: map[string][]string{
+					"central": {"https://my-internal-mirror/maven2/"},
 				},
 			},
 			assertion: require.Error,
