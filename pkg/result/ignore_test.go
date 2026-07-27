@@ -2,10 +2,14 @@ package result
 
 import (
 	"os"
+	"path/filepath"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func TestParseIgnoreFile(t *testing.T) {
@@ -72,4 +76,74 @@ func TestParseIgnoreFile(t *testing.T) {
 		assert.Empty(t, got)
 	})
 
+}
+
+func TestIgnoreFindings_Match_withoutID(t *testing.T) {
+	trivyPURL, err := purl.FromString("pkg:golang/github.com/aquasecurity/trivy@0.50.0")
+	require.NoError(t, err)
+	otherPURL, err := purl.FromString("pkg:golang/github.com/other/pkg@1.0.0")
+	require.NoError(t, err)
+
+	findings := IgnoreFindings{
+		{
+			PURLs: []*purl.PackageURL{trivyPURL},
+		},
+		{
+			Paths: []string{"app/vendor/**"},
+		},
+	}
+
+	tests := []struct {
+		name  string
+		id    string
+		path  string
+		pkg   *packageurl.PackageURL
+		match bool
+	}{
+		{
+			name:  "any ID is ignored for the selected package",
+			id:    "CVE-2019-0001",
+			pkg:   (*packageurl.PackageURL)(trivyPURL),
+			match: true,
+		},
+		{
+			name:  "another ID is ignored for the same package",
+			id:    "CVE-2021-1234",
+			pkg:   (*packageurl.PackageURL)(trivyPURL),
+			match: true,
+		},
+		{
+			name:  "another package is not ignored",
+			id:    "CVE-2019-0001",
+			pkg:   (*packageurl.PackageURL)(otherPURL),
+			match: false,
+		},
+		{
+			name:  "any ID is ignored under the selected path",
+			id:    "CVE-2022-2222",
+			path:  "app/vendor/foo/bar.go",
+			match: true,
+		},
+		{
+			name:  "another path is not ignored",
+			id:    "CVE-2022-2222",
+			path:  "app/main.go",
+			match: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := findings.Match(tt.id, tt.path, tt.pkg)
+			assert.Equal(t, tt.match, got != nil)
+		})
+	}
+}
+
+func TestParseIgnoreFile_withoutSelector(t *testing.T) {
+	path := filepath.Join(t.TempDir(), ".trivyignore.yaml")
+	require.NoError(t, os.WriteFile(path, []byte("vulnerabilities:\n  - statement: no selector at all\n"), 0o600))
+
+	_, err := ParseIgnoreFile(t.Context(), path)
+	require.ErrorContains(t, err, "at least one of 'id', 'paths' or 'purls' must be set")
 }
