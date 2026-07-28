@@ -845,6 +845,9 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	}
 
 	seen := set.New[string]()
+	// A 429 only skips the rate-limited mirror; the last one is kept so it can be
+	// returned if every mirror turns out to be rate-limited.
+	var lastRateLimitErr error
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
@@ -870,6 +873,10 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			if snapshot {
 				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
 				if err != nil {
+					if isRateLimit(err) {
+						lastRateLimitErr = err
+						continue
+					}
 					return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
 				}
 				// Use file name from `maven-metadata.xml` if it exists
@@ -879,12 +886,19 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate.url, repoPaths)
 			if err != nil {
+				if isRateLimit(err) {
+					lastRateLimitErr = err
+					continue
+				}
 				return nil, xerrors.Errorf("fetch repository error: %w", err)
 			} else if fetched == nil {
 				continue
 			}
 			return fetched, nil
 		}
+	}
+	if lastRateLimitErr != nil {
+		return nil, lastRateLimitErr
 	}
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
@@ -928,7 +942,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return "", rateLimitError(req, resp)
+		return "", newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -969,7 +983,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return nil, rateLimitError(req, resp)
+		return nil, newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -1056,15 +1070,23 @@ func shouldReturnError(err error) bool {
 	return errors.As(err, &ue)
 }
 
-// rateLimitError builds a user-facing error for a 429 response from a remote Maven
-// repository. Rate limits are typically per-IP and apply to all subsequent requests
-// (including cached ones), so continuing the scan is pointless until the block clears.
-func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
+// rateLimitError wraps a 429 Too Many Requests response from a remote Maven repository.
+// The wrapped *types.UserError is exposed via Unwrap so the top level still prints the
+// clean 429 message.
+type rateLimitError struct {
+	err *types.UserError
+}
+
+func (e *rateLimitError) Error() string { return e.err.Error() }
+func (e *rateLimitError) Unwrap() error { return e.err }
+
+// newRateLimitError builds a rateLimitError for a 429 response, including Retry-After.
+func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
 	var ra string
 	if v := resp.Header.Get("Retry-After"); v != "" {
 		ra = fmt.Sprintf(" Retry-After: %s.", v)
 	}
-	return &types.UserError{
+	return &rateLimitError{err: &types.UserError{
 		Message: fmt.Sprintf(
 			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
 				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
@@ -1072,5 +1094,11 @@ func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
 				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
 			req.URL.Redacted(), ra,
 		),
-	}
+	}}
+}
+
+// isRateLimit reports whether err is (or wraps) a rateLimitError.
+func isRateLimit(err error) bool {
+	var rle *rateLimitError
+	return errors.As(err, &rle)
 }
