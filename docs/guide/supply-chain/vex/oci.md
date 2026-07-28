@@ -23,6 +23,12 @@ Since a single artifact type covers every kind of attestation, an image usually 
 Trivy uses the `in-toto.io/predicate-type` annotation to pick the VEX attestation without downloading the others, and falls back to inspecting the attestation itself when a referrer carries no annotation.
 A referrer Trivy cannot decode is skipped rather than failing the scan.
 
+!!! note
+    The annotation is optional:
+
+    - If any referrer is annotated as OpenVEX, Trivy uses only those referrers, even when none of them can be fetched or decoded.
+    - If no referrer is annotated as OpenVEX, Trivy downloads the unannotated referrers and inspects their contents.
+
 To use this feature, follow these three steps:
 
 1. Create a VEX document

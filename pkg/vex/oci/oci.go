@@ -138,6 +138,11 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 	for _, desc := range lo.Slice(vexCandidates(descs), 0, maxAttestations) {
 		vexDoc, err := fetchReferrerVEX(ctx, digest, desc, registryOptions)
 		if err != nil {
+			// A canceled context or an expired deadline applies to the whole discovery
+			// operation, not just this referrer, so stop instead of trying the next one.
+			if ctxErr := ctx.Err(); ctxErr != nil {
+				return nil, ctxErr
+			}
 			// An oversized attestation is a decompression-bomb signal (CWE-409),
 			// so fail loudly instead of skipping it.
 			if errors.Is(err, xio.ErrLimitExceeded) {
@@ -161,10 +166,13 @@ func retrieveReferrerVEX(ctx context.Context, digest name.Digest, registryOption
 // vexCandidates narrows referrers to those that may carry an OpenVEX document,
 // preserving the registry order. A single artifact type covers every kind of
 // attestation (SBOM, provenance, VEX), so it filters on the optional
-// `in-toto.io/predicate-type` annotation instead: referrers announced as OpenVEX
-// are preferred, those announced as anything else are dropped, and unannotated ones
-// are a fallback used only when nothing is announced as OpenVEX (the annotation is
-// optional, so an unannotated referrer may still be the VEX document).
+// `in-toto.io/predicate-type` annotation instead:
+//   - announced as OpenVEX: kept, and the unannotated referrers are then dropped.
+//     A publisher annotating its VEX referrers is unlikely to do so for only some of
+//     them, so looking at the announced ones alone avoids unnecessary downloads.
+//   - announced as anything else (SBOM, provenance, ...): dropped, without downloading.
+//   - unannotated: kept only when nothing is announced as OpenVEX, since the
+//     annotation is optional.
 func vexCandidates(descs []v1.Descriptor) []v1.Descriptor {
 	var openVEX, unannotated []v1.Descriptor
 	for _, desc := range descs {
