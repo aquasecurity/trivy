@@ -281,9 +281,12 @@ func validateMavenMirrors(mirrors map[string][]string) error {
 		if !isValidMirrorURL(src) {
 			return xerrors.New("invalid Maven repository URL in 'scan.maven.mirrors'")
 		}
+		s, _ := url.Parse(src)
+		if len(targets) == 0 {
+			return xerrors.Errorf("no mirror URLs configured in 'scan.maven.mirrors' for %s", s.Redacted())
+		}
 		for _, target := range targets {
 			if !isValidMirrorURL(target) {
-				s, _ := url.Parse(src)
 				return xerrors.Errorf("invalid Maven mirror URL in 'scan.maven.mirrors' for %s", s.Redacted())
 			}
 		}

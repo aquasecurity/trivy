@@ -180,6 +180,15 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.Error,
 		},
+		{
+			name: "empty maven mirror target list is rejected",
+			fields: fields{
+				mavenMirrors: map[string][]string{
+					"https://repo.maven.apache.org/maven2/": {},
+				},
+			},
+			assertion: require.Error,
+		},
 	}
 
 	for _, tt := range tests {
