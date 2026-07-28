@@ -171,6 +171,15 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.Error,
 		},
+		{
+			name: "non-http(s) maven mirror scheme is rejected",
+			fields: fields{
+				mavenMirrors: map[string][]string{
+					"https://repo.maven.apache.org/maven2/": {"ftp://my-internal-mirror/maven2/"},
+				},
+			},
+			assertion: require.Error,
+		},
 	}
 
 	for _, tt := range tests {

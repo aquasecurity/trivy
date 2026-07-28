@@ -273,8 +273,8 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 }
 
 // validateMavenMirrors returns an error on the first invalid URL in the Maven mirror
-// configuration — either a repository key or a mirror value. URLs must be absolute
-// (scheme and host), so a bare repository id such as "central" is rejected.
+// configuration — either a repository key or a mirror value. URLs must be http(s) URLs
+// with a host, so a bare repository id such as "central" or a non-http scheme is rejected.
 func validateMavenMirrors(mirrors map[string][]string) error {
 	for src, targets := range mirrors {
 		// A URL may carry userinfo, so never echo it raw: redact before pointing at an entry.
@@ -291,9 +291,12 @@ func validateMavenMirrors(mirrors map[string][]string) error {
 	return nil
 }
 
-// isValidMirrorURL reports whether raw is an absolute URL usable as a Maven repository
-// or mirror: it must parse and have both a scheme and a host.
+// isValidMirrorURL reports whether raw is a usable Maven repository or mirror URL: it
+// must parse to an http/https URL with a host.
 func isValidMirrorURL(raw string) bool {
 	u, err := url.Parse(raw)
-	return err == nil && u.Scheme != "" && u.Host != ""
+	if err != nil {
+		return false
+	}
+	return (u.Scheme == "http" || u.Scheme == "https") && u.Host != ""
 }
