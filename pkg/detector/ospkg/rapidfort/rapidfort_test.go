@@ -996,23 +996,23 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			custom:           map[string]any{"identifiers": []any{"rf"}},
 			want:             false,
 		},
-		// ── Ubuntu: rf- package fallback ────────────────────────────────────────
+		// ── Ubuntu: rf- package primary-only (no fallback) ──────────────────────
 		{
 			// rf- prefixed package installed at a standard ubuntu version;
 			// advisory has only "rf" ranges. Primary "ubuntu" match yields
-			// nothing → fallback picks up the rf range.
-			name:             "Ubuntu rf- fallback: ubuntu-version package matches 'rf' range when no ubuntu range exists",
+			// nothing and Ubuntu has no fallback, so the range is skipped.
+			name:             "Ubuntu rf- package: 'rf'-only range not matched when installed carries 'ubuntu' tag",
 			baseOS:           ftypes.Ubuntu,
 			installedVersion: "0:2.39-0ubuntu8.3",
 			isRFPackage:      true,
 			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
 			custom:           map[string]any{"identifiers": []any{"rf"}},
-			want:             true,
+			want:             false,
 		},
 		{
-			// rf- prefixed package but a ubuntu range IS present → primary
-			// match used, fallback must not fire.
-			name:             "Ubuntu rf- fallback: ubuntu range present, primary match used — no fallback",
+			// rf- prefixed package with a ubuntu range present → primary
+			// match on the "ubuntu"-tagged range applies.
+			name:             "Ubuntu rf- package: primary 'ubuntu'-tagged range matches",
 			baseOS:           ftypes.Ubuntu,
 			installedVersion: "0:2.39-0ubuntu8.3",
 			isRFPackage:      true,
@@ -1025,8 +1025,8 @@ func TestScanner_IsVulnerable(t *testing.T) {
 		},
 		{
 			// Non-rf package on a ubuntu version; advisory has only "rf" ranges.
-			// Fallback must NOT fire for non-rf packages, so no vulnerability.
-			name:             "Ubuntu rf- fallback: non-rf package must not match 'rf'-only range",
+			// Primary "ubuntu" filter drops the rf-tagged range → not vulnerable.
+			name:             "Ubuntu non-rf package: 'rf'-only range must not match",
 			baseOS:           ftypes.Ubuntu,
 			installedVersion: "0:2.39-0ubuntu8.3",
 			isRFPackage:      false,
@@ -1035,15 +1035,15 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			want:             false,
 		},
 		{
-			// No Custom.identifiers on the feed — fallback path derives tag from
-			// the range string itself. "rfubu" in the range text is picked up as
-			// an rf range for the rf- package.
-			name:             "Ubuntu rf- fallback (no Custom.identifiers): range with rf substring matched via string extraction",
+			// No Custom.identifiers on the feed — the range string is inspected by
+			// extractDebIdentifier which returns "rf" for "rfubu". Primary tag is
+			// "ubuntu", so the rf-tagged range is skipped (no fallback on Ubuntu).
+			name:             "Ubuntu rf- package (no Custom.identifiers): 'rfubu' range string not matched under 'ubuntu' primary",
 			baseOS:           ftypes.Ubuntu,
 			installedVersion: "0:2.39-0ubuntu8.3",
 			isRFPackage:      true,
 			vulnerableRanges: []string{">= 0:0, < 0:2.39-1rfubu.5"},
-			want:             true,
+			want:             false,
 		},
 	}
 

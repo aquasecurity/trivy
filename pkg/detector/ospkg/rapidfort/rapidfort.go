@@ -230,7 +230,7 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, isR
 	// rebuilds ("rf") from standard Ubuntu builds ("ubuntu") — the feed now
 	// tags each event so a range for one flavor doesn't false-positive the other.
 	if s.baseOS == "ubuntu" {
-		return s.isDebVulnerable(ctx, installedVersion, isRFPackage, adv)
+		return s.isDebVulnerable(ctx, installedVersion, adv)
 	}
 
 	// Check if installed version lies in any vulnerable range.
@@ -263,19 +263,20 @@ func parseCustomIdentifiers(custom any) []string {
 }
 
 // filterRangesByIdentifier keeps advisory ranges whose distro tag matches
-// `identifier`. Shared between the RedHat and Ubuntu paths; the two callers
-// differ only in how they derive tags from strings and how they recognize an
-// "rf" range in the fallback loop.
+// `identifier`. Shared between the RedHat and Ubuntu paths.
 //
 //   - extractRange derives a tag from a constraint string when
 //     Custom.identifiers is absent. It may legitimately return "" for tags
 //     the caller wants to treat as universal (e.g. RPM's rf ranges have no
 //     el/fc tag and are kept unless the rf-package fallback fires).
 //   - isRFRangeStr reports whether a constraint string is RF-tagged in the
-//     absence of Custom.identifiers — used only by the rf-package fallback loop.
+//     absence of Custom.identifiers — used only by the rf-package fallback
+//     loop. Callers that disable the fallback (isRFPackage=false) may pass nil.
 //
 // Ranges with no tag at all (both branches see ""/empty) are treated as
 // universal and always kept, matching pre-annotation feed behaviour.
+// Only the RedHat path uses the isRFPackage fallback; Ubuntu passes false
+// because its annotator is expected to tag every event.
 func filterRangesByIdentifier(
 	adv dbTypes.Advisory,
 	identifier string,
@@ -349,7 +350,10 @@ func (s *Scanner) isRPMVulnerable(ctx context.Context, installedVersion string, 
 // ("rf" for RapidFort rebuilds, "ubuntu" for standard Ubuntu) before checking
 // the version. Follows the same rule the RapidFort feed annotator applies on
 // the data side: "rf" wins over "ubuntu" as a version-string substring.
-func (s *Scanner) isDebVulnerable(ctx context.Context, installedVersion string, isRFPackage bool, adv dbTypes.Advisory) bool {
+// Primary-only matching: the Ubuntu annotator is expected to tag every event
+// (either "rf" or "ubuntu"), so a primary miss means the range genuinely does
+// not apply — no rf-package fallback is performed here.
+func (s *Scanner) isDebVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory) bool {
 	// Identifier derivation (Ubuntu-only path — isDebVulnerable is its sole caller):
 	//   - Versions containing "rf" (e.g. "0:3.12.10-1rfubu.1") → tag "rf",
 	//     matching RapidFort-built advisory ranges.
@@ -360,9 +364,7 @@ func (s *Scanner) isDebVulnerable(ctx context.Context, installedVersion string, 
 		identifier = "ubuntu"
 	}
 
-	matchingRanges := filterRangesByIdentifier(adv, identifier, isRFPackage,
-		extractDebIdentifier,
-		func(s string) bool { return strings.Contains(s, "rf") })
+	matchingRanges := filterRangesByIdentifier(adv, identifier, false, extractDebIdentifier, nil)
 	return s.checkConstraints(ctx, installedVersion, matchingRanges)
 }
 
