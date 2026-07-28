@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"sort"
 	"time"
 
@@ -57,11 +58,14 @@ func (o *OS) Merge(newOS OS) {
 		return
 	}
 
-	switch o.Family {
+	supplier := o.Supplier
+	switch {
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
-	case RedHat, Debian:
+	// Only a newOS that identifies the OS may overwrite it. One carrying just
+	// supplementary data, such as Supplier, would otherwise wipe the family.
+	case (o.Family == RedHat || o.Family == Debian) && newOS.Family != "":
 		*o = newOS
 	default:
 		if o.Family == "" {
@@ -70,9 +74,6 @@ func (o *OS) Merge(newOS OS) {
 		if o.Name == "" {
 			o.Name = newOS.Name
 		}
-		if o.Supplier == "" {
-			o.Supplier = newOS.Supplier
-		}
 		// Ubuntu has ESM program: https://ubuntu.com/security/esm
 		// OS version and esm status are stored in different files.
 		// We have to merge OS version after parsing these files.
@@ -80,6 +81,11 @@ func (o *OS) Merge(newOS OS) {
 			o.Extended = true
 		}
 	}
+
+	// Which third party rebuilt the packages is independent of which distro was
+	// detected, so the supplier has to survive the family correction above.
+	o.Supplier = cmp.Or(supplier, newOS.Supplier)
+
 	// When merging layers, there are cases when a layer contains an OS with an old name:
 	//   - Cache contains a layer derived from an old version of Trivy.
 	//   - `client` uses an old version of Trivy, but `server` is a new version of Trivy (for `client/server` mode).
