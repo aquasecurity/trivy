@@ -310,6 +310,53 @@ func TestConvertPackageRepository(t *testing.T) {
 	}
 }
 
+func TestConvertOS(t *testing.T) {
+	tests := []struct {
+		name  string
+		os    ftypes.OS
+		rpcOS *common.OS
+	}{
+		{
+			name: "happy path",
+			os: ftypes.OS{
+				Family: ftypes.Alpine,
+				Name:   "3.20.3",
+			},
+			rpcOS: &common.OS{
+				Family: "alpine",
+				Name:   "3.20.3",
+			},
+		},
+		{
+			name: "all fields",
+			os: ftypes.OS{
+				Family:   ftypes.CentOS,
+				Name:     "7.9.2009",
+				Eosl:     true,
+				Extended: true,
+				Supplier: ftypes.SupplierSeal,
+			},
+			rpcOS: &common.OS{
+				Family:   "centos",
+				Name:     "7.9.2009",
+				Eosl:     true,
+				Extended: true,
+				Supplier: "seal",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.rpcOS, ConvertToRPCOS(tt.os))
+			assert.Equal(t, tt.os, ConvertFromRPCOS(tt.rpcOS))
+		})
+	}
+
+	t.Run("nil", func(t *testing.T) {
+		assert.Equal(t, ftypes.OS{}, ConvertFromRPCOS(nil))
+	})
+}
+
 func TestConvertToRpcVulns(t *testing.T) {
 	fixedPublishedDate := time.Unix(1257894000, 0)
 	fixedLastModifiedDate := time.Unix(1257894010, 0)

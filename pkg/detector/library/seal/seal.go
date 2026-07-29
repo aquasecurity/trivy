@@ -10,6 +10,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 // Seal Security appends an ecosystem-specific patch-level suffix to the upstream
@@ -35,7 +36,7 @@ var (
 )
 
 func init() {
-	library.RegisterVendor(sealSecurity{
+	library.RegisterSupplier(sealSecurity{
 		pipComparer: pep440.NewComparer(pep440.AllowLocalSpecifier()),
 	})
 }
@@ -65,7 +66,7 @@ type sealSecurity struct {
 }
 
 func (sealSecurity) Name() string {
-	return "seal"
+	return string(ftypes.SupplierSeal)
 }
 
 // Match determines whether a package is provided by Seal Security.
@@ -125,7 +126,7 @@ func (sealSecurity) Match(eco ecosystem.Type, pkgName, pkgVer string) library.Ma
 	return library.NoMatch
 }
 
-// BucketPrefix returns the vendor-specific advisory bucket prefix.
+// BucketPrefix returns the supplier-specific advisory bucket prefix.
 func (s sealSecurity) BucketPrefix(eco ecosystem.Type) string {
 	return fmt.Sprintf("%s %s::", s.Name(), eco)
 }

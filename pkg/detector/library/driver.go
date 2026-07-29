@@ -145,13 +145,13 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 // advisories resolves the advisory bucket for the package and returns the
 // matching advisories together with the version comparer to use.
 //
-// For vendor packages (e.g. Seal Security), it prefers the vendor-specific
-// bucket and comparer. When the vendor match is only a candidate (a version
+// For supplier packages (e.g. Seal Security), it prefers the supplier-specific
+// bucket and comparer. When the supplier match is only a candidate (a version
 // suffix that can also appear on real packages, e.g. `-spN` on Go/npm), the
-// vendor bucket is used only if it actually contains advisories for the
+// supplier bucket is used only if it actually contains advisories for the
 // package; otherwise it falls back to the default ecosystem bucket.
 func (d *Driver) advisories(normalizedName, pkgVer string) ([]dbTypes.Advisory, compare.Comparer, error) {
-	if v, res := lookupVendor(d.ecosystem, normalizedName, pkgVer); res != NoMatch {
+	if v, res := lookupSupplier(d.ecosystem, normalizedName, pkgVer); res != NoMatch {
 		advisories, err := d.dbc.GetAdvisories(v.BucketPrefix(d.ecosystem), normalizedName)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
@@ -159,7 +159,7 @@ func (d *Driver) advisories(normalizedName, pkgVer string) ([]dbTypes.Advisory, 
 		if res == Matched || len(advisories) > 0 {
 			return advisories, v.Comparer(d.ecosystem, d.comparer), nil
 		}
-		// Candidate match without vendor advisories: fall back to the default bucket.
+		// Candidate match without supplier advisories: fall back to the default bucket.
 	}
 
 	advisories, err := d.dbc.GetAdvisories(defaultBucketPrefix(d.ecosystem), normalizedName)

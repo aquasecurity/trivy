@@ -762,6 +762,7 @@ func ConvertFromRPCOS(rpcOS *common.OS) ftypes.OS {
 		Name:     rpcOS.Name,
 		Eosl:     rpcOS.Eosl,
 		Extended: rpcOS.Extended,
+		Supplier: ftypes.Supplier(rpcOS.Supplier),
 	}
 }
 
@@ -885,6 +886,7 @@ func ConvertToRPCOS(fos ftypes.OS) *common.OS {
 		Name:     fos.Name,
 		Eosl:     fos.Eosl,
 		Extended: fos.Extended,
+		Supplier: string(fos.Supplier),
 	}
 }
 
