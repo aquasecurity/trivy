@@ -8556,12 +8556,24 @@ This feature allows you to automatically use VEX during container image scanning
 <h2 id="how-it-works">How It Works<a class="headerlink" href="#how-it-works" title="Permanent link">&para;</a></h2>
 <p>Trivy can automatically discover and utilize VEX attestations for container images during scanning by using the <code>--vex oci</code> flag.
 This process enhances vulnerability detection results by incorporating the information from the VEX attestation.</p>
-<p>Trivy discovers attestations in both layouts produced by Cosign:</p>
+<p>Trivy discovers attestations in the following layouts:</p>
 <ul>
 <li>An <strong>OCI 1.1 referrer</strong> holding a Sigstore bundle, which is the default for <code>cosign attest</code> since Cosign v3.</li>
+<li>An <strong>OCI 1.1 referrer</strong> holding a DSSE envelope or a bare in-toto statement under the generic <code>application/vnd.in-toto+json</code> artifact type, as published by tools such as Docker Scout.</li>
 <li>The <strong>legacy <code>.att</code> tag</strong>, which is the default for Cosign v2.</li>
 </ul>
 <p>The referrer layout takes precedence; Trivy falls back to the legacy <code>.att</code> tag when no VEX referrer is found.</p>
+<p>Since a single artifact type covers every kind of attestation, an image usually exposes SBOM and provenance referrers next to the VEX one.
+Trivy uses the <code>in-toto.io/predicate-type</code> annotation to pick the VEX attestation without downloading the others, and falls back to inspecting the attestation itself when a referrer carries no annotation.
+A referrer Trivy cannot decode is skipped rather than failing the scan.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The annotation is optional:</p>
+<ul>
+<li>If any referrer is annotated as OpenVEX, Trivy uses only those referrers, even when none of them can be fetched or decoded.</li>
+<li>If no referrer is annotated as OpenVEX, Trivy downloads the unannotated referrers and inspects their contents.</li>
+</ul>
+</div>
 <p>To use this feature, follow these three steps:</p>
 <ol>
 <li>Create a VEX document</li>
