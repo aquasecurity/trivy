@@ -1,3 +1,6 @@
+# RapidFort advisories, one bucket per distribution: Red Hat (elN), Fedora
+# (fcNN) and RapidFort (rf) each get their own bucket, alongside Ubuntu and
+# Alpine. Each bucket holds a single distribution's ranges.
 - bucket: rapidfort ubuntu 22.04
   pairs:
     - bucket: curl
@@ -38,45 +41,21 @@
             Severity: 2
 - bucket: rapidfort Red Hat 9
   pairs:
-    - bucket: rf-curl
+    - bucket: curl
       pairs:
         - key: CVE-2023-27536
           value:
             VulnerableVersions:
               - ">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"
-              - ">= 7.76.1-14.fc39, < 7.76.1-26.fc39"
-              - ">= 7.76.1-14.rf, < 7.76.1-26.rf1"
             PatchedVersions:
               - "7.76.1-26.el9_3.3"
-              - "7.76.1-26.fc39"
-              - "7.76.1-26.rf1"
             Severity: 2
-            Custom:
-              identifiers:
-                - "el9"
-                - "fc39"
-                - "rf"
         - key: CVE-2024-99999
           value:
             VulnerableVersions:
               - ">=7.76.1-14.el9"
-              - ">=7.76.1-14.rf"
             PatchedVersions: []
             Severity: 3
-            Custom:
-              identifiers:
-                - "el9"
-                - "rf"
-        - key: CVE-2024-FC39-ONLY
-          value:
-            VulnerableVersions:
-              - ">= 7.76.1-14.fc39, < 7.76.1-26.fc39"
-            PatchedVersions:
-              - "7.76.1-26.fc39"
-            Severity: 2
-            Custom:
-              identifiers:
-                - "fc39"
     # SRPM bucket: trivy looks up advisories here using pkg.SrcName.
     - bucket: rust-rpm-sequoia
       pairs:
@@ -87,9 +66,6 @@
             PatchedVersions:
               - "1.8.0-2.el9"
             Severity: 3
-            Custom:
-              identifiers:
-                - "el9"
         # Overlap with rpm-sequoia bucket — dedupe must keep the srcName entry
         # (this Severity=3 / fix=1.9.0-1.el9), not the binary one below.
         - key: CVE-2025-OVERLAP
@@ -99,9 +75,6 @@
             PatchedVersions:
               - "1.9.0-1.el9"
             Severity: 3
-            Custom:
-              identifiers:
-                - "el9"
     # Binary bucket: trivy must also query this and merge when pkg.Name differs
     # from pkg.SrcName. Mirrors the upstream rpm-sequoia.json mis-key issue.
     - bucket: rpm-sequoia
@@ -113,9 +86,6 @@
             PatchedVersions:
               - "1.10.0-1.el9"
             Severity: 2
-            Custom:
-              identifiers:
-                - "el9"
         # Same CVE as in rust-rpm-sequoia bucket but with a different (wrong)
         # fix version + severity. Dedupe must drop this entry in favor of the
         # srcName one.
@@ -126,33 +96,17 @@
             PatchedVersions:
               - "99.99.99-1.el9"
             Severity: 1
-            Custom:
-              identifiers:
-                - "el9"
+- bucket: rapidfort fedora 39
+  pairs:
     - bucket: curl
       pairs:
         - key: CVE-2023-27536
           value:
             VulnerableVersions:
-              - ">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"
               - ">= 7.76.1-14.fc39, < 7.76.1-26.fc39"
             PatchedVersions:
-              - "7.76.1-26.el9_3.3"
               - "7.76.1-26.fc39"
             Severity: 2
-            Custom:
-              identifiers:
-                - "el9"
-                - "fc39"
-        - key: CVE-2024-99999
-          value:
-            VulnerableVersions:
-              - ">=7.76.1-14.el9"
-            PatchedVersions: []
-            Severity: 3
-            Custom:
-              identifiers:
-                - "el9"
         - key: CVE-2024-FC39-ONLY
           value:
             VulnerableVersions:
@@ -160,6 +114,14 @@
             PatchedVersions:
               - "7.76.1-26.fc39"
             Severity: 2
-            Custom:
-              identifiers:
-                - "fc39"
+- bucket: rapidfort
+  pairs:
+    - bucket: rf-curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">= 7.76.1-14.rf, < 7.76.1-26.rf1"
+            PatchedVersions:
+              - "7.76.1-26.rf1"
+            Severity: 2
