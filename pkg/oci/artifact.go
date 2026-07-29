@@ -36,11 +36,18 @@ const (
 	// DSSE envelope artifact type for legacy Cosign attestations (.att tag)
 	DSSEEnvelopeArtifactType = "application/vnd.dsse.envelope.v1+json"
 
+	// Generic in-toto artifact type, used by Docker Scout for every attestation.
+	// The payload is either a bare in-toto statement or a DSSE envelope.
+	InTotoArtifactType = "application/vnd.in-toto+json"
+
 	// Media types
 	OCIImageManifest = "application/vnd.oci.image.manifest.v1+json"
 
 	// Annotations
 	titleAnnotation = "org.opencontainers.image.title"
+
+	// Optional annotation naming the in-toto predicate type of a referrer
+	PredicateTypeAnnotation = "in-toto.io/predicate-type"
 )
 
 var SupportedSBOMArtifactTypes = []string{
