@@ -143,13 +143,12 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Ver
 //
 // A package carries one advisory per architecture, and it is looked up under two
 // names, so a vulnerability comes back more than once. The advisories for the
-// package's own architecture are the
-// accurate ones, so they win when the feed has any. The
-// feed does not always cover both architectures though - around one in eleven
-// package/vulnerability pairs appears for a single architecture only - so when
-// nothing matches, the advisories for the other architecture are used rather
-// than dropping the vulnerability. Chainguard builds every architecture of a
-// package from the same source, so an advisory recorded for one of them is
+// package's own architecture are the accurate ones, so they win when the feed
+// has any. The feed does not always cover both architectures though - around one
+// in eleven package/vulnerability pairs appears for a single architecture only -
+// so when nothing matches, the advisories for the other architecture are used
+// rather than dropping the vulnerability. Chainguard builds every architecture
+// of a package from the same source, so an advisory recorded for one of them is
 // evidence about the other.
 //
 // Among the remaining candidates an unresolved advisory wins, because it means
@@ -202,9 +201,13 @@ func matchArch(advisories []dbTypes.Advisory, pkgArch string) []dbTypes.Advisory
 
 // statusRanks orders the statuses of unresolved advisories from the one a user
 // most needs to act on to the one they least need to act on, matching the order
-// the database applies when it aggregates them. Without this the choice between
-// two unresolved advisories would fall out of the order they happen to be stored
-// in.
+// the database applies to the statuses it records. Without this the choice
+// between two unresolved advisories would fall out of the order they happen to
+// be stored in.
+//
+// A status the database did not recognize is stored as StatusAffected, so it
+// ranks first here while the database ranked it last. The vulnerability is
+// reported either way; only the label differs.
 var statusRanks = []dbTypes.Status{
 	dbTypes.StatusAffected,
 	dbTypes.StatusFixDeferred,

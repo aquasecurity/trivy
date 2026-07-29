@@ -29,7 +29,7 @@ The feed publishes one record per vulnerable component found inside a package, s
 - Otherwise the highest fixed version any record names is reported, because that is the first version in which every component is fixed.
 - A vulnerability Chainguard has determined does not apply to the package is not reported.
 
-A package is matched on its own name. The feed files an advisory against whichever APK package ships the vulnerable component, so a subpackage such as `libcrypto3` carries its own advisories rather than inheriting every advisory filed against its origin package `openssl`.
+A package is matched under its own name and under its origin package's name. The feed files an advisory against whichever APK package ships the vulnerable component, which can be either: the subpackage `katib-suggestion-skopt-enas` carries advisories its origin `kubeflow-katib` does not, and `openssl` carries advisories its subpackage `libcrypto3` does not. A subpackage is built from its origin and shares its version numbers, so an advisory filed against either name applies.
 
 ### Architectures
 The feed records each advisory against a CPU architecture, and Trivy prefers the advisory matching the architecture of the installed package, because the two builds of a package are not always fixed in the same revision.
