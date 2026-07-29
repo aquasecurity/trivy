@@ -1,39 +1,66 @@
 - bucket: chainguard
   pairs:
-    - bucket: ansible
+    - bucket: glibc
       pairs:
-        - key: CVE-2018-10875
+        # Fixed in the same version on both architectures.
+        - key: CVE-2023-4911
           value:
-            FixedVersion: "2.6.3-r0"
-        - key: CVE-2019-10217
+            FixedVersion: 2.38-r5
+            Entries:
+              - FixedVersion: 2.38-r5
+                Arches:
+                  - aarch64
+                  - x86_64
+                VendorIDs:
+                  - CGA-2222-2222-2222
+        # Recorded for x86_64 only. Status 6 is fix_deferred.
+        - key: CVE-2026-12345
           value:
-            FixedVersion: "2.8.4-r0"
-        - key: CVE-2020-1740
+            Entries:
+              - Status: 6
+                Arches:
+                  - x86_64
+                VendorIDs:
+                  - CGA-3333-3333-3333
+        # Fixed in a different revision on each architecture.
+        - key: CVE-2026-54321
           value:
-            FixedVersion: ""
-            AffectedVersion: "2.6.5"
-        - key: CVE-2021-20191
-          value:
-            FixedVersion: ""
-        - key: CVE-2019-INVALID
-          value:
-            FixedVersion: "invalid"
-    - bucket: jq
+            FixedVersion: 2.43-r0
+            Entries:
+              - FixedVersion: 2.40-r0
+                Arches:
+                  - aarch64
+                VendorIDs:
+                  - CGA-5555-5555-5555
+              - FixedVersion: 2.43-r0
+                Arches:
+                  - x86_64
+                VendorIDs:
+                  - CGA-6666-6666-6666
+    - bucket: openssl
       pairs:
-        - key: CVE-2016-4074
+        - key: CVE-2024-9143
           value:
-            FixedVersion: "1.6_rc1-r0"
-        - key: CVE-2019-9999
-          value:
-            FixedVersion: "1.6_rc2"
-        - key: CVE-2020-1234
-          value:
-            FixedVersion: "1.6-r1"
-    - bucket: test-src
+            FixedVersion: 3.3.3-r0
+            Entries:
+              - FixedVersion: 3.3.3-r0
+                VendorIDs:
+                  - CGA-4444-4444-4444
+    # The feed also files advisories against the subpackage that ships the
+    # vulnerable component, not only against the origin package.
+    - bucket: libcrypto3
       pairs:
-        - key: CVE-2030-0001
+        - key: CVE-2026-11111
           value:
-            FixedVersion: "0.1.0_alpha_pre2"
-        - key: CVE-2030-0002
-          value:
-            FixedVersion: "0.1.0_alpha2"
+            FixedVersion: 3.6.0-r0
+            Entries:
+              - FixedVersion: 3.6.0-r0
+                VendorIDs:
+                  - CGA-7777-7777-7777
+- bucket: data-source
+  pairs:
+    - key: chainguard
+      value:
+        ID: chainguard
+        Name: Chainguard Security Data
+        URL: https://advisories.cgr.dev/chainguard/v3/osv/all.json
