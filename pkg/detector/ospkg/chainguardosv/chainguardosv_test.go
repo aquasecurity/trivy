@@ -91,12 +91,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource: source,
 				},
 			},
-			wantCalls: []db.GetParams{
-				{
-					PkgName: "glibc",
-					Arch:    "x86_64",
-				},
-			},
+			wantCalls: []db.GetParams{{PkgName: "glibc"}},
 		},
 		{
 			name: "a package at the fixed version is not vulnerable",
@@ -183,13 +178,8 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			// The aarch64 build was fixed in r1, so r4 is not vulnerable, even
 			// though the x86_64 build was not fixed until r8.
-			want: nil,
-			wantCalls: []db.GetParams{
-				{
-					PkgName: "prism",
-					Arch:    "aarch64",
-				},
-			},
+			want:      nil,
+			wantCalls: []db.GetParams{{PkgName: "prism"}},
 		},
 		{
 			// The feed covers only one architecture for around one in eleven
@@ -257,16 +247,22 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource:       source,
 				},
 			},
-			wantCalls: []db.GetParams{
-				{
-					PkgName: "ca-certificates",
-					Arch:    "noarch",
-				},
-			},
+			wantCalls: []db.GetParams{{PkgName: "ca-certificates"}},
 		},
 		{
-			name: "a subpackage is matched against its origin package",
+			// A subpackage is built from its origin and carries its origin's
+			// version numbers, so advisories filed against either name apply.
+			// Both are needed: matching only the origin loses the advisories the
+			// subpackage carries alone, and matching only the subpackage produces
+			// 40 false negatives on Chainguard's subpackage test image.
+			name: "a subpackage is matched under its own name and its origin's",
 			advisories: map[string][]dbTypes.Advisory{
+				"libcrypto3": {
+					{
+						VulnerabilityID: "CVE-2026-11111",
+						FixedVersion:    "3.6.0-r0",
+					},
+				},
 				"openssl": {
 					{
 						VulnerabilityID: "CVE-2024-9143",
@@ -286,10 +282,19 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			want: []types.DetectedVulnerability{
 				{
+					// Filed against the origin package openssl.
 					VulnerabilityID:  "CVE-2024-9143",
 					PkgName:          "libcrypto3",
 					InstalledVersion: "3.3.2-r0",
 					FixedVersion:     "3.3.3-r0",
+					DataSource:       source,
+				},
+				{
+					// Filed against the subpackage libcrypto3.
+					VulnerabilityID:  "CVE-2026-11111",
+					PkgName:          "libcrypto3",
+					InstalledVersion: "3.3.2-r0",
+					FixedVersion:     "3.6.0-r0",
 					DataSource:       source,
 				},
 			},
@@ -299,70 +304,22 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// The feed files advisories against whichever APK package the
-			// vulnerable component was found in, so a subpackage carries
-			// advisories its origin does not and the other way round.
-			name: "a subpackage is also matched against its own name",
-			advisories: map[string][]dbTypes.Advisory{
-				"kubeflow-katib": {
-					{
-						VulnerabilityID: "CVE-2022-41723",
-						FixedVersion:    "0.17.0-r13",
-					},
-				},
-				"katib-suggestion-skopt-enas": {
-					{
-						VulnerabilityID: "CVE-2021-4231",
-						FixedVersion:    "0.19.0-r31",
-					},
-				},
-			},
-			pkgs: []ftypes.Package{
-				{
-					Name:       "katib-suggestion-skopt-enas",
-					Version:    "0.17.0",
-					Release:    "r3",
-					SrcName:    "kubeflow-katib",
-					SrcVersion: "0.17.0",
-					SrcRelease: "r3",
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2021-4231",
-					PkgName:          "katib-suggestion-skopt-enas",
-					InstalledVersion: "0.17.0-r3",
-					FixedVersion:     "0.19.0-r31",
-					DataSource:       source,
-				},
-				{
-					VulnerabilityID:  "CVE-2022-41723",
-					PkgName:          "katib-suggestion-skopt-enas",
-					InstalledVersion: "0.17.0-r3",
-					FixedVersion:     "0.17.0-r13",
-					DataSource:       source,
-				},
-			},
-			wantCalls: []db.GetParams{
-				{PkgName: "katib-suggestion-skopt-enas"},
-				{PkgName: "kubeflow-katib"},
-			},
-		},
-		{
-			// Both names carry the same vulnerability, and the package is only
-			// safe once it reaches the later of the two fixed versions.
+			// Both names carry the same vulnerability but name different fixed
+			// versions. The package is only safe once it reaches the later one,
+			// otherwise it would be reported as fixed while a component covered
+			// by the other advisory is still vulnerable.
 			name: "the later fixed version wins across the two names",
 			advisories: map[string][]dbTypes.Advisory{
-				"kubeflow-katib": {
-					{
-						VulnerabilityID: "CVE-2021-4231",
-						FixedVersion:    "0.17.0-r13",
-					},
-				},
 				"katib-suggestion-skopt-enas": {
 					{
 						VulnerabilityID: "CVE-2021-4231",
 						FixedVersion:    "0.19.0-r31",
+					},
+				},
+				"kubeflow-katib": {
+					{
+						VulnerabilityID: "CVE-2021-4231",
+						FixedVersion:    "0.17.0-r13",
 					},
 				},
 			},
@@ -412,9 +369,7 @@ func TestScanner_Detect(t *testing.T) {
 					DataSource:       source,
 				},
 			},
-			wantCalls: []db.GetParams{
-				{PkgName: "jq"},
-			},
+			wantCalls: []db.GetParams{{PkgName: "jq"}},
 		},
 		{
 			name: "unresolved beats fixed when both apply to a package",
@@ -491,6 +446,48 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// Both apply to this package and neither has a fix, so the status a
+			// user most needs to act on is the one reported.
+			name: "the most pressing unresolved status is reported",
+			advisories: map[string][]dbTypes.Advisory{
+				"haproxy-2.2": {
+					{
+						VulnerabilityID: "CVE-2025-32464",
+						Status:          dbTypes.StatusUnderInvestigation,
+						Arches:          []string{"x86_64"},
+						VendorIDs:       []string{"CGA-detect-0000-00"},
+					},
+					{
+						VulnerabilityID: "CVE-2025-32464",
+						Status:          dbTypes.StatusFixDeferred,
+						Arches:          []string{"aarch64"},
+						VendorIDs:       []string{"CGA-pending-000-00"},
+					},
+				},
+			},
+			pkgs: []ftypes.Package{
+				{
+					// No architecture, so both advisories are candidates.
+					Name:       "haproxy-2.2",
+					Version:    "2.2.33",
+					Release:    "r40",
+					SrcName:    "haproxy-2.2",
+					SrcVersion: "2.2.33",
+					SrcRelease: "r40",
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2025-32464",
+					VendorIDs:        []string{"CGA-pending-000-00"},
+					PkgName:          "haproxy-2.2",
+					InstalledVersion: "2.2.33-r40",
+					Status:           dbTypes.StatusFixDeferred,
+					DataSource:       source,
+				},
+			},
+		},
+		{
 			name: "an unparsable installed version is skipped",
 			advisories: map[string][]dbTypes.Advisory{
 				"invalid": {
@@ -540,10 +537,8 @@ func TestScanner_Detect(t *testing.T) {
 					SrcName: "unknown",
 				},
 			},
-			want: nil,
-			wantCalls: []db.GetParams{
-				{PkgName: "unknown"},
-			},
+			want:      nil,
+			wantCalls: []db.GetParams{{PkgName: "unknown"}},
 		},
 	}
 

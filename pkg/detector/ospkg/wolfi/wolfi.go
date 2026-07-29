@@ -8,10 +8,14 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguardosv"
 )
 
-// Scanner implements the Wolfi scanner.
-type Scanner = chainguardosv.Scanner
+// Scanner implements the Wolfi scanner. It is a distinct type from the Chainguard
+// scanner it shares an implementation with, so that callers can still tell the
+// two apart.
+type Scanner struct {
+	*chainguardosv.Scanner
+}
 
 // NewScanner is the factory method for Scanner.
 func NewScanner() *Scanner {
-	return chainguardosv.NewScanner(wolfi.NewVulnSrc(), "Wolfi")
+	return &Scanner{chainguardosv.NewScanner(wolfi.NewVulnSrc(), "Wolfi")}
 }

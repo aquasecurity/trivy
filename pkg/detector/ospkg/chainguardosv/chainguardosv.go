@@ -90,15 +90,22 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 	return vulns, nil
 }
 
-// advisories collects the advisories that apply to a package.
+// advisories collects the advisories that apply to a package, which means
+// looking it up under two names.
 //
-// The feed files an advisory against the APK package the vulnerable component
-// was found in, which is the subpackage when a subpackage is what ships the
-// component, and against the origin package otherwise. Since a subpackage is
-// built from its origin and carries its origin's version numbers, both sets
-// apply and both have to be looked up: an origin such as kubeflow-katib and a
-// subpackage such as katib-suggestion-skopt-enas each carry advisories the
-// other does not.
+// The feed files an advisory against whichever APK package ships the vulnerable
+// component, and both a subpackage and its origin can ship one. Neither set
+// contains the other: the origin kubeflow-katib has 93 advisories to its
+// subpackage katib-suggestion-skopt-enas's 632, while openssl has 75 to
+// libcrypto3's 29. Since a subpackage is built from its origin and carries its
+// origin's version numbers, an advisory against either applies to the installed
+// subpackage.
+//
+// Both names are needed to satisfy Chainguard's own conformance suite: matching
+// only the origin loses 500 advisories on kubeflow-katib, and matching only the
+// package's own name produces 40 false negatives on the
+// subpackage-unfixed-vulnerabilities test image, whose outdated libcrypto3 is
+// covered by advisories filed against openssl.
 func (s *Scanner) advisories(pkg ftypes.Package) ([]dbTypes.Advisory, error) {
 	names := []string{pkg.Name}
 	if pkg.SrcName != "" && pkg.SrcName != pkg.Name {
@@ -107,10 +114,7 @@ func (s *Scanner) advisories(pkg ftypes.Package) ([]dbTypes.Advisory, error) {
 
 	var advisories []dbTypes.Advisory
 	for _, name := range names {
-		found, err := s.vs.Get(db.GetParams{
-			PkgName: name,
-			Arch:    pkg.Arch,
-		})
+		found, err := s.vs.Get(db.GetParams{PkgName: name})
 		if err != nil {
 			return nil, err
 		}
@@ -137,10 +141,10 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Ver
 
 // dedupe reduces the advisories for each vulnerability to a single one.
 //
-// A package carries one advisory per architecture, and looking a package up
-// under both its own name and its origin name brings back more than one
-// advisory for the same vulnerability. The advisories for the package's own
-// architecture are the accurate ones, so they win when the feed has any. The
+// A package carries one advisory per architecture, and it is looked up under two
+// names, so a vulnerability comes back more than once. The advisories for the
+// package's own architecture are the
+// accurate ones, so they win when the feed has any. The
 // feed does not always cover both architectures though - around one in eleven
 // package/vulnerability pairs appears for a single architecture only - so when
 // nothing matches, the advisories for the other architecture are used rather
@@ -151,8 +155,7 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Ver
 // Among the remaining candidates an unresolved advisory wins, because it means
 // Chainguard has not established that any version of the package is safe.
 // Otherwise the highest fixed version wins, since a lower one would report the
-// vulnerability as fixed while another component or architecture is still
-// waiting for it.
+// vulnerability as fixed while another component is still waiting for it.
 func dedupe(advisories []dbTypes.Advisory, pkgArch string) []dbTypes.Advisory {
 	byVulnID := make(map[string][]dbTypes.Advisory)
 	for _, adv := range advisories {
@@ -197,10 +200,33 @@ func matchArch(advisories []dbTypes.Advisory, pkgArch string) []dbTypes.Advisory
 	return matching
 }
 
+// statusRanks orders the statuses of unresolved advisories from the one a user
+// most needs to act on to the one they least need to act on, matching the order
+// the database applies when it aggregates them. Without this the choice between
+// two unresolved advisories would fall out of the order they happen to be stored
+// in.
+var statusRanks = []dbTypes.Status{
+	dbTypes.StatusAffected,
+	dbTypes.StatusFixDeferred,
+	dbTypes.StatusWillNotFix,
+	dbTypes.StatusUnderInvestigation,
+}
+
+func statusRank(status dbTypes.Status) int {
+	if i := slices.Index(statusRanks, status); i >= 0 {
+		return i
+	}
+	return len(statusRanks)
+}
+
 // preferred reports whether candidate should replace current.
 func preferred(current, candidate dbTypes.Advisory) bool {
+	// Neither has a fix, so the more pressing status wins.
+	if candidate.FixedVersion == "" && current.FixedVersion == "" {
+		return statusRank(candidate.Status) < statusRank(current.Status)
+	}
 	if candidate.FixedVersion == "" {
-		return current.FixedVersion != ""
+		return true
 	}
 	if current.FixedVersion == "" {
 		return false

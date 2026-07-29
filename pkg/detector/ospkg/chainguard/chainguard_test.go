@@ -140,7 +140,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "a subpackage is matched against both its own name and its origin",
+			name:     "a subpackage is matched under its own name and its origin's",
 			fixtures: []string{"testdata/fixtures/chainguard.yaml"},
 			pkgs: []ftypes.Package{
 				{

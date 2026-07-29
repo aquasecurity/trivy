@@ -29,21 +29,31 @@ The feed publishes one record per vulnerable component found inside a package, s
 - Otherwise the highest fixed version any record names is reported, because that is the first version in which every component is fixed.
 - A vulnerability Chainguard has determined does not apply to the package is not reported.
 
-Advisories are matched per architecture. A vulnerability that only affects the `x86_64` build of a package is not reported for the `aarch64` build.
+A package is matched on its own name. The feed files an advisory against whichever APK package ships the vulnerable component, so a subpackage such as `libcrypto3` carries its own advisories rather than inheriting every advisory filed against its origin package `openssl`.
+
+### Architectures
+The feed records each advisory against a CPU architecture, and Trivy prefers the advisory matching the architecture of the installed package, because the two builds of a package are not always fixed in the same revision.
+
+Where the feed has no advisory for a package's architecture at all, the advisory recorded for the other architecture is used rather than being discarded. Around one package/vulnerability pair in eleven appears for a single architecture only, and Chainguard builds every architecture of a package from the same source, so an advisory recorded for one is evidence about the other.
 
 ### Unfixed vulnerabilities
 Unlike secdb, the OSV v3 feed also publishes advisories Chainguard has not resolved yet.
 Trivy reports them with no fixed version, and records the reason as the vulnerability status:
 
-| Chainguard status            | Trivy status          |
-|------------------------------|-----------------------|
-| `true_positive_determination` | `affected`            |
-| `pending_upstream_fix`        | `fix_deferred`        |
-| `fix_not_planned`             | `will_not_fix`        |
-| `analysis_not_planned`        | `will_not_fix`        |
-| `detection`                   | `under_investigation` |
+| Chainguard status             | Trivy status          |
+|-------------------------------|-----------------------|
+| `true_positive_determination`  | `affected`            |
+| `pending_upstream_fix`         | `fix_deferred`        |
+| `fix_not_planned`              | `will_not_fix`        |
+| `analysis_not_planned`         | `will_not_fix`        |
+| `detection`                    | `under_investigation` |
+| anything else unresolved       | `affected`            |
 
-Use `--ignore-unfixed` to leave all of them out, or `--ignore-status` to leave out particular statuses.
+A `false_positive_determination` is resolved rather than unresolved, and is not reported at all.
+
+Use `--ignore-unfixed` to leave all unresolved advisories out, or `--ignore-status` to leave out particular statuses.
+
+Note that Chainguard records these against the component inside the package, and Trivy's language scanners may report the same vulnerability against that component directly. The two findings then appear under different package names.
 
 ### Data Source
 See [here](../../scanner/vulnerability.md#data-sources).
