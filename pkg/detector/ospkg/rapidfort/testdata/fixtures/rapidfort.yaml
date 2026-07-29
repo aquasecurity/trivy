@@ -19,15 +19,6 @@
             PatchedVersions:
               - "7.81.0-1ubuntu1.14"
             Severity: 2
-    - bucket: openssl
-      pairs:
-        - key: CVE-2023-5678
-          value:
-            VulnerableVersions:
-              - ">= 0, < 3.0.2-0ubuntu1.13"
-            PatchedVersions:
-              - "3.0.2-0ubuntu1.13"
-            Severity: 2
 - bucket: rapidfort alpine 3.18
   pairs:
     - bucket: libssl3

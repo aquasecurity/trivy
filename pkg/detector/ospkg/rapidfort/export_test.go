@@ -10,3 +10,8 @@ import (
 func (s *Scanner) IsVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory) bool {
 	return s.isVulnerable(ctx, installedVersion, adv)
 }
+
+// RpmDistTag exports rpmDistTag for testing.
+func RpmDistTag(ver string) (tag, num string) {
+	return rpmDistTag(ver)
+}

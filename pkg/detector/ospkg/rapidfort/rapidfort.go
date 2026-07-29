@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/rapidfort"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -19,8 +20,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// rpmDistTagRe extracts the RPM %{dist} tag that decides which RapidFort bucket
-// an installed package belongs to.
+// rpmDistTagRe matches an RPM %{dist} tag and its trailing digits. A release may
+// contain more than one el/fc/rf substring (e.g. ".rfc3339"), so rpmDistTag uses
+// the last match — the dist tag is the trailing element of the release.
 //
 //	"7.76.1-26.el9_3.3" → el/9    "7.76.1-26.fc43" → fc/43    "7.76.1-26.rf1" → rf/1
 var rpmDistTagRe = regexp.MustCompile(`\.(el|fc|rf)(\d*)`)
@@ -28,11 +30,12 @@ var rpmDistTagRe = regexp.MustCompile(`\.(el|fc|rf)(\d*)`)
 // rpmDistTag returns the RPM dist tag and its trailing digits from a version
 // string, or ("", "") for an untagged RPM.
 func rpmDistTag(ver string) (tag, num string) {
-	m := rpmDistTagRe.FindStringSubmatch(ver)
-	if m == nil {
+	m := rpmDistTagRe.FindAllStringSubmatch(ver, -1)
+	if len(m) == 0 {
 		return "", ""
 	}
-	return m[1], m[2]
+	last := m[len(m)-1]
+	return last[1], last[2]
 }
 
 // Scanner detects vulnerabilities for RapidFort curated images by querying
@@ -224,10 +227,6 @@ func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, adv
 }
 
 func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string, constraintsStr []string) bool {
-	if installedVersion == "" {
-		return false
-	}
-
 	for _, constraintStr := range constraintsStr {
 		constraints, err := version.NewConstraints(constraintStr, s.comparer)
 		if err != nil {
@@ -235,7 +234,7 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 				log.String("installed", installedVersion),
 				log.String("constraint", constraintStr),
 				log.Err(err))
-			return false
+			continue
 		}
 
 		satisfied, err := constraints.Check(installedVersion)
@@ -244,7 +243,7 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 				log.String("installed", installedVersion),
 				log.String("constraint", constraintStr),
 				log.Err(err))
-			return false
+			continue
 		}
 
 		if satisfied {
@@ -260,6 +259,8 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
+
+var _ driver.PackageFilter = (*Scanner)(nil)
 
 // FilterPackages implements driver.PackageFilter.
 // RapidFort curated images may include patched versions of third-party packages

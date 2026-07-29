@@ -367,6 +367,61 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// An untagged RPM (no el/fc/rf dist tag) routes to the base Red Hat
+			// bucket keyed by the image's OS version, matching the el9 advisories there.
+			name:   "RedHat: untagged RPM routes to the base Red Hat bucket",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-99999",
+					InstalledVersion: "7.76.1-20",
+					FixedVersion:     "",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
+		{
 			// Source→binary fallback: rpm-sequoia is the installed binary,
 			// rust-rpm-sequoia is its SRPM. CVE-2025-0977 lives in the SRPM
 			// bucket (primary lookup). CVE-2026-2625 lives in the binary
@@ -717,6 +772,22 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			vulnerableRanges: []string{">=7.76.1-14.el9"},
 			want:             true,
 		},
+		{
+			// A malformed range must be skipped, not abort the loop: a later
+			// valid range still decides the result.
+			name:             "Malformed range is skipped; a later valid range still matches",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "1.0",
+			vulnerableRanges: []string{"not-a-constraint", ">= 0, < 2.0"},
+			want:             true,
+		},
+		{
+			name:             "Only a malformed range: not vulnerable",
+			baseOS:           ftypes.Ubuntu,
+			installedVersion: "1.0",
+			vulnerableRanges: []string{"not-a-constraint"},
+			want:             false,
+		},
 	}
 
 	for _, tt := range tests {
@@ -730,4 +801,53 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			assert.Equal(t, tt.want, result)
 		})
 	}
+}
+
+func TestRpmDistTag(t *testing.T) {
+	tests := []struct {
+		ver     string
+		wantTag string
+		wantNum string
+	}{
+		{ver: "7.76.1-26.el9_3.3", wantTag: "el", wantNum: "9"},
+		{ver: "7.76.1-26.fc43", wantTag: "fc", wantNum: "43"},
+		{ver: "7.76.1-20.rf1", wantTag: "rf", wantNum: "1"},
+		{ver: "7.76.1-26.rf", wantTag: "rf", wantNum: ""},
+		// The dist tag is the trailing one: a ".rf" inside "rfc3339" must not win.
+		{ver: "1.0-1.rfc3339.el9", wantTag: "el", wantNum: "9"},
+		// Composite release: the last tag wins.
+		{ver: "7.76.1-26.rf1.el9", wantTag: "el", wantNum: "9"},
+		// Untagged / non-RPM versions have no dist tag.
+		{ver: "1.0.0-1", wantTag: "", wantNum: ""},
+		{ver: "3.1.4-r1", wantTag: "", wantNum: ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.ver, func(t *testing.T) {
+			tag, num := rapidfort.RpmDistTag(tt.ver)
+			assert.Equal(t, tt.wantTag, tag)
+			assert.Equal(t, tt.wantNum, num)
+		})
+	}
+}
+
+func TestScanner_FilterPackages(t *testing.T) {
+	// RapidFort curates advisories for every package it ships, including
+	// third-party ones, so FilterPackages keeps them all unchanged.
+	pkgs := []ftypes.Package{
+		{
+			Name: "curl",
+			Repository: ftypes.PackageRepository{
+				Class: ftypes.RepositoryClassThirdParty,
+			},
+		},
+		{
+			Name: "nginx",
+		},
+		{
+			Name: "rf-glibc",
+		},
+	}
+
+	s := rapidfort.NewScanner(ftypes.RedHat)
+	assert.Equal(t, pkgs, s.FilterPackages(t.Context(), pkgs))
 }
