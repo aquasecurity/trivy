@@ -72,6 +72,7 @@ var (
 	// suppliers dynamically generate drivers based on package information
 	// and environment detection. They are tried before standard OS-specific drivers.
 	suppliers = []driver.Supplier{
+		rapidfort.Supplier,
 		rootio.Supplier,
 		seal.Supplier,
 	}
@@ -113,7 +114,7 @@ func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
 		opt(r)
 	}
 
-	drv, err := r.resolve(target.OS, target.Packages, target.CustomResources)
+	drv, err := r.resolve(target.OS, target.Packages)
 	if err != nil {
 		return nil, err
 	}
@@ -151,13 +152,8 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 	return vulns, eosl, nil
 }
 
-func (r *resolver) resolve(os ftypes.OS, pkgs []ftypes.Package, customResources []ftypes.CustomResource) (driver.Driver, error) {
-	// Try custom-resource providers (e.g. RapidFort curated-image detection via a sentinel file)
-	if d := rapidfort.Provider(os.Family, pkgs, customResources); d != nil {
-		return d, nil
-	}
-
-	// Try suppliers
+func (r *resolver) resolve(os ftypes.OS, pkgs []ftypes.Package) (driver.Driver, error) {
+	// Try suppliers first
 	for _, supplier := range r.suppliers {
 		if d := supplier(os, pkgs); d != nil {
 			return d, nil

@@ -16,11 +16,6 @@ func init() {
 const (
 	analyzerVersion = 1
 	curatedFilePath = "usr/share/rapidfort/curated.json"
-
-	// CustomResourceType is the marker emitted when this analyzer finds the
-	// RapidFort curated-image sentinel file. The RapidFort scanner provider
-	// reads it to decide whether to switch to the RapidFort feed for the image.
-	CustomResourceType = "rapidfort-curated"
 )
 
 var requiredFiles = []string{curatedFilePath}
@@ -30,13 +25,10 @@ var requiredFiles = []string{curatedFilePath}
 // is checked — the file contents are not read.
 type curatedAnalyzer struct{}
 
-func (a curatedAnalyzer) Analyze(_ context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
+func (a curatedAnalyzer) Analyze(_ context.Context, _ analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
 	return &analyzer.AnalysisResult{
-		CustomResources: []types.CustomResource{
-			{
-				Type:     CustomResourceType,
-				FilePath: input.FilePath,
-			},
+		OS: types.OS{
+			Supplier: types.SupplierRapidFort,
 		},
 	}, nil
 }

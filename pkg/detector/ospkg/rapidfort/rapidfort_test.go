@@ -577,66 +577,47 @@ func TestScanner_Detect(t *testing.T) {
 	}
 }
 
-func TestProvider(t *testing.T) {
-	curatedMarker := ftypes.CustomResource{
-		Type:     "rapidfort-curated",
-		FilePath: "usr/share/rapidfort/curated.json",
-	}
-	unrelatedMarker := ftypes.CustomResource{Type: "some-other-marker"}
-
+func TestSupplier(t *testing.T) {
 	tests := []struct {
-		name            string
-		osFamily        ftypes.OSType
-		customResources []ftypes.CustomResource
-		wantNil         bool
+		name    string
+		os      ftypes.OS
+		wantNil bool
 	}{
 		{
-			name:            "RapidFort Ubuntu image detected",
-			osFamily:        ftypes.Ubuntu,
-			customResources: []ftypes.CustomResource{curatedMarker},
-			wantNil:         false,
+			name:    "RapidFort Ubuntu image detected",
+			os:      ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
 		},
 		{
-			name:            "RapidFort Alpine image detected",
-			osFamily:        ftypes.Alpine,
-			customResources: []ftypes.CustomResource{curatedMarker},
-			wantNil:         false,
+			name:    "RapidFort Alpine image detected",
+			os:      ftypes.OS{Family: ftypes.Alpine, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
 		},
 		{
-			name:            "RapidFort RedHat image detected",
-			osFamily:        ftypes.RedHat,
-			customResources: []ftypes.CustomResource{curatedMarker},
-			wantNil:         false,
+			name:    "RapidFort RedHat image detected",
+			os:      ftypes.OS{Family: ftypes.RedHat, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
 		},
 		{
-			name:            "Non-RapidFort image: no custom resources",
-			osFamily:        ftypes.Ubuntu,
-			customResources: nil,
-			wantNil:         true,
+			name:    "No RapidFort supplier returns nil",
+			os:      ftypes.OS{Family: ftypes.Ubuntu},
+			wantNil: true,
 		},
 		{
-			name:            "Non-RapidFort image: only unrelated markers",
-			osFamily:        ftypes.Ubuntu,
-			customResources: []ftypes.CustomResource{unrelatedMarker},
-			wantNil:         true,
+			name:    "Different supplier returns nil",
+			os:      ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierSeal},
+			wantNil: true,
 		},
 		{
-			name:            "Curated marker mixed with unrelated markers still detected",
-			osFamily:        ftypes.RedHat,
-			customResources: []ftypes.CustomResource{unrelatedMarker, curatedMarker},
-			wantNil:         false,
-		},
-		{
-			name:            "Curated marker on unsupported OS family returns nil",
-			osFamily:        ftypes.Debian,
-			customResources: []ftypes.CustomResource{curatedMarker},
-			wantNil:         true,
+			name:    "RapidFort supplier on unsupported OS family returns nil",
+			os:      ftypes.OS{Family: ftypes.Debian, Supplier: ftypes.SupplierRapidFort},
+			wantNil: true,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := rapidfort.Provider(tt.osFamily, nil, tt.customResources)
+			d := rapidfort.Supplier(tt.os, nil)
 			if tt.wantNil {
 				assert.Nil(t, d)
 			} else {

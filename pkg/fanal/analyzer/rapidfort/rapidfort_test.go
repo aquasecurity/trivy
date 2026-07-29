@@ -19,11 +19,8 @@ func Test_curatedAnalyzer_Analyze(t *testing.T) {
 	})
 	require.NoError(t, err)
 	want := &analyzer.AnalysisResult{
-		CustomResources: []types.CustomResource{
-			{
-				Type:     CustomResourceType,
-				FilePath: curatedFilePath,
-			},
+		OS: types.OS{
+			Supplier: types.SupplierRapidFort,
 		},
 	}
 	assert.Equal(t, want, got)
