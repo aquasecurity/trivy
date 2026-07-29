@@ -40,6 +40,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -76,6 +77,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 				{
 					VulnerabilityID: "CVE-2019-12735",
@@ -92,6 +98,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -100,6 +111,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.5",
@@ -139,6 +151,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 				{
 					VulnerabilityID: "CVE-2020-12403",
@@ -155,6 +172,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -163,6 +185,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -202,6 +225,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -210,6 +238,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -249,6 +278,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -257,6 +291,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "7.6",
@@ -296,6 +331,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -304,6 +344,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -330,6 +371,11 @@ func TestScanner_Detect(t *testing.T) {
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -338,6 +384,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -377,6 +424,11 @@ func TestScanner_Detect(t *testing.T) {
 					Layer: ftypes.Layer{
 						DiffID: "sha256:3e968ecc016e1b9aa19023798229bf2d25c813d1bf092533f38b056aff820524",
 					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
+					},
 				},
 			},
 		},
@@ -407,6 +459,7 @@ func TestScanner_Detect(t *testing.T) {
 			fixtures: []string{
 				"testdata/fixtures/redhat.yaml",
 				"testdata/fixtures/cpe.yaml",
+				"testdata/fixtures/data-source.yaml",
 			},
 			args: args{
 				osVer: "8.3",
@@ -448,6 +501,11 @@ func TestScanner_Detect(t *testing.T) {
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.RedHat,
+						Name: "Red Hat",
+						URL:  "https://access.redhat.com/security/cve/",
 					},
 				},
 			},

@@ -147,7 +147,6 @@ trivy rootfs [flags] ROOTDIR
                                           Allowed values:
                                             - nvd
                                             - redhat
-                                            - redhat-oval
                                             - debian
                                             - ubuntu
                                             - alpine

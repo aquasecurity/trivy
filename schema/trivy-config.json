@@ -890,7 +890,6 @@
             "enum": [
               "nvd",
               "redhat",
-              "redhat-oval",
               "debian",
               "ubuntu",
               "alpine",
