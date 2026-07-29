@@ -528,7 +528,7 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			name:       "a package with no advisories is not queried twice",
-			advisories: map[string][]dbTypes.Advisory{},
+			advisories: make(map[string][]dbTypes.Advisory),
 			pkgs: []ftypes.Package{
 				{
 					Name:    "unknown",

@@ -489,4 +489,4 @@ tool (
 	sigs.k8s.io/kind
 )
 
-replace github.com/aquasecurity/trivy-db => github.com/plerion-sina/trivy-db v0.0.0-20260729105912-d0195ade1530
+replace github.com/aquasecurity/trivy-db => github.com/plerion-sina/trivy-db v0.0.0-20260729111857-e9ab465b4c3c
