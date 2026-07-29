@@ -14,6 +14,14 @@ type (
 	ConfigType = TargetType
 )
 
+// Supplier identifies a third party that rebuilds and ships packages e.g. Seal Security.
+type Supplier string
+
+// Suppliers
+const (
+	SupplierSeal Supplier = "seal"
+)
+
 const (
 	ArtifactJSONSchemaVersion = 1
 	BlobJSONSchemaVersion     = 2

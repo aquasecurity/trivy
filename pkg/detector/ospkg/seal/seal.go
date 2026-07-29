@@ -66,7 +66,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	default:
-		// Should never happen as it's validated in the provider
+		// Should never happen as it's validated in the supplier
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)

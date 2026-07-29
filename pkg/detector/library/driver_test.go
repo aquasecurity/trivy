@@ -14,7 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
 func TestDriver_Detect(t *testing.T) {
