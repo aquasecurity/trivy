@@ -11,6 +11,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/go-viper/mapstructure/v2"
 	"github.com/samber/lo"
 	"github.com/spf13/cast"
 	"github.com/spf13/cobra"
@@ -30,7 +31,7 @@ import (
 )
 
 type FlagType interface {
-	int | string | []string | bool | time.Duration | float64 | map[string][]string
+	int | string | []string | bool | time.Duration | float64 | map[string][]string | []MavenMirror
 }
 
 type Flag[T FlagType] struct {
@@ -113,7 +114,8 @@ func (f *Flag[T]) Parse() error {
 
 	value, ok := f.cast(v).(T)
 	if !ok {
-		return xerrors.Errorf("failed to parse flag %s", f.Name)
+		// Config-only flags have no name, so the config file key is the only locator.
+		return xerrors.Errorf("failed to parse flag %s", lo.Ternary(f.Name != "", f.Name, f.ConfigName))
 	}
 
 	if f.ValueNormalize != nil {
@@ -178,6 +180,14 @@ func (f *Flag[T]) cast(val any) any {
 		return cast.ToDuration(val)
 	case map[string][]string:
 		return cast.ToStringMapStringSlice(val)
+	case []MavenMirror:
+		// cast doesn't support structs, so the config file value is decoded here.
+		var mirrors []MavenMirror
+		if err := mapstructure.Decode(val, &mirrors); err != nil {
+			// Parse turns the nil into an error, as the cast to T fails.
+			return nil
+		}
+		return mirrors
 	case []string:
 		if s, ok := val.(string); ok && strings.Contains(s, ",") {
 			// Split environmental variables by comma as it is not done by viper.

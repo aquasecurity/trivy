@@ -97,18 +97,20 @@ For each package that needs to be fetched from a remote repository, Trivy applie
     Trivy supports chained resolution across the two sources: if `settings.xml` maps `repo1 -> repo2` and the config file maps `repo2 -> repo3`, then `repo1` resolves to `repo3`.
 
 #### config-file mirrors
-`scan.maven.mirrors` maps each source repository URL to an ordered list of mirror URLs, tried in turn. Use it to avoid modifying `settings.xml` (for example in CI) and to configure several fallback mirrors[^10] for a single repository:
+`scan.maven.mirrors` is a list of entries, each mapping a `source` repository URL to the ordered `targets` that mirror it, tried in turn. Use it to avoid modifying `settings.xml` (for example in CI) and to configure several fallback mirrors[^10] for a single repository:
 
 ```yaml
 scan:
   maven:
     mirrors:
-      https://repo.maven.apache.org/maven2/:
-        - https://my-internal-mirror/maven2/
-        - https://backup-mirror/maven2/
+      - source: https://repo.maven.apache.org/maven2/
+        targets:
+          - https://my-internal-mirror/maven2/
+          - https://backup-mirror/maven2/
 ```
 
-To mirror Maven Central, use `https://repo.maven.apache.org/maven2/` as the source repository URL.
+To mirror Maven Central, use `https://repo.maven.apache.org/maven2/` as the `source`.
+As in Maven, a mirrored repository is never queried directly, so a dependency is reported as not found when every mirror of it fails.
 
 !!! warning "Credentials"
     Config-file mirrors do not read credentials from `settings.xml` `<server>` entries. To authenticate, embed them in the mirror URL (`https://user:password@host/...`), which stores the password in plaintext in the config file. For a secure setup, configure the mirror in `settings.xml` instead.

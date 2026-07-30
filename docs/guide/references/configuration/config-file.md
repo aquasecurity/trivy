@@ -614,7 +614,7 @@ scan:
   file-patterns: []
 
   maven:
-    mirrors:
+    mirrors: []
 
   # Same as '--offline-scan'
   offline: false
