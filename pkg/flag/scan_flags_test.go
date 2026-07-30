@@ -220,6 +220,41 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			},
 			assertion: require.Error,
 		},
+		{
+			// The parser matches repositories without their credentials, so these two
+			// would collapse into a single entry.
+			name: "maven repositories differing only by credentials are rejected",
+			fields: fields{
+				mavenMirrors: []flag.MavenMirror{
+					{
+						Source:  "https://first:pass@nexus.example.com/maven2/",
+						Targets: []string{"https://my-internal-mirror/maven2/"},
+					},
+					{
+						Source:  "https://second:pass@nexus.example.com/maven2/",
+						Targets: []string{"https://backup-mirror/maven2/"},
+					},
+				},
+			},
+			assertion: require.Error,
+		},
+		{
+			// The host is case-insensitive, so these two would collapse as well.
+			name: "maven repositories differing only by host case are rejected",
+			fields: fields{
+				mavenMirrors: []flag.MavenMirror{
+					{
+						Source:  "https://nexus.example.com/maven2/",
+						Targets: []string{"https://my-internal-mirror/maven2/"},
+					},
+					{
+						Source:  "https://Nexus.Example.COM/maven2/",
+						Targets: []string{"https://backup-mirror/maven2/"},
+					},
+				},
+			},
+			assertion: require.Error,
+		},
 	}
 
 	for _, tt := range tests {

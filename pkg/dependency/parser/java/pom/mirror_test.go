@@ -348,6 +348,7 @@ func TestParser_mirrorFor(t *testing.T) {
 	tests := []struct {
 		name            string
 		settingsMirrors []Mirror
+		servers         []Server
 		configMirrors   map[string][]string
 		repo            repository
 		want            []repository
@@ -483,6 +484,45 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
+			// Trivy embeds <server> credentials into the repository URL, so the lookup
+			// must ignore them — the configured key never carries a password.
+			name: "config file: repository credentials are ignored by the lookup",
+			configMirrors: map[string][]string{
+				"https://repo1.example.com/maven2": {"https://repo3.example.com/maven2"},
+			},
+			repo: repository{
+				id:             "corp",
+				url:            mustParseURL(t, "https://repo-user:repo-pass@repo1.example.com/maven2"),
+				releaseEnabled: true,
+			},
+			want: []repository{
+				{
+					id:             "corp",
+					url:            mustParseURL(t, "https://repo3.example.com/maven2"),
+					releaseEnabled: true,
+				},
+			},
+		},
+		{
+			// RFC 3986 defines the host as case-insensitive, unlike the path.
+			name: "config file: host case is ignored by the lookup",
+			configMirrors: map[string][]string{
+				"https://Repo1.Example.COM/maven2": {"https://repo3.example.com/maven2"},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo1.example.com/maven2"),
+				releaseEnabled: true,
+			},
+			want: []repository{
+				{
+					id:             "central",
+					url:            mustParseURL(t, "https://repo3.example.com/maven2"),
+					releaseEnabled: true,
+				},
+			},
+		},
+		{
 			// Several mirrors for one repository become ordered fallback candidates.
 			name: "config file: fallback list — repo1 -> [repo3, repo4] in order",
 			configMirrors: map[string][]string{
@@ -555,11 +595,38 @@ func TestParser_mirrorFor(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Chaining through a mirror that has <server> credentials: pass 1 rewrites the
+			// repository to the mirror URL with the credentials embedded, so the config-file
+			// lookup in pass 2 sees them and must still match the plain configured key.
+			name: "cross-source: chaining through a mirror with credentials",
+			settingsMirrors: []Mirror{
+				{ID: "settings-mirror", MirrorOf: "central", URL: "https://repo2.example.com/maven2"},
+			},
+			servers: []Server{
+				{ID: "settings-mirror", Username: "mirror-user", Password: "mirror-pass"},
+			},
+			configMirrors: map[string][]string{
+				"https://repo2.example.com/maven2": {"https://repo3.example.com/maven2"},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo1.example.com/maven2"),
+				releaseEnabled: true,
+			},
+			want: []repository{
+				{
+					id:             "settings-mirror",
+					url:            mustParseURL(t, "https://repo3.example.com/maven2"),
+					releaseEnabled: true,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			p := &Parser{mirrors: resolveMirrors(tt.settingsMirrors, nil, tt.configMirrors)}
+			p := &Parser{mirrors: resolveMirrors(tt.settingsMirrors, tt.servers, tt.configMirrors)}
 			require.Equal(t, tt.want, p.mirrorFor(tt.repo))
 		})
 	}

@@ -305,9 +305,12 @@ func parseMavenMirrors(mirrors []MavenMirror) (map[string][]string, error) {
 				return nil, xerrors.Errorf("invalid Maven mirror URL in 'scan.maven.mirrors' for %s", src.Redacted())
 			}
 		}
-		// Repositories are matched ignoring the trailing slash, so entries that differ only by
-		// it are duplicates and would otherwise silently overwrite each other.
-		key := strings.TrimRight(mirror.Source, "/")
+		// The parser looks a repository up by the same key: without credentials, with a
+		// lower-cased host and without the trailing slash. Entries differing only by those
+		// collapse into one key there, so they are duplicates and are rejected here.
+		src.User = nil
+		src.Host = strings.ToLower(src.Host)
+		key := strings.TrimRight(src.String(), "/")
 		if _, ok := parsed[key]; ok {
 			return nil, xerrors.Errorf("duplicate Maven repository in 'scan.maven.mirrors': %s", src.Redacted())
 		}
