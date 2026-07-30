@@ -873,7 +873,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			if snapshot {
 				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
 				if err != nil {
-					if isRateLimit(err) {
+					if _, ok := errors.AsType[*rateLimitError](err); ok {
 						lastRateLimitErr = err
 						continue
 					}
@@ -886,7 +886,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate.url, repoPaths)
 			if err != nil {
-				if isRateLimit(err) {
+				if _, ok := errors.AsType[*rateLimitError](err); ok {
 					lastRateLimitErr = err
 					continue
 				}
@@ -1095,10 +1095,4 @@ func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
 			req.URL.Redacted(), ra,
 		),
 	}}
-}
-
-// isRateLimit reports whether err is (or wraps) a rateLimitError.
-func isRateLimit(err error) bool {
-	var rle *rateLimitError
-	return errors.As(err, &rle)
 }
