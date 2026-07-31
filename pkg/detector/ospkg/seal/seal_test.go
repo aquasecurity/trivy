@@ -199,6 +199,43 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name:   "non-Seal package is scanned with the base OS scanner",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "openssl",
+						Version:    "3.0.15",
+						Release:    "1~deb12u1",
+						SrcName:    "openssl",
+						SrcVersion: "3.0.15",
+						SrcRelease: "1~deb12u1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2025-27587",
+					InstalledVersion: "3.0.15-1~deb12u1",
+					SeveritySource:   "debian",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: "LOW",
+					},
+					DataSource: &dbTypes.DataSource{
+						ID:   "debian",
+						Name: "Debian Security Tracker",
+						URL:  "https://salsa.debian.org/security-tracker-team/security-tracker",
+					},
+				},
+			},
+		},
+		{
 			name:   "Get returns an error",
 			baseOS: ftypes.Alpine,
 			fixtures: []string{
@@ -233,6 +270,86 @@ func TestScanner_Detect(t *testing.T) {
 			}
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestScanner_FilterPackages(t *testing.T) {
+	officialPkg := ftypes.Package{
+		Name: "openssl",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassOfficial,
+		},
+	}
+	thirdPartyPkg := ftypes.Package{
+		Name: "nginx",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+	sealPkg := ftypes.Package{
+		Name: "seal-wget",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+	sealSrcPkg := ftypes.Package{
+		Name:    "wget",
+		SrcName: "seal-wget",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+
+	tests := []struct {
+		name string
+		pkgs []ftypes.Package
+		want []ftypes.Package
+	}{
+		{
+			name: "Seal package is kept despite being classified as third-party",
+			pkgs: []ftypes.Package{sealPkg},
+			want: []ftypes.Package{sealPkg},
+		},
+		{
+			name: "Seal package is recognized by SrcName",
+			pkgs: []ftypes.Package{sealSrcPkg},
+			want: []ftypes.Package{sealSrcPkg},
+		},
+		{
+			name: "base OS package from a third-party repository is dropped",
+			pkgs: []ftypes.Package{thirdPartyPkg},
+			want: []ftypes.Package{},
+		},
+		{
+			name: "base OS package from an official repository is kept",
+			pkgs: []ftypes.Package{officialPkg},
+			want: []ftypes.Package{officialPkg},
+		},
+		{
+			name: "package without a repository class is kept",
+			pkgs: []ftypes.Package{{Name: "curl"}},
+			want: []ftypes.Package{{Name: "curl"}},
+		},
+		{
+			// Seal packages are collected separately, so they come first.
+			// The order does not reach the report: it is regrouped in Detect and the
+			// result is sorted before output.
+			name: "only the base OS packages are filtered",
+			pkgs: []ftypes.Package{officialPkg, sealPkg, thirdPartyPkg},
+			want: []ftypes.Package{sealPkg, officialPkg},
+		},
+		{
+			name: "no packages",
+			pkgs: nil,
+			want: []ftypes.Package{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := seal.NewScanner(ftypes.RedHat)
+			require.Equal(t, tt.want, s.FilterPackages(t.Context(), tt.pkgs))
 		})
 	}
 }

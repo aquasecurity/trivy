@@ -3,6 +3,7 @@ package registrytest
 
 import (
 	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"testing"
 
@@ -24,36 +25,48 @@ func NewServer(t *testing.T) *httptest.Server {
 	return httptest.NewServer(registry.New(registry.WithReferrersSupport(true)))
 }
 
-// PushRandomImage pushes a random image to the registry and returns its reference and descriptor.
-func PushRandomImage(t *testing.T, registryHost, repo, tag string) (name.Reference, v1.Descriptor) {
+// NewServerWithAuth starts a test registry server with OCI 1.1 referrers support
+// that requires the given credentials via HTTP basic auth.
+func NewServerWithAuth(t *testing.T, user, password string) *httptest.Server {
+	t.Helper()
+
+	reg := registry.New(registry.WithReferrersSupport(true))
+	handler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotUser, gotPassword, ok := r.BasicAuth()
+		if !ok || gotUser != user || gotPassword != password {
+			w.Header().Set("WWW-Authenticate", `Basic realm="test"`)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			return
+		}
+		reg.ServeHTTP(w, r)
+	})
+	return httptest.NewServer(handler)
+}
+
+// PushImage pushes the given image to the registry and returns its reference and descriptor.
+func PushImage(t *testing.T, registryHost, repo, tag string, img v1.Image, opts ...remote.Option) (name.Reference, v1.Descriptor) {
 	t.Helper()
 
 	ref, err := name.ParseReference(fmt.Sprintf("%s/%s:%s", registryHost, repo, tag))
 	require.NoError(t, err)
+	require.NoError(t, remote.Write(ref, img, opts...))
+
+	return ref, descriptor(t, img)
+}
+
+// PushRandomImage pushes a random image to the registry and returns its reference and descriptor.
+func PushRandomImage(t *testing.T, registryHost, repo, tag string, opts ...remote.Option) (name.Reference, v1.Descriptor) {
+	t.Helper()
 
 	img, err := random.Image(10, 1)
 	require.NoError(t, err)
 
-	err = remote.Write(ref, img)
-	require.NoError(t, err)
-
-	d, err := img.Digest()
-	require.NoError(t, err)
-	sz, err := img.Size()
-	require.NoError(t, err)
-	mt, err := img.MediaType()
-	require.NoError(t, err)
-
-	return ref, v1.Descriptor{
-		Digest:    d,
-		Size:      sz,
-		MediaType: mt,
-	}
+	return PushImage(t, registryHost, repo, tag, img, opts...)
 }
 
 // PushReferrer pushes an artifact referrer to the registry attached to the subject image.
 // The artifactType is used both as the config media type (for OCI 1.1 artifact type) and layer media type.
-func PushReferrer(t *testing.T, registryHost, repo string, subjectDesc v1.Descriptor, artifactType string, content []byte) {
+func PushReferrer(t *testing.T, registryHost, repo string, subjectDesc v1.Descriptor, artifactType string, content []byte, opts ...remote.Option) {
 	t.Helper()
 
 	// Create an OCI artifact with the content as a layer
@@ -76,6 +89,33 @@ func PushReferrer(t *testing.T, registryHost, repo string, subjectDesc v1.Descri
 	ref, err := name.ParseReference(fmt.Sprintf("%s/%s@%s", registryHost, repo, d.String()))
 	require.NoError(t, err)
 
-	err = remote.Write(ref, img)
+	require.NoError(t, remote.Write(ref, img, opts...))
+}
+
+// PushLegacyAttestation pushes an image as a legacy cosign `.att` attestation for
+// the given subject digest (the `<algorithm>-<hex>.att` tag convention).
+func PushLegacyAttestation(t *testing.T, registryHost, repo string, subjectDigest v1.Hash, img v1.Image, opts ...remote.Option) {
+	t.Helper()
+
+	tag := fmt.Sprintf("%s-%s.att", subjectDigest.Algorithm, subjectDigest.Hex)
+	ref, err := name.ParseReference(fmt.Sprintf("%s/%s:%s", registryHost, repo, tag))
 	require.NoError(t, err)
+	require.NoError(t, remote.Write(ref, img, opts...))
+}
+
+func descriptor(t *testing.T, img v1.Image) v1.Descriptor {
+	t.Helper()
+
+	d, err := img.Digest()
+	require.NoError(t, err)
+	sz, err := img.Size()
+	require.NoError(t, err)
+	mt, err := img.MediaType()
+	require.NoError(t, err)
+
+	return v1.Descriptor{
+		Digest:    d,
+		Size:      sz,
+		MediaType: mt,
+	}
 }
