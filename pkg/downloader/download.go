@@ -171,8 +171,8 @@ func (t *CustomTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	return res, nil
 }
 
-func NewGitHubTransport(u *url.URL, token string) (http.RoundTripper, error) {
-	client, err := newGitHubClient(token)
+func NewGitHubTransport(u *url.URL, token string, baseURL ...string) (http.RoundTripper, error) {
+	client, err := newGitHubClient(token, baseURL...)
 	if err != nil {
 		return nil, err
 	}
@@ -206,23 +206,27 @@ func (t *GitHubContentTransport) RoundTrip(req *http.Request) (*http.Response, e
 		return nil, xerrors.Errorf("failed to get the file content: %w", err)
 	}
 
-	if res != nil && res.Response != nil {
-		if err := github.CheckResponse(res.Response); err != nil {
-			if rc != nil {
-				rc.Close()
-			}
-			return nil, xerrors.Errorf("failed to download the file: %w", err)
-		}
+	if err := github.CheckResponse(res.Response); err != nil {
 		if rc != nil {
-			res.Response.Body = rc
+			rc.Close()
 		}
+		return nil, xerrors.Errorf("failed to download the file: %w", err)
+	}
+	if rc != nil {
+		res.Response.Body = rc
+		res.Response.ContentLength = -1
+		res.Response.Header.Del("Content-Length")
+		res.Response.Header.Del("Content-Type")
 	}
 	return res.Response, nil
 }
 
-func newGitHubClient(token string) (*github.Client, error) {
+func newGitHubClient(token string, baseURL ...string) (*github.Client, error) {
 	opts := []github.ClientOptionsFunc{
 		github.WithHTTPClient(xhttp.Client()),
+	}
+	if len(baseURL) > 0 && baseURL[0] != "" {
+		opts = append(opts, github.WithEnterpriseURLs(baseURL[0], baseURL[0]))
 	}
 	token = cmp.Or(token, os.Getenv("GITHUB_TOKEN"))
 	if token != "" {
