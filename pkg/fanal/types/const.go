@@ -41,6 +41,7 @@ const (
 	Chainguard         OSType = "chainguard"
 	CoreOS             OSType = "coreos"
 	Debian             OSType = "debian"
+	DHI                OSType = "dhi"
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
 	MinimOS            OSType = "minimos"
@@ -158,6 +159,7 @@ var (
 		Chainguard,
 		CoreOS,
 		Debian,
+		DHI,
 		Echo,
 		Fedora,
 		MinimOS,
