@@ -410,43 +410,50 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParsePluginLicenseName(t *testing.T) {
+func TestParsePluginLicenseNames(t *testing.T) {
 	tests := []struct {
-		name string
-		line string
-		want string
+		name     string
+		manifest string
+		want     []string
 	}{
 		{
-			name: "plugin license name",
-			line: "Plugin-License-Name: Apache License, Version 2.0",
-			want: "Apache License, Version 2.0",
+			name:     "plugin license name",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n",
+			want:     []string{"Apache License, Version 2.0"},
 		},
 		{
-			name: "suffixed plugin license name",
-			line: "Plugin-License-Name-2: MIT License",
-			want: "MIT License",
+			name: "suffixed plugin license names",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n" +
+				"Plugin-License-Name-2: MIT License\n",
+			want: []string{
+				"Apache License, Version 2.0",
+				"MIT License",
+			},
 		},
 		{
-			name: "trims license name",
-			line: "Plugin-License-Name:  MIT License  ",
-			want: "MIT License",
+			name:     "trims license name",
+			manifest: "Plugin-License-Name:  MIT License  \n",
+			want:     []string{"MIT License"},
 		},
 		{
-			name: "empty license name",
-			line: "Plugin-License-Name: ",
-			want: "",
+			name:     "empty license name",
+			manifest: "Plugin-License-Name: \n",
 		},
 		{
-			name: "non license line",
-			line: "Plugin-License-Url: https://opensource.org/licenses/MIT",
-			want: "",
+			name:     "other plugin license attribute",
+			manifest: "Plugin-License-Url: https://opensource.org/licenses/MIT\n",
+		},
+		{
+			name:     "attribute sharing the prefix",
+			manifest: "Plugin-License-NameSpace: MIT License\n",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := jar.ParsePluginLicenseName(tt.line)
-			assert.Equal(t, tt.want, got)
+			m, err := jar.ParseManifest(manifestZipEntry(t, tt.manifest))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, m.PluginLicenseNames())
 		})
 	}
 }
@@ -685,18 +692,25 @@ func TestParseManifestFolding(t *testing.T) {
 		" SE-2.0.txt\r\n" +
 		"Bundle-Name: Example\r\n"
 
+	m, err := jar.ParseManifest(manifestZipEntry(t, mf))
+	require.NoError(t, err)
+	assert.Equal(t, "https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+}
+
+// manifestZipEntry packs the given MANIFEST.MF content into a zip archive and
+// returns its entry, as parseManifest reads the manifest straight from the JAR.
+func manifestZipEntry(t *testing.T, content string) *zip.File {
+	t.Helper()
+
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
 	w, err := zw.Create("META-INF/MANIFEST.MF")
 	require.NoError(t, err)
-	_, err = w.Write([]byte(mf))
+	_, err = w.Write([]byte(content))
 	require.NoError(t, err)
 	require.NoError(t, zw.Close())
 
 	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 	require.NoError(t, err)
-
-	m, err := jar.ParseManifest(zr.File[0])
-	require.NoError(t, err)
-	assert.Equal(t, " https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+	return zr.File[0]
 }
