@@ -696,13 +696,14 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return m, nil
 }
 
-// parseBundleLicense resolves the OSGi Bundle-License header (a comma-separated
-// list of "name;attr=value" entries) to SPDX license IDs. Each entry's name is
-// tried as an SPDX ID then as a URL, and its ;link= value as a URL; entries that
-// resolve to neither (free text, "<<EXTERNAL>>") are skipped.
+// parseBundleLicense resolves the OSGi Bundle-License header to SPDX license IDs.
+// The header is a comma-separated list of "license-identifier;attr=value" entries.
+// The identifier is an SPDX ID or the canonical URL of the license, and the optional link attribute points to the license text.
+// Entries that resolve to neither (free text, "<<EXTERNAL>>") are skipped.
+// https://docs.osgi.org/specification/osgi.core/8.0.0/framework.module.html#framework.module-bundle-license
 func parseBundleLicense(header string) []string {
 	var names []string
-	for entry := range strings.SplitSeq(header, ",") {
+	for _, entry := range splitUnquoted(header, ',') {
 		name, link := parseBundleLicenseEntry(entry)
 		if id, ok := resolveBundleLicense(name, link); ok {
 			names = append(names, id)
@@ -732,14 +733,34 @@ func resolveBundleLicense(name, link string) (string, bool) {
 // and the value of its optional ;link attribute. Surrounding spaces and double
 // quotes are trimmed from both.
 func parseBundleLicenseEntry(entry string) (name, link string) {
-	fields := strings.Split(entry, ";")
+	fields := splitUnquoted(entry, ';')
 	name = strings.Trim(fields[0], ` "`)
 	for _, attr := range fields[1:] {
-		if v, ok := strings.CutPrefix(strings.TrimSpace(attr), "link="); ok {
+		if k, v, ok := strings.Cut(attr, "="); ok && strings.TrimSpace(k) == "link" {
 			link = strings.Trim(v, ` "`)
 		}
 	}
 	return name, link
+}
+
+// splitUnquoted splits s on sep, ignoring separators inside a double-quoted value.
+// Attribute values in a manifest header are quoted strings, so a description such as "Apache License, Version 2.0" is a single value rather than two entries.
+func splitUnquoted(s string, sep byte) []string {
+	var fields []string
+	var quoted bool
+	start := 0
+	for i := range len(s) {
+		switch s[i] {
+		case '"':
+			quoted = !quoted
+		case sep:
+			if !quoted {
+				fields = append(fields, s[start:i])
+				start = i + 1
+			}
+		}
+	}
+	return append(fields, s[start:])
 }
 
 // parsePluginLicenseName extracts the license name from a single Jenkins

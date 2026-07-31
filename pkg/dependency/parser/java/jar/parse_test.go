@@ -649,6 +649,26 @@ func TestParseBundleLicense(t *testing.T) {
 			want:   []string{"Apache-2.0", "MIT"},
 		},
 		{
+			name:   "comma inside a quoted description does not split the entry",
+			header: `Apache-2.0;description="Apache License, Version 2.0";link="https://www.apache.org/licenses/LICENSE-2.0"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "comma inside a quoted name does not split the entry",
+			header: `"Eclipse Public License, Version 1.0";link="http://www.eclipse.org/legal/epl-v10.html"`,
+			want:   []string{"EPL-1.0"},
+		},
+		{
+			name:   "semicolon inside a quoted name does not start an attribute",
+			header: `"Custom; License";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "spaces around the attribute assignment",
+			header: `"Custom" ; link = "https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
 			name:   "EXTERNAL token is skipped",
 			header: "<<EXTERNAL>>",
 			want:   nil,
