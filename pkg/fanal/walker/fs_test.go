@@ -89,6 +89,85 @@ func TestFS_Walk(t *testing.T) {
 	}
 }
 
+func TestFS_Walk_FollowSymlinks(t *testing.T) {
+	// testdata/fs/sym.txt is a symlink to the regular file testdata/fs/bar.
+	tests := []struct {
+		name           string
+		followSymlinks bool
+		wantVisited    bool
+	}{
+		{
+			name:           "disabled (default): symlink skipped",
+			followSymlinks: false,
+			wantVisited:    false,
+		},
+		{
+			name:           "enabled: symlink to regular file followed",
+			followSymlinks: true,
+			wantVisited:    true,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var visited []string
+			var symContent string
+			err := walker.NewFS().Walk("testdata/fs", walker.Option{FollowSymlinks: tt.followSymlinks},
+				func(filePath string, _ os.FileInfo, opener analyzer.Opener) error {
+					visited = append(visited, filePath)
+					if filePath == "sym.txt" {
+						r, err := opener()
+						require.NoError(t, err)
+						b, err := io.ReadAll(r)
+						require.NoError(t, err)
+						symContent = string(b)
+					}
+					return nil
+				})
+			require.NoError(t, err)
+
+			// The walker yields paths relative to the scan root, so the
+			// symlink appears as "sym.txt", not "testdata/fs/sym.txt".
+			assert.Contains(t, visited, "bar", "regular files must always be walked")
+			gotVisited := slices.Contains(visited, "sym.txt")
+			assert.Equal(t, tt.wantVisited, gotVisited)
+			if tt.wantVisited {
+				assert.Equal(t, "bar", symContent, "symlink should resolve to its target's content")
+			}
+		})
+	}
+}
+
+func TestFS_Walk_FollowSymlinks_SkipsDirsAndBrokenLinks(t *testing.T) {
+	if runtime.GOOS == "windows" {
+		t.Skip("symlink creation requires privileges on Windows")
+	}
+	// A tree exercising the three symlink target kinds the walker handles.
+	root := t.TempDir()
+	require.NoError(t, os.WriteFile(filepath.Join(root, "real.txt"), []byte("real"), 0o644))
+	require.NoError(t, os.Mkdir(filepath.Join(root, "subdir"), 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(root, "subdir", "nested.txt"), []byte("nested"), 0o644))
+	require.NoError(t, os.Symlink(filepath.Join(root, "real.txt"), filepath.Join(root, "file-link")))  // -> regular file
+	require.NoError(t, os.Symlink(filepath.Join(root, "subdir"), filepath.Join(root, "dir-link")))     // -> directory
+	require.NoError(t, os.Symlink(filepath.Join(root, "missing"), filepath.Join(root, "broken-link"))) // -> nonexistent
+
+	var visited []string
+	err := walker.NewFS().Walk(root, walker.Option{FollowSymlinks: true},
+		func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
+			visited = append(visited, filePath)
+			return nil
+		})
+	require.NoError(t, err) // a broken symlink must not abort the walk
+
+	assert.Contains(t, visited, "real.txt", "regular files are always walked")
+	assert.Contains(t, visited, "subdir/nested.txt", "real subdirectories are walked")
+	assert.Contains(t, visited, "file-link", "symlink to a regular file is followed")
+	assert.NotContains(t, visited, "dir-link", "symlink to a directory is not followed")
+	assert.NotContains(t, visited, "broken-link", "broken symlink is skipped")
+	for _, p := range visited {
+		assert.False(t, strings.HasPrefix(p, "dir-link/"), "must not traverse into a directory symlink: %s", p)
+	}
+}
+
 func TestFS_BuildSkipPaths(t *testing.T) {
 	tests := []struct {
 		name  string

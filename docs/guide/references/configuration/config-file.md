@@ -613,6 +613,9 @@ scan:
   # Same as '--file-patterns'
   file-patterns: []
 
+  # Same as '--follow-symlinks'
+  follow-symlinks: false
+
   # Same as '--offline-scan'
   offline: false
 

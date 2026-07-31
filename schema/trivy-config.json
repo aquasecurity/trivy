@@ -746,6 +746,10 @@
           },
           "description": "specify the files or glob patterns to skip"
         },
+        "follow-symlinks": {
+          "type": "boolean",
+          "description": "follow symlinks that resolve to regular files and scan their targets (symlinks to directories are not followed)"
+        },
         "offline": {
           "type": "boolean",
           "description": "do not issue API requests to identify dependencies"

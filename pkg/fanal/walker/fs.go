@@ -58,6 +58,26 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 				return filepath.SkipDir
 			}
 			return nil
+		case d.Type()&fs.ModeSymlink != 0:
+			// WalkDir lstat's without following symlinks; optionally follow
+			// those resolving to regular files (dir symlinks would cycle).
+			if !opt.FollowSymlinks {
+				return nil
+			}
+			target, err := os.Stat(filePath)
+			if err != nil {
+				return nil // broken symlink
+			}
+			if !target.Mode().IsRegular() {
+				return nil
+			}
+			if utils.SkipPath(relPath, opt.SkipFiles) {
+				return nil
+			}
+			if err = fn(relPath, target, fileOpener(filePath)); err != nil {
+				return xerrors.Errorf("failed to analyze file: %w", err)
+			}
+			return nil
 		case !d.Type().IsRegular():
 			return nil
 		case utils.SkipPath(relPath, opt.SkipFiles):
