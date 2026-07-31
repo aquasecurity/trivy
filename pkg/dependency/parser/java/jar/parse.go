@@ -642,7 +642,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 	defer file.Close()
 
-	b, err := io.ReadAll(io.LimitReader(file, maxManifestSize))
+	b, err := xio.ReadAllWithLimit(file, maxManifestSize)
 	if err != nil {
 		return manifest{}, xerrors.Errorf("unable to read MANIFEST.MF: %w", err)
 	}
