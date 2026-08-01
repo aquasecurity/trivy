@@ -86,6 +86,13 @@ var (
 		TelemetrySafe: true,
 		Internal:      true, // Hidden from help output, intended for maintainer debugging only
 	}
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Usage:         "disable colored output",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
 )
 
 // GlobalFlagGroup composes global flags
@@ -100,6 +107,7 @@ type GlobalFlagGroup struct {
 	CacheDir              *Flag[string]
 	GenerateDefaultConfig *Flag[bool]
 	TraceHTTP             *Flag[bool]
+	NoColor               *Flag[bool]
 }
 
 // GlobalOptions defines flags and other configuration parameters for all the subcommands
@@ -114,6 +122,7 @@ type GlobalOptions struct {
 	CacheDir              string
 	GenerateDefaultConfig bool
 	TraceHTTP             bool
+	NoColor              bool
 }
 
 func NewGlobalFlagGroup() *GlobalFlagGroup {
@@ -128,6 +137,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		CacheDir:              CacheDirFlag.Clone(),
 		GenerateDefaultConfig: GenerateDefaultConfigFlag.Clone(),
 		TraceHTTP:             TraceHTTPFlag.Clone(),
+		NoColor:               NoColorFlag.Clone(),
 	}
 }
 
@@ -147,6 +157,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.CacheDir,
 		f.GenerateDefaultConfig,
 		f.TraceHTTP,
+		f.NoColor,
 	}
 }
 
