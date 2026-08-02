@@ -110,6 +110,8 @@ func idToOSFamily(id string) types.OSType {
 		return types.CBLMariner
 	case "echo":
 		return types.Echo
+	case "hummingbird":
+		return types.Hummingbird
 	case "minimos":
 		return types.MinimOS
 	case "coreos":
