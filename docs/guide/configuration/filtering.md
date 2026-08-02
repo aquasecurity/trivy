@@ -343,11 +343,28 @@ Available fields:
 
 | Field      | Required | Type                | Description                                                                                                                                                             |
 |------------|:--------:|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                                                                                          |
+| id         |          | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1]. When omitted, every finding that satisfies the remaining filters is ignored. At least one of `id`, `paths` or `purls` must be set. |
 | paths[^2]  |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
 | statement  |          | string              | The reason for ignoring the finding. (This field is not used for filtering.)                                                                                            |
+
+!!! tip "Ignore every finding for a package or path"
+    Omit `id` to ignore every finding that matches the remaining filters. This is useful for noisy dependencies that ship with hundreds of advisories (for example kernel headers like `linux-libc-dev`):
+
+    ```yaml
+    vulnerabilities:
+      - purls:
+          - "pkg:deb/ubuntu/linux-libc-dev"
+        statement: Kernel headers, not exercised at runtime
+
+    misconfigurations:
+      - paths:
+          - "test/fixtures/**"
+        statement: Test fixtures, safe to ignore
+    ```
+
+    Trivy rejects entries with `id`, `paths` and `purls` all empty so an accidental no-op cannot silently disable scanning.
 
 ```bash
 $ cat .trivyignore.yaml
