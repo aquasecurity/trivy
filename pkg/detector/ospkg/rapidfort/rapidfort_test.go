@@ -121,6 +121,110 @@ func TestScanner_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
+			// rf-marked Ubuntu package routes to the bare "rapidfort" bucket,
+			// where the rf-tagged range for rf-binutils lives (per splitUbuntu
+			// on the DB side). Below the rf fix → vulnerable.
+			name:   "Ubuntu: rfubu package routes to the RapidFort bucket and matches the rf range",
+			baseOS: ftypes.Ubuntu,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "22.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-binutils",
+						Version:    "0:2.46-5rfubu",
+						SrcName:    "rf-binutils",
+						SrcVersion: "0:2.46-5rfubu",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-binutils",
+					VulnerabilityID:  "CVE-2025-69648",
+					InstalledVersion: "0:2.46-5rfubu",
+					FixedVersion:     "0:2.46-10rfubu",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:   "rapidfort",
+						Name: "RapidFort Security Advisories",
+						URL:  "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// The false-positive case from knqyf263's review: a plain-ubuntu
+			// version (no "rfubu" marker) for the rf-binutils package must NOT
+			// cross-match the rf-tagged range in the "rapidfort" bucket.
+			// Routing sends it to the Ubuntu bucket, where the ubuntu-tagged
+			// fix says 3ubuntu2 is patched → no CVE reported.
+			name:   "Ubuntu: plain-ubuntu package for rf-binutils patched under ubuntu range only, no cross-match",
+			baseOS: ftypes.Ubuntu,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "22.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-binutils",
+						Version:    "0:2.46-3ubuntu2",
+						SrcName:    "rf-binutils",
+						SrcVersion: "0:2.46-3ubuntu2",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			// Same rf-binutils package but at an older ubuntu version, below
+			// the ubuntu fix. Ubuntu bucket returns the ubuntu range and the
+			// scanner correctly reports vulnerable.
+			name:   "Ubuntu: plain-ubuntu package for rf-binutils below ubuntu fix reports the ubuntu-tagged advisory",
+			baseOS: ftypes.Ubuntu,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "22.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-binutils",
+						Version:    "0:2.44-1ubuntu1",
+						SrcName:    "rf-binutils",
+						SrcVersion: "0:2.44-1ubuntu1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-binutils",
+					VulnerabilityID:  "CVE-2025-69648",
+					InstalledVersion: "0:2.44-1ubuntu1",
+					FixedVersion:     "0:2.46-1ubuntu1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "ubuntu",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			name:   "Alpine: vulnerable libssl3",
 			baseOS: ftypes.Alpine,
 			fixtures: []string{

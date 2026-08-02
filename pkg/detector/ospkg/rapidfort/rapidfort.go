@@ -38,6 +38,15 @@ func rpmDistTag(ver string) (tag, num string) {
 	return last[1], last[2]
 }
 
+// dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries the
+// RapidFort rebuild marker. RapidFort's Ubuntu builds embed "rfubu" in the
+// package revision (e.g. "0:2.46-10rfubu", "0:3.12.10-1rfubu.1") — matching
+// the "rf" identifier the feed annotator writes on those events on the DB
+// side, so the routing decision here uses the same signal.
+func dpkgHasRfMarker(ver string) bool {
+	return strings.Contains(ver, "rfubu")
+}
+
 // Scanner detects vulnerabilities for RapidFort curated images by querying
 // the RapidFort advisory data that was ingested by trivy-db.
 type Scanner struct {
@@ -66,7 +75,10 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Ubuntu:
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
+		// ubuntu and rf packages each resolve to their own bucket, mirroring
+		// how the DB build splits the Ubuntu feed by range identifier.
 		s.getters[ecosystem.Ubuntu] = rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu)
+		s.getters[ecosystem.RapidFort] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFort)
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
@@ -93,6 +105,9 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
+		if dpkgHasRfMarker(installedVer) {
+			return ecosystem.RapidFort, "" // "rfubu"-marked → distribution-less "rapidfort" bucket
+		}
 		return ecosystem.Ubuntu, osVer
 	case ftypes.Alpine:
 		return ecosystem.Alpine, osVer

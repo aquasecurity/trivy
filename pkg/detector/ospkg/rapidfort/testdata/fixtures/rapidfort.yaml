@@ -19,6 +19,18 @@
             PatchedVersions:
               - "7.81.0-1ubuntu1.14"
             Severity: 2
+    # ubuntu-tagged Ubuntu range for the rf-binutils package: shows the split
+    # keeps the ubuntu fix in the Ubuntu bucket so a plain-ubuntu package
+    # can't cross-match the "rapidfort" bucket's rf-tagged range.
+    - bucket: rf-binutils
+      pairs:
+        - key: CVE-2025-69648
+          value:
+            VulnerableVersions:
+              - ">= 0:2.42-4ubuntu2.10, < 0:2.46-1ubuntu1"
+            PatchedVersions:
+              - "0:2.46-1ubuntu1"
+            Severity: 2
 - bucket: rapidfort alpine 3.18
   pairs:
     - bucket: libssl3
@@ -115,4 +127,15 @@
               - ">= 7.76.1-14.rf, < 7.76.1-26.rf1"
             PatchedVersions:
               - "7.76.1-26.rf1"
+            Severity: 2
+    # rf-tagged Ubuntu ranges live in the same bare "rapidfort" bucket as
+    # RedHat's rf ranges — DB splitUbuntu routes them here by identifier.
+    - bucket: rf-binutils
+      pairs:
+        - key: CVE-2025-69648
+          value:
+            VulnerableVersions:
+              - ">= 0:0, < 0:2.46-10rfubu"
+            PatchedVersions:
+              - "0:2.46-10rfubu"
             Severity: 2
