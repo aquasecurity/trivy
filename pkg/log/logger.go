@@ -38,10 +38,16 @@ func New(h slog.Handler) *Logger {
 }
 
 // InitLogger initializes the logger variable and flushes the buffered logs if needed.
-func InitLogger(debug, disable bool) {
+func InitLogger(debug, disable bool, logFormat string) {
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
-	h := NewHandler(out, &Options{Level: level})
+
+	var h slog.Handler
+	if logFormat == "json" {
+		h = slog.NewJSONHandler(out, &slog.HandlerOptions{Level: level})
+	} else {
+		h = NewHandler(out, &Options{Level: level})
+	}
 
 	// Flush the buffered logs if needed.
 	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {

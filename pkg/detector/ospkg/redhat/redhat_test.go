@@ -19,7 +19,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	log.InitLogger(false, false)
+	log.InitLogger(false, false, "")
 	os.Exit(m.Run())
 }
 
