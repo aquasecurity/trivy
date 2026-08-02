@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -72,6 +73,13 @@ func TestReportWriter_Sarif(t *testing.T) {
 								FixedVersion:     "3.4.5",
 								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
 								SeveritySource:   "redhat",
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "foo",
+										Version: "1.2.3",
+									},
+								},
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "foobar",
 									Description: "baz",
@@ -127,6 +135,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 											"security-severity": "7.5",
 											"cvssv3_vector":     "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
 											"cvssv3_baseScore":  7.5,
+											"purls":             []any{"pkg:deb/foo@1.2.3"},
 										},
 										Help: &sarif.MultiformatMessageString{
 											Text:     new("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nbaz"),
@@ -183,6 +192,148 @@ func TestReportWriter_Sarif(t *testing.T) {
 								"imageID":     "sha256:7640c3f9e75002deb419d5e32738eeff82cf2b3edca3781b4fe1f1f626d11b20",
 								"repoDigests": []any{"debian@sha256:a8cc1744bbdd5266678e3e8b3e6387e45c053218438897e86876f2eb104e5534"},
 								"repoTags":    []any{"debian:9"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "vulnerability rule aggregates PURLs across packages",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "go.mod",
+						Class:  types.ClassLangPkg,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-9999",
+								PkgName:          "bar",
+								InstalledVersion: "1.0.0",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "HIGH",
+								},
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "bar",
+										Version: "1.0.0",
+									},
+								},
+							},
+							{
+								VulnerabilityID:  "CVE-2020-9999",
+								PkgName:          "baz",
+								InstalledVersion: "2.0.0",
+								Vulnerability: dbTypes.Vulnerability{
+									Severity: "HIGH",
+								},
+								PkgIdentifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "baz",
+										Version: "2.0.0",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "CVE-2020-9999",
+										Name:             new("LanguageSpecificPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "error",
+										},
+										Properties: map[string]any{
+											"tags": []any{
+												"vulnerability",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "8.0",
+											"purls": []any{
+												"pkg:golang/bar@1.0.0",
+												"pkg:golang/baz@2.0.0",
+											},
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Vulnerability CVE-2020-9999\nSeverity: HIGH\nPackage: baz\nFixed Version: \nLink: [CVE-2020-9999]()\n"),
+											Markdown: new("**Vulnerability CVE-2020-9999**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|baz||[CVE-2020-9999]()|\n\n"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("CVE-2020-9999"),
+								RuleIndex: new(uint(0)),
+								Level:     new("error"),
+								Message:   sarif.Message{Text: new("Package: bar\nInstalled Version: 1.0.0\nVulnerability CVE-2020-9999\nSeverity: HIGH\nFixed Version: \nLink: [CVE-2020-9999]()")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("go.mod: bar@1.0.0")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("go.mod"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(1),
+												EndLine:     new(1),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+							},
+							{
+								RuleID:    new("CVE-2020-9999"),
+								RuleIndex: new(uint(0)),
+								Level:     new("error"),
+								Message:   sarif.Message{Text: new("Package: baz\nInstalled Version: 2.0.0\nVulnerability CVE-2020-9999\nSeverity: HIGH\nFixed Version: \nLink: [CVE-2020-9999]()")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("go.mod: baz@2.0.0")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("go.mod"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(1),
+												EndLine:     new(1),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
 							},
 						},
 					},
@@ -964,7 +1115,7 @@ func TestMakePropertiesMarshal(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := report.ToProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
+			result := report.ToProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData, nil)
 
 			actualJSON, err := json.Marshal(result)
 			require.NoError(t, err)
