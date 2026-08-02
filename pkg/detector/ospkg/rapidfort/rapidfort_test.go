@@ -225,6 +225,33 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// Cross-format isolation: the fixture has an rf-openssl range in
+			// the RPM-format "rapidfort redhat" bucket ("< 1:3.2.2-20.rf").
+			// An Ubuntu rfubu package at 3.5.7-10rfubu+rf.0 (no explicit epoch)
+			// would falsely satisfy that range under dpkg comparison because
+			// dpkg reads "1:" as epoch 1 and treats an epoch-less version as
+			// epoch 0. Routing must send it to "rapidfort ubuntu" (dpkg-only)
+			// where the RPM range is not present, so no CVE is reported.
+			name:   "Ubuntu: rf-openssl rfubu package must not cross-match the RedHat rf-openssl range",
+			baseOS: ftypes.Ubuntu,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "22.04",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-openssl",
+						Version:    "3.5.7-10rfubu+rf.0",
+						SrcName:    "rf-openssl",
+						SrcVersion: "3.5.7-10rfubu+rf.0",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
 			name:   "Alpine: vulnerable libssl3",
 			baseOS: ftypes.Alpine,
 			fixtures: []string{

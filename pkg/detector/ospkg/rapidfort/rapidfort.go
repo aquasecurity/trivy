@@ -77,8 +77,11 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
 		// ubuntu and rf packages each resolve to their own bucket, mirroring
 		// how the DB build splits the Ubuntu feed by range identifier.
+		// RapidFortUbuntu (bucket "rapidfort ubuntu") holds dpkg-format rf
+		// ranges only, so the dpkg comparator never sees an RPM-format
+		// "rapidfort redhat" range.
 		s.getters[ecosystem.Ubuntu] = rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu)
-		s.getters[ecosystem.RapidFort] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFort)
+		s.getters[ecosystem.RapidFortUbuntu] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortUbuntu)
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
@@ -106,7 +109,7 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
 		if dpkgHasRfMarker(installedVer) {
-			return ecosystem.RapidFort, "" // "rfubu"-marked → distribution-less "rapidfort" bucket
+			return ecosystem.RapidFortUbuntu, "" // "rfubu"-marked → dpkg-only "rapidfort ubuntu" bucket
 		}
 		return ecosystem.Ubuntu, osVer
 	case ftypes.Alpine:
