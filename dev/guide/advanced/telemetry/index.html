@@ -8615,6 +8615,11 @@ You're not viewing the latest version of the documentation.
 <p>For example:</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>image<span class="w"> </span>--disable-telemetry<span class="w"> </span>alpine
 </code></pre></div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Disabling telemetry stops the collection of the data described above, but Trivy still connects to <code>check.trivy.dev</code> to <a href="../../configuration/others/#check-for-updates">check for updates</a> unless the <code>--skip-version-check</code> flag is specified as well.
+See <a href="../air-gap/#check-updates-service">Check updates service</a> for details.</p>
+</div>
 
 
 
