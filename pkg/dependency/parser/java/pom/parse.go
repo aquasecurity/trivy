@@ -845,8 +845,9 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	}
 
 	seen := set.New[string]()
-	// A 429 only skips the rate-limited mirror; the last one is kept so it can be
-	// returned if every mirror turns out to be rate-limited.
+	// A 429 only skips the rate-limited mirror; the last one is kept so it can be returned
+	// if no other mirror serves the POM. A rate-limited mirror leaves the result unknown,
+	// so the 429 wins over the "not found" that the remaining mirrors may have returned.
 	var lastRateLimitErr error
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
