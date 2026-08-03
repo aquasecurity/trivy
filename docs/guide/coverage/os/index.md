@@ -49,7 +49,7 @@ Each page gives more details.
 [^1]: CentOS Stream is not supported 
 [^2]: https://github.com/GoogleContainerTools/distroless
 [^3]: Fedora CoreOS and the deprecated CoreOS Container Linux
-[^4]: Vulnerability matching is not available out of the box since the version numbering used by these OSes isn't matched by any advisory source yet. Use `--distro <family>/<version>` to force matching against a supported family/version.
+[^4]: Detection only; vulnerability matching is not available yet. See [SUSE](suse.md) for details.
 
 
 [sbom]: ../../supply-chain/sbom.md
