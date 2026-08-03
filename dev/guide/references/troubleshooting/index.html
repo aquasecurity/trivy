@@ -9208,6 +9208,11 @@ To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dep
 <p>Recommended mitigations:</p>
 <ul>
 <li><strong>Populate <code>~/.m2</code> before scanning.</strong> Run <code>mvn dependency:resolve</code> (or any build step that resolves dependencies) so that every POM is cached locally. In CI, cache the <code>~/.m2</code> directory between runs (e.g. keyed on <code>pom.xml</code> checksums) so subsequent runs reuse the artifacts.</li>
+<li><strong>Configure mirrors</strong> of the rate-limited repository, so that POM lookups go to a host that isn't blocking you. There are two ways to do it:<ul>
+<li><code>&lt;mirrors&gt;</code> in Maven's <a href="https://maven.apache.org/guides/mini/guide-mirror-settings.html">settings.xml</a> — the standard mechanism, honored by <code>mvn</code> itself as well. A repository is served by a single mirror, so a mirror that is rate-limited too leaves nothing to fall back on.</li>
+<li><a href="../../coverage/language/java/#config-file-mirrors">scan.maven.mirrors</a> in <code>trivy.yaml</code> — Trivy-specific, and takes an ordered list of mirrors per repository. A mirror that returns <code>429</code> is skipped in favor of the next one, and if the remaining mirrors do not return the artifact, the scan stops and reports the <code>429</code>.</li>
+</ul>
+</li>
 <li><strong>Wait for the block to expire.</strong> The <code>Retry-After</code> value in the error tells you the minimum wait. Repeated scans during the block will extend it.</li>
 <li><strong>Use <code>--offline-scan</code></strong> to skip remote lookups entirely and rely only on the local <code>~/.m2</code> cache. Be careful: any transitive POM missing from the cache is silently skipped, so populate <code>~/.m2</code> first (see above) — otherwise the dependency tree will be incomplete.</li>
 </ul>

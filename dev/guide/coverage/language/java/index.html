@@ -3620,6 +3620,45 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#mirrors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mirrors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="mirrors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolving-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resolving priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-file-mirrors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config-file mirrors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#supported-scopes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8612,6 +8651,45 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#mirrors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        mirrors
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="mirrors">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#resolving-priority" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        resolving priority
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-file-mirrors" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        config-file mirrors
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#supported-scopes" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8873,6 +8951,38 @@ The vulnerability database will be downloaded anyway.</p>
 <p class="admonition-title">Warning</p>
 <p>Trivy may skip some dependencies (that were not found on your local machine) when the <code>--offline-scan</code> flag is passed.</p>
 </div>
+<h3 id="mirrors">mirrors<a class="headerlink" href="#mirrors" title="Permanent link">&para;</a></h3>
+<p>Trivy supports several ways to set up mirrors for Maven repositories:</p>
+<ul>
+<li><code>&lt;mirrors&gt;</code> in your Maven <a href="https://maven.apache.org/guides/mini/guide-mirror-settings.html"><code>settings.xml</code></a> — both the global and the user file.</li>
+<li>The Trivy <a href="../../../references/configuration/config-file/">config file</a> — see <a href="#config-file-mirrors">config-file mirrors</a> below.</li>
+</ul>
+<h4 id="resolving-priority">resolving priority<a class="headerlink" href="#resolving-priority" title="Permanent link">&para;</a></h4>
+<p>For each package that needs to be fetched from a remote repository, Trivy applies the following order:</p>
+<ol>
+<li>mirror from <code>settings.xml</code>;</li>
+<li>mirrors<sup id="fnref2:10"><a class="footnote-ref" href="#fn:10">10</a></sup> from the config file.</li>
+</ol>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Trivy supports chained resolution across the two sources: if <code>settings.xml</code> maps <code>repo1 -&gt; repo2</code> and the config file maps <code>repo2 -&gt; repo3</code>, then <code>repo1</code> resolves to <code>repo3</code>.</p>
+</div>
+<h4 id="config-file-mirrors">config-file mirrors<a class="headerlink" href="#config-file-mirrors" title="Permanent link">&para;</a></h4>
+<p><code>scan.maven.mirrors</code> is a list of entries, each mapping a <code>source</code> repository URL to the ordered <code>targets</code> that mirror it, tried in turn. Use it to avoid modifying <code>settings.xml</code> (for example in CI) and to configure several fallback mirrors<sup id="fnref:10"><a class="footnote-ref" href="#fn:10">10</a></sup> for a single repository:</p>
+<div class="highlight"><pre><span></span><code><span class="nt">scan</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">maven</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">mirrors</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">source</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://repo.maven.apache.org/maven2/</span>
+<span class="w">        </span><span class="nt">targets</span><span class="p">:</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://my-internal-mirror/maven2/</span>
+<span class="w">          </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">https://backup-mirror/maven2/</span>
+</code></pre></div>
+<p>To mirror Maven Central, use <code>https://repo.maven.apache.org/maven2/</code> as the <code>source</code>.
+As in Maven, a mirrored repository is never queried directly, so a dependency is reported as not found when every mirror of it fails.</p>
+<div class="admonition warning">
+<p class="admonition-title">Credentials</p>
+<p>Config-file mirrors do not read credentials from <code>settings.xml</code> <code>&lt;server&gt;</code> entries. To authenticate, embed them in the mirror URL (<code>https://user:password@host/...</code>), which stores the password in plaintext in the config file. For a secure setup, configure the mirror in <code>settings.xml</code> instead.</p>
+</div>
 <h3 id="supported-scopes">supported scopes<a class="headerlink" href="#supported-scopes" title="Permanent link">&para;</a></h3>
 <p>Trivy only scans <code>import</code>, <code>compile</code>, <code>runtime</code> and empty <a href="https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope">maven scopes</a>. Other scopes and <code>Optional</code> dependencies are not currently being analyzed.</p>
 <h3 id="empty-dependency-version">empty dependency version<a class="headerlink" href="#empty-dependency-version" title="Permanent link">&para;</a></h3>
@@ -8945,6 +9055,9 @@ Therefore, we mark all dependencies as indirect to use logic to guess direct dep
 </li>
 <li id="fn:9">
 <p>License detection is limited. See <a href="#licenses">Licenses</a> for details.&#160;<a class="footnote-backref" href="#fnref:9" title="Jump back to footnote 9 in the text">&#8617;</a></p>
+</li>
+<li id="fn:10">
+<p>The mirrors are tried in order, falling back to the next one when the requested POM is not found.&#160;<a class="footnote-backref" href="#fnref:10" title="Jump back to footnote 10 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:10" title="Jump back to footnote 10 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
