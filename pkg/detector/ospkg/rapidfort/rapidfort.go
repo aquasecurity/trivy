@@ -92,7 +92,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		// el/fc/rf packages each resolve to their own bucket.
 		s.getters[ecosystem.RedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RedHat)
 		s.getters[ecosystem.Fedora] = rapidfort.NewVulnSrcGetter(ecosystem.Fedora)
-		s.getters[ecosystem.RapidFort] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFort)
+		s.getters[ecosystem.RapidFortRedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortRedHat)
 	default:
 		// Provider only creates scanners for Ubuntu/Alpine/RedHat; the DEB
 		// comparer + minor trimmer here is a safe placeholder for any direct
@@ -119,7 +119,7 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 		case "fc":
 			return ecosystem.Fedora, num // "fc43" → "rapidfort fedora 43" bucket
 		case "rf":
-			return ecosystem.RapidFort, "" // ".rf"/".rfN" → distribution-less "rapidfort" bucket
+			return ecosystem.RapidFortRedHat, "" // ".rf"/".rfN" → dpkg-free "rapidfort redhat" bucket
 		default: // "el" or untagged → "rapidfort Red Hat <major>" bucket, keyed by the OS version
 			return ecosystem.RedHat, osVer
 		}
