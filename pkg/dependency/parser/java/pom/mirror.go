@@ -1,8 +1,11 @@
 package pom
 
 import (
+	"cmp"
 	"net/url"
 	"strings"
+
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/log"
 )
@@ -17,14 +20,21 @@ type mirror struct {
 	url      url.URL  // parsed URL with userinfo from the matching <server>
 }
 
-// resolveMirrors converts <mirror> entries from settings.xml into the runtime
-// mirror form: split and trim the mirrorOf patterns, parse the URL, and embed
-// credentials from the <server> whose id equals the mirror id. Mirrors with
-// no usable pattern or an unparsable URL are dropped.
-func resolveMirrors(mirrors []Mirror, servers []Server) []mirror {
+// mirrors holds the resolved mirrors from settings.xml and from the config file.
+type mirrors struct {
+	settings   []mirror             // settings.xml mirrors
+	configFile map[string][]url.URL // config-file mirrors; key: mirrorKey(source), value: ordered parsed mirror URL
+}
+
+// resolveMirrors resolves and validates both mirror sources into their runtime form:
+// it parses every URL — embedding <server> credentials into settings.xml mirrors and
+// normalizing config-file keys via mirrorKey — and drops any entry with an unusable
+// pattern or an unparsable URL.
+func resolveMirrors(settingsMirrors []Mirror, servers []Server, configFileMirrors map[string][]string) mirrors {
 	logger := log.WithPrefix("pom")
-	var result []mirror
-	for _, m := range mirrors {
+
+	var resolved mirrors
+	for _, m := range settingsMirrors {
 		var patterns []string
 		for p := range strings.SplitSeq(m.MirrorOf, ",") {
 			p = strings.TrimSpace(p)
@@ -55,13 +65,59 @@ func resolveMirrors(mirrors []Mirror, servers []Server) []mirror {
 		}
 
 		logger.Debug("Adding mirror", log.String("id", m.ID), log.String("url", u.Redacted()))
-		result = append(result, mirror{
+		resolved.settings = append(resolved.settings, mirror{
 			id:       m.ID,
 			patterns: patterns,
 			url:      *u,
 		})
 	}
-	return result
+
+	for src, targets := range configFileMirrors {
+		// Config-file mirror URLs are validated when the config file is parsed (fail-fast).
+		srcURL, err := url.Parse(src)
+		if err != nil {
+			continue
+		}
+
+		var mirrorURLs []url.URL
+		for _, target := range targets {
+			mirrorURL, err := url.Parse(target)
+			if err != nil {
+				continue
+			}
+			mirrorURLs = append(mirrorURLs, *mirrorURL)
+		}
+		if len(mirrorURLs) == 0 {
+			continue
+		}
+		logger.Debug("Added config-file mirror", log.String("source", srcURL.Redacted()),
+			log.Any("mirrors", lo.Map(mirrorURLs, func(u url.URL, _ int) string {
+				return u.Redacted()
+			})))
+		if resolved.configFile == nil {
+			resolved.configFile = make(map[string][]url.URL)
+		}
+		resolved.configFile[mirrorKey(*srcURL)] = mirrorURLs
+	}
+
+	return resolved
+}
+
+// mirrorKey normalizes a repository URL to the key used for config-file mirror lookup.
+// The path is cleaned the same way as when an artifact URL is built, so that
+// "https://host/maven2/" and "https://host//maven2" resolve to the same key.
+//
+// The key has to identify the repository, so the parts that don't are dropped as well:
+// the credentials that Trivy embeds from a <server> — otherwise a mirrored repository
+// with credentials would never match its configured key — and the case of the host,
+// which RFC 3986 defines as case-insensitive. The case of the path is kept, as it is
+// case-sensitive.
+func mirrorKey(u url.URL) string {
+	u.User = nil
+	u.Host = strings.ToLower(u.Host)
+	// JoinPath cleans the path only, leaving any query and fragment alone.
+	u.Path = cmp.Or(u.Path, "/")
+	return u.JoinPath(".").String()
 }
 
 // matches reports whether this mirror should serve the given repository.

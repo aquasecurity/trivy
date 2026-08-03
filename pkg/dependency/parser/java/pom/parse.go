@@ -35,9 +35,10 @@ import (
 )
 
 type options struct {
-	offline       bool
-	defaultRepo   repository
-	settingsRepos []repository
+	offline           bool
+	defaultRepo       repository
+	settingsRepos     []repository
+	configFileMirrors map[string][]string
 }
 
 type option func(*options)
@@ -45,6 +46,14 @@ type option func(*options)
 func WithOffline(offline bool) option {
 	return func(opts *options) {
 		opts.offline = offline
+	}
+}
+
+// WithConfigFileMirrors injects Maven mirrors from Trivy's config file:
+// each source repository URL maps to an ordered list of fallback mirror URLs.
+func WithConfigFileMirrors(mirrors map[string][]string) option {
+	return func(opts *options) {
+		opts.configFileMirrors = mirrors
 	}
 }
 
@@ -90,7 +99,7 @@ type Parser struct {
 	remoteRepos     repositories
 	offline         bool
 	servers         []Server
-	mirrors         []mirror
+	mirrors         mirrors
 	httpClient      *http.Client
 }
 
@@ -152,29 +161,53 @@ func NewParser(filePath string, opts ...option) *Parser {
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
 		servers:         s.Servers,
-		mirrors:         resolveMirrors(s.Mirrors, s.Servers),
+		mirrors:         resolveMirrors(s.Mirrors, s.Servers, o.configFileMirrors),
 		httpClient: &http.Client{
 			Transport: tr.Build(),
 		},
 	}
 }
 
-// mirrorFor returns a mirrored repository for repo if one of the configured
-// mirrors matches; otherwise repo is returned unchanged. The first matching
-// mirror wins — Maven does not chain mirrors.
-func (p *Parser) mirrorFor(repo repository) repository {
-	for _, m := range p.mirrors {
+// mirrorFor returns the ordered list of repositories to try for repo, after applying
+// the configured mirrors in two passes:
+//
+//  1. settings.xml <mirror> entries — the first matching mirror replaces repo (Maven
+//     first-match; no chaining within this source).
+//  2. config-file mirrors — if an entry matches repo's URL, repo expands into one
+//     candidate per listed mirror, in order (fallbacks).
+//
+// The two passes chain: pass 2 runs on the URL rewritten by pass 1, so a settings.xml
+// mapping repo1->repo2 followed by a config-file mapping repo2->repo3 resolves repo1 to
+// repo3. When both map the same repo, settings.xml wins (it rewrites first, so pass 2 no
+// longer matches). With no match, the single element repo is returned unchanged.
+func (p *Parser) mirrorFor(repo repository) []repository {
+	// Pass 1: settings.xml mirrors (a single mirror, Maven first-match).
+	for _, m := range p.mirrors.settings {
 		if !m.matches(repo.id, &repo.url) {
 			continue
 		}
-		return repository{
+		repo = repository{
 			id:              m.id,
 			url:             m.url,
 			releaseEnabled:  repo.releaseEnabled,
 			snapshotEnabled: repo.snapshotEnabled,
 		}
+		break
 	}
-	return repo
+
+	// Pass 2: config-file mirrors, looked up by the current repository URL.
+	// Each listed mirror becomes a fallback candidate.
+	if len(p.mirrors.configFile) > 0 {
+		if targets, ok := p.mirrors.configFile[mirrorKey(repo.url)]; ok {
+			return lo.Map(targets, func(target url.URL, _ int) repository {
+				r := repo
+				r.url = target
+				return r
+			})
+		}
+	}
+
+	return []repository{repo}
 }
 
 func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -812,46 +845,61 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	}
 
 	seen := set.New[string]()
+	// A 429 only skips the rate-limited mirror; the last one is kept so it can be returned
+	// if no other mirror serves the POM. A rate-limited mirror leaves the result unknown,
+	// so the 429 wins over the "not found" that the remaining mirrors may have returned.
+	var lastRateLimitErr error
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
 	// 3. default remoteRepository (Maven Central for Release repository)
 	for _, repo := range slices.Concat(p.remoteRepos.settings, pomRepos, []repository{p.remoteRepos.defaultRepo}) {
-		// Apply <mirrors> from settings.xml so that settings/pom-declared/default
-		// repositories are all routed through a matching mirror at request time.
-		repo = p.mirrorFor(repo)
+		// Route each repository through its mirrors; a config-file mirror may expand
+		// one repository into several ordered fallback candidates.
+		for _, candidate := range p.mirrorFor(repo) {
+			// After mirrorFor different source repositories may collapse to the same URL
+			// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
+			// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
+			if seen.Contains(candidate.url.String()) {
+				continue
+			}
+			seen.Append(candidate.url.String())
 
-		// After mirrorFor different source repositories may collapse to the same URL
-		// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
-		// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
-		if seen.Contains(repo.url.String()) {
-			continue
-		}
-		seen.Append(repo.url.String())
+			// Skip Release only repositories for snapshot artifacts and vice versa
+			if snapshot && !candidate.snapshotEnabled || !snapshot && !candidate.releaseEnabled {
+				continue
+			}
 
-		// Skip Release only repositories for snapshot artifacts and vice versa
-		if snapshot && !repo.snapshotEnabled || !snapshot && !repo.releaseEnabled {
-			continue
-		}
-
-		repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
-		if snapshot {
-			pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, repo.url, repoPaths)
+			repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
+			if snapshot {
+				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
+				if err != nil {
+					if _, ok := errors.AsType[*rateLimitError](err); ok {
+						lastRateLimitErr = err
+						continue
+					}
+					return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+				}
+				// Use file name from `maven-metadata.xml` if it exists
+				if pomFileName != "" {
+					repoPaths[len(repoPaths)-1] = pomFileName
+				}
+			}
+			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate.url, repoPaths)
 			if err != nil {
-				return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+				if _, ok := errors.AsType[*rateLimitError](err); ok {
+					lastRateLimitErr = err
+					continue
+				}
+				return nil, xerrors.Errorf("fetch repository error: %w", err)
+			} else if fetched == nil {
+				continue
 			}
-			// Use file name from `maven-metadata.xml` if it exists
-			if pomFileName != "" {
-				repoPaths[len(repoPaths)-1] = pomFileName
-			}
+			return fetched, nil
 		}
-		fetched, err := p.fetchPOMFromRemoteRepository(ctx, repo.url, repoPaths)
-		if err != nil {
-			return nil, xerrors.Errorf("fetch repository error: %w", err)
-		} else if fetched == nil {
-			continue
-		}
-		return fetched, nil
+	}
+	if lastRateLimitErr != nil {
+		return nil, lastRateLimitErr
 	}
 	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
 }
@@ -895,7 +943,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return "", rateLimitError(req, resp)
+		return "", newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -936,7 +984,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return nil, rateLimitError(req, resp)
+		return nil, newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -1023,15 +1071,23 @@ func shouldReturnError(err error) bool {
 	return errors.As(err, &ue)
 }
 
-// rateLimitError builds a user-facing error for a 429 response from a remote Maven
-// repository. Rate limits are typically per-IP and apply to all subsequent requests
-// (including cached ones), so continuing the scan is pointless until the block clears.
-func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
+// rateLimitError wraps a 429 Too Many Requests response from a remote Maven repository.
+// The wrapped *types.UserError is exposed via Unwrap so the top level still prints the
+// clean 429 message.
+type rateLimitError struct {
+	err *types.UserError
+}
+
+func (e *rateLimitError) Error() string { return e.err.Error() }
+func (e *rateLimitError) Unwrap() error { return e.err }
+
+// newRateLimitError builds a rateLimitError for a 429 response, including Retry-After.
+func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
 	var ra string
 	if v := resp.Header.Get("Retry-After"); v != "" {
 		ra = fmt.Sprintf(" Retry-After: %s.", v)
 	}
-	return &types.UserError{
+	return &rateLimitError{err: &types.UserError{
 		Message: fmt.Sprintf(
 			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
 				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
@@ -1039,5 +1095,5 @@ func rateLimitError(req *http.Request, resp *http.Response) *types.UserError {
 				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
 			req.URL.Redacted(), ra,
 		),
-	}
+	}}
 }
