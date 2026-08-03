@@ -504,6 +504,25 @@ func TestParser_mirrorFor(t *testing.T) {
 			},
 		},
 		{
+			// The path is cleaned, so repeated and relative segments don't break the match.
+			name: "config file: path segments are cleaned before the lookup",
+			configMirrors: map[string][]string{
+				"https://repo1.example.com//nexus/./content/../maven2/": {"https://repo3.example.com/maven2"},
+			},
+			repo: repository{
+				id:             "central",
+				url:            mustParseURL(t, "https://repo1.example.com/nexus/maven2"),
+				releaseEnabled: true,
+			},
+			want: []repository{
+				{
+					id:             "central",
+					url:            mustParseURL(t, "https://repo3.example.com/maven2"),
+					releaseEnabled: true,
+				},
+			},
+		},
+		{
 			// RFC 3986 defines the host as case-insensitive, unlike the path.
 			name: "config file: host case is ignored by the lookup",
 			configMirrors: map[string][]string{

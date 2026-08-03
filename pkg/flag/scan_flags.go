@@ -1,6 +1,7 @@
 package flag
 
 import (
+	"cmp"
 	"net/url"
 	"runtime"
 	"slices"
@@ -306,11 +307,12 @@ func parseMavenMirrors(mirrors []MavenMirror) (map[string][]string, error) {
 			}
 		}
 		// The parser looks a repository up by the same key: without credentials, with a
-		// lower-cased host and without the trailing slash. Entries differing only by those
-		// collapse into one key there, so they are duplicates and are rejected here.
+		// lower-cased host and with a cleaned path. Entries differing only by those collapse
+		// into one key there, so they are duplicates and are rejected here.
 		src.User = nil
 		src.Host = strings.ToLower(src.Host)
-		key := strings.TrimRight(src.String(), "/")
+		src.Path = cmp.Or(src.Path, "/")
+		key := src.JoinPath(".").String()
 		if _, ok := parsed[key]; ok {
 			return nil, xerrors.Errorf("duplicate Maven repository in 'scan.maven.mirrors': %s", src.Redacted())
 		}

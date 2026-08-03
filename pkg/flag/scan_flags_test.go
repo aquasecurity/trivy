@@ -239,6 +239,23 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			assertion: require.Error,
 		},
 		{
+			// The path is cleaned before matching, so these two would collapse as well.
+			name: "maven repositories differing only by path segments are rejected",
+			fields: fields{
+				mavenMirrors: []flag.MavenMirror{
+					{
+						Source:  "https://nexus.example.com/nexus/maven2",
+						Targets: []string{"https://my-internal-mirror/maven2/"},
+					},
+					{
+						Source:  "https://nexus.example.com//nexus/./maven2/",
+						Targets: []string{"https://backup-mirror/maven2/"},
+					},
+				},
+			},
+			assertion: require.Error,
+		},
+		{
 			// The host is case-insensitive, so these two would collapse as well.
 			name: "maven repositories differing only by host case are rejected",
 			fields: fields{

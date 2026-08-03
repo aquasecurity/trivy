@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"cmp"
 	"net/url"
 	"strings"
 
@@ -102,19 +103,21 @@ func resolveMirrors(settingsMirrors []Mirror, servers []Server, configFileMirror
 	return resolved
 }
 
-// mirrorKey normalizes a repository URL to the key used for config-file mirror lookup:
-// its string form with any trailing slash trimmed, so that "https://host/maven2/" and
-// "https://host/maven2" resolve to the same key.
+// mirrorKey normalizes a repository URL to the key used for config-file mirror lookup.
+// The path is cleaned the same way as when an artifact URL is built, so that
+// "https://host/maven2/" and "https://host//maven2" resolve to the same key.
 //
 // The key has to identify the repository, so the parts that don't are dropped as well:
 // the credentials that Trivy embeds from a <server> — otherwise a mirrored repository
 // with credentials would never match its configured key — and the case of the host,
-// which RFC 3986 defines as case-insensitive. The path is kept as it is, being
+// which RFC 3986 defines as case-insensitive. The case of the path is kept, as it is
 // case-sensitive.
 func mirrorKey(u url.URL) string {
 	u.User = nil
 	u.Host = strings.ToLower(u.Host)
-	return strings.TrimRight(u.String(), "/")
+	// JoinPath cleans the path only, leaving any query and fragment alone.
+	u.Path = cmp.Or(u.Path, "/")
+	return u.JoinPath(".").String()
 }
 
 // matches reports whether this mirror should serve the given repository.
