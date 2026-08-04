@@ -38,6 +38,15 @@ func rpmDistTag(ver string) (tag, num string) {
 	return last[1], last[2]
 }
 
+// dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries the
+// RapidFort rebuild marker. RapidFort's Ubuntu builds embed "rfubu" in the
+// package revision (e.g. "0:2.46-10rfubu", "0:3.12.10-1rfubu.1") — matching
+// the "rf" identifier the feed annotator writes on those events on the DB
+// side, so the routing decision here uses the same signal.
+func dpkgHasRfMarker(ver string) bool {
+	return strings.Contains(ver, "rfubu")
+}
+
 // Scanner detects vulnerabilities for RapidFort curated images by querying
 // the RapidFort advisory data that was ingested by trivy-db.
 type Scanner struct {
@@ -66,7 +75,13 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Ubuntu:
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
+		// ubuntu and rf packages each resolve to their own bucket, mirroring
+		// how the DB build splits the Ubuntu feed by range identifier.
+		// RapidFortUbuntu (bucket "rapidfort ubuntu") holds dpkg-format rf
+		// ranges only, so the dpkg comparator never sees an RPM-format
+		// "rapidfort redhat" range.
 		s.getters[ecosystem.Ubuntu] = rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu)
+		s.getters[ecosystem.RapidFortUbuntu] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortUbuntu)
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
@@ -77,7 +92,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		// el/fc/rf packages each resolve to their own bucket.
 		s.getters[ecosystem.RedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RedHat)
 		s.getters[ecosystem.Fedora] = rapidfort.NewVulnSrcGetter(ecosystem.Fedora)
-		s.getters[ecosystem.RapidFort] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFort)
+		s.getters[ecosystem.RapidFortRedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortRedHat)
 	default:
 		// Provider only creates scanners for Ubuntu/Alpine/RedHat; the DEB
 		// comparer + minor trimmer here is a safe placeholder for any direct
@@ -93,6 +108,9 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
+		if dpkgHasRfMarker(installedVer) {
+			return ecosystem.RapidFortUbuntu, "" // "rfubu"-marked → dpkg-only "rapidfort ubuntu" bucket
+		}
 		return ecosystem.Ubuntu, osVer
 	case ftypes.Alpine:
 		return ecosystem.Alpine, osVer
@@ -101,7 +119,7 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 		case "fc":
 			return ecosystem.Fedora, num // "fc43" → "rapidfort fedora 43" bucket
 		case "rf":
-			return ecosystem.RapidFort, "" // ".rf"/".rfN" → distribution-less "rapidfort" bucket
+			return ecosystem.RapidFortRedHat, "" // ".rf"/".rfN" → dpkg-free "rapidfort redhat" bucket
 		default: // "el" or untagged → "rapidfort Red Hat <major>" bucket, keyed by the OS version
 			return ecosystem.RedHat, osVer
 		}

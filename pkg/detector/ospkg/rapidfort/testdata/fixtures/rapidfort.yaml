@@ -19,6 +19,18 @@
             PatchedVersions:
               - "7.81.0-1ubuntu1.14"
             Severity: 2
+    # ubuntu-tagged Ubuntu range for the rf-binutils package: shows the split
+    # keeps the ubuntu fix in the Ubuntu bucket so a plain-ubuntu package
+    # can't cross-match the "rapidfort ubuntu" bucket's rf-tagged range.
+    - bucket: rf-binutils
+      pairs:
+        - key: CVE-2025-69648
+          value:
+            VulnerableVersions:
+              - ">= 0:2.42-4ubuntu2.10, < 0:2.46-1ubuntu1"
+            PatchedVersions:
+              - "0:2.46-1ubuntu1"
+            Severity: 2
 - bucket: rapidfort alpine 3.18
   pairs:
     - bucket: libssl3
@@ -105,7 +117,7 @@
             PatchedVersions:
               - "7.76.1-26.fc39"
             Severity: 2
-- bucket: rapidfort
+- bucket: rapidfort redhat
   pairs:
     - bucket: rf-curl
       pairs:
@@ -115,4 +127,34 @@
               - ">= 7.76.1-14.rf, < 7.76.1-26.rf1"
             PatchedVersions:
               - "7.76.1-26.rf1"
+            Severity: 2
+    # RedHat rf-openssl range in RPM format — has an epoch (1:) and a .rf
+    # release suffix. Ubuntu scans must NOT see this bucket, otherwise the
+    # dpkg comparator would read "1:" as an epoch on the range side and
+    # false-positive an rfubu package with no explicit epoch. See the
+    # matching test case "Ubuntu: rf-openssl rfubu package must not
+    # cross-match the RedHat rf-openssl range".
+    - bucket: rf-openssl
+      pairs:
+        - key: CVE-2024-41996
+          value:
+            VulnerableVersions:
+              - "< 1:3.2.2-20.rf"
+            PatchedVersions:
+              - "1:3.2.2-20.rf"
+            Severity: 2
+- bucket: rapidfort ubuntu
+  pairs:
+    # rf-tagged Ubuntu ranges live in the dpkg-only "rapidfort ubuntu" bucket,
+    # separate from RedHat's RPM-format "rapidfort redhat" — the two must not
+    # share a bucket because the version comparators can't read each other's
+    # format (e.g. dpkg reads "1:" as an epoch in an RPM range and false-matches).
+    - bucket: rf-binutils
+      pairs:
+        - key: CVE-2025-69648
+          value:
+            VulnerableVersions:
+              - ">= 0:0, < 0:2.46-10rfubu"
+            PatchedVersions:
+              - "0:2.46-10rfubu"
             Severity: 2
