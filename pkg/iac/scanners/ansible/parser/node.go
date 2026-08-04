@@ -400,7 +400,10 @@ func (n *Node) BoolValue(path string) iacTypes.BoolValue {
 	return iacTypes.Bool(val, iacTypes.Metadata{})
 }
 
-func (n *Node) AsBool() (bool, bool) {
+// AsBool interprets the node's scalar value as a boolean using Ansible's
+// conversion rules. ok is false if the value couldn't be recognized
+// (e.g. an unrecognized string, or an int other than 0/1).
+func (n *Node) AsBool() (val, ok bool) {
 	if n.IsNil() {
 		return false, false
 	}
@@ -426,8 +429,9 @@ func (n *Node) AsBool() (bool, bool) {
 	return false, false
 }
 
-// parseAnsibleBool implements Ansible's string→bool conversion.
-func parseAnsibleBool(s string) (bool, bool) {
+// parseAnsibleBool converts a string to bool per Ansible's boolean rules.
+// ok is false if s isn't a recognized boolean string.
+func parseAnsibleBool(s string) (val, ok bool) {
 	normalized := strings.ToLower(strings.TrimSpace(s))
 
 	switch normalized {

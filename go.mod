@@ -81,7 +81,7 @@ require (
 	github.com/moby/docker-image-spec v1.3.1
 	github.com/moby/moby/api v1.55.0
 	github.com/moby/moby/client v0.5.0
-	github.com/nikolalohinski/gonja/v2 v2.8.0
+	github.com/nikolalohinski/gonja/v2 v2.9.0
 	github.com/open-policy-agent/opa v1.18.2
 	github.com/opencontainers/go-digest v1.0.0
 	github.com/opencontainers/image-spec v1.1.1
@@ -441,7 +441,7 @@ require (
 	go.yaml.in/yaml/v2 v2.4.4 // indirect
 	go.yaml.in/yaml/v3 v3.0.4 // indirect
 	go.yaml.in/yaml/v4 v4.0.0-rc.3 // indirect
-	golang.org/x/exp v0.0.0-20260603202125-055de637280b // indirect
+	golang.org/x/exp v0.0.0-20260727155853-b88d891fe743 // indirect
 	golang.org/x/oauth2 v0.36.0 // indirect
 	golang.org/x/sys v0.47.0 // indirect
 	golang.org/x/telemetry v0.0.0-20260708182218-49f421fb7959 // indirect
