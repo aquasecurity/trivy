@@ -680,6 +680,10 @@ func (e *evaluator) localHasDynamicValues(localVal cty.Value) bool {
 
 	// Check if the local contains DynamicVal which indicates unresolved references
 	for _, val := range valueMap {
+		if !val.IsKnown() {
+			return true
+		}
+
 		if val.Type() == cty.DynamicPseudoType {
 			return true
 		}
