@@ -98,6 +98,13 @@ func TestOS_Merge(t *testing.T) {
 			want:  OS{Family: Alpine, Name: "3.2"},
 		},
 		{
+			// Versions of different families are unrelated, so one never refines the other.
+			name:  "a longer version from another family is ignored",
+			os:    OS{Family: Alpine, Name: "3"},
+			newOS: OS{Family: Wolfi, Name: "3.20"},
+			want:  OS{Family: Alpine, Name: "3"},
+		},
+		{
 			name:  "extended is sticky",
 			os:    OS{Family: Ubuntu, Name: "18.04", Extended: true},
 			newOS: OS{Family: Ubuntu, Name: "18.04"},
