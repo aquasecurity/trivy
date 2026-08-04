@@ -1,5 +1,29 @@
 # Changelog
 
+## [0.73.0](https://github.com/aquasecurity/trivy/compare/v0.72.0...v0.73.0) (2026-08-03)
+
+
+### Features
+
+* add bounded read helpers ([#10974](https://github.com/aquasecurity/trivy/issues/10974)) ([35384b4](https://github.com/aquasecurity/trivy/commit/35384b44ef87a7d0505f6814650fa905ff14cf1a))
+* **java:** read Jenkins plugin manifest licenses ([#10939](https://github.com/aquasecurity/trivy/issues/10939)) ([f065203](https://github.com/aquasecurity/trivy/commit/f06520353fc632e69eaf9d669ecdd785e770305a))
+* **java:** support user-defined Maven mirrors in trivy.yaml ([#11006](https://github.com/aquasecurity/trivy/issues/11006)) ([8e5509c](https://github.com/aquasecurity/trivy/commit/8e5509c940bd1baa9070344ea2386634b40f4c68))
+* **seal:** detect no-prefix packages by version suffix ([#10911](https://github.com/aquasecurity/trivy/issues/10911)) ([69da733](https://github.com/aquasecurity/trivy/commit/69da7331bb11f5f18e237aad3950aef52224ebf9))
+* **vex:** discover OpenVEX in generic in-toto OCI referrers ([#10986](https://github.com/aquasecurity/trivy/issues/10986)) ([990d765](https://github.com/aquasecurity/trivy/commit/990d76568ecab5583381facd112bfd5ac6f4266b))
+* **vex:** native discovery of VEX documents stored as OCI artifacts ([#10932](https://github.com/aquasecurity/trivy/issues/10932)) ([38d5dbd](https://github.com/aquasecurity/trivy/commit/38d5dbd226d201d7c7939713b601d261354f1dec))
+
+
+### Bug Fixes
+
+* **conda:** avoid panic on an all-operator dependency line ([#10955](https://github.com/aquasecurity/trivy/issues/10955)) ([f964fa2](https://github.com/aquasecurity/trivy/commit/f964fa2bb61e1b59088d2b35397ca8fd39045b00))
+* **dotnet:** identify deps.json root project from dependency graph ([#10954](https://github.com/aquasecurity/trivy/issues/10954)) ([3c6a1a2](https://github.com/aquasecurity/trivy/commit/3c6a1a2aca33893f231412a34d3dfddc4f64b456))
+* **java:** set per-file digest for nested JARs ([#10855](https://github.com/aquasecurity/trivy/issues/10855)) ([c3c7d17](https://github.com/aquasecurity/trivy/commit/c3c7d174f94649e4552275854dfdee3c4e7b7d5d))
+* **misconf:** guard nil Healthcheck when building Dockerfile from history ([#10899](https://github.com/aquasecurity/trivy/issues/10899)) ([824e2ed](https://github.com/aquasecurity/trivy/commit/824e2ed2a45e1e7fb0b70bcbfc243f4f48f229e0))
+* **nodejs:** support pnpm workspaces with overlapping packages ([#10894](https://github.com/aquasecurity/trivy/issues/10894)) ([19f2ddc](https://github.com/aquasecurity/trivy/commit/19f2ddc3752906b0602e2e739de41b945a49f495))
+* **vex:** handle 304 status code ([#10307](https://github.com/aquasecurity/trivy/issues/10307)) ([e73c76d](https://github.com/aquasecurity/trivy/commit/e73c76d83b609cd5c387833e2467dbb52df06e46))
+* **vex:** reject non-local VEX repository names ([#10987](https://github.com/aquasecurity/trivy/issues/10987)) ([2c64b8f](https://github.com/aquasecurity/trivy/commit/2c64b8f58b63dfd33f4bec32fc001662c705c002))
+* **vuln:** don't skip packages covered by a driver's own advisory feed ([#10980](https://github.com/aquasecurity/trivy/issues/10980)) ([86acabe](https://github.com/aquasecurity/trivy/commit/86acabe7c3357d3e0d5a7241a37f2b5de23bc0e5))
+
 ## [0.72.0](https://github.com/aquasecurity/trivy/compare/v0.71.0...v0.72.0) (2026-06-30)
 
 

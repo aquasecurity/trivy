@@ -81,6 +81,40 @@ The vulnerability database will be downloaded anyway.
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
 
+### mirrors
+Trivy supports several ways to set up mirrors for Maven repositories:
+
+- `<mirrors>` in your Maven [`settings.xml`][maven-mirror-settings] — both the global and the user file.
+- The Trivy [config file][config-file] — see [config-file mirrors](#config-file-mirrors) below.
+
+#### resolving priority
+For each package that needs to be fetched from a remote repository, Trivy applies the following order:
+
+1. mirror from `settings.xml`;
+2. mirrors[^10] from the config file.
+
+!!! note
+    Trivy supports chained resolution across the two sources: if `settings.xml` maps `repo1 -> repo2` and the config file maps `repo2 -> repo3`, then `repo1` resolves to `repo3`.
+
+#### config-file mirrors
+`scan.maven.mirrors` is a list of entries, each mapping a `source` repository URL to the ordered `targets` that mirror it, tried in turn. Use it to avoid modifying `settings.xml` (for example in CI) and to configure several fallback mirrors[^10] for a single repository:
+
+```yaml
+scan:
+  maven:
+    mirrors:
+      - source: https://repo.maven.apache.org/maven2/
+        targets:
+          - https://my-internal-mirror/maven2/
+          - https://backup-mirror/maven2/
+```
+
+To mirror Maven Central, use `https://repo.maven.apache.org/maven2/` as the `source`.
+As in Maven, a mirrored repository is never queried directly, so a dependency is reported as not found when every mirror of it fails.
+
+!!! warning "Credentials"
+    Config-file mirrors do not read credentials from `settings.xml` `<server>` entries. To authenticate, embed them in the mirror URL (`https://user:password@host/...`), which stores the password in plaintext in the config file. For a secure setup, configure the mirror in `settings.xml` instead.
+
 ### supported scopes
 Trivy only scans `import`, `compile`, `runtime` and empty [maven scopes][maven-scopes]. Other scopes and `Optional` dependencies are not currently being analyzed.
 
@@ -142,11 +176,14 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [^7]: To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.
 [^8]: The supported directories are `$GRADLE_USER_HOME/caches` and `$HOME/.gradle/caches` (`%HOMEPATH%\.gradle\caches` for Windows).
 [^9]: License detection is limited. See [Licenses](#licenses) for details.
+[^10]: The mirrors are tried in order, falling back to the next one when the requested POM is not found.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 [maven-central]: https://repo.maven.apache.org/maven2/
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
+[maven-mirror-settings]: https://maven.apache.org/guides/mini/guide-mirror-settings.html
+[config-file]: ../../references/configuration/config-file.md
 [maven-scopes]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority

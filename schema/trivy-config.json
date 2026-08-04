@@ -808,6 +808,36 @@
         "disable-telemetry": {
           "type": "boolean",
           "description": "disable sending anonymous usage data to Aqua"
+        },
+        "maven": {
+          "type": "object",
+          "properties": {
+            "mirrors": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "source": {
+                    "type": "string",
+                    "description": "URL of the mirrored Maven repository"
+                  },
+                  "targets": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "URLs of the mirrors serving the repository, tried in order",
+                    "minItems": 1
+                  }
+                },
+                "required": [
+                  "source",
+                  "targets"
+                ]
+              },
+              "description": "list of Maven repositories and the ordered mirrors that serve each of them."
+            }
+          }
         }
       }
     },

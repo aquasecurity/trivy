@@ -136,6 +136,9 @@ The block applies to *all* subsequent requests from the affected IP for the dura
 Recommended mitigations:
 
 - **Populate `~/.m2` before scanning.** Run `mvn dependency:resolve` (or any build step that resolves dependencies) so that every POM is cached locally. In CI, cache the `~/.m2` directory between runs (e.g. keyed on `pom.xml` checksums) so subsequent runs reuse the artifacts.
+- **Configure mirrors** of the rate-limited repository, so that POM lookups go to a host that isn't blocking you. There are two ways to do it:
+    - `<mirrors>` in Maven's [settings.xml][maven-mirror-settings] — the standard mechanism, honored by `mvn` itself as well. A repository is served by a single mirror, so a mirror that is rate-limited too leaves nothing to fall back on.
+    - [scan.maven.mirrors][maven-mirrors] in `trivy.yaml` — Trivy-specific, and takes an ordered list of mirrors per repository. A mirror that returns `429` is skipped in favor of the next one, and if the remaining mirrors do not return the artifact, the scan stops and reports the `429`.
 - **Wait for the block to expire.** The `Retry-After` value in the error tells you the minimum wait. Repeated scans during the block will extend it.
 - **Use `--offline-scan`** to skip remote lookups entirely and rely only on the local `~/.m2` cache. Be careful: any transitive POM missing from the cache is silently skipped, so populate `~/.m2` first (see above) — otherwise the dependency tree will be incomplete.
 
@@ -351,5 +354,7 @@ $ trivy clean --all
 ```
 
 [air-gapped]: ../advanced/air-gap.md
+[maven-mirror-settings]: https://maven.apache.org/guides/mini/guide-mirror-settings.html
+[maven-mirrors]: ../coverage/language/java.md#config-file-mirrors
 [network]: ../advanced/air-gap.md#connectivity-requirements
 [redis-cache]: ../configuration/cache.md#redis
