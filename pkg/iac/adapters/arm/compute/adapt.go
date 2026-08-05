@@ -56,7 +56,7 @@ func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualM
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
-				GetMapValue("customData").AsStringValue("", resource.Metadata),
+				GetMapValue("customData").AsStringValue(),
 			NetworkInterfaces: networkInterfaces,
 		},
 	}
@@ -81,14 +81,14 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 		VirtualMachine: compute.VirtualMachine{
 			Metadata: resource.Metadata,
 			CustomData: resource.Properties.GetMapValue("osProfile").
-				GetMapValue("customData").AsStringValue("", resource.Metadata),
+				GetMapValue("customData").AsStringValue(),
 			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 			Metadata: resource.Metadata,
 			DisablePasswordAuthentication: resource.Properties.GetMapValue("osProfile").
 				GetMapValue("linuxConfiguration").
-				GetMapValue("disablePasswordAuthentication").AsBoolValue(false, resource.Metadata),
+				GetMapValue("disablePasswordAuthentication").AsBoolValue(),
 		},
 	}
 

@@ -12,8 +12,8 @@ func addFirewallRule(resource azure.Resource) []database.FirewallRule {
 	for _, rule := range resource.Properties.GetMapValue("firewallRules").AsMap() {
 		rules = append(rules, database.FirewallRule{
 			Metadata: rule.GetMetadata(),
-			StartIP:  rule.GetMapValue("startIpAddress").AsStringValue("", rule.GetMetadata()),
-			EndIP:    rule.GetMapValue("endIpAddress").AsStringValue("", rule.GetMetadata()),
+			StartIP:  rule.GetMapValue("startIpAddress").AsStringValue(),
+			EndIP:    rule.GetMapValue("endIpAddress").AsStringValue(),
 		})
 	}
 	return rules
