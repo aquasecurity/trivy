@@ -184,6 +184,15 @@ func (c RedisCache) GetBlob(ctx context.Context, blobID string) (types.BlobInfo,
 	return blobInfo, nil
 }
 
+// GetBlobOS retrieves OS information from a blob in the Redis cache.
+func (c RedisCache) GetBlobOS(ctx context.Context, blobID string) (types.OS, error) {
+	blobInfo, err := c.GetBlob(ctx, blobID)
+	if err != nil {
+		return types.OS{}, err
+	}
+	return blobInfo.OS, nil
+}
+
 func (c RedisCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool
 	var missingBlobIDs []string

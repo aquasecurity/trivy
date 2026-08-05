@@ -66,6 +66,17 @@ func (c RemoteCache) PutBlob(ctx context.Context, diffID string, blobInfo types.
 	return nil
 }
 
+// GetBlobOS fetches OS information for a blob from RemoteCache.
+func (c RemoteCache) GetBlobOS(ctx context.Context, blobID string) (types.OS, error) {
+	res, err := rpc.Retry(ctx, func() (*rpcCache.GetBlobOSResponse, error) {
+		return c.client.GetBlobOS(c.ctx, rpc.ConvertToRPCGetBlobOSRequest(blobID))
+	})
+	if err != nil {
+		return types.OS{}, xerrors.Errorf("unable to fetch blob OS from the server: %w", err)
+	}
+	return rpc.ConvertFromRPCOS(res.Os), nil
+}
+
 // MissingBlobs fetches missing blobs from RemoteCache
 func (c RemoteCache) MissingBlobs(ctx context.Context, imageID string, layerIDs []string) (bool, []string, error) {
 	layers, err := rpc.Retry(ctx, func() (*rpcCache.MissingBlobsResponse, error) {
