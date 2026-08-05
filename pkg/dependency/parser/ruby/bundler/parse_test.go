@@ -214,6 +214,38 @@ var (
 			},
 		},
 	}
+	BlankDepLinePkgs = []ftypes.Package{
+		{
+			ID:           "i18n@1.6.0",
+			Name:         "i18n",
+			Version:      "1.6.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 5,
+					EndLine:   5,
+				},
+			},
+		},
+		{
+			ID:           "concurrent-ruby@1.1.5",
+			Name:         "concurrent-ruby",
+			Version:      "1.1.5",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 4,
+					EndLine:   4,
+				},
+			},
+		},
+	}
+	BlankDepLineDeps = []ftypes.Dependency{
+		{
+			ID:        "i18n@1.6.0",
+			DependsOn: []string{"concurrent-ruby@1.1.5"},
+		},
+	}
 	Bundler2Deps = []ftypes.Dependency{
 		{
 			ID:        "faker@2.21.0",
@@ -259,6 +291,15 @@ func TestParser_Parse(t *testing.T) {
 			name:     "malformed",
 			file:     "testdata/Gemfile_malformed.lock",
 			wantPkgs: []ftypes.Package{},
+			wantErr:  assert.NoError,
+		},
+		{
+			// A whitespace-only line inside the dependency graph has no fields
+			// to take the name from; it must be skipped instead of panicking.
+			name:     "blank dependency line",
+			file:     "testdata/Gemfile_blank_dep_line.lock",
+			wantPkgs: BlankDepLinePkgs,
+			wantDeps: BlankDepLineDeps,
 			wantErr:  assert.NoError,
 		},
 	}

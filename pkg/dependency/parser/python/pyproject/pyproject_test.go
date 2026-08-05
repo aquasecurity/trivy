@@ -119,6 +119,20 @@ func TestParser_Parse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			// An empty dependency string leaves no fields to take the name
+			// from; it must be skipped instead of panicking.
+			name: "empty dependency",
+			file: "testdata/empty_dep.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask"),
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,

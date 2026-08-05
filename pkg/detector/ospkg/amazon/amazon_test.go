@@ -152,6 +152,24 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// A version-less "/etc/system-release" leaves no fields to index;
+			// detection must fall back to Amazon Linux 1 instead of panicking.
+			name: "version-less system-release",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "no-such-package",
+						Version: "1.0.0",
+					},
+				},
+			},
+		},
+		{
 			name: "Get returns an error",
 			fixtures: []string{
 				"testdata/fixtures/invalid.yaml",
@@ -243,6 +261,17 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osVer:    "2023",
 			},
 			want: true,
+		},
+		{
+			// A version-less "/etc/system-release" (e.g. just "Amazon Linux") must
+			// not panic; it is simply reported as unsupported.
+			name: "empty version",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
 		},
 	}
 	for _, tt := range tests {
