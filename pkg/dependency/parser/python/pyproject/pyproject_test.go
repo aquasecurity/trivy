@@ -3,6 +3,7 @@ package pyproject_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -136,6 +137,36 @@ func TestParser_Parse(t *testing.T) {
 				return
 			}
 			assert.Equalf(t, tt.want, got, "Parse(%v)", tt.file)
+		})
+	}
+}
+
+func TestParser_ParseMalformedDependencies(t *testing.T) {
+	tests := []struct {
+		name       string
+		dependency string
+	}{
+		{
+			name:       "empty",
+			dependency: "",
+		},
+		{
+			name:       "whitespace",
+			dependency: " ",
+		},
+		{
+			name:       "operators only",
+			dependency: "<===",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			input := fmt.Sprintf("[project]\ndependencies = [\"flask>=1.0\", %q]\n", tt.dependency)
+
+			got, err := (&pyproject.Parser{}).Parse(strings.NewReader(input))
+			require.NoError(t, err)
+			assert.Equal(t, set.New[string]("flask"), got.MainDeps())
 		})
 	}
 }
