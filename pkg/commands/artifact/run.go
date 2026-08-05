@@ -54,6 +54,7 @@ const (
 	TargetSBOM           TargetKind = "sbom"
 	TargetVM             TargetKind = "vm"
 	TargetK8s            TargetKind = "k8s"
+	TargetAppImage       TargetKind = "appimage"
 )
 
 var SkipScan = errors.New("skip subsequent processes")
@@ -89,6 +90,8 @@ type Runner interface {
 	ScanSBOM(ctx context.Context, opts flag.Options) (types.Report, error)
 	// ScanVM scans VM
 	ScanVM(ctx context.Context, opts flag.Options) (types.Report, error)
+	// ScanAppImage scans an AppImage file
+	ScanAppImage(ctx context.Context, opts flag.Options) (types.Report, error)
 	// Filter filter a report
 	Filter(ctx context.Context, opts flag.Options, report types.Report) (types.Report, error)
 	// Report a writes a report
@@ -295,6 +298,20 @@ func (r *runner) ScanVM(ctx context.Context, opts flag.Options) (types.Report, e
 	return r.scanArtifact(ctx, opts, s)
 }
 
+func (r *runner) ScanAppImage(ctx context.Context, opts flag.Options) (types.Report, error) {
+	// Disable lock file scanning — AppImage filesystems don't use lock files.
+	opts.DisabledAnalyzers = analyzer.TypeLockfiles
+
+	var s InitializeScanService
+	if opts.ServerAddr == "" {
+		s = appimageStandaloneScanService
+	} else {
+		s = appimageRemoteScanService
+	}
+
+	return r.scanArtifact(ctx, opts, s)
+}
+
 func (r *runner) scanArtifact(ctx context.Context, opts flag.Options, initializeService InitializeScanService) (types.Report, error) {
 	if r.initializeScanService != nil {
 		initializeService = r.initializeScanService
@@ -439,6 +456,7 @@ func run(ctx context.Context, opts flag.Options, targetKind TargetKind) (types.R
 		TargetRepository:     r.ScanRepository,
 		TargetSBOM:           r.ScanSBOM,
 		TargetVM:             r.ScanVM,
+		TargetAppImage:       r.ScanAppImage,
 	}
 
 	scanFunction, exists := scans[targetKind]

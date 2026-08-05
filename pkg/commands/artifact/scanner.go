@@ -9,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	artappimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/appimage"
 	artimage "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
 	artlocal "github.com/aquasecurity/trivy/pkg/fanal/artifact/local"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/repo"
@@ -215,6 +216,34 @@ func vmRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service,
 		art, err := vm.NewArtifact(conf.Target, c, walkerVM, conf.ArtifactOption)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("unable to initialize VM artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
+}
+
+// appimageStandaloneScanService scans AppImage files (local, standalone mode).
+// Target: AppImage file path (e.g., /path/to/app.AppImage)
+// Mode: Standalone (local scanning without server)
+func appimageStandaloneScanService(_ context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createLocalService(conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		w := walker.NewAppImage()
+		art, err := artappimage.NewArtifact(conf.Target, c, w, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize AppImage artifact: %w", err)
+		}
+		return art, func() {}, nil
+	})
+}
+
+// appimageRemoteScanService scans AppImage files via Trivy server.
+// Target: AppImage file path (e.g., /path/to/app.AppImage)
+// Mode: Client/Server (sends AppImage data to Trivy server for scanning)
+func appimageRemoteScanService(ctx context.Context, conf ScannerConfig) (scan.Service, func(), error) {
+	return createRemoteService(ctx, conf, func(c cache.ArtifactCache) (artifact.Artifact, func(), error) {
+		w := walker.NewAppImage()
+		art, err := artappimage.NewArtifact(conf.Target, c, w, conf.ArtifactOption)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("unable to initialize AppImage artifact: %w", err)
 		}
 		return art, func() {}, nil
 	})
