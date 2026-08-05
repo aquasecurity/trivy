@@ -72,3 +72,28 @@ kind: Pod
 		})
 	}
 }
+
+func TestParse_WhitespaceOnly(t *testing.T) {
+	const filePath = "test.yaml"
+
+	tests := []struct {
+		name string
+		src  string
+	}{
+		{name: "single space", src: " "},
+		{name: "multiple spaces", src: "    "},
+		{name: "single newline", src: "\n"},
+		{name: "multiple newlines", src: "\n\n\n"},
+		{name: "tabs only", src: "\t\t"},
+		{name: "mixed whitespace", src: "  \t\n  \r\n\t "},
+		{name: "CRLF only", src: "\r\n\r\n"},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			manifests, err := parser.Parse(t.Context(), strings.NewReader(tt.src), filePath)
+			require.NoError(t, err)
+			require.Empty(t, manifests)
+		})
+	}
+}
