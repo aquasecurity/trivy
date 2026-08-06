@@ -31,7 +31,6 @@ Trivy's databases are published to the following locations:
 | | `aquasec/trivy-checks` | <https://hub.docker.com/r/aquasec/trivy-checks>
 | AWS ECR | `public.ecr.aws/aquasecurity/trivy-db` | <https://gallery.ecr.aws/aquasecurity/trivy-db>
 | | `public.ecr.aws/aquasecurity/trivy-java-db` | <https://gallery.ecr.aws/aquasecurity/trivy-java-db>
-| | `public.ecr.aws/aquasecurity/trivy-checks` | <https://gallery.ecr.aws/aquasecurity/trivy-checks>
 
 In addition, images are also available via pull-through cache registries like [Google Container Registry Mirror](https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images).
 
