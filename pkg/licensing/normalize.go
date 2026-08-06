@@ -554,6 +554,65 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	return expr.SimpleExpr{License: name, HasPlus: hasPlus}
 }
 
+// docExtensions are common file extensions appended to license URLs (e.g.
+// LICENSE-2.0.txt, gpl-3.0.html). They carry no meaning for matching and are
+// stripped during normalization.
+var docExtensions = [...]string{".txt", ".html", ".htm", ".php", ".md"}
+
+// NormalizeLicenseURL canonicalizes a license URL so that cosmetic differences
+// do not prevent a match: scheme (http/https), a leading "www." host prefix, a
+// trailing slash, a document extension, opensource.org's "/licenses/" vs
+// "/license/" paths, and letter case.
+func NormalizeLicenseURL(u string) string {
+	s := strings.ToLower(strings.TrimSpace(u))
+	if s == "" {
+		return ""
+	}
+
+	// Unwrap archive/proxy URLs that embed the real license URL, e.g.
+	// web.archive.org snapshots ".../web/<timestamp>/http://real/url".
+	s = unwrapArchiveURL(s)
+
+	// Drop the scheme so http and https compare equal.
+	s = strings.TrimPrefix(s, "https://")
+	s = strings.TrimPrefix(s, "http://")
+
+	// Drop a leading "www." host prefix.
+	s = strings.TrimPrefix(s, "www.")
+
+	// opensource.org exposes the same license under both /licenses/<id> and
+	// /license/<id>. Unify them.
+	s = strings.Replace(s, "opensource.org/licenses/", "opensource.org/license/", 1)
+
+	// Drop a trailing slash.
+	s = strings.TrimSuffix(s, "/")
+
+	// Drop a common document extension.
+	for _, ext := range docExtensions {
+		if after, ok := strings.CutSuffix(s, ext); ok {
+			s = after
+			break
+		}
+	}
+
+	return s
+}
+
+// unwrapArchiveURL strips an archive/proxy prefix down to the embedded URL by
+// keeping everything from the last "http://" or "https://" occurrence
+// (".../web/<timestamp>/http://real/url" -> "http://real/url"). An unwrapped URL
+// (only scheme at the start, or none) is returned unchanged.
+func unwrapArchiveURL(s string) string {
+	i := strings.LastIndex(s, "http://")
+	if j := strings.LastIndex(s, "https://"); j > i {
+		i = j
+	}
+	if i > 0 {
+		return s[i:]
+	}
+	return s
+}
+
 func NormalizeLicenses(licenses []string) []string {
 	seq := it.UniqMap(slices.Values(licenses), normalizeLicense)
 	seq = it.Compact(seq)

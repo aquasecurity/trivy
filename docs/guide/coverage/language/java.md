@@ -38,14 +38,16 @@ To find information about these JARs[^2], the same logic is used as for the base
 `table` format only contains the name of root JAR[^2] . To get the full path to inner JARs[^2] use the `json` format.
 
 ### Licenses
-Trivy detects licenses for a JAR[^2] from three sources, in this order:
+Trivy detects licenses for a JAR[^2] from four sources, in this order:
 
-1. **Embedded POM** — the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml`, matched to the package by `groupId:artifactId`.
+1. **Embedded POM** — the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml`, matched to the package by `groupId:artifactId`. A `<license>` is taken from its `<name>`; when the `<name>` is empty, the `<url>` is used instead if it maps to a known SPDX license.
 2. **Jenkins plugin manifest** — `Plugin-License-Name` attributes in `META-INF/MANIFEST.MF`, including suffixed variants such as `Plugin-License-Name-2`.
-3. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
+3. **OSGi `Bundle-License` manifest header** — the `Bundle-License` header of `META-INF/MANIFEST.MF`. Each entry is used when it is an SPDX license ID, or a URL (including the entry's `link` attribute) that maps to a known SPDX license.
+4. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
 
 Notes and limitations:
 
+- License URLs are mapped to SPDX IDs using the `seeAlso` references of the [SPDX license list](https://spdx.org/licenses/licenses.json); a URL that does not map to a known SPDX license is skipped, so the next source is tried.
 - Coverage is limited: many JARs[^2] declare a license only in a parent POM (which is not expanded in the embedded `pom.xml`) or ship no Maven descriptor at all.
 - A single license file may bundle the texts of third-party components (e.g. Spring or Tomcat artifacts), so a package can be reported with several licenses found in that file, not only its own.
 

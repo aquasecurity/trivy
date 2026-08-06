@@ -406,3 +406,72 @@ func TestNormalize(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizeLicenseURL(t *testing.T) {
+	tests := []struct {
+		name string
+		url  string
+		want string
+	}{
+		{
+			name: "empty",
+			url:  "",
+			want: "",
+		},
+		{
+			name: "whitespace only",
+			url:  "   ",
+			want: "",
+		},
+		{
+			name: "https scheme is stripped",
+			url:  "https://www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/license-2.0",
+		},
+		{
+			name: "http scheme is stripped",
+			url:  "http://www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/license-2.0",
+		},
+		{
+			name: "trailing slash is dropped",
+			url:  "https://opensource.org/license/mit/",
+			want: "opensource.org/license/mit",
+		},
+		{
+			name: ".txt suffix is dropped",
+			url:  "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want: "apache.org/licenses/license-2.0",
+		},
+		{
+			name: ".html suffix is dropped",
+			url:  "https://www.gnu.org/licenses/gpl-3.0.html",
+			want: "gnu.org/licenses/gpl-3.0",
+		},
+		{
+			name: "opensource.org licenses vs license",
+			url:  "https://opensource.org/licenses/Apache-2.0",
+			want: "opensource.org/license/apache-2.0",
+		},
+		{
+			name: "opensource.org license lowercased with trailing slash",
+			url:  "http://opensource.org/license/apache-2.0/",
+			want: "opensource.org/license/apache-2.0",
+		},
+		{
+			name: "archive.org snapshot is unwrapped to the embedded license URL",
+			url:  "http://wayback.archive.org/web/20060924134533/http://www.opensource.org/licenses/afl-2.0.txt",
+			want: "opensource.org/license/afl-2.0",
+		},
+		{
+			name: "https archive snapshot embedding http URL is unwrapped",
+			url:  "https://web.archive.org/web/20120101081418/http://rosenlaw.com/OSL3.0.htm",
+			want: "rosenlaw.com/osl3.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, licensing.NormalizeLicenseURL(tt.url))
+		})
+	}
+}
