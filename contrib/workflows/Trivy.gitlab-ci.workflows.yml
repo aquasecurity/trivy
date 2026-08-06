@@ -1,0 +1,76 @@
+stages:
+  - test
+  - audit
+
+variables:
+  TRIVY_CACHE_DIR: .trivycache/
+  TRIVY_NO_PROGRESS: "true"
+
+default:
+  image: alpine:3.22
+  before_script:
+    - apk add --no-cache curl bash docker-cli
+    - ./contrib/install.sh -b /usr/local/bin
+    - trivy --version
+  cache:
+    paths:
+      - .trivycache/
+
+trivy_fs_and_secret:
+  stage: test
+  script:
+    - trivy fs --config examples/workflows/trivy.yaml --ignorefile examples/workflows/.trivyignore --scanners vuln,secret --severity HIGH,CRITICAL --exit-code 1 .
+
+trivy_iac:
+  stage: test
+  script:
+    - trivy config --severity HIGH,CRITICAL --exit-code 1 .
+
+trivy_image_release:
+  stage: audit
+  variables:
+    IMAGE_REF: "$CI_REGISTRY_IMAGE:$CI_COMMIT_SHA"
+  script:
+    - trivy image --severity HIGH,CRITICAL --ignore-unfixed --format json --output trivy-image.json "$IMAGE_REF"
+    - trivy image --severity HIGH,CRITICAL --ignore-unfixed --exit-code 1 "$IMAGE_REF"
+  artifacts:
+    paths:
+      - trivy-image.json
+
+trivy_repo_vex:
+  stage: audit
+  variables:
+    REPOSITORY_URL: "$CI_PROJECT_URL"
+  script:
+    - trivy repo --config examples/workflows/trivy.yaml --ignorefile examples/workflows/.trivyignore --scanners vuln,misconfig,secret,license --severity HIGH,CRITICAL --vex repo --format json --output trivy-repo.json "$REPOSITORY_URL"
+    - trivy convert --format sarif --output trivy-repo.sarif trivy-repo.json
+    - trivy repo --config examples/workflows/trivy.yaml --ignorefile examples/workflows/.trivyignore --scanners vuln,misconfig,secret,license --severity HIGH,CRITICAL --vex repo --exit-code 1 "$REPOSITORY_URL"
+  artifacts:
+    paths:
+      - trivy-repo.json
+      - trivy-repo.sarif
+
+trivy_sbom:
+  stage: audit
+  script:
+    - test -f sbom.cdx.json
+    - trivy sbom --scanners vuln,license --severity HIGH,CRITICAL --format json --output trivy-sbom.json sbom.cdx.json
+    - trivy convert --format sarif --output trivy-sbom.sarif trivy-sbom.json
+    - trivy sbom --scanners vuln,license --severity HIGH,CRITICAL --exit-code 1 sbom.cdx.json
+  artifacts:
+    paths:
+      - trivy-sbom.json
+      - trivy-sbom.sarif
+
+trivy_k8s:
+  stage: audit
+  script:
+    - test -n "$KUBECONFIG_CONTENT"
+    - install -d -m 700 ~/.kube
+    - printf '%s' "$KUBECONFIG_CONTENT" > ~/.kube/config
+    - chmod 600 ~/.kube/config
+    - trivy k8s --kubeconfig ~/.kube/config --report summary --severity HIGH,CRITICAL --format json --output trivy-k8s.json cluster
+    - trivy k8s --kubeconfig ~/.kube/config --report summary --severity HIGH,CRITICAL --exit-code 1 cluster
+  artifacts:
+    paths:
+      - trivy-k8s.json
