@@ -486,7 +486,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeDebian
 	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
-		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
+		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.OpenSUSEMicroOS, ftypes.OpenSUSELeapMicro,
+		ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
 		ftypes.Azure, ftypes.CBLMariner, ftypes.CoreOS:
 		return packageurl.TypeRPM
 	case ftypes.Bottlerocket:
