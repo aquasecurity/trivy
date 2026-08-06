@@ -49,6 +49,7 @@ var (
 )
 
 var osVendors = []string{
+	"Alibaba Cloud",         // Alibaba Cloud Linux (Alinux)
 	"Amazon Linux",          // Amazon Linux 1
 	"Amazon.com",            // Amazon Linux 2
 	"CentOS",                // CentOS
@@ -257,7 +258,11 @@ func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
 	if pkg.Vendor == "" {
 		// Official Amazon packages may not contain `Vendor` field:
 		// https://github.com/aquasecurity/trivy/issues/5887
-		return strings.Contains(pkg.Release, "amzn")
+		// Alibaba Cloud Linux packages use "al7", "al8", "alnx4" suffixes
+		return strings.Contains(pkg.Release, "amzn") ||
+			strings.Contains(pkg.Release, ".al7") ||
+			strings.Contains(pkg.Release, ".al8") ||
+			strings.Contains(pkg.Release, ".alnx4")
 	}
 
 	for _, vendor := range osVendors {
