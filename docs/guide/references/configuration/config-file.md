@@ -529,6 +529,9 @@ rego:
 ## Report options
 
 ```yaml
+# Same as '--color'
+color: "auto"
+
 # Same as '--dependency-tree'
 dependency-tree: false
 

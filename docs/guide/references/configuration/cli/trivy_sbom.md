@@ -22,6 +22,7 @@ trivy sbom [flags] SBOM_PATH
 ```
       --cache-backend string           [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
       --cache-ttl duration             cache TTL when using redis as cache backend
+      --color string                   control colored output (only for 'table' format) (allowed values: auto,always,never) (default "auto")
       --compliance string              compliance report to generate
       --custom-headers strings         custom headers in client mode
       --db-repository strings          OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
