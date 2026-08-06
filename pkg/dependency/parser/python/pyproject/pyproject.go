@@ -75,9 +75,8 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 			// There are some formats:
 			// e.g. `Flask == 1.1.4`, `Flask==1.1.4`, `Flask(>= 1.0.0)`, `pluggy[pre-commit,tox] (==0.13.1)`, etc.
 			dep = strings.NewReplacer(">", " ", "<", " ", "=", " ", "(", " ", "[", " ").Replace(dep)
-			// Normalize the name (PEP 503) as the Poetry v1 branch does, so it matches
-			// the normalized names from poetry.lock/pylock.toml when identifying direct deps.
-			d.Set.Append(python.NormalizePkgName(strings.Fields(dep)[0], true)) // Save only name
+			// Save only the name, normalized (PEP 503) to match the names from poetry.lock/pylock.toml.
+			d.Set.Append(python.NormalizePkgName(strings.Fields(dep)[0], true))
 		}
 	default:
 		return xerrors.Errorf("dependencies must be map, but got: %T", data)

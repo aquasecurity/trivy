@@ -2,7 +2,8 @@
 name = "test-project"
 version = "0.1.0"
 dependencies = [
-    "requests>=2.32.0",
+    # Non-normalized name to check that it is matched with `requests` from pylock.toml
+    "Requests>=2.32.0",
     "click>=8.0.0",
 ]
 

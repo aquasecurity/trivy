@@ -1,8 +1,0 @@
-[project]
-name = "example"
-version = "0.1.0"
-dependencies = [
-    "Flask==1.1.4",
-    "typing_extensions>=4",
-    "ruamel.yaml (>=0.18)",
-]

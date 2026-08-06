@@ -23,14 +23,6 @@ func TestPyProject_MainDeps(t *testing.T) {
 			file: "testdata/happy_with_optional_only.toml",
 			want: set.New[string]("pytest", "ruff"),
 		},
-		{
-			// PEP 621 `project.dependencies` may use non-normalized names
-			// (mixed case, `_` or `.`), which must be normalized (PEP 503) to
-			// match the names from poetry.lock/pylock.toml.
-			name: "PEP 621 dependencies with non-normalized names",
-			file: "testdata/normalize_v2.toml",
-			want: set.New[string]("flask", "typing-extensions", "ruamel-yaml"),
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -86,7 +78,9 @@ func TestParser_Parse(t *testing.T) {
 			want: pyproject.PyProject{
 				Project: pyproject.Project{
 					Dependencies: pyproject.Dependencies{
-						Set: set.New[string]("check-wheel-contents", "flask", "pluggy"),
+						// Names are normalized (PEP 503):
+						// `Flask` => `flask`, `typing_extensions` => `typing-extensions`, `ruamel.yaml` => `ruamel-yaml`
+						Set: set.New[string]("check-wheel-contents", "flask", "pluggy", "ruamel-yaml", "typing-extensions"),
 					},
 				},
 				Tool: pyproject.Tool{
