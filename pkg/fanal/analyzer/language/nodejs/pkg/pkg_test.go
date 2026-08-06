@@ -41,6 +41,26 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Node.js version header",
+			inputFile: "testdata/node_version.h",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.NodePkg,
+						FilePath: "testdata/node_version.h",
+						Packages: types.Packages{
+							{
+								ID:       "node@26.5.0",
+								Name:     "node",
+								Version:  "26.5.0",
+								FilePath: "testdata/node_version.h",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:            "happy path with checksum",
 			inputFile:       "testdata/package.json",
 			includeChecksum: true,
@@ -108,6 +128,16 @@ func Test_nodePkgLibraryAnalyzer_Required(t *testing.T) {
 			name:     "happy path",
 			filePath: "nodejs/package.json",
 			want:     true,
+		},
+		{
+			name:     "Node.js version header",
+			filePath: "usr/local/include/node/node_version.h",
+			want:     true,
+		},
+		{
+			name:     "ignore source header",
+			filePath: "src/node_version.h",
+			want:     false,
 		},
 		{
 			name:     "sad path",
