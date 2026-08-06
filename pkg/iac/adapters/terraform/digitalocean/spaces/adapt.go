@@ -22,10 +22,10 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 
 			bucket := spaces.Bucket{
 				Metadata:     block.GetMetadata(),
-				Name:         block.GetAttribute("name").AsStringValueOrDefault("", block),
+				Name:         block.GetAttribute("name").AsStringValue(),
 				Objects:      nil,
-				ACL:          block.GetAttribute("acl").AsStringValueOrDefault("private", block),
-				ForceDestroy: block.GetAttribute("force_destroy").AsBoolValueOrDefault(false, block),
+				ACL:          block.GetAttribute("acl").AsStringValue("private"),
+				ForceDestroy: block.GetAttribute("force_destroy").AsBoolValue(),
 				Versioning: spaces.Versioning{
 					Metadata: block.GetMetadata(),
 					Enabled:  iacTypes.BoolDefault(false, block.GetMetadata()),
@@ -35,7 +35,7 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 			if versioning := block.GetBlock("versioning"); versioning.IsNotNil() {
 				bucket.Versioning = spaces.Versioning{
 					Metadata: versioning.GetMetadata(),
-					Enabled:  versioning.GetAttribute("enabled").AsBoolValueOrDefault(false, versioning),
+					Enabled:  versioning.GetAttribute("enabled").AsBoolValue(),
 				}
 			}
 			bucketMap[block.ID()] = bucket
@@ -43,7 +43,7 @@ func adaptBuckets(modules terraform.Modules) []spaces.Bucket {
 		for _, block := range module.GetResourcesByType("digitalocean_spaces_bucket_object") {
 			object := spaces.Object{
 				Metadata: block.GetMetadata(),
-				ACL:      block.GetAttribute("acl").AsStringValueOrDefault("private", block),
+				ACL:      block.GetAttribute("acl").AsStringValue("private"),
 			}
 			bucketName := block.GetAttribute("bucket")
 			var found bool

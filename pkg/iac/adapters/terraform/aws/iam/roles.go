@@ -10,7 +10,7 @@ func adaptRoles(modules terraform.Modules) []iam.Role {
 	for _, roleBlock := range modules.GetResourcesByType("aws_iam_role") {
 		role := iam.Role{
 			Metadata: roleBlock.GetMetadata(),
-			Name:     roleBlock.GetAttribute("name").AsStringValueOrDefault("", roleBlock),
+			Name:     roleBlock.GetAttribute("name").AsStringValue(),
 		}
 
 		if inlineBlock := roleBlock.GetBlock("inline_policy"); inlineBlock.IsNotNil() {

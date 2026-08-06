@@ -27,7 +27,7 @@ func adaptCompute(modules terraform.Modules) openstack.Compute {
 
 func adaptInstance(resourceBlock *terraform.Block) openstack.Instance {
 	adminPassAttr := resourceBlock.GetAttribute("admin_pass")
-	adminPassVal := adminPassAttr.AsStringValueOrDefault("", resourceBlock)
+	adminPassVal := adminPassAttr.AsStringValue()
 
 	return openstack.Instance{
 		Metadata:      resourceBlock.GetMetadata(),
@@ -45,19 +45,19 @@ func adaptFirewall(modules terraform.Modules) openstack.Firewall {
 		for _, resource := range module.GetResourcesByType("openstack_fw_rule_v1") {
 
 			sourceAttr := resource.GetAttribute("source_ip_address")
-			sourceVal := sourceAttr.AsStringValueOrDefault("", resource)
+			sourceVal := sourceAttr.AsStringValue()
 
 			destinationAttr := resource.GetAttribute("destination_ip_address")
-			destinationVal := destinationAttr.AsStringValueOrDefault("", resource)
+			destinationVal := destinationAttr.AsStringValue()
 
 			sourcePortAttr := resource.GetAttribute("source_port")
-			sourcePortVal := sourcePortAttr.AsStringValueOrDefault("", resource)
+			sourcePortVal := sourcePortAttr.AsStringValue()
 
 			destinationPortAttr := resource.GetAttribute("destination_port")
-			destinationPortVal := destinationPortAttr.AsStringValueOrDefault("", resource)
+			destinationPortVal := destinationPortAttr.AsStringValue()
 
 			enabledAttr := resource.GetAttribute("enabled")
-			enabledVal := enabledAttr.AsBoolValueOrDefault(true, resource)
+			enabledVal := enabledAttr.AsBoolValue(true)
 
 			if resource.GetAttribute("action").Equals("allow") {
 				firewall.AllowRules = append(firewall.AllowRules, openstack.FirewallRule{

@@ -35,13 +35,13 @@ func adaptBroker(resource *terraform.Block) mq.Broker {
 	}
 
 	publicAccessAttr := resource.GetAttribute("publicly_accessible")
-	broker.PublicAccess = publicAccessAttr.AsBoolValueOrDefault(false, resource)
+	broker.PublicAccess = publicAccessAttr.AsBoolValue()
 	if logsBlock := resource.GetBlock("logs"); logsBlock.IsNotNil() {
 		broker.Logging.Metadata = logsBlock.GetMetadata()
 		auditAttr := logsBlock.GetAttribute("audit")
-		broker.Logging.Audit = auditAttr.AsBoolValueOrDefault(false, logsBlock)
+		broker.Logging.Audit = auditAttr.AsBoolValue()
 		generalAttr := logsBlock.GetAttribute("general")
-		broker.Logging.General = generalAttr.AsBoolValueOrDefault(false, logsBlock)
+		broker.Logging.General = generalAttr.AsBoolValue()
 	}
 
 	return broker

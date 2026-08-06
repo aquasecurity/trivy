@@ -25,7 +25,7 @@ func adaptManagedZones(modules terraform.Modules) []dns.ManagedZone {
 func adaptManagedZone(resource *terraform.Block) dns.ManagedZone {
 	zone := dns.ManagedZone{
 		Metadata:   resource.GetMetadata(),
-		Visibility: resource.GetAttribute("visibility").AsStringValueOrDefault("public", resource),
+		Visibility: resource.GetAttribute("visibility").AsStringValue("public"),
 		DNSSec:     adaptDNSSec(resource),
 	}
 	return zone
@@ -56,8 +56,8 @@ func adaptKeySpecs(b *terraform.Block) []dns.KeySpecs {
 	for _, keySpecsBlock := range b.GetBlocks("default_key_specs") {
 		keySpecs = append(keySpecs, dns.KeySpecs{
 			Metadata:  keySpecsBlock.GetMetadata(),
-			Algorithm: keySpecsBlock.GetAttribute("algorithm").AsStringValueOrDefault("", keySpecsBlock),
-			KeyType:   keySpecsBlock.GetAttribute("key_type").AsStringValueOrDefault("", keySpecsBlock),
+			Algorithm: keySpecsBlock.GetAttribute("algorithm").AsStringValue(),
+			KeyType:   keySpecsBlock.GetAttribute("key_type").AsStringValue(),
 		})
 	}
 	return keySpecs

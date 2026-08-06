@@ -146,7 +146,7 @@ func (c *Module) GetReferencingBlocks(originalBlock *Block, referencingType, ref
 	var results Blocks
 	for _, block := range blocks {
 		attr := block.GetAttribute(referencingAttributeName)
-		if attr == nil {
+		if attr.IsNil() {
 			continue
 		}
 		if attr.References(originalBlock.reference) {

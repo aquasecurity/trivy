@@ -37,17 +37,17 @@ func adaptSubscriptions(modules terraform.Modules) []securitycenter.Subscription
 
 func adaptContact(resource *terraform.Block) securitycenter.Contact {
 	enableAlertNotifAttr := resource.GetAttribute("alert_notifications")
-	enableAlertNotifVal := enableAlertNotifAttr.AsBoolValueOrDefault(false, resource)
+	enableAlertNotifVal := enableAlertNotifAttr.AsBoolValue()
 
 	// TODO: add support for the new format https://github.com/hashicorp/terraform-provider-azurerm/issues/30797
 	alertsToAdminsAttr := resource.GetAttribute("alerts_to_admins")
-	alertsToAdminsVal := alertsToAdminsAttr.AsBoolValueOrDefault(false, resource)
+	alertsToAdminsVal := alertsToAdminsAttr.AsBoolValue()
 
 	emailAttr := resource.GetAttribute("email")
-	emailVal := emailAttr.AsStringValueOrDefault("", resource)
+	emailVal := emailAttr.AsStringValue()
 
 	phoneAttr := resource.GetAttribute("phone")
-	phoneVal := phoneAttr.AsStringValueOrDefault("", resource)
+	phoneVal := phoneAttr.AsStringValue()
 
 	return securitycenter.Contact{
 		Metadata:                 resource.GetMetadata(),
@@ -62,7 +62,7 @@ func adaptContact(resource *terraform.Block) securitycenter.Contact {
 
 func adaptSubscription(resource *terraform.Block) securitycenter.SubscriptionPricing {
 	tierAttr := resource.GetAttribute("tier")
-	tierVal := tierAttr.AsStringValueOrDefault("Free", resource)
+	tierVal := tierAttr.AsStringValue("Free")
 
 	return securitycenter.SubscriptionPricing{
 		Metadata: resource.GetMetadata(),

@@ -28,10 +28,10 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 
 		subnetwork := compute.SubNetwork{
 			Metadata:              subnetworkBlock.GetMetadata(),
-			Name:                  subnetworkBlock.GetAttribute("name").AsStringValueOrDefault("", subnetworkBlock),
-			Purpose:               subnetworkBlock.GetAttribute("purpose").AsStringValueOrDefault(defaultSubnetPurpose, subnetworkBlock),
+			Name:                  subnetworkBlock.GetAttribute("name").AsStringValue(),
+			Purpose:               subnetworkBlock.GetAttribute("purpose").AsStringValue(defaultSubnetPurpose),
 			EnableFlowLogs:        iacTypes.BoolDefault(false, subnetworkBlock.GetMetadata()),
-			PrivateIPGoogleAccess: subnetworkBlock.GetAttribute("private_ip_google_access").AsBoolValueOrDefault(false, subnetworkBlock),
+			PrivateIPGoogleAccess: subnetworkBlock.GetAttribute("private_ip_google_access").AsBoolValue(),
 		}
 
 		// logging
@@ -63,7 +63,7 @@ func adaptNetworks(modules terraform.Modules) (networks []compute.Network) {
 
 		firewall := compute.Firewall{
 			Metadata:     firewallBlock.GetMetadata(),
-			Name:         firewallBlock.GetAttribute("name").AsStringValueOrDefault("", firewallBlock),
+			Name:         firewallBlock.GetAttribute("name").AsStringValue(),
 			IngressRules: nil,
 			EgressRules:  nil,
 			SourceTags:   firewallBlock.GetAttribute("source_tags").AsStringValueSliceOrEmpty(),
@@ -128,7 +128,7 @@ func adaptFirewallRule(firewall *compute.Firewall, firewallBlock, ruleBlock *ter
 		Metadata: firewallBlock.GetMetadata(),
 		Enforced: iacTypes.BoolDefault(true, firewallBlock.GetMetadata()),
 		IsAllow:  iacTypes.Bool(allow, ruleBlock.GetMetadata()),
-		Protocol: protocolAttr.AsStringValueOrDefault("tcp", ruleBlock),
+		Protocol: protocolAttr.AsStringValue("tcp"),
 		Ports:    rngs,
 	}
 

@@ -23,7 +23,7 @@ func adaptRouter(resource *terraform.Block) network.Router {
 			networkInterfaces,
 			network.NetworkInterface{
 				Metadata:     networkInterfaceBlock.GetMetadata(),
-				NetworkID:    networkInterfaceBlock.GetAttribute("network_id").AsStringValueOrDefault("", resource),
+				NetworkID:    networkInterfaceBlock.GetAttribute("network_id").AsStringValue(),
 				IsVipNetwork: types.Bool(false, networkInterfaceBlock.GetMetadata()),
 			},
 		)
@@ -31,7 +31,7 @@ func adaptRouter(resource *terraform.Block) network.Router {
 
 	return network.Router{
 		Metadata:          resource.GetMetadata(),
-		SecurityGroup:     resource.GetAttribute("security_group").AsStringValueOrDefault("", resource),
+		SecurityGroup:     resource.GetAttribute("security_group").AsStringValue(),
 		NetworkInterfaces: networkInterfaces,
 	}
 }

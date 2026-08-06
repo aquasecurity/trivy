@@ -96,16 +96,16 @@ func (a *adapter) adaptVault(resource *terraform.Block, module *terraform.Module
 	}
 
 	purgeProtectionAttr := resource.GetAttribute("purge_protection_enabled")
-	purgeProtectionVal := purgeProtectionAttr.AsBoolValueOrDefault(false, resource)
+	purgeProtectionVal := purgeProtectionAttr.AsBoolValue()
 
 	softDeleteRetentionDaysAttr := resource.GetAttribute("soft_delete_retention_days")
-	softDeleteRetentionDaysVal := softDeleteRetentionDaysAttr.AsIntValueOrDefault(0, resource)
+	softDeleteRetentionDaysVal := softDeleteRetentionDaysAttr.AsIntValue()
 
 	aclMetadata := iacTypes.NewUnmanagedMetadata()
 	if aclBlock := resource.GetBlock("network_acls"); aclBlock.IsNotNil() {
 		aclMetadata = aclBlock.GetMetadata()
 		defaultActionAttr := aclBlock.GetAttribute("default_action")
-		defaultActionVal = defaultActionAttr.AsStringValueOrDefault("", resource.GetBlock("network_acls"))
+		defaultActionVal = defaultActionAttr.AsStringValue()
 	}
 
 	return keyvault.Vault{
@@ -123,7 +123,7 @@ func (a *adapter) adaptVault(resource *terraform.Block, module *terraform.Module
 
 func adaptSecret(resource *terraform.Block) keyvault.Secret {
 	contentTypeAttr := resource.GetAttribute("content_type")
-	contentTypeVal := contentTypeAttr.AsStringValueOrDefault("", resource)
+	contentTypeVal := contentTypeAttr.AsStringValue()
 
 	return keyvault.Secret{
 		Metadata:    resource.GetMetadata(),

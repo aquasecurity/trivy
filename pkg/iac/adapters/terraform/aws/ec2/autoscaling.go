@@ -25,7 +25,7 @@ func adaptLaunchTemplate(b *terraform.Block) ec2.LaunchTemplate {
 		Instance: ec2.Instance{
 			Metadata:        b.GetMetadata(),
 			MetadataOptions: getMetadataOptions(b),
-			UserData:        b.GetAttribute("user_data").AsStringValueOrDefault("", b),
+			UserData:        b.GetAttribute("user_data").AsStringValue(),
 		},
 	}
 }
@@ -55,7 +55,7 @@ func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration
 	launchConfig := ec2.LaunchConfiguration{
 		Metadata:          resource.GetMetadata(),
 		Name:              iacTypes.StringDefault("", resource.GetMetadata()),
-		AssociatePublicIP: resource.GetAttribute("associate_public_ip_address").AsBoolValueOrDefault(false, resource),
+		AssociatePublicIP: resource.GetAttribute("associate_public_ip_address").AsBoolValue(),
 		RootBlockDevice: &ec2.BlockDevice{
 			Metadata:  resource.GetMetadata(),
 			Encrypted: iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -68,19 +68,19 @@ func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration
 	//#nosec G101 -- False positive
 	if resource.TypeLabel() == "aws_launch_configuration" {
 		nameAttr := resource.GetAttribute("name")
-		launchConfig.Name = nameAttr.AsStringValueOrDefault("", resource)
+		launchConfig.Name = nameAttr.AsStringValue()
 	}
 
 	if rootBlockDeviceBlock := resource.GetBlock("root_block_device"); rootBlockDeviceBlock.IsNotNil() {
 		encryptedAttr := rootBlockDeviceBlock.GetAttribute("encrypted")
-		launchConfig.RootBlockDevice.Encrypted = encryptedAttr.AsBoolValueOrDefault(false, rootBlockDeviceBlock)
+		launchConfig.RootBlockDevice.Encrypted = encryptedAttr.AsBoolValue()
 		launchConfig.RootBlockDevice.Metadata = rootBlockDeviceBlock.GetMetadata()
 	}
 
 	EBSBlockDevicesBlocks := resource.GetBlocks("ebs_block_device")
 	for _, EBSBlockDevicesBlock := range EBSBlockDevicesBlocks {
 		encryptedAttr := EBSBlockDevicesBlock.GetAttribute("encrypted")
-		encryptedVal := encryptedAttr.AsBoolValueOrDefault(false, EBSBlockDevicesBlock)
+		encryptedVal := encryptedAttr.AsBoolValue()
 		launchConfig.EBSBlockDevices = append(launchConfig.EBSBlockDevices, &ec2.BlockDevice{
 			Metadata:  EBSBlockDevicesBlock.GetMetadata(),
 			Encrypted: encryptedVal,
@@ -88,7 +88,7 @@ func adaptLaunchConfiguration(resource *terraform.Block) ec2.LaunchConfiguration
 	}
 
 	if userDataAttr := resource.GetAttribute("user_data"); userDataAttr.IsNotNil() {
-		launchConfig.UserData = userDataAttr.AsStringValueOrDefault("", resource)
+		launchConfig.UserData = userDataAttr.AsStringValue()
 	} else if userDataBase64Attr := resource.GetAttribute("user_data_base64"); userDataBase64Attr.IsString() {
 		encoded, err := base64.StdEncoding.DecodeString(userDataBase64Attr.Value().AsString())
 		if err == nil {
@@ -108,8 +108,8 @@ func getMetadataOptions(b *terraform.Block) ec2.MetadataOptions {
 
 	if metadataOptions := b.GetBlock("metadata_options"); metadataOptions.IsNotNil() {
 		options.Metadata = metadataOptions.GetMetadata()
-		options.HttpTokens = metadataOptions.GetAttribute("http_tokens").AsStringValueOrDefault("", metadataOptions)
-		options.HttpEndpoint = metadataOptions.GetAttribute("http_endpoint").AsStringValueOrDefault("", metadataOptions)
+		options.HttpTokens = metadataOptions.GetAttribute("http_tokens").AsStringValue()
+		options.HttpEndpoint = metadataOptions.GetAttribute("http_endpoint").AsStringValue()
 	}
 
 	return options

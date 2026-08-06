@@ -33,7 +33,7 @@ func adaptCosmosDBAccount(resource *terraform.Block) cosmosdb.Account {
 	} else {
 		switch ipRangeFilterAttr.Type() {
 		case cty.String:
-			ipRangeFilterVal = []iacTypes.StringValue{ipRangeFilterAttr.AsStringValueOrDefault("", resource)}
+			ipRangeFilterVal = []iacTypes.StringValue{ipRangeFilterAttr.AsStringValue()}
 		default:
 			ipRangeFilterVal = ipRangeFilterAttr.AsStringValues()
 		}

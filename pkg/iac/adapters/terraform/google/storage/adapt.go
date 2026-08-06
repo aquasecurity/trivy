@@ -82,14 +82,14 @@ func (a *adapter) adaptBuckets() []storage.Bucket {
 func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bucket {
 
 	nameAttr := resourceBlock.GetAttribute("name")
-	nameValue := nameAttr.AsStringValueOrDefault("", resourceBlock)
+	nameValue := nameAttr.AsStringValue()
 
 	locationAttr := resourceBlock.GetAttribute("location")
-	locationValue := locationAttr.AsStringValueOrDefault("", resourceBlock)
+	locationValue := locationAttr.AsStringValue()
 
 	// See https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#uniform_bucket_level_access
 	ublaAttr := resourceBlock.GetAttribute("uniform_bucket_level_access")
-	ublaValue := ublaAttr.AsBoolValueOrDefault(false, resourceBlock)
+	ublaValue := ublaAttr.AsBoolValue()
 
 	bucket := storage.Bucket{
 		Metadata:                       resourceBlock.GetMetadata(),
@@ -116,18 +116,18 @@ func (a *adapter) adaptBucketResource(resourceBlock *terraform.Block) storage.Bu
 	if encBlock := resourceBlock.GetBlock("encryption"); encBlock.IsNotNil() {
 		bucket.Encryption.Metadata = encBlock.GetMetadata()
 		kmsKeyNameAttr := encBlock.GetAttribute("default_kms_key_name")
-		bucket.Encryption.DefaultKMSKeyName = kmsKeyNameAttr.AsStringValueOrDefault("", encBlock)
+		bucket.Encryption.DefaultKMSKeyName = kmsKeyNameAttr.AsStringValue()
 	}
 
 	if logBlock := resourceBlock.GetBlock("logging"); logBlock.IsNotNil() {
 		bucket.Logging.Metadata = logBlock.GetMetadata()
-		bucket.Logging.LogBucket = logBlock.GetAttribute("log_bucket").AsStringValueOrDefault("", logBlock)
-		bucket.Logging.LogObjectPrefix = logBlock.GetAttribute("log_object_prefix").AsStringValueOrDefault("", logBlock)
+		bucket.Logging.LogBucket = logBlock.GetAttribute("log_bucket").AsStringValue()
+		bucket.Logging.LogObjectPrefix = logBlock.GetAttribute("log_object_prefix").AsStringValue()
 	}
 
 	if versioningBlock := resourceBlock.GetBlock("versioning"); versioningBlock.IsNotNil() {
 		bucket.Versioning.Metadata = versioningBlock.GetMetadata()
-		bucket.Versioning.Enabled = versioningBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, versioningBlock)
+		bucket.Versioning.Enabled = versioningBlock.GetAttribute("enabled").AsBoolValue()
 	}
 
 	var name string

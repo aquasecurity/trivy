@@ -14,11 +14,11 @@ func adaptDomainNamesV2(modules terraform.Modules) []v2.DomainName {
 		for _, nameBlock := range module.GetResourcesByType("aws_apigatewayv2_domain_name") {
 			domainName := v2.DomainName{
 				Metadata:       nameBlock.GetMetadata(),
-				Name:           nameBlock.GetAttribute("domain_name").AsStringValueOrDefault("", nameBlock),
+				Name:           nameBlock.GetAttribute("domain_name").AsStringValue(),
 				SecurityPolicy: types.StringDefault("TLS_1_0", nameBlock.GetMetadata()),
 			}
 			if config := nameBlock.GetBlock("domain_name_configuration"); config.IsNotNil() {
-				domainName.SecurityPolicy = config.GetAttribute("security_policy").AsStringValueOrDefault("TLS_1_0", config)
+				domainName.SecurityPolicy = config.GetAttribute("security_policy").AsStringValue("TLS_1_0")
 			}
 			domainNames = append(domainNames, domainName)
 		}

@@ -24,8 +24,8 @@ func adaptElasticLoadBalancer(resource *terraform.Block, modules terraform.Modul
 			networkInterfaces,
 			network.NetworkInterface{
 				Metadata:     networkInterfaceBlock.GetMetadata(),
-				NetworkID:    networkInterfaceBlock.GetAttribute("network_id").AsStringValueOrDefault("", resource),
-				IsVipNetwork: networkInterfaceBlock.GetAttribute("is_vip_network").AsBoolValueOrDefault(true, resource),
+				NetworkID:    networkInterfaceBlock.GetAttribute("network_id").AsStringValue(),
+				IsVipNetwork: networkInterfaceBlock.GetAttribute("is_vip_network").AsBoolValue(true),
 			},
 		)
 	}
@@ -45,6 +45,6 @@ func adaptElasticLoadBalancer(resource *terraform.Block, modules terraform.Modul
 func adaptElasticLoadBalancerListener(resource *terraform.Block) network.ElasticLoadBalancerListener {
 	return network.ElasticLoadBalancerListener{
 		Metadata: resource.GetMetadata(),
-		Protocol: resource.GetAttribute("protocol").AsStringValueOrDefault("", resource),
+		Protocol: resource.GetAttribute("protocol").AsStringValue(),
 	}
 }

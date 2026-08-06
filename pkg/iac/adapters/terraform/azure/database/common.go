@@ -29,7 +29,7 @@ func parseServerParameters(configs []*terraform.Block, resourceMetadata iacTypes
 		case nameAttr.Equals("require_secure_transport"):
 			params.requireSecureTransport, _ = iacTypes.BoolFromCtyValue(valAttr.Value(), valAttr.GetMetadata())
 		case nameAttr.Equals("tls_version"):
-			params.tlsVersion = valAttr.AsStringValueOrDefault("TLS1_2", config)
+			params.tlsVersion = valAttr.AsStringValue("TLS1_2")
 		}
 	}
 
@@ -40,8 +40,8 @@ func adaptFirewallRule(resource *terraform.Block) database.FirewallRule {
 	return database.FirewallRule{
 		Metadata: resource.GetMetadata(),
 		StartIP: resource.GetAttribute("start_ip_address").
-			AsStringValueOrDefault("", resource),
+			AsStringValue(""),
 		EndIP: resource.GetAttribute("end_ip_address").
-			AsStringValueOrDefault("", resource),
+			AsStringValue(""),
 	}
 }

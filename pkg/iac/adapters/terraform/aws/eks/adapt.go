@@ -69,13 +69,13 @@ func adaptCluster(resource *terraform.Block) eks.Cluster {
 		}
 		if providerBlock := encryptBlock.GetBlock("provider"); providerBlock.IsNotNil() {
 			keyArnAttr := providerBlock.GetAttribute("key_arn")
-			cluster.Encryption.KMSKeyID = keyArnAttr.AsStringValueOrDefault("", providerBlock)
+			cluster.Encryption.KMSKeyID = keyArnAttr.AsStringValue()
 		}
 	}
 
 	if vpcBlock := resource.GetBlock("vpc_config"); vpcBlock.IsNotNil() {
 		publicAccessAttr := vpcBlock.GetAttribute("endpoint_public_access")
-		cluster.PublicAccessEnabled = publicAccessAttr.AsBoolValueOrDefault(true, vpcBlock)
+		cluster.PublicAccessEnabled = publicAccessAttr.AsBoolValue(true)
 
 		publicAccessCidrsAttr := vpcBlock.GetAttribute("public_access_cidrs")
 		cidrList := publicAccessCidrsAttr.AsStringValues()

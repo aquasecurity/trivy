@@ -64,7 +64,7 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 			Enabled:  iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
 		DatapathProvider: resource.GetAttribute("datapath_provider").
-			AsStringValueOrDefault("DATAPATH_PROVIDER_UNSPECIFIED", resource),
+			AsStringValue("DATAPATH_PROVIDER_UNSPECIFIED"),
 		PrivateCluster: gke.PrivateCluster{
 			Metadata:           resource.GetMetadata(),
 			EnablePrivateNodes: iacTypes.BoolDefault(false, resource.GetMetadata()),
@@ -109,19 +109,19 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 	if policyBlock := resource.GetBlock("network_policy"); policyBlock.IsNotNil() {
 		enabledAttr := policyBlock.GetAttribute("enabled")
 		cluster.NetworkPolicy.Metadata = policyBlock.GetMetadata()
-		cluster.NetworkPolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, policyBlock)
+		cluster.NetworkPolicy.Enabled = enabledAttr.AsBoolValue()
 	}
 
 	if privBlock := resource.GetBlock("private_cluster_config"); privBlock.IsNotNil() {
 		privateNodesEnabledAttr := privBlock.GetAttribute("enable_private_nodes")
 		cluster.PrivateCluster.Metadata = privBlock.GetMetadata()
-		cluster.PrivateCluster.EnablePrivateNodes = privateNodesEnabledAttr.AsBoolValueOrDefault(false, privBlock)
+		cluster.PrivateCluster.EnablePrivateNodes = privateNodesEnabledAttr.AsBoolValue()
 	}
 
 	loggingAttr := resource.GetAttribute("logging_service")
-	cluster.LoggingService = loggingAttr.AsStringValueOrDefault("logging.googleapis.com/kubernetes", resource)
+	cluster.LoggingService = loggingAttr.AsStringValue("logging.googleapis.com/kubernetes")
 	monitoringServiceAttr := resource.GetAttribute("monitoring_service")
-	cluster.MonitoringService = monitoringServiceAttr.AsStringValueOrDefault("monitoring.googleapis.com/kubernetes", resource)
+	cluster.MonitoringService = monitoringServiceAttr.AsStringValue("monitoring.googleapis.com/kubernetes")
 
 	if masterBlock := resource.GetBlock("master_auth"); masterBlock.IsNotNil() {
 		cluster.MasterAuth = adaptMasterAuth(masterBlock)
@@ -134,31 +134,31 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 	if autoScalingBlock := resource.GetBlock("cluster_autoscaling"); autoScalingBlock.IsNotNil() {
 		cluster.AutoScaling = gke.AutoScaling{
 			Metadata: autoScalingBlock.GetMetadata(),
-			Enabled:  autoScalingBlock.GetAttribute("enabled").AsBoolValueOrDefault(false, autoScalingBlock),
+			Enabled:  autoScalingBlock.GetAttribute("enabled").AsBoolValue(),
 		}
 
 		if b := autoScalingBlock.GetBlock("auto_provisioning_defaults"); b.IsNotNil() {
 			cluster.AutoScaling.AutoProvisioningDefaults = gke.AutoProvisioningDefaults{
 				Metadata:       b.GetMetadata(),
-				ServiceAccount: b.GetAttribute("service_account").AsStringValueOrDefault("", b),
+				ServiceAccount: b.GetAttribute("service_account").AsStringValue(),
 				Management:     adaptManagement(b),
-				ImageType:      b.GetAttribute("image_type").AsStringValueOrDefault("", b),
+				ImageType:      b.GetAttribute("image_type").AsStringValue(),
 			}
 		}
 	}
-	cluster.EnableShieldedNodes = resource.GetAttribute("enable_shielded_nodes").AsBoolValueOrDefault(true, resource)
+	cluster.EnableShieldedNodes = resource.GetAttribute("enable_shielded_nodes").AsBoolValue(true)
 
 	enableLegacyABACAttr := resource.GetAttribute("enable_legacy_abac")
-	cluster.EnableLegacyABAC = enableLegacyABACAttr.AsBoolValueOrDefault(false, resource)
+	cluster.EnableLegacyABAC = enableLegacyABACAttr.AsBoolValue()
 
-	cluster.EnableAutpilot = resource.GetAttribute("enable_autopilot").AsBoolValueOrDefault(false, resource)
+	cluster.EnableAutpilot = resource.GetAttribute("enable_autopilot").AsBoolValue()
 
 	resourceLabelsAttr := resource.GetAttribute("resource_labels")
 	if resourceLabelsAttr.IsNotNil() {
 		cluster.ResourceLabels = resourceLabelsAttr.AsMapValue()
 	}
 
-	cluster.RemoveDefaultNodePool = resource.GetAttribute("remove_default_node_pool").AsBoolValueOrDefault(false, resource)
+	cluster.RemoveDefaultNodePool = resource.GetAttribute("remove_default_node_pool").AsBoolValue()
 
 	a.clusterMap[resource.ID()] = cluster
 }
@@ -175,8 +175,8 @@ func adaptManagement(parent *terraform.Block) gke.Management {
 
 	return gke.Management{
 		Metadata:          b.GetMetadata(),
-		EnableAutoRepair:  b.GetAttribute("auto_repair").AsBoolValueOrDefault(false, b),
-		EnableAutoUpgrade: b.GetAttribute("auto_upgrade").AsBoolValueOrDefault(false, b),
+		EnableAutoRepair:  b.GetAttribute("auto_repair").AsBoolValue(),
+		EnableAutoUpgrade: b.GetAttribute("auto_upgrade").AsBoolValue(),
 	}
 }
 
@@ -273,12 +273,12 @@ func adaptNodeConfig(resource *terraform.Block) gke.NodeConfig {
 
 	config := gke.NodeConfig{
 		Metadata:  resource.GetMetadata(),
-		ImageType: resource.GetAttribute("image_type").AsStringValueOrDefault("", resource),
+		ImageType: resource.GetAttribute("image_type").AsStringValue(),
 		WorkloadMetadataConfig: gke.WorkloadMetadataConfig{
 			Metadata:     resource.GetMetadata(),
 			NodeMetadata: iacTypes.StringDefault("UNSPECIFIED", resource.GetMetadata()),
 		},
-		ServiceAccount:        resource.GetAttribute("service_account").AsStringValueOrDefault("", resource),
+		ServiceAccount:        resource.GetAttribute("service_account").AsStringValue(),
 		EnableLegacyEndpoints: iacTypes.BoolDefault(true, resource.GetMetadata()),
 	}
 
@@ -296,7 +296,7 @@ func adaptNodeConfig(resource *terraform.Block) gke.NodeConfig {
 		if modeAttr.IsNil() {
 			modeAttr = workloadBlock.GetAttribute("mode") // try newest version
 		}
-		config.WorkloadMetadataConfig.NodeMetadata = modeAttr.AsStringValueOrDefault("UNSPECIFIED", workloadBlock)
+		config.WorkloadMetadataConfig.NodeMetadata = modeAttr.AsStringValue("UNSPECIFIED")
 	}
 
 	return config
@@ -310,12 +310,12 @@ func adaptMasterAuth(resource *terraform.Block) gke.MasterAuth {
 
 	if certConfigBlock := resource.GetBlock("client_certificate_config"); certConfigBlock.IsNotNil() {
 		clientCertAttr := certConfigBlock.GetAttribute("issue_client_certificate")
-		clientCert.IssueCertificate = clientCertAttr.AsBoolValueOrDefault(false, certConfigBlock)
+		clientCert.IssueCertificate = clientCertAttr.AsBoolValue()
 		clientCert.Metadata = certConfigBlock.GetMetadata()
 	}
 
-	username := resource.GetAttribute("username").AsStringValueOrDefault("", resource)
-	password := resource.GetAttribute("password").AsStringValueOrDefault("", resource)
+	username := resource.GetAttribute("username").AsStringValue()
+	password := resource.GetAttribute("password").AsStringValue()
 
 	return gke.MasterAuth{
 		Metadata:          resource.GetMetadata(),

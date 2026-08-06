@@ -17,7 +17,7 @@ func adaptRecords(modules terraform.Modules) []dns.Record {
 func adaptRecord(resource *terraform.Block) dns.Record {
 	return dns.Record{
 		Metadata: resource.GetMetadata(),
-		Record:   resource.GetAttribute("record").AsStringValueOrDefault("", resource),
-		Type:     resource.GetAttribute("type").AsStringValueOrDefault("", resource),
+		Record:   resource.GetAttribute("record").AsStringValue(),
+		Type:     resource.GetAttribute("type").AsStringValue(),
 	}
 }

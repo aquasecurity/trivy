@@ -97,7 +97,7 @@ func (a *adapter) adaptQueues() []sqs.Queue {
 func (a *adapter) adaptQueue(resource *terraform.Block) {
 
 	kmsKeyIdAttr := resource.GetAttribute("kms_master_key_id")
-	kmsKeyIdVal := kmsKeyIdAttr.AsStringValueOrDefault("", resource)
+	kmsKeyIdVal := kmsKeyIdAttr.AsStringValue()
 	managedEncryption := resource.GetAttribute("sqs_managed_sse_enabled")
 
 	var policies []iamp.Policy
@@ -159,7 +159,7 @@ func (a *adapter) adaptQueue(resource *terraform.Block) {
 		QueueURL: iacTypes.StringDefault("", resource.GetMetadata()),
 		Encryption: sqs.Encryption{
 			Metadata:          resource.GetMetadata(),
-			ManagedEncryption: managedEncryption.AsBoolValueOrDefault(false, resource),
+			ManagedEncryption: managedEncryption.AsBoolValue(),
 			KMSKeyID:          kmsKeyIdVal,
 		},
 		Policies: policies,

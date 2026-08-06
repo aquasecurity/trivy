@@ -263,28 +263,34 @@ func (b *Block) createAttributes() hcl.Attributes {
 	}
 }
 
+func (b *Block) nullBlock() *Block {
+	if b == nil {
+		return &Block{}
+	}
+	return &Block{metadata: b.metadata}
+}
+
 func (b *Block) GetBlock(name string) *Block {
-	var returnBlock *Block
-	if b == nil || b.hclBlock == nil {
-		return returnBlock
+	if b.IsNil() {
+		return b.nullBlock()
 	}
 	for _, child := range b.childBlocks {
 		if child.Type() == name {
 			return child
 		}
 	}
-	return returnBlock
+	return b.nullBlock()
 }
 
 func (b *Block) AllBlocks() Blocks {
-	if b == nil || b.hclBlock == nil {
+	if b.IsNil() {
 		return nil
 	}
 	return b.childBlocks
 }
 
 func (b *Block) GetBlocks(name string) Blocks {
-	if b == nil || b.hclBlock == nil {
+	if b.IsNil() {
 		return nil
 	}
 	var results []*Block
@@ -297,7 +303,7 @@ func (b *Block) GetBlocks(name string) Blocks {
 }
 
 func (b *Block) GetAttributes() []*Attribute {
-	if b == nil {
+	if b.IsNil() {
 		return nil
 	}
 	return b.attributes
@@ -307,9 +313,16 @@ func (b *Block) GetAttribute(name string) *Attribute {
 	return b.GetFirstAttributeOf(name)
 }
 
+func (b *Block) nullAttribute() *Attribute {
+	if b == nil {
+		return &Attribute{}
+	}
+	return &Attribute{metadata: b.metadata}
+}
+
 func (b *Block) GetFirstAttributeOf(names ...string) *Attribute {
-	if b == nil || b.hclBlock == nil || len(names) == 0 {
-		return nil
+	if b.IsNil() || len(names) == 0 {
+		return b.nullAttribute()
 	}
 
 	nameSet := set.New(names...)
@@ -319,7 +332,7 @@ func (b *Block) GetFirstAttributeOf(names ...string) *Attribute {
 			return attr
 		}
 	}
-	return nil
+	return b.nullAttribute()
 }
 
 // GetValueByPath returns the value of the attribute located at the given path.
@@ -345,7 +358,7 @@ func (b *Block) GetValueByPath(path string) cty.Value {
 
 	attr, restPath := b.getAttributeByPath(path)
 
-	if attr == nil {
+	if attr.IsNil() {
 		return cty.NilVal
 	}
 
@@ -435,7 +448,7 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 	return val, nil
 }
 
-func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
+func (b *Block) GetNestedAttribute(name string) *Attribute {
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
 	attrName := parts[len(parts)-1]
@@ -443,23 +456,13 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 	working := b
 	for _, subBlock := range blocks {
 		checkBlock := working.GetBlock(subBlock)
-		if checkBlock == nil {
-			return nil, working
+		if checkBlock.IsNil() {
+			return b.nullAttribute()
 		}
 		working = checkBlock
 	}
 
-	if working != nil {
-		if attr := working.GetAttribute(attrName); attr != nil {
-			return attr, working
-		}
-	}
-
-	return nil, b
-}
-
-func MapNestedAttribute[T any](block *Block, path string, f func(attr *Attribute, parent *Block) T) T {
-	return f(block.GetNestedAttribute(path))
+	return working.GetAttribute(attrName)
 }
 
 // LocalName is the name relative to the current module
@@ -524,7 +527,7 @@ func (b *Block) NameLabel() string {
 }
 
 func (b *Block) InModule() bool {
-	if b == nil {
+	if b.IsNil() {
 		return false
 	}
 	return b.moduleBlock != nil
@@ -574,7 +577,7 @@ func (b *Block) values(allowNull bool) cty.Value {
 }
 
 func (b *Block) IsNil() bool {
-	return b == nil
+	return b == nil || b.hclBlock == nil
 }
 
 func (b *Block) IsNotNil() bool {
@@ -647,7 +650,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 		})
 		forEachCtx.Set(obj, iteratorName)
 
-		if content := b.GetBlock("content"); content != nil {
+		if content := b.GetBlock("content"); content.IsNotNil() {
 			inherited := content.inherit(forEachCtx)
 			inherited.hclBlock.Labels = []string{}
 			inherited.hclBlock.Type = realBlockType
@@ -669,7 +672,7 @@ func (b *Block) expandDynamic() ([]*Block, error) {
 
 func (b *Block) validateForEach() (cty.Value, error) {
 	forEachAttr := b.GetAttribute("for_each")
-	if forEachAttr == nil {
+	if forEachAttr.IsNil() {
 		return cty.NilVal, errors.New("for_each attribute required")
 	}
 
@@ -684,7 +687,7 @@ func (b *Block) validateForEach() (cty.Value, error) {
 
 func (b *Block) iteratorName(blockType string) (string, error) {
 	iteratorAttr := b.GetAttribute("iterator")
-	if iteratorAttr == nil {
+	if iteratorAttr.IsNil() {
 		return blockType, nil
 	}
 

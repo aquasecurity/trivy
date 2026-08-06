@@ -19,12 +19,12 @@ func adaptDBSecurityGroup(resource *terraform.Block) rdb.DBSecurityGroup {
 	var cidrs []iacTypes.StringValue
 
 	for _, rule := range resource.GetBlocks("rule") {
-		cidrs = append(cidrs, rule.GetAttribute("cidr_ip").AsStringValueOrDefault("", resource))
+		cidrs = append(cidrs, rule.GetAttribute("cidr_ip").AsStringValue())
 	}
 
 	return rdb.DBSecurityGroup{
 		Metadata:    resource.GetMetadata(),
-		Description: resource.GetAttribute("description").AsStringValueOrDefault("", resource),
+		Description: resource.GetAttribute("description").AsStringValue(),
 		CIDRs:       cidrs,
 	}
 }

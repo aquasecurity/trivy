@@ -55,13 +55,13 @@ func (a *adapter) adaptLoadBalancer(resource *terraform.Block, module terraform.
 	var listeners []elb.Listener
 
 	typeAttr := resource.GetAttribute("load_balancer_type")
-	typeVal := typeAttr.AsStringValueOrDefault("application", resource)
+	typeVal := typeAttr.AsStringValue("application")
 
 	dropInvalidHeadersAttr := resource.GetAttribute("drop_invalid_header_fields")
-	dropInvalidHeadersVal := dropInvalidHeadersAttr.AsBoolValueOrDefault(false, resource)
+	dropInvalidHeadersVal := dropInvalidHeadersAttr.AsBoolValue()
 
 	internalAttr := resource.GetAttribute("internal")
-	internalVal := internalAttr.AsBoolValueOrDefault(false, resource)
+	internalVal := internalAttr.AsBoolValue()
 
 	listenerBlocks := module.GetReferencingResources(resource, "aws_lb_listener", "load_balancer_arn")
 	listenerBlocks = append(listenerBlocks, module.GetReferencingResources(resource, "aws_alb_listener", "load_balancer_arn")...)
@@ -81,7 +81,7 @@ func (a *adapter) adaptLoadBalancer(resource *terraform.Block, module terraform.
 
 func (a *adapter) adaptClassicLoadBalancer(resource *terraform.Block, _ terraform.Modules) elb.LoadBalancer {
 	internalAttr := resource.GetAttribute("internal")
-	internalVal := internalAttr.AsBoolValueOrDefault(false, resource)
+	internalVal := internalAttr.AsBoolValue()
 
 	return elb.LoadBalancer{
 		Metadata:                resource.GetMetadata(),
@@ -102,16 +102,16 @@ func adaptListener(listenerBlock *terraform.Block, typeVal string) elb.Listener 
 
 	protocolAttr := listenerBlock.GetAttribute("protocol")
 	if typeVal == "application" {
-		listener.Protocol = protocolAttr.AsStringValueOrDefault("HTTP", listenerBlock)
+		listener.Protocol = protocolAttr.AsStringValue("HTTP")
 	}
 
 	sslPolicyAttr := listenerBlock.GetAttribute("ssl_policy")
-	listener.TLSPolicy = sslPolicyAttr.AsStringValueOrDefault("", listenerBlock)
+	listener.TLSPolicy = sslPolicyAttr.AsStringValue()
 
 	for _, defaultActionBlock := range listenerBlock.GetBlocks("default_action") {
 		action := elb.Action{
 			Metadata: defaultActionBlock.GetMetadata(),
-			Type:     defaultActionBlock.GetAttribute("type").AsStringValueOrDefault("", defaultActionBlock),
+			Type:     defaultActionBlock.GetAttribute("type").AsStringValue(),
 		}
 		listener.DefaultActions = append(listener.DefaultActions, action)
 	}

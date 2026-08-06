@@ -10,10 +10,10 @@ func (a *adapter) adaptPublicAccessBlocks() {
 
 		pba := s3.PublicAccessBlock{
 			Metadata:              b.GetMetadata(),
-			BlockPublicACLs:       b.GetAttribute("block_public_acls").AsBoolValueOrDefault(false, b),
-			BlockPublicPolicy:     b.GetAttribute("block_public_policy").AsBoolValueOrDefault(false, b),
-			IgnorePublicACLs:      b.GetAttribute("ignore_public_acls").AsBoolValueOrDefault(false, b),
-			RestrictPublicBuckets: b.GetAttribute("restrict_public_buckets").AsBoolValueOrDefault(false, b),
+			BlockPublicACLs:       b.GetAttribute("block_public_acls").AsBoolValue(),
+			BlockPublicPolicy:     b.GetAttribute("block_public_policy").AsBoolValue(),
+			IgnorePublicACLs:      b.GetAttribute("ignore_public_acls").AsBoolValue(),
+			RestrictPublicBuckets: b.GetAttribute("restrict_public_buckets").AsBoolValue(),
 		}
 
 		var bucketName string

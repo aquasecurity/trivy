@@ -26,8 +26,8 @@ func adaptDomain(resource *terraform.Block) elasticsearch.Domain {
 	domain := elasticsearch.Domain{
 		Metadata:               resource.GetMetadata(),
 		DomainName:             iacTypes.StringDefault("", resource.GetMetadata()),
-		AccessPolicies:         resource.GetAttribute("access_policies").AsStringValueOrDefault("", resource),
-		VpcId:                  resource.GetAttribute("vpc_options.0.vpc_id").AsStringValueOrDefault("", resource),
+		AccessPolicies:         resource.GetAttribute("access_policies").AsStringValue(),
+		VpcId:                  resource.GetAttribute("vpc_options.0.vpc_id").AsStringValue(),
 		DedicatedMasterEnabled: iacTypes.Bool(false, resource.GetMetadata()),
 		LogPublishing: elasticsearch.LogPublishing{
 			Metadata:              resource.GetMetadata(),
@@ -58,13 +58,13 @@ func adaptDomain(resource *terraform.Block) elasticsearch.Domain {
 	}
 
 	nameAttr := resource.GetAttribute("domain_name")
-	domain.DomainName = nameAttr.AsStringValueOrDefault("", resource)
+	domain.DomainName = nameAttr.AsStringValue()
 
 	for _, logOptionsBlock := range resource.GetBlocks("log_publishing_options") {
 		domain.LogPublishing.Metadata = logOptionsBlock.GetMetadata()
-		domain.LogPublishing.CloudWatchLogGroupArn = logOptionsBlock.GetAttribute("cloudwatch_log_group_arn").AsStringValueOrDefault("", resource)
+		domain.LogPublishing.CloudWatchLogGroupArn = logOptionsBlock.GetAttribute("cloudwatch_log_group_arn").AsStringValue()
 		enabledAttr := logOptionsBlock.GetAttribute("enabled")
-		enabledVal := enabledAttr.AsBoolValueOrDefault(true, logOptionsBlock)
+		enabledVal := enabledAttr.AsBoolValue(true)
 		logTypeAttr := logOptionsBlock.GetAttribute("log_type")
 		if logTypeAttr.Equals("AUDIT_LOGS") {
 			domain.LogPublishing.AuditEnabled = enabledVal
@@ -74,26 +74,26 @@ func adaptDomain(resource *terraform.Block) elasticsearch.Domain {
 	if transitEncryptBlock := resource.GetBlock("node_to_node_encryption"); transitEncryptBlock.IsNotNil() {
 		enabledAttr := transitEncryptBlock.GetAttribute("enabled")
 		domain.TransitEncryption.Metadata = transitEncryptBlock.GetMetadata()
-		domain.TransitEncryption.Enabled = enabledAttr.AsBoolValueOrDefault(false, transitEncryptBlock)
+		domain.TransitEncryption.Enabled = enabledAttr.AsBoolValue()
 	}
 
 	if clusterconfigBlock := resource.GetBlock("cluster_config"); clusterconfigBlock.IsNotNil() {
-		domain.DedicatedMasterEnabled = clusterconfigBlock.GetAttribute("dedicated_master_enabled").AsBoolValueOrDefault(false, clusterconfigBlock)
+		domain.DedicatedMasterEnabled = clusterconfigBlock.GetAttribute("dedicated_master_enabled").AsBoolValue()
 	}
 
 	if atRestEncryptBlock := resource.GetBlock("encrypt_at_rest"); atRestEncryptBlock.IsNotNil() {
 		enabledAttr := atRestEncryptBlock.GetAttribute("enabled")
 		domain.AtRestEncryption.Metadata = atRestEncryptBlock.GetMetadata()
-		domain.AtRestEncryption.Enabled = enabledAttr.AsBoolValueOrDefault(false, atRestEncryptBlock)
-		domain.AtRestEncryption.KmsKeyId = atRestEncryptBlock.GetAttribute("kms_key_id").AsStringValueOrDefault("", resource)
+		domain.AtRestEncryption.Enabled = enabledAttr.AsBoolValue()
+		domain.AtRestEncryption.KmsKeyId = atRestEncryptBlock.GetAttribute("kms_key_id").AsStringValue()
 	}
 
 	if endpointBlock := resource.GetBlock("domain_endpoint_options"); endpointBlock.IsNotNil() {
 		domain.Endpoint.Metadata = endpointBlock.GetMetadata()
 		enforceHTTPSAttr := endpointBlock.GetAttribute("enforce_https")
-		domain.Endpoint.EnforceHTTPS = enforceHTTPSAttr.AsBoolValueOrDefault(true, endpointBlock)
+		domain.Endpoint.EnforceHTTPS = enforceHTTPSAttr.AsBoolValue(true)
 		TLSPolicyAttr := endpointBlock.GetAttribute("tls_security_policy")
-		domain.Endpoint.TLSPolicy = TLSPolicyAttr.AsStringValueOrDefault("", endpointBlock)
+		domain.Endpoint.TLSPolicy = TLSPolicyAttr.AsStringValue()
 	}
 
 	return domain
