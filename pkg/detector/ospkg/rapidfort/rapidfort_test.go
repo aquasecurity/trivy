@@ -149,9 +149,10 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "0:2.46-10rfubu",
 					SeveritySource:   "rapidfort",
 					DataSource: &dbTypes.DataSource{
-						ID:   "rapidfort",
-						Name: "RapidFort Security Advisories",
-						URL:  "https://github.com/rapidfort/security-advisories",
+						ID:     "rapidfort",
+						BaseID: "ubuntu",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
@@ -162,9 +163,9 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			// The false-positive case from knqyf263's review: a plain-ubuntu
 			// version (no "rfubu" marker) for the rf-binutils package must NOT
-			// cross-match the rf-tagged range in the "rapidfort" bucket.
-			// Routing sends it to the Ubuntu bucket, where the ubuntu-tagged
-			// fix says 3ubuntu2 is patched → no CVE reported.
+			// cross-match the rf-tagged range in the "rapidfort ubuntu" bucket.
+			// Routing sends it to the versioned Ubuntu bucket, where the
+			// ubuntu-tagged fix says 3ubuntu2 is patched → no CVE reported.
 			name:   "Ubuntu: plain-ubuntu package for rf-binutils patched under ubuntu range only, no cross-match",
 			baseOS: ftypes.Ubuntu,
 			fixtures: []string{
@@ -487,9 +488,10 @@ func TestScanner_Detect(t *testing.T) {
 					FixedVersion:     "7.76.1-26.rf1",
 					SeveritySource:   "rapidfort",
 					DataSource: &dbTypes.DataSource{
-						ID:   "rapidfort",
-						Name: "RapidFort Security Advisories",
-						URL:  "https://github.com/rapidfort/security-advisories",
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),

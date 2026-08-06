@@ -75,13 +75,11 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Ubuntu:
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
-		// ubuntu and rf packages each resolve to their own bucket, mirroring
-		// how the DB build splits the Ubuntu feed by range identifier.
-		// RapidFortUbuntu (bucket "rapidfort ubuntu") holds dpkg-format rf
-		// ranges only, so the dpkg comparator never sees an RPM-format
-		// "rapidfort redhat" range.
+		// One getter serves both versioned buckets ("rapidfort ubuntu <ver>",
+		// for ubuntu-tagged ranges) and the family-level rf bucket ("rapidfort
+		// ubuntu", empty version, for dpkg-format rf ranges). The release is
+		// passed at Get time — route() picks it per package.
 		s.getters[ecosystem.Ubuntu] = rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu)
-		s.getters[ecosystem.RapidFortUbuntu] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortUbuntu)
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
@@ -89,10 +87,12 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.RedHat:
 		s.comparer = version.NewRPMComparer()
 		s.versionTrimmer = version.Major // "9.2" → "9"
-		// el/fc/rf packages each resolve to their own bucket.
+		// el/fc/rf packages each resolve to their own bucket. RedHat serves
+		// both "rapidfort Red Hat <major>" (versioned) and "rapidfort Red Hat"
+		// (family-level rf bucket, empty version) — one getter, release passed
+		// at Get time.
 		s.getters[ecosystem.RedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RedHat)
 		s.getters[ecosystem.Fedora] = rapidfort.NewVulnSrcGetter(ecosystem.Fedora)
-		s.getters[ecosystem.RapidFortRedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RapidFortRedHat)
 	default:
 		// Provider only creates scanners for Ubuntu/Alpine/RedHat; the DEB
 		// comparer + minor trimmer here is a safe placeholder for any direct
@@ -109,7 +109,7 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
 		if dpkgHasRfMarker(installedVer) {
-			return ecosystem.RapidFortUbuntu, "" // "rfubu"-marked → dpkg-only "rapidfort ubuntu" bucket
+			return ecosystem.Ubuntu, "" // "rfubu"-marked → "rapidfort ubuntu" family bucket (dpkg-only)
 		}
 		return ecosystem.Ubuntu, osVer
 	case ftypes.Alpine:
@@ -119,7 +119,7 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 		case "fc":
 			return ecosystem.Fedora, num // "fc43" → "rapidfort fedora 43" bucket
 		case "rf":
-			return ecosystem.RapidFortRedHat, "" // ".rf"/".rfN" → dpkg-free "rapidfort redhat" bucket
+			return ecosystem.RedHat, "" // ".rf"/".rfN" → "rapidfort Red Hat" family bucket (RPM-only)
 		default: // "el" or untagged → "rapidfort Red Hat <major>" bucket, keyed by the OS version
 			return ecosystem.RedHat, osVer
 		}
