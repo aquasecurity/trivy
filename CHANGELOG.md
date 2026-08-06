@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.73.1](https://github.com/aquasecurity/trivy/compare/v0.73.0...v0.73.1) (2026-08-06)
+
+
+### Bug Fixes
+
+* **python:** normalize dependency names in PEP 621 pyproject.toml ([#11050](https://github.com/aquasecurity/trivy/issues/11050)) ([0012281](https://github.com/aquasecurity/trivy/commit/0012281c8a8adad2eff1889f12fe08a0ca5a7bfc))
+* **terraform:** avoid panic when for_each local has unknown object values ([#11019](https://github.com/aquasecurity/trivy/issues/11019)) ([199a126](https://github.com/aquasecurity/trivy/commit/199a12624b84d82aaa48a14f85b38c1a3ea3e9ca))
+
 ## [0.73.0](https://github.com/aquasecurity/trivy/compare/v0.72.0...v0.73.0) (2026-08-03)
 
 
