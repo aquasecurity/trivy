@@ -3,11 +3,13 @@ package walker_test
 import (
 	"errors"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"runtime"
 	"slices"
 	"strings"
+	"syscall"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -87,6 +89,58 @@ func TestFS_Walk(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+}
+
+// fakeDirEntry is a fs.DirEntry that fails on Info().
+type fakeDirEntry struct {
+	infoErr error
+}
+
+func (e fakeDirEntry) Name() string               { return "bad" }
+func (e fakeDirEntry) IsDir() bool                { return false }
+func (e fakeDirEntry) Type() fs.FileMode          { return 0 } // regular file
+func (e fakeDirEntry) Info() (fs.FileInfo, error) { return nil, e.infoErr }
+
+func TestFS_WalkDirFunc_UnreadablePaths(t *testing.T) {
+	root := "testdata/fs"
+	analyzeFn := func(string, os.FileInfo, analyzer.Opener) error {
+		assert.Fail(t, "analyze function must not be called for unreadable paths")
+		return nil
+	}
+	walkFn := walker.NewFS().WalkDirFunc(root, analyzeFn, walker.Option{})
+
+	t.Run("unreadable file is skipped", func(t *testing.T) {
+		// e.g. "lstat: input/output error" on a broken filesystem
+		// cf. https://github.com/aquasecurity/trivy/issues/3259
+		err := walkFn(filepath.Join(root, "bad"), nil, &fs.PathError{
+			Op:   "lstat",
+			Path: filepath.Join(root, "bad"),
+			Err:  syscall.EIO,
+		})
+		assert.NoError(t, err)
+	})
+
+	t.Run("error with the root is returned", func(t *testing.T) {
+		err := walkFn(root, nil, &fs.PathError{
+			Op:   "lstat",
+			Path: root,
+			Err:  syscall.EIO,
+		})
+		assert.ErrorIs(t, err, syscall.EIO)
+	})
+
+	t.Run("file with unreadable info is skipped", func(t *testing.T) {
+		err := walkFn(filepath.Join(root, "bad"), fakeDirEntry{infoErr: syscall.EIO}, nil)
+		assert.NoError(t, err)
+	})
+}
+
+func TestFS_Walk_NonExistentRoot(t *testing.T) {
+	analyzeFn := func(string, os.FileInfo, analyzer.Opener) error {
+		return nil
+	}
+	err := walker.NewFS().Walk("testdata/non-existent", walker.Option{}, analyzeFn)
+	assert.ErrorContains(t, err, "unknown error with")
 }
 
 func TestFS_BuildSkipPaths(t *testing.T) {
