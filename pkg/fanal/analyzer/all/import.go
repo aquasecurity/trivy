@@ -50,6 +50,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/bottlerocket_inventory"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/hadron"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/sbom"

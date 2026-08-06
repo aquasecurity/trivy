@@ -33,6 +33,7 @@ const (
 	// OS Package
 	TypeApk                   Type = "apk"
 	TypeBottlerocketInventory Type = "bottlerocket-inventory"
+	TypeHadron                Type = "hadron"
 	TypeDpkg                  Type = "dpkg"
 	TypeDpkgLicense           Type = "dpkg-license" // For analyzing licenses
 	TypeRpm                   Type = "rpm"
@@ -175,6 +176,7 @@ var (
 		TypeUbuntuESM,
 		TypeApk,
 		TypeBottlerocketInventory,
+		TypeHadron,
 		TypeDpkg,
 		TypeDpkgLicense,
 		TypeRpm,
