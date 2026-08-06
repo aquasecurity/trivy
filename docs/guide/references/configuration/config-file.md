@@ -593,6 +593,12 @@ repository:
   # Same as '--commit'
   commit: ""
 
+  # Same as '--git-password'
+  git-password: ""
+
+  # Same as '--git-username'
+  git-username: ""
+
   # Same as '--tag'
   tag: ""
 

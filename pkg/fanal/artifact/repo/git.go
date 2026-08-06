@@ -92,7 +92,7 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
-		Auth:            gitAuth(),
+		Auth:            gitAuth(artifactOpt),
 		Progress:        os.Stderr,
 		InsecureSkipTLS: artifactOpt.Insecure,
 	}
@@ -152,11 +152,27 @@ func newURL(rawurl string) (*url.URL, error) {
 	return u, nil
 }
 
-// Helper function to check for a GitHub/GitLab token from env vars in order to
-// make authenticated requests to access private repos
-func gitAuth() http.AuthMethod {
+// Helper function to look up the credentials used to access private repos.
+// Credentials passed explicitly take precedence, so that repositories hosted
+// anywhere (Bitbucket, GitHub Enterprise, self-hosted, etc.) can be scanned.
+// Otherwise we fall back to the GitHub/GitLab token env vars.
+func gitAuth(artifactOpt artifact.Option) http.AuthMethod {
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
+
+	// Credentials given via --git-username/--git-password (or the corresponding
+	// TRIVY_GIT_USERNAME/TRIVY_GIT_PASSWORD env vars) win over everything else.
+	if artifactOpt.RepoGitPassword != "" {
+		username := artifactOpt.RepoGitUsername
+		if username == "" {
+			// Token-based authentication doesn't care about the username
+			username = gitUsername
+		}
+		return &http.BasicAuth{
+			Username: username,
+			Password: artifactOpt.RepoGitPassword,
+		}
+	}
 
 	// We first check if a GitHub token was provided
 	githubToken := os.Getenv("GITHUB_TOKEN")
