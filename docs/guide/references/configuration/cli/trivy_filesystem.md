@@ -176,6 +176,7 @@ trivy filesystem [flags] PATH
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```

@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/minimos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/oracle"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/photon"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rapidfort"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/redhat"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rocky"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/rootio"
@@ -71,6 +72,7 @@ var (
 	// suppliers dynamically generate drivers based on package information
 	// and environment detection. They are tried before standard OS-specific drivers.
 	suppliers = []driver.Supplier{
+		rapidfort.Supplier,
 		rootio.Supplier,
 		seal.Supplier,
 	}
@@ -136,7 +138,7 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 
 	// By default, drop packages installed from third-party repositories such as EPEL or
 	// Docker: an OS vendor's advisories do not describe them. A driver whose own feed
-	// covers those packages (Echo, Seal) implements packageFilter to keep them instead.
+	// covers those packages (Echo, Seal, RapidFort) implements PackageFilter to keep them instead.
 	filterFunc := driver.DropThirdPartyPackages
 	if f, ok := d.driver.(driver.PackageFilter); ok {
 		filterFunc = f.FilterPackages

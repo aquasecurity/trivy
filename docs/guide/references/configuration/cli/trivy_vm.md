@@ -161,6 +161,7 @@ trivy vm [flags] VM_IMAGE
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```

@@ -152,6 +152,11 @@ const (
 	// =======
 	TypeRedHatContentManifestType Type = "redhat-content-manifest"
 	TypeRedHatDockerfileType      Type = "redhat-dockerfile"
+
+	// =========
+	// RapidFort
+	// =========
+	TypeRapidFortCurated Type = "rapidfort-curated"
 )
 
 var (

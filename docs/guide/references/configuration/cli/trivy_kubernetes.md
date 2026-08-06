@@ -185,6 +185,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```

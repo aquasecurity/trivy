@@ -177,6 +177,7 @@ trivy rootfs [flags] ROOTDIR
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```

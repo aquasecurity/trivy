@@ -197,6 +197,7 @@ trivy image [flags] IMAGE_NAME
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```
