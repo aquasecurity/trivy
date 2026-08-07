@@ -490,3 +490,37 @@ func TestFSCache_MissingBlobs(t *testing.T) {
 		})
 	}
 }
+
+func TestNewFSCache_LockTimeoutDefault(t *testing.T) {
+	t.Parallel()
+	c, err := NewFSCache(t.TempDir())
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = c.Close() })
+}
+
+func TestNewFSCache_LockTimeoutCustom(t *testing.T) {
+	t.Parallel()
+	dir := t.TempDir()
+
+	c1, err := NewFSCache(dir, WithLockTimeout(200*time.Millisecond))
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = c1.Close() })
+
+	// A second open against the same dir must give up well before the 5s
+	// default, proving the custom timeout is applied to bolt.Open.
+	start := time.Now()
+	_, err = NewFSCache(dir, WithLockTimeout(200*time.Millisecond))
+	elapsed := time.Since(start)
+	require.Error(t, err)
+	require.Contains(t, err.Error(), "cache may be in use by another process")
+	require.Less(t, elapsed, time.Second, "should give up well before the 5s default")
+}
+
+func TestWithLockTimeout_NonPositiveIgnored(t *testing.T) {
+	t.Parallel()
+	cfg := fsCacheConfig{lockTimeout: defaultFSCacheTimeout}
+	WithLockTimeout(0)(&cfg)
+	WithLockTimeout(-1 * time.Second)(&cfg)
+	require.Equal(t, defaultFSCacheTimeout, cfg.lockTimeout,
+		"non-positive durations should leave the default in place")
+}

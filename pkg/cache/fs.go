@@ -25,14 +25,38 @@ type FSCache struct {
 	directory string
 }
 
-func NewFSCache(cacheDir string) (FSCache, error) {
+type fsCacheConfig struct {
+	lockTimeout time.Duration
+}
+
+// FSCacheOption configures NewFSCache.
+type FSCacheOption func(*fsCacheConfig)
+
+// WithLockTimeout overrides the default 5-second timeout used when acquiring
+// the bolt cache file's OS-level lock. A non-positive value is ignored and
+// the default is preserved. Useful when multiple trivy processes share a
+// cache directory and serialized access is expected to exceed the default.
+func WithLockTimeout(d time.Duration) FSCacheOption {
+	return func(c *fsCacheConfig) {
+		if d > 0 {
+			c.lockTimeout = d
+		}
+	}
+}
+
+func NewFSCache(cacheDir string, opts ...FSCacheOption) (FSCache, error) {
+	cfg := fsCacheConfig{lockTimeout: defaultFSCacheTimeout}
+	for _, o := range opts {
+		o(&cfg)
+	}
+
 	dir := filepath.Join(cacheDir, scanCacheDirName)
 	if err := os.MkdirAll(dir, 0o700); err != nil {
 		return FSCache{}, xerrors.Errorf("failed to create cache dir: %w", err)
 	}
 
 	db, err := bolt.Open(filepath.Join(dir, "fanal.db"), 0o600, &bolt.Options{
-		Timeout: defaultFSCacheTimeout,
+		Timeout: cfg.lockTimeout,
 	})
 	if err != nil {
 		// Check if the error is due to timeout (database locked by another process)
