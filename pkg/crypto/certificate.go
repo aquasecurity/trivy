@@ -26,6 +26,10 @@ type Certificate struct {
 	URIs                  []string          `json:",omitempty"`
 	BasicConstraintsValid bool              `json:",omitempty"`
 	IsCA                  bool              `json:",omitempty"`
-	MaxPathLen            int               `json:",omitempty"`
-	MaxPathLenZero        bool              `json:",omitempty"`
+	// MaxPathLen is the maximum number of non-self-issued intermediate
+	// certificates. Zero with MaxPathLenZero unset means no constraint was
+	// specified; negative sentinel values are not retained in this model.
+	MaxPathLen int `json:",omitempty"`
+	// MaxPathLenZero reports whether zero is an explicit maximum path length.
+	MaxPathLenZero bool `json:",omitempty"`
 }

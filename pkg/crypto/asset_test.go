@@ -79,6 +79,21 @@ func TestAssetValidate(t *testing.T) {
 			wantErr: "",
 		},
 		{
+			name: "explicit zero certificate path length",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *crypto.Asset) {
+				a.Certificate.MaxPathLenZero = true
+			})),
+			wantErr: "",
+		},
+		{
+			name: "non-zero certificate path length with zero flag",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *crypto.Asset) {
+				a.Certificate.MaxPathLen = 1
+				a.Certificate.MaxPathLenZero = true
+			})),
+			wantErr: "certificate path length zero flag requires zero path length",
+		},
+		{
 			name:    "public key",
 			asset:   cryptotest.PublicKeyAsset(),
 			wantErr: "",

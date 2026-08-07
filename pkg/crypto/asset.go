@@ -152,6 +152,9 @@ func (a *Asset) validateCertificate() error {
 	if a.Certificate.MaxPathLen < 0 {
 		return xerrors.Errorf("certificate path length must not be negative")
 	}
+	if a.Certificate.MaxPathLen != 0 && a.Certificate.MaxPathLenZero {
+		return xerrors.Errorf("certificate path length zero flag requires zero path length")
+	}
 	return nil
 }
 
