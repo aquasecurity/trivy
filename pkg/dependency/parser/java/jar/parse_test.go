@@ -669,6 +669,21 @@ func TestParseBundleLicense(t *testing.T) {
 			want:   []string{"MIT"},
 		},
 		{
+			name:   "escaped quote does not end the quoted value",
+			header: `Apache-2.0;description="one \"quote",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "separator inside a value ending with an escaped quote",
+			header: `Apache-2.0;description="a \"quoted\" word, and a comma",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "escaped backslash does not escape the closing quote",
+			header: `Apache-2.0;description="ends with a backslash\\",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
 			name:   "EXTERNAL token is skipped",
 			header: "<<EXTERNAL>>",
 			want:   nil,

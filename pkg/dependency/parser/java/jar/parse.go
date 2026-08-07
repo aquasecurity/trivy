@@ -745,12 +745,17 @@ func parseBundleLicenseEntry(entry string) (name, link string) {
 
 // splitUnquoted splits s on sep, ignoring separators inside a double-quoted value.
 // Attribute values in a manifest header are quoted strings, so a description such as "Apache License, Version 2.0" is a single value rather than two entries.
+// Inside such a value a backslash escapes the next character, which is how a quoted string carries a quote of its own.
 func splitUnquoted(s string, sep byte) []string {
 	var fields []string
 	var quoted bool
 	start := 0
-	for i := range len(s) {
+	for i := 0; i < len(s); i++ {
 		switch s[i] {
+		case '\\':
+			if quoted {
+				i++
+			}
 		case '"':
 			quoted = !quoted
 		case sep:
