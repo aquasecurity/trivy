@@ -1,94 +1,21 @@
+// Package wolfi detects vulnerabilities in the APK packages of a Wolfi image.
+// The detection itself is shared with Chainguard in the chainguardosv package,
+// because both distros are covered by the same feed.
 package wolfi
 
 import (
-	"context"
-
-	version "github.com/knqyf263/go-apk-version"
-	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy-db/pkg/db"
-	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/wolfi"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
-	"github.com/aquasecurity/trivy/pkg/scan/utils"
-	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguardosv"
 )
 
-// Scanner implements the Wolfi scanner
+// Scanner implements the Wolfi scanner. It is a distinct type from the Chainguard
+// scanner it shares an implementation with, so that callers can still tell the
+// two apart.
 type Scanner struct {
-	vs wolfi.VulnSrc
+	*chainguardosv.Scanner
 }
 
-// NewScanner is the factory method for Scanner
+// NewScanner is the factory method for Scanner.
 func NewScanner() *Scanner {
-	return &Scanner{
-		vs: wolfi.NewVulnSrc(),
-	}
-}
-
-// Detect vulnerabilities in package using Wolfi scanner
-func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	log.InfoContext(ctx, "Detecting vulnerabilities...", log.Int("pkg_num", len(pkgs)))
-
-	var vulns []types.DetectedVulnerability
-	for _, pkg := range pkgs {
-		srcName := pkg.SrcName
-		if srcName == "" {
-			srcName = pkg.Name
-		}
-		advisories, err := s.vs.Get(db.GetParams{
-			PkgName: srcName,
-		})
-		if err != nil {
-			return nil, xerrors.Errorf("failed to get Wolfi advisories: %w", err)
-		}
-
-		installed := utils.FormatVersion(pkg)
-		installedVersion, err := version.NewVersion(installed)
-		if err != nil {
-			log.DebugContext(ctx, "Failed to parse the installed package version",
-				log.String("version", installed), log.Err(err))
-			continue
-		}
-
-		for _, adv := range advisories {
-			if !s.isVulnerable(ctx, installedVersion, adv) {
-				continue
-			}
-			vulns = append(vulns, types.DetectedVulnerability{
-				VulnerabilityID:  adv.VulnerabilityID,
-				PkgID:            pkg.ID,
-				PkgName:          pkg.Name,
-				InstalledVersion: installed,
-				FixedVersion:     adv.FixedVersion,
-				Layer:            pkg.Layer,
-				PkgIdentifier:    pkg.Identifier,
-				Custom:           adv.Custom,
-				DataSource:       adv.DataSource,
-			})
-		}
-	}
-	return vulns, nil
-}
-
-func (s *Scanner) isVulnerable(ctx context.Context, installedVersion version.Version, adv dbTypes.Advisory) bool {
-	// Compare versions for fixed vulnerabilities
-	fixedVersion, err := version.NewVersion(adv.FixedVersion)
-	if err != nil {
-		log.DebugContext(ctx, "Failed to parse the fixed version",
-			log.String("version", adv.FixedVersion), log.Err(err))
-		return false
-	}
-
-	// It means the fixed vulnerability
-	return installedVersion.LessThan(fixedVersion)
-}
-
-// IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
-	// Wolfi doesn't have versions, so there is no case where a given input yields a
-	// result of an unsupported Wolfi version.
-
-	return true
+	return &Scanner{chainguardosv.NewScanner(wolfi.NewVulnSrc(), "Wolfi")}
 }

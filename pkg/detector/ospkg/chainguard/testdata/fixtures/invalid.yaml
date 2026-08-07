@@ -1,9 +1,13 @@
 - bucket: chainguard
   pairs:
-    - bucket: jq
+    - bucket: glibc
       pairs:
-        - key: CVE-2020-8177
-          value:
-            FixedVersion:
-              - foo
-              - bar
+        - key: CVE-2023-4911
+          value: not-an-advisory
+- bucket: data-source
+  pairs:
+    - key: chainguard
+      value:
+        ID: chainguard
+        Name: Chainguard Security Data
+        URL: https://advisories.cgr.dev/chainguard/v3/osv/all.json

@@ -1,7 +1,6 @@
 package chainguard_test
 
 import (
-	"sort"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -16,195 +15,202 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
+var source = &dbTypes.DataSource{
+	ID:   vulnerability.Chainguard,
+	Name: "Chainguard Security Data",
+	URL:  "https://advisories.cgr.dev/chainguard/v3/osv/all.json",
+}
+
+// TestScanner_Detect covers the wiring between the Chainguard scanner and the
+// Chainguard bucket of the database. The detection logic itself is covered in
+// the chainguardosv package.
 func TestScanner_Detect(t *testing.T) {
-	type args struct {
-		repo *ftypes.Repository
-		pkgs []ftypes.Package
-	}
 	tests := []struct {
 		name     string
-		args     args
 		fixtures []string
+		pkgs     []ftypes.Package
 		want     []types.DetectedVulnerability
 		wantErr  string
 	}{
 		{
-			name: "happy path",
-			fixtures: []string{
-				"testdata/fixtures/chainguard.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			args: args{
-				pkgs: []ftypes.Package{
-					{
-						Name:       "ansible",
-						Version:    "2.6.4",
-						SrcName:    "ansible",
-						SrcVersion: "2.6.4",
-						Layer: ftypes.Layer{
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						},
-					},
-					{
-						Name:       "invalid",
-						Version:    "invalid", // skipped
-						SrcName:    "invalid",
-						SrcVersion: "invalid",
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
+			name:     "an outdated package is vulnerable",
+			fixtures: []string{"testdata/fixtures/chainguard.yaml"},
+			pkgs: []ftypes.Package{
 				{
-					PkgName:          "ansible",
-					VulnerabilityID:  "CVE-2019-10217",
-					InstalledVersion: "2.6.4",
-					FixedVersion:     "2.8.4-r0",
+					Name:       "glibc",
+					Version:    "2.38",
+					Release:    "r4",
+					SrcName:    "glibc",
+					SrcVersion: "2.38",
+					SrcRelease: "r4",
+					Arch:       "aarch64",
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Chainguard,
-						Name: "Chainguard Secdb",
-						URL:  "https://packages.cgr.dev/chainguard/security.json",
-					},
-				},
-			},
-		},
-		{
-			name: "contain rc",
-			fixtures: []string{
-				"testdata/fixtures/chainguard.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			args: args{
-				pkgs: []ftypes.Package{
-					{
-						Name:       "jq",
-						Version:    "1.6-r0",
-						SrcName:    "jq",
-						SrcVersion: "1.6-r0",
-					},
 				},
 			},
 			want: []types.DetectedVulnerability{
 				{
-					PkgName:          "jq",
-					VulnerabilityID:  "CVE-2020-1234",
-					InstalledVersion: "1.6-r0",
-					FixedVersion:     "1.6-r1",
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Chainguard,
-						Name: "Chainguard Secdb",
-						URL:  "https://packages.cgr.dev/chainguard/security.json",
-					},
-				},
-			},
-		},
-		{
-			name: "contain pre",
-			fixtures: []string{
-				"testdata/fixtures/chainguard.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			args: args{
-				pkgs: []ftypes.Package{
-					{
-						Name:       "test",
-						Version:    "0.1.0_alpha",
-						SrcName:    "test-src",
-						SrcVersion: "0.1.0_alpha",
-						Layer: ftypes.Layer{
-							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-						},
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					VulnerabilityID:  "CVE-2030-0002",
-					PkgName:          "test",
-					InstalledVersion: "0.1.0_alpha",
-					FixedVersion:     "0.1.0_alpha2",
+					VulnerabilityID:  "CVE-2023-4911",
+					VendorIDs:        []string{"CGA-2222-2222-2222"},
+					PkgName:          "glibc",
+					InstalledVersion: "2.38-r4",
+					FixedVersion:     "2.38-r5",
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Chainguard,
-						Name: "Chainguard Secdb",
-						URL:  "https://packages.cgr.dev/chainguard/security.json",
+					DataSource: source,
+				},
+				{
+					// Recorded for x86_64 only, and the feed says nothing about
+					// aarch64, so it still applies here.
+					VulnerabilityID:  "CVE-2026-12345",
+					VendorIDs:        []string{"CGA-3333-3333-3333"},
+					PkgName:          "glibc",
+					InstalledVersion: "2.38-r4",
+					Status:           dbTypes.StatusFixDeferred,
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
 					},
+					DataSource: source,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-54321",
+					VendorIDs:        []string{"CGA-5555-5555-5555"},
+					PkgName:          "glibc",
+					InstalledVersion: "2.38-r4",
+					FixedVersion:     "2.40-r0",
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+					DataSource: source,
 				},
 			},
 		},
 		{
-			name: "Get returns an error",
-			fixtures: []string{
-				"testdata/fixtures/invalid.yaml",
-				"testdata/fixtures/data-source.yaml",
+			name:     "an unresolved advisory is reported with no fixed version",
+			fixtures: []string{"testdata/fixtures/chainguard.yaml"},
+			pkgs: []ftypes.Package{
+				{
+					Name:       "glibc",
+					Version:    "2.44",
+					Release:    "r0",
+					SrcName:    "glibc",
+					SrcVersion: "2.44",
+					SrcRelease: "r0",
+					Arch:       "x86_64",
+				},
 			},
-			args: args{
-				pkgs: []ftypes.Package{
-					{
-						Name:       "jq",
-						Version:    "1.6-r0",
-						SrcName:    "jq",
-						SrcVersion: "1.6-r0",
-					},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-12345",
+					VendorIDs:        []string{"CGA-3333-3333-3333"},
+					PkgName:          "glibc",
+					InstalledVersion: "2.44-r0",
+					Status:           dbTypes.StatusFixDeferred,
+					DataSource:       source,
+				},
+			},
+		},
+		{
+			// The aarch64 build was fixed in 2.40-r0, so 2.41-r0 is not
+			// vulnerable even though x86_64 was not fixed until 2.43-r0.
+			name:     "the fixed version of the package's architecture is used",
+			fixtures: []string{"testdata/fixtures/chainguard.yaml"},
+			pkgs: []ftypes.Package{
+				{
+					Name:       "glibc",
+					Version:    "2.41",
+					Release:    "r0",
+					SrcName:    "glibc",
+					SrcVersion: "2.41",
+					SrcRelease: "r0",
+					Arch:       "aarch64",
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-12345",
+					VendorIDs:        []string{"CGA-3333-3333-3333"},
+					PkgName:          "glibc",
+					InstalledVersion: "2.41-r0",
+					Status:           dbTypes.StatusFixDeferred,
+					DataSource:       source,
+				},
+			},
+		},
+		{
+			name:     "a subpackage is matched under its own name and its origin's",
+			fixtures: []string{"testdata/fixtures/chainguard.yaml"},
+			pkgs: []ftypes.Package{
+				{
+					Name:       "libcrypto3",
+					Version:    "3.3.2",
+					Release:    "r0",
+					SrcName:    "openssl",
+					SrcVersion: "3.3.2",
+					SrcRelease: "r0",
+					Arch:       "x86_64",
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					// Filed against the origin package openssl.
+					VulnerabilityID:  "CVE-2024-9143",
+					VendorIDs:        []string{"CGA-4444-4444-4444"},
+					PkgName:          "libcrypto3",
+					InstalledVersion: "3.3.2-r0",
+					FixedVersion:     "3.3.3-r0",
+					DataSource:       source,
+				},
+				{
+					// Filed against the subpackage libcrypto3.
+					VulnerabilityID:  "CVE-2026-11111",
+					VendorIDs:        []string{"CGA-7777-7777-7777"},
+					PkgName:          "libcrypto3",
+					InstalledVersion: "3.3.2-r0",
+					FixedVersion:     "3.6.0-r0",
+					DataSource:       source,
+				},
+			},
+		},
+		{
+			name:     "a broken advisory is an error",
+			fixtures: []string{"testdata/fixtures/invalid.yaml"},
+			pkgs: []ftypes.Package{
+				{
+					Name:       "glibc",
+					Version:    "2.38",
+					Release:    "r4",
+					SrcName:    "glibc",
+					SrcVersion: "2.38",
+					SrcRelease: "r4",
 				},
 			},
 			wantErr: "failed to get Chainguard advisories",
 		},
-		{
-			name: "No src name",
-			fixtures: []string{
-				"testdata/fixtures/chainguard.yaml",
-				"testdata/fixtures/data-source.yaml",
-			},
-			args: args{
-				repo: &ftypes.Repository{
-					Family:  ftypes.Chainguard,
-					Release: "3.10",
-				},
-				pkgs: []ftypes.Package{
-					{
-						Name:       "jq",
-						Version:    "1.6-r0",
-						SrcVersion: "1.6-r0",
-					},
-				},
-			},
-			want: []types.DetectedVulnerability{
-				{
-					PkgName:          "jq",
-					VulnerabilityID:  "CVE-2020-1234",
-					InstalledVersion: "1.6-r0",
-					FixedVersion:     "1.6-r1",
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.Chainguard,
-						Name: "Chainguard Secdb",
-						URL:  "https://packages.cgr.dev/chainguard/security.json",
-					},
-				},
-			},
-		},
 	}
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			_ = dbtest.InitDB(t, tt.fixtures)
 			defer db.Close()
 
 			s := chainguard.NewScanner()
-			got, err := s.Detect(t.Context(), "", tt.args.repo, tt.args.pkgs)
+			got, err := s.Detect(t.Context(), "", nil, tt.pkgs)
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
-
-			sort.Slice(got, func(i, j int) bool {
-				return got[i].VulnerabilityID < got[j].VulnerabilityID
-			})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestScanner_IsSupportedVersion(t *testing.T) {
+	s := chainguard.NewScanner()
+	// Chainguard has no distro version, so every input is supported.
+	assert.True(t, s.IsSupportedVersion(t.Context(), ftypes.Chainguard, ""))
+	assert.True(t, s.IsSupportedVersion(t.Context(), ftypes.Chainguard, "20230214"))
 }
