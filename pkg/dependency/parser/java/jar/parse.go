@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -29,6 +30,10 @@ import (
 var (
 	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
 )
+
+// maxManifestSize caps how much of a (decompressed) MANIFEST.MF is read into
+// memory, guarding against a decompression bomb. Real manifests are a few KB.
+const maxManifestSize = 10 << 20 // 10 MiB
 
 type Client interface {
 	Exists(groupID, artifactID string) (bool, error)
@@ -147,10 +152,11 @@ func (p *Parser) parsePackages(filePath string, size int64, r xio.ReadSeekerAt) 
 		}
 	}
 
-	// Attach license sources that depend on the jar's own artifact after it has
-	// been resolved (it may have been added above from MANIFEST.MF / SHA-1 / file
-	// name). Manifest attributes are cheap to parse, so try them before falling
-	// back to classifying packed LICENSE files.
+	// Attach licenses that depend on the jar's own artifact after it has been
+	// resolved (it may have been added above from MANIFEST.MF / SHA-1 / file name).
+	// Manifest licenses (Jenkins Plugin-License-Name and OSGi Bundle-License) are
+	// cheap to parse, so they come before classifying a packed LICENSE file. Each
+	// step only applies when no license has been set yet.
 	attachManifestLicenses(pkgs, fileProps.FilePath, m.licenseNames())
 	p.attachFileLicenses(pkgs, fileProps.FilePath, licenseFile)
 
@@ -330,8 +336,9 @@ func attachPomLicenses(pkgs []ftypes.Package, pomLicenses map[string][]string) {
 	}
 }
 
-// attachManifestLicenses attaches Jenkins plugin licenses declared in MANIFEST.MF
-// to the jar's own package when a single unambiguous package belongs to this jar.
+// attachManifestLicenses attaches license names declared in MANIFEST.MF (Jenkins
+// Plugin-License-Name and OSGi Bundle-License) to the jar's own package when a
+// single unambiguous package belongs to this jar.
 func attachManifestLicenses(pkgs []ftypes.Package, filePath string, licenses []string) {
 	if len(licenses) == 0 {
 		return
@@ -369,7 +376,7 @@ func ownJarPackage(pkgs []ftypes.Package, filePath string) *ftypes.Package {
 
 // attachFileLicenses classifies the LICENSE file packed in a jar and attaches it to the
 // jar's own package, but only when the owner is unambiguous: a single LICENSE file, a
-// single package belonging to this jar, and no license from its pom.xml yet.
+// single package belonging to this jar, and no license from its pom.xml / manifest yet.
 func (p *Parser) attachFileLicenses(pkgs []ftypes.Package, filePath string, licenseFile *zip.File) {
 	if licenseFile == nil {
 		return
@@ -502,11 +509,12 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	return p, nil
 }
 
-// embeddedPom is a minimal view of an embedded pom.xml: only the license names are needed.
+// embeddedPom is a minimal view of an embedded pom.xml: only the license name and URL are needed.
 type embeddedPom struct {
 	Licenses struct {
 		License []struct {
 			Name string `xml:"name"`
+			URL  string `xml:"url"`
 		} `xml:"license"`
 	} `xml:"licenses"`
 }
@@ -541,8 +549,9 @@ func parsePomLicenses(f *zip.File) ([]string, error) {
 	return decodePomLicenses(file)
 }
 
-// decodePomLicenses decodes a pom.xml and returns the raw <license><name> values.
-// Names are kept as-is; normalization happens downstream.
+// decodePomLicenses decodes a pom.xml and returns the license values.
+// The <name> is kept as-is (normalization happens downstream); when it is empty,
+// the <url> is used as a fallback but only if it resolves to an SPDX license ID.
 func decodePomLicenses(r io.Reader) ([]string, error) {
 	var pom embeddedPom
 	decoder := xml.NewDecoder(r)
@@ -553,11 +562,25 @@ func decodePomLicenses(r io.Reader) ([]string, error) {
 
 	var names []string
 	for _, lic := range pom.Licenses.License {
-		if name := strings.TrimSpace(lic.Name); name != "" {
+		if name := pomLicenseName(lic.Name, lic.URL); name != "" {
 			names = append(names, name)
 		}
 	}
 	return names, nil
+}
+
+// pomLicenseName resolves a single pom <license> to a license value: the <name>
+// if present, otherwise the <url> mapped to its SPDX ID via the seeAlso index.
+// An unresolved URL returns "" so the caller can fall back to another source
+// (e.g. a packed LICENSE file).
+func pomLicenseName(name, url string) string {
+	if name = strings.TrimSpace(name); name != "" {
+		return name
+	}
+	if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(url)); ok {
+		return id
+	}
+	return ""
 }
 
 // isJarLicenseFile reports whether a zip entry is a license file eligible for
@@ -608,6 +631,7 @@ type manifest struct {
 	bundleName             string
 	bundleVersion          string
 	bundleSymbolicName     string
+	bundleLicense          string
 	pluginLicenseNames     []string
 }
 
@@ -618,76 +642,122 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 	defer file.Close()
 
-	var m manifest
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
+	b, err := io.ReadAll(io.LimitReader(file, maxManifestSize))
+	if err != nil {
+		return manifest{}, xerrors.Errorf("unable to read MANIFEST.MF: %w", err)
+	}
 
-		// Skip variables. e.g. Bundle-Name: %bundleName
-		ss := strings.Fields(line)
-		if len(ss) <= 1 || (len(ss) > 1 && strings.HasPrefix(ss[1], "%")) {
+	// MANIFEST.MF folds long values onto continuation lines starting with a space.
+	// Unfold by removing the "line break + space" (both CRLF and LF) without inserting anything, as java.util.jar.Manifest does.
+	// https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
+	unfolded := strings.ReplaceAll(string(b), "\r\n ", "")
+	unfolded = strings.ReplaceAll(unfolded, "\n ", "")
+
+	var m manifest
+	for line := range strings.SplitSeq(unfolded, "\n") {
+		line = strings.TrimSuffix(line, "\r")
+
+		// Per the manifest grammar a value always starts with a single space
+		// ("value: SPACE *otherchar newline *continuation"), so splitting on the
+		// first ":" and trimming gives the value directly. Skip lines with no
+		// value at all and variables, e.g. Bundle-Name: %bundleName.
+		key, value, ok := strings.Cut(line, ":")
+		value = strings.TrimSpace(value)
+		if !ok || value == "" || strings.HasPrefix(value, "%") {
 			continue
 		}
 
 		// It is not determined which fields are present in each application.
 		// In some cases, none of them are included, in which case they cannot be detected.
-		switch {
-		case strings.HasPrefix(line, "Implementation-Version:"):
-			m.implementationVersion = strings.TrimPrefix(line, "Implementation-Version:")
-		case strings.HasPrefix(line, "Implementation-Title:"):
-			m.implementationTitle = strings.TrimPrefix(line, "Implementation-Title:")
-		case strings.HasPrefix(line, "Implementation-Vendor:"):
-			m.implementationVendor = strings.TrimPrefix(line, "Implementation-Vendor:")
-		case strings.HasPrefix(line, "Implementation-Vendor-Id:"):
-			m.implementationVendorId = strings.TrimPrefix(line, "Implementation-Vendor-Id:")
-		case strings.HasPrefix(line, "Specification-Version:"):
-			m.specificationVersion = strings.TrimPrefix(line, "Specification-Version:")
-		case strings.HasPrefix(line, "Specification-Title:"):
-			m.specificationTitle = strings.TrimPrefix(line, "Specification-Title:")
-		case strings.HasPrefix(line, "Specification-Vendor:"):
-			m.specificationVendor = strings.TrimPrefix(line, "Specification-Vendor:")
-		case strings.HasPrefix(line, "Bundle-Version:"):
-			m.bundleVersion = strings.TrimPrefix(line, "Bundle-Version:")
-		case strings.HasPrefix(line, "Bundle-Name:"):
-			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
-		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
-			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
-		case strings.HasPrefix(line, "Plugin-License-Name"):
-			m.pluginLicenseNames = append(m.pluginLicenseNames, line)
+		switch key {
+		case "Implementation-Version":
+			m.implementationVersion = value
+		case "Implementation-Title":
+			m.implementationTitle = value
+		case "Implementation-Vendor":
+			m.implementationVendor = value
+		case "Implementation-Vendor-Id":
+			m.implementationVendorId = value
+		case "Specification-Version":
+			m.specificationVersion = value
+		case "Specification-Title":
+			m.specificationTitle = value
+		case "Specification-Vendor":
+			m.specificationVendor = value
+		case "Bundle-Version":
+			m.bundleVersion = value
+		case "Bundle-Name":
+			m.bundleName = value
+		case "Bundle-SymbolicName":
+			m.bundleSymbolicName = value
+		case "Bundle-License":
+			m.bundleLicense = value
+		default:
+			// Jenkins plugins declare one or more licenses as Plugin-License-Name,
+			// Plugin-License-Name-1, Plugin-License-Name-2, etc.
+			if key == "Plugin-License-Name" || strings.HasPrefix(key, "Plugin-License-Name-") {
+				m.pluginLicenseNames = append(m.pluginLicenseNames, value)
+			}
 		}
 	}
 
-	if err = scanner.Err(); err != nil {
-		return manifest{}, xerrors.Errorf("scan error: %w", err)
-	}
 	return m, nil
 }
 
-// parsePluginLicenseName extracts the license name from a single Jenkins
-// Plugin-License-Name[-N] manifest line, or an empty string when the line is not
-// such an attribute or carries no value.
-func parsePluginLicenseName(line string) string {
-	key, value, ok := strings.Cut(line, ":")
-	if !ok {
-		return ""
-	}
-	if key != "Plugin-License-Name" {
-		if _, ok = strings.CutPrefix(key, "Plugin-License-Name-"); !ok {
-			return ""
-		}
-	}
-	return strings.TrimSpace(value)
-}
-
-// licenseNames returns the license names declared in the manifest.
-func (m manifest) licenseNames() []string {
+// parseBundleLicense resolves the OSGi Bundle-License header (a comma-separated
+// list of "name;attr=value" entries) to SPDX license IDs. Each entry's name is
+// tried as an SPDX ID then as a URL, and its ;link= value as a URL; entries that
+// resolve to neither (free text, "<<EXTERNAL>>") are skipped.
+func parseBundleLicense(header string) []string {
 	var names []string
-	for _, line := range m.pluginLicenseNames {
-		if name := parsePluginLicenseName(line); name != "" {
-			names = append(names, name)
+	for entry := range strings.SplitSeq(header, ",") {
+		name, link := parseBundleLicenseEntry(entry)
+		if id, ok := resolveBundleLicense(name, link); ok {
+			names = append(names, id)
 		}
 	}
 	return names
+}
+
+func resolveBundleLicense(name, link string) (string, bool) {
+	// The name may be an SPDX license ID.
+	if id, ok := expression.SPDXLicenseID(name); ok {
+		return id, true
+	}
+	// Otherwise the name itself or the link attribute may be a license URL.
+	for _, u := range []string{name, link} {
+		if u == "" {
+			continue
+		}
+		if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(u)); ok {
+			return id, true
+		}
+	}
+	return "", false
+}
+
+// parseBundleLicenseEntry splits one Bundle-License entry into its license name
+// and the value of its optional ;link attribute. Surrounding spaces and double
+// quotes are trimmed from both.
+func parseBundleLicenseEntry(entry string) (name, link string) {
+	fields := strings.Split(entry, ";")
+	name = strings.Trim(fields[0], ` "`)
+	for _, attr := range fields[1:] {
+		if v, ok := strings.CutPrefix(strings.TrimSpace(attr), "link="); ok {
+			link = strings.Trim(v, ` "`)
+		}
+	}
+	return name, link
+}
+
+// licenseNames returns the license names declared in the manifest: the Jenkins
+// Plugin-License-Name attributes if present, otherwise the OSGi Bundle-License
+// entries resolved to SPDX IDs.
+func (m manifest) licenseNames() []string {
+	if len(m.pluginLicenseNames) > 0 {
+		return m.pluginLicenseNames
+	}
+	return parseBundleLicense(m.bundleLicense)
 }
 
 func (m manifest) properties(filePath string) Properties {
@@ -734,7 +804,7 @@ func (m manifest) determineGroupID() (string, error) {
 	default:
 		return "", xerrors.New("no groupID found")
 	}
-	return strings.TrimSpace(groupID), nil
+	return groupID, nil
 }
 
 func (m manifest) determineArtifactID() (string, error) {
@@ -749,7 +819,7 @@ func (m manifest) determineArtifactID() (string, error) {
 	default:
 		return "", xerrors.New("no artifactID found")
 	}
-	return strings.TrimSpace(artifactID), nil
+	return artifactID, nil
 }
 
 func (m manifest) determineVersion() (string, error) {
@@ -764,7 +834,7 @@ func (m manifest) determineVersion() (string, error) {
 	default:
 		return "", xerrors.New("no version found")
 	}
-	return strings.TrimSpace(version), nil
+	return version, nil
 }
 
 func removePackageDuplicates(pkgs []ftypes.Package) []ftypes.Package {
