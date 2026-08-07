@@ -1,4 +1,4 @@
-package crypto
+package types
 
 // CryptoPrimitive identifies the cryptographic primitive provided by an algorithm.
 type CryptoPrimitive string

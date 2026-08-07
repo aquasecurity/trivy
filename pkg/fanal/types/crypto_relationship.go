@@ -1,4 +1,4 @@
-package crypto
+package types
 
 import "golang.org/x/xerrors"
 

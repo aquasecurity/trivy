@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
-	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestAssets(t *testing.T) {
@@ -15,41 +15,41 @@ func TestAssets(t *testing.T) {
 
 	tests := []struct {
 		name   string
-		asset  func(...cryptotest.Option) cryptotypes.CryptoAsset
-		mutate func(*cryptotypes.CryptoAsset)
+		asset  func(...cryptotest.Option) types.CryptoAsset
+		mutate func(*types.CryptoAsset)
 	}{
 		{
 			name:  "certificate",
 			asset: cryptotest.CertificateAsset,
-			mutate: func(asset *cryptotypes.CryptoAsset) {
+			mutate: func(asset *types.CryptoAsset) {
 				asset.Certificate.Subject = "changed"
 			},
 		},
 		{
 			name:  "public key",
 			asset: cryptotest.PublicKeyAsset,
-			mutate: func(asset *cryptotypes.CryptoAsset) {
+			mutate: func(asset *types.CryptoAsset) {
 				asset.Key.Size = 4096
 			},
 		},
 		{
 			name:  "private key",
 			asset: cryptotest.PrivateKeyAsset,
-			mutate: func(asset *cryptotypes.CryptoAsset) {
+			mutate: func(asset *types.CryptoAsset) {
 				asset.Key.Size = 4096
 			},
 		},
 		{
 			name:  "encrypted private key",
 			asset: cryptotest.EncryptedPrivateKeyAsset,
-			mutate: func(asset *cryptotypes.CryptoAsset) {
+			mutate: func(asset *types.CryptoAsset) {
 				asset.Key.Size = 4096
 			},
 		},
 		{
 			name:  "algorithm",
 			asset: cryptotest.AlgorithmAsset,
-			mutate: func(asset *cryptotypes.CryptoAsset) {
+			mutate: func(asset *types.CryptoAsset) {
 				asset.Algorithm.Family = "changed"
 			},
 		},

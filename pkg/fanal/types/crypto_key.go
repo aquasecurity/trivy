@@ -1,4 +1,4 @@
-package crypto
+package types
 
 // CryptoKeyType identifies whether a key is public or private.
 type CryptoKeyType string

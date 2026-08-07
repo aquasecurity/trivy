@@ -1,4 +1,4 @@
-package crypto_test
+package types_test
 
 import (
 	"strings"
@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
-	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 func TestCryptoAssetDescriptor(t *testing.T) {
@@ -16,28 +16,28 @@ func TestCryptoAssetDescriptor(t *testing.T) {
 
 	asset := cryptotest.PublicKeyAsset()
 	// Descriptor projects the fields that make up the asset's identity.
-	want := cryptotypes.CryptoDescriptor{
-		Kind:    cryptotypes.CryptoKindKey,
-		KeyType: cryptotypes.CryptoKeyTypePublic,
-		Identity: cryptotypes.CryptoIdentity{
-			Method: cryptotypes.CryptoMethodSPKISHA256,
+	want := types.CryptoDescriptor{
+		Kind:    types.CryptoKindKey,
+		KeyType: types.CryptoKeyTypePublic,
+		Identity: types.CryptoIdentity{
+			Method: types.CryptoMethodSPKISHA256,
 			Value:  strings.Repeat("b", 64),
 		},
 	}
 	assert.Equal(t, want, asset.Descriptor())
 
-	asset.Kind = cryptotypes.CryptoKindAlgorithm
+	asset.Kind = types.CryptoKindAlgorithm
 	asset.KeyType = ""
-	asset.Identity = cryptotypes.CryptoIdentity{
-		Method:     cryptotypes.CryptoMethodOID,
+	asset.Identity = types.CryptoIdentity{
+		Method:     types.CryptoMethodOID,
 		Value:      "1.2.840.10045.2.1",
 		Parameters: "curve=P-256",
 	}
 	// Changes to those fields are reflected in the next projection.
-	want = cryptotypes.CryptoDescriptor{
-		Kind: cryptotypes.CryptoKindAlgorithm,
-		Identity: cryptotypes.CryptoIdentity{
-			Method:     cryptotypes.CryptoMethodOID,
+	want = types.CryptoDescriptor{
+		Kind: types.CryptoKindAlgorithm,
+		Identity: types.CryptoIdentity{
+			Method:     types.CryptoMethodOID,
 			Value:      "1.2.840.10045.2.1",
 			Parameters: "curve=P-256",
 		},
@@ -50,7 +50,7 @@ func TestCryptoAssetValidate(t *testing.T) {
 
 	tests := []struct {
 		name    string
-		asset   cryptotypes.CryptoAsset
+		asset   types.CryptoAsset
 		wantErr string
 	}{
 		{
@@ -60,14 +60,14 @@ func TestCryptoAssetValidate(t *testing.T) {
 		},
 		{
 			name: "explicit zero certificate path length",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate.MaxPathLenZero = true
 			})),
 			wantErr: "",
 		},
 		{
 			name: "non-zero certificate path length with zero flag",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate.MaxPathLen = 1
 				a.Certificate.MaxPathLenZero = true
 			})),
@@ -80,7 +80,7 @@ func TestCryptoAssetValidate(t *testing.T) {
 		},
 		{
 			name: "derived public key without format or encoding",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Format = ""
 				a.Key.Encoding = ""
 			})),
@@ -103,108 +103,108 @@ func TestCryptoAssetValidate(t *testing.T) {
 		},
 		{
 			name: "algorithm with key size",
-			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Identity.Parameters = "key-size=2048"
 			})),
 			wantErr: "",
 		},
 		{
 			name: "algorithm with curve",
-			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Identity.Parameters = "curve=P-256"
 			})),
 			wantErr: "",
 		},
 		{
 			name: "missing detail",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate = nil
 			})),
 			wantErr: "asset must contain exactly one detail, got 0",
 		},
 		{
 			name: "multiple details",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
-				a.Key = &cryptotypes.CryptoKey{}
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Key = &types.CryptoKey{}
 			})),
 			wantErr: "asset must contain exactly one detail, got 2",
 		},
 		{
 			name: "certificate detail on key",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
-				a.Certificate = &cryptotypes.CryptoCertificate{Format: cryptotypes.CryptoCertificateFormatX509}
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Certificate = &types.CryptoCertificate{Format: types.CryptoCertificateFormatX509}
 				a.Key = nil
 			})),
 			wantErr: `asset kind "key" requires key details`,
 		},
 		{
 			name: "key detail on algorithm",
-			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
-				a.Key = &cryptotypes.CryptoKey{}
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Key = &types.CryptoKey{}
 				a.Algorithm = nil
 			})),
 			wantErr: `asset kind "algorithm" requires algorithm details`,
 		},
 		{
 			name: "algorithm detail on certificate",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
-				a.Algorithm = &cryptotypes.CryptoAlgorithm{Primitive: cryptotypes.CryptoPrimitiveUnknown}
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm = &types.CryptoAlgorithm{Primitive: types.CryptoPrimitiveUnknown}
 				a.Certificate = nil
 			})),
 			wantErr: `asset kind "certificate" requires certificate details`,
 		},
 		{
 			name: "unencrypted encrypted container",
-			asset: cryptotest.EncryptedPrivateKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.EncryptedPrivateKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Encrypted = false
 			})),
 			wantErr: `key encrypted flag does not match identification method "encrypted-pkcs8-sha256"`,
 		},
 		{
 			name: "encrypted plain key",
-			asset: cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Encrypted = true
 			})),
 			wantErr: `key encrypted flag does not match identification method "spki-sha256"`,
 		},
 		{
 			name: "unknown certificate format",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate.Format = "PEM"
 			})),
 			wantErr: `unknown certificate format "PEM"`,
 		},
 		{
 			name: "unknown key format",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Format = "OpenSSH"
 			})),
 			wantErr: `unknown key format "OpenSSH"`,
 		},
 		{
 			name: "unknown key encoding",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Encoding = "SSH"
 			})),
 			wantErr: `unknown key encoding "SSH"`,
 		},
 		{
 			name: "unknown primitive",
-			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Algorithm.Primitive = "hash"
 			})),
 			wantErr: `unknown algorithm primitive "hash"`,
 		},
 		{
 			name: "negative key size",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Size = -1
 			})),
 			wantErr: "key size must not be negative",
 		},
 		{
 			name: "negative normalized path length",
-			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *cryptotypes.CryptoAsset) {
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate.MaxPathLen = -1
 			})),
 			wantErr: "certificate path length must not be negative",
@@ -230,41 +230,41 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 
 	tests := []struct {
 		name          string
-		relationship  cryptotypes.CryptoRelationship
+		relationship  types.CryptoRelationship
 		selfReference bool
 		wantErr       string
 	}{
 		{
 			name: "contains",
-			relationship: cryptotypes.CryptoRelationship{
-				Type:         cryptotypes.CryptoRelationshipContains,
+			relationship: types.CryptoRelationship{
+				Type:         types.CryptoRelationshipContains,
 				RelatedAsset: cryptotest.PublicKeyDescriptor(),
 			},
 		},
 		{
 			name: "signed with",
-			relationship: cryptotypes.CryptoRelationship{
-				Type:         cryptotypes.CryptoRelationshipSignedWith,
+			relationship: types.CryptoRelationship{
+				Type:         types.CryptoRelationshipSignedWith,
 				RelatedAsset: cryptotest.PublicKeyDescriptor(),
 			},
 		},
 		{
 			name: "used with",
-			relationship: cryptotypes.CryptoRelationship{
-				Type:         cryptotypes.CryptoRelationshipUsedWith,
+			relationship: types.CryptoRelationship{
+				Type:         types.CryptoRelationshipUsedWith,
 				RelatedAsset: cryptotest.PublicKeyDescriptor(),
 			},
 		},
 		{
 			name: "corresponds to",
-			relationship: cryptotypes.CryptoRelationship{
-				Type:         cryptotypes.CryptoRelationshipCorrespondsTo,
+			relationship: types.CryptoRelationship{
+				Type:         types.CryptoRelationshipCorrespondsTo,
 				RelatedAsset: cryptotest.PublicKeyDescriptor(),
 			},
 		},
 		{
 			name: "unknown type",
-			relationship: cryptotypes.CryptoRelationship{
+			relationship: types.CryptoRelationship{
 				Type:         "issued_by",
 				RelatedAsset: cryptotest.PublicKeyDescriptor(),
 			},
@@ -272,12 +272,12 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 		},
 		{
 			name: "invalid related descriptor",
-			relationship: cryptotypes.CryptoRelationship{
-				Type: cryptotypes.CryptoRelationshipContains,
-				RelatedAsset: cryptotypes.CryptoDescriptor{
-					Kind: cryptotypes.CryptoKindAlgorithm,
-					Identity: cryptotypes.CryptoIdentity{
-						Method: cryptotypes.CryptoMethodOID,
+			relationship: types.CryptoRelationship{
+				Type: types.CryptoRelationshipContains,
+				RelatedAsset: types.CryptoDescriptor{
+					Kind: types.CryptoKindAlgorithm,
+					Identity: types.CryptoIdentity{
+						Method: types.CryptoMethodOID,
 						Value:  "1.02.3",
 					},
 				},
@@ -286,8 +286,8 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 		},
 		{
 			name: "self-reference",
-			relationship: cryptotypes.CryptoRelationship{
-				Type: cryptotypes.CryptoRelationshipContains,
+			relationship: types.CryptoRelationship{
+				Type: types.CryptoRelationshipContains,
 			},
 			selfReference: true,
 			wantErr:       "relationship 0 refers to the source asset",
@@ -302,7 +302,7 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 			if tt.selfReference {
 				tt.relationship.RelatedAsset = a.Descriptor()
 			}
-			a.Relationships = []cryptotypes.CryptoRelationship{tt.relationship}
+			a.Relationships = []types.CryptoRelationship{tt.relationship}
 
 			err := a.Validate()
 			if tt.wantErr != "" {
@@ -321,14 +321,20 @@ func TestCryptoAssetClone(t *testing.T) {
 		t.Parallel()
 
 		source := cryptotest.CertificateAsset()
+		source.Layer = types.Layer{
+			Size:      1024,
+			Digest:    "sha256:layer",
+			DiffID:    "sha256:diff-id",
+			CreatedBy: "COPY certificate.pem /etc/ssl/",
+		}
 		source.Certificate.KeyUsage = []string{"digital signature"}
 		source.Certificate.ExtendedKeyUsage = []string{"server auth"}
 		source.Certificate.DNSNames = []string{"example.com"}
 		source.Certificate.EmailAddresses = []string{"security@example.com"}
 		source.Certificate.IPAddresses = []string{"192.0.2.1"}
 		source.Certificate.URIs = []string{"spiffe://example.com/service"}
-		source.Relationships = []cryptotypes.CryptoRelationship{{
-			Type:         cryptotypes.CryptoRelationshipContains,
+		source.Relationships = []types.CryptoRelationship{{
+			Type:         types.CryptoRelationshipContains,
 			RelatedAsset: cryptotest.PublicKeyDescriptor(),
 		}}
 
@@ -344,7 +350,7 @@ func TestCryptoAssetClone(t *testing.T) {
 		clone.Certificate.EmailAddresses[0] = "changed"
 		clone.Certificate.IPAddresses[0] = "changed"
 		clone.Certificate.URIs[0] = "changed"
-		clone.Relationships[0].Type = cryptotypes.CryptoRelationshipSignedWith
+		clone.Relationships[0].Type = types.CryptoRelationshipSignedWith
 
 		assert.Equal(t, "CN=example.test", source.Certificate.Subject)
 		assert.Equal(t, []string{"digital signature"}, source.Certificate.KeyUsage)
@@ -353,7 +359,7 @@ func TestCryptoAssetClone(t *testing.T) {
 		assert.Equal(t, []string{"security@example.com"}, source.Certificate.EmailAddresses)
 		assert.Equal(t, []string{"192.0.2.1"}, source.Certificate.IPAddresses)
 		assert.Equal(t, []string{"spiffe://example.com/service"}, source.Certificate.URIs)
-		assert.Equal(t, cryptotypes.CryptoRelationshipContains, source.Relationships[0].Type)
+		assert.Equal(t, types.CryptoRelationshipContains, source.Relationships[0].Type)
 	})
 
 	t.Run("key", func(t *testing.T) {

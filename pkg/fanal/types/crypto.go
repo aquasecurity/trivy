@@ -1,4 +1,4 @@
-package crypto
+package types
 
 import (
 	"slices"
@@ -42,13 +42,12 @@ type CryptoIdentity struct {
 
 // CryptoAsset describes a format-neutral cryptographic asset.
 type CryptoAsset struct {
-	Kind        CryptoKind     `json:",omitempty"`
-	KeyType     CryptoKeyType  `json:",omitempty"`
-	Identity    CryptoIdentity `json:",omitzero"`
-	Name        string         `json:",omitempty"`
-	FilePath    string         `json:",omitempty"`
-	LayerDigest string         `json:",omitempty"`
-	LayerDiffID string         `json:",omitempty"`
+	Kind     CryptoKind     `json:",omitempty"`
+	KeyType  CryptoKeyType  `json:",omitempty"`
+	Identity CryptoIdentity `json:",omitzero"`
+	Name     string         `json:",omitempty"`
+	FilePath string         `json:",omitempty"`
+	Layer    Layer          `json:",omitzero"`
 
 	Certificate   *CryptoCertificate   `json:",omitempty"`
 	Key           *CryptoKey           `json:",omitempty"`

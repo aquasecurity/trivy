@@ -21,8 +21,8 @@ import (
 
 	"github.com/stretchr/testify/require"
 
-	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
 	cryptox509 "github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
 var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
@@ -75,7 +75,7 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:        cryptox509.ObjectCertificate,
 				Certificate: fixtures.certificate,
-				Encoding:    cryptotypes.CryptoEncodingPEM,
+				Encoding:    types.CryptoEncodingPEM,
 			}},
 		},
 		{
@@ -84,7 +84,7 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:        cryptox509.ObjectCertificate,
 				Certificate: fixtures.certificate,
-				Encoding:    cryptotypes.CryptoEncodingDER,
+				Encoding:    types.CryptoEncodingDER,
 			}},
 		},
 		{
@@ -93,8 +93,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPrivateKey,
 				PublicKey: fixtures.rsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKCS1,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatPKCS1,
 			}},
 		},
 		{
@@ -103,8 +103,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPrivateKey,
 				PublicKey: fixtures.rsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKCS8,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
@@ -113,8 +113,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPrivateKey,
 				PublicKey: fixtures.rsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingPEM,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKCS8,
+				Encoding:  types.CryptoEncodingPEM,
+				KeyFormat: types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
@@ -123,8 +123,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPrivateKey,
 				PublicKey: fixtures.ecdsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatSEC1,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatSEC1,
 			}},
 		},
 		{
@@ -133,8 +133,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPublicKey,
 				PublicKey: fixtures.rsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKIX,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatPKIX,
 			}},
 		},
 		{
@@ -143,8 +143,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPublicKey,
 				PublicKey: fixtures.rsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingPEM,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKIX,
+				Encoding:  types.CryptoEncodingPEM,
+				KeyFormat: types.CryptoKeyFormatPKIX,
 			}},
 		},
 		{
@@ -153,8 +153,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:                 cryptox509.ObjectEncryptedPrivateKey,
 				EncryptedPKCS8SHA256: hex.EncodeToString(encryptedDigest[:]),
-				Encoding:             cryptotypes.CryptoEncodingDER,
-				KeyFormat:            cryptotypes.CryptoKeyFormatPKCS8,
+				Encoding:             types.CryptoEncodingDER,
+				KeyFormat:            types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
@@ -163,8 +163,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:                 cryptox509.ObjectEncryptedPrivateKey,
 				EncryptedPKCS8SHA256: hex.EncodeToString(encryptedDigest[:]),
-				Encoding:             cryptotypes.CryptoEncodingPEM,
-				KeyFormat:            cryptotypes.CryptoKeyFormatPKCS8,
+				Encoding:             types.CryptoEncodingPEM,
+				KeyFormat:            types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
@@ -173,8 +173,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPrivateKey,
 				PublicKey: fixtures.ed25519Public,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKCS8,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
@@ -183,8 +183,8 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:      cryptox509.ObjectPublicKey,
 				PublicKey: fixtures.dsaPublic,
-				Encoding:  cryptotypes.CryptoEncodingDER,
-				KeyFormat: cryptotypes.CryptoKeyFormatPKIX,
+				Encoding:  types.CryptoEncodingDER,
+				KeyFormat: types.CryptoKeyFormatPKIX,
 			}},
 		},
 		{
@@ -194,12 +194,12 @@ func TestParse(t *testing.T) {
 				{
 					Kind:        cryptox509.ObjectCertificate,
 					Certificate: fixtures.certificate,
-					Encoding:    cryptotypes.CryptoEncodingPEM,
+					Encoding:    types.CryptoEncodingPEM,
 				},
 				{
 					Kind:        cryptox509.ObjectCertificate,
 					Certificate: fixtures.certificate,
-					Encoding:    cryptotypes.CryptoEncodingPEM,
+					Encoding:    types.CryptoEncodingPEM,
 				},
 			},
 		},
@@ -210,13 +210,13 @@ func TestParse(t *testing.T) {
 				{
 					Kind:        cryptox509.ObjectCertificate,
 					Certificate: fixtures.certificate,
-					Encoding:    cryptotypes.CryptoEncodingPEM,
+					Encoding:    types.CryptoEncodingPEM,
 				},
 				{
 					Kind:      cryptox509.ObjectPrivateKey,
 					PublicKey: fixtures.rsaPublic,
-					Encoding:  cryptotypes.CryptoEncodingPEM,
-					KeyFormat: cryptotypes.CryptoKeyFormatPKCS8,
+					Encoding:  types.CryptoEncodingPEM,
+					KeyFormat: types.CryptoKeyFormatPKCS8,
 				},
 			},
 		},
@@ -226,7 +226,7 @@ func TestParse(t *testing.T) {
 			want: []cryptox509.Object{{
 				Kind:        cryptox509.ObjectCertificate,
 				Certificate: fixtures.certificate,
-				Encoding:    cryptotypes.CryptoEncodingPEM,
+				Encoding:    types.CryptoEncodingPEM,
 			}},
 		},
 		{
