@@ -10,7 +10,7 @@ const (
 	KeyTypePrivate KeyType = "private"
 )
 
-// Encoding identifies the outer encoding of a key.
+// Encoding identifies the outer encoding of source cryptographic data.
 type Encoding string
 
 const (
@@ -20,7 +20,7 @@ const (
 	EncodingDER Encoding = "DER"
 )
 
-// KeyFormat identifies the serialization format of a key.
+// KeyFormat identifies the serialization format of a standalone key object.
 type KeyFormat string
 
 const (
@@ -36,9 +36,15 @@ const (
 
 // Key contains key-specific metadata.
 type Key struct {
-	Size      int       `json:",omitempty"`
-	Curve     string    `json:",omitempty"`
-	Format    KeyFormat `json:",omitempty"`
-	Encoding  Encoding  `json:",omitempty"`
-	Encrypted bool      `json:",omitempty"`
+	Size  int    `json:",omitempty"`
+	Curve string `json:",omitempty"`
+
+	// Format identifies the source standalone key container. It is empty when
+	// the key is derived from an enclosing object, such as a certificate.
+	Format KeyFormat `json:",omitempty"`
+	// Encoding identifies the source standalone key encoding. It is empty when
+	// the key is derived from an enclosing object, such as a certificate.
+	Encoding Encoding `json:",omitempty"`
+
+	Encrypted bool `json:",omitempty"`
 }
