@@ -1,0 +1,30 @@
+version = 1
+
+[manifest]
+members = ["a", "b"]
+
+[[package]]
+name = "a"
+version = "0.1.0"
+source = { editable = "src/a" }
+dependencies = [
+    { name = "requests" },
+]
+
+[[package]]
+name = "b"
+version = "0.1.0"
+source = { editable = "src/b" }
+dependencies = [
+    { name = "pillow" },
+]
+
+[[package]]
+name = "pillow"
+version = "11.0.0"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "requests"
+version = "2.32.3"
+source = { registry = "https://pypi.org/simple" }
