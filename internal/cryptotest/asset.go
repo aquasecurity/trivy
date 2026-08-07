@@ -30,6 +30,7 @@ func CertificateAsset(opts ...Option) types.CryptoAsset {
 			Issuer:       "CN=Example Test CA",
 			SerialNumber: "1",
 			Format:       types.CryptoCertificateFormatX509,
+			Encoding:     types.CryptoEncodingPEM,
 		},
 	}
 	return applyOptions(asset, opts)

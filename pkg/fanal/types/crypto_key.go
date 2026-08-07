@@ -10,16 +10,6 @@ const (
 	CryptoKeyTypePrivate CryptoKeyType = "private"
 )
 
-// CryptoEncoding identifies the outer encoding of source cryptographic data.
-type CryptoEncoding string
-
-const (
-	// CryptoEncodingPEM identifies PEM encoding.
-	CryptoEncodingPEM CryptoEncoding = "PEM"
-	// CryptoEncodingDER identifies DER encoding.
-	CryptoEncodingDER CryptoEncoding = "DER"
-)
-
 // CryptoKeyFormat identifies the serialization format of a standalone key object.
 type CryptoKeyFormat string
 

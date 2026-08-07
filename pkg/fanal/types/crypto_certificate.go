@@ -2,7 +2,7 @@ package types
 
 import "time"
 
-// CryptoCertificateFormat identifies a certificate serialization format.
+// CryptoCertificateFormat identifies a certificate format independently of its source encoding.
 type CryptoCertificateFormat string
 
 const (
@@ -10,7 +10,9 @@ const (
 	CryptoCertificateFormatX509 CryptoCertificateFormat = "X.509"
 )
 
-// CryptoCertificate contains certificate-specific metadata.
+// CryptoCertificate contains certificate-specific metadata. Format identifies
+// the certificate structure, while Encoding identifies whether its source
+// representation was PEM or DER.
 type CryptoCertificate struct {
 	Subject               string                  `json:",omitempty"`
 	Issuer                string                  `json:",omitempty"`
@@ -18,6 +20,7 @@ type CryptoCertificate struct {
 	NotBefore             time.Time               `json:",omitzero"`
 	NotAfter              time.Time               `json:",omitzero"`
 	Format                CryptoCertificateFormat `json:",omitempty"`
+	Encoding              CryptoEncoding          `json:",omitempty"`
 	KeyUsage              []string                `json:",omitempty"`
 	ExtendedKeyUsage      []string                `json:",omitempty"`
 	DNSNames              []string                `json:",omitempty"`

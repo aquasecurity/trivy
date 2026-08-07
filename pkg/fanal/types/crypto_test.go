@@ -68,6 +68,13 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: "",
 		},
 		{
+			name: "DER certificate",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Certificate.Encoding = types.CryptoEncodingDER
+			})),
+			wantErr: "",
+		},
+		{
 			name: "explicit zero certificate path length",
 			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Certificate.MaxPathLenZero = true
@@ -182,6 +189,13 @@ func TestCryptoAssetValidate(t *testing.T) {
 				a.Certificate.Format = "PEM"
 			})),
 			wantErr: `unknown certificate format "PEM"`,
+		},
+		{
+			name: "unknown certificate encoding",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Certificate.Encoding = "SSH"
+			})),
+			wantErr: `unknown certificate encoding "SSH"`,
 		},
 		{
 			name: "unknown key format",

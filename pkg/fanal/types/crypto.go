@@ -40,6 +40,16 @@ type CryptoIdentity struct {
 	Parameters string               `json:",omitempty"`
 }
 
+// CryptoEncoding identifies the outer encoding of source cryptographic data.
+type CryptoEncoding string
+
+const (
+	// CryptoEncodingPEM identifies PEM encoding.
+	CryptoEncodingPEM CryptoEncoding = "PEM"
+	// CryptoEncodingDER identifies DER encoding.
+	CryptoEncodingDER CryptoEncoding = "DER"
+)
+
 // CryptoAsset describes a format-neutral cryptographic asset.
 type CryptoAsset struct {
 	Kind     CryptoKind     `json:",omitempty"`
@@ -136,6 +146,11 @@ func (a *CryptoAsset) Clone() CryptoAsset {
 func (a *CryptoAsset) validateCertificate() error {
 	if a.Certificate.Format != CryptoCertificateFormatX509 {
 		return xerrors.Errorf("unknown certificate format %q", a.Certificate.Format)
+	}
+	switch a.Certificate.Encoding {
+	case "", CryptoEncodingPEM, CryptoEncodingDER:
+	default:
+		return xerrors.Errorf("unknown certificate encoding %q", a.Certificate.Encoding)
 	}
 	if a.Certificate.MaxPathLen < 0 {
 		return xerrors.Errorf("certificate path length must not be negative")
