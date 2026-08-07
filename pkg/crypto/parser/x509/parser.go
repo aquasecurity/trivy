@@ -101,9 +101,11 @@ func Parse(ctx context.Context, filePath string, content []byte) []Object {
 		logParseError(ctx, filePath, "", err)
 		return nil
 	}
+	object.Encoding = cryptotypes.EncodingDER
 	return []Object{object}
 }
 
+// parsePEMBlock parses a block's DER payload and records its PEM source encoding.
 func parsePEMBlock(block *pem.Block) (Object, error) {
 	object, err := parsePEMObject(block.Type, block.Bytes)
 	if err != nil {
@@ -124,7 +126,6 @@ func parsePEMObject(label string, der []byte) (Object, error) {
 		return Object{
 			Kind:        ObjectCertificate,
 			Certificate: certificate,
-			Encoding:    cryptotypes.EncodingDER,
 		}, nil
 	case "PRIVATE KEY":
 		privateKey, err := stdx509.ParsePKCS8PrivateKey(der)
@@ -180,7 +181,6 @@ func parseDERObject(der []byte) (Object, error) {
 		return Object{
 			Kind:        ObjectCertificate,
 			Certificate: certificate,
-			Encoding:    cryptotypes.EncodingDER,
 		}, nil
 	}
 
@@ -235,7 +235,6 @@ func privateKeyToObject(privateKey any, format cryptotypes.KeyFormat) (Object, e
 	return Object{
 		Kind:      ObjectPrivateKey,
 		PublicKey: publicKey,
-		Encoding:  cryptotypes.EncodingDER,
 		KeyFormat: format,
 	}, nil
 }
@@ -247,7 +246,6 @@ func publicKeyToObject(publicKey any) (Object, error) {
 	return Object{
 		Kind:      ObjectPublicKey,
 		PublicKey: publicKey,
-		Encoding:  cryptotypes.EncodingDER,
 		KeyFormat: cryptotypes.KeyFormatPKIX,
 	}, nil
 }
@@ -263,7 +261,6 @@ func parseEncryptedPKCS8(der []byte) (Object, bool) {
 	return Object{
 		Kind:                 ObjectEncryptedPrivateKey,
 		EncryptedPKCS8SHA256: hex.EncodeToString(digest[:]),
-		Encoding:             cryptotypes.EncodingDER,
 		KeyFormat:            cryptotypes.KeyFormatPKCS8,
 	}, true
 }
