@@ -66,10 +66,6 @@ func (a artifact) IsEmpty() bool {
 	return false
 }
 
-func (a artifact) Equal(o artifact) bool {
-	return a.GroupID == o.GroupID || a.ArtifactID == o.ArtifactID || a.Version.String() == o.Version.String()
-}
-
 func (a artifact) ToPOMLicenses() pomLicenses {
 	return pomLicenses{
 		License: xslices.Map(a.Licenses, func(lic string) pomLicense {
