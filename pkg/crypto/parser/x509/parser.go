@@ -166,6 +166,7 @@ func parsePEMObject(label string, der []byte) (Object, error) {
 		"DSA PUBLIC KEY",
 		"EC PARAMETERS",
 		"DH PARAMETERS",
+		"DSA PARAMETERS",
 		"TRUSTED CERTIFICATE",
 		"PKCS7",
 		"PKCS12":
