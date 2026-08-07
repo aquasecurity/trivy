@@ -1,0 +1,15 @@
+- bucket: dhi alpine 3.24
+  pairs:
+    - bucket: coreutils
+      pairs:
+        - key: DHI-CVE-2016-2781-coreutils
+          value:
+            FixedVersion: "9.11-r1"
+            Arches: [aarch64]
+- bucket: dhi debian 13
+  pairs:
+    - bucket: coreutils
+      pairs:
+        - key: DHI-CVE-2017-18018-coreutils
+          value:
+            FixedVersion: "9.7-3+dhi4"

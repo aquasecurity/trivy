@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/coreos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/dhi"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/echo"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/minimos"
@@ -51,6 +52,7 @@ var (
 		ftypes.Bottlerocket:       bottlerocket.NewScanner(),
 		ftypes.CBLMariner:         azure.NewMarinerScanner(),
 		ftypes.Debian:             debian.NewScanner(),
+		ftypes.DHI:                dhi.NewScanner(),
 		ftypes.Ubuntu:             ubuntu.NewScanner(),
 		ftypes.RedHat:             redhat.NewScanner(),
 		ftypes.CentOS:             redhat.NewScanner(),
