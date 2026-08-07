@@ -7,61 +7,58 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Kind identifies the category of a cryptographic asset.
-type Kind string
+// CryptoKind identifies the category of a cryptographic asset.
+type CryptoKind string
 
 const (
-	// KindCertificate identifies a certificate asset.
-	KindCertificate Kind = "certificate"
-	// KindKey identifies a cryptographic key asset.
-	KindKey Kind = "key"
-	// KindAlgorithm identifies a cryptographic algorithm asset.
-	KindAlgorithm Kind = "algorithm"
+	// CryptoKindCertificate identifies a certificate asset.
+	CryptoKindCertificate CryptoKind = "certificate"
+	// CryptoKindKey identifies a cryptographic key asset.
+	CryptoKindKey CryptoKind = "key"
+	// CryptoKindAlgorithm identifies a cryptographic algorithm asset.
+	CryptoKindAlgorithm CryptoKind = "algorithm"
 )
 
-// IdentityMethod identifies the canonical method used to identify an asset.
-type IdentityMethod string
+// CryptoIdentityMethod identifies the canonical method used to identify an asset.
+type CryptoIdentityMethod string
 
 const (
-	// MethodSHA256 identifies KindCertificate assets. The value is the lowercase SHA-256 digest of canonical X.509 DER, and parameters are empty.
-	MethodSHA256 IdentityMethod = "sha256"
-	// MethodSPKISHA256 identifies KindKey assets with KeyTypePublic or unencrypted KeyTypePrivate. The value is the lowercase SHA-256 digest of SubjectPublicKeyInfo DER, and parameters are empty.
-	MethodSPKISHA256 IdentityMethod = "spki-sha256"
-	// MethodEncryptedPKCS8SHA256 identifies opaque KindKey assets with KeyTypePrivate. The value is the lowercase SHA-256 digest of encrypted PKCS#8 DER, and parameters are empty.
-	MethodEncryptedPKCS8SHA256 IdentityMethod = "encrypted-pkcs8-sha256"
-	// MethodOID identifies KindAlgorithm assets. The value is a canonical dotted-decimal OID, and parameters are empty or key-size=<bits> / curve=<name> when needed to distinguish the algorithm asset.
-	MethodOID IdentityMethod = "oid"
+	// CryptoMethodSHA256 identifies CryptoKindCertificate assets. The value is the lowercase SHA-256 digest of canonical X.509 DER, and parameters are empty.
+	CryptoMethodSHA256 CryptoIdentityMethod = "sha256"
+	// CryptoMethodSPKISHA256 identifies CryptoKindKey assets with CryptoKeyTypePublic or unencrypted CryptoKeyTypePrivate. The value is the lowercase SHA-256 digest of SubjectPublicKeyInfo DER, and parameters are empty.
+	CryptoMethodSPKISHA256 CryptoIdentityMethod = "spki-sha256"
+	// CryptoMethodEncryptedPKCS8SHA256 identifies opaque CryptoKindKey assets with CryptoKeyTypePrivate. The value is the lowercase SHA-256 digest of encrypted PKCS#8 DER, and parameters are empty.
+	CryptoMethodEncryptedPKCS8SHA256 CryptoIdentityMethod = "encrypted-pkcs8-sha256"
+	// CryptoMethodOID identifies CryptoKindAlgorithm assets. The value is a canonical dotted-decimal OID, and parameters are empty or key-size=<bits> / curve=<name> when needed to distinguish the algorithm asset.
+	CryptoMethodOID CryptoIdentityMethod = "oid"
 )
 
-// Identity is the method-specific portion of an Asset's identity; Kind and, for key assets, KeyType complete the identity represented by Descriptor.
-type Identity struct {
-	Method     IdentityMethod `json:",omitempty"`
-	Value      string         `json:",omitempty"`
-	Parameters string         `json:",omitempty"`
+// CryptoIdentity is the method-specific portion of a CryptoAsset's identity; Kind and, for key assets, KeyType complete the identity represented by CryptoDescriptor.
+type CryptoIdentity struct {
+	Method     CryptoIdentityMethod `json:",omitempty"`
+	Value      string               `json:",omitempty"`
+	Parameters string               `json:",omitempty"`
 }
 
-// Asset describes a format-neutral cryptographic asset.
-type Asset struct {
-	Kind     Kind     `json:",omitempty"`
-	KeyType  KeyType  `json:",omitempty"`
-	Identity Identity `json:",omitzero"`
-	Name     string   `json:",omitempty"`
-	FilePath string   `json:",omitempty"`
+// CryptoAsset describes a format-neutral cryptographic asset.
+type CryptoAsset struct {
+	Kind        CryptoKind     `json:",omitempty"`
+	KeyType     CryptoKeyType  `json:",omitempty"`
+	Identity    CryptoIdentity `json:",omitzero"`
+	Name        string         `json:",omitempty"`
+	FilePath    string         `json:",omitempty"`
+	LayerDigest string         `json:",omitempty"`
+	LayerDiffID string         `json:",omitempty"`
 
-	// TODO: Replace these fields with fanal/types.Layer after layer provenance
-	// moves to a package that crypto can import without an import cycle.
-	LayerDigest string `json:",omitempty"`
-	LayerDiffID string `json:",omitempty"`
-
-	Certificate   *Certificate   `json:",omitempty"`
-	Key           *Key           `json:",omitempty"`
-	Algorithm     *Algorithm     `json:",omitempty"`
-	Relationships []Relationship `json:",omitempty"`
+	Certificate   *CryptoCertificate   `json:",omitempty"`
+	Key           *CryptoKey           `json:",omitempty"`
+	Algorithm     *CryptoAlgorithm     `json:",omitempty"`
+	Relationships []CryptoRelationship `json:",omitempty"`
 }
 
 // Descriptor returns the comparable identity projected from the asset.
-func (a *Asset) Descriptor() Descriptor {
-	return Descriptor{
+func (a *CryptoAsset) Descriptor() CryptoDescriptor {
+	return CryptoDescriptor{
 		Kind:     a.Kind,
 		KeyType:  a.KeyType,
 		Identity: a.Identity,
@@ -69,7 +66,7 @@ func (a *Asset) Descriptor() Descriptor {
 }
 
 // Validate checks the intrinsic asset invariants.
-func (a *Asset) Validate() error {
+func (a *CryptoAsset) Validate() error {
 	descriptor := a.Descriptor()
 	if err := descriptor.Validate(); err != nil {
 		return xerrors.Errorf("validate descriptor: %w", err)
@@ -81,21 +78,21 @@ func (a *Asset) Validate() error {
 	}
 
 	switch a.Kind {
-	case KindCertificate:
+	case CryptoKindCertificate:
 		if a.Certificate == nil {
 			return xerrors.Errorf("asset kind %q requires certificate details", a.Kind)
 		}
 		if err := a.validateCertificate(); err != nil {
 			return xerrors.Errorf("validate certificate: %w", err)
 		}
-	case KindKey:
+	case CryptoKindKey:
 		if a.Key == nil {
 			return xerrors.Errorf("asset kind %q requires key details", a.Kind)
 		}
 		if err := a.validateKey(); err != nil {
 			return xerrors.Errorf("validate key: %w", err)
 		}
-	case KindAlgorithm:
+	case CryptoKindAlgorithm:
 		if a.Algorithm == nil {
 			return xerrors.Errorf("asset kind %q requires algorithm details", a.Kind)
 		}
@@ -116,7 +113,7 @@ func (a *Asset) Validate() error {
 }
 
 // Clone returns a deep copy of the asset.
-func (a *Asset) Clone() Asset {
+func (a *CryptoAsset) Clone() CryptoAsset {
 	clone := *a
 	clone.Relationships = slices.Clone(a.Relationships)
 	if a.Certificate != nil {
@@ -137,8 +134,8 @@ func (a *Asset) Clone() Asset {
 	return clone
 }
 
-func (a *Asset) validateCertificate() error {
-	if a.Certificate.Format != CertificateFormatX509 {
+func (a *CryptoAsset) validateCertificate() error {
+	if a.Certificate.Format != CryptoCertificateFormatX509 {
 		return xerrors.Errorf("unknown certificate format %q", a.Certificate.Format)
 	}
 	if a.Certificate.MaxPathLen < 0 {
@@ -150,31 +147,31 @@ func (a *Asset) validateCertificate() error {
 	return nil
 }
 
-func (a *Asset) validateKey() error {
+func (a *CryptoAsset) validateKey() error {
 	if a.Key.Size < 0 {
 		return xerrors.Errorf("key size must not be negative")
 	}
 	switch a.Key.Format {
-	case "", KeyFormatPKCS1, KeyFormatPKCS8, KeyFormatSEC1, KeyFormatPKIX:
+	case "", CryptoKeyFormatPKCS1, CryptoKeyFormatPKCS8, CryptoKeyFormatSEC1, CryptoKeyFormatPKIX:
 	default:
 		return xerrors.Errorf("unknown key format %q", a.Key.Format)
 	}
 	switch a.Key.Encoding {
-	case "", EncodingPEM, EncodingDER:
+	case "", CryptoEncodingPEM, CryptoEncodingDER:
 	default:
 		return xerrors.Errorf("unknown key encoding %q", a.Key.Encoding)
 	}
 
-	encrypted := a.KeyType == KeyTypePrivate && a.Identity.Method == MethodEncryptedPKCS8SHA256
+	encrypted := a.KeyType == CryptoKeyTypePrivate && a.Identity.Method == CryptoMethodEncryptedPKCS8SHA256
 	if a.Key.Encrypted != encrypted {
 		return xerrors.Errorf("key encrypted flag does not match identification method %q", a.Identity.Method)
 	}
 	return nil
 }
 
-func (a *Asset) validateAlgorithm() error {
+func (a *CryptoAsset) validateAlgorithm() error {
 	switch a.Algorithm.Primitive {
-	case PrimitiveUnknown, PrimitiveSignature, PrimitivePKE:
+	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
 	default:
 		return xerrors.Errorf("unknown algorithm primitive %q", a.Algorithm.Primitive)
 	}

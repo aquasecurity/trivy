@@ -1,19 +1,19 @@
 package crypto
 
-// Primitive identifies the cryptographic primitive provided by an algorithm.
-type Primitive string
+// CryptoPrimitive identifies the cryptographic primitive provided by an algorithm.
+type CryptoPrimitive string
 
 const (
-	// PrimitiveUnknown identifies an algorithm with an unknown primitive.
-	PrimitiveUnknown Primitive = "unknown"
-	// PrimitiveSignature identifies a digital signature algorithm.
-	PrimitiveSignature Primitive = "signature"
-	// PrimitivePKE identifies a public-key encryption algorithm.
-	PrimitivePKE Primitive = "pke"
+	// CryptoPrimitiveUnknown identifies an algorithm with an unknown primitive.
+	CryptoPrimitiveUnknown CryptoPrimitive = "unknown"
+	// CryptoPrimitiveSignature identifies a digital signature algorithm.
+	CryptoPrimitiveSignature CryptoPrimitive = "signature"
+	// CryptoPrimitivePKE identifies a public-key encryption algorithm.
+	CryptoPrimitivePKE CryptoPrimitive = "pke"
 )
 
-// Algorithm contains algorithm-specific metadata.
-type Algorithm struct {
-	Family    string    `json:",omitempty"`
-	Primitive Primitive `json:",omitempty"`
+// CryptoAlgorithm contains algorithm-specific metadata.
+type CryptoAlgorithm struct {
+	Family    string          `json:",omitempty"`
+	Primitive CryptoPrimitive `json:",omitempty"`
 }

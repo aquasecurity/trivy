@@ -44,9 +44,9 @@ type Object struct {
 	// EncryptedPKCS8SHA256 contains the lowercase SHA-256 digest of an encrypted PKCS#8 container.
 	EncryptedPKCS8SHA256 string
 	// Encoding identifies the source encoding.
-	Encoding cryptotypes.Encoding
+	Encoding cryptotypes.CryptoEncoding
 	// KeyFormat identifies the source key container format.
-	KeyFormat cryptotypes.KeyFormat
+	KeyFormat cryptotypes.CryptoKeyFormat
 }
 
 type encryptedPrivateKeyInfo struct {
@@ -101,7 +101,7 @@ func Parse(ctx context.Context, filePath string, content []byte) []Object {
 		logParseError(ctx, filePath, "", err)
 		return nil
 	}
-	object.Encoding = cryptotypes.EncodingDER
+	object.Encoding = cryptotypes.CryptoEncodingDER
 	return []Object{object}
 }
 
@@ -112,7 +112,7 @@ func parsePEMBlock(block *pem.Block) (Object, error) {
 		return Object{}, err
 	}
 
-	object.Encoding = cryptotypes.EncodingPEM
+	object.Encoding = cryptotypes.CryptoEncodingPEM
 	return object, nil
 }
 
@@ -132,19 +132,19 @@ func parsePEMObject(label string, der []byte) (Object, error) {
 		if err != nil {
 			return Object{}, errMalformedCrypto
 		}
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatPKCS8)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatPKCS8)
 	case "RSA PRIVATE KEY":
 		privateKey, err := stdx509.ParsePKCS1PrivateKey(der)
 		if err != nil {
 			return Object{}, errMalformedCrypto
 		}
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatPKCS1)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatPKCS1)
 	case "EC PRIVATE KEY":
 		privateKey, err := stdx509.ParseECPrivateKey(der)
 		if err != nil {
 			return Object{}, errMalformedCrypto
 		}
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatSEC1)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatSEC1)
 	case "PUBLIC KEY":
 		publicKey, err := stdx509.ParsePKIXPublicKey(der)
 		if err != nil {
@@ -186,15 +186,15 @@ func parseDERObject(der []byte) (Object, error) {
 	}
 
 	if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatPKCS1)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatPKCS1)
 	}
 
 	if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatPKCS8)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatPKCS8)
 	}
 
 	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, cryptotypes.KeyFormatSEC1)
+		return privateKeyToObject(privateKey, cryptotypes.CryptoKeyFormatSEC1)
 	}
 
 	if publicKey, err := stdx509.ParsePKIXPublicKey(der); err == nil {
@@ -224,7 +224,7 @@ func parseDERObject(der []byte) (Object, error) {
 }
 
 // privateKeyToObject converts a private key to an Object containing its public projection.
-func privateKeyToObject(privateKey any, format cryptotypes.KeyFormat) (Object, error) {
+func privateKeyToObject(privateKey any, format cryptotypes.CryptoKeyFormat) (Object, error) {
 	signer, ok := privateKey.(stdcrypto.Signer)
 	if !ok {
 		return Object{}, errUnsupportedCrypto
@@ -247,7 +247,7 @@ func publicKeyToObject(publicKey any) (Object, error) {
 	return Object{
 		Kind:      ObjectPublicKey,
 		PublicKey: publicKey,
-		KeyFormat: cryptotypes.KeyFormatPKIX,
+		KeyFormat: cryptotypes.CryptoKeyFormatPKIX,
 	}, nil
 }
 
@@ -262,7 +262,7 @@ func parseEncryptedPKCS8(der []byte) (Object, bool) {
 	return Object{
 		Kind:                 ObjectEncryptedPrivateKey,
 		EncryptedPKCS8SHA256: hex.EncodeToString(digest[:]),
-		KeyFormat:            cryptotypes.KeyFormatPKCS8,
+		KeyFormat:            cryptotypes.CryptoKeyFormatPKCS8,
 	}, true
 }
 

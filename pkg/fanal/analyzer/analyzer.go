@@ -17,7 +17,7 @@ import (
 	"golang.org/x/sync/semaphore"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/crypto"
+	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -185,7 +185,7 @@ type AnalysisResult struct {
 	Misconfigurations    []ftypes.Misconfiguration
 	Secrets              []ftypes.Secret
 	Licenses             []ftypes.LicenseFile
-	CryptoAssets         []crypto.Asset
+	CryptoAssets         []cryptotypes.CryptoAsset
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Digests contains SHA-256 digests of unpackaged files

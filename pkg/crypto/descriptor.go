@@ -8,17 +8,17 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// Descriptor is the comparable canonical identity of an asset.
-type Descriptor struct {
-	Kind     Kind     `json:",omitempty"`
-	KeyType  KeyType  `json:",omitempty"`
-	Identity Identity `json:",omitzero"`
+// CryptoDescriptor is the comparable canonical identity of an asset.
+type CryptoDescriptor struct {
+	Kind     CryptoKind     `json:",omitempty"`
+	KeyType  CryptoKeyType  `json:",omitempty"`
+	Identity CryptoIdentity `json:",omitzero"`
 }
 
 // String returns the canonical encoded descriptor.
-func (d Descriptor) String() string {
+func (d CryptoDescriptor) String() string {
 	segments := []string{string(d.Kind)}
-	if d.Kind == KindKey {
+	if d.Kind == CryptoKindKey {
 		segments = append(segments, string(d.KeyType))
 	}
 	// QueryEscape uses the standard library's query-component encoding for
@@ -34,7 +34,7 @@ func (d Descriptor) String() string {
 }
 
 // MarshalJSON validates and encodes the descriptor as its canonical string.
-func (d Descriptor) MarshalJSON() ([]byte, error) {
+func (d CryptoDescriptor) MarshalJSON() ([]byte, error) {
 	if err := d.Validate(); err != nil {
 		return nil, xerrors.Errorf("validate descriptor: %w", err)
 	}
@@ -46,7 +46,7 @@ func (d Descriptor) MarshalJSON() ([]byte, error) {
 }
 
 // UnmarshalJSON decodes and validates a descriptor string.
-func (d *Descriptor) UnmarshalJSON(data []byte) error {
+func (d *CryptoDescriptor) UnmarshalJSON(data []byte) error {
 	var s string
 	if err := json.Unmarshal(data, &s); err != nil {
 		return xerrors.Errorf("decode descriptor: %w", err)
@@ -61,7 +61,7 @@ func (d *Descriptor) UnmarshalJSON(data []byte) error {
 }
 
 // Validate checks that the descriptor is structurally valid and canonical.
-func (d Descriptor) Validate() error {
+func (d CryptoDescriptor) Validate() error {
 	if err := d.validateKindKeyTypeMethod(); err != nil {
 		return xerrors.Errorf("validate kind, key type, and method: %w", err)
 	}
@@ -74,34 +74,34 @@ func (d Descriptor) Validate() error {
 	return nil
 }
 
-func (d Descriptor) validateKindKeyTypeMethod() error {
+func (d CryptoDescriptor) validateKindKeyTypeMethod() error {
 	switch d.Kind {
-	case KindCertificate:
+	case CryptoKindCertificate:
 		if d.KeyType != "" {
 			return xerrors.Errorf("certificate descriptor must not contain key type %q", d.KeyType)
 		}
-		if d.Identity.Method != MethodSHA256 {
-			return xerrors.Errorf("certificate descriptor requires identification method %q", MethodSHA256)
+		if d.Identity.Method != CryptoMethodSHA256 {
+			return xerrors.Errorf("certificate descriptor requires identification method %q", CryptoMethodSHA256)
 		}
-	case KindKey:
+	case CryptoKindKey:
 		switch d.KeyType {
-		case KeyTypePublic:
-			if d.Identity.Method != MethodSPKISHA256 {
-				return xerrors.Errorf("public key descriptor requires identification method %q", MethodSPKISHA256)
+		case CryptoKeyTypePublic:
+			if d.Identity.Method != CryptoMethodSPKISHA256 {
+				return xerrors.Errorf("public key descriptor requires identification method %q", CryptoMethodSPKISHA256)
 			}
-		case KeyTypePrivate:
-			if d.Identity.Method != MethodSPKISHA256 && d.Identity.Method != MethodEncryptedPKCS8SHA256 {
+		case CryptoKeyTypePrivate:
+			if d.Identity.Method != CryptoMethodSPKISHA256 && d.Identity.Method != CryptoMethodEncryptedPKCS8SHA256 {
 				return xerrors.Errorf("private key descriptor has unknown identification method %q", d.Identity.Method)
 			}
 		default:
 			return xerrors.Errorf("unknown key type %q", d.KeyType)
 		}
-	case KindAlgorithm:
+	case CryptoKindAlgorithm:
 		if d.KeyType != "" {
 			return xerrors.Errorf("algorithm descriptor must not contain key type %q", d.KeyType)
 		}
-		if d.Identity.Method != MethodOID {
-			return xerrors.Errorf("algorithm descriptor requires identification method %q", MethodOID)
+		if d.Identity.Method != CryptoMethodOID {
+			return xerrors.Errorf("algorithm descriptor requires identification method %q", CryptoMethodOID)
 		}
 	default:
 		return xerrors.Errorf("unknown asset kind %q", d.Kind)
@@ -109,13 +109,13 @@ func (d Descriptor) validateKindKeyTypeMethod() error {
 	return nil
 }
 
-func (d Descriptor) validateIdentityValue() error {
+func (d CryptoDescriptor) validateIdentityValue() error {
 	switch d.Identity.Method {
-	case MethodSHA256, MethodSPKISHA256, MethodEncryptedPKCS8SHA256:
+	case CryptoMethodSHA256, CryptoMethodSPKISHA256, CryptoMethodEncryptedPKCS8SHA256:
 		if !isLowerSHA256(d.Identity.Value) {
 			return xerrors.Errorf("identification value must be 64 lowercase hexadecimal characters")
 		}
-	case MethodOID:
+	case CryptoMethodOID:
 		if !isCanonicalOID(d.Identity.Value) {
 			return xerrors.Errorf("identification value must be a canonical OID")
 		}
@@ -123,11 +123,11 @@ func (d Descriptor) validateIdentityValue() error {
 	return nil
 }
 
-func (d Descriptor) validateParameters() error {
+func (d CryptoDescriptor) validateParameters() error {
 	if d.Identity.Parameters == "" {
 		return nil
 	}
-	if d.Kind != KindAlgorithm || d.Identity.Method != MethodOID {
+	if d.Kind != CryptoKindAlgorithm || d.Identity.Method != CryptoMethodOID {
 		return xerrors.Errorf("parameters are only valid for OID algorithm descriptors")
 	}
 	if err := validateAlgorithmParameters(d.Identity.Parameters); err != nil {
@@ -136,60 +136,60 @@ func (d Descriptor) validateParameters() error {
 	return nil
 }
 
-func parseDescriptor(s string) (Descriptor, error) {
+func parseDescriptor(s string) (CryptoDescriptor, error) {
 	segments := strings.Split(s, ":")
-	var descriptor Descriptor
+	var descriptor CryptoDescriptor
 	var valueSegment string
 	var parametersSegment string
 
-	switch Kind(segments[0]) {
-	case KindCertificate:
+	switch CryptoKind(segments[0]) {
+	case CryptoKindCertificate:
 		if len(segments) != 3 {
-			return Descriptor{}, xerrors.Errorf("certificate descriptor must contain 3 segments")
+			return CryptoDescriptor{}, xerrors.Errorf("certificate descriptor must contain 3 segments")
 		}
-		descriptor.Kind = KindCertificate
-		descriptor.Identity.Method = IdentityMethod(segments[1])
+		descriptor.Kind = CryptoKindCertificate
+		descriptor.Identity.Method = CryptoIdentityMethod(segments[1])
 		valueSegment = segments[2]
-	case KindKey:
+	case CryptoKindKey:
 		if len(segments) != 4 {
-			return Descriptor{}, xerrors.Errorf("key descriptor must contain 4 segments")
+			return CryptoDescriptor{}, xerrors.Errorf("key descriptor must contain 4 segments")
 		}
-		descriptor.Kind = KindKey
-		descriptor.KeyType = KeyType(segments[1])
-		descriptor.Identity.Method = IdentityMethod(segments[2])
+		descriptor.Kind = CryptoKindKey
+		descriptor.KeyType = CryptoKeyType(segments[1])
+		descriptor.Identity.Method = CryptoIdentityMethod(segments[2])
 		valueSegment = segments[3]
-	case KindAlgorithm:
+	case CryptoKindAlgorithm:
 		if len(segments) != 3 && len(segments) != 4 {
-			return Descriptor{}, xerrors.Errorf("algorithm descriptor must contain 3 or 4 segments")
+			return CryptoDescriptor{}, xerrors.Errorf("algorithm descriptor must contain 3 or 4 segments")
 		}
-		descriptor.Kind = KindAlgorithm
-		descriptor.Identity.Method = IdentityMethod(segments[1])
+		descriptor.Kind = CryptoKindAlgorithm
+		descriptor.Identity.Method = CryptoIdentityMethod(segments[1])
 		valueSegment = segments[2]
 		if len(segments) == 4 {
 			parametersSegment = segments[3]
 			if parametersSegment == "" {
-				return Descriptor{}, xerrors.Errorf("algorithm descriptor parameters must not be empty")
+				return CryptoDescriptor{}, xerrors.Errorf("algorithm descriptor parameters must not be empty")
 			}
 		}
 	default:
-		return Descriptor{}, xerrors.Errorf("unknown descriptor kind %q", segments[0])
+		return CryptoDescriptor{}, xerrors.Errorf("unknown descriptor kind %q", segments[0])
 	}
 
 	value, err := url.QueryUnescape(valueSegment)
 	if err != nil {
-		return Descriptor{}, xerrors.Errorf("decode identification value: %w", err)
+		return CryptoDescriptor{}, xerrors.Errorf("decode identification value: %w", err)
 	}
 	descriptor.Identity.Value = value
-	if len(segments) == 4 && descriptor.Kind == KindAlgorithm {
+	if len(segments) == 4 && descriptor.Kind == CryptoKindAlgorithm {
 		parameters, err := url.QueryUnescape(parametersSegment)
 		if err != nil {
-			return Descriptor{}, xerrors.Errorf("decode identification parameters: %w", err)
+			return CryptoDescriptor{}, xerrors.Errorf("decode identification parameters: %w", err)
 		}
 		descriptor.Identity.Parameters = parameters
 	}
 
 	if err := descriptor.Validate(); err != nil {
-		return Descriptor{}, xerrors.Errorf("validate descriptor: %w", err)
+		return CryptoDescriptor{}, xerrors.Errorf("validate descriptor: %w", err)
 	}
 	return descriptor, nil
 }

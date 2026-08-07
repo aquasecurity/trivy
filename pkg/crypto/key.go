@@ -1,50 +1,50 @@
 package crypto
 
-// KeyType identifies whether a key is public or private.
-type KeyType string
+// CryptoKeyType identifies whether a key is public or private.
+type CryptoKeyType string
 
 const (
-	// KeyTypePublic identifies a public key.
-	KeyTypePublic KeyType = "public"
-	// KeyTypePrivate identifies a private key.
-	KeyTypePrivate KeyType = "private"
+	// CryptoKeyTypePublic identifies a public key.
+	CryptoKeyTypePublic CryptoKeyType = "public"
+	// CryptoKeyTypePrivate identifies a private key.
+	CryptoKeyTypePrivate CryptoKeyType = "private"
 )
 
-// Encoding identifies the outer encoding of source cryptographic data.
-type Encoding string
+// CryptoEncoding identifies the outer encoding of source cryptographic data.
+type CryptoEncoding string
 
 const (
-	// EncodingPEM identifies PEM encoding.
-	EncodingPEM Encoding = "PEM"
-	// EncodingDER identifies DER encoding.
-	EncodingDER Encoding = "DER"
+	// CryptoEncodingPEM identifies PEM encoding.
+	CryptoEncodingPEM CryptoEncoding = "PEM"
+	// CryptoEncodingDER identifies DER encoding.
+	CryptoEncodingDER CryptoEncoding = "DER"
 )
 
-// KeyFormat identifies the serialization format of a standalone key object.
-type KeyFormat string
+// CryptoKeyFormat identifies the serialization format of a standalone key object.
+type CryptoKeyFormat string
 
 const (
-	// KeyFormatPKCS1 identifies the PKCS#1 key format.
-	KeyFormatPKCS1 KeyFormat = "PKCS#1"
-	// KeyFormatPKCS8 identifies the PKCS#8 key format.
-	KeyFormatPKCS8 KeyFormat = "PKCS#8"
-	// KeyFormatSEC1 identifies the SEC1 key format.
-	KeyFormatSEC1 KeyFormat = "SEC1"
-	// KeyFormatPKIX identifies the PKIX public key format.
-	KeyFormatPKIX KeyFormat = "PKIX"
+	// CryptoKeyFormatPKCS1 identifies the PKCS#1 key format.
+	CryptoKeyFormatPKCS1 CryptoKeyFormat = "PKCS#1"
+	// CryptoKeyFormatPKCS8 identifies the PKCS#8 key format.
+	CryptoKeyFormatPKCS8 CryptoKeyFormat = "PKCS#8"
+	// CryptoKeyFormatSEC1 identifies the SEC1 key format.
+	CryptoKeyFormatSEC1 CryptoKeyFormat = "SEC1"
+	// CryptoKeyFormatPKIX identifies the PKIX public key format.
+	CryptoKeyFormatPKIX CryptoKeyFormat = "PKIX"
 )
 
-// Key contains key-specific metadata.
-type Key struct {
+// CryptoKey contains key-specific metadata.
+type CryptoKey struct {
 	Size  int    `json:",omitempty"`
 	Curve string `json:",omitempty"`
 
 	// Format identifies the source standalone key container. It is empty when
 	// the key is derived from an enclosing object, such as a certificate.
-	Format KeyFormat `json:",omitempty"`
+	Format CryptoKeyFormat `json:",omitempty"`
 	// Encoding identifies the source standalone key encoding. It is empty when
 	// the key is derived from an enclosing object, such as a certificate.
-	Encoding Encoding `json:",omitempty"`
+	Encoding CryptoEncoding `json:",omitempty"`
 
 	Encrypted bool `json:",omitempty"`
 }

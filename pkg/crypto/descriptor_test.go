@@ -8,15 +8,15 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
-	"github.com/aquasecurity/trivy/pkg/crypto"
+	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
 )
 
-func TestDescriptorString(t *testing.T) {
+func TestCryptoDescriptorString(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name string
-		desc crypto.Descriptor
+		desc cryptotypes.CryptoDescriptor
 		want string
 	}{
 		{
@@ -46,10 +46,10 @@ func TestDescriptorString(t *testing.T) {
 		},
 		{
 			name: "algorithm key size",
-			desc: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			desc: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.840.113549.1.1.1",
 					Parameters: "key-size=2048",
 				},
@@ -58,10 +58,10 @@ func TestDescriptorString(t *testing.T) {
 		},
 		{
 			name: "algorithm parameters are escaped",
-			desc: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			desc: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.840.10045.2.1",
 					Parameters: "curve=P-256:key",
 				},
@@ -70,10 +70,10 @@ func TestDescriptorString(t *testing.T) {
 		},
 		{
 			name: "algorithm parameter space",
-			desc: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			desc: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.840.10045.2.1",
 					Parameters: "curve=P 256",
 				},
@@ -90,12 +90,12 @@ func TestDescriptorString(t *testing.T) {
 	}
 }
 
-func TestDescriptorValidate(t *testing.T) {
+func TestCryptoDescriptorValidate(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name    string
-		desc    crypto.Descriptor
+		desc    cryptotypes.CryptoDescriptor
 		wantErr string
 	}{
 		{name: "certificate", desc: cryptotest.CertificateDescriptor()},
@@ -104,139 +104,139 @@ func TestDescriptorValidate(t *testing.T) {
 		{name: "algorithm", desc: cryptotest.AlgorithmDescriptor()},
 		{
 			name:    "unknown kind",
-			desc:    crypto.Descriptor{Kind: "unknown"},
+			desc:    cryptotypes.CryptoDescriptor{Kind: "unknown"},
 			wantErr: `unknown asset kind "unknown"`,
 		},
 		{
 			name:    "missing key type",
-			desc:    crypto.Descriptor{Kind: crypto.KindKey, Identity: cryptotest.PublicKeyDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindKey, Identity: cryptotest.PublicKeyDescriptor().Identity},
 			wantErr: `unknown key type ""`,
 		},
 		{
 			name:    "unknown key type",
-			desc:    crypto.Descriptor{Kind: crypto.KindKey, KeyType: "secret", Identity: cryptotest.PublicKeyDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindKey, KeyType: "secret", Identity: cryptotest.PublicKeyDescriptor().Identity},
 			wantErr: `unknown key type "secret"`,
 		},
 		{
 			name:    "key type on certificate",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, KeyType: crypto.KeyTypePublic, Identity: cryptotest.CertificateDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, KeyType: cryptotypes.CryptoKeyTypePublic, Identity: cryptotest.CertificateDescriptor().Identity},
 			wantErr: `certificate descriptor must not contain key type "public"`,
 		},
 		{
 			name:    "key type on algorithm",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, KeyType: crypto.KeyTypePrivate, Identity: cryptotest.AlgorithmDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, KeyType: cryptotypes.CryptoKeyTypePrivate, Identity: cryptotest.AlgorithmDescriptor().Identity},
 			wantErr: `algorithm descriptor must not contain key type "private"`,
 		},
 		{
 			name:    "wrong certificate identification method",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, Identity: cryptotest.PublicKeyDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, Identity: cryptotest.PublicKeyDescriptor().Identity},
 			wantErr: `certificate descriptor requires identification method "sha256"`,
 		},
 		{
 			name: "wrong public key identification method",
-			desc: crypto.Descriptor{
-				Kind: crypto.KindKey, KeyType: crypto.KeyTypePublic,
-				Identity: crypto.Identity{Method: crypto.MethodEncryptedPKCS8SHA256, Value: strings.Repeat("a", 64)},
+			desc: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindKey, KeyType: cryptotypes.CryptoKeyTypePublic,
+				Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodEncryptedPKCS8SHA256, Value: strings.Repeat("a", 64)},
 			},
 			wantErr: `public key descriptor requires identification method "spki-sha256"`,
 		},
 		{
 			name: "wrong private key identification method",
-			desc: crypto.Descriptor{
-				Kind: crypto.KindKey, KeyType: crypto.KeyTypePrivate,
-				Identity: crypto.Identity{Method: crypto.MethodSHA256, Value: strings.Repeat("a", 64)},
+			desc: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindKey, KeyType: cryptotypes.CryptoKeyTypePrivate,
+				Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSHA256, Value: strings.Repeat("a", 64)},
 			},
 			wantErr: `private key descriptor has unknown identification method "sha256"`,
 		},
 		{
 			name:    "wrong algorithm identification method",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: cryptotest.CertificateDescriptor().Identity},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotest.CertificateDescriptor().Identity},
 			wantErr: `algorithm descriptor requires identification method "oid"`,
 		},
 		{
 			name:    "uppercase hash",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, Identity: crypto.Identity{Method: crypto.MethodSHA256, Value: strings.Repeat("A", 64)}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSHA256, Value: strings.Repeat("A", 64)}},
 			wantErr: "identification value must be 64 lowercase hexadecimal characters",
 		},
 		{
 			name:    "short hash",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, Identity: crypto.Identity{Method: crypto.MethodSHA256, Value: strings.Repeat("a", 63)}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSHA256, Value: strings.Repeat("a", 63)}},
 			wantErr: "identification value must be 64 lowercase hexadecimal characters",
 		},
 		{
 			name:    "non hexadecimal hash",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, Identity: crypto.Identity{Method: crypto.MethodSHA256, Value: strings.Repeat("g", 64)}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSHA256, Value: strings.Repeat("g", 64)}},
 			wantErr: "identification value must be 64 lowercase hexadecimal characters",
 		},
 		{
 			name:    "non canonical OID arc",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.02.840.113549"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.02.840.113549"}},
 			wantErr: "identification value must be a canonical OID",
 		},
 		{
 			name:    "invalid OID first arc",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "3.1.1"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "3.1.1"}},
 			wantErr: "identification value must be a canonical OID",
 		},
 		{
 			name:    "one OID arc",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1"}},
 			wantErr: "identification value must be a canonical OID",
 		},
 		{
 			name: "OID root zero second arc boundary",
-			desc: crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "0.39"}},
+			desc: cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "0.39"}},
 		},
 		{
 			name:    "OID root zero second arc above boundary",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "0.40"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "0.40"}},
 			wantErr: "identification value must be a canonical OID",
 		},
 		{
 			name: "OID root one second arc boundary",
-			desc: crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.39"}},
+			desc: cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.39"}},
 		},
 		{
 			name:    "OID root one second arc above boundary",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.40"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.40"}},
 			wantErr: "identification value must be a canonical OID",
 		},
 		{
 			name: "OID root two unrestricted second arc",
-			desc: crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "2.40"}},
+			desc: cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "2.40"}},
 		},
 		{
 			name: "OID arc larger than machine integer",
-			desc: crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "2.184467440737095516160"}},
+			desc: cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "2.184467440737095516160"}},
 		},
 		{
 			name:    "parameters on certificate",
-			desc:    crypto.Descriptor{Kind: crypto.KindCertificate, Identity: crypto.Identity{Method: crypto.MethodSHA256, Value: strings.Repeat("a", 64), Parameters: "curve=P-256"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindCertificate, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSHA256, Value: strings.Repeat("a", 64), Parameters: "curve=P-256"}},
 			wantErr: "parameters are only valid for OID algorithm descriptors",
 		},
 		{
 			name:    "parameters on key",
-			desc:    crypto.Descriptor{Kind: crypto.KindKey, KeyType: crypto.KeyTypePublic, Identity: crypto.Identity{Method: crypto.MethodSPKISHA256, Value: strings.Repeat("b", 64), Parameters: "key-size=2048"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindKey, KeyType: cryptotypes.CryptoKeyTypePublic, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodSPKISHA256, Value: strings.Repeat("b", 64), Parameters: "key-size=2048"}},
 			wantErr: "parameters are only valid for OID algorithm descriptors",
 		},
 		{
 			name:    "zero key size parameter",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.2.3", Parameters: "key-size=0"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=0"}},
 			wantErr: "key size parameter must be a canonical positive decimal",
 		},
 		{
 			name:    "leading zero key size parameter",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.2.3", Parameters: "key-size=02048"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=02048"}},
 			wantErr: "key size parameter must be a canonical positive decimal",
 		},
 		{
 			name:    "empty curve parameter",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.2.3", Parameters: "curve="}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.2.3", Parameters: "curve="}},
 			wantErr: "curve parameter must not be empty",
 		},
 		{
 			name:    "unknown parameter form",
-			desc:    crypto.Descriptor{Kind: crypto.KindAlgorithm, Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.2.3", Parameters: "mode=GCM"}},
+			desc:    cryptotypes.CryptoDescriptor{Kind: cryptotypes.CryptoKindAlgorithm, Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.2.3", Parameters: "mode=GCM"}},
 			wantErr: `unknown algorithm parameters "mode=GCM"`,
 		},
 	}
@@ -254,12 +254,12 @@ func TestDescriptorValidate(t *testing.T) {
 	}
 }
 
-func TestDescriptorMarshalJSON(t *testing.T) {
+func TestCryptoDescriptorMarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	tests := []struct {
 		name    string
-		desc    crypto.Descriptor
+		desc    cryptotypes.CryptoDescriptor
 		want    string
 		wantErr bool
 	}{
@@ -270,15 +270,15 @@ func TestDescriptorMarshalJSON(t *testing.T) {
 		},
 		{
 			name: "algorithm parameters",
-			desc: crypto.Descriptor{
-				Kind:     crypto.KindAlgorithm,
-				Identity: crypto.Identity{Method: crypto.MethodOID, Value: "1.2.840.113549.1.1.1", Parameters: "key-size=2048"},
+			desc: cryptotypes.CryptoDescriptor{
+				Kind:     cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{Method: cryptotypes.CryptoMethodOID, Value: "1.2.840.113549.1.1.1", Parameters: "key-size=2048"},
 			},
 			want: `"algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"`,
 		},
 		{
 			name:    "invalid descriptor",
-			desc:    crypto.Descriptor{Kind: "unknown"},
+			desc:    cryptotypes.CryptoDescriptor{Kind: "unknown"},
 			wantErr: true,
 		},
 	}
@@ -297,14 +297,14 @@ func TestDescriptorMarshalJSON(t *testing.T) {
 	}
 }
 
-func TestDescriptorUnmarshalJSON(t *testing.T) {
+func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
 	t.Parallel()
 
 	hash := strings.Repeat("a", 64)
 	tests := []struct {
 		name    string
 		in      string
-		want    crypto.Descriptor
+		want    cryptotypes.CryptoDescriptor
 		wantErr string
 	}{
 		{
@@ -315,10 +315,10 @@ func TestDescriptorUnmarshalJSON(t *testing.T) {
 		{
 			name: "lowercase percent escape",
 			in:   `"algorithm:oid:1.2.3:key-size%3d2048"`,
-			want: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			want: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.3",
 					Parameters: "key-size=2048",
 				},
@@ -327,10 +327,10 @@ func TestDescriptorUnmarshalJSON(t *testing.T) {
 		{
 			name: "escaped unreserved byte",
 			in:   `"algorithm:oid:1.2.3:curve%3DP%2D256"`,
-			want: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			want: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.3",
 					Parameters: "curve=P-256",
 				},
@@ -339,10 +339,10 @@ func TestDescriptorUnmarshalJSON(t *testing.T) {
 		{
 			name: "raw plus is a space",
 			in:   `"algorithm:oid:1.2.3:curve%3DP+256"`,
-			want: crypto.Descriptor{
-				Kind: crypto.KindAlgorithm,
-				Identity: crypto.Identity{
-					Method:     crypto.MethodOID,
+			want: cryptotypes.CryptoDescriptor{
+				Kind: cryptotypes.CryptoKindAlgorithm,
+				Identity: cryptotypes.CryptoIdentity{
+					Method:     cryptotypes.CryptoMethodOID,
 					Value:      "1.2.3",
 					Parameters: "curve=P 256",
 				},
@@ -408,7 +408,7 @@ func TestDescriptorUnmarshalJSON(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			var got crypto.Descriptor
+			var got cryptotypes.CryptoDescriptor
 			err := got.UnmarshalJSON([]byte(tt.in))
 			if tt.wantErr != "" {
 				require.ErrorContains(t, err, tt.wantErr)

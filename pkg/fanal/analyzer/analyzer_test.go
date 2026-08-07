@@ -14,7 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
-	"github.com/aquasecurity/trivy/pkg/crypto"
+	cryptotypes "github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
@@ -40,7 +40,7 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		OS           types.OS
 		PackageInfos []types.PackageInfo
 		Applications []types.Application
-		CryptoAssets []crypto.Asset
+		CryptoAssets []cryptotypes.CryptoAsset
 	}
 	type args struct {
 		new *analyzer.AnalysisResult
@@ -349,19 +349,19 @@ func TestAnalysisResult_Merge(t *testing.T) {
 		{
 			name: "merge crypto assets",
 			fields: fields{
-				CryptoAssets: []crypto.Asset{cryptotest.CertificateAsset()},
+				CryptoAssets: []cryptotypes.CryptoAsset{cryptotest.CertificateAsset()},
 			},
 			args: args{
 				new: &analyzer.AnalysisResult{
-					CryptoAssets: []crypto.Asset{cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *crypto.Asset) {
+					CryptoAssets: []cryptotypes.CryptoAsset{cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *cryptotypes.CryptoAsset) {
 						asset.FilePath = "/etc/second.pem"
 					}))},
 				},
 			},
 			want: analyzer.AnalysisResult{
-				CryptoAssets: []crypto.Asset{
+				CryptoAssets: []cryptotypes.CryptoAsset{
 					cryptotest.CertificateAsset(),
-					cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *crypto.Asset) {
+					cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *cryptotypes.CryptoAsset) {
 						asset.FilePath = "/etc/second.pem"
 					})),
 				},
