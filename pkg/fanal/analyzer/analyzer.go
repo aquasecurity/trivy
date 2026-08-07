@@ -1,6 +1,7 @@
 package analyzer
 
 import (
+	"cmp"
 	"context"
 	"errors"
 	"io/fs"
@@ -272,12 +273,15 @@ func (r *AnalysisResult) Sort() {
 
 	// Cryptographic assets
 	sort.SliceStable(r.CryptoAssets, func(i, j int) bool {
-		left := r.CryptoAssets[i].Descriptor().String()
-		right := r.CryptoAssets[j].Descriptor().String()
-		if left != right {
-			return left < right
-		}
-		return r.CryptoAssets[i].FilePath < r.CryptoAssets[j].FilePath
+		left, right := &r.CryptoAssets[i], &r.CryptoAssets[j]
+		return cmp.Or(
+			cmp.Compare(left.Kind, right.Kind),
+			cmp.Compare(left.KeyType, right.KeyType),
+			cmp.Compare(left.Identity.Method, right.Identity.Method),
+			cmp.Compare(left.Identity.Value, right.Identity.Value),
+			cmp.Compare(left.Identity.Parameters, right.Identity.Parameters),
+			cmp.Compare(left.FilePath, right.FilePath),
+		) < 0
 	})
 }
 

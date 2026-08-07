@@ -42,8 +42,6 @@ type Identity struct {
 
 // Asset describes a format-neutral cryptographic asset.
 type Asset struct {
-	descriptor *Descriptor
-
 	Kind     Kind     `json:",omitempty"`
 	KeyType  KeyType  `json:",omitempty"`
 	Identity Identity `json:",omitzero"`
@@ -61,19 +59,13 @@ type Asset struct {
 	Relationships []Relationship `json:",omitempty"`
 }
 
-// Descriptor returns the cached comparable identity of the asset. Kind,
-// KeyType, and Identity must not change after the first call. FilePath,
-// layer fields, details, and relationships remain non-identity fields and may
-// be set later.
+// Descriptor returns the comparable identity projected from the asset.
 func (a *Asset) Descriptor() Descriptor {
-	if a.descriptor == nil {
-		a.descriptor = new(Descriptor{
-			Kind:     a.Kind,
-			KeyType:  a.KeyType,
-			Identity: a.Identity,
-		})
+	return Descriptor{
+		Kind:     a.Kind,
+		KeyType:  a.KeyType,
+		Identity: a.Identity,
 	}
-	return *a.descriptor
 }
 
 // Validate checks the intrinsic asset invariants.

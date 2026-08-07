@@ -1,7 +1,6 @@
 package crypto_test
 
 import (
-	"encoding/json"
 	"strings"
 	"testing"
 
@@ -15,54 +14,35 @@ import (
 func TestAssetDescriptor(t *testing.T) {
 	t.Parallel()
 
-	asset := cryptotest.CertificateAsset()
+	asset := cryptotest.PublicKeyAsset()
+	// Descriptor projects the fields that make up the asset's identity.
 	want := crypto.Descriptor{
-		Kind:     asset.Kind,
-		KeyType:  asset.KeyType,
-		Identity: asset.Identity,
+		Kind:    crypto.KindKey,
+		KeyType: crypto.KeyTypePublic,
+		Identity: crypto.Identity{
+			Method: crypto.MethodSPKISHA256,
+			Value:  strings.Repeat("b", 64),
+		},
 	}
-	// The first call caches the descriptor's kind, key type, and identity.
 	assert.Equal(t, want, asset.Descriptor())
 
-	asset.Kind = crypto.KindKey
-	asset.KeyType = crypto.KeyTypePrivate
+	asset.Kind = crypto.KindAlgorithm
+	asset.KeyType = ""
 	asset.Identity = crypto.Identity{
-		Method: crypto.MethodSPKISHA256,
-		Value:  strings.Repeat("b", 64),
+		Method:     crypto.MethodOID,
+		Value:      "1.2.840.10045.2.1",
+		Parameters: "curve=P-256",
 	}
-	// Later mutations to all descriptor source fields do not change the cached value.
+	// Changes to those fields are reflected in the next projection.
+	want = crypto.Descriptor{
+		Kind: crypto.KindAlgorithm,
+		Identity: crypto.Identity{
+			Method:     crypto.MethodOID,
+			Value:      "1.2.840.10045.2.1",
+			Parameters: "curve=P-256",
+		},
+	}
 	assert.Equal(t, want, asset.Descriptor())
-}
-
-func TestAssetDescriptorJSONRoundTrip(t *testing.T) {
-	t.Parallel()
-
-	source := cryptotest.CertificateAsset()
-	cached := source.Descriptor()
-	source.Identity.Value = strings.Repeat("b", 64)
-
-	// Marshal writes only the source fields and excludes the internal descriptor cache.
-	data, err := json.Marshal(source)
-	require.NoError(t, err)
-	assert.NotContains(t, string(data), "descriptor")
-	assert.NotContains(t, string(data), cached.Identity.Value)
-
-	// Unmarshal restores the source fields without restoring the descriptor cache.
-	var got crypto.Asset
-	require.NoError(t, json.Unmarshal(data, &got))
-	assert.Equal(t, source.Identity, got.Identity)
-
-	// The first Descriptor call on the decoded asset populates a new cache.
-	want := crypto.Descriptor{
-		Kind:     got.Kind,
-		KeyType:  got.KeyType,
-		Identity: got.Identity,
-	}
-	assert.Equal(t, want, got.Descriptor())
-
-	// Mutating the decoded identity proves subsequent calls use that new cache.
-	got.Identity.Value = strings.Repeat("c", 64)
-	assert.Equal(t, want, got.Descriptor())
 }
 
 func TestAssetValidate(t *testing.T) {
