@@ -72,6 +72,12 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty.mix.lock",
 			want:      nil,
 		},
+		{
+			// a dependency line with an empty body, which splits into no fields
+			name:      "malformed",
+			inputFile: "testdata/malformed.mix.lock",
+			want:      nil,
+		},
 	}
 
 	for _, tt := range tests {

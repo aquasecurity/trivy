@@ -46,7 +46,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		if len(ss) < 8 { // In the case where <required deps> array is empty: s == 8, in other cases s > 8
 			// git repository doesn't have dependency version
 			// skip these dependencies
-			if !strings.Contains(ss[0], ":git") {
+			// FieldsFunc returns nothing when the body is empty or only separators
+			if len(ss) == 0 || !strings.Contains(ss[0], ":git") {
 				p.logger.Warn("Cannot parse dependency", log.String("line", line))
 			} else {
 				p.logger.Debug("Skip git dependencies", log.String("name", name))
