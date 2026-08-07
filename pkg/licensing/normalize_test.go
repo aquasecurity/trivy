@@ -426,12 +426,39 @@ func TestNormalizeLicenseURL(t *testing.T) {
 		{
 			name: "https scheme is stripped",
 			url:  "https://www.apache.org/licenses/LICENSE-2.0",
-			want: "apache.org/licenses/license-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
 		},
 		{
 			name: "http scheme is stripped",
 			url:  "http://www.apache.org/licenses/LICENSE-2.0",
-			want: "apache.org/licenses/license-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "scheme and host are lowercased",
+			url:  "HTTPS://WWW.Apache.ORG/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a URL without a scheme is normalized as well",
+			url:  "www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a host without a path is lowercased as a whole",
+			url:  "https://Opensource.ORG",
+			want: "opensource.org",
+		},
+		{
+			// The only ftp:// URL in the SPDX index. It is the seeAlso of the Zeeff
+			// License, whose text is only published inside the newsx source tarball.
+			name: "a non-http scheme is stripped too",
+			url:  "ftp://ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
+			want: "ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
+		},
+		{
+			name: "path keeps its case",
+			url:  "https://opensource.org/license/MIT",
+			want: "opensource.org/license/MIT",
 		},
 		{
 			name: "trailing slash is dropped",
@@ -441,22 +468,22 @@ func TestNormalizeLicenseURL(t *testing.T) {
 		{
 			name: ".txt suffix is dropped",
 			url:  "https://www.apache.org/licenses/LICENSE-2.0.txt",
-			want: "apache.org/licenses/license-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
 		},
 		{
 			name: ".html suffix is dropped",
-			url:  "https://www.gnu.org/licenses/gpl-3.0.html",
-			want: "gnu.org/licenses/gpl-3.0",
+			url:  "https://www.gnu.org/licenses/gpl-3.0-standalone.html",
+			want: "gnu.org/licenses/gpl-3.0-standalone",
 		},
 		{
 			name: "opensource.org licenses vs license",
 			url:  "https://opensource.org/licenses/Apache-2.0",
-			want: "opensource.org/license/apache-2.0",
+			want: "opensource.org/license/Apache-2.0",
 		},
 		{
-			name: "opensource.org license lowercased with trailing slash",
-			url:  "http://opensource.org/license/apache-2.0/",
-			want: "opensource.org/license/apache-2.0",
+			name: "opensource.org license with trailing slash",
+			url:  "http://opensource.org/license/apache-2-0/",
+			want: "opensource.org/license/apache-2-0",
 		},
 		{
 			name: "archive.org snapshot is unwrapped to the embedded license URL",
@@ -465,8 +492,8 @@ func TestNormalizeLicenseURL(t *testing.T) {
 		},
 		{
 			name: "https archive snapshot embedding http URL is unwrapped",
-			url:  "https://web.archive.org/web/20120101081418/http://rosenlaw.com/OSL3.0.htm",
-			want: "rosenlaw.com/osl3.0",
+			url:  "https://web.archive.org/web/20120101081418/http://rosenlaw.com:80/OSL3.0.htm",
+			want: "rosenlaw.com:80/OSL3.0",
 		},
 	}
 	for _, tt := range tests {

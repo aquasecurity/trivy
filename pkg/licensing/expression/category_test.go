@@ -19,7 +19,7 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 	}{
 		{
 			name:   "apache-2.0 upstream URL",
-			url:    "apache.org/licenses/license-2.0",
+			url:    "apache.org/licenses/LICENSE-2.0",
 			want:   "Apache-2.0",
 			wantOK: true,
 		},
@@ -30,8 +30,19 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 			wantOK: true,
 		},
 		{
+			// SPDX lists both spellings for MIT, so both are indexed.
+			name:   "opensource.org MIT",
+			url:    "opensource.org/license/MIT",
+			want:   "MIT",
+			wantOK: true,
+		},
+		{
+			name: "path case must match the indexed URL",
+			url:  "apache.org/licenses/license-2.0",
+		},
+		{
 			name:   "license family collapsed to its base license at generation time",
-			url:    "opensource.org/license/gpl-2.0",
+			url:    "opensource.org/license/GPL-2.0",
 			want:   "GPL-2.0",
 			wantOK: true,
 		},
@@ -42,7 +53,7 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 		},
 		{
 			name:   "ambiguous URL shared by multiple IDs is dropped at generation time",
-			url:    "mozilla.org/mpl/2.0",
+			url:    "mozilla.org/MPL/2.0",
 			wantOK: false,
 		},
 		{

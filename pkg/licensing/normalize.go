@@ -559,12 +559,13 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 // stripped during normalization.
 var docExtensions = [...]string{".txt", ".html", ".htm", ".php", ".md"}
 
-// NormalizeLicenseURL canonicalizes a license URL so that cosmetic differences
-// do not prevent a match: scheme (http/https), a leading "www." host prefix, a
-// trailing slash, a document extension, opensource.org's "/licenses/" vs
-// "/license/" paths, and letter case.
+// NormalizeLicenseURL builds a matching key for a license URL.
+// It drops the scheme, a "www." prefix, a trailing slash and a document extension.
+// It also unifies opensource.org's "/licenses/" and "/license/" paths.
+// Only the host is lowercased.
+// RFC 3986, section 6.2.2.1 makes the path, query and fragment case-sensitive.
 func NormalizeLicenseURL(u string) string {
-	s := strings.ToLower(strings.TrimSpace(u))
+	s := strings.TrimSpace(u)
 	if s == "" {
 		return ""
 	}
@@ -573,9 +574,20 @@ func NormalizeLicenseURL(u string) string {
 	// web.archive.org snapshots ".../web/<timestamp>/http://real/url".
 	s = unwrapArchiveURL(s)
 
-	// Drop the scheme so http and https compare equal.
-	s = strings.TrimPrefix(s, "https://")
-	s = strings.TrimPrefix(s, "http://")
+	// Drop the scheme so http and https compare equal. The first "://" is the
+	// scheme separator: unwrapArchiveURL has already reduced an archive snapshot
+	// to the URL it embeds.
+	if _, rest, ok := strings.Cut(s, "://"); ok {
+		s = rest
+	}
+
+	// Lowercase the host, i.e. everything before the path, query or fragment.
+	// RFC 3986, section 3.2 ends the authority at the next "/", "?" or "#", or at the end of the URI.
+	hostEnd := strings.IndexAny(s, "/?#")
+	if hostEnd < 0 {
+		hostEnd = len(s)
+	}
+	s = strings.ToLower(s[:hostEnd]) + s[hostEnd:]
 
 	// Drop a leading "www." host prefix.
 	s = strings.TrimPrefix(s, "www.")
@@ -603,8 +615,9 @@ func NormalizeLicenseURL(u string) string {
 // (".../web/<timestamp>/http://real/url" -> "http://real/url"). An unwrapped URL
 // (only scheme at the start, or none) is returned unchanged.
 func unwrapArchiveURL(s string) string {
-	i := strings.LastIndex(s, "http://")
-	if j := strings.LastIndex(s, "https://"); j > i {
+	lower := strings.ToLower(s)
+	i := strings.LastIndex(lower, "http://")
+	if j := strings.LastIndex(lower, "https://"); j > i {
 		i = j
 	}
 	if i > 0 {
