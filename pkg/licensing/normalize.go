@@ -562,6 +562,7 @@ var docExtensions = [...]string{".txt", ".html", ".htm", ".php", ".md"}
 // NormalizeLicenseURL builds a matching key for a license URL.
 // It drops the scheme, a "www." prefix, a trailing slash and a document extension.
 // It also unifies opensource.org's "/licenses/" and "/license/" paths.
+// A Wayback Machine snapshot is replaced by the URL it captured.
 // Only the host is lowercased.
 // RFC 3986, section 6.2.2.1 makes the path, query and fragment case-sensitive.
 func NormalizeLicenseURL(u string) string {
@@ -570,15 +571,13 @@ func NormalizeLicenseURL(u string) string {
 		return ""
 	}
 
-	// Unwrap archive/proxy URLs that embed the real license URL, e.g.
-	// web.archive.org snapshots ".../web/<timestamp>/http://real/url".
-	s = unwrapArchiveURL(s)
+	// Drop the scheme so http and https compare equal.
+	s = cutScheme(s)
 
-	// Drop the scheme so http and https compare equal. The first "://" is the
-	// scheme separator: unwrapArchiveURL has already reduced an archive snapshot
-	// to the URL it embeds.
-	if _, rest, ok := strings.Cut(s, "://"); ok {
-		s = rest
+	// A snapshot only stands for the URL it captured, so continue with that one.
+	// Only the outermost is unwrapped: SPDX links to no nested snapshot, and the URL comes from third-party metadata.
+	if captured, ok := cutSnapshotPrefix(s); ok {
+		s = cutScheme(captured)
 	}
 
 	// Lowercase the host, i.e. everything before the path, query or fragment.
@@ -610,20 +609,43 @@ func NormalizeLicenseURL(u string) string {
 	return s
 }
 
-// unwrapArchiveURL strips an archive/proxy prefix down to the embedded URL by
-// keeping everything from the last "http://" or "https://" occurrence
-// (".../web/<timestamp>/http://real/url" -> "http://real/url"). An unwrapped URL
-// (only scheme at the start, or none) is returned unchanged.
-func unwrapArchiveURL(s string) string {
-	lower := strings.ToLower(s)
-	i := strings.LastIndex(lower, "http://")
-	if j := strings.LastIndex(lower, "https://"); j > i {
-		i = j
+// snapshotHosts are the Wayback Machine hosts that wrap a captured page.
+// They serve it under "/web/<timestamp>/<captured URL>".
+// SPDX links to no other wrapper, so nothing else is unwrapped.
+var snapshotHosts = [...]string{"web.archive.org", "wayback.archive.org"}
+
+// cutScheme drops the scheme of a URL that has one.
+// A scheme holds no "/", "?" or "#" (RFC 3986, section 3.1), so one of them before the "://" means that "://" opens a URL carried in the path or query.
+// Such a URL keeps its own identity rather than being cut down to the one it carries.
+func cutScheme(s string) string {
+	scheme, rest, ok := strings.Cut(s, "://")
+	if !ok || scheme == "" || strings.ContainsAny(scheme, "/?#") {
+		return s
 	}
-	if i > 0 {
-		return s[i:]
+	return rest
+}
+
+// cutSnapshotPrefix returns the URL a Wayback Machine snapshot captured.
+// The scheme must already be dropped.
+// The host is matched case-insensitively and the path is not, as RFC 3986, section 6.2.2.1 prescribes.
+func cutSnapshotPrefix(s string) (string, bool) {
+	for _, host := range snapshotHosts {
+		if len(s) < len(host) || !strings.EqualFold(s[:len(host)], host) {
+			continue
+		}
+		rest, ok := strings.CutPrefix(s[len(host):], "/web/")
+		if !ok {
+			continue
+		}
+		// The timestamp starts with the capture date and ends at the slash before the URL.
+		// A modifier such as "id_" may follow the date.
+		timestamp, captured, ok := strings.Cut(rest, "/")
+		if !ok || timestamp == "" || captured == "" || timestamp[0] < '0' || timestamp[0] > '9' {
+			continue
+		}
+		return captured, true
 	}
-	return s
+	return "", false
 }
 
 func NormalizeLicenses(licenses []string) []string {

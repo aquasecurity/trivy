@@ -491,6 +491,58 @@ func TestNormalizeLicenseURL(t *testing.T) {
 			want: "opensource.org/license/afl-2.0",
 		},
 		{
+			name: "the archive host is matched case-insensitively",
+			url:  "HTTPS://WEB.ARCHIVE.ORG/web/20120101081418/http://rosenlaw.com:80/OSL3.0.htm",
+			want: "rosenlaw.com:80/OSL3.0",
+		},
+		{
+			name: "a timestamp modifier is accepted",
+			url:  "https://web.archive.org/web/20170708004848id_/http://www.gnu.org/licenses/lgpl.html",
+			want: "gnu.org/licenses/lgpl",
+		},
+		{
+			name: "only the outermost of nested snapshots is unwrapped",
+			url:  "https://web.archive.org/web/20120101081418/https://web.archive.org/web/20160823201924/https://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/web/20160823201924/https://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a URL carrying another one in its query is not unwrapped",
+			url:  "https://example.com/reference?target=https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want: "example.com/reference?target=https://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			// Without a scheme of its own, the first "://" is the carried URL's.
+			name: "a URL carrying another one is not cut down to it",
+			url:  "example.com/redirect?url=https://opensource.org/licenses/MIT",
+			want: "example.com/redirect?url=https://opensource.org/license/MIT",
+		},
+		{
+			name: "an archive path other than /web/ is not unwrapped",
+			url:  "https://web.archive.org/about/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/about/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			// The path is case-sensitive, so /WEB/ is not the snapshot path.
+			name: "an archive path in upper case is not unwrapped",
+			url:  "https://web.archive.org/WEB/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/WEB/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a snapshot without a timestamp is not unwrapped",
+			url:  "https://web.archive.org/web/about/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/web/about/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a snapshot with nothing after the timestamp is not unwrapped",
+			url:  "https://web.archive.org/web/20060924134533",
+			want: "web.archive.org/web/20060924134533",
+		},
+		{
+			name: "a snapshot path on another host is not unwrapped",
+			url:  "https://example.com/web/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "example.com/web/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
 			name: "https archive snapshot embedding http URL is unwrapped",
 			url:  "https://web.archive.org/web/20120101081418/http://rosenlaw.com:80/OSL3.0.htm",
 			want: "rosenlaw.com:80/OSL3.0",
