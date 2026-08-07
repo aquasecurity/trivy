@@ -283,7 +283,7 @@ func logParseError(ctx context.Context, filePath, pemType string, err error) {
 
 	switch {
 	case errors.Is(err, errUnsupportedCrypto):
-		logger.InfoContext(ctx, "Unsupported cryptographic object")
+		logger.DebugContext(ctx, "Unsupported cryptographic object")
 	case errors.Is(err, errMalformedCrypto):
 		logger.WarnContext(ctx, "Malformed cryptographic object")
 	default:
