@@ -1,6 +1,7 @@
 package types_test
 
 import (
+	"encoding/json"
 	"strings"
 	"testing"
 
@@ -10,6 +11,14 @@ import (
 	"github.com/aquasecurity/trivy/internal/cryptotest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
+
+func TestCryptoAlgorithmJSON(t *testing.T) {
+	t.Parallel()
+
+	got, err := json.Marshal(types.CryptoAlgorithm{})
+	require.NoError(t, err)
+	assert.JSONEq(t, `{"Primitive":""}`, string(got))
+}
 
 func TestCryptoAssetDescriptor(t *testing.T) {
 	t.Parallel()

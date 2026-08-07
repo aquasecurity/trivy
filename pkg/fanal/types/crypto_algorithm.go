@@ -14,6 +14,6 @@ const (
 
 // CryptoAlgorithm contains algorithm-specific metadata.
 type CryptoAlgorithm struct {
-	Family    string          `json:",omitempty"`
-	Primitive CryptoPrimitive `json:",omitempty"`
+	Family    string `json:",omitempty"`
+	Primitive CryptoPrimitive
 }
