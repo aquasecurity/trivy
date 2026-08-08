@@ -45,6 +45,8 @@ Trivy is available in most common distribution channels. The full list of instal
 - Download binary from <https://github.com/aquasecurity/trivy/releases/latest/>
 - See [Installation] for more
 
+On Windows, after downloading a release binary (or installing via a package manager), put the directory that contains `trivy.exe` on your `PATH`, then open a **new** terminal before running `trivy`.
+
 Trivy is integrated with many popular platforms and applications. The complete list of integrations is available in the [Ecosystem] page. Here are a few popular examples:
 
 - [GitHub Actions](https://github.com/aquasecurity/trivy-action)
