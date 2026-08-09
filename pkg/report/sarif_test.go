@@ -976,3 +976,99 @@ func TestMakePropertiesMarshal(t *testing.T) {
 		})
 	}
 }
+
+// TestReportWriter_Sarif_UnparsableTarget is a regression test for
+// https://github.com/aquasecurity/trivy/issues/8154.
+// `toUri` logs and returns nil when `url.Parse` rejects its input (e.g. a path that
+// contains a bare `%`), and the returned pointer was dereferenced without a check.
+func TestReportWriter_Sarif_UnparsableTarget(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   types.Report
+		wantURI string
+		wantMsg string
+	}{
+		{
+			name: "misconfiguration in a file whose path contains a percent sign",
+			input: types.Report{
+				ArtifactName: ".",
+				ArtifactType: ftypes.TypeFilesystem,
+				Results: types.Results{
+					{
+						Target: "terraform/main%.tf",
+						Class:  types.ClassConfig,
+						Type:   "terraform",
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{
+								Type:       "Terraform Security Check",
+								ID:         "AVD-AWS-0088",
+								Title:      "Unencrypted S3 bucket",
+								Message:    "Bucket does not have encryption enabled",
+								Severity:   "HIGH",
+								PrimaryURL: "https://avd.aquasec.com/misconfig/avd-aws-0088",
+								Status:     types.MisconfStatusFailure,
+								CauseMetadata: ftypes.CauseMetadata{
+									StartLine: 1,
+									EndLine:   3,
+								},
+							},
+						},
+					},
+				},
+			},
+			wantURI: "",
+			wantMsg: "terraform/main%.tf",
+		},
+		{
+			name: "vulnerability in a file whose path contains a percent sign",
+			input: types.Report{
+				ArtifactName: ".",
+				ArtifactType: ftypes.TypeFilesystem,
+				Results: types.Results{
+					{
+						Target: "app/50%/package-lock.json",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.NodePkg,
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "foobar",
+									Description: "baz",
+									Severity:    "HIGH",
+								},
+							},
+						},
+					},
+				},
+			},
+			wantURI: "",
+			wantMsg: "app/50%/package-lock.json: foo@1.2.3",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{Output: sarifWritten}
+
+			require.NotPanics(t, func() {
+				require.NoError(t, w.Write(t.Context(), tt.input))
+			})
+
+			result := &sarif.Report{}
+			require.NoError(t, json.Unmarshal(sarifWritten.Bytes(), result))
+			require.Len(t, result.Runs, 1)
+			require.Len(t, result.Runs[0].Results, 1)
+
+			locs := result.Runs[0].Results[0].Locations
+			require.Len(t, locs, 1)
+			assert.Equal(t, tt.wantURI, *locs[0].PhysicalLocation.ArtifactLocation.URI)
+			assert.Equal(t, tt.wantMsg, *locs[0].Message.Text)
+		})
+	}
+}

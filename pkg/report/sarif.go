@@ -88,8 +88,8 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 			Level: toSarifErrorLevel(data.severity),
 		}).
 		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData))
-	if data.url != nil && data.url.String() != "" {
-		r.WithHelpURI(data.url.String())
+	if uri := uriString(data.url); uri != "" {
+		r.WithHelpURI(uri)
 	}
 }
 
@@ -100,7 +100,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
+		WithLocations(toSarifLocations(data.locations, uriString(data.artifactLocation), data.locationMessage))
 	sw.run.AddResult(result)
 }
 
@@ -397,6 +397,17 @@ func toUri(str string) *url.URL {
 		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
 	}
 	return uri
+}
+
+// uriString returns the string representation of the given URI.
+// `toUri` returns nil when the input cannot be parsed (e.g. a path containing a bare `%`),
+// so the conversion has to be guarded against a nil pointer dereference.
+// cf. https://github.com/aquasecurity/trivy/issues/8154
+func uriString(uri *url.URL) string {
+	if uri == nil {
+		return ""
+	}
+	return uri.String()
 }
 
 func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
