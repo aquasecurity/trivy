@@ -12,6 +12,12 @@
         BaseID: "alpine"
         Name: "RapidFort Security Advisories"
         URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort Red Hat 8
+      value:
+        ID: "rapidfort"
+        BaseID: "redhat"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
     - key: rapidfort Red Hat 9
       value:
         ID: "rapidfort"

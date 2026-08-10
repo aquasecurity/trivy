@@ -38,13 +38,23 @@ func rpmDistTag(ver string) (tag, num string) {
 	return last[1], last[2]
 }
 
-// dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries the
-// RapidFort rebuild marker. RapidFort's Ubuntu builds embed "rfubu" in the
-// package revision (e.g. "0:2.46-10rfubu", "0:3.12.10-1rfubu.1") — matching
-// the "rf" identifier the feed annotator writes on those events on the DB
-// side, so the routing decision here uses the same signal.
+// dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
+// RapidFort rebuild marker. The feed uses two conventions: "+rf" (e.g.
+// "0:2.5.2-1build1+rf.1") and "rfubu" (e.g. "0:2.46-10rfubu"). Both signal
+// the same "rf" identifier on the DB side.
 func dpkgHasRfMarker(ver string) bool {
-	return strings.Contains(ver, "rfubu")
+	return strings.Contains(ver, "+rf") || strings.Contains(ver, "rfubu")
+}
+
+// getters is package-level because a getter depends on nothing per-scanner —
+// the release is passed at Get time, so the same getter serves both the
+// versioned bucket ("rapidfort ubuntu 22.04") and the family-level rf bucket
+// ("rapidfort ubuntu", with an empty release).
+var getters = map[ecosystem.Type]rapidfort.VulnSrcGetter{
+	ecosystem.Ubuntu: rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu),
+	ecosystem.Alpine: rapidfort.NewVulnSrcGetter(ecosystem.Alpine),
+	ecosystem.RedHat: rapidfort.NewVulnSrcGetter(ecosystem.RedHat),
+	ecosystem.Fedora: rapidfort.NewVulnSrcGetter(ecosystem.Fedora),
 }
 
 // Scanner detects vulnerabilities for RapidFort curated images by querying
@@ -56,47 +66,30 @@ type Scanner struct {
 	// that RapidFort advisories are keyed on (e.g. "22.04.1" → "22.04" for Ubuntu,
 	// "9.2" → "9" for RedHat).
 	versionTrimmer func(string) string
-	// getters holds one RapidFort advisory getter per ecosystem this scanner
-	// dispatches to: RedHat has three (Red Hat, Fedora, RapidFort), Ubuntu and
-	// Alpine one each.
-	getters map[ecosystem.Type]rapidfort.VulnSrcGetter
-	logger  *log.Logger
+	logger         *log.Logger
 }
 
 // NewScanner creates a RapidFort Scanner for the given base OS type.
 func NewScanner(baseOS ftypes.OSType) *Scanner {
 	s := &Scanner{
-		baseOS:  baseOS,
-		getters: make(map[ecosystem.Type]rapidfort.VulnSrcGetter),
-		logger:  log.WithPrefix("rapidfort"),
+		baseOS: baseOS,
+		logger: log.WithPrefix("rapidfort"),
 	}
 
 	switch baseOS {
 	case ftypes.Ubuntu:
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
-		// One getter serves both versioned buckets ("rapidfort ubuntu <ver>",
-		// for ubuntu-tagged ranges) and the family-level rf bucket ("rapidfort
-		// ubuntu", empty version, for dpkg-format rf ranges). The release is
-		// passed at Get time — route() picks it per package.
-		s.getters[ecosystem.Ubuntu] = rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu)
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
-		s.getters[ecosystem.Alpine] = rapidfort.NewVulnSrcGetter(ecosystem.Alpine)
 	case ftypes.RedHat:
 		s.comparer = version.NewRPMComparer()
 		s.versionTrimmer = version.Major // "9.2" → "9"
-		// el/fc/rf packages each resolve to their own bucket. RedHat serves
-		// both "rapidfort Red Hat <major>" (versioned) and "rapidfort Red Hat"
-		// (family-level rf bucket, empty version) — one getter, release passed
-		// at Get time.
-		s.getters[ecosystem.RedHat] = rapidfort.NewVulnSrcGetter(ecosystem.RedHat)
-		s.getters[ecosystem.Fedora] = rapidfort.NewVulnSrcGetter(ecosystem.Fedora)
 	default:
-		// Provider only creates scanners for Ubuntu/Alpine/RedHat; the DEB
-		// comparer + minor trimmer here is a safe placeholder for any direct
-		// caller. getters stays empty, so Detect finds no advisories.
+		// Scanners are only created for Ubuntu/Alpine/RedHat; the DEB comparer
+		// + minor trimmer here is a safe placeholder for any direct caller.
+		// Routing yields no ecosystem for such an OS, so Detect finds nothing.
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor
 	}
@@ -104,12 +97,15 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	return s
 }
 
-// route maps an installed package to its RapidFort bucket's ecosystem and release.
+// route picks the (ecosystem, release) pair whose bucket the installed
+// package belongs in. An rf-tagged package drops the release so it lands in
+// the family-level rf bucket, isolated from the versioned base-OS bucket that
+// speaks a different version-comparator language.
 func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
 		if dpkgHasRfMarker(installedVer) {
-			return ecosystem.Ubuntu, "" // "rfubu"-marked → "rapidfort ubuntu" family bucket (dpkg-only)
+			return ecosystem.Ubuntu, ""
 		}
 		return ecosystem.Ubuntu, osVer
 	case ftypes.Alpine:
@@ -117,14 +113,18 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	case ftypes.RedHat:
 		switch tag, num := rpmDistTag(installedVer); tag {
 		case "fc":
-			return ecosystem.Fedora, num // "fc43" → "rapidfort fedora 43" bucket
+			return ecosystem.Fedora, num
 		case "rf":
-			return ecosystem.RedHat, "" // ".rf"/".rfN" → "rapidfort Red Hat" family bucket (RPM-only)
-		default: // "el" or untagged → "rapidfort Red Hat <major>" bucket, keyed by the OS version
+			return ecosystem.RedHat, ""
+		case "el":
+			// Use the package's own dist-tag major, not osVer: an .el8
+			// package inside a RHEL 9 image belongs to the Red Hat 8 bucket.
+			return ecosystem.RedHat, num
+		default: // untagged
 			return ecosystem.RedHat, osVer
 		}
 	}
-	return "", osVer // unsupported base OS; getters is empty and the lookup misses
+	return "", osVer
 }
 
 // Detect queries the RapidFort advisory DB for vulnerabilities in the given packages.
@@ -144,12 +144,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		installedVer := utils.FormatSrcVersion(pkg)
 
-		// Route the package to the bucket that holds its advisories (a RedHat
-		// image mixes RedHat/Fedora/RapidFort packages across three buckets).
 		eco, release := s.route(installedVer, osVer)
-		vs, ok := s.getters[eco]
+		vs, ok := getters[eco]
 		if !ok {
-			continue // ecosystem not served by this scanner
+			continue
 		}
 
 		advisories, err := vs.Get(db.GetParams{
@@ -160,9 +158,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", srcName, err)
 		}
 
-		// Fallback: some upstream RapidFort advisory files key entries by the binary
-		// package name rather than the SRPM name.
-		// Query the binary name as well and merge, deduping by VulnerabilityID with srcName entries winning.
+		// Some advisory files key entries by the binary package name rather
+		// than the SRPM name, so fall back to the binary name when the two
+		// differ. SRPM entries win on collision.
 		if pkg.Name != srcName {
 			binAdvisories, err := vs.Get(db.GetParams{
 				Release: release,
@@ -172,8 +170,6 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", pkg.Name, err)
 			}
 			if len(binAdvisories) > 0 {
-				// Seed the set with CVE IDs already returned for the SRPM query so
-				// srcName entries win when the same CVE appears in both feeds.
 				seen := set.New[string]()
 				for _, adv := range advisories {
 					seen.Append(adv.VulnerabilityID)
@@ -222,25 +218,17 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	return vulns, nil
 }
 
-// isVulnerable reports whether installedVersion is affected by adv.
 func (s *Scanner) isVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory) bool {
 	if installedVersion == "" {
 		return false
 	}
 
-	// Check fixed versions first: if installed equals any patched version, not vulnerable.
-	for _, fixedVer := range adv.PatchedVersions {
-		if result, err := s.comparer.Compare(installedVersion, fixedVer); err == nil && result == 0 {
-			return false
-		}
-	}
-
-	// No vulnerable ranges means all versions are considered vulnerable.
+	// An empty range list means "all versions are vulnerable" (the advisory
+	// exists but has no fixed version yet).
 	if len(adv.VulnerableVersions) == 0 {
 		return true
 	}
 
-	// Check if installed version lies in any vulnerable range.
 	return s.checkConstraints(ctx, installedVersion, adv.VulnerableVersions)
 }
 
@@ -271,19 +259,17 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 	return false
 }
 
-// IsSupportedVersion always returns true.
-// RapidFort provides its own curated advisories including for EOL distributions,
-// so we never reject a scan based on OS version alone.
+// IsSupportedVersion never rejects a scan on OS version alone: RapidFort
+// curates advisories for EOL distributions too.
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }
 
 var _ driver.PackageFilter = (*Scanner)(nil)
 
-// FilterPackages implements driver.PackageFilter.
-// RapidFort curated images may include patched versions of third-party packages
-// (e.g. MariaDB, Docker), which RapidFort's own feed covers — so we keep every
-// package here rather than letting the default third-party filter drop them.
+// FilterPackages keeps every package. RapidFort curated images ship patched
+// third-party packages (MariaDB, Docker, …) that RapidFort's own feed covers,
+// so the default third-party drop would strip real advisory targets.
 func (s *Scanner) FilterPackages(_ context.Context, pkgs []ftypes.Package) []ftypes.Package {
 	return pkgs
 }

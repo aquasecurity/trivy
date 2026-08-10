@@ -42,6 +42,17 @@
             PatchedVersions:
               - "3.1.4-r1"
             Severity: 2
+- bucket: rapidfort Red Hat 8
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-EL8-ONLY
+          value:
+            VulnerableVersions:
+              - ">= 7.61.1-14.el8, < 7.61.1-30.el8"
+            PatchedVersions:
+              - "7.61.1-30.el8"
+            Severity: 2
 - bucket: rapidfort Red Hat 9
   pairs:
     - bucket: curl
@@ -59,7 +70,7 @@
               - ">=7.76.1-14.el9"
             PatchedVersions: []
             Severity: 3
-    # SRPM bucket: trivy looks up advisories here using pkg.SrcName.
+    # SRPM bucket (queried by pkg.SrcName).
     - bucket: rust-rpm-sequoia
       pairs:
         - key: CVE-2025-0977
@@ -69,8 +80,6 @@
             PatchedVersions:
               - "1.8.0-2.el9"
             Severity: 3
-        # Overlap with rpm-sequoia bucket — dedupe must keep the srcName entry
-        # (this Severity=3 / fix=1.9.0-1.el9), not the binary one below.
         - key: CVE-2025-OVERLAP
           value:
             VulnerableVersions:
@@ -78,8 +87,7 @@
             PatchedVersions:
               - "1.9.0-1.el9"
             Severity: 3
-    # Binary bucket: trivy must also query this and merge when pkg.Name differs
-    # from pkg.SrcName. Mirrors the upstream rpm-sequoia.json mis-key issue.
+    # Binary bucket (queried by pkg.Name when it differs from pkg.SrcName).
     - bucket: rpm-sequoia
       pairs:
         - key: CVE-2026-2625
@@ -89,9 +97,8 @@
             PatchedVersions:
               - "1.10.0-1.el9"
             Severity: 2
-        # Same CVE as in rust-rpm-sequoia bucket but with a different (wrong)
-        # fix version + severity. Dedupe must drop this entry in favor of the
-        # srcName one.
+        # Same CVE as the SRPM bucket, deliberately wrong so the dedupe test
+        # can prove the SRPM entry wins.
         - key: CVE-2025-OVERLAP
           value:
             VulnerableVersions:
@@ -158,3 +165,12 @@
             PatchedVersions:
               - "0:2.46-10rfubu"
             Severity: 2
+    - bucket: openjpeg
+      pairs:
+        - key: CVE-2019-6988
+          value:
+            VulnerableVersions:
+              - ">= 0:0, < 0:2.5.2-1build1+rf.1"
+            PatchedVersions:
+              - "0:2.5.2-1build1+rf.1"
+            Severity: 1

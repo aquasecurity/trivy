@@ -1,5 +1,8 @@
 # RapidFort
 
+!!! warning "EXPERIMENTAL"
+    Scanning results may be inaccurate.
+
 This page describes the details of the [RapidFort](https://www.rapidfort.com/) curated vulnerability feed.
 RapidFort publishes curated builds of [Ubuntu](../os/ubuntu.md), [Alpine](../os/alpine.md), and [Red Hat Enterprise Linux](../os/rhel.md)-based container images together with the corresponding security advisories.
 
