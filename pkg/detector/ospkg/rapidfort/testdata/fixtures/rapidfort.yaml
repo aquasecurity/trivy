@@ -135,12 +135,6 @@
             PatchedVersions:
               - "7.76.1-26.rf1"
             Severity: 2
-    # RedHat rf-openssl range in RPM format — has an epoch (1:) and a .rf
-    # release suffix. Ubuntu scans must NOT see this bucket, otherwise the
-    # dpkg comparator would read "1:" as an epoch on the range side and
-    # false-positive an rfubu package with no explicit epoch. See the
-    # matching test case "Ubuntu: rf-openssl rfubu package must not
-    # cross-match the RedHat rf-openssl range".
     - bucket: rf-openssl
       pairs:
         - key: CVE-2024-41996
@@ -152,10 +146,6 @@
             Severity: 2
 - bucket: rapidfort ubuntu
   pairs:
-    # rf-tagged Ubuntu ranges live in the dpkg-only "rapidfort ubuntu" bucket,
-    # separate from RedHat's RPM-format "rapidfort Red Hat" — the two must not
-    # share a bucket because the version comparators can't read each other's
-    # format (e.g. dpkg reads "1:" as an epoch in an RPM range and false-matches).
     - bucket: rf-binutils
       pairs:
         - key: CVE-2025-69648

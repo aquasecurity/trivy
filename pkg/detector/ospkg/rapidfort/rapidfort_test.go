@@ -158,8 +158,8 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// Regression: dpkgHasRfMarker previously matched only "rfubu",
-			// missing the "+rf" convention used by newer feed entries.
+			// Both "+rf" and "rfubu" mark a RapidFort rebuild, so either one
+			// routes the package to the rf bucket.
 			name:   "Ubuntu: +rf-marked package routes to the RapidFort bucket and matches the rf range",
 			baseOS: ftypes.Ubuntu,
 			fixtures: []string{
@@ -522,7 +522,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// Regression: previously routed by osVer, which sent .el8 to Red Hat 9.
+			// The package's own dist tag decides the bucket, not the image's OS version.
 			name:   "RedHat: cross-major .el8 package on RHEL 9 image routes to Red Hat 8 bucket",
 			baseOS: ftypes.RedHat,
 			fixtures: []string{
@@ -812,7 +812,6 @@ func TestScanner_Detect(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			// Sort results for stable comparison since map iteration order is not deterministic
 			assert.ElementsMatch(t, tt.want, got)
 		})
 	}
@@ -869,8 +868,8 @@ func TestSupplier(t *testing.T) {
 }
 
 func TestScanner_IsVulnerable(t *testing.T) {
-	// Covers the version-comparison logic: the patched-equality shortcut, empty
-	// ranges meaning "all versions vulnerable", and range membership.
+	// Covers empty ranges meaning "all versions vulnerable", range membership,
+	// and a malformed range being skipped rather than aborting the check.
 	tests := []struct {
 		name             string
 		baseOS           ftypes.OSType
@@ -991,9 +990,9 @@ func TestRpmDistTag(t *testing.T) {
 		{ver: "7.76.1-26.fc43", wantTag: "fc", wantNum: "43"},
 		{ver: "7.76.1-20.rf1", wantTag: "rf", wantNum: "1"},
 		{ver: "7.76.1-26.rf", wantTag: "rf", wantNum: ""},
-		// The dist tag is the trailing one: a ".rf" inside "rfc3339" must not win.
+		// The last match wins, so a trailing tag beats an earlier one and beats
+		// an el/fc/rf substring caught inside another word.
 		{ver: "1.0-1.rfc3339.el9", wantTag: "el", wantNum: "9"},
-		// Composite release: the last tag wins.
 		{ver: "7.76.1-26.rf1.el9", wantTag: "el", wantNum: "9"},
 		// Untagged / non-RPM versions have no dist tag.
 		{ver: "1.0.0-1", wantTag: "", wantNum: ""},

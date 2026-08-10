@@ -46,10 +46,9 @@ func dpkgHasRfMarker(ver string) bool {
 	return strings.Contains(ver, "+rf") || strings.Contains(ver, "rfubu")
 }
 
-// getters is package-level because a getter depends on nothing per-scanner —
-// the release is passed at Get time, so the same getter serves both the
-// versioned bucket ("rapidfort ubuntu 22.04") and the family-level rf bucket
-// ("rapidfort ubuntu", with an empty release).
+// getters is package-level because a getter is not tied to a scanner: the
+// release is passed at Get time, so one getter serves both "rapidfort ubuntu
+// 22.04" and the family-level "rapidfort ubuntu".
 var getters = map[ecosystem.Type]rapidfort.VulnSrcGetter{
 	ecosystem.Ubuntu: rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu),
 	ecosystem.Alpine: rapidfort.NewVulnSrcGetter(ecosystem.Alpine),
@@ -88,8 +87,8 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		s.versionTrimmer = version.Major // "9.2" → "9"
 	default:
 		// Scanners are only created for Ubuntu/Alpine/RedHat; the DEB comparer
-		// + minor trimmer here is a safe placeholder for any direct caller.
-		// Routing yields no ecosystem for such an OS, so Detect finds nothing.
+		// + minor trimmer here is a safe placeholder for any direct caller,
+		// whose packages route to no ecosystem anyway.
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor
 	}
@@ -97,10 +96,9 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	return s
 }
 
-// route picks the (ecosystem, release) pair whose bucket the installed
-// package belongs in. An rf-tagged package drops the release so it lands in
-// the family-level rf bucket, isolated from the versioned base-OS bucket that
-// speaks a different version-comparator language.
+// route picks the (ecosystem, release) pair whose bucket the installed package
+// belongs in. RapidFort's own rebuilds are not tied to a distribution release,
+// so they drop it and land in the family-level bucket of their ecosystem.
 func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 	switch s.baseOS {
 	case ftypes.Ubuntu:
@@ -120,10 +118,13 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 			// Use the package's own dist-tag major, not osVer: an .el8
 			// package inside a RHEL 9 image belongs to the Red Hat 8 bucket.
 			return ecosystem.RedHat, num
-		default: // untagged
+		default:
+			// An untagged RPM names no distribution, so it is treated as a
+			// build of the image's own release.
 			return ecosystem.RedHat, osVer
 		}
 	}
+	// Unsupported base OS: no getter matches the empty ecosystem.
 	return "", osVer
 }
 
@@ -147,7 +148,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 		eco, release := s.route(installedVer, osVer)
 		vs, ok := getters[eco]
 		if !ok {
-			continue
+			continue // RapidFort ships no buckets for this ecosystem, so the package goes unscanned
 		}
 
 		advisories, err := vs.Get(db.GetParams{
