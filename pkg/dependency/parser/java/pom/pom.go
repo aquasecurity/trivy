@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/utils"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
-	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/set"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -142,7 +141,7 @@ func pomLicenseName(name, url string) string {
 	if name = strings.TrimSpace(name); name != "" {
 		return name
 	}
-	if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(url)); ok {
+	if id, ok := licensing.SPDXLicenseIDByURL(url); ok {
 		return id
 	}
 	return ""

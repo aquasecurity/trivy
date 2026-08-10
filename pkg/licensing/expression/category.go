@@ -441,8 +441,7 @@ func SPDXLicenseID(license string) (string, bool) {
 	return spdxLicenses.Find(license)
 }
 
-// SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi
-// Bundle-License header or a pom <url>) to its canonical SPDX license ID via the
+// SPDXLicenseIDByURL maps a license URL to its canonical SPDX license ID via the
 // SPDX seeAlso references. Like SPDXLicenseID it does not normalize its input: the
 // URL must already be normalized with licensing.NormalizeLicenseURL. Returns false
 // if the URL is unknown.

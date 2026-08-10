@@ -577,7 +577,7 @@ func pomLicenseName(name, url string) string {
 	if name = strings.TrimSpace(name); name != "" {
 		return name
 	}
-	if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(url)); ok {
+	if id, ok := licensing.SPDXLicenseIDByURL(url); ok {
 		return id
 	}
 	return ""
@@ -722,7 +722,7 @@ func resolveBundleLicense(name, link string) (string, bool) {
 		if u == "" {
 			continue
 		}
-		if id, ok := expression.SPDXLicenseIDByURL(licensing.NormalizeLicenseURL(u)); ok {
+		if id, ok := licensing.SPDXLicenseIDByURL(u); ok {
 			return id, true
 		}
 	}

@@ -554,3 +554,40 @@ func TestNormalizeLicenseURL(t *testing.T) {
 		})
 	}
 }
+
+func TestSPDXLicenseIDByURL(t *testing.T) {
+	tests := []struct {
+		name   string
+		url    string
+		want   string
+		wantOK bool
+	}{
+		{
+			name:   "URL taken from metadata as-is",
+			url:    "http://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   "Apache-2.0",
+			wantOK: true,
+		},
+		{
+			name:   "URL that needs no normalization",
+			url:    "opensource.org/license/MIT",
+			want:   "MIT",
+			wantOK: true,
+		},
+		{
+			name: "URL of no SPDX license",
+			url:  "https://example.com/LICENSE",
+		},
+		{
+			name: "empty",
+			url:  "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok := licensing.SPDXLicenseIDByURL(tt.url)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

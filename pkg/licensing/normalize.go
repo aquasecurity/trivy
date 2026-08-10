@@ -609,6 +609,13 @@ func NormalizeLicenseURL(u string) string {
 	return s
 }
 
+// SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi Bundle-License header or a pom <url>)
+// to its canonical SPDX license ID, and returns false if no SPDX license claims that URL.
+// The URL is normalized here, so it is passed in as it appears in the metadata.
+func SPDXLicenseIDByURL(rawURL string) (string, bool) {
+	return expr.SPDXLicenseIDByURL(NormalizeLicenseURL(rawURL))
+}
+
 // snapshotHosts are the Wayback Machine hosts that wrap a captured page.
 // They serve it under "/web/<timestamp>/<captured URL>".
 // SPDX links to no other wrapper, so nothing else is unwrapped.
