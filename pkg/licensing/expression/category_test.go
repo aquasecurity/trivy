@@ -41,9 +41,11 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 			url:  "apache.org/licenses/license-2.0",
 		},
 		{
+			// The URL cannot tell -only from -or-later, so generation settles on the
+			// base license and canonicalizes the ID SPDX has deprecated.
 			name:   "license family collapsed to its base license at generation time",
 			url:    "opensource.org/license/GPL-2.0",
-			want:   "GPL-2.0",
+			want:   "GPL-2.0-only",
 			wantOK: true,
 		},
 		{

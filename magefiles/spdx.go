@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/downloader"
@@ -103,11 +104,8 @@ func updateLicenses() error {
 		}
 	}
 
-	// Resolve each normalized URL to a single license ID:
-	//   - the first license to reference it -> its ID
-	//   - more IDs of the same only/or-later/+ family -> the smallest of them (see below)
-	//   - genuinely different licenses -> "" (ambiguous; the URL is dropped)
-	urlToID := make(map[string]string)
+	// Collect every license that references each normalized URL.
+	urlToIDs := make(map[string][]string)
 	for _, l := range licenses.Licenses {
 		if l.ID == "" {
 			continue
@@ -122,40 +120,51 @@ func updateLicenses() error {
 				continue
 			}
 			seen.Append(u)
-
-			switch existing, ok := urlToID[u]; {
-			case !ok:
-				urlToID[u] = l.ID
-			case existing == "":
-				// Already marked ambiguous; keep it dropped.
-			case licenseStem(existing) == licenseStem(l.ID):
-				// Same only/or-later/+ family: keep the lexicographically smallest
-				// referencing ID — deterministic, and the bare base when it is in the
-				// group ("GPL-3.0" < "GPL-3.0+" < "GPL-3.0-only" < ...).
-				if l.ID < existing {
-					urlToID[u] = l.ID
-				}
-			default:
-				log.Warn("Dropping ambiguous license URL shared by different licenses",
-					log.String("url", u), log.String("licenses", existing+", "+l.ID))
-				urlToID[u] = ""
-			}
+			urlToIDs[u] = append(urlToIDs[u], l.ID)
 		}
 	}
 
-	// Attach each resolved URL to its license. Ambiguous URLs were dropped above
-	// (empty ID); every remaining ID is a real SPDX license, so it is a key in result.
-	for u, id := range urlToID {
-		if id == "" {
-			continue
+	// Attach each URL to the license it identifies; every such ID is a real SPDX license, so it is a key in result.
+	// Walking the URLs in sorted order keeps the generated lists (and the warnings) out of Go's randomized map iteration order,
+	// so regenerating the committed file does not reshuffle it.
+	urls := lo.Keys(urlToIDs)
+	sort.Strings(urls)
+	for _, u := range urls {
+		if id, ok := licenseForURL(u, urlToIDs[u]); ok {
+			result[id] = append(result[id], u)
 		}
-		result[id] = append(result[id], u)
-	}
-	for id := range result {
-		sort.Strings(result[id])
 	}
 
 	return writeJSON(filepath.Join(expressionDir, licenseFileName), result)
+}
+
+// licenseForURL picks the license a URL identifies among the IDs that reference it, and reports false when it identifies none.
+// IDs of one only/or-later/+ family point at the same license text, and nothing in the URL says whether the licensor also granted "or later",
+// so within a family the URL identifies the -only variant and nothing else.
+// SPDX reads the deprecated bare ID that way too: it names "GPL-2.0" "GNU General Public License v2.0 only", which is also the name it gives "GPL-2.0-only".
+func licenseForURL(url string, ids []string) (string, bool) {
+	if len(ids) == 1 {
+		return ids[0], true
+	}
+
+	stems := set.New[string]()
+	for _, id := range ids {
+		stems.Append(licenseStem(id))
+	}
+	if stems.Size() > 1 {
+		log.Warn("Dropping ambiguous license URL shared by different licenses",
+			log.String("url", url), log.String("licenses", strings.Join(ids, ", ")))
+		return "", false
+	}
+
+	for _, id := range ids {
+		if strings.HasSuffix(id, "-only") {
+			return id, true
+		}
+	}
+	log.Warn("Dropping license URL shared by variants of one license that has no -only form",
+		log.String("url", url), log.String("licenses", strings.Join(ids, ", ")))
+	return "", false
 }
 
 // licenseStem strips a trailing +, -only or -or-later suffix from an SPDX license
