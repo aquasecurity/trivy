@@ -92,6 +92,13 @@ func (v *CSAF) matchProduct(productID csaf.ProductID, product *core.Component) b
 func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProduct *core.Component) (
 	csaf.RelationshipCategory, bool) {
 
+	// A relationship describes a sub-component within a product, so it can only match
+	// when a sub-component is given. The leaf component is first evaluated on its own,
+	// with no sub-component.
+	if subProduct == nil {
+		return "", false
+	}
+
 	for category, relationships := range v.inspectProductRelationships(fullProductID) {
 		for _, rel := range relationships {
 			if !rel.Product.Match(product.PkgIdentifier.PURL) {
