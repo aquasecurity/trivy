@@ -186,6 +186,7 @@ var (
 		TypeRpmqa,
 		TypeApkRepo,
 		TypeApkCommand,
+		TypeRapidFortCurated,
 	}
 
 	// TypeLanguages has all language analyzers
