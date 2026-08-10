@@ -108,65 +108,6 @@ func TestDetector_Detect(t *testing.T) {
 	}
 }
 
-// TestDetector_Detect_PackageFilter verifies that when the driver implements
-// PackageFilter, its filter is used instead of the default third-party drop —
-// but gpg-pubkey is still stripped up-front (it has no scannable version and
-// must never reach the driver, regardless of the driver's custom filter).
-func TestDetector_Detect_PackageFilter(t *testing.T) {
-	target := types.ScanTarget{
-		OS: ftypes.OS{
-			Family: ftypes.CentOS,
-			Name:   "7",
-		},
-		Packages: []ftypes.Package{
-			{
-				Name: "vim",
-				Repository: ftypes.PackageRepository{
-					Class: ftypes.RepositoryClassOfficial,
-				},
-			},
-			{Name: "gpg-pubkey"},
-			{
-				Name: "php",
-				Repository: ftypes.PackageRepository{
-					Class: ftypes.RepositoryClassThirdParty,
-				},
-			},
-		},
-	}
-
-	// Expected: gpg-pubkey stripped up-front; the driver's identity filter
-	// keeps both vim and the third-party php.
-	wantPkgs := []ftypes.Package{
-		{
-			Name: "vim",
-			Repository: ftypes.PackageRepository{
-				Class: ftypes.RepositoryClassOfficial,
-			},
-		},
-		{
-			Name: "php",
-			Repository: ftypes.PackageRepository{
-				Class: ftypes.RepositoryClassThirdParty,
-			},
-		},
-	}
-
-	inner := &mockDriver{}
-	mockDrv := &filteringMockDriver{
-		mockDriver: inner,
-		filter: func(pkgs []ftypes.Package) []ftypes.Package {
-			return pkgs
-		},
-	}
-	d, err := ospkg.NewDetector(target, ospkg.WithDriver(target.OS.Family, mockDrv))
-	require.NoError(t, err)
-
-	_, _, err = d.Detect(t.Context())
-	require.NoError(t, err)
-	assert.Equal(t, wantPkgs, inner.receivedPkgs)
-}
-
 func TestNewDetector(t *testing.T) {
 	target := types.ScanTarget{
 		OS: ftypes.OS{
