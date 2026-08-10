@@ -49,6 +49,9 @@ cache:
     # Same as '--redis-tls'
     tls: false
 
+    # Same as '--redis-tls-server-name'
+    tlsServerName: ""
+
   # Same as '--cache-ttl'
   ttl: 0s
 
