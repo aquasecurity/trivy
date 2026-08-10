@@ -618,10 +618,21 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 	defer file.Close()
 
+	return parseManifestMainSection(file)
+}
+
+// parseManifestMainSection reads the main section of a MANIFEST.MF, which is the one describing the archive itself.
+// It ends at the first empty line; the individual sections that may follow describe single files inside the archive,
+// so their attributes say nothing about the artifact the archive ships.
+// cf. https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#jar-manifest
+func parseManifestMainSection(r io.Reader) (manifest, error) {
 	var m manifest
-	scanner := bufio.NewScanner(file)
+	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
 		line := scanner.Text()
+		if line == "" {
+			break
+		}
 
 		// Skip variables. e.g. Bundle-Name: %bundleName
 		ss := strings.Fields(line)
@@ -657,7 +668,7 @@ func parseManifest(f *zip.File) (manifest, error) {
 		}
 	}
 
-	if err = scanner.Err(); err != nil {
+	if err := scanner.Err(); err != nil {
 		return manifest{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return m, nil
