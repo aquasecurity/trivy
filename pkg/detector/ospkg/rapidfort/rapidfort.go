@@ -1,6 +1,7 @@
 package rapidfort
 
 import (
+	"cmp"
 	"context"
 	"regexp"
 	"strings"
@@ -138,12 +139,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		srcName := pkg.SrcName
-		if srcName == "" {
-			srcName = pkg.Name
-		}
-
-		installedVer := utils.FormatSrcVersion(pkg)
+		// An RPM without SOURCERPM carries no source name or version at all, so
+		// both fall back to the binary package.
+		srcName := cmp.Or(pkg.SrcName, pkg.Name)
+		installedVer := cmp.Or(utils.FormatSrcVersion(pkg), utils.FormatVersion(pkg))
 
 		eco, release := s.route(installedVer, osVer)
 		vs, ok := getters[eco]

@@ -615,6 +615,61 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// An RPM without SOURCERPM has neither a source name nor a source
+			// version, so both fall back to the binary package. Without the
+			// version fallback the comparison would run on an empty string and
+			// report nothing at all.
+			name:   "RedHat: RPM without SOURCERPM falls back to the binary name and version",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "curl",
+						Version: "7.76.1-20.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-99999",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+			},
+		},
+		{
 			// SRPM lookup is primary; binary-name lookup is a fallback that
 			// catches CVEs the feed mis-keys on the binary. When the same CVE
 			// appears in both, the SRPM entry wins on dedupe.
