@@ -621,13 +621,44 @@ func parseManifest(f *zip.File) (manifest, error) {
 	return parseManifestMainSection(file)
 }
 
+// scanManifestLines is a bufio.SplitFunc that splits on the newline sequences the JAR manifest grammar allows:
+// CRLF, LF and a lone CR. bufio.ScanLines handles only the first two.
+// cf. https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#name-value-pairs-and-sections
+func scanManifestLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	for i, b := range data {
+		switch b {
+		case '\n':
+			return i + 1, data[:i], nil
+		case '\r':
+			// The CR may be the first half of a CRLF, so wait for the next byte before deciding.
+			if i+1 == len(data) && !atEOF {
+				return 0, nil, nil
+			}
+			advance = i + 1
+			if i+1 < len(data) && data[i+1] == '\n' {
+				advance++
+			}
+			return advance, data[:i], nil
+		}
+	}
+	if atEOF {
+		return len(data), data, nil
+	}
+	// Request more data.
+	return 0, nil, nil
+}
+
 // parseManifestMainSection reads the main section of a MANIFEST.MF, which is the one describing the archive itself.
-// It ends at the first empty line; the individual sections that may follow describe single files inside the archive,
-// so their attributes say nothing about the artifact the archive ships.
+// It ends at the first empty line; the individual sections that may follow describe packages or files inside the archive,
+// so their attributes must not be used as archive-level artifact properties.
 // cf. https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#jar-manifest
 func parseManifestMainSection(r io.Reader) (manifest, error) {
 	var m manifest
 	scanner := bufio.NewScanner(r)
+	scanner.Split(scanManifestLines)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {

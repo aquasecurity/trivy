@@ -651,6 +651,16 @@ Implementation-Vendor: Apache Software Foundation
 				FilePath:   "xercesImpl-2.12.2.jar",
 			},
 		},
+		{
+			name:     "CR line endings",
+			manifest: "Manifest-Version: 1.0\rImplementation-Title: xercesImpl\rImplementation-Version: 2.12.2\rImplementation-Vendor-Id: xerces\r\rName: org/apache/xerces/xni/\rImplementation-Version: 1.2\r",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
