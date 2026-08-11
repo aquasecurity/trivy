@@ -232,7 +232,7 @@ func Test_Adapt(t *testing.T) {
 			  resource "azurerm_postgresql_flexible_server_configuration" "tls_version" {
 				name      = "tls_version"
 				server_id = azurerm_postgresql_flexible_server.example.id
-				value     = "TLS1_2"
+				value     = "TLSv1.2"
 			  }
 
 			  resource "azurerm_postgresql_flexible_server_configuration" "log_connections" {
@@ -304,7 +304,7 @@ func Test_Adapt(t *testing.T) {
 			  resource "azurerm_postgresql_flexible_server_configuration" "tls_version" {
 				name      = "tls_version"
 				server_id = azurerm_postgresql_flexible_server.example.id
-				value     = "TLS1_2"
+				value     = "TLSv1.2"
 			  }
 			`,
 			expected: database.Database{
@@ -354,7 +354,7 @@ func Test_Adapt(t *testing.T) {
 			  resource "azurerm_mysql_flexible_server_configuration" "tls_version" {
 				name      = "tls_version"
 				server_id = azurerm_mysql_flexible_server.example.id
-				value     = "TLS1_2"
+				value     = "TLSv1.2"
 			  }
 
 			  resource "azurerm_mysql_flexible_server_configuration" "interactive_timeout" {
@@ -406,7 +406,7 @@ func Test_Adapt(t *testing.T) {
 			  resource "azurerm_mysql_flexible_server_configuration" "tls_version" {
 				name      = "tls_version"
 				server_id = azurerm_mysql_flexible_server.example.id
-				value     = "TLS1_2"
+				value     = "TLSv1.2"
 			  }
 			`,
 			expected: database.Database{
@@ -423,6 +423,64 @@ func Test_Adapt(t *testing.T) {
 								},
 							},
 						},
+					},
+				},
+			},
+		},
+		{
+			name: "postgresql flexible server with azure parameter names",
+			terraform: `
+			resource "azurerm_postgresql_flexible_server" "example" {
+				name                = "example-flexible"
+
+				public_network_access_enabled = true
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "ssl_min_protocol_version" {
+				name      = "ssl_min_protocol_version"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "TLSv1.2"
+			  }
+
+			  resource "azurerm_postgresql_flexible_server_configuration" "connection_throttle_enable" {
+				name      = "connection_throttle.enable"
+				server_id = azurerm_postgresql_flexible_server.example.id
+				value     = "on"
+			  }
+			`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Server: database.Server{
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
+						},
+						Config: database.PostgresSQLConfig{
+							ConnectionThrottling: iacTypes.BoolTest(true),
+						},
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{},
+					},
+				},
+			},
+		},
+		{
+			name: "postgresql flexible server bare",
+			terraform: `
+			resource "azurerm_postgresql_flexible_server" "example" {
+				name = "example-flexible"
+			  }
+			`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Server: database.Server{
+							EnableSSLEnforcement:      iacTypes.BoolTest(true),
+							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
+							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
+						},
+						Config:                database.PostgresSQLConfig{},
+						ThreatDetectionPolicy: database.ThreatDetectionPolicy{},
 					},
 				},
 			},

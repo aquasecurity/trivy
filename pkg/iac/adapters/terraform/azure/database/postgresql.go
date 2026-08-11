@@ -113,7 +113,7 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 		switch {
 		case nameAttr.Equals("log_checkpoints"):
 			config.LogCheckpoints = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
-		case nameAttr.Equals("connection_throttling"):
+		case nameAttr.Equals("connection_throttling"), nameAttr.Equals("connection_throttle.enable"):
 			config.ConnectionThrottling = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
 		case nameAttr.Equals("log_connections"):
 			config.LogConnections = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
