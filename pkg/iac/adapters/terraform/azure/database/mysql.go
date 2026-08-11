@@ -56,7 +56,7 @@ func adaptMySQLFlexibleServer(resource *terraform.Block, module *terraform.Modul
 	// Each configuration resource manages a single parameter specified in the name attribute
 	// By default, the server enforces secure connections using TLS 1.2
 	configBlocks := module.GetReferencingResources(resource, "azurerm_mysql_flexible_server_configuration", "server_id")
-	params := parseServerParameters(configBlocks, resource.GetMetadata())
+	params := parseServerParameters(configBlocks, resource.GetMetadata(), "tls_version")
 
 	return database.MySQLServer{
 		Metadata: resource.GetMetadata(),
