@@ -2203,3 +2203,43 @@ func TestArtifact_InspectWithMaxImageSize(t *testing.T) {
 		})
 	}
 }
+
+// attestationManifestImage wraps a real v1.Image but swaps in a manifest
+// whose layers are all attestation/SBOM artifact types, to exercise
+// Inspect's early attestation-manifest detection without needing a real
+// registry-hosted attestation manifest.
+type attestationManifestImage struct {
+	v1.Image
+	manifest *v1.Manifest
+}
+
+func (a attestationManifestImage) Manifest() (*v1.Manifest, error) {
+	return a.manifest, nil
+}
+
+func TestArtifact_InspectAttestationManifest(t *testing.T) {
+	randomImage, err := random.Image(1000, 2, random.WithSource(rand.NewSource(0)))
+	require.NoError(t, err)
+
+	attestationManifest := &v1.Manifest{
+		SchemaVersion: 2,
+		MediaType:     "application/vnd.oci.image.manifest.v1+json",
+		Layers: []v1.Descriptor{
+			{
+				MediaType: "application/vnd.in-toto+json",
+				Digest:    v1.Hash{Algorithm: "sha256", Hex: "f5124fb579e27b9769a8ce0158cb650168246572098b5095ecbf8e605488afb6"},
+				Size:      79673,
+			},
+		},
+	}
+
+	img := &fakeImage{Image: attestationManifestImage{Image: randomImage, manifest: attestationManifest}}
+	c := cachetest.NewCache(t, nil)
+
+	a, err := image2.NewArtifact(img, c, artifact.Option{})
+	require.NoError(t, err)
+
+	_, err = a.Inspect(t.Context())
+	require.ErrorContains(t, err, "has no container image layers")
+	require.ErrorContains(t, err, "application/vnd.in-toto+json")
+}
