@@ -14,8 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-type EvalContext struct{}
-
 type Kind string
 
 const (
