@@ -45,7 +45,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Alpine)
 		versionTrimmer = version.Minor
 	default:
-		// Should never happen as it's validated in the provider
+		// Should never happen as it's validated in the supplier
 		comparer = version.NewDEBComparer()
 		vsg = rootio.NewVulnSrcGetter(vulnerability.Debian)
 		versionTrimmer = version.Major

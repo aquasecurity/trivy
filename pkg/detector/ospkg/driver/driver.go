@@ -16,8 +16,8 @@ type Driver interface {
 	IsSupportedVersion(context.Context, ftypes.OSType, string) bool
 }
 
-// Provider creates a specialized driver based on the environment
-type Provider func(osFamily ftypes.OSType, pkgs []ftypes.Package) Driver
+// Supplier creates a specialized driver based on the environment
+type Supplier func(os ftypes.OS, pkgs []ftypes.Package) Driver
 
 // PackageFilter is an optional interface a Driver can implement to narrow the package
 // set before Detect with its own logic instead of the default third-party filtering.

@@ -172,6 +172,9 @@ func (f FilePatterns) Match(filePath string) bool {
 type AnalysisOptions struct {
 	Offline      bool
 	FileChecksum bool
+
+	// MavenMirrors maps a Maven repository URL to an ordered list of fallback mirror URLs.
+	MavenMirrors map[string][]string
 }
 
 type AnalysisResult struct {

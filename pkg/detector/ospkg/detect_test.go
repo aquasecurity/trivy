@@ -121,21 +121,21 @@ func TestNewDetector(t *testing.T) {
 		name       string
 		target     types.ScanTarget
 		drivers    map[ftypes.OSType]string // OS family => driver name
-		providers  []string                 // driver names returned by providers, in registration order
+		suppliers  []string                 // driver names returned by suppliers, in registration order
 		wantCalled string                   // name of the driver expected to handle detection
 		wantErr    string
 	}{
 		{
-			name:       "provider takes priority over driver",
+			name:       "supplier takes priority over driver",
 			target:     target,
 			drivers:    map[ftypes.OSType]string{ftypes.CentOS: "driver"},
-			providers:  []string{"provider"},
-			wantCalled: "provider",
+			suppliers:  []string{"supplier"},
+			wantCalled: "supplier",
 		},
 		{
-			name:       "most recently registered provider is tried first",
+			name:       "most recently registered supplier is tried first",
 			target:     target,
-			providers:  []string{"first", "second"},
+			suppliers:  []string{"first", "second"},
 			wantCalled: "second",
 		},
 		{
@@ -159,9 +159,9 @@ func TestNewDetector(t *testing.T) {
 			for family, name := range tt.drivers {
 				opts = append(opts, ospkg.WithDriver(family, mock(name)))
 			}
-			for _, name := range tt.providers {
+			for _, name := range tt.suppliers {
 				drv := mock(name)
-				opts = append(opts, ospkg.WithProvider(func(_ ftypes.OSType, _ []ftypes.Package) driver.Driver {
+				opts = append(opts, ospkg.WithSupplier(func(_ ftypes.OS, _ []ftypes.Package) driver.Driver {
 					return drv
 				}))
 			}
@@ -192,7 +192,7 @@ func TestNewDetector(t *testing.T) {
 // curated-feed driver that forgets the override (and would silently drop those packages)
 // is caught here.
 func TestDriversPackageFilter(t *testing.T) {
-	// Registered drivers that keep third-party packages. Provider-built drivers
+	// Registered drivers that keep third-party packages. Supplier-built drivers
 	// (Root.io, Seal) are not registered and have their own tests.
 	keepsThirdPartyPackages := map[ftypes.OSType]bool{
 		ftypes.Echo: true,

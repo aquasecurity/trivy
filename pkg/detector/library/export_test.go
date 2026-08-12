@@ -1,4 +1,4 @@
 package library
 
-// LookupVendor is exported for testing.
-var LookupVendor = lookupVendor
+// LookupSupplier is exported for testing.
+var LookupSupplier = lookupSupplier

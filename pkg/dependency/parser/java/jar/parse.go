@@ -647,15 +647,58 @@ func parseManifest(f *zip.File) (manifest, error) {
 		return manifest{}, xerrors.Errorf("unable to read MANIFEST.MF: %w", err)
 	}
 
-	// MANIFEST.MF folds long values onto continuation lines starting with a space.
-	// Unfold by removing the "line break + space" (both CRLF and LF) without inserting anything, as java.util.jar.Manifest does.
-	// https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
-	unfolded := strings.ReplaceAll(string(b), "\r\n ", "")
-	unfolded = strings.ReplaceAll(unfolded, "\n ", "")
+	return parseManifestMainSection(strings.NewReader(manifestUnfolder.Replace(string(b))))
+}
 
+// manifestUnfolder rejoins the continuation lines onto which MANIFEST.MF folds long values.
+// A fold is a line break followed by a single space, and it is removed without inserting anything, as java.util.jar.Manifest does.
+// Every newline sequence the grammar allows can fold a value, so all three are covered.
+// cf. https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
+var manifestUnfolder = strings.NewReplacer("\r\n ", "", "\n ", "", "\r ", "")
+
+// scanManifestLines is a bufio.SplitFunc that splits on the newline sequences the JAR manifest grammar allows:
+// CRLF, LF and a lone CR. bufio.ScanLines handles only the first two.
+// cf. https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#name-value-pairs-and-sections
+func scanManifestLines(data []byte, atEOF bool) (advance int, token []byte, err error) {
+	if atEOF && len(data) == 0 {
+		return 0, nil, nil
+	}
+	for i, b := range data {
+		switch b {
+		case '\n':
+			return i + 1, data[:i], nil
+		case '\r':
+			// The CR may be the first half of a CRLF, so wait for the next byte before deciding.
+			if i+1 == len(data) && !atEOF {
+				return 0, nil, nil
+			}
+			advance = i + 1
+			if i+1 < len(data) && data[i+1] == '\n' {
+				advance++
+			}
+			return advance, data[:i], nil
+		}
+	}
+	if atEOF {
+		return len(data), data, nil
+	}
+	// Request more data.
+	return 0, nil, nil
+}
+
+// parseManifestMainSection reads the main section of a MANIFEST.MF, which is the one describing the archive itself.
+// It ends at the first empty line; the individual sections that may follow describe packages or files inside the archive,
+// so their attributes must not be used as archive-level artifact properties.
+// cf. https://docs.oracle.com/en/java/javase/21/docs/specs/jar/jar.html#jar-manifest
+func parseManifestMainSection(r io.Reader) (manifest, error) {
 	var m manifest
-	for line := range strings.SplitSeq(unfolded, "\n") {
-		line = strings.TrimSuffix(line, "\r")
+	scanner := bufio.NewScanner(r)
+	scanner.Split(scanManifestLines)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if line == "" {
+			break
+		}
 
 		// Skip variables. e.g. Bundle-Name: %bundleName
 		ss := strings.Fields(line)
@@ -693,6 +736,9 @@ func parseManifest(f *zip.File) (manifest, error) {
 		}
 	}
 
+	if err := scanner.Err(); err != nil {
+		return manifest{}, xerrors.Errorf("scan error: %w", err)
+	}
 	return m, nil
 }
 

@@ -713,25 +713,131 @@ func TestParseBundleLicense(t *testing.T) {
 
 // TestParseManifestFolding verifies that a header value wrapped onto the next
 // line (continued by a single leading space, as MANIFEST.MF folds long values)
-// is rejoined without inserting a space at the fold point.
+// is rejoined without inserting a space at the fold point. A value can be folded
+// over any of the newline sequences the manifest grammar allows.
 func TestParseManifestFolding(t *testing.T) {
-	mf := "Manifest-Version: 1.0\r\n" +
-		"Bundle-License: https://www.apache.org/licenses/LICEN\r\n" +
-		" SE-2.0.txt\r\n" +
-		"Bundle-Name: Example\r\n"
+	tests := []struct {
+		name string
+		eol  string
+	}{
+		{
+			name: "CRLF",
+			eol:  "\r\n",
+		},
+		{
+			name: "LF",
+			eol:  "\n",
+		},
+		{
+			name: "CR",
+			eol:  "\r",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mf := "Manifest-Version: 1.0" + tt.eol +
+				"Bundle-License: https://www.apache.org/licenses/LICEN" + tt.eol +
+				" SE-2.0.txt" + tt.eol +
+				"Bundle-Name: Example" + tt.eol
 
-	var buf bytes.Buffer
-	zw := zip.NewWriter(&buf)
-	w, err := zw.Create("META-INF/MANIFEST.MF")
-	require.NoError(t, err)
-	_, err = w.Write([]byte(mf))
-	require.NoError(t, err)
-	require.NoError(t, zw.Close())
+			var buf bytes.Buffer
+			zw := zip.NewWriter(&buf)
+			w, err := zw.Create("META-INF/MANIFEST.MF")
+			require.NoError(t, err)
+			_, err = w.Write([]byte(mf))
+			require.NoError(t, err)
+			require.NoError(t, zw.Close())
 
-	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
-	require.NoError(t, err)
+			zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+			require.NoError(t, err)
 
-	m, err := jar.ParseManifest(zr.File[0])
-	require.NoError(t, err)
-	assert.Equal(t, " https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+			m, err := jar.ParseManifest(zr.File[0])
+			require.NoError(t, err)
+			assert.Equal(t, " https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+		})
+	}
+}
+
+func TestManifestProperties(t *testing.T) {
+	tests := []struct {
+		name     string
+		manifest string
+		want     jar.Properties
+	}{
+		{
+			name: "main section only",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: Apache Commons Lang
+Implementation-Version: 3.17.0
+Implementation-Vendor-Id: org.apache.commons
+`,
+			want: jar.Properties{
+				GroupID:    "org.apache.commons",
+				ArtifactID: "Apache Commons Lang",
+				Version:    "3.17.0",
+				FilePath:   "commons-lang3-3.17.0.jar",
+			},
+		},
+		{
+			name: "individual sections do not override the main section",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: xercesImpl
+Implementation-Version: 2.12.2
+Implementation-Vendor-Id: xerces
+
+Name: org/apache/xerces/xni/
+Implementation-Title: org.apache.xerces.xni
+Implementation-Version: 1.2
+Implementation-Vendor-Id: org.apache.xerces
+`,
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			// The attributes describe a package inside the archive, not the archive itself,
+			// so the artifact stays unidentified and the caller falls back to another source.
+			name: "artifact attributes only in an individual section",
+			manifest: `Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.10.14
+Created-By: 22.0.2+9-70 (Oracle Corporation)
+
+Name: org/apache/tools/ant/
+Implementation-Title: org.apache.tools.ant
+Implementation-Version: 1.10.15
+Implementation-Vendor: Apache Software Foundation
+`,
+			want: jar.Properties{},
+		},
+		{
+			name:     "CRLF line endings",
+			manifest: "Manifest-Version: 1.0\r\nImplementation-Title: xercesImpl\r\nImplementation-Version: 2.12.2\r\nImplementation-Vendor-Id: xerces\r\n\r\nName: org/apache/xerces/xni/\r\nImplementation-Version: 1.2\r\n",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			name:     "CR line endings",
+			manifest: "Manifest-Version: 1.0\rImplementation-Title: xercesImpl\rImplementation-Version: 2.12.2\rImplementation-Vendor-Id: xerces\r\rName: org/apache/xerces/xni/\rImplementation-Version: 1.2\r",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.ManifestProperties(strings.NewReader(tt.manifest), tt.want.FilePath)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }

@@ -12,10 +12,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	// The bundled vendors are registered eagerly at init time. To opt out,
-	// call library.DeregisterVendor (e.g., library.DeregisterVendor("seal"))
+	// The bundled suppliers are registered eagerly at init time. To opt out,
+	// call library.DeregisterSupplier (e.g., library.DeregisterSupplier("seal"))
 	// after importing this package.
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/all" // register library vulnerability vendors
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/all" // register library vulnerability suppliers
 )
 
 var (

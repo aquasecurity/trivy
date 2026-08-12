@@ -68,18 +68,18 @@ var (
 		ftypes.CoreOS:             coreos.NewScanner(),
 	}
 
-	// providers dynamically generate drivers based on package information
+	// suppliers dynamically generate drivers based on package information
 	// and environment detection. They are tried before standard OS-specific drivers.
-	providers = []driver.Provider{
-		rootio.Provider,
-		seal.Provider,
+	suppliers = []driver.Supplier{
+		rootio.Supplier,
+		seal.Supplier,
 	}
 )
 
-// resolver holds the candidate drivers and providers and resolves one for a scan target.
+// resolver holds the candidate drivers and suppliers and resolves one for a scan target.
 type resolver struct {
 	drivers   map[ftypes.OSType]driver.Driver
-	providers []driver.Provider
+	suppliers []driver.Supplier
 }
 
 // Option configures a Detector. Options are provided for extensibility by users
@@ -93,12 +93,12 @@ func WithDriver(family ftypes.OSType, drv driver.Driver) Option {
 	}
 }
 
-// WithProvider registers an additional provider. It takes priority over the
-// built-in providers and the standard OS-specific drivers. When called multiple
-// times, the most recently registered provider is tried first.
-func WithProvider(provider driver.Provider) Option {
+// WithSupplier registers an additional supplier. It takes priority over the
+// built-in suppliers and the standard OS-specific drivers. When called multiple
+// times, the most recently registered supplier is tried first.
+func WithSupplier(supplier driver.Supplier) Option {
 	return func(r *resolver) {
-		r.providers = slices.Insert(r.providers, 0, provider)
+		r.suppliers = slices.Insert(r.suppliers, 0, supplier)
 	}
 }
 
@@ -106,13 +106,13 @@ func WithProvider(provider driver.Provider) Option {
 func NewDetector(target types.ScanTarget, opts ...Option) (*Detector, error) {
 	r := &resolver{
 		drivers:   maps.Clone(drivers),
-		providers: slices.Clone(providers),
+		suppliers: slices.Clone(suppliers),
 	}
 	for _, opt := range opts {
 		opt(r)
 	}
 
-	drv, err := r.resolve(target.OS.Family, target.Packages)
+	drv, err := r.resolve(target.OS, target.Packages)
 	if err != nil {
 		return nil, err
 	}
@@ -150,19 +150,19 @@ func (d *Detector) Detect(ctx context.Context) ([]types.DetectedVulnerability, b
 	return vulns, eosl, nil
 }
 
-func (r *resolver) resolve(osFamily ftypes.OSType, pkgs []ftypes.Package) (driver.Driver, error) {
-	// Try providers first
-	for _, provider := range r.providers {
-		if d := provider(osFamily, pkgs); d != nil {
+func (r *resolver) resolve(os ftypes.OS, pkgs []ftypes.Package) (driver.Driver, error) {
+	// Try suppliers first
+	for _, supplier := range r.suppliers {
+		if d := supplier(os, pkgs); d != nil {
 			return d, nil
 		}
 	}
 
 	// Fall back to standard drivers
-	if d, ok := r.drivers[osFamily]; ok {
+	if d, ok := r.drivers[os.Family]; ok {
 		return d, nil
 	}
 
-	log.Warn("Unsupported os", log.String("family", string(osFamily)))
+	log.Warn("Unsupported os", log.String("family", string(os.Family)))
 	return nil, ErrUnsupportedOS
 }

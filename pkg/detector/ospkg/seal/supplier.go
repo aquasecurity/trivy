@@ -20,10 +20,10 @@ var (
 	)
 )
 
-// Provider creates a Root.io driver if Root.io packages are detected
-func Provider(osFamily ftypes.OSType, pkgs []ftypes.Package) driver.Driver {
-	if supportedOSFamilies.Contains(osFamily) && slices.ContainsFunc(pkgs, sealPkg) {
-		return NewScanner(osFamily)
+// Supplier creates a Seal driver if Seal packages are detected
+func Supplier(os ftypes.OS, pkgs []ftypes.Package) driver.Driver {
+	if supportedOSFamilies.Contains(os.Family) && slices.ContainsFunc(pkgs, sealPkg) {
+		return NewScanner(os.Family)
 	}
 	return nil
 }

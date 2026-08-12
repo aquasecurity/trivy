@@ -10,16 +10,16 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func TestProvider(t *testing.T) {
+func TestSupplier(t *testing.T) {
 	tests := []struct {
-		name     string
-		osFamily ftypes.OSType
-		pkgs     []ftypes.Package
-		want     bool // true if driver should be returned, false if nil
+		name string
+		os   ftypes.OS
+		pkgs []ftypes.Package
+		want bool // true if driver should be returned, false if nil
 	}{
 		{
-			name:     "returns driver when package name starts with seal",
-			osFamily: ftypes.Debian,
+			name: "returns driver when package name starts with seal",
+			os:   ftypes.OS{Family: ftypes.Debian},
 			pkgs: []ftypes.Package{
 				{Name: "seal-agent", Version: "1.0.0"},
 				{Name: "bash", Version: "5.1"},
@@ -27,8 +27,8 @@ func TestProvider(t *testing.T) {
 			want: true,
 		},
 		{
-			name:     "returns driver when src name starts with seal",
-			osFamily: ftypes.Ubuntu,
+			name: "returns driver when src name starts with seal",
+			os:   ftypes.OS{Family: ftypes.Ubuntu},
 			pkgs: []ftypes.Package{
 				{Name: "libssl", SrcName: "seal-ssl", Version: "1.2.3"},
 				{Name: "curl", Version: "7.81.0"},
@@ -36,8 +36,8 @@ func TestProvider(t *testing.T) {
 			want: true,
 		},
 		{
-			name:     "returns nil when no seal packages present",
-			osFamily: ftypes.Alpine,
+			name: "returns nil when no seal packages present",
+			os:   ftypes.OS{Family: ftypes.Alpine},
 			pkgs: []ftypes.Package{
 				{Name: "musl", Version: "1.2.3"},
 				{Name: "busybox", Version: "1.36.1"},
@@ -45,22 +45,22 @@ func TestProvider(t *testing.T) {
 			want: false,
 		},
 		{
-			name:     "returns nil for empty package list",
-			osFamily: ftypes.Debian,
-			pkgs:     []ftypes.Package{},
-			want:     false,
+			name: "returns nil for empty package list",
+			os:   ftypes.OS{Family: ftypes.Debian},
+			pkgs: []ftypes.Package{},
+			want: false,
 		},
 		{
-			name:     "case-insensitive: Seal prefix matched",
-			osFamily: ftypes.Ubuntu,
+			name: "case-insensitive: Seal prefix matched",
+			os:   ftypes.OS{Family: ftypes.Ubuntu},
 			pkgs: []ftypes.Package{
 				{Name: "Seal-agent", Version: "2.0.0"},
 			},
 			want: true,
 		},
 		{
-			name:     "returns nil for unsupported OS family even with seal package",
-			osFamily: ftypes.Fedora,
+			name: "returns nil for unsupported OS family even with seal package",
+			os:   ftypes.OS{Family: ftypes.Fedora},
 			pkgs: []ftypes.Package{
 				{Name: "seal-agent", Version: "1.0.0"},
 			},
@@ -70,7 +70,7 @@ func TestProvider(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			d := seal.Provider(tt.osFamily, tt.pkgs)
+			d := seal.Supplier(tt.os, tt.pkgs)
 			if tt.want {
 				require.NotNil(t, d, "expected a non-nil driver when seal package is present")
 			} else {

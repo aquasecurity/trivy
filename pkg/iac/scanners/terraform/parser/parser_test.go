@@ -164,6 +164,25 @@ check "cats_mittens_is_special" {
 	require.NotNil(t, checkBlocks[0].GetBlock("assert"))
 }
 
+// Regression test for https://github.com/aquasecurity/trivy/issues/10906
+func Test_OpenTofuLanguageBlock(t *testing.T) {
+	fs := testutil.CreateFS(map[string]string{
+		"main.tofu": `
+language {
+  compatible_with {
+    opentofu = ">= 1.12"
+  }
+}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	_, err := parser.Load(t.Context())
+	require.NoError(t, err)
+}
+
 func Test_Modules(t *testing.T) {
 
 	fs := testutil.CreateFS(map[string]string{
@@ -734,6 +753,52 @@ resource "aws_s3_bucket" "this" {
 		require.NotNil(t, attr)
 		assert.Contains(t, []string{"foo", "bar"}, attr.AsStringValueOrDefault("", block).Value())
 	}
+}
+
+func Test_ForEachOnLocalWithUnknownObjectValues(t *testing.T) {
+	fs := testutil.CreateFS(map[string]string{
+		"main.tf": `
+variable "bucket_names" {
+  type = map(string)
+}
+
+variable "bucket_details" {
+  type = map(object({
+    bucket = string
+    tags   = optional(map(string), {})
+  }))
+}
+
+locals {
+  bucket_config = {
+    for name, _ in var.bucket_names :
+    name => var.bucket_details[name]
+  }
+}
+
+resource "aws_s3_bucket" "this" {
+  for_each = local.bucket_config
+  bucket   = each.value.bucket
+  tags     = each.value.tags
+}
+`,
+		"main.tfvars": `
+bucket_names = {
+  app-logs = "ipsos-app-logs-dev"
+  app-data = "ipsos-app-data-dev"
+}
+`,
+	})
+
+	parser := New(fs, "",
+		OptionStopOnHCLError(true),
+		OptionWithTFVarsPaths("main.tfvars"),
+	)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	assert.Len(t, modules, 1)
 }
 
 func Test_ForEachRefToVariableWithDefault(t *testing.T) {

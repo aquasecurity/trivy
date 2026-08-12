@@ -105,9 +105,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
 		log.Int("pkg_num", len(pkgs)))
 
+	osVer = s.versionFromEolDates(ctx, osVer)
+
 	var vulns []types.DetectedVulnerability
 	for _, pkg := range pkgs {
-		osVer = s.versionFromEolDates(ctx, osVer)
 		advisories, err := s.vs.Get(db.GetParams{
 			Release: osVer,
 			PkgName: pkg.SrcName,
