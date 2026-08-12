@@ -554,6 +554,108 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 	return expr.SimpleExpr{License: name, HasPlus: hasPlus}
 }
 
+// docExtensions are common file extensions appended to license URLs (e.g.
+// LICENSE-2.0.txt, gpl-3.0.html). They carry no meaning for matching and are
+// stripped during normalization.
+var docExtensions = [...]string{".txt", ".html", ".htm", ".php", ".md"}
+
+// NormalizeLicenseURL builds a matching key for a license URL.
+// It drops an http or https scheme, a "www." prefix, a trailing slash and a document extension.
+// It also unifies opensource.org's "/licenses/" and "/license/" paths.
+// A Wayback Machine snapshot is replaced by the URL it captured.
+// Only the host is lowercased.
+// RFC 3986, section 6.2.2.1 makes the path, query and fragment case-sensitive.
+func NormalizeLicenseURL(u string) string {
+	s := strings.TrimSpace(u)
+	if s == "" {
+		return ""
+	}
+
+	// Drop the scheme so http and https compare equal.
+	s = cutScheme(s)
+
+	// A snapshot only stands for the URL it captured, so continue with that one.
+	// Only the outermost is unwrapped: SPDX links to no nested snapshot, and the URL comes from third-party metadata.
+	if captured, ok := cutSnapshotPrefix(s); ok {
+		s = cutScheme(captured)
+	}
+
+	// Lowercase the host, i.e. everything before the path, query or fragment.
+	// RFC 3986, section 3.2 ends the authority at the next "/", "?" or "#", or at the end of the URI.
+	hostEnd := strings.IndexAny(s, "/?#")
+	if hostEnd < 0 {
+		hostEnd = len(s)
+	}
+	s = strings.ToLower(s[:hostEnd]) + s[hostEnd:]
+
+	// Drop a leading "www." host prefix.
+	s = strings.TrimPrefix(s, "www.")
+
+	// opensource.org exposes the same license under both /licenses/<id> and
+	// /license/<id>. Unify them.
+	s = strings.Replace(s, "opensource.org/licenses/", "opensource.org/license/", 1)
+
+	// Drop a trailing slash.
+	s = strings.TrimSuffix(s, "/")
+
+	// Drop a common document extension.
+	for _, ext := range docExtensions {
+		if after, ok := strings.CutSuffix(s, ext); ok {
+			s = after
+			break
+		}
+	}
+
+	return s
+}
+
+// SPDXLicenseIDByURL maps an upstream license URL (e.g. from an OSGi Bundle-License header or a pom <url>)
+// to its canonical SPDX license ID, and returns false if no SPDX license claims that URL.
+// The URL is normalized here, so it is passed in as it appears in the metadata.
+func SPDXLicenseIDByURL(rawURL string) (string, bool) {
+	return expr.SPDXLicenseIDByURL(NormalizeLicenseURL(rawURL))
+}
+
+// snapshotHosts are the Wayback Machine hosts that wrap a captured page.
+// They serve it under "/web/<timestamp>/<captured URL>".
+// SPDX links to no other wrapper, so nothing else is unwrapped.
+var snapshotHosts = [...]string{"web.archive.org", "wayback.archive.org"}
+
+// cutScheme drops a leading http or https scheme, which are the only two that compare equal.
+// Cutting nothing else also keeps a URL that carries another one in its path or query (e.g. a redirect) from being cut down to the URL it carries.
+// The scheme itself is case-insensitive (RFC 3986, section 3.1).
+func cutScheme(s string) string {
+	for _, scheme := range [...]string{"https://", "http://"} {
+		if len(s) >= len(scheme) && strings.EqualFold(s[:len(scheme)], scheme) {
+			return s[len(scheme):]
+		}
+	}
+	return s
+}
+
+// cutSnapshotPrefix returns the URL a Wayback Machine snapshot captured.
+// The scheme must already be dropped.
+// The host is matched case-insensitively and the path is not, as RFC 3986, section 6.2.2.1 prescribes.
+func cutSnapshotPrefix(s string) (string, bool) {
+	for _, host := range snapshotHosts {
+		if len(s) < len(host) || !strings.EqualFold(s[:len(host)], host) {
+			continue
+		}
+		rest, ok := strings.CutPrefix(s[len(host):], "/web/")
+		if !ok {
+			continue
+		}
+		// The timestamp starts with the capture date and ends at the slash before the URL.
+		// A modifier such as "id_" may follow the date.
+		timestamp, captured, ok := strings.Cut(rest, "/")
+		if !ok || timestamp == "" || captured == "" || timestamp[0] < '0' || timestamp[0] > '9' {
+			continue
+		}
+		return captured, true
+	}
+	return "", false
+}
+
 func NormalizeLicenses(licenses []string) []string {
 	seq := it.UniqMap(slices.Values(licenses), normalizeLicense)
 	seq = it.Compact(seq)
