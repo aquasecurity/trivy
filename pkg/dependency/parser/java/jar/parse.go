@@ -31,8 +31,8 @@ var (
 	jarFileRegEx = regexp.MustCompile(`^([a-zA-Z0-9\._-]*[^-*])-(\d\S*(?:-SNAPSHOT)?).jar$`)
 )
 
-// maxManifestSize caps how much of a (decompressed) MANIFEST.MF is read into
-// memory, guarding against a decompression bomb. Real manifests are a few KB.
+// maxManifestSize caps how much of a (decompressed) MANIFEST.MF is read,
+// guarding against a decompression bomb. Real manifests are a few KB.
 const maxManifestSize = 10 << 20 // 10 MiB
 
 type Client interface {
@@ -642,19 +642,8 @@ func parseManifest(f *zip.File) (manifest, error) {
 	}
 	defer file.Close()
 
-	b, err := xio.ReadAllWithLimit(file, maxManifestSize)
-	if err != nil {
-		return manifest{}, xerrors.Errorf("unable to read MANIFEST.MF: %w", err)
-	}
-
-	return parseManifestMainSection(strings.NewReader(manifestUnfolder.Replace(string(b))))
+	return parseManifestMainSection(xio.MaxBytesReader(file, maxManifestSize))
 }
-
-// manifestUnfolder rejoins the continuation lines onto which MANIFEST.MF folds long values.
-// A fold is a line break followed by a single space, and it is removed without inserting anything, as java.util.jar.Manifest does.
-// Every newline sequence the grammar allows can fold a value, so all three are covered.
-// cf. https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
-var manifestUnfolder = strings.NewReplacer("\r\n ", "", "\n ", "", "\r ", "")
 
 // scanManifestLines is a bufio.SplitFunc that splits on the newline sequences the JAR manifest grammar allows:
 // CRLF, LF and a lone CR. bufio.ScanLines handles only the first two.
@@ -694,52 +683,69 @@ func parseManifestMainSection(r io.Reader) (manifest, error) {
 	var m manifest
 	scanner := bufio.NewScanner(r)
 	scanner.Split(scanManifestLines)
+
+	// MANIFEST.MF folds a long value onto continuation lines starting with a single space.
+	// Unfolding rejoins them without inserting anything, as java.util.jar.Manifest does, so an attribute
+	// is complete only once the following line turns out not to be a continuation of it.
+	// cf. https://github.com/openjdk/jdk/blob/ab116d00a88046d662210539b4bc12db3a364c86/src/java.base/share/classes/java/util/jar/Attributes.java#L392-L393
+	var attr strings.Builder
 	for scanner.Scan() {
 		line := scanner.Text()
 		if line == "" {
 			break
 		}
-
-		// Skip variables. e.g. Bundle-Name: %bundleName
-		ss := strings.Fields(line)
-		if len(ss) <= 1 || strings.HasPrefix(ss[1], "%") {
+		if continued, ok := strings.CutPrefix(line, " "); ok {
+			attr.WriteString(continued)
 			continue
 		}
-
-		// It is not determined which fields are present in each application.
-		// In some cases, none of them are included, in which case they cannot be detected.
-		switch {
-		case strings.HasPrefix(line, "Implementation-Version:"):
-			m.implementationVersion = strings.TrimPrefix(line, "Implementation-Version:")
-		case strings.HasPrefix(line, "Implementation-Title:"):
-			m.implementationTitle = strings.TrimPrefix(line, "Implementation-Title:")
-		case strings.HasPrefix(line, "Implementation-Vendor:"):
-			m.implementationVendor = strings.TrimPrefix(line, "Implementation-Vendor:")
-		case strings.HasPrefix(line, "Implementation-Vendor-Id:"):
-			m.implementationVendorId = strings.TrimPrefix(line, "Implementation-Vendor-Id:")
-		case strings.HasPrefix(line, "Specification-Version:"):
-			m.specificationVersion = strings.TrimPrefix(line, "Specification-Version:")
-		case strings.HasPrefix(line, "Specification-Title:"):
-			m.specificationTitle = strings.TrimPrefix(line, "Specification-Title:")
-		case strings.HasPrefix(line, "Specification-Vendor:"):
-			m.specificationVendor = strings.TrimPrefix(line, "Specification-Vendor:")
-		case strings.HasPrefix(line, "Bundle-Version:"):
-			m.bundleVersion = strings.TrimPrefix(line, "Bundle-Version:")
-		case strings.HasPrefix(line, "Bundle-Name:"):
-			m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
-		case strings.HasPrefix(line, "Bundle-SymbolicName:"):
-			m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
-		case strings.HasPrefix(line, "Bundle-License:"):
-			m.bundleLicense = strings.TrimPrefix(line, "Bundle-License:")
-		case strings.HasPrefix(line, "Plugin-License-Name"):
-			m.pluginLicenseNames = append(m.pluginLicenseNames, line)
-		}
+		m.addAttribute(attr.String())
+		attr.Reset()
+		attr.WriteString(line)
 	}
+	m.addAttribute(attr.String())
 
 	if err := scanner.Err(); err != nil {
 		return manifest{}, xerrors.Errorf("scan error: %w", err)
 	}
 	return m, nil
+}
+
+// addAttribute records one unfolded attribute line of the main section.
+func (m *manifest) addAttribute(line string) {
+	// Skip variables. e.g. Bundle-Name: %bundleName
+	ss := strings.Fields(line)
+	if len(ss) <= 1 || strings.HasPrefix(ss[1], "%") {
+		return
+	}
+
+	// It is not determined which fields are present in each application.
+	// In some cases, none of them are included, in which case they cannot be detected.
+	switch {
+	case strings.HasPrefix(line, "Implementation-Version:"):
+		m.implementationVersion = strings.TrimPrefix(line, "Implementation-Version:")
+	case strings.HasPrefix(line, "Implementation-Title:"):
+		m.implementationTitle = strings.TrimPrefix(line, "Implementation-Title:")
+	case strings.HasPrefix(line, "Implementation-Vendor:"):
+		m.implementationVendor = strings.TrimPrefix(line, "Implementation-Vendor:")
+	case strings.HasPrefix(line, "Implementation-Vendor-Id:"):
+		m.implementationVendorId = strings.TrimPrefix(line, "Implementation-Vendor-Id:")
+	case strings.HasPrefix(line, "Specification-Version:"):
+		m.specificationVersion = strings.TrimPrefix(line, "Specification-Version:")
+	case strings.HasPrefix(line, "Specification-Title:"):
+		m.specificationTitle = strings.TrimPrefix(line, "Specification-Title:")
+	case strings.HasPrefix(line, "Specification-Vendor:"):
+		m.specificationVendor = strings.TrimPrefix(line, "Specification-Vendor:")
+	case strings.HasPrefix(line, "Bundle-Version:"):
+		m.bundleVersion = strings.TrimPrefix(line, "Bundle-Version:")
+	case strings.HasPrefix(line, "Bundle-Name:"):
+		m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
+	case strings.HasPrefix(line, "Bundle-SymbolicName:"):
+		m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
+	case strings.HasPrefix(line, "Bundle-License:"):
+		m.bundleLicense = strings.TrimPrefix(line, "Bundle-License:")
+	case strings.HasPrefix(line, "Plugin-License-Name"):
+		m.pluginLicenseNames = append(m.pluginLicenseNames, line)
+	}
 }
 
 // parseBundleLicense resolves the OSGi Bundle-License header to SPDX license IDs.
@@ -833,7 +839,7 @@ func parsePluginLicenseName(line string) string {
 // licenseNames returns the license names declared in the manifest: the Jenkins
 // Plugin-License-Name attributes if present, otherwise the OSGi Bundle-License
 // entries resolved to SPDX IDs.
-func (m manifest) licenseNames() []string {
+func (m *manifest) licenseNames() []string {
 	var names []string
 	for _, line := range m.pluginLicenseNames {
 		if name := parsePluginLicenseName(line); name != "" {
@@ -846,7 +852,7 @@ func (m manifest) licenseNames() []string {
 
 	return names
 }
-func (m manifest) properties(filePath string) Properties {
+func (m *manifest) properties(filePath string) Properties {
 	groupID, err := m.determineGroupID()
 	if err != nil {
 		return Properties{}
@@ -870,7 +876,7 @@ func (m manifest) properties(filePath string) Properties {
 	}
 }
 
-func (m manifest) determineGroupID() (string, error) {
+func (m *manifest) determineGroupID() (string, error) {
 	var groupID string
 	switch {
 	case m.implementationVendorId != "":
@@ -893,7 +899,7 @@ func (m manifest) determineGroupID() (string, error) {
 	return strings.TrimSpace(groupID), nil
 }
 
-func (m manifest) determineArtifactID() (string, error) {
+func (m *manifest) determineArtifactID() (string, error) {
 	var artifactID string
 	switch {
 	case m.implementationTitle != "":
@@ -908,7 +914,7 @@ func (m manifest) determineArtifactID() (string, error) {
 	return strings.TrimSpace(artifactID), nil
 }
 
-func (m manifest) determineVersion() (string, error) {
+func (m *manifest) determineVersion() (string, error) {
 	var version string
 	switch {
 	case m.implementationVersion != "":

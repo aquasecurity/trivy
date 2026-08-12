@@ -14,7 +14,7 @@ var (
 )
 
 // BundleLicense exposes the unexported bundleLicense field to tests.
-func (m manifest) BundleLicense() string { return m.bundleLicense }
+func (m *manifest) BundleLicense() string { return m.bundleLicense }
 
 // ManifestProperties parses a MANIFEST.MF and returns the artifact properties its main section yields.
 func ManifestProperties(r io.Reader, filePath string) (Properties, error) {
