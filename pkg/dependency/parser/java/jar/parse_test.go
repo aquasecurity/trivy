@@ -1,6 +1,8 @@
 package jar_test
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -32,16 +34,19 @@ var (
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-databind",
 			Version:  "2.9.10.6",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-annotations",
 			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-core",
 			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 		},
 		{
@@ -405,43 +410,50 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParsePluginLicenseName(t *testing.T) {
+func TestParsePluginLicenseNames(t *testing.T) {
 	tests := []struct {
-		name string
-		line string
-		want string
+		name     string
+		manifest string
+		want     []string
 	}{
 		{
-			name: "plugin license name",
-			line: "Plugin-License-Name: Apache License, Version 2.0",
-			want: "Apache License, Version 2.0",
+			name:     "plugin license name",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n",
+			want:     []string{"Apache License, Version 2.0"},
 		},
 		{
-			name: "suffixed plugin license name",
-			line: "Plugin-License-Name-2: MIT License",
-			want: "MIT License",
+			name: "suffixed plugin license names",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n" +
+				"Plugin-License-Name-2: MIT License\n",
+			want: []string{
+				"Apache License, Version 2.0",
+				"MIT License",
+			},
 		},
 		{
-			name: "trims license name",
-			line: "Plugin-License-Name:  MIT License  ",
-			want: "MIT License",
+			name:     "trims license name",
+			manifest: "Plugin-License-Name:  MIT License  \n",
+			want:     []string{"MIT License"},
 		},
 		{
-			name: "empty license name",
-			line: "Plugin-License-Name: ",
-			want: "",
+			name:     "empty license name",
+			manifest: "Plugin-License-Name: \n",
 		},
 		{
-			name: "non license line",
-			line: "Plugin-License-Url: https://opensource.org/licenses/MIT",
-			want: "",
+			name:     "other plugin license attribute",
+			manifest: "Plugin-License-Url: https://opensource.org/licenses/MIT\n",
+		},
+		{
+			name:     "attribute sharing the prefix",
+			manifest: "Plugin-License-NameSpace: MIT License\n",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := jar.ParsePluginLicenseName(tt.line)
-			assert.Equal(t, tt.want, got)
+			m, err := jar.ParseManifest(manifestZipEntry(t, tt.manifest))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, m.PluginLicenseNames())
 		})
 	}
 }
@@ -518,6 +530,21 @@ func TestDecodePomLicenses(t *testing.T) {
 			xml:  `<project><parent><groupId>com.example</groupId></parent></project>`,
 			want: nil,
 		},
+		{
+			name: "empty name falls back to url resolved to SPDX ID",
+			xml:  `<project><licenses><license><name></name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "name takes precedence over url",
+			xml:  `<project><licenses><license><name>The Apache Software License, Version 2.0</name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			name: "unresolvable url is skipped",
+			xml:  `<project><licenses><license><name></name><url>https://example.com/my-license</url></license></licenses></project>`,
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -585,4 +612,105 @@ func TestIsJarLicenseFile(t *testing.T) {
 			assert.Equal(t, tt.want, jar.IsJarLicenseFile(tt.path))
 		})
 	}
+}
+
+func TestParseBundleLicense(t *testing.T) {
+	tests := []struct {
+		name   string
+		header string
+		want   []string
+	}{
+		{
+			name:   "empty",
+			header: "",
+			want:   nil,
+		},
+		{
+			name:   "SPDX ID",
+			header: "Apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "SPDX ID is case-insensitive and canonicalized",
+			header: "apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "license URL",
+			header: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "OSGi structured form resolved via link",
+			header: `"Apache License 2.0";link="https://www.apache.org/licenses/LICENSE-2.0";description="Apache 2"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "name is an SPDX ID, link ignored",
+			header: `"MIT";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "multiple entries",
+			header: "Apache-2.0, https://opensource.org/licenses/MIT",
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "EXTERNAL token is skipped",
+			header: "<<EXTERNAL>>",
+			want:   nil,
+		},
+		{
+			name:   "free text is skipped",
+			header: "My Company License",
+			want:   nil,
+		},
+		{
+			name:   "unresolvable link is skipped",
+			header: `"Custom";link="https://example.com/license"`,
+			want:   nil,
+		},
+		{
+			name:   "resolvable and unresolvable entries mixed",
+			header: "Apache-2.0, My Company License",
+			want:   []string{"Apache-2.0"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, jar.ParseBundleLicense(tt.header))
+		})
+	}
+}
+
+// TestParseManifestFolding verifies that a header value wrapped onto the next
+// line (continued by a single leading space, as MANIFEST.MF folds long values)
+// is rejoined without inserting a space at the fold point.
+func TestParseManifestFolding(t *testing.T) {
+	mf := "Manifest-Version: 1.0\r\n" +
+		"Bundle-License: https://www.apache.org/licenses/LICEN\r\n" +
+		" SE-2.0.txt\r\n" +
+		"Bundle-Name: Example\r\n"
+
+	m, err := jar.ParseManifest(manifestZipEntry(t, mf))
+	require.NoError(t, err)
+	assert.Equal(t, "https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+}
+
+// manifestZipEntry packs the given MANIFEST.MF content into a zip archive and
+// returns its entry, as parseManifest reads the manifest straight from the JAR.
+func manifestZipEntry(t *testing.T, content string) *zip.File {
+	t.Helper()
+
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	w, err := zw.Create("META-INF/MANIFEST.MF")
+	require.NoError(t, err)
+	_, err = w.Write([]byte(content))
+	require.NoError(t, err)
+	require.NoError(t, zw.Close())
+
+	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	require.NoError(t, err)
+	return zr.File[0]
 }
