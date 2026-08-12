@@ -24,6 +24,7 @@ See [here](./index.md) for the detail.
 
 ## JAR/WAR/PAR/EAR
 To find information about your JAR[^2] file, Trivy parses `pom.properties` and `MANIFEST.MF` files in your JAR[^2] file and takes required properties[^3].
+Only the main section of `MANIFEST.MF` is used for artifact properties, because the individual sections that may follow it describe packages or files inside the archive rather than the archive itself.
 
 If those files don't exist or don't contain enough information - Trivy will try to find this JAR[^2] file in [trivy-java-db](https://github.com/aquasecurity/trivy-java-db).
 The Java DB will be automatically downloaded/updated when any JAR[^2] file is found.

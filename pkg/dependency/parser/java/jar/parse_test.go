@@ -586,3 +586,87 @@ func TestIsJarLicenseFile(t *testing.T) {
 		})
 	}
 }
+
+func TestManifestProperties(t *testing.T) {
+	tests := []struct {
+		name     string
+		manifest string
+		want     jar.Properties
+	}{
+		{
+			name: "main section only",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: Apache Commons Lang
+Implementation-Version: 3.17.0
+Implementation-Vendor-Id: org.apache.commons
+`,
+			want: jar.Properties{
+				GroupID:    "org.apache.commons",
+				ArtifactID: "Apache Commons Lang",
+				Version:    "3.17.0",
+				FilePath:   "commons-lang3-3.17.0.jar",
+			},
+		},
+		{
+			name: "individual sections do not override the main section",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: xercesImpl
+Implementation-Version: 2.12.2
+Implementation-Vendor-Id: xerces
+
+Name: org/apache/xerces/xni/
+Implementation-Title: org.apache.xerces.xni
+Implementation-Version: 1.2
+Implementation-Vendor-Id: org.apache.xerces
+`,
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			// The attributes describe a package inside the archive, not the archive itself,
+			// so the artifact stays unidentified and the caller falls back to another source.
+			name: "artifact attributes only in an individual section",
+			manifest: `Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.10.14
+Created-By: 22.0.2+9-70 (Oracle Corporation)
+
+Name: org/apache/tools/ant/
+Implementation-Title: org.apache.tools.ant
+Implementation-Version: 1.10.15
+Implementation-Vendor: Apache Software Foundation
+`,
+			want: jar.Properties{},
+		},
+		{
+			name:     "CRLF line endings",
+			manifest: "Manifest-Version: 1.0\r\nImplementation-Title: xercesImpl\r\nImplementation-Version: 2.12.2\r\nImplementation-Vendor-Id: xerces\r\n\r\nName: org/apache/xerces/xni/\r\nImplementation-Version: 1.2\r\n",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			name:     "CR line endings",
+			manifest: "Manifest-Version: 1.0\rImplementation-Title: xercesImpl\rImplementation-Version: 2.12.2\rImplementation-Vendor-Id: xerces\r\rName: org/apache/xerces/xni/\rImplementation-Version: 1.2\r",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.ManifestProperties(strings.NewReader(tt.manifest), tt.want.FilePath)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
