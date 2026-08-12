@@ -8891,7 +8891,8 @@ You're not viewing the latest version of the documentation.
 <p>These may be enabled or disabled depending on the target.
 See <a href="../">here</a> for the detail.</p>
 <h2 id="jarwarparear">JAR/WAR/PAR/EAR<a class="headerlink" href="#jarwarparear" title="Permanent link">&para;</a></h2>
-<p>To find information about your JAR<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file, Trivy parses <code>pom.properties</code> and <code>MANIFEST.MF</code> files in your JAR<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file and takes required properties<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.</p>
+<p>To find information about your JAR<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file, Trivy parses <code>pom.properties</code> and <code>MANIFEST.MF</code> files in your JAR<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file and takes required properties<sup id="fnref:3"><a class="footnote-ref" href="#fn:3">3</a></sup>.
+Only the main section of <code>MANIFEST.MF</code> is used for artifact properties, because the individual sections that may follow it describe packages or files inside the archive rather than the archive itself.</p>
 <p>If those files don't exist or don't contain enough information - Trivy will try to find this JAR<sup id="fnref3:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file in <a href="https://github.com/aquasecurity/trivy-java-db">trivy-java-db</a>.
 The Java DB will be automatically downloaded/updated when any JAR<sup id="fnref4:2"><a class="footnote-ref" href="#fn:2">2</a></sup> file is found.
 It is stored in <a href="../../../configuration/cache/#cache-directory">the cache directory</a>.</p>
