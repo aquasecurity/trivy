@@ -110,8 +110,11 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 	}
 
 	data := make(map[string]cty.Value)
+	var marks cty.ValueMarks
 	if isNotEmptyObject(src) {
-		data = src.AsValueMap()
+		var unmarked cty.Value
+		unmarked, marks = src.Unmark()
+		data = unmarked.AsValueMap()
 		if attr, ok := data[parts[0]]; ok {
 			src = attr
 		} else {
@@ -121,10 +124,13 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 
 	data[parts[0]] = mergeVars(src, parts[1:], value)
 
-	return cty.ObjectVal(data)
+	return cty.ObjectVal(data).WithMarks(marks)
 }
 
 func mergeObjects(a, b cty.Value) cty.Value {
+	a, aMarks := a.Unmark()
+	b, bMarks := b.Unmark()
+
 	output := make(map[string]cty.Value)
 
 	maps.Copy(output, a.AsValueMap())
@@ -138,7 +144,7 @@ func mergeObjects(a, b cty.Value) cty.Value {
 		}
 		return false
 	})
-	return cty.ObjectVal(output)
+	return cty.ObjectVal(output).WithMarks(aMarks, bMarks)
 }
 
 func isNotEmptyObject(val cty.Value) bool {

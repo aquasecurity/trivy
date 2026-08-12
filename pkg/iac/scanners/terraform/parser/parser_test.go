@@ -2958,6 +2958,12 @@ func Test_MarkedValues(t *testing.T) {
   test = sensitive({})
 }`,
 		},
+		{
+			name: "marked non-empty object",
+			src: `resource "foo" "bar" {
+  test = sensitive({ id = "some_id" })
+}`,
+		},
 	}
 
 	for _, tt := range tests {
