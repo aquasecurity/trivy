@@ -8536,6 +8536,13 @@ bicep build main.bicep
 </code></pre></div>
 <h2 id="misconfiguration">Misconfiguration<a class="headerlink" href="#misconfiguration" title="Permanent link">&para;</a></h2>
 <p>Trivy recursively searches directories and scans all found Azure ARM templates.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>ARM template expressions (e.g. <code>[parameters('name')]</code>, <code>[concat(...)]</code>) are not evaluated.
+A property whose value is an expression is treated as if it were not set, so checks may produce
+inaccurate results for such properties. This is especially relevant for templates built from Bicep,
+where expressions are common.</p>
+</div>
 <h2 id="secret">Secret<a class="headerlink" href="#secret" title="Permanent link">&para;</a></h2>
 <p>The secret scan is performed on plain text files, with no special treatment for Azure ARM templates.</p>
 <div class="footnote">
