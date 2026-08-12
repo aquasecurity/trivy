@@ -24,7 +24,7 @@ func adaptClusters(modules terraform.Modules) []documentdb.Cluster {
 
 func adaptCluster(resource *terraform.Block, module *terraform.Module) documentdb.Cluster {
 	identifierAttr := resource.GetAttribute("cluster_identifier")
-	identifierVal := identifierAttr.AsStringValueOrDefault("", resource)
+	identifierVal := identifierAttr.AsStringValue()
 
 	var enabledLogExports []types.StringValue
 	var instances []documentdb.Instance
@@ -37,7 +37,7 @@ func adaptCluster(resource *terraform.Block, module *terraform.Module) documentd
 	instancesRes := module.GetReferencingResources(resource, "aws_docdb_cluster_instance", "cluster_identifier")
 	for _, instanceRes := range instancesRes {
 		keyIDAttr := instanceRes.GetAttribute("kms_key_id")
-		keyIDVal := keyIDAttr.AsStringValueOrDefault("", instanceRes)
+		keyIDVal := keyIDAttr.AsStringValue()
 
 		instances = append(instances, documentdb.Instance{
 			Metadata: instanceRes.GetMetadata(),
@@ -46,16 +46,16 @@ func adaptCluster(resource *terraform.Block, module *terraform.Module) documentd
 	}
 
 	storageEncryptedAttr := resource.GetAttribute("storage_encrypted")
-	storageEncryptedVal := storageEncryptedAttr.AsBoolValueOrDefault(false, resource)
+	storageEncryptedVal := storageEncryptedAttr.AsBoolValue()
 
 	KMSKeyIDAttr := resource.GetAttribute("kms_key_id")
-	KMSKeyIDVal := KMSKeyIDAttr.AsStringValueOrDefault("", resource)
+	KMSKeyIDVal := KMSKeyIDAttr.AsStringValue()
 
 	return documentdb.Cluster{
 		Metadata:              resource.GetMetadata(),
 		Identifier:            identifierVal,
 		EnabledLogExports:     enabledLogExports,
-		BackupRetentionPeriod: resource.GetAttribute("backup_retention_period").AsIntValueOrDefault(0, resource),
+		BackupRetentionPeriod: resource.GetAttribute("backup_retention_period").AsIntValue(),
 		Instances:             instances,
 		StorageEncrypted:      storageEncryptedVal,
 		KMSKeyID:              KMSKeyIDVal,

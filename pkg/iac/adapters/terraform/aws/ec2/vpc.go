@@ -123,7 +123,7 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 	var egressRules []ec2.SecurityGroupRule
 
 	descriptionAttr := resource.GetAttribute("description")
-	descriptionVal := descriptionAttr.AsStringValueOrDefault("Managed by Terraform", resource)
+	descriptionVal := descriptionAttr.AsStringValue("Managed by Terraform")
 
 	ingressBlocks := resource.GetBlocks("ingress")
 	for _, ingressBlock := range ingressBlocks {
@@ -161,13 +161,13 @@ func (a *sgAdapter) adaptSecurityGroup(resource *terraform.Block, module terrafo
 		IngressRules: ingressRules,
 		EgressRules:  egressRules,
 		IsDefault:    iacTypes.Bool(false, iacTypes.NewUnmanagedMetadata()),
-		VPCID:        resource.GetAttribute("vpc_id").AsStringValueOrDefault("", resource),
+		VPCID:        resource.GetAttribute("vpc_id").AsStringValue(),
 	}
 }
 
 func adaptSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
 	ruleDescAttr := resource.GetAttribute("description")
-	ruleDescVal := ruleDescAttr.AsStringValueOrDefault("", resource)
+	ruleDescVal := ruleDescAttr.AsStringValue()
 
 	var cidrs []iacTypes.StringValue
 
@@ -183,7 +183,7 @@ func adaptSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
 	}
 
 	protocolAddr := resource.GetAttribute("protocol")
-	protocol := protocolAddr.AsStringValueOrDefault("", resource)
+	protocol := protocolAddr.AsStringValue()
 	if protocolAddr.IsNumber() {
 		protocol = iacTypes.String(strconv.Itoa(int(protocolAddr.AsNumber())), protocolAddr.GetMetadata())
 	}
@@ -192,30 +192,30 @@ func adaptSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
 		Metadata:    resource.GetMetadata(),
 		Description: ruleDescVal,
 		CIDRs:       cidrs,
-		FromPort:    resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
-		ToPort:      resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
+		FromPort:    resource.GetAttribute("from_port").AsIntValue(-1),
+		ToPort:      resource.GetAttribute("to_port").AsIntValue(-1),
 		Protocol:    protocol,
 	}
 }
 
 func adaptSingleSGRule(resource *terraform.Block) ec2.SecurityGroupRule {
-	description := resource.GetAttribute("description").AsStringValueOrDefault("", resource)
+	description := resource.GetAttribute("description").AsStringValue()
 
 	var cidrs []iacTypes.StringValue
 	if ipv4 := resource.GetAttribute("cidr_ipv4"); ipv4.IsNotNil() {
-		cidrs = append(cidrs, ipv4.AsStringValueOrDefault("", resource))
+		cidrs = append(cidrs, ipv4.AsStringValue())
 	}
 	if ipv6 := resource.GetAttribute("cidr_ipv6"); ipv6.IsNotNil() {
-		cidrs = append(cidrs, ipv6.AsStringValueOrDefault("", resource))
+		cidrs = append(cidrs, ipv6.AsStringValue())
 	}
 
 	return ec2.SecurityGroupRule{
 		Metadata:    resource.GetMetadata(),
 		Description: description,
 		CIDRs:       cidrs,
-		FromPort:    resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
-		ToPort:      resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
-		Protocol:    resource.GetAttribute("ip_protocol").AsStringValueOrDefault("", resource),
+		FromPort:    resource.GetAttribute("from_port").AsIntValue(-1),
+		ToPort:      resource.GetAttribute("to_port").AsIntValue(-1),
+		Protocol:    resource.GetAttribute("ip_protocol").AsStringValue(),
 	}
 }
 
@@ -246,18 +246,18 @@ func adaptNetworkACLRule(resource *terraform.Block) ec2.NetworkACLRule {
 	}
 
 	actionAttr := resource.GetAttribute("rule_action")
-	actionVal := actionAttr.AsStringValueOrDefault("", resource)
+	actionVal := actionAttr.AsStringValue()
 
 	protocolAtrr := resource.GetAttribute("protocol")
-	protocolVal := protocolAtrr.AsStringValueOrDefault("", resource)
+	protocolVal := protocolAtrr.AsStringValue()
 
 	cidrAttr := resource.GetAttribute("cidr_block")
 	if cidrAttr.IsNotNil() {
-		cidrs = append(cidrs, cidrAttr.AsStringValueOrDefault("", resource))
+		cidrs = append(cidrs, cidrAttr.AsStringValue())
 	}
 	ipv4cidrAttr := resource.GetAttribute("ipv6_cidr_block")
 	if ipv4cidrAttr.IsNotNil() {
-		cidrs = append(cidrs, ipv4cidrAttr.AsStringValueOrDefault("", resource))
+		cidrs = append(cidrs, ipv4cidrAttr.AsStringValue())
 	}
 
 	return ec2.NetworkACLRule{
@@ -266,7 +266,7 @@ func adaptNetworkACLRule(resource *terraform.Block) ec2.NetworkACLRule {
 		Action:   actionVal,
 		Protocol: protocolVal,
 		CIDRs:    cidrs,
-		FromPort: resource.GetAttribute("from_port").AsIntValueOrDefault(-1, resource),
-		ToPort:   resource.GetAttribute("to_port").AsIntValueOrDefault(-1, resource),
+		FromPort: resource.GetAttribute("from_port").AsIntValue(-1),
+		ToPort:   resource.GetAttribute("to_port").AsIntValue(-1),
 	}
 }

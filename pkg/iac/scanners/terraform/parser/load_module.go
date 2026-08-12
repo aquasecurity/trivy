@@ -132,7 +132,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 
 	e.logger.Debug("Locating non-initialized module", log.String("source", source))
 
-	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
+	version := b.GetAttribute("version").AsStringValue().Value()
 	opt := resolvers.Options{
 		Source:          source,
 		OriginalSource:  source,

@@ -36,16 +36,16 @@ func adaptPostgreSQLServer(resource *terraform.Block, module *terraform.Module) 
 		Server: database.Server{
 			Metadata: resource.GetMetadata(),
 			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
-				AsBoolValueOrDefault(false, resource),
+				AsBoolValue(false),
 			MinimumTLSVersion: resource.GetAttribute("ssl_minimal_tls_version_enforced").
-				AsStringValueOrDefault("TLS1_2", resource),
+				AsStringValue("TLS1_2"),
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
-				AsBoolValueOrDefault(true, resource),
+				AsBoolValue(true),
 			FirewallRules: firewallRules,
 		},
 		Config: config,
 		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
-			AsBoolValueOrDefault(false, resource),
+			AsBoolValue(false),
 		ThreatDetectionPolicy: adaptThreatDetectionPolicy(resource, resource.GetMetadata()),
 	}
 }
@@ -74,12 +74,12 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 			EnableSSLEnforcement: params.requireSecureTransport,
 			MinimumTLSVersion:    params.tlsVersion,
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
-				AsBoolValueOrDefault(true, resource),
+				AsBoolValue(true),
 			FirewallRules: firewallRules,
 		},
 		Config: config,
 		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
-			AsBoolValueOrDefault(false, resource),
+			AsBoolValue(false),
 
 		// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
 		// It can only be configured via Azure CLI, so we mark it as unmanaged to avoid false positives
@@ -136,6 +136,6 @@ func adaptThreatDetectionPolicy(resource *terraform.Block, defaultMetadata iacTy
 
 	return database.ThreatDetectionPolicy{
 		Metadata: block.GetMetadata(),
-		Enabled:  block.GetAttribute("enabled").AsBoolValueOrDefault(false, block),
+		Enabled:  block.GetAttribute("enabled").AsBoolValue(),
 	}
 }

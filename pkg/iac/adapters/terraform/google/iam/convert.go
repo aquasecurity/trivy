@@ -12,7 +12,7 @@ func ParsePolicyBlock(block *terraform.Block) []iam.Binding {
 		binding := iam.Binding{
 			Metadata:                      bindingBlock.GetMetadata(),
 			Members:                       nil,
-			Role:                          bindingBlock.GetAttribute("role").AsStringValueOrDefault("", bindingBlock),
+			Role:                          bindingBlock.GetAttribute("role").AsStringValue(),
 			IncludesDefaultServiceAccount: iacTypes.BoolDefault(false, bindingBlock.GetMetadata()),
 		}
 		membersAttr := bindingBlock.GetAttribute("members")

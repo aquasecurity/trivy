@@ -17,6 +17,6 @@ func adaptNASInstances(modules terraform.Modules) []nas.NASInstance {
 func adaptNASInstance(resource *terraform.Block) nas.NASInstance {
 	return nas.NASInstance{
 		Metadata:  resource.GetMetadata(),
-		NetworkID: resource.GetAttribute("network_id").AsStringValueOrDefault("net-COMMON_PRIVATE", resource),
+		NetworkID: resource.GetAttribute("network_id").AsStringValue("net-COMMON_PRIVATE"),
 	}
 }

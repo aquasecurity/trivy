@@ -30,7 +30,7 @@ func (a *adapter) adaptProjects() {
 
 		a.projects[projectBlock.ID()] = &iam.Project{
 			Metadata:          projectBlock.GetMetadata().Root(),
-			AutoCreateNetwork: projectBlock.GetAttribute("auto_create_network").AsBoolValueOrDefault(true, projectBlock),
+			AutoCreateNetwork: projectBlock.GetAttribute("auto_create_network").AsBoolValue(true),
 		}
 	}
 }
@@ -42,8 +42,8 @@ func (a *adapter) adaptMember(iamBlock *terraform.Block) iam.Member {
 func AdaptMember(iamBlock *terraform.Block, modules terraform.Modules) iam.Member {
 	member := iam.Member{
 		Metadata:              iamBlock.GetMetadata(),
-		Member:                iamBlock.GetAttribute("member").AsStringValueOrDefault("", iamBlock),
-		Role:                  iamBlock.GetAttribute("role").AsStringValueOrDefault("", iamBlock),
+		Member:                iamBlock.GetAttribute("member").AsStringValue(),
+		Role:                  iamBlock.GetAttribute("role").AsStringValue(),
 		DefaultServiceAccount: iacTypes.BoolDefault(false, iamBlock.GetMetadata()),
 	}
 
@@ -101,7 +101,7 @@ func AdaptBinding(iamBlock *terraform.Block, modules terraform.Modules) iam.Bind
 	binding := iam.Binding{
 		Metadata:                      iamBlock.GetMetadata(),
 		Members:                       nil,
-		Role:                          iamBlock.GetAttribute("role").AsStringValueOrDefault("", iamBlock),
+		Role:                          iamBlock.GetAttribute("role").AsStringValue(),
 		IncludesDefaultServiceAccount: iacTypes.BoolDefault(false, iamBlock.GetMetadata()),
 	}
 	membersAttr := iamBlock.GetAttribute("members")
@@ -233,13 +233,13 @@ func (a *adapter) adaptProjectAuditConfigs() {
 func AdaptAuditConfig(block *terraform.Block) iam.AuditConfig {
 	auditConfig := iam.AuditConfig{
 		Metadata: block.GetMetadata(),
-		Service:  block.GetAttribute("service").AsStringValueOrDefault("", block),
+		Service:  block.GetAttribute("service").AsStringValue(),
 	}
 
 	for _, logConfigBlock := range block.GetBlocks("audit_log_config") {
 		logConfig := iam.AuditLogConfig{
 			Metadata: logConfigBlock.GetMetadata(),
-			LogType:  logConfigBlock.GetAttribute("log_type").AsStringValueOrDefault("", logConfigBlock),
+			LogType:  logConfigBlock.GetAttribute("log_type").AsStringValue(),
 		}
 
 		// Parse exempted_members array

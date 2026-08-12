@@ -24,17 +24,17 @@ func adaptLogGroups(modules terraform.Modules) []cloudwatch.LogGroup {
 
 func adaptLogGroup(resource *terraform.Block, module *terraform.Module) cloudwatch.LogGroup {
 	nameAttr := resource.GetAttribute("name")
-	nameVal := nameAttr.AsStringValueOrDefault("", resource)
+	nameVal := nameAttr.AsStringValue()
 
 	KMSKeyIDAttr := resource.GetAttribute("kms_key_id")
-	KMSKeyIDVal := KMSKeyIDAttr.AsStringValueOrDefault("", resource)
+	KMSKeyIDVal := KMSKeyIDAttr.AsStringValue()
 
 	if keyBlock, err := module.GetReferencedBlock(KMSKeyIDAttr, resource); err == nil {
 		KMSKeyIDVal = types.String(keyBlock.FullName(), keyBlock.GetMetadata())
 	}
 
 	retentionInDaysAttr := resource.GetAttribute("retention_in_days")
-	retentionInDaysVal := retentionInDaysAttr.AsIntValueOrDefault(0, resource)
+	retentionInDaysVal := retentionInDaysAttr.AsIntValue()
 
 	return cloudwatch.LogGroup{
 		Metadata:        resource.GetMetadata(),

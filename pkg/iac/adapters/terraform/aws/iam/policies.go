@@ -13,7 +13,7 @@ func parsePolicy(policyBlock *terraform.Block, modules terraform.Modules) (iam.P
 	nameAttr := policyBlock.GetAttribute("name")
 	policy := iam.Policy{
 		Metadata: policyBlock.GetMetadata(),
-		Name:     nameAttr.AsStringValueOrDefault("", policyBlock),
+		Name:     nameAttr.AsStringValue(),
 		Document: iam.Document{
 			Metadata: iacTypes.NewUnmanagedMetadata(),
 			Parsed:   iamgo.Document{},
@@ -95,7 +95,7 @@ func applyForDependentResource[T any](
 }
 
 func isDependentBlock(refBlock *terraform.Block, refAttrName string, relatedAttr *terraform.Attribute) bool {
-	refAttr := refBlock.GetAttribute(refAttrName).AsStringValueOrDefault("", refBlock).Value()
+	refAttr := refBlock.GetAttribute(refAttrName).AsStringValue().Value()
 	return relatedAttr.Equals(refBlock.ID()) || relatedAttr.Equals(refAttr) || relatedAttr.ReferencesBlock(refBlock)
 }
 

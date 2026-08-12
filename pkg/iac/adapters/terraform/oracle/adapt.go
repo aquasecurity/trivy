@@ -19,7 +19,7 @@ func adaptCompute(modules terraform.Modules) oracle.Compute {
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("opc_compute_ip_address_reservation") {
 			addressPoolAttr := resource.GetAttribute("ip_address_pool")
-			addressPoolVal := addressPoolAttr.AsStringValueOrDefault("", resource)
+			addressPoolVal := addressPoolAttr.AsStringValue()
 			compute.AddressReservations = append(compute.AddressReservations, oracle.AddressReservation{
 				Metadata: resource.GetMetadata(),
 				Pool:     addressPoolVal,

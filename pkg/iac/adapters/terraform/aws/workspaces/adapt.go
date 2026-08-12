@@ -44,13 +44,13 @@ func adaptWorkspace(resource *terraform.Block) workspaces.WorkSpace {
 	if rootVolumeEncryptAttr := resource.GetAttribute("root_volume_encryption_enabled"); rootVolumeEncryptAttr.IsNotNil() {
 		workspace.RootVolume.Metadata = rootVolumeEncryptAttr.GetMetadata()
 		workspace.RootVolume.Encryption.Metadata = rootVolumeEncryptAttr.GetMetadata()
-		workspace.RootVolume.Encryption.Enabled = rootVolumeEncryptAttr.AsBoolValueOrDefault(false, resource)
+		workspace.RootVolume.Encryption.Enabled = rootVolumeEncryptAttr.AsBoolValue()
 	}
 
 	if userVolumeEncryptAttr := resource.GetAttribute("user_volume_encryption_enabled"); userVolumeEncryptAttr.IsNotNil() {
 		workspace.UserVolume.Metadata = userVolumeEncryptAttr.GetMetadata()
 		workspace.UserVolume.Encryption.Metadata = userVolumeEncryptAttr.GetMetadata()
-		workspace.UserVolume.Encryption.Enabled = userVolumeEncryptAttr.AsBoolValueOrDefault(false, resource)
+		workspace.UserVolume.Encryption.Enabled = userVolumeEncryptAttr.AsBoolValue()
 	}
 
 	return workspace

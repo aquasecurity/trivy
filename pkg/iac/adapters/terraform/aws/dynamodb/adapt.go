@@ -48,12 +48,12 @@ func adaptCluster(resource *terraform.Block, _ *terraform.Module) dynamodb.DAXCl
 	if ssEncryptionBlock := resource.GetBlock("server_side_encryption"); ssEncryptionBlock.IsNotNil() {
 		cluster.ServerSideEncryption.Metadata = ssEncryptionBlock.GetMetadata()
 		enabledAttr := ssEncryptionBlock.GetAttribute("enabled")
-		cluster.ServerSideEncryption.Enabled = enabledAttr.AsBoolValueOrDefault(false, ssEncryptionBlock)
+		cluster.ServerSideEncryption.Enabled = enabledAttr.AsBoolValue()
 	}
 
 	if recoveryBlock := resource.GetBlock("point_in_time_recovery"); recoveryBlock.IsNotNil() {
 		recoveryEnabledAttr := recoveryBlock.GetAttribute("enabled")
-		cluster.PointInTimeRecovery = recoveryEnabledAttr.AsBoolValueOrDefault(false, recoveryBlock)
+		cluster.PointInTimeRecovery = recoveryEnabledAttr.AsBoolValue()
 	}
 
 	return cluster
@@ -74,10 +74,10 @@ func adaptTable(resource *terraform.Block, module *terraform.Module) dynamodb.Ta
 	if ssEncryptionBlock := resource.GetBlock("server_side_encryption"); ssEncryptionBlock.IsNotNil() {
 		table.ServerSideEncryption.Metadata = ssEncryptionBlock.GetMetadata()
 		enabledAttr := ssEncryptionBlock.GetAttribute("enabled")
-		table.ServerSideEncryption.Enabled = enabledAttr.AsBoolValueOrDefault(false, ssEncryptionBlock)
+		table.ServerSideEncryption.Enabled = enabledAttr.AsBoolValue()
 
 		kmsKeyIdAttr := ssEncryptionBlock.GetAttribute("kms_key_arn")
-		table.ServerSideEncryption.KMSKeyID = kmsKeyIdAttr.AsStringValueOrDefault(dynamodb.DefaultKMSKeyID, ssEncryptionBlock)
+		table.ServerSideEncryption.KMSKeyID = kmsKeyIdAttr.AsStringValue(dynamodb.DefaultKMSKeyID)
 
 		kmsBlock, err := module.GetReferencedBlock(kmsKeyIdAttr, resource)
 		if err == nil && kmsBlock.IsNotNil() {
@@ -87,7 +87,7 @@ func adaptTable(resource *terraform.Block, module *terraform.Module) dynamodb.Ta
 
 	if recoveryBlock := resource.GetBlock("point_in_time_recovery"); recoveryBlock.IsNotNil() {
 		recoveryEnabledAttr := recoveryBlock.GetAttribute("enabled")
-		table.PointInTimeRecovery = recoveryEnabledAttr.AsBoolValueOrDefault(false, recoveryBlock)
+		table.PointInTimeRecovery = recoveryEnabledAttr.AsBoolValue()
 	}
 
 	return table

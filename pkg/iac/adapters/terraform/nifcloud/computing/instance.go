@@ -22,14 +22,14 @@ func adaptInstance(resource *terraform.Block) computing.Instance {
 			networkInterfaces,
 			computing.NetworkInterface{
 				Metadata:  networkInterfaceBlock.GetMetadata(),
-				NetworkID: networkInterfaceBlock.GetAttribute("network_id").AsStringValueOrDefault("", resource),
+				NetworkID: networkInterfaceBlock.GetAttribute("network_id").AsStringValue(),
 			},
 		)
 	}
 
 	return computing.Instance{
 		Metadata:          resource.GetMetadata(),
-		SecurityGroup:     resource.GetAttribute("security_group").AsStringValueOrDefault("", resource),
+		SecurityGroup:     resource.GetAttribute("security_group").AsStringValue(),
 		NetworkInterfaces: networkInterfaces,
 	}
 }

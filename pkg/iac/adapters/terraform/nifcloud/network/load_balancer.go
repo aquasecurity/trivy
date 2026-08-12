@@ -51,12 +51,12 @@ func adaptListener(resource *terraform.Block) network.LoadBalancerListener {
 
 	policyIDAttr := resource.GetAttribute("ssl_policy_id")
 	if policyIDAttr.IsNotNil() && policyIDAttr.IsString() {
-		policyVal = policyIDAttr.AsStringValueOrDefault("", resource)
+		policyVal = policyIDAttr.AsStringValue()
 	}
 
 	policyNameAttr := resource.GetAttribute("ssl_policy_name")
 	if policyNameAttr.IsNotNil() && policyNameAttr.IsString() {
-		policyVal = policyNameAttr.AsStringValueOrDefault("", resource)
+		policyVal = policyNameAttr.AsStringValue()
 	}
 
 	return network.LoadBalancerListener{

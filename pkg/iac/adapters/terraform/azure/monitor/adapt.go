@@ -39,9 +39,9 @@ func adaptLogProfile(resource *terraform.Block) monitor.LogProfile {
 	if retentionPolicyBlock := resource.GetBlock("retention_policy"); retentionPolicyBlock.IsNotNil() {
 		logProfile.RetentionPolicy.Metadata = retentionPolicyBlock.GetMetadata()
 		enabledAttr := retentionPolicyBlock.GetAttribute("enabled")
-		logProfile.RetentionPolicy.Enabled = enabledAttr.AsBoolValueOrDefault(false, resource)
+		logProfile.RetentionPolicy.Enabled = enabledAttr.AsBoolValue()
 		daysAttr := retentionPolicyBlock.GetAttribute("days")
-		logProfile.RetentionPolicy.Days = daysAttr.AsIntValueOrDefault(0, resource)
+		logProfile.RetentionPolicy.Days = daysAttr.AsIntValue()
 	}
 
 	if categoriesAttr := resource.GetAttribute("categories"); categoriesAttr.IsNotNil() {

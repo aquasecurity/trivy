@@ -11,7 +11,7 @@ func adaptGroups(modules terraform.Modules) []iam.Group {
 	for _, groupBlock := range modules.GetResourcesByType("aws_iam_group") {
 		group := iam.Group{
 			Metadata: groupBlock.GetMetadata(),
-			Name:     groupBlock.GetAttribute("name").AsStringValueOrDefault("", groupBlock),
+			Name:     groupBlock.GetAttribute("name").AsStringValue(),
 		}
 
 		if policy, ok := applyForDependentResource(

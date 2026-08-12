@@ -58,13 +58,13 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 		if encryptionInTransitBlock := encryptBlock.GetBlock("encryption_in_transit"); encryptionInTransitBlock.IsNotNil() {
 			cluster.EncryptionInTransit.Metadata = encryptionInTransitBlock.GetMetadata()
 			if clientBrokerAttr := encryptionInTransitBlock.GetAttribute("client_broker"); clientBrokerAttr.IsNotNil() {
-				cluster.EncryptionInTransit.ClientBroker = clientBrokerAttr.AsStringValueOrDefault("TLS", encryptionInTransitBlock)
+				cluster.EncryptionInTransit.ClientBroker = clientBrokerAttr.AsStringValue("TLS")
 			}
 		}
 
 		if encryptionAtRestAttr := encryptBlock.GetAttribute("encryption_at_rest_kms_key_arn"); encryptionAtRestAttr.IsNotNil() {
 			cluster.EncryptionAtRest.Metadata = encryptionAtRestAttr.GetMetadata()
-			cluster.EncryptionAtRest.KMSKeyARN = encryptionAtRestAttr.AsStringValueOrDefault("", encryptBlock)
+			cluster.EncryptionAtRest.KMSKeyARN = encryptionAtRestAttr.AsStringValue()
 			cluster.EncryptionAtRest.Enabled = iacTypes.Bool(true, encryptionAtRestAttr.GetMetadata())
 		}
 	}
@@ -76,17 +76,17 @@ func adaptCluster(resource *terraform.Block) msk.Cluster {
 			if s3Block := brokerLogsBlock.GetBlock("s3"); s3Block.IsNotNil() {
 				s3enabledAttr := s3Block.GetAttribute("enabled")
 				cluster.Logging.Broker.S3.Metadata = s3Block.GetMetadata()
-				cluster.Logging.Broker.S3.Enabled = s3enabledAttr.AsBoolValueOrDefault(false, s3Block)
+				cluster.Logging.Broker.S3.Enabled = s3enabledAttr.AsBoolValue()
 			}
 			if cloudwatchBlock := brokerLogsBlock.GetBlock("cloudwatch_logs"); cloudwatchBlock.IsNotNil() {
 				cwEnabledAttr := cloudwatchBlock.GetAttribute("enabled")
 				cluster.Logging.Broker.Cloudwatch.Metadata = cloudwatchBlock.GetMetadata()
-				cluster.Logging.Broker.Cloudwatch.Enabled = cwEnabledAttr.AsBoolValueOrDefault(false, cloudwatchBlock)
+				cluster.Logging.Broker.Cloudwatch.Enabled = cwEnabledAttr.AsBoolValue()
 			}
 			if firehoseBlock := brokerLogsBlock.GetBlock("firehose"); firehoseBlock.IsNotNil() {
 				firehoseEnabledAttr := firehoseBlock.GetAttribute("enabled")
 				cluster.Logging.Broker.Firehose.Metadata = firehoseBlock.GetMetadata()
-				cluster.Logging.Broker.Firehose.Enabled = firehoseEnabledAttr.AsBoolValueOrDefault(false, firehoseBlock)
+				cluster.Logging.Broker.Firehose.Enabled = firehoseEnabledAttr.AsBoolValue()
 			}
 		}
 	}

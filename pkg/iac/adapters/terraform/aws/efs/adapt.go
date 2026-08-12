@@ -23,7 +23,7 @@ func adaptFileSystems(modules terraform.Modules) []efs.FileSystem {
 
 func adaptFileSystem(resource *terraform.Block) efs.FileSystem {
 	encryptedAttr := resource.GetAttribute("encrypted")
-	encryptedVal := encryptedAttr.AsBoolValueOrDefault(false, resource)
+	encryptedVal := encryptedAttr.AsBoolValue()
 
 	return efs.FileSystem{
 		Metadata:  resource.GetMetadata(),

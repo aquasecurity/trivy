@@ -41,10 +41,10 @@ func adaptCluster(resource *terraform.Block) neptune.Cluster {
 	}
 
 	storageEncryptedAttr := resource.GetAttribute("storage_encrypted")
-	cluster.StorageEncrypted = storageEncryptedAttr.AsBoolValueOrDefault(false, resource)
+	cluster.StorageEncrypted = storageEncryptedAttr.AsBoolValue()
 
 	KMSKeyAttr := resource.GetAttribute("kms_key_arn")
-	cluster.KMSKeyID = KMSKeyAttr.AsStringValueOrDefault("", resource)
+	cluster.KMSKeyID = KMSKeyAttr.AsStringValue()
 
 	return cluster
 }

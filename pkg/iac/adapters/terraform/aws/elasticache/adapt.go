@@ -44,13 +44,13 @@ func adaptSecurityGroups(modules terraform.Modules) []elasticache.SecurityGroup 
 
 func adaptCluster(resource *terraform.Block) elasticache.Cluster {
 	engineAttr := resource.GetAttribute("engine")
-	engineVal := engineAttr.AsStringValueOrDefault("", resource)
+	engineVal := engineAttr.AsStringValue()
 
 	nodeTypeAttr := resource.GetAttribute("node_type")
-	nodeTypeVal := nodeTypeAttr.AsStringValueOrDefault("", resource)
+	nodeTypeVal := nodeTypeAttr.AsStringValue()
 
 	snapshotRetentionAttr := resource.GetAttribute("snapshot_retention_limit")
-	snapshotRetentionVal := snapshotRetentionAttr.AsIntValueOrDefault(0, resource)
+	snapshotRetentionVal := snapshotRetentionAttr.AsIntValue()
 
 	return elasticache.Cluster{
 		Metadata:               resource.GetMetadata(),
@@ -62,10 +62,10 @@ func adaptCluster(resource *terraform.Block) elasticache.Cluster {
 
 func adaptReplicationGroup(resource *terraform.Block) elasticache.ReplicationGroup {
 	transitEncryptionAttr := resource.GetAttribute("transit_encryption_enabled")
-	transitEncryptionVal := transitEncryptionAttr.AsBoolValueOrDefault(false, resource)
+	transitEncryptionVal := transitEncryptionAttr.AsBoolValue()
 
 	atRestEncryptionAttr := resource.GetAttribute("at_rest_encryption_enabled")
-	atRestEncryptionVal := atRestEncryptionAttr.AsBoolValueOrDefault(false, resource)
+	atRestEncryptionVal := atRestEncryptionAttr.AsBoolValue()
 
 	return elasticache.ReplicationGroup{
 		Metadata:                 resource.GetMetadata(),
@@ -76,7 +76,7 @@ func adaptReplicationGroup(resource *terraform.Block) elasticache.ReplicationGro
 
 func adaptSecurityGroup(resource *terraform.Block) elasticache.SecurityGroup {
 	descriptionAttr := resource.GetAttribute("description")
-	descriptionVal := descriptionAttr.AsStringValueOrDefault("Managed by Terraform", resource)
+	descriptionVal := descriptionAttr.AsStringValue("Managed by Terraform")
 
 	return elasticache.SecurityGroup{
 		Metadata:    resource.GetMetadata(),

@@ -17,6 +17,6 @@ func adaptVpnGateways(modules terraform.Modules) []network.VpnGateway {
 func adaptVpnGateway(resource *terraform.Block) network.VpnGateway {
 	return network.VpnGateway{
 		Metadata:      resource.GetMetadata(),
-		SecurityGroup: resource.GetAttribute("security_group").AsStringValueOrDefault("", resource),
+		SecurityGroup: resource.GetAttribute("security_group").AsStringValue(),
 	}
 }

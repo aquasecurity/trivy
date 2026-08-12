@@ -23,7 +23,7 @@ func adaptBranchProtection(resource *terraform.Block) github.BranchProtection {
 
 	branchProtection := github.BranchProtection{
 		Metadata:             resource.GetMetadata(),
-		RequireSignedCommits: resource.GetAttribute("require_signed_commits").AsBoolValueOrDefault(false, resource),
+		RequireSignedCommits: resource.GetAttribute("require_signed_commits").AsBoolValue(),
 	}
 
 	return branchProtection

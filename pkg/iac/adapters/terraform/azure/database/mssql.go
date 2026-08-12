@@ -23,9 +23,9 @@ func adaptMSSQLServer(resource *terraform.Block, module *terraform.Module) datab
 
 	if resource.TypeLabel() == "azurerm_mssql_server" {
 		minTLSVersionAttr := resource.GetAttribute("minimum_tls_version")
-		minTLSVersionVal = minTLSVersionAttr.AsStringValueOrDefault("1.2", resource)
+		minTLSVersionVal = minTLSVersionAttr.AsStringValue("1.2")
 		publicAccessAttr := resource.GetAttribute("public_network_access_enabled")
-		publicAccessVal = publicAccessAttr.AsBoolValueOrDefault(true, resource)
+		publicAccessVal = publicAccessAttr.AsBoolValue(true)
 	}
 
 	var alertPolicies []database.SecurityAlertPolicy
@@ -79,7 +79,7 @@ func adaptMSSQLServer(resource *terraform.Block, module *terraform.Module) datab
 		},
 		ExtendedAuditingPolicies:      auditingPolicies,
 		SecurityAlertPolicies:         alertPolicies,
-		AdministratorLogin:            resource.GetAttribute("administrator_login").AsStringValueOrDefault("", resource),
+		AdministratorLogin:            resource.GetAttribute("administrator_login").AsStringValue(),
 		ActiveDirectoryAdministrators: adAdmins,
 	}
 }
@@ -90,21 +90,21 @@ func adaptMSSQLSecurityAlertPolicy(resource *terraform.Block) database.SecurityA
 		EmailAddresses: resource.GetAttribute("email_addresses").AsStringValues(),
 		DisabledAlerts: resource.GetAttribute("disabled_alerts").AsStringValues(),
 		EmailAccountAdmins: resource.GetAttribute("email_account_admins").
-			AsBoolValueOrDefault(false, resource),
+			AsBoolValue(false),
 	}
 }
 
 func adaptMSSQLExtendedAuditingPolicy(resource *terraform.Block) database.ExtendedAuditingPolicy {
 	return database.ExtendedAuditingPolicy{
 		Metadata:        resource.GetMetadata(),
-		RetentionInDays: resource.GetAttribute("retention_in_days").AsIntValueOrDefault(0, resource),
+		RetentionInDays: resource.GetAttribute("retention_in_days").AsIntValue(),
 	}
 }
 
 func adaptActiveDirectoryAdministrator(resource *terraform.Block) database.ActiveDirectoryAdministrator {
 	return database.ActiveDirectoryAdministrator{
 		Metadata: resource.GetMetadata(),
-		Login:    resource.GetAttribute("login").AsStringValueOrDefault("", resource),
+		Login:    resource.GetAttribute("login").AsStringValue(),
 	}
 }
 
@@ -113,6 +113,6 @@ func adaptAzureADAdministratorBlock(block *terraform.Block) database.ActiveDirec
 		Metadata: block.GetMetadata(),
 		// The azuread_administrator block uses login_username attribute
 		Login: block.GetFirstAttributeOf("login_username", "login").
-			AsStringValueOrDefault("", block),
+			AsStringValue(""),
 	}
 }
