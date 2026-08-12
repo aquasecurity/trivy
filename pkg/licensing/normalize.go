@@ -560,7 +560,7 @@ func standardizeKeyAndSuffix(name string) expr.SimpleExpr {
 var docExtensions = [...]string{".txt", ".html", ".htm", ".php", ".md"}
 
 // NormalizeLicenseURL builds a matching key for a license URL.
-// It drops the scheme, a "www." prefix, a trailing slash and a document extension.
+// It drops an http or https scheme, a "www." prefix, a trailing slash and a document extension.
 // It also unifies opensource.org's "/licenses/" and "/license/" paths.
 // A Wayback Machine snapshot is replaced by the URL it captured.
 // Only the host is lowercased.
@@ -621,15 +621,16 @@ func SPDXLicenseIDByURL(rawURL string) (string, bool) {
 // SPDX links to no other wrapper, so nothing else is unwrapped.
 var snapshotHosts = [...]string{"web.archive.org", "wayback.archive.org"}
 
-// cutScheme drops the scheme of a URL that has one.
-// A scheme holds no "/", "?" or "#" (RFC 3986, section 3.1), so one of them before the "://" means that "://" opens a URL carried in the path or query.
-// Such a URL keeps its own identity rather than being cut down to the one it carries.
+// cutScheme drops a leading http or https scheme, which are the only two that compare equal.
+// Cutting nothing else also keeps a URL that carries another one in its path or query (e.g. a redirect) from being cut down to the URL it carries.
+// The scheme itself is case-insensitive (RFC 3986, section 3.1).
 func cutScheme(s string) string {
-	scheme, rest, ok := strings.Cut(s, "://")
-	if !ok || scheme == "" || strings.ContainsAny(scheme, "/?#") {
-		return s
+	for _, scheme := range [...]string{"https://", "http://"} {
+		if len(s) >= len(scheme) && strings.EqualFold(s[:len(scheme)], scheme) {
+			return s[len(scheme):]
+		}
 	}
-	return rest
+	return s
 }
 
 // cutSnapshotPrefix returns the URL a Wayback Machine snapshot captured.

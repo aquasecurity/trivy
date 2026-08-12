@@ -434,7 +434,7 @@ func TestNormalizeLicenseURL(t *testing.T) {
 			want: "apache.org/licenses/LICENSE-2.0",
 		},
 		{
-			name: "scheme and host are lowercased",
+			name: "an uppercase scheme is dropped and the host is lowercased",
 			url:  "HTTPS://WWW.Apache.ORG/licenses/LICENSE-2.0",
 			want: "apache.org/licenses/LICENSE-2.0",
 		},
@@ -451,9 +451,9 @@ func TestNormalizeLicenseURL(t *testing.T) {
 		{
 			// The only ftp:// URL in the SPDX index. It is the seeAlso of the Zeeff
 			// License, whose text is only published inside the newsx source tarball.
-			name: "a non-http scheme is stripped too",
+			name: "a non-http scheme is kept, so it matches only itself",
 			url:  "ftp://ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
-			want: "ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
+			want: "ftp://ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
 		},
 		{
 			name: "path keeps its case",
