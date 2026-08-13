@@ -110,6 +110,8 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 	}
 
 	data := make(map[string]cty.Value)
+	// go-cty panics when a marked value is traversed, so marks are removed
+	// before the traversal and restored on the result.
 	var marks cty.ValueMarks
 	if isNotEmptyObject(src) {
 		var unmarked cty.Value
@@ -128,6 +130,8 @@ func mergeVars(src cty.Value, parts []string, value cty.Value) cty.Value {
 }
 
 func mergeObjects(a, b cty.Value) cty.Value {
+	// go-cty panics when a marked value is traversed, so marks are removed
+	// before the traversal and restored on the result.
 	a, aMarks := a.Unmark()
 	b, bMarks := b.Unmark()
 

@@ -669,6 +669,9 @@ func (e *evaluator) shouldDeferForEachExpansion(forEachAttr *terraform.Attribute
 }
 
 func (e *evaluator) localHasDynamicValues(localVal cty.Value) bool {
+	// Only the structure of the value matters here, so the marks are dropped.
+	localVal, _ = localVal.UnmarkDeep()
+
 	if !localVal.Type().IsObjectType() {
 		return false
 	}
