@@ -148,7 +148,7 @@ func (b *Block) GetRawValue() any {
 func (b *Block) injectBlock(block *Block) {
 	for attrName, attr := range block.Attributes() {
 		path := fmt.Sprintf("%s.%s.%s", b.reference.String(), block.hclBlock.Type, attrName)
-		b.context.Root().SetByDot(attr.Value(), path)
+		b.context.Root().SetByDot(attr.MarkedValue(), path)
 	}
 	b.childBlocks = append(b.childBlocks, block)
 }
@@ -567,7 +567,7 @@ func (b *Block) values(allowNull bool) cty.Value {
 		if allowNull {
 			values[attribute.Name()] = attribute.NullableValue()
 		} else {
-			values[attribute.Name()] = attribute.Value()
+			values[attribute.Name()] = attribute.MarkedValue()
 		}
 	}
 	return cty.ObjectVal(postProcessValues(b, values))

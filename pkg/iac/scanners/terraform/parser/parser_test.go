@@ -2977,6 +2977,23 @@ func Test_MarkedValues(t *testing.T) {
   test = sensitive({})
 }`,
 		},
+		{
+			name: "marked non-empty object",
+			src: `resource "foo" "bar" {
+  test = sensitive({ id = "some_id" })
+}`,
+		},
+		{
+			name: "marked local in for_each",
+			src: `locals {
+  buckets = sensitive({ a = "bucket-a", b = "bucket-b" })
+}
+
+resource "foo" "bar" {
+  for_each = local.buckets
+  test     = each.value
+}`,
+		},
 	}
 
 	for _, tt := range tests {

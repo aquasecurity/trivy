@@ -84,7 +84,7 @@ func (a *Attribute) GetRawValue() any {
 		default:
 			switch {
 			case typ.IsTupleType(), typ.IsListType(), typ.IsSetType():
-				values := a.Value().AsValueSlice()
+				values := v.AsValueSlice()
 				if len(values) == 0 {
 					return []string{}
 				}
@@ -198,7 +198,8 @@ func (a *Attribute) IsResolvable() bool {
 	if a == nil {
 		return false
 	}
-	return a.Value() != cty.NilVal && a.Value().IsKnown()
+	val := a.Value()
+	return val != cty.NilVal && val.IsKnown()
 }
 
 func (a *Attribute) Type() cty.Type {
@@ -277,7 +278,9 @@ func (a *Attribute) IsBool() bool {
 	})
 }
 
-func (a *Attribute) Value() (ctyVal cty.Value) {
+// value evaluates the attribute expression. If nullable is false, a null
+// result is reported as unknown instead.
+func (a *Attribute) value(nullable bool) (ctyVal cty.Value) {
 	if a == nil {
 		return cty.NilVal
 	}
@@ -287,27 +290,39 @@ func (a *Attribute) Value() (ctyVal cty.Value) {
 		}
 	}()
 	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
-	if ctyVal.IsNull() {
+	if nullable {
+		if !ctyVal.IsKnown() || ctyVal.IsNull() {
+			return cty.NullVal(cty.DynamicPseudoType)
+		}
+	} else if ctyVal.IsNull() {
 		return cty.DynamicVal
 	}
 	return ctyVal
 }
 
-// Allows a null value for a variable https://developer.hashicorp.com/terraform/language/expressions/types#null
-func (a *Attribute) NullableValue() (ctyVal cty.Value) {
-	if a == nil {
-		return cty.NilVal
+// MarkedValue returns the attribute value with its marks, such as the one set
+// by sensitive(). Marks are only meaningful while values are fed back into the
+// evaluation context, so use Value everywhere else.
+func (a *Attribute) MarkedValue() cty.Value {
+	return a.value(false)
+}
+
+// Value returns the attribute value with all marks removed, since go-cty
+// panics when a marked value is traversed.
+func (a *Attribute) Value() cty.Value {
+	val := a.MarkedValue()
+	if val == cty.NilVal {
+		return val
 	}
-	defer func() {
-		if err := recover(); err != nil {
-			ctyVal = cty.NilVal
-		}
-	}()
-	ctyVal, _ = a.hclAttribute.Expr.Value(a.ctx.Inner())
-	if !ctyVal.IsKnown() || ctyVal.IsNull() {
-		return cty.NullVal(cty.DynamicPseudoType)
-	}
-	return ctyVal
+	unmarked, _ := val.UnmarkDeep()
+	return unmarked
+}
+
+// NullableValue returns the attribute value with its marks. Unlike Value, a
+// null is kept as null instead of being reported as unknown.
+// See https://developer.hashicorp.com/terraform/language/expressions/types#null
+func (a *Attribute) NullableValue() cty.Value {
+	return a.value(true)
 }
 
 func (a *Attribute) Name() string {
@@ -391,6 +406,11 @@ func (a *Attribute) valueToStrings(value cty.Value) (results []iacTypes.StringVa
 			results = []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 		}
 	}()
+
+	// The expression is evaluated directly, bypassing Value,
+	// so the marks are still in place.
+	value, _ = value.UnmarkDeep()
+
 	if value.IsNull() || !value.IsKnown() {
 		return []iacTypes.StringValue{iacTypes.StringUnresolvable(a.metadata)}
 	}
@@ -411,6 +431,8 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 	}()
 
 	result = iacTypes.StringUnresolvable(a.metadata)
+
+	value, _ = value.UnmarkDeep()
 
 	if value.IsNull() || !value.IsKnown() {
 		return result
@@ -550,7 +572,7 @@ func (a *Attribute) Equals(checkValue any, equalityOptions ...EqualityOption) bo
 			if err != nil {
 				return false
 			}
-			return a.Value().RawEquals(checkNumber)
+			return v.RawEquals(checkNumber)
 		case cty.Bool:
 			return v.True() == checkValue
 		default:
@@ -825,9 +847,7 @@ func safeOp[T any](a *Attribute, fn func(cty.Value) T) T {
 		return res
 	}
 
-	unmarked, _ := val.UnmarkDeep()
-
-	return fn(unmarked)
+	return fn(val)
 }
 
 func isDefined(v cty.Value, t cty.Type) bool {
