@@ -48,14 +48,14 @@ func Test_minimumTLSVersion(t *testing.T) {
 			expected: "",
 		},
 		{
-			name:     "unknown version is returned as is",
-			val:      "TLSv2.0",
-			expected: "TLSv2.0",
+			name:     "unrecognized version is skipped",
+			val:      "TLSv1.2,TLSv1.4",
+			expected: "TLS1_2",
 		},
 		{
-			name:     "list with an unknown version is returned as is",
-			val:      "TLSv1.3,TLSv2.0",
-			expected: "TLSv1.3,TLSv2.0",
+			name:     "value with no recognized version is returned as is",
+			val:      "TLSv1.4",
+			expected: "TLSv1.4",
 		},
 	}
 

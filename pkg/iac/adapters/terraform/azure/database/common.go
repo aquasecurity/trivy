@@ -55,18 +55,14 @@ func parseServerParameters(configs []*terraform.Block, resourceMetadata iacTypes
 
 // minimumTLSVersion converts an Azure TLS version to the TLS1_2 format.
 // MySQL flexible servers accept a comma-separated list of allowed versions,
-// in which case the lowest one is returned. Unknown values are left as is.
+// in which case the lowest one is returned. Unrecognized versions are skipped,
+// and the value is left as is if none of them is recognized.
 func minimumTLSVersion(val string) string {
 	var minimum string
 	for version := range strings.SplitSeq(val, ",") {
-		version = strings.TrimSpace(version)
-		if version == "" {
-			continue
-		}
-
-		normalized, ok := tlsVersions[strings.ToLower(version)]
+		normalized, ok := tlsVersions[strings.ToLower(strings.TrimSpace(version))]
 		if !ok {
-			return val
+			continue
 		}
 		if minimum == "" || normalized < minimum {
 			minimum = normalized
