@@ -411,6 +411,6 @@ func TestCryptoAssetClone(t *testing.T) {
 		assert.Equal(t, source, clone)
 
 		clone.Algorithm.Family = "changed"
-		assert.Equal(t, "RSA", source.Algorithm.Family)
+		assert.Empty(t, source.Algorithm.Family)
 	})
 }

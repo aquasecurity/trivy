@@ -214,12 +214,17 @@ func parsePEMObject(label string, der []byte) (Object, error) {
 		"NEW CERTIFICATE REQUEST",
 		"X509 CRL",
 		"OPENSSH PRIVATE KEY",
+		// TODO: describe this key as well. It holds a PKCS#1 public key, which
+		// x509.ParsePKCS1PublicKey reads.
 		"RSA PUBLIC KEY",
 		"DSA PRIVATE KEY",
 		"DSA PUBLIC KEY",
 		"EC PARAMETERS",
 		"DH PARAMETERS",
 		"DSA PARAMETERS",
+		// TODO: describe this certificate as well. It holds an X.509 certificate followed
+		// by the OpenSSL trust settings, so x509.ParseCertificate rejects the block as a
+		// whole and only the leading certificate is readable.
 		"TRUSTED CERTIFICATE",
 		"PKCS7",
 		"PKCS12":

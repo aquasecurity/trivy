@@ -91,9 +91,10 @@ func AlgorithmAsset(opts ...Option) types.CryptoAsset {
 		},
 		Name:     "RSA",
 		FilePath: "/etc/example-algorithm.pem",
+		// rsaEncryption identifies both signature and encryption keys, so the primitive
+		// stays unknown and the family stays empty, as the algorithm catalog describes it.
 		Algorithm: &types.CryptoAlgorithm{
-			Family:    "RSA",
-			Primitive: types.CryptoPrimitivePKE,
+			Primitive: types.CryptoPrimitiveUnknown,
 		},
 	}
 	return applyOptions(asset, opts)
