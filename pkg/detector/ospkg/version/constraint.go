@@ -22,9 +22,9 @@ var constraintOperators = map[string]operatorFunc{
 	"<=": constraintLessThanEqual,
 }
 
-// constraintRegex matches constraint patterns like ">=1.2.3", "<2.0.0", "==1.0.0"
-// Version can contain numbers, dots, hyphens, plus signs, tildes, colons, and alphanumeric characters
-var constraintRegex = regexp.MustCompile(`^(>=|<=|>|<|==|!=|=)?\s*([0-9]+[0-9a-zA-Z.\-+~:_]*)$`)
+// constraintRegex matches constraint patterns like ">=1.2.3", "<2.0.0", "==1.0.0", "<1.0^git1"
+// Version can contain numbers, dots, hyphens, plus signs, tildes, colons, carets, and alphanumeric characters
+var constraintRegex = regexp.MustCompile(`^(>=|<=|>|<|==|!=|=)?\s*([0-9]+[0-9a-zA-Z.\-+~:_^]*)$`)
 
 // constraint represents a single version constraint
 type constraint struct {
