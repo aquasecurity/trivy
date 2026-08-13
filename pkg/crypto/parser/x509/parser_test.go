@@ -63,6 +63,11 @@ func TestParse(t *testing.T) {
 	fixtures := newParserFixtures(t)
 	encryptedDigest := sha256.Sum256(fixtures.encryptedDER)
 	malformedPEMPrefix := append([]byte("-----BEGIN CERTIFICATE-----\nmalformed\n"), fixtures.certificatePEM...)
+	rfc1423Headers := map[string]string{
+		"Proc-Type": "4,ENCRYPTED",
+		"DEK-Info":  "AES-256-CBC,00112233445566778899AABBCCDDEEFF",
+	}
+	rfc1423Ciphertext := []byte{0x01, 0x02, 0x03, 0x04}
 
 	tests := []struct {
 		name  string
@@ -151,20 +156,82 @@ func TestParse(t *testing.T) {
 			name:  "encrypted PKCS8 DER",
 			input: fixtures.encryptedDER,
 			want: []cryptox509.Object{{
-				Kind:                 cryptox509.ObjectEncryptedPrivateKey,
-				EncryptedPKCS8SHA256: hex.EncodeToString(encryptedDigest[:]),
-				Encoding:             types.CryptoEncodingDER,
-				KeyFormat:            types.CryptoKeyFormatPKCS8,
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  hex.EncodeToString(encryptedDigest[:]),
+				EncryptionFormat: cryptox509.EncryptionFormatPKCS8,
+				Encoding:         types.CryptoEncodingDER,
+				KeyFormat:        types.CryptoKeyFormatPKCS8,
 			}},
 		},
 		{
 			name:  "encrypted PKCS8 PEM",
 			input: fixtures.encryptedPEM,
 			want: []cryptox509.Object{{
-				Kind:                 cryptox509.ObjectEncryptedPrivateKey,
-				EncryptedPKCS8SHA256: hex.EncodeToString(encryptedDigest[:]),
-				Encoding:             types.CryptoEncodingPEM,
-				KeyFormat:            types.CryptoKeyFormatPKCS8,
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  hex.EncodeToString(encryptedDigest[:]),
+				EncryptionFormat: cryptox509.EncryptionFormatPKCS8,
+				Encoding:         types.CryptoEncodingPEM,
+				KeyFormat:        types.CryptoKeyFormatPKCS8,
+			}},
+		},
+		{
+			name: "RFC 1423 encrypted RSA private key",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "RSA PRIVATE KEY",
+				Headers: rfc1423Headers,
+				Bytes:   rfc1423Ciphertext,
+			}),
+			want: []cryptox509.Object{{
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  "ff5f6fab9c65f8788299998b931dfb1c120610010c74b1c48078e9d0db0e5431",
+				EncryptionFormat: cryptox509.EncryptionFormatRFC1423,
+				Encoding:         types.CryptoEncodingPEM,
+				KeyFormat:        types.CryptoKeyFormatPKCS1,
+			}},
+		},
+		{
+			name: "RFC 1423 encrypted EC private key",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "EC PRIVATE KEY",
+				Headers: rfc1423Headers,
+				Bytes:   rfc1423Ciphertext,
+			}),
+			want: []cryptox509.Object{{
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  "06b939cc4deaf4dbe7d7f770300817097c53ba34d788719de9a0d32a2b0e61ac",
+				EncryptionFormat: cryptox509.EncryptionFormatRFC1423,
+				Encoding:         types.CryptoEncodingPEM,
+				KeyFormat:        types.CryptoKeyFormatSEC1,
+			}},
+		},
+		{
+			name: "RFC 1423 encrypted PKCS8 private key",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "PRIVATE KEY",
+				Headers: rfc1423Headers,
+				Bytes:   rfc1423Ciphertext,
+			}),
+			want: []cryptox509.Object{{
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  "48b9cab15381512d5d23441a87f44f7c880a921e6fb2b9dcdee9bba91023cd4d",
+				EncryptionFormat: cryptox509.EncryptionFormatRFC1423,
+				Encoding:         types.CryptoEncodingPEM,
+				KeyFormat:        types.CryptoKeyFormatPKCS8,
+			}},
+		},
+		{
+			name: "RFC 1423 equivalent source formatting",
+			input: []byte("-----BEGIN RSA PRIVATE KEY-----\r\n" +
+				"DEK-Info: AES-256-CBC,00112233445566778899AABBCCDDEEFF\r\n" +
+				"Proc-Type: 4,ENCRYPTED\r\n\r\n" +
+				"AQID\r\nBA==\r\n" +
+				"-----END RSA PRIVATE KEY-----\r\n"),
+			want: []cryptox509.Object{{
+				Kind:             cryptox509.ObjectEncryptedPrivateKey,
+				EncryptedSHA256:  "ff5f6fab9c65f8788299998b931dfb1c120610010c74b1c48078e9d0db0e5431",
+				EncryptionFormat: cryptox509.EncryptionFormatRFC1423,
+				Encoding:         types.CryptoEncodingPEM,
+				KeyFormat:        types.CryptoKeyFormatPKCS1,
 			}},
 		},
 		{
@@ -232,6 +299,37 @@ func TestParse(t *testing.T) {
 		{
 			name:  "malformed supported PEM",
 			input: pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: []byte{0x30, 0x80}}),
+		},
+		{
+			name: "RFC 1423 missing Proc-Type",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "RSA PRIVATE KEY",
+				Headers: map[string]string{"DEK-Info": rfc1423Headers["DEK-Info"]},
+				Bytes:   rfc1423Ciphertext,
+			}),
+		},
+		{
+			name: "RFC 1423 missing DEK-Info",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "RSA PRIVATE KEY",
+				Headers: map[string]string{"Proc-Type": rfc1423Headers["Proc-Type"]},
+				Bytes:   rfc1423Ciphertext,
+			}),
+		},
+		{
+			name: "RFC 1423 missing ciphertext",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "RSA PRIVATE KEY",
+				Headers: rfc1423Headers,
+			}),
+		},
+		{
+			name: "RFC 1423 unsupported key label",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:    "DSA PRIVATE KEY",
+				Headers: rfc1423Headers,
+				Bytes:   rfc1423Ciphertext,
+			}),
 		},
 		{
 			name:  "PKCS1 under PRIVATE KEY",

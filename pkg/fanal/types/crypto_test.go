@@ -113,6 +113,11 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: "",
 		},
 		{
+			name:    "RFC 1423 encrypted private key",
+			asset:   cryptotest.RFC1423EncryptedPrivateKeyAsset(),
+			wantErr: "",
+		},
+		{
 			name:    "algorithm without parameters",
 			asset:   cryptotest.AlgorithmAsset(),
 			wantErr: "",

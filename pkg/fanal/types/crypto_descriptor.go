@@ -90,7 +90,9 @@ func (d CryptoDescriptor) validateKindKeyTypeMethod() error {
 				return xerrors.Errorf("public key descriptor requires identification method %q", CryptoMethodSPKISHA256)
 			}
 		case CryptoKeyTypePrivate:
-			if d.Identity.Method != CryptoMethodSPKISHA256 && d.Identity.Method != CryptoMethodEncryptedPKCS8SHA256 {
+			if d.Identity.Method != CryptoMethodSPKISHA256 &&
+				d.Identity.Method != CryptoMethodEncryptedPKCS8SHA256 &&
+				d.Identity.Method != CryptoMethodEncryptedRFC1423SHA256 {
 				return xerrors.Errorf("private key descriptor has unknown identification method %q", d.Identity.Method)
 			}
 		default:
@@ -111,7 +113,7 @@ func (d CryptoDescriptor) validateKindKeyTypeMethod() error {
 
 func (d CryptoDescriptor) validateIdentityValue() error {
 	switch d.Identity.Method {
-	case CryptoMethodSHA256, CryptoMethodSPKISHA256, CryptoMethodEncryptedPKCS8SHA256:
+	case CryptoMethodSHA256, CryptoMethodSPKISHA256, CryptoMethodEncryptedPKCS8SHA256, CryptoMethodEncryptedRFC1423SHA256:
 		if !isLowerSHA256(d.Identity.Value) {
 			return xerrors.Errorf("identification value must be 64 lowercase hexadecimal characters")
 		}

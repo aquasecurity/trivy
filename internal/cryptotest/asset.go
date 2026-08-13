@@ -73,6 +73,14 @@ func EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
 	return applyOptions(asset, opts)
 }
 
+// RFC1423EncryptedPrivateKeyAsset returns a valid RFC 1423 encrypted private key asset.
+func RFC1423EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
+	asset := EncryptedPrivateKeyAsset()
+	asset.Identity.Method = types.CryptoMethodEncryptedRFC1423SHA256
+	asset.Key.Format = types.CryptoKeyFormatPKCS1
+	return applyOptions(asset, opts)
+}
+
 // AlgorithmAsset returns a valid algorithm asset.
 func AlgorithmAsset(opts ...Option) types.CryptoAsset {
 	asset := types.CryptoAsset{

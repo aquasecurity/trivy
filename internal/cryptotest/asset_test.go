@@ -47,6 +47,13 @@ func TestAssets(t *testing.T) {
 			},
 		},
 		{
+			name:  "RFC 1423 encrypted private key",
+			asset: cryptotest.RFC1423EncryptedPrivateKeyAsset,
+			mutate: func(asset *types.CryptoAsset) {
+				asset.Key.Size = 4096
+			},
+		},
+		{
 			name:  "algorithm",
 			asset: cryptotest.AlgorithmAsset,
 			mutate: func(asset *types.CryptoAsset) {

@@ -33,6 +33,16 @@ const (
 	ObjectEncryptedPrivateKey
 )
 
+// EncryptionFormat identifies the container format of an encrypted private key.
+type EncryptionFormat uint8
+
+const (
+	// EncryptionFormatPKCS8 identifies an encrypted PKCS#8 container.
+	EncryptionFormatPKCS8 EncryptionFormat = iota + 1
+	// EncryptionFormatRFC1423 identifies an RFC 1423 encrypted PEM container.
+	EncryptionFormatRFC1423
+)
+
 // Object is a safe projection of a parsed cryptographic object.
 type Object struct {
 	// Kind identifies the parsed object kind.
@@ -41,8 +51,10 @@ type Object struct {
 	Certificate *stdx509.Certificate
 	// PublicKey contains a public key or the public projection of a private key.
 	PublicKey any
-	// EncryptedPKCS8SHA256 contains the lowercase SHA-256 digest of an encrypted PKCS#8 container.
-	EncryptedPKCS8SHA256 string
+	// EncryptedSHA256 contains the lowercase SHA-256 digest of an encrypted private-key container.
+	EncryptedSHA256 string
+	// EncryptionFormat identifies the encrypted private-key container format.
+	EncryptionFormat EncryptionFormat
 	// Encoding identifies the source encoding.
 	Encoding ftypes.CryptoEncoding
 	// KeyFormat identifies the source key container format.
@@ -105,8 +117,17 @@ func Parse(ctx context.Context, filePath string, content []byte) []Object {
 	return []Object{object}
 }
 
-// parsePEMBlock parses a block's DER payload and records its PEM source encoding.
+// parsePEMBlock parses a supported PEM block and records its source encoding.
 func parsePEMBlock(block *pem.Block) (Object, error) {
+	if block.Headers["Proc-Type"] == "4,ENCRYPTED" || block.Headers["DEK-Info"] != "" {
+		object, err := parseRFC1423EncryptedPrivateKey(block)
+		if err != nil {
+			return Object{}, err
+		}
+		object.Encoding = ftypes.CryptoEncodingPEM
+		return object, nil
+	}
+
 	object, err := parsePEMObject(block.Type, block.Bytes)
 	if err != nil {
 		return Object{}, err
@@ -114,6 +135,38 @@ func parsePEMBlock(block *pem.Block) (Object, error) {
 
 	object.Encoding = ftypes.CryptoEncodingPEM
 	return object, nil
+}
+
+// parseRFC1423EncryptedPrivateKey validates an encrypted PEM block and retains only its canonical digest.
+func parseRFC1423EncryptedPrivateKey(block *pem.Block) (Object, error) {
+	if block.Headers["Proc-Type"] != "4,ENCRYPTED" || block.Headers["DEK-Info"] == "" || len(block.Bytes) == 0 {
+		return Object{}, errMalformedCrypto
+	}
+
+	var keyFormat ftypes.CryptoKeyFormat
+	switch block.Type {
+	case "PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatPKCS8
+	case "RSA PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatPKCS1
+	case "EC PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatSEC1
+	default:
+		return Object{}, errUnsupportedCrypto
+	}
+
+	// Re-encoding normalizes header order, line endings, and Base64 wrapping.
+	encoded := pem.EncodeToMemory(block)
+	if encoded == nil {
+		return Object{}, errMalformedCrypto
+	}
+	digest := sha256.Sum256(encoded)
+	return Object{
+		Kind:             ObjectEncryptedPrivateKey,
+		EncryptedSHA256:  hex.EncodeToString(digest[:]),
+		EncryptionFormat: EncryptionFormatRFC1423,
+		KeyFormat:        keyFormat,
+	}, nil
 }
 
 func parsePEMObject(label string, der []byte) (Object, error) {
@@ -260,9 +313,10 @@ func parseEncryptedPKCS8(der []byte) (Object, bool) {
 	}
 	digest := sha256.Sum256(der)
 	return Object{
-		Kind:                 ObjectEncryptedPrivateKey,
-		EncryptedPKCS8SHA256: hex.EncodeToString(digest[:]),
-		KeyFormat:            ftypes.CryptoKeyFormatPKCS8,
+		Kind:             ObjectEncryptedPrivateKey,
+		EncryptedSHA256:  hex.EncodeToString(digest[:]),
+		EncryptionFormat: EncryptionFormatPKCS8,
+		KeyFormat:        ftypes.CryptoKeyFormatPKCS8,
 	}, true
 }
 

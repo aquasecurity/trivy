@@ -40,6 +40,11 @@ func TestCryptoDescriptorString(t *testing.T) {
 			want: "key:private:encrypted-pkcs8-sha256:" + strings.Repeat("b", 64),
 		},
 		{
+			name: "RFC 1423 encrypted private key",
+			desc: cryptotest.RFC1423EncryptedPrivateKeyDescriptor(),
+			want: "key:private:encrypted-rfc1423-sha256:" + strings.Repeat("b", 64),
+		},
+		{
 			name: "algorithm without parameters",
 			desc: cryptotest.AlgorithmDescriptor(),
 			want: "algorithm:oid:1.2.840.113549.1.1.1",
@@ -101,6 +106,7 @@ func TestCryptoDescriptorValidate(t *testing.T) {
 		{name: "certificate", desc: cryptotest.CertificateDescriptor()},
 		{name: "public key", desc: cryptotest.PublicKeyDescriptor()},
 		{name: "private key", desc: cryptotest.PrivateKeyDescriptor()},
+		{name: "RFC 1423 encrypted private key", desc: cryptotest.RFC1423EncryptedPrivateKeyDescriptor()},
 		{name: "algorithm", desc: cryptotest.AlgorithmDescriptor()},
 		{
 			name:    "unknown kind",
@@ -137,6 +143,14 @@ func TestCryptoDescriptorValidate(t *testing.T) {
 			desc: types.CryptoDescriptor{
 				Kind: types.CryptoKindKey, KeyType: types.CryptoKeyTypePublic,
 				Identity: types.CryptoIdentity{Method: types.CryptoMethodEncryptedPKCS8SHA256, Value: strings.Repeat("a", 64)},
+			},
+			wantErr: `public key descriptor requires identification method "spki-sha256"`,
+		},
+		{
+			name: "RFC 1423 method on public key",
+			desc: types.CryptoDescriptor{
+				Kind: types.CryptoKindKey, KeyType: types.CryptoKeyTypePublic,
+				Identity: types.CryptoIdentity{Method: types.CryptoMethodEncryptedRFC1423SHA256, Value: strings.Repeat("a", 64)},
 			},
 			wantErr: `public key descriptor requires identification method "spki-sha256"`,
 		},

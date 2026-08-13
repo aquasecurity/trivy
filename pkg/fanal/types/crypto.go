@@ -29,6 +29,8 @@ const (
 	CryptoMethodSPKISHA256 CryptoIdentityMethod = "spki-sha256"
 	// CryptoMethodEncryptedPKCS8SHA256 identifies opaque CryptoKindKey assets with CryptoKeyTypePrivate. The value is the lowercase SHA-256 digest of encrypted PKCS#8 DER, and parameters are empty.
 	CryptoMethodEncryptedPKCS8SHA256 CryptoIdentityMethod = "encrypted-pkcs8-sha256"
+	// CryptoMethodEncryptedRFC1423SHA256 identifies opaque CryptoKindKey assets with CryptoKeyTypePrivate. The value is the lowercase SHA-256 digest of canonical RFC 1423 encrypted PEM, including its label, headers, and ciphertext, and parameters are empty.
+	CryptoMethodEncryptedRFC1423SHA256 CryptoIdentityMethod = "encrypted-rfc1423-sha256"
 	// CryptoMethodOID identifies CryptoKindAlgorithm assets. The value is a canonical dotted-decimal OID, and parameters are empty or key-size=<bits> / curve=<name> when needed to distinguish the algorithm asset.
 	CryptoMethodOID CryptoIdentityMethod = "oid"
 )
@@ -176,7 +178,8 @@ func (a *CryptoAsset) validateKey() error {
 		return xerrors.Errorf("unknown key encoding %q", a.Key.Encoding)
 	}
 
-	encrypted := a.KeyType == CryptoKeyTypePrivate && a.Identity.Method == CryptoMethodEncryptedPKCS8SHA256
+	encrypted := a.KeyType == CryptoKeyTypePrivate &&
+		(a.Identity.Method == CryptoMethodEncryptedPKCS8SHA256 || a.Identity.Method == CryptoMethodEncryptedRFC1423SHA256)
 	if a.Key.Encrypted != encrypted {
 		return xerrors.Errorf("key encrypted flag does not match identification method %q", a.Identity.Method)
 	}

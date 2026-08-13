@@ -26,6 +26,12 @@ func EncryptedPrivateKeyDescriptor() types.CryptoDescriptor {
 	return asset.Descriptor()
 }
 
+// RFC1423EncryptedPrivateKeyDescriptor returns the descriptor of RFC1423EncryptedPrivateKeyAsset.
+func RFC1423EncryptedPrivateKeyDescriptor() types.CryptoDescriptor {
+	asset := RFC1423EncryptedPrivateKeyAsset()
+	return asset.Descriptor()
+}
+
 // AlgorithmDescriptor returns the descriptor of AlgorithmAsset.
 func AlgorithmDescriptor() types.CryptoDescriptor {
 	asset := AlgorithmAsset()
