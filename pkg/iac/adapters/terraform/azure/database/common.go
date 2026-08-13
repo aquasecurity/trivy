@@ -59,7 +59,12 @@ func parseServerParameters(configs []*terraform.Block, resourceMetadata iacTypes
 func minimumTLSVersion(val string) string {
 	var minimum string
 	for version := range strings.SplitSeq(val, ",") {
-		normalized, ok := tlsVersions[strings.ToLower(strings.TrimSpace(version))]
+		version = strings.TrimSpace(version)
+		if version == "" {
+			continue
+		}
+
+		normalized, ok := tlsVersions[strings.ToLower(version)]
 		if !ok {
 			return val
 		}

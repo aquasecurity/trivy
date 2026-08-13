@@ -34,7 +34,7 @@ func adaptMySQLServer(resource *terraform.Block, module *terraform.Module) datab
 			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
 				AsBoolValueOrDefault(false, resource),
 			MinimumTLSVersion: resource.GetAttribute("ssl_minimal_tls_version_enforced").
-				AsStringValueOrDefault("TLS1_2", resource),
+				AsStringValueOrDefault(defaultTLSVersion, resource),
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
 				AsBoolValueOrDefault(true, resource),
 			FirewallRules: firewallRules,

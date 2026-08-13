@@ -431,7 +431,7 @@ func Test_Adapt(t *testing.T) {
 			  resource "azurerm_mysql_flexible_server_configuration" "tls_version" {
 				name      = "tls_version"
 				server_id = azurerm_mysql_flexible_server.example.id
-				value     = "TLSv1.2,TLSv1.3"
+				value     = "TLSv1.3,TLSv1.2"
 			  }
 			`,
 			expected: database.Database{
