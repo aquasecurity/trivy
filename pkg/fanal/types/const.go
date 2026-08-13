@@ -19,7 +19,8 @@ type Supplier string
 
 // Suppliers
 const (
-	SupplierSeal Supplier = "seal"
+	SupplierSeal      Supplier = "seal"
+	SupplierRapidFort Supplier = "rapidfort"
 )
 
 const (

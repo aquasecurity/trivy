@@ -175,6 +175,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - echo
                                             - minimos
                                             - rootio
+                                            - rapidfort
                                             - auto
                                            (default [auto])
 ```
