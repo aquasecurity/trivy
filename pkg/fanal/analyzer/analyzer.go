@@ -271,6 +271,7 @@ func (r *AnalysisResult) Sort() {
 	})
 
 	// Cryptographic assets
+	// Preserve the input order of assets with the same identity and file path.
 	sort.SliceStable(r.CryptoAssets, func(i, j int) bool {
 		left, right := &r.CryptoAssets[i], &r.CryptoAssets[j]
 		return cmp.Or(
