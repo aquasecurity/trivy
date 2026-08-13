@@ -114,7 +114,7 @@ func (e *evaluator) exportOutputs() cty.Value {
 		if attr.IsNil() {
 			continue
 		}
-		data[block.Label()] = attr.Value()
+		data[block.Label()] = attr.MarkedValue()
 		e.logger.Debug(
 			"Added module output",
 			log.String("block", block.Label()),
@@ -525,7 +525,7 @@ func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 	if attribute.IsNil() {
 		return cty.NilVal, errors.New("cannot resolve output with no attributes")
 	}
-	return attribute.Value(), nil
+	return attribute.MarkedValue(), nil
 }
 
 // returns true if all evaluations were successful
