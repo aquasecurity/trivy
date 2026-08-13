@@ -194,19 +194,30 @@ func parseDescriptor(s string) (CryptoDescriptor, error) {
 	return descriptor, nil
 }
 
+// CryptoAlgorithmParameter names the property that distinguishes algorithm assets
+// sharing one OID. It is empty for an algorithm whose OID identifies it completely.
+type CryptoAlgorithmParameter string
+
+const (
+	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits.
+	CryptoParameterKeySize CryptoAlgorithmParameter = "key-size"
+	// CryptoParameterCurve distinguishes algorithm assets by curve name.
+	CryptoParameterCurve CryptoAlgorithmParameter = "curve"
+)
+
 // validateAlgorithmParameters accepts only empty parameters, key-size=<canonical positive
 // decimal>, and curve=<non-empty name>.
 func validateAlgorithmParameters(parameters string) error {
 	if parameters == "" {
 		return nil
 	}
-	if value, ok := strings.CutPrefix(parameters, "key-size="); ok {
+	if value, ok := strings.CutPrefix(parameters, string(CryptoParameterKeySize)+"="); ok {
 		if !isCanonicalPositiveDecimal(value) {
 			return xerrors.Errorf("key size parameter must be a canonical positive decimal")
 		}
 		return nil
 	}
-	if value, ok := strings.CutPrefix(parameters, "curve="); ok {
+	if value, ok := strings.CutPrefix(parameters, string(CryptoParameterCurve)+"="); ok {
 		if value == "" {
 			return xerrors.Errorf("curve parameter must not be empty")
 		}
