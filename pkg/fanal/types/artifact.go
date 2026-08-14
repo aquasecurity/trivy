@@ -1,6 +1,7 @@
 package types
 
 import (
+	"slices"
 	"sort"
 	"time"
 
@@ -232,6 +233,8 @@ func (a *ArtifactDetail) Sort() {
 	sort.Sort(a.Applications)
 	sort.Sort(a.Secrets)
 	sort.Sort(a.Licenses)
+	// The merged assets come out of the nested map in the map's iteration order.
+	slices.SortStableFunc(a.CryptoAssets, CompareCryptoAssets)
 	// Misconfigurations will be sorted later
 }
 

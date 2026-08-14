@@ -172,6 +172,22 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			nestedMap.SetByString(key, sep, license)
 		}
 
+		// Apply cryptographic assets
+		// A file holds several assets, so they are stored as a group under the file path:
+		// a file replaced in an upper layer replaces all the assets found in it.
+		for filePath, assets := range lo.GroupBy(layer.CryptoAssets, func(asset ftypes.CryptoAsset) string {
+			return asset.FilePath
+		}) {
+			for i := range assets {
+				assets[i].Layer = ftypes.Layer{
+					Digest: layer.Digest,
+					DiffID: layer.DiffID,
+				}
+			}
+			key := fmt.Sprintf("%s/type:crypto", filePath)
+			nestedMap.SetByString(key, sep, assets)
+		}
+
 		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
@@ -190,6 +206,8 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
 		case ftypes.LicenseFile:
 			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
+		case []ftypes.CryptoAsset:
+			mergedLayer.CryptoAssets = append(mergedLayer.CryptoAssets, v...)
 		case ftypes.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}

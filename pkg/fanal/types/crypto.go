@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"slices"
 
 	"github.com/samber/lo"
@@ -119,6 +120,18 @@ func (a *CryptoAsset) Validate() error {
 		}
 	}
 	return nil
+}
+
+// CompareCryptoAssets orders assets by identity and then by the path they were found at.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+	)
 }
 
 // Clone returns a deep copy of the asset.
