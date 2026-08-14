@@ -360,6 +360,149 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 	}
 }
 
+func TestLinkCryptoKeyPairs(t *testing.T) {
+	t.Parallel()
+
+	publicKey := cryptotest.PublicKeyAsset()
+	otherPublicKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Identity.Value = strings.Repeat("d", 64)
+		asset.FilePath = "etc/ssl/certs/other.pem"
+	}))
+	correspondsTo := types.CryptoRelationship{
+		Type:         types.CryptoRelationshipCorrespondsTo,
+		RelatedAsset: publicKey.Descriptor(),
+	}
+	privateKeyAt := func(path string, relationships ...types.CryptoRelationship) types.CryptoAsset {
+		return cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+			asset.FilePath = path
+			asset.Relationships = relationships
+		}))
+	}
+
+	tests := []struct {
+		name   string
+		assets []types.CryptoAsset
+		want   []types.CryptoAsset
+	}{
+		{
+			name:   "a private key found without its public half",
+			assets: []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+			want:   []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+		},
+		{
+			name: "a private key and the public key derived from it",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "another public key of the same size",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				otherPublicKey,
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				otherPublicKey,
+				publicKey,
+			},
+		},
+		{
+			name: "the same private key found in two files",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				privateKeyAt("opt/app/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				privateKeyAt("opt/app/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "an encrypted container is identified by the container itself",
+			assets: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			types.LinkCryptoKeyPairs(tt.assets)
+			assert.Equal(t, tt.want, tt.assets)
+		})
+	}
+}
+
+func TestDedupeCryptoAssets(t *testing.T) {
+	t.Parallel()
+
+	certificate := cryptotest.CertificateAsset().CryptoAssetInfo
+	algorithm := cryptotest.AlgorithmAsset().CryptoAssetInfo
+	standaloneKey := cryptotest.PublicKeyAsset().CryptoAssetInfo
+	keyFromCertificate := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Key.Format = ""
+		asset.Key.Encoding = ""
+	})).CryptoAssetInfo
+
+	renamedCertificate := certificate.Clone()
+	renamedCertificate.Name = "other.test"
+
+	tests := []struct {
+		name   string
+		assets []types.CryptoAssetInfo
+		want   []types.CryptoAssetInfo
+	}{
+		{
+			name: "no assets",
+			want: []types.CryptoAssetInfo{},
+		},
+		{
+			name:   "distinct identities are kept in the order they were described",
+			assets: []types.CryptoAssetInfo{algorithm, certificate, standaloneKey},
+			want:   []types.CryptoAssetInfo{algorithm, certificate, standaloneKey},
+		},
+		{
+			name:   "a repeated identity keeps its first description",
+			assets: []types.CryptoAssetInfo{certificate, renamedCertificate, algorithm, certificate},
+			want:   []types.CryptoAssetInfo{certificate, algorithm},
+		},
+		{
+			name:   "a key that states its format replaces one taken from a certificate",
+			assets: []types.CryptoAssetInfo{certificate, keyFromCertificate, algorithm, standaloneKey},
+			want:   []types.CryptoAssetInfo{certificate, standaloneKey, algorithm},
+		},
+		{
+			name:   "a key without a format leaves the described one alone",
+			assets: []types.CryptoAssetInfo{standaloneKey, keyFromCertificate},
+			want:   []types.CryptoAssetInfo{standaloneKey},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.want, types.DedupeCryptoAssets(tt.assets))
+		})
+	}
+}
+
 func TestCryptoAssetClone(t *testing.T) {
 	t.Parallel()
 
