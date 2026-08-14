@@ -23,6 +23,7 @@ const (
 	PrefixMisconfiguration = "misconfig"
 	PrefixSecret           = "secret"
 	PrefixLicense          = "license"
+	PrefixCrypto           = "crypto"
 	PrefixVulnerabilityDB  = "vulndb"
 	PrefixJavaDB           = "javadb"
 	PrefixSPDX             = "spdx"

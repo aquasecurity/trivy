@@ -101,6 +101,7 @@ type ScanTarget struct {
 	Misconfigurations []types.Misconfiguration
 	Secrets           []types.Secret
 	Licenses          []types.LicenseFile
+	CryptoAssets      []types.CryptoAsset
 
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.

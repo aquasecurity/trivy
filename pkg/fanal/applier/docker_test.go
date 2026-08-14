@@ -2,11 +2,13 @@ package applier_test
 
 import (
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1525,6 +1527,59 @@ func TestApplyLayers(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "cryptographic assets replaced in an upper layer",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CryptoAssets: []types.CryptoAsset{
+						cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.FilePath = "etc/ssl/certs/ca.pem"
+						})),
+						cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.FilePath = "etc/ssl/certs/ca.pem"
+						})),
+						cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.FilePath = "usr/local/share/ca-certificates/extra.pem"
+						})),
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					CryptoAssets: []types.CryptoAsset{
+						cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.Identity.Value = strings.Repeat("c", 64)
+							asset.FilePath = "etc/ssl/certs/ca.pem"
+						})),
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				CryptoAssets: []types.CryptoAsset{
+					cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+						asset.FilePath = "usr/local/share/ca-certificates/extra.pem"
+						asset.Layer = types.Layer{
+							Digest: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+							DiffID: "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+						}
+					})),
+					// The certificate and the public key of the lower layer are gone with the
+					// file they were found in.
+					cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+						asset.Identity.Value = strings.Repeat("c", 64)
+						asset.FilePath = "etc/ssl/certs/ca.pem"
+						asset.Layer = types.Layer{
+							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						}
+					})),
 				},
 			},
 		},

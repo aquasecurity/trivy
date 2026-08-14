@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"slices"
 
 	"github.com/samber/lo"
@@ -119,6 +120,42 @@ func (a *CryptoAsset) Validate() error {
 		}
 	}
 	return nil
+}
+
+// CompareCryptoAssets orders assets by identity and then by the path they were found at.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+	)
+}
+
+// DedupeCryptoAssets collapses assets that share an identity, keeping the first
+// description of each. A key described by a container of its own replaces the same key
+// taken from a certificate, because only a standalone container states the format and
+// the encoding.
+func DedupeCryptoAssets(assets []CryptoAsset) []CryptoAsset {
+	// The slice keeps the order the assets were described in; the map holds their positions.
+	deduped := make([]CryptoAsset, 0, len(assets))
+	indexes := make(map[CryptoDescriptor]int, len(assets))
+	for _, asset := range assets {
+		descriptor := asset.Descriptor()
+		index, seen := indexes[descriptor]
+		if !seen {
+			indexes[descriptor] = len(deduped)
+			deduped = append(deduped, asset)
+			continue
+		}
+		kept := deduped[index]
+		if asset.Key != nil && kept.Key != nil && asset.Key.Format != "" && kept.Key.Format == "" {
+			deduped[index] = asset
+		}
+	}
+	return deduped
 }
 
 // Clone returns a deep copy of the asset.
