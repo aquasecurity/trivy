@@ -1,5 +1,24 @@
 # Changelog
 
+## [0.74.0](https://github.com/aquasecurity/trivy/compare/v0.73.0...v0.74.0) (2026-08-14)
+
+
+### Features
+
+* add RapidFort curated image scanner ([#10452](https://github.com/aquasecurity/trivy/issues/10452)) ([2c3b86c](https://github.com/aquasecurity/trivy/commit/2c3b86c9bba05beb8a0ad6ff06de9678dddc8a4e))
+* **java:** resolve JAR license URLs to SPDX IDs (Bundle-License, pom &lt;url&gt;) ([#10948](https://github.com/aquasecurity/trivy/issues/10948)) ([171e391](https://github.com/aquasecurity/trivy/commit/171e39168b1ad100f7c5ddc7bc65c1e796d8d2d5))
+
+
+### Bug Fixes
+
+* **java:** read artifact properties only from the MANIFEST.MF main section ([#11066](https://github.com/aquasecurity/trivy/issues/11066)) ([018bfbf](https://github.com/aquasecurity/trivy/commit/018bfbff1c37ccaff016973dd7c4468545edf3bf))
+* **misconf:** parse Azure flexible server parameters under their own names ([#11072](https://github.com/aquasecurity/trivy/issues/11072)) ([d59f0f8](https://github.com/aquasecurity/trivy/commit/d59f0f872fddca976c756d92e99caa817c11f741))
+* **misconf:** unmark cty values outside the evaluation context ([#11078](https://github.com/aquasecurity/trivy/issues/11078)) ([9e85b6b](https://github.com/aquasecurity/trivy/commit/9e85b6b9d8df113a134d425ba1ad70768345a516))
+* **python:** normalize dependency names in PEP 621 pyproject.toml ([#11050](https://github.com/aquasecurity/trivy/issues/11050)) ([0012281](https://github.com/aquasecurity/trivy/commit/0012281c8a8adad2eff1889f12fe08a0ca5a7bfc))
+* **server:** preserve check aliases and query in uploaded blobs ([#11080](https://github.com/aquasecurity/trivy/issues/11080)) ([0512d6d](https://github.com/aquasecurity/trivy/commit/0512d6dcdfac47622f1a15ded9bab9d0d5764c40))
+* **terraform:** avoid panic when for_each local has unknown object values ([#11019](https://github.com/aquasecurity/trivy/issues/11019)) ([199a126](https://github.com/aquasecurity/trivy/commit/199a12624b84d82aaa48a14f85b38c1a3ea3e9ca))
+* **terraform:** support OpenTofu language block ([#10923](https://github.com/aquasecurity/trivy/issues/10923)) ([bacf17f](https://github.com/aquasecurity/trivy/commit/bacf17fe52a45dda1adaec8c0bb04ccc3cd98c65))
+
 ## [0.73.0](https://github.com/aquasecurity/trivy/compare/v0.72.0...v0.73.0) (2026-08-03)
 
 
