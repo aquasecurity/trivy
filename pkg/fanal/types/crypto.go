@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"crypto/sha256"
 	"encoding/hex"
 	"slices"
@@ -132,6 +133,55 @@ func (a CryptoAssetInfo) Validate() error {
 		}
 	}
 	return nil
+}
+
+// CompareCryptoAssets orders assets by identity, then by the path they were found at and
+// the container they were stored in, which one identity can have several of.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+		cmp.Compare(a.Format, b.Format),
+		cmp.Compare(a.Encoding, b.Encoding),
+	)
+}
+
+// LinkCryptoKeyPairs points every private key at the public key derived from it, when both
+// were found. A public key states nothing about the existence of a private one, so the
+// reference runs in one direction only.
+//
+// The two halves are told apart by the key type and share an identity, since a key is
+// identified by the digest of its SubjectPublicKeyInfo. An encrypted container is left
+// alone, because its identity is the digest of the container, which never equals the
+// digest of a SubjectPublicKeyInfo.
+func LinkCryptoKeyPairs(assets []CryptoAsset) {
+	public := make(map[CryptoIdentity]CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
+			Type:         CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
 }
 
 // Clone returns a deep copy of the description.

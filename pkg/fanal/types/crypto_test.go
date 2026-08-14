@@ -367,6 +367,95 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 	}
 }
 
+func TestLinkCryptoKeyPairs(t *testing.T) {
+	t.Parallel()
+
+	publicKey := cryptotest.PublicKeyAsset()
+	otherPublicKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Identity.Value = strings.Repeat("d", 64)
+		asset.FilePath = "etc/ssl/certs/other.pem"
+	}))
+	correspondsTo := types.CryptoRelationship{
+		Type:         types.CryptoRelationshipCorrespondsTo,
+		RelatedAsset: publicKey.Descriptor(),
+	}
+	privateKeyAt := func(path string, relationships ...types.CryptoRelationship) types.CryptoAsset {
+		return cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+			asset.FilePath = path
+			asset.Relationships = relationships
+		}))
+	}
+
+	tests := []struct {
+		name   string
+		assets []types.CryptoAsset
+		want   []types.CryptoAsset
+	}{
+		{
+			name:   "a private key found without its public half",
+			assets: []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+			want:   []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+		},
+		{
+			name: "a private key and the public key derived from it",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "another public key of the same size",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				otherPublicKey,
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				otherPublicKey,
+				publicKey,
+			},
+		},
+		{
+			name: "the same private key found in two files",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				privateKeyAt("opt/app/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				privateKeyAt("opt/app/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "an encrypted container is identified by the container itself",
+			assets: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			types.LinkCryptoKeyPairs(tt.assets)
+			assert.Equal(t, tt.want, tt.assets)
+		})
+	}
+}
+
 func TestCryptoAssetClone(t *testing.T) {
 	t.Parallel()
 

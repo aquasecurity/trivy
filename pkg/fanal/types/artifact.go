@@ -2,6 +2,7 @@ package types
 
 import (
 	"cmp"
+	"slices"
 	"sort"
 	"time"
 
@@ -244,6 +245,7 @@ func (a *ArtifactDetail) Sort() {
 	sort.Sort(a.Applications)
 	sort.Sort(a.Secrets)
 	sort.Sort(a.Licenses)
+	slices.SortStableFunc(a.CryptoAssets, CompareCryptoAssets)
 	// Misconfigurations will be sorted later
 }
 
