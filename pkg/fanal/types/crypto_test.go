@@ -367,6 +367,153 @@ func TestCryptoAssetValidateRelationships(t *testing.T) {
 	}
 }
 
+func TestLinkCryptoKeyPairs(t *testing.T) {
+	t.Parallel()
+
+	publicKey := cryptotest.PublicKeyAsset()
+	otherPublicKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Identity.Value = strings.Repeat("d", 64)
+		asset.FilePath = "etc/ssl/certs/other.pem"
+	}))
+	correspondsTo := types.CryptoRelationship{
+		Type:         types.CryptoRelationshipCorrespondsTo,
+		RelatedAsset: publicKey.Descriptor(),
+	}
+	privateKeyAt := func(path string, relationships ...types.CryptoRelationship) types.CryptoAsset {
+		return cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+			asset.FilePath = path
+			asset.Relationships = relationships
+		}))
+	}
+
+	tests := []struct {
+		name   string
+		assets []types.CryptoAsset
+		want   []types.CryptoAsset
+	}{
+		{
+			name:   "a private key found without its public half",
+			assets: []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+			want:   []types.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+		},
+		{
+			name: "a private key and the public key derived from it",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "another public key of the same size",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				otherPublicKey,
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				otherPublicKey,
+				publicKey,
+			},
+		},
+		{
+			name: "the same private key found in two files",
+			assets: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				privateKeyAt("opt/app/server.key"),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				privateKeyAt("opt/app/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "an encrypted container is identified by the container itself",
+			assets: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+			want: []types.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			types.LinkCryptoKeyPairs(tt.assets)
+			assert.Equal(t, tt.want, tt.assets)
+		})
+	}
+}
+
+func TestDedupeCryptoAssets(t *testing.T) {
+	t.Parallel()
+
+	certificate := cryptotest.CertificateAsset()
+	algorithm := cryptotest.AlgorithmAsset()
+	standaloneKey := cryptotest.PublicKeyAsset()
+	// The same key taken from a certificate in the same file, where it has no container.
+	keyFromCertificate := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Format = ""
+		asset.Encoding = ""
+	}))
+
+	renamedCertificate := certificate.Clone()
+	renamedCertificate.Name = "other.test"
+
+	certificateInOtherFile := certificate.Clone()
+	certificateInOtherFile.FilePath = "/etc/other.pem"
+
+	tests := []struct {
+		name   string
+		assets []types.CryptoAsset
+		want   []types.CryptoAsset
+	}{
+		{
+			name: "no assets",
+			want: []types.CryptoAsset{},
+		},
+		{
+			name:   "distinct assets are kept in the order they were described",
+			assets: []types.CryptoAsset{algorithm, certificate, standaloneKey},
+			want:   []types.CryptoAsset{algorithm, certificate, standaloneKey},
+		},
+		{
+			name:   "a repeated asset keeps its first description",
+			assets: []types.CryptoAsset{certificate, renamedCertificate, algorithm, certificate},
+			want:   []types.CryptoAsset{certificate, algorithm},
+		},
+		{
+			name:   "one key stored two ways in one file stays two assets",
+			assets: []types.CryptoAsset{standaloneKey, keyFromCertificate},
+			want:   []types.CryptoAsset{standaloneKey, keyFromCertificate},
+		},
+		{
+			name:   "one certificate found in two files stays two assets",
+			assets: []types.CryptoAsset{certificate, certificateInOtherFile},
+			want:   []types.CryptoAsset{certificate, certificateInOtherFile},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			assert.Equal(t, tt.want, types.DedupeCryptoAssets(tt.assets))
+		})
+	}
+}
+
 func TestCryptoAssetClone(t *testing.T) {
 	t.Parallel()
 

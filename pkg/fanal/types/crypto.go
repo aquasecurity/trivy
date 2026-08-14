@@ -1,12 +1,15 @@
 package types
 
 import (
+	"cmp"
 	"crypto/sha256"
 	"encoding/hex"
 	"slices"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // CryptoKind identifies the category of a cryptographic asset.
@@ -132,6 +135,94 @@ func (a CryptoAssetInfo) Validate() error {
 		}
 	}
 	return nil
+}
+
+// CompareCryptoAssets orders assets by identity, then by the path they were found at and
+// the container they were stored in, which one identity can have several of.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+		cmp.Compare(a.Format, b.Format),
+		cmp.Compare(a.Encoding, b.Encoding),
+	)
+}
+
+// LinkCryptoKeyPairs points every private key at the public key derived from it, when both
+// were found. A public key states nothing about the existence of a private one, so the
+// reference runs in one direction only.
+//
+// The two halves are told apart by the key type and share an identity, since a key is
+// identified by the digest of its SubjectPublicKeyInfo. An encrypted container is left
+// alone, because its identity is the digest of the container, which never equals the
+// digest of a SubjectPublicKeyInfo.
+//
+// The link is added to every asset that carries the description, not to the first of them,
+// so that deduplication cannot drop it.
+func LinkCryptoKeyPairs(assets []CryptoAsset) {
+	public := make(map[CryptoIdentity]CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
+			Type:         CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
+}
+
+// cryptoAssetKey identifies one occurrence of one asset: what the material is, where it
+// was found and how it was stored there.
+type cryptoAssetKey struct {
+	Descriptor CryptoDescriptor
+	FilePath   string
+	Format     CryptoKeyFormat
+	Encoding   CryptoEncoding
+	Layer      Layer
+}
+
+// DedupeCryptoAssets collapses assets that agree on the material, the file, the container
+// and the layer, keeping the first of each and their order. One identity can therefore
+// remain several assets.
+//
+// Dropped assets take their relationships with them, which is safe as long as a
+// relationship follows from the material rather than from the object it was read out of.
+func DedupeCryptoAssets(assets []CryptoAsset) []CryptoAsset {
+	deduped := make([]CryptoAsset, 0, len(assets))
+	seen := set.New[cryptoAssetKey]()
+	for _, asset := range assets {
+		key := cryptoAssetKey{
+			Descriptor: asset.Descriptor(),
+			FilePath:   asset.FilePath,
+			Format:     asset.Format,
+			Encoding:   asset.Encoding,
+			Layer:      asset.Layer,
+		}
+		if seen.Contains(key) {
+			continue
+		}
+		seen.Append(key)
+		deduped = append(deduped, asset)
+	}
+	return deduped
 }
 
 // Clone returns a deep copy of the description.
