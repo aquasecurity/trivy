@@ -8788,8 +8788,9 @@ https://github.com/aquasecurity/trivy/blob/main/CHANGELOG.md#0520-2024-06-03
 <p>Example: <a href="https://github.com/aquasecurity/trivy/releases/tag/v0.52.0">https://github.com/aquasecurity/trivy/releases/tag/v0.52.0</a></p>
 <h3 id="adding-the-release-branch-to-rulesets">Adding the Release Branch to Rulesets<a class="headerlink" href="#adding-the-release-branch-to-rulesets" title="Permanent link">&para;</a></h3>
 <p>For major and minor releases (e.g., v0.52.0), a <code>release/vX.Y</code> branch is automatically created.
-The release maintainer must add this branch to the repository ruleset to enable merge queue protection, unless it has already been added in advance.
-Go to the repository settings → Rules → Rulesets → "release" and add <code>release/vX.Y</code> to the branch targeting pattern.</p>
+The <code>release-protection</code> ruleset automatically applies the standard release branch protections to branches matching <code>release/v*</code>.
+The release maintainer must add the new branch to the <code>release-merge-queue</code> ruleset to enable the merge queue, unless it has already been added in advance.
+Go to the repository settings → Rules → Rulesets → "release-merge-queue" and add <code>release/vX.Y</code> to the branch targeting pattern.</p>
 <h3 id="merging-the-auto-generated-helm-chart-update-pr">Merging the auto-generated Helm chart update PR<a class="headerlink" href="#merging-the-auto-generated-helm-chart-update-pr" title="Permanent link">&para;</a></h3>
 <p>Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen <a href="https://github.com/aquasecurity/trivy/pull/8638">here</a>.</p>
 <blockquote>
