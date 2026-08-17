@@ -136,7 +136,9 @@ func (a CryptoAssetInfo) Validate() error {
 	return nil
 }
 
-// CompareCryptoAssets orders assets by identity and then by the path they were found at.
+// CompareCryptoAssets orders assets by identity and then by the path and the layer they
+// were found at. One asset can be found at the same path in several layers, so the layer
+// is what tells those apart.
 func CompareCryptoAssets(a, b CryptoAsset) int {
 	return cmp.Or(
 		cmp.Compare(a.Kind, b.Kind),
@@ -145,6 +147,7 @@ func CompareCryptoAssets(a, b CryptoAsset) int {
 		cmp.Compare(a.Identity.Value, b.Identity.Value),
 		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
 		cmp.Compare(a.FilePath, b.FilePath),
+		cmp.Compare(a.Layer.DiffID, b.Layer.DiffID),
 	)
 }
 
