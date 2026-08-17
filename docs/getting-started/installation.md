@@ -131,9 +131,10 @@ sudo zypper install trivy
 References: 
 - <https://software.opensuse.org/package/trivy>
 
+
 ## MacPorts (Community)
 
-[MacPorts](https://www.macports.org) for macOS and Linux.
+[MacPorts](https://www.macports.org) for macOS.
 
 ```bash
 sudo port install trivy
@@ -181,7 +182,7 @@ pkg install trivy
 
 ## asdf/mise (Community)
 
-[asdf](https://asdf-vm.com/guide/getting-started.html) and [mise](https://mise.jdx.dev/getting-started.html) are quite similar tools you can use to install trivy.
+[asdf](https://github.com/asdf-vm/asdf) and [mise](https://github.com/jdx/mise) are quite similar tools you can use to install trivy.
 See their respective documentation for more information of how to install them and use them:
 
 - [asdf](https://asdf-vm.com/guide/getting-started.html)
