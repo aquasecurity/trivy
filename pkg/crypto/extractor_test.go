@@ -45,7 +45,7 @@ func TestExtract(t *testing.T) {
 
 	// The algorithm of an RSA key cannot be told apart from a signature algorithm by its
 	// OID alone, so it carries an unknown primitive and no family.
-	rsaAlgorithm := ftypes.CryptoAsset{
+	rsaAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
@@ -57,7 +57,7 @@ func TestExtract(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveUnknown,
 		},
 	}
-	ecAlgorithm := ftypes.CryptoAsset{
+	ecAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
@@ -69,7 +69,7 @@ func TestExtract(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveUnknown,
 		},
 	}
-	ed25519Algorithm := ftypes.CryptoAsset{
+	ed25519Algorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method: ftypes.CryptoMethodOID,
@@ -81,7 +81,7 @@ func TestExtract(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
-	dsaAlgorithm := ftypes.CryptoAsset{
+	dsaAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
@@ -94,7 +94,7 @@ func TestExtract(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
-	signatureAlgorithm := ftypes.CryptoAsset{
+	signatureAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method: ftypes.CryptoMethodOID,
@@ -108,7 +108,7 @@ func TestExtract(t *testing.T) {
 	}
 
 	// The key a certificate carries has no format and no encoding of its own.
-	certificateKey := ftypes.CryptoAsset{
+	certificateKey := ftypes.CryptoAssetInfo{
 		Kind:     ftypes.CryptoKindKey,
 		KeyType:  ftypes.CryptoKeyTypePublic,
 		Identity: spkiIdentity(t, fixtures.rsaPublic),
@@ -125,7 +125,7 @@ func TestExtract(t *testing.T) {
 	tests := []struct {
 		name   string
 		object cryptox509.Object
-		want   []ftypes.CryptoAsset
+		want   []ftypes.CryptoAssetInfo
 	}{
 		{
 			name: "certificate",
@@ -134,7 +134,7 @@ func TestExtract(t *testing.T) {
 				Certificate: fixtures.certificate,
 				Encoding:    ftypes.CryptoEncodingPEM,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind: ftypes.CryptoKindCertificate,
 					Identity: ftypes.CryptoIdentity{
@@ -197,7 +197,7 @@ func TestExtract(t *testing.T) {
 				Encoding:  ftypes.CryptoEncodingPEM,
 				KeyFormat: ftypes.CryptoKeyFormatPKIX,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind:     ftypes.CryptoKindKey,
 					KeyType:  ftypes.CryptoKeyTypePublic,
@@ -224,7 +224,7 @@ func TestExtract(t *testing.T) {
 				Encoding:  ftypes.CryptoEncodingDER,
 				KeyFormat: ftypes.CryptoKeyFormatPKIX,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind:     ftypes.CryptoKindKey,
 					KeyType:  ftypes.CryptoKeyTypePublic,
@@ -252,7 +252,7 @@ func TestExtract(t *testing.T) {
 				Encoding:  ftypes.CryptoEncodingPEM,
 				KeyFormat: ftypes.CryptoKeyFormatPKIX,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind:     ftypes.CryptoKindKey,
 					KeyType:  ftypes.CryptoKeyTypePublic,
@@ -280,7 +280,7 @@ func TestExtract(t *testing.T) {
 				Encoding:  ftypes.CryptoEncodingPEM,
 				KeyFormat: ftypes.CryptoKeyFormatPKCS8,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind:     ftypes.CryptoKindKey,
 					KeyType:  ftypes.CryptoKeyTypePrivate,
@@ -307,7 +307,7 @@ func TestExtract(t *testing.T) {
 				Encoding:             ftypes.CryptoEncodingPEM,
 				KeyFormat:            ftypes.CryptoKeyFormatPKCS8,
 			},
-			want: []ftypes.CryptoAsset{{
+			want: []ftypes.CryptoAssetInfo{{
 				Kind:    ftypes.CryptoKindKey,
 				KeyType: ftypes.CryptoKeyTypePrivate,
 				Identity: ftypes.CryptoIdentity{
@@ -330,7 +330,7 @@ func TestExtract(t *testing.T) {
 				Encoding:  ftypes.CryptoEncodingDER,
 				KeyFormat: ftypes.CryptoKeyFormatPKIX,
 			},
-			want: []ftypes.CryptoAsset{
+			want: []ftypes.CryptoAssetInfo{
 				{
 					Kind:     ftypes.CryptoKindKey,
 					KeyType:  ftypes.CryptoKeyTypePublic,
@@ -451,7 +451,7 @@ func TestExtractUnknownSignatureAlgorithm(t *testing.T) {
 	})
 	require.Len(t, assets, 4)
 
-	signature := ftypes.CryptoAsset{
+	signature := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method: ftypes.CryptoMethodOID,

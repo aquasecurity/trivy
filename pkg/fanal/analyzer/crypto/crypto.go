@@ -14,6 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 func init() {
@@ -43,7 +44,7 @@ func (a *cryptoAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInp
 		return nil, xerrors.Errorf("read %s: %w", input.FilePath, err)
 	}
 
-	var assets []ftypes.CryptoAsset
+	var described []ftypes.CryptoAssetInfo
 	for _, object := range x509.Parse(ctx, input.FilePath, content) {
 		extracted := crypto.Extract(object)
 		// The assets of one object are validated as a group and dropped as a group, because
@@ -52,25 +53,28 @@ func (a *cryptoAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInp
 			logger.WarnContext(ctx, "Invalid cryptographic asset", log.Err(err))
 			continue
 		}
-		assets = append(assets, extracted...)
+		described = append(described, extracted...)
 	}
 
 	// A file can describe the same asset more than once: every certificate in a bundle is
 	// signed with the same algorithm, and an Ed25519 certificate uses one OID for both its
 	// signature and its key.
-	assets = ftypes.DedupeCryptoAssets(assets)
-	if len(assets) == 0 {
+	described = ftypes.DedupeCryptoAssets(described)
+	if len(described) == 0 {
 		return nil, nil
 	}
 
-	for i := range assets {
-		assets[i].FilePath = input.FilePath
-	}
+	assets := xslices.Map(described, func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
+		return ftypes.CryptoAsset{
+			CryptoAssetInfo: info,
+			FilePath:        input.FilePath,
+		}
+	})
 	return &analyzer.AnalysisResult{CryptoAssets: assets}, nil
 }
 
 // validate reports the first asset that breaks the model invariants.
-func validate(assets []ftypes.CryptoAsset) error {
+func validate(assets []ftypes.CryptoAssetInfo) error {
 	for i := range assets {
 		if err := assets[i].Validate(); err != nil {
 			return xerrors.Errorf("asset %q: %w", assets[i].Name, err)

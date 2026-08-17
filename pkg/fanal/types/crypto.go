@@ -51,14 +51,14 @@ const (
 	CryptoEncodingDER CryptoEncoding = "DER"
 )
 
-// CryptoAsset describes a format-neutral cryptographic asset.
-type CryptoAsset struct {
+// CryptoAssetInfo describes a format-neutral cryptographic asset. It states what the
+// asset is, independently of where it was found: the same asset found in several files
+// and layers has one description.
+type CryptoAssetInfo struct {
 	Kind     CryptoKind     `json:",omitempty"`
 	KeyType  CryptoKeyType  `json:",omitempty"`
 	Identity CryptoIdentity `json:",omitzero"`
 	Name     string         `json:",omitempty"`
-	FilePath string         `json:",omitempty"`
-	Layer    Layer          `json:",omitzero"`
 
 	Certificate   *CryptoCertificate   `json:",omitempty"`
 	Key           *CryptoKey           `json:",omitempty"`
@@ -66,8 +66,15 @@ type CryptoAsset struct {
 	Relationships []CryptoRelationship `json:",omitempty"`
 }
 
+// CryptoAsset is a cryptographic asset found at a path in a layer.
+type CryptoAsset struct {
+	CryptoAssetInfo
+	FilePath string `json:",omitempty"`
+	Layer    Layer  `json:",omitzero"`
+}
+
 // Descriptor returns the comparable identity projected from the asset.
-func (a *CryptoAsset) Descriptor() CryptoDescriptor {
+func (a CryptoAssetInfo) Descriptor() CryptoDescriptor {
 	return CryptoDescriptor{
 		Kind:     a.Kind,
 		KeyType:  a.KeyType,
@@ -75,8 +82,18 @@ func (a *CryptoAsset) Descriptor() CryptoDescriptor {
 	}
 }
 
+// Prefer returns whichever of two descriptions of one asset states more about it. Only a
+// container of its own states the format and the encoding of a key, so a key described by
+// such a container wins over the same key taken from a certificate.
+func (a CryptoAssetInfo) Prefer(other CryptoAssetInfo) CryptoAssetInfo {
+	if a.Key != nil && other.Key != nil && a.Key.Format == "" && other.Key.Format != "" {
+		return other
+	}
+	return a
+}
+
 // Validate checks the intrinsic asset invariants.
-func (a *CryptoAsset) Validate() error {
+func (a CryptoAssetInfo) Validate() error {
 	descriptor := a.Descriptor()
 	if err := descriptor.Validate(); err != nil {
 		return xerrors.Errorf("validate descriptor: %w", err)
@@ -135,12 +152,10 @@ func CompareCryptoAssets(a, b CryptoAsset) int {
 }
 
 // DedupeCryptoAssets collapses assets that share an identity, keeping the first
-// description of each. A key described by a container of its own replaces the same key
-// taken from a certificate, because only a standalone container states the format and
-// the encoding.
-func DedupeCryptoAssets(assets []CryptoAsset) []CryptoAsset {
+// description of each and preferring the one that states more.
+func DedupeCryptoAssets(assets []CryptoAssetInfo) []CryptoAssetInfo {
 	// The slice keeps the order the assets were described in; the map holds their positions.
-	deduped := make([]CryptoAsset, 0, len(assets))
+	deduped := make([]CryptoAssetInfo, 0, len(assets))
 	indexes := make(map[CryptoDescriptor]int, len(assets))
 	for _, asset := range assets {
 		descriptor := asset.Descriptor()
@@ -150,17 +165,20 @@ func DedupeCryptoAssets(assets []CryptoAsset) []CryptoAsset {
 			deduped = append(deduped, asset)
 			continue
 		}
-		kept := deduped[index]
-		if asset.Key != nil && kept.Key != nil && asset.Key.Format != "" && kept.Key.Format == "" {
-			deduped[index] = asset
-		}
+		deduped[index] = deduped[index].Prefer(asset)
 	}
 	return deduped
 }
 
 // Clone returns a deep copy of the asset.
-func (a *CryptoAsset) Clone() CryptoAsset {
-	clone := *a
+func (a CryptoAsset) Clone() CryptoAsset {
+	a.CryptoAssetInfo = a.CryptoAssetInfo.Clone()
+	return a
+}
+
+// Clone returns a deep copy of the description.
+func (a CryptoAssetInfo) Clone() CryptoAssetInfo {
+	clone := a
 	clone.Relationships = slices.Clone(a.Relationships)
 	if a.Certificate != nil {
 		clone.Certificate = new(*a.Certificate)
@@ -180,7 +198,7 @@ func (a *CryptoAsset) Clone() CryptoAsset {
 	return clone
 }
 
-func (a *CryptoAsset) validateCertificate() error {
+func (a CryptoAssetInfo) validateCertificate() error {
 	if a.Certificate.Format != CryptoCertificateFormatX509 {
 		return xerrors.Errorf("unknown certificate format %q", a.Certificate.Format)
 	}
@@ -198,7 +216,7 @@ func (a *CryptoAsset) validateCertificate() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateKey() error {
+func (a CryptoAssetInfo) validateKey() error {
 	if a.Key.Size < 0 {
 		return xerrors.Errorf("key size must not be negative")
 	}
@@ -220,7 +238,7 @@ func (a *CryptoAsset) validateKey() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateAlgorithm() error {
+func (a CryptoAssetInfo) validateAlgorithm() error {
 	switch a.Algorithm.Primitive {
 	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
 	default:

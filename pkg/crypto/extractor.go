@@ -23,9 +23,9 @@ import (
 )
 
 // Extract describes a parsed cryptographic object as assets. It returns nil for an
-// object it cannot describe, such as a key with no canonical form. FilePath and Layer
-// are left to the caller.
-func Extract(object cryptox509.Object) []ftypes.CryptoAsset {
+// object it cannot describe, such as a key with no canonical form. The description says
+// nothing about where the object was found.
+func Extract(object cryptox509.Object) []ftypes.CryptoAssetInfo {
 	switch object.Kind {
 	case cryptox509.ObjectCertificate:
 		return extractCertificate(object.Certificate, object.Encoding)
@@ -43,10 +43,10 @@ func Extract(object cryptox509.Object) []ftypes.CryptoAsset {
 // extractCertificate describes a certificate, the algorithm it is signed with, the key
 // it carries and the algorithm of that key. An algorithm or a key that cannot be
 // described is left out, and the certificate keeps the relationships it can state.
-func extractCertificate(cert *x509.Certificate, encoding ftypes.CryptoEncoding) []ftypes.CryptoAsset {
+func extractCertificate(cert *x509.Certificate, encoding ftypes.CryptoEncoding) []ftypes.CryptoAssetInfo {
 	digest := sha256.Sum256(cert.Raw)
 
-	certificate := ftypes.CryptoAsset{
+	certificate := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindCertificate,
 		Identity: ftypes.CryptoIdentity{
 			Method: ftypes.CryptoMethodSHA256,
@@ -90,7 +90,7 @@ func extractCertificate(cert *x509.Certificate, encoding ftypes.CryptoEncoding) 
 		Type:         ftypes.CryptoRelationshipSignedWith,
 		RelatedAsset: signature.Descriptor(),
 	})
-	related := []ftypes.CryptoAsset{signature}
+	related := []ftypes.CryptoAssetInfo{signature}
 
 	// The key stays without a format and an encoding, because it is not a standalone
 	// container.
@@ -102,7 +102,7 @@ func extractCertificate(cert *x509.Certificate, encoding ftypes.CryptoEncoding) 
 		related = append(related, key, keyAlgorithm)
 	}
 
-	return append([]ftypes.CryptoAsset{certificate}, related...)
+	return append([]ftypes.CryptoAssetInfo{certificate}, related...)
 }
 
 // certificateName prefers the common name and falls back to the full distinguished
@@ -159,12 +159,12 @@ func extractKey(
 	encoding ftypes.CryptoEncoding,
 	keyType ftypes.CryptoKeyType,
 	pub any,
-) []ftypes.CryptoAsset {
+) []ftypes.CryptoAssetInfo {
 	key, keyAlgorithm, ok := describeKey(format, encoding, keyType, pub)
 	if !ok {
 		return nil
 	}
-	return []ftypes.CryptoAsset{key, keyAlgorithm}
+	return []ftypes.CryptoAssetInfo{key, keyAlgorithm}
 }
 
 // describeKey describes a key and the algorithm it belongs to. An Object always carries
@@ -176,16 +176,16 @@ func describeKey(
 	encoding ftypes.CryptoEncoding,
 	keyType ftypes.CryptoKeyType,
 	pub any,
-) (ftypes.CryptoAsset, ftypes.CryptoAsset, bool) {
+) (ftypes.CryptoAssetInfo, ftypes.CryptoAssetInfo, bool) {
 	identity, oid, ok := publicKeyInfo(pub)
 	if !ok {
-		return ftypes.CryptoAsset{}, ftypes.CryptoAsset{}, false
+		return ftypes.CryptoAssetInfo{}, ftypes.CryptoAssetInfo{}, false
 	}
 
 	size, curve := keyDetails(pub)
 	keyAlgorithm := algorithmAsset(oid, size, curve)
 
-	key := ftypes.CryptoAsset{
+	key := ftypes.CryptoAssetInfo{
 		Kind:     ftypes.CryptoKindKey,
 		KeyType:  keyType,
 		Identity: identity,
@@ -223,7 +223,7 @@ func keyDetails(pub any) (int, string) {
 
 // algorithmAsset describes the algorithm an OID identifies. The size and the curve
 // belong to the key the algorithm is used with and are zero for a signature algorithm.
-func algorithmAsset(oid string, size int, curve string) ftypes.CryptoAsset {
+func algorithmAsset(oid string, size int, curve string) ftypes.CryptoAssetInfo {
 	found, known := algorithms[oid]
 	if !known {
 		// An unrecognized OID is still reported, named by the OID itself. It states no
@@ -246,7 +246,7 @@ func algorithmAsset(oid string, size int, curve string) ftypes.CryptoAsset {
 		parameters = string(ftypes.CryptoParameterCurve) + "=" + curve
 	}
 
-	return ftypes.CryptoAsset{
+	return ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
@@ -371,8 +371,8 @@ func extractEncryptedPrivateKey(
 	format ftypes.CryptoKeyFormat,
 	encoding ftypes.CryptoEncoding,
 	digest string,
-) []ftypes.CryptoAsset {
-	return []ftypes.CryptoAsset{
+) []ftypes.CryptoAssetInfo {
+	return []ftypes.CryptoAssetInfo{
 		{
 			Kind:    ftypes.CryptoKindKey,
 			KeyType: ftypes.CryptoKeyTypePrivate,
