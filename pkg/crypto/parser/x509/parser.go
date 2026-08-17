@@ -29,7 +29,7 @@ const (
 	ObjectPrivateKey
 	// ObjectPublicKey identifies a public key.
 	ObjectPublicKey
-	// ObjectEncryptedPrivateKey identifies an opaque encrypted PKCS#8 private key.
+	// ObjectEncryptedPrivateKey identifies an opaque encrypted private key.
 	ObjectEncryptedPrivateKey
 )
 
