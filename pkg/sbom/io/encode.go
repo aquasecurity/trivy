@@ -46,6 +46,10 @@ type Encoder struct {
 	bom             *core.BOM
 	bomOpts         core.Options
 	forceRegenerate bool
+
+	// cryptoAssets collects the assets of every result, because assets are merged by
+	// identity across results and not within one of them.
+	cryptoAssets []ftypes.CryptoAsset
 }
 
 func NewEncoder(opts ...EncoderOption) *Encoder {
@@ -80,6 +84,7 @@ func (e *Encoder) Encode(report types.Report) (*core.BOM, error) {
 	for _, result := range report.Results {
 		e.encodeResult(root, report.Metadata, result)
 	}
+	e.encodeCryptoAssets()
 
 	// Components that do not have their own dependencies MUST be declared as empty elements within the graph.
 	if _, ok := e.bom.Relationships()[root.ID()]; !ok {
@@ -180,6 +185,11 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 }
 
 func (e *Encoder) encodeResult(root *core.Component, metadata types.Metadata, result types.Result) {
+	if result.Class == types.ClassCrypto {
+		e.cryptoAssets = append(e.cryptoAssets, result.CryptoAssets...)
+		return
+	}
+
 	if slices.Contains(ftypes.AggregatingTypes, result.Type) {
 		// If a package is language-specific package that isn't associated with a lock file,
 		// it will be a dependency of a component under "metadata".
@@ -284,6 +294,44 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		if len(pkg.DependsOn) == 0 {
 			e.bom.AddRelationship(c, nil, "")
 		}
+	}
+}
+
+// encodeCryptoAssets turns cryptographic assets into components, one per identity. The
+// same asset found in several files or layers becomes one component carrying an
+// occurrence per source, because identity is derived from content and does not depend on
+// where the asset was found.
+//
+// TODO: drop a relationship whose target is missing from the BOM. Nothing removes an
+// asset today, so every target is present; filtering trust store bundles will change that.
+func (e *Encoder) encodeCryptoAssets() {
+	// Sorting once puts both the components and the occurrences of each of them in a fixed
+	// order.
+	slices.SortStableFunc(e.cryptoAssets, ftypes.CompareCryptoAssets)
+
+	descriptions := make(map[ftypes.CryptoDescriptor]ftypes.CryptoAssetInfo)
+	occurrences := make(map[ftypes.CryptoDescriptor][]core.Occurrence)
+	descriptors := make([]ftypes.CryptoDescriptor, 0, len(e.cryptoAssets))
+	for _, asset := range e.cryptoAssets {
+		descriptor := asset.Descriptor()
+		if _, described := descriptions[descriptor]; !described {
+			descriptions[descriptor] = asset.CryptoAssetInfo
+			descriptors = append(descriptors, descriptor)
+		}
+
+		// An occurrence states where the asset was found and nothing about how it was
+		// stored there, so one file that holds the material twice states it once.
+		occurrence := core.Occurrence{Location: asset.FilePath}
+		if !slices.Contains(occurrences[descriptor], occurrence) {
+			occurrences[descriptor] = append(occurrences[descriptor], occurrence)
+		}
+	}
+
+	for _, descriptor := range descriptors {
+		e.bom.AddCryptoComponent(&core.CryptoComponent{
+			Asset:       descriptions[descriptor],
+			Occurrences: occurrences[descriptor],
+		})
 	}
 }
 
