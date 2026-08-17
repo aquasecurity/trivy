@@ -30,7 +30,7 @@ func adaptPostgreSQLServer(resource *terraform.Block, module *terraform.Module) 
 	}
 
 	configs := module.GetReferencingResources(resource, "azurerm_postgresql_configuration", "server_name")
-	config := adaptPostgreSQLConfig(resource, configs)
+	config := adaptPostgreSQLConfig(resource, configs, "connection_throttling")
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
@@ -38,7 +38,7 @@ func adaptPostgreSQLServer(resource *terraform.Block, module *terraform.Module) 
 			EnableSSLEnforcement: resource.GetAttribute("ssl_enforcement_enabled").
 				AsBoolValueOrDefault(false, resource),
 			MinimumTLSVersion: resource.GetAttribute("ssl_minimal_tls_version_enforced").
-				AsStringValueOrDefault("TLS1_2", resource),
+				AsStringValueOrDefault(defaultTLSVersion, resource),
 			EnablePublicNetworkAccess: resource.GetAttribute("public_network_access_enabled").
 				AsBoolValueOrDefault(true, resource),
 			FirewallRules: firewallRules,
@@ -64,8 +64,8 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 	// By default, the server enforces secure connections using TLS 1.2
 	// Flexible server configurations use server_id instead of server_name
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_flexible_server_configuration", "server_id")
-	config := adaptPostgreSQLConfig(resource, configBlocks)
-	params := parseServerParameters(configBlocks, resource.GetMetadata())
+	config := adaptPostgreSQLConfig(resource, configBlocks, "connection_throttle.enable")
+	params := parseServerParameters(configBlocks, resource.GetMetadata(), "ssl_min_protocol_version")
 
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
@@ -89,7 +89,7 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 	}
 }
 
-func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.Block) database.PostgresSQLConfig {
+func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.Block, throttlingParam string) database.PostgresSQLConfig {
 	var defaultMetadata iacTypes.Metadata
 	if resource != nil {
 		defaultMetadata = resource.GetMetadata()
@@ -113,7 +113,7 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 		switch {
 		case nameAttr.Equals("log_checkpoints"):
 			config.LogCheckpoints = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
-		case nameAttr.Equals("connection_throttling"):
+		case nameAttr.Equals(throttlingParam):
 			config.ConnectionThrottling = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())
 		case nameAttr.Equals("log_connections"):
 			config.LogConnections = iacTypes.Bool(valAttr.Equals("on"), valAttr.GetMetadata())

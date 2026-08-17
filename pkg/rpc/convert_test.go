@@ -950,6 +950,251 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 	}
 }
 
+func TestConvertToMisconfResults(t *testing.T) {
+	tests := []struct {
+		name    string
+		results []ftypes.MisconfResult
+		want    []*common.MisconfResult
+	}{
+		{
+			name: "happy path",
+			results: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: ftypes.PolicyMetadata{
+						ID:    "DS-0005",
+						AVDID: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+					},
+				},
+			},
+			want: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: &common.PolicyMetadata{
+						Id:    "DS-0005",
+						AdvId: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:      "Dockerfile",
+						Service:       "general",
+						StartLine:     3,
+						EndLine:       3,
+						Code:          &common.Code{},
+						RenderedCause: &common.RenderedCause{},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToMisconfResults(tt.results)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCMisconfResults(t *testing.T) {
+	tests := []struct {
+		name    string
+		results []*common.MisconfResult
+		want    []ftypes.MisconfResult
+	}{
+		{
+			name: "happy path",
+			results: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: &common.PolicyMetadata{
+						Id:    "DS-0005",
+						AdvId: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: ftypes.PolicyMetadata{
+						ID:    "DS-0005",
+						AVDID: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "no cause metadata",
+			results: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+				},
+			},
+			want: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCMisconfResults(tt.results)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCCode(t *testing.T) {
+	tests := []struct {
+		name string
+		code *common.Code
+		want ftypes.Code
+	}{
+		{
+			name: "happy path",
+			code: &common.Code{
+				Lines: []*common.Line{
+					{
+						Number:      3,
+						Content:     "ADD . /app",
+						IsCause:     true,
+						Annotation:  "annotation",
+						Truncated:   true,
+						Highlighted: "ADD . /app",
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+			want: ftypes.Code{
+				Lines: []ftypes.Line{
+					{
+						Number:      3,
+						Content:     "ADD . /app",
+						IsCause:     true,
+						Annotation:  "annotation",
+						Truncated:   true,
+						Highlighted: "ADD . /app",
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+		},
+		{
+			name: "nil code",
+			code: nil,
+			want: ftypes.Code{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCCode(tt.code)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func TestConvertFromRPCLicenses(t *testing.T) {
 	tests := []struct {
 		name        string

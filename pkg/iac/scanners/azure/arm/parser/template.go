@@ -13,7 +13,6 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -131,7 +130,7 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 	rootMetadata := types.NewMetadata(
 		types.NewRange(path, 0, 0, "", fsys),
 		"",
-	).WithInternal(resolver.NewResolver())
+	)
 	template.Metadata.SetParentPtr(&rootMetadata)
 	return &template, nil
 }

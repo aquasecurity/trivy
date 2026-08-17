@@ -413,6 +413,7 @@ func ConvertToRPCPolicyMetadata(policy ftypes.PolicyMetadata) *common.PolicyMeta
 	return &common.PolicyMetadata{
 		Id:                 policy.ID,
 		AdvId:              policy.AVDID,
+		Aliases:            policy.Aliases,
 		Type:               policy.Type,
 		Title:              policy.Title,
 		Description:        policy.Description,
@@ -512,6 +513,10 @@ func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) 
 }
 
 func ConvertFromRPCCode(rpcCode *common.Code) ftypes.Code {
+	if rpcCode == nil {
+		return ftypes.Code{}
+	}
+
 	var lines []ftypes.Line
 	for _, line := range rpcCode.Lines {
 		lines = append(lines, ftypes.Line{
@@ -718,6 +723,7 @@ func ConvertFromRPCPolicyMetadata(rpcPolicy *common.PolicyMetadata) ftypes.Polic
 	return ftypes.PolicyMetadata{
 		ID:                 rpcPolicy.Id,
 		AVDID:              rpcPolicy.AdvId,
+		Aliases:            rpcPolicy.Aliases,
 		Type:               rpcPolicy.Type,
 		Title:              rpcPolicy.Title,
 		Description:        rpcPolicy.Description,
@@ -836,6 +842,7 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 	for _, r := range rpcResults {
 		results = append(results, ftypes.MisconfResult{
 			Namespace:      r.Namespace,
+			Query:          r.Query,
 			Message:        r.Message,
 			PolicyMetadata: ConvertFromRPCPolicyMetadata(r.PolicyMetadata),
 			CauseMetadata:  ConvertFromRPCCauseMetadata(r.CauseMetadata),
@@ -1025,6 +1032,7 @@ func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfRe
 	for _, r := range results {
 		rpcResults = append(rpcResults, &common.MisconfResult{
 			Namespace:      r.Namespace,
+			Query:          r.Query,
 			Message:        r.Message,
 			PolicyMetadata: ConvertToRPCPolicyMetadata(r.PolicyMetadata),
 			CauseMetadata:  ConvertToRPCCauseMetadata(r.CauseMetadata),

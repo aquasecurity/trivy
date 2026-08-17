@@ -1,6 +1,8 @@
 package jar_test
 
 import (
+	"archive/zip"
+	"bytes"
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
@@ -32,16 +34,19 @@ var (
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-databind",
 			Version:  "2.9.10.6",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-annotations",
 			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
 		},
 		{
 			Name:     "com.fasterxml.jackson.core:jackson-core",
 			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
 			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-core-2.9.10.jar",
 		},
 		{
@@ -518,6 +523,21 @@ func TestDecodePomLicenses(t *testing.T) {
 			xml:  `<project><parent><groupId>com.example</groupId></parent></project>`,
 			want: nil,
 		},
+		{
+			name: "empty name falls back to url resolved to SPDX ID",
+			xml:  `<project><licenses><license><name></name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "name takes precedence over url",
+			xml:  `<project><licenses><license><name>The Apache Software License, Version 2.0</name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			name: "unresolvable url is skipped",
+			xml:  `<project><licenses><license><name></name><url>https://example.com/my-license</url></license></licenses></project>`,
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -583,6 +603,241 @@ func TestIsJarLicenseFile(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, jar.IsJarLicenseFile(tt.path))
+		})
+	}
+}
+
+func TestParseBundleLicense(t *testing.T) {
+	tests := []struct {
+		name   string
+		header string
+		want   []string
+	}{
+		{
+			name:   "empty",
+			header: "",
+			want:   nil,
+		},
+		{
+			name:   "SPDX ID",
+			header: "Apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "SPDX ID is case-insensitive and canonicalized",
+			header: "apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "license URL",
+			header: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "OSGi structured form resolved via link",
+			header: `"Apache License 2.0";link="https://www.apache.org/licenses/LICENSE-2.0";description="Apache 2"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "name is an SPDX ID, link ignored",
+			header: `"MIT";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "multiple entries",
+			header: "Apache-2.0, https://opensource.org/licenses/MIT",
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "comma inside a quoted description does not split the entry",
+			header: `Apache-2.0;description="Apache License, Version 2.0";link="https://www.apache.org/licenses/LICENSE-2.0"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "comma inside a quoted name does not split the entry",
+			header: `"Eclipse Public License, Version 1.0";link="http://www.eclipse.org/legal/epl-v10.html"`,
+			want:   []string{"EPL-1.0"},
+		},
+		{
+			name:   "semicolon inside a quoted name does not start an attribute",
+			header: `"Custom; License";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "spaces around the attribute assignment",
+			header: `"Custom" ; link = "https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "escaped quote does not end the quoted value",
+			header: `Apache-2.0;description="one \"quote",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "separator inside a value ending with an escaped quote",
+			header: `Apache-2.0;description="a \"quoted\" word, and a comma",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "escaped backslash does not escape the closing quote",
+			header: `Apache-2.0;description="ends with a backslash\\",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "EXTERNAL token is skipped",
+			header: "<<EXTERNAL>>",
+			want:   nil,
+		},
+		{
+			name:   "free text is skipped",
+			header: "My Company License",
+			want:   nil,
+		},
+		{
+			name:   "unresolvable link is skipped",
+			header: `"Custom";link="https://example.com/license"`,
+			want:   nil,
+		},
+		{
+			name:   "resolvable and unresolvable entries mixed",
+			header: "Apache-2.0, My Company License",
+			want:   []string{"Apache-2.0"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, jar.ParseBundleLicense(tt.header))
+		})
+	}
+}
+
+// TestParseManifestFolding verifies that a header value wrapped onto the next
+// line (continued by a single leading space, as MANIFEST.MF folds long values)
+// is rejoined without inserting a space at the fold point. A value can be folded
+// over any of the newline sequences the manifest grammar allows.
+func TestParseManifestFolding(t *testing.T) {
+	tests := []struct {
+		name string
+		eol  string
+	}{
+		{
+			name: "CRLF",
+			eol:  "\r\n",
+		},
+		{
+			name: "LF",
+			eol:  "\n",
+		},
+		{
+			name: "CR",
+			eol:  "\r",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mf := "Manifest-Version: 1.0" + tt.eol +
+				"Bundle-License: https://www.apache.org/licenses/LICEN" + tt.eol +
+				" SE-2.0.txt" + tt.eol +
+				"Bundle-Name: Example" + tt.eol
+
+			var buf bytes.Buffer
+			zw := zip.NewWriter(&buf)
+			w, err := zw.Create("META-INF/MANIFEST.MF")
+			require.NoError(t, err)
+			_, err = w.Write([]byte(mf))
+			require.NoError(t, err)
+			require.NoError(t, zw.Close())
+
+			zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+			require.NoError(t, err)
+
+			m, err := jar.ParseManifest(zr.File[0])
+			require.NoError(t, err)
+			assert.Equal(t, " https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+		})
+	}
+}
+
+func TestManifestProperties(t *testing.T) {
+	tests := []struct {
+		name     string
+		manifest string
+		want     jar.Properties
+	}{
+		{
+			name: "main section only",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: Apache Commons Lang
+Implementation-Version: 3.17.0
+Implementation-Vendor-Id: org.apache.commons
+`,
+			want: jar.Properties{
+				GroupID:    "org.apache.commons",
+				ArtifactID: "Apache Commons Lang",
+				Version:    "3.17.0",
+				FilePath:   "commons-lang3-3.17.0.jar",
+			},
+		},
+		{
+			name: "individual sections do not override the main section",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: xercesImpl
+Implementation-Version: 2.12.2
+Implementation-Vendor-Id: xerces
+
+Name: org/apache/xerces/xni/
+Implementation-Title: org.apache.xerces.xni
+Implementation-Version: 1.2
+Implementation-Vendor-Id: org.apache.xerces
+`,
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			// The attributes describe a package inside the archive, not the archive itself,
+			// so the artifact stays unidentified and the caller falls back to another source.
+			name: "artifact attributes only in an individual section",
+			manifest: `Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.10.14
+Created-By: 22.0.2+9-70 (Oracle Corporation)
+
+Name: org/apache/tools/ant/
+Implementation-Title: org.apache.tools.ant
+Implementation-Version: 1.10.15
+Implementation-Vendor: Apache Software Foundation
+`,
+			want: jar.Properties{},
+		},
+		{
+			name:     "CRLF line endings",
+			manifest: "Manifest-Version: 1.0\r\nImplementation-Title: xercesImpl\r\nImplementation-Version: 2.12.2\r\nImplementation-Vendor-Id: xerces\r\n\r\nName: org/apache/xerces/xni/\r\nImplementation-Version: 1.2\r\n",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			name:     "CR line endings",
+			manifest: "Manifest-Version: 1.0\rImplementation-Title: xercesImpl\rImplementation-Version: 2.12.2\rImplementation-Vendor-Id: xerces\r\rName: org/apache/xerces/xni/\rImplementation-Version: 1.2\r",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.ManifestProperties(strings.NewReader(tt.manifest), tt.want.FilePath)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
