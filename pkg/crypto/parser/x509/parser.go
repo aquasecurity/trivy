@@ -1,0 +1,346 @@
+package x509
+
+import (
+	"context"
+	stdcrypto "crypto"
+	"crypto/dsa"
+	"crypto/ecdsa"
+	"crypto/ed25519"
+	"crypto/rsa"
+	"crypto/sha256"
+	stdx509 "crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/asn1"
+	"encoding/hex"
+	"encoding/pem"
+	"errors"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+)
+
+// ObjectKind identifies the kind of parsed cryptographic object.
+type ObjectKind uint8
+
+const (
+	// ObjectCertificate identifies an X.509 certificate.
+	ObjectCertificate ObjectKind = iota + 1
+	// ObjectPrivateKey identifies a private key projected to its public key.
+	ObjectPrivateKey
+	// ObjectPublicKey identifies a public key.
+	ObjectPublicKey
+	// ObjectEncryptedPrivateKey identifies an opaque encrypted private key.
+	ObjectEncryptedPrivateKey
+)
+
+// EncryptionFormat identifies the container format of an encrypted private key.
+type EncryptionFormat uint8
+
+const (
+	// EncryptionFormatPKCS8 identifies an encrypted PKCS#8 container.
+	EncryptionFormatPKCS8 EncryptionFormat = iota + 1
+	// EncryptionFormatRFC1423 identifies an RFC 1423 encrypted PEM container.
+	EncryptionFormatRFC1423
+)
+
+// Object is a safe projection of a parsed cryptographic object.
+type Object struct {
+	// Kind identifies the parsed object kind.
+	Kind ObjectKind
+	// Certificate contains the parsed certificate for ObjectCertificate.
+	Certificate *stdx509.Certificate
+	// PublicKey contains a public key or the public projection of a private key.
+	PublicKey any
+	// EncryptedSHA256 contains the lowercase SHA-256 digest of an encrypted private-key container.
+	EncryptedSHA256 string
+	// EncryptionFormat identifies the encrypted private-key container format.
+	EncryptionFormat EncryptionFormat
+	// Encoding identifies the source encoding.
+	Encoding ftypes.CryptoEncoding
+	// KeyFormat identifies the source key container format.
+	KeyFormat ftypes.CryptoKeyFormat
+}
+
+type encryptedPrivateKeyInfo struct {
+	Algorithm     pkix.AlgorithmIdentifier
+	EncryptedData []byte
+}
+
+var (
+	errNotCryptographic  = errors.New("not cryptographic")
+	errUnsupportedCrypto = errors.New("unsupported cryptographic object")
+	errMalformedCrypto   = errors.New("malformed cryptographic object")
+)
+
+// Parse sniffs content because eligible extensions such as .crt, .cer, and .key do not reliably identify PEM or DER.
+// It decodes PEM blocks first, then falls back to DER when no valid PEM block is found.
+func Parse(ctx context.Context, filePath string, content []byte) []Object {
+	ctx = log.WithContextPrefix(ctx, "x509")
+	var objects []Object
+	var decodedPEM, recognized bool
+	// pem.Decode scans past malformed leading data and returns the next valid block.
+	for rest := content; ; {
+		block, next := pem.Decode(rest)
+		if block == nil {
+			break
+		}
+		decodedPEM = true
+		rest = next
+
+		object, err := parsePEMBlock(block)
+		if errors.Is(err, errNotCryptographic) {
+			continue
+		}
+		recognized = true
+		if err != nil {
+			logParseError(ctx, filePath, block.Type, err)
+			continue
+		}
+		objects = append(objects, object)
+	}
+
+	// A decoded PEM file is complete even when none of its blocks is supported.
+	if decodedPEM {
+		if !recognized {
+			log.DebugContext(ctx, "No cryptographic object found", log.FilePath(filePath))
+		}
+		return objects
+	}
+
+	// No PEM block was decoded, so try the whole file as DER.
+	object, err := parseDERObject(content)
+	if err != nil {
+		logParseError(ctx, filePath, "", err)
+		return nil
+	}
+	object.Encoding = ftypes.CryptoEncodingDER
+	return []Object{object}
+}
+
+// parsePEMBlock parses a supported PEM block and records its source encoding.
+func parsePEMBlock(block *pem.Block) (Object, error) {
+	if block.Headers["Proc-Type"] == "4,ENCRYPTED" || block.Headers["DEK-Info"] != "" {
+		object, err := parseRFC1423EncryptedPrivateKey(block)
+		if err != nil {
+			return Object{}, err
+		}
+		object.Encoding = ftypes.CryptoEncodingPEM
+		return object, nil
+	}
+
+	object, err := parsePEMObject(block.Type, block.Bytes)
+	if err != nil {
+		return Object{}, err
+	}
+
+	object.Encoding = ftypes.CryptoEncodingPEM
+	return object, nil
+}
+
+// parseRFC1423EncryptedPrivateKey validates an encrypted PEM block and retains only its canonical digest.
+func parseRFC1423EncryptedPrivateKey(block *pem.Block) (Object, error) {
+	if block.Headers["Proc-Type"] != "4,ENCRYPTED" || block.Headers["DEK-Info"] == "" || len(block.Bytes) == 0 {
+		return Object{}, errMalformedCrypto
+	}
+
+	var keyFormat ftypes.CryptoKeyFormat
+	switch block.Type {
+	case "PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatPKCS8
+	case "RSA PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatPKCS1
+	case "EC PRIVATE KEY":
+		keyFormat = ftypes.CryptoKeyFormatSEC1
+	default:
+		return Object{}, errUnsupportedCrypto
+	}
+
+	// Re-encoding normalizes header order, line endings, and Base64 wrapping.
+	encoded := pem.EncodeToMemory(block)
+	if encoded == nil {
+		return Object{}, errMalformedCrypto
+	}
+	digest := sha256.Sum256(encoded)
+	return Object{
+		Kind:             ObjectEncryptedPrivateKey,
+		EncryptedSHA256:  hex.EncodeToString(digest[:]),
+		EncryptionFormat: EncryptionFormatRFC1423,
+		KeyFormat:        keyFormat,
+	}, nil
+}
+
+func parsePEMObject(label string, der []byte) (Object, error) {
+	switch label {
+	case "CERTIFICATE":
+		certificate, err := stdx509.ParseCertificate(der)
+		if err != nil {
+			return Object{}, errMalformedCrypto
+		}
+		return Object{
+			Kind:        ObjectCertificate,
+			Certificate: certificate,
+		}, nil
+	case "PRIVATE KEY":
+		privateKey, err := stdx509.ParsePKCS8PrivateKey(der)
+		if err != nil {
+			return Object{}, errMalformedCrypto
+		}
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+	case "RSA PRIVATE KEY":
+		privateKey, err := stdx509.ParsePKCS1PrivateKey(der)
+		if err != nil {
+			return Object{}, errMalformedCrypto
+		}
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+	case "EC PRIVATE KEY":
+		privateKey, err := stdx509.ParseECPrivateKey(der)
+		if err != nil {
+			return Object{}, errMalformedCrypto
+		}
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+	case "PUBLIC KEY":
+		publicKey, err := stdx509.ParsePKIXPublicKey(der)
+		if err != nil {
+			return Object{}, errMalformedCrypto
+		}
+		return publicKeyToObject(publicKey)
+	case "ENCRYPTED PRIVATE KEY":
+		object, ok := parseEncryptedPKCS8(der)
+		if !ok {
+			return Object{}, errMalformedCrypto
+		}
+		return object, nil
+	case "CERTIFICATE REQUEST",
+		"NEW CERTIFICATE REQUEST",
+		"X509 CRL",
+		"OPENSSH PRIVATE KEY",
+		"RSA PUBLIC KEY",
+		"DSA PRIVATE KEY",
+		"DSA PUBLIC KEY",
+		"EC PARAMETERS",
+		"DH PARAMETERS",
+		"DSA PARAMETERS",
+		"TRUSTED CERTIFICATE",
+		"PKCS7",
+		"PKCS12":
+		return Object{}, errUnsupportedCrypto
+	default:
+		return Object{}, errNotCryptographic
+	}
+}
+
+func parseDERObject(der []byte) (Object, error) {
+	// The target ASN.1 DER structures have no common outer discriminator, so try their schema-specific parsers in order.
+	if certificate, err := stdx509.ParseCertificate(der); err == nil {
+		return Object{
+			Kind:        ObjectCertificate,
+			Certificate: certificate,
+		}, nil
+	}
+
+	if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+	}
+
+	if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+	}
+
+	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+	}
+
+	if publicKey, err := stdx509.ParsePKIXPublicKey(der); err == nil {
+		return publicKeyToObject(publicKey)
+	}
+
+	if object, ok := parseEncryptedPKCS8(der); ok {
+		return object, nil
+	}
+
+	if _, err := stdx509.ParseCertificateRequest(der); err == nil {
+		return Object{}, errUnsupportedCrypto
+	}
+	if _, err := stdx509.ParseRevocationList(der); err == nil {
+		return Object{}, errUnsupportedCrypto
+	}
+
+	var raw asn1.RawValue
+	rest, err := asn1.Unmarshal(der, &raw)
+	if err == nil && len(rest) == 0 && raw.Class == asn1.ClassUniversal && raw.Tag == asn1.TagSequence && raw.IsCompound {
+		return Object{}, errUnsupportedCrypto
+	}
+	if len(der) > 0 && der[0] == byte(asn1.TagSequence)|0x20 {
+		return Object{}, errMalformedCrypto
+	}
+	return Object{}, errNotCryptographic
+}
+
+// privateKeyToObject converts a private key to an Object containing its public projection.
+func privateKeyToObject(privateKey any, format ftypes.CryptoKeyFormat) (Object, error) {
+	signer, ok := privateKey.(stdcrypto.Signer)
+	if !ok {
+		return Object{}, errUnsupportedCrypto
+	}
+	publicKey := signer.Public()
+	if !isSupportedPublicKey(publicKey) {
+		return Object{}, errUnsupportedCrypto
+	}
+	return Object{
+		Kind:      ObjectPrivateKey,
+		PublicKey: publicKey,
+		KeyFormat: format,
+	}, nil
+}
+
+func publicKeyToObject(publicKey any) (Object, error) {
+	if !isSupportedPublicKey(publicKey) {
+		return Object{}, errUnsupportedCrypto
+	}
+	return Object{
+		Kind:      ObjectPublicKey,
+		PublicKey: publicKey,
+		KeyFormat: ftypes.CryptoKeyFormatPKIX,
+	}, nil
+}
+
+// parseEncryptedPKCS8 validates only the opaque envelope and retains its digest.
+func parseEncryptedPKCS8(der []byte) (Object, bool) {
+	var encrypted encryptedPrivateKeyInfo
+	rest, err := asn1.Unmarshal(der, &encrypted)
+	if err != nil || len(rest) != 0 || len(encrypted.Algorithm.Algorithm) == 0 || len(encrypted.EncryptedData) == 0 {
+		return Object{}, false
+	}
+	digest := sha256.Sum256(der)
+	return Object{
+		Kind:             ObjectEncryptedPrivateKey,
+		EncryptedSHA256:  hex.EncodeToString(digest[:]),
+		EncryptionFormat: EncryptionFormatPKCS8,
+		KeyFormat:        ftypes.CryptoKeyFormatPKCS8,
+	}, true
+}
+
+func isSupportedPublicKey(key any) bool {
+	switch key.(type) {
+	case *rsa.PublicKey, *dsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey:
+		return true
+	default:
+		return false
+	}
+}
+
+func logParseError(ctx context.Context, filePath, pemType string, err error) {
+	logger := log.With(log.FilePath(filePath))
+	if pemType != "" {
+		logger = logger.With(log.String("pem_type", pemType))
+	}
+
+	switch {
+	case errors.Is(err, errUnsupportedCrypto):
+		logger.DebugContext(ctx, "Unsupported cryptographic object")
+	case errors.Is(err, errMalformedCrypto):
+		logger.WarnContext(ctx, "Malformed cryptographic object")
+	default:
+		logger.DebugContext(ctx, "No cryptographic object found")
+	}
+}

@@ -525,6 +525,7 @@ func (a Artifact) inspectLayer(ctx context.Context, layer types.Layer, disabled 
 		Misconfigurations: result.Misconfigurations,
 		Secrets:           result.Secrets,
 		Licenses:          result.Licenses,
+		CryptoAssets:      result.CryptoAssets,
 		CustomResources:   result.CustomResources,
 
 		// For Red Hat
