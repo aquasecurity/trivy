@@ -21,6 +21,8 @@ const (
 	TypeLibrary        ComponentType = "library"
 	TypeOS             ComponentType = "os"
 	TypePlatform       ComponentType = "platform"
+	// TypeCryptographicAsset is a certificate, a key or an algorithm.
+	TypeCryptographicAsset ComponentType = "cryptographic_asset"
 
 	// Metadata properties
 	PropertySchemaVersion = "SchemaVersion"
@@ -164,6 +166,18 @@ type Component struct {
 	// SPDX: files
 	Files []File
 
+	// Occurrences is a list of places the component was found at.
+	// CycloneDX: component.evidence.occurrences
+	// SPDX: N/A
+	Occurrences []Occurrence
+
+	// Crypto describes a cryptographic asset. It is set for TypeCryptographicAsset
+	// components only, and it says nothing about where the asset was found: one component
+	// is merged from the assets of several files and layers, which become Occurrences.
+	// CycloneDX: component.cryptoProperties
+	// SPDX: N/A
+	Crypto *ftypes.CryptoAssetInfo
+
 	// Properties is a list of key-value pairs that provide additional information about the component
 	// CycloneDX: component.properties
 	// SPDX: package.attributionTexts
@@ -181,7 +195,11 @@ func (c *Component) Clone() *Component {
 	// Deep copy slices using slices.Clone
 	clone.Licenses = slices.Clone(c.Licenses)
 	clone.Files = slices.Clone(c.Files)
+	clone.Occurrences = slices.Clone(c.Occurrences)
 	clone.Properties = slices.Clone(c.Properties)
+	if c.Crypto != nil {
+		clone.Crypto = new(c.Crypto.Clone())
+	}
 
 	return &clone
 }
@@ -201,6 +219,27 @@ type File struct {
 
 func (f File) IsEmpty() bool {
 	return f.Path == "" && len(f.Digests) == 0
+}
+
+// CryptoBOMRef returns the BOM reference of the component describing an asset. The
+// reference is derived from the asset identity, so a reference to an asset and the
+// component describing it agree without looking either of them up.
+//
+// The prefix scopes cryptographic assets in a namespace shared with package components,
+// whose reference is a package URL.
+func CryptoBOMRef(descriptor ftypes.CryptoDescriptor) string {
+	return "crypto:" + descriptor.String()
+}
+
+// Occurrence is a place a component was found at.
+type Occurrence struct {
+	// Location is the path of the file the component was found in.
+	// CycloneDX: component.evidence.occurrences[].location
+	Location string
+
+	// Layer is the image layer the file belongs to.
+	// CycloneDX: component.evidence.occurrences[].additionalContext
+	Layer ftypes.Layer
 }
 
 type Property struct {

@@ -123,16 +123,18 @@ func (m *Marshaler) MarshalComponent(component *core.Component) (*cdx.Component,
 	}
 
 	cdxComponent := &cdx.Component{
-		BOMRef:     component.PkgIdentifier.BOMRef,
-		Type:       componentType,
-		Name:       component.Name,
-		Group:      component.Group,
-		Version:    component.Version,
-		PackageURL: m.PackageURL(component.PkgIdentifier.PURL),
-		Supplier:   m.Supplier(component.Supplier),
-		Hashes:     m.Hashes(component.Files),
-		Licenses:   m.Licenses(component.Licenses),
-		Properties: m.Properties(component.Properties),
+		BOMRef:           component.PkgIdentifier.BOMRef,
+		Type:             componentType,
+		Name:             component.Name,
+		Group:            component.Group,
+		Version:          component.Version,
+		PackageURL:       m.PackageURL(component.PkgIdentifier.PURL),
+		Supplier:         m.Supplier(component.Supplier),
+		Hashes:           m.Hashes(component.Files),
+		Licenses:         m.Licenses(component.Licenses),
+		Properties:       m.Properties(component.Properties),
+		Evidence:         m.evidence(component.Occurrences),
+		CryptoProperties: m.cryptoProperties(component.Crypto),
 	}
 	m.componentIDs[component.ID()] = cdxComponent.BOMRef
 
@@ -244,6 +246,8 @@ func (*Marshaler) componentType(t core.ComponentType) (cdx.ComponentType, error)
 		return cdx.ComponentTypeOS, nil
 	case core.TypePlatform:
 		return cdx.ComponentTypePlatform, nil
+	case core.TypeCryptographicAsset:
+		return cdx.ComponentTypeCryptographicAsset, nil
 	}
 	return "", xerrors.Errorf("unknown component type: %s", t)
 }
@@ -359,6 +363,11 @@ func (m *Marshaler) normalizeLicense(license string) expression.Expression {
 }
 
 func (*Marshaler) Properties(properties []core.Property) *[]cdx.Property {
+	// No properties are reported as an absent field rather than an empty array.
+	if len(properties) == 0 {
+		return nil
+	}
+
 	cdxProps := make([]cdx.Property, 0, len(properties))
 	for _, property := range properties {
 		namespace := cmp.Or(property.Namespace, Namespace)

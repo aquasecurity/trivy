@@ -130,7 +130,7 @@ func (d CryptoDescriptor) validateParameters() error {
 	if d.Kind != CryptoKindAlgorithm || d.Identity.Method != CryptoMethodOID {
 		return xerrors.Errorf("parameters are only valid for OID algorithm descriptors")
 	}
-	if err := validateAlgorithmParameters(d.Identity.Parameters); err != nil {
+	if err := d.Identity.validateAlgorithmParameter(); err != nil {
 		return xerrors.Errorf("validate algorithm parameters: %w", err)
 	}
 	return nil
@@ -205,25 +205,40 @@ const (
 	CryptoParameterCurve CryptoAlgorithmParameter = "curve"
 )
 
-// validateAlgorithmParameters accepts only empty parameters, key-size=<canonical positive
+// AlgorithmParameter returns the parameter that distinguishes algorithm assets sharing an
+// OID. It reports false when the identity carries none.
+func (i CryptoIdentity) AlgorithmParameter() (CryptoAlgorithmParameter, string, bool) {
+	name, value, found := strings.Cut(i.Parameters, "=")
+	if !found {
+		return "", "", false
+	}
+	return CryptoAlgorithmParameter(name), value, true
+}
+
+// validateAlgorithmParameter accepts only empty parameters, key-size=<canonical positive
 // decimal>, and curve=<non-empty name>.
-func validateAlgorithmParameters(parameters string) error {
-	if parameters == "" {
+func (i CryptoIdentity) validateAlgorithmParameter() error {
+	if i.Parameters == "" {
 		return nil
 	}
-	if value, ok := strings.CutPrefix(parameters, string(CryptoParameterKeySize)+"="); ok {
+	name, value, found := i.AlgorithmParameter()
+	if !found {
+		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
+	}
+
+	switch name {
+	case CryptoParameterKeySize:
 		if !isCanonicalPositiveDecimal(value) {
 			return xerrors.Errorf("key size parameter must be a canonical positive decimal")
 		}
-		return nil
-	}
-	if value, ok := strings.CutPrefix(parameters, string(CryptoParameterCurve)+"="); ok {
+	case CryptoParameterCurve:
 		if value == "" {
 			return xerrors.Errorf("curve parameter must not be empty")
 		}
-		return nil
+	default:
+		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
 	}
-	return xerrors.Errorf("unknown algorithm parameters %q", parameters)
+	return nil
 }
 
 func isLowerSHA256(value string) bool {

@@ -167,6 +167,11 @@ func (m *Marshaler) Marshal(ctx context.Context, bom *core.BOM) (*spdx.Document,
 		if c.Root {
 			continue
 		}
+		// SPDX 2.3 describes no cryptographic assets, and a certificate or an algorithm
+		// says nothing as a package.
+		if c.Type == core.TypeCryptographicAsset {
+			continue
+		}
 		spdxPackage, err := m.spdxPackage(c, timeNow, pkgDownloadLocation)
 		if err != nil {
 			return nil, xerrors.Errorf("spdx package error: %w", err)
