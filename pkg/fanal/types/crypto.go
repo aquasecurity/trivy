@@ -51,14 +51,14 @@ const (
 	CryptoEncodingDER CryptoEncoding = "DER"
 )
 
-// CryptoAsset describes a format-neutral cryptographic asset.
-type CryptoAsset struct {
+// CryptoAssetInfo describes a cryptographic asset: a certificate, a key or an algorithm.
+// It says what the asset is, not where it was found, so the same asset found in several
+// files has a single description.
+type CryptoAssetInfo struct {
 	Kind     CryptoKind     `json:",omitempty"`
 	KeyType  CryptoKeyType  `json:",omitempty"`
 	Identity CryptoIdentity `json:",omitzero"`
 	Name     string         `json:",omitempty"`
-	FilePath string         `json:",omitempty"`
-	Layer    Layer          `json:",omitzero"`
 
 	Certificate   *CryptoCertificate   `json:",omitempty"`
 	Key           *CryptoKey           `json:",omitempty"`
@@ -67,7 +67,7 @@ type CryptoAsset struct {
 }
 
 // Descriptor returns the comparable identity projected from the asset.
-func (a *CryptoAsset) Descriptor() CryptoDescriptor {
+func (a CryptoAssetInfo) Descriptor() CryptoDescriptor {
 	return CryptoDescriptor{
 		Kind:     a.Kind,
 		KeyType:  a.KeyType,
@@ -76,7 +76,7 @@ func (a *CryptoAsset) Descriptor() CryptoDescriptor {
 }
 
 // Validate checks the intrinsic asset invariants.
-func (a *CryptoAsset) Validate() error {
+func (a CryptoAssetInfo) Validate() error {
 	descriptor := a.Descriptor()
 	if err := descriptor.Validate(); err != nil {
 		return xerrors.Errorf("validate descriptor: %w", err)
@@ -122,65 +122,7 @@ func (a *CryptoAsset) Validate() error {
 	return nil
 }
 
-// CompareCryptoAssets orders assets by identity and then by the path they were found at.
-func CompareCryptoAssets(a, b CryptoAsset) int {
-	return cmp.Or(
-		cmp.Compare(a.Kind, b.Kind),
-		cmp.Compare(a.KeyType, b.KeyType),
-		cmp.Compare(a.Identity.Method, b.Identity.Method),
-		cmp.Compare(a.Identity.Value, b.Identity.Value),
-		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
-		cmp.Compare(a.FilePath, b.FilePath),
-	)
-}
-
-// DedupeCryptoAssets collapses assets that share an identity, keeping the first
-// description of each. A key described by a container of its own replaces the same key
-// taken from a certificate, because only a standalone container states the format and
-// the encoding.
-func DedupeCryptoAssets(assets []CryptoAsset) []CryptoAsset {
-	// The slice keeps the order the assets were described in; the map holds their positions.
-	deduped := make([]CryptoAsset, 0, len(assets))
-	indexes := make(map[CryptoDescriptor]int, len(assets))
-	for _, asset := range assets {
-		descriptor := asset.Descriptor()
-		index, seen := indexes[descriptor]
-		if !seen {
-			indexes[descriptor] = len(deduped)
-			deduped = append(deduped, asset)
-			continue
-		}
-		kept := deduped[index]
-		if asset.Key != nil && kept.Key != nil && asset.Key.Format != "" && kept.Key.Format == "" {
-			deduped[index] = asset
-		}
-	}
-	return deduped
-}
-
-// Clone returns a deep copy of the asset.
-func (a *CryptoAsset) Clone() CryptoAsset {
-	clone := *a
-	clone.Relationships = slices.Clone(a.Relationships)
-	if a.Certificate != nil {
-		clone.Certificate = new(*a.Certificate)
-		clone.Certificate.KeyUsage = slices.Clone(a.Certificate.KeyUsage)
-		clone.Certificate.ExtendedKeyUsage = slices.Clone(a.Certificate.ExtendedKeyUsage)
-		clone.Certificate.DNSNames = slices.Clone(a.Certificate.DNSNames)
-		clone.Certificate.EmailAddresses = slices.Clone(a.Certificate.EmailAddresses)
-		clone.Certificate.IPAddresses = slices.Clone(a.Certificate.IPAddresses)
-		clone.Certificate.URIs = slices.Clone(a.Certificate.URIs)
-	}
-	if a.Key != nil {
-		clone.Key = new(*a.Key)
-	}
-	if a.Algorithm != nil {
-		clone.Algorithm = new(*a.Algorithm)
-	}
-	return clone
-}
-
-func (a *CryptoAsset) validateCertificate() error {
+func (a CryptoAssetInfo) validateCertificate() error {
 	if a.Certificate.Format != CryptoCertificateFormatX509 {
 		return xerrors.Errorf("unknown certificate format %q", a.Certificate.Format)
 	}
@@ -198,7 +140,7 @@ func (a *CryptoAsset) validateCertificate() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateKey() error {
+func (a CryptoAssetInfo) validateKey() error {
 	if a.Key.Size < 0 {
 		return xerrors.Errorf("key size must not be negative")
 	}
@@ -220,11 +162,82 @@ func (a *CryptoAsset) validateKey() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateAlgorithm() error {
+func (a CryptoAssetInfo) validateAlgorithm() error {
 	switch a.Algorithm.Primitive {
 	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
 	default:
 		return xerrors.Errorf("unknown algorithm primitive %q", a.Algorithm.Primitive)
 	}
 	return nil
+}
+
+// Clone returns a deep copy of the description.
+func (a CryptoAssetInfo) Clone() CryptoAssetInfo {
+	clone := a
+	clone.Relationships = slices.Clone(a.Relationships)
+	if a.Certificate != nil {
+		clone.Certificate = new(*a.Certificate)
+		clone.Certificate.KeyUsage = slices.Clone(a.Certificate.KeyUsage)
+		clone.Certificate.ExtendedKeyUsage = slices.Clone(a.Certificate.ExtendedKeyUsage)
+		clone.Certificate.DNSNames = slices.Clone(a.Certificate.DNSNames)
+		clone.Certificate.EmailAddresses = slices.Clone(a.Certificate.EmailAddresses)
+		clone.Certificate.IPAddresses = slices.Clone(a.Certificate.IPAddresses)
+		clone.Certificate.URIs = slices.Clone(a.Certificate.URIs)
+	}
+	if a.Key != nil {
+		clone.Key = new(*a.Key)
+	}
+	if a.Algorithm != nil {
+		clone.Algorithm = new(*a.Algorithm)
+	}
+	return clone
+}
+
+// DedupeCryptoAssets collapses assets that share an identity, keeping the first
+// description of each. A key described by a container of its own replaces the same key
+// taken from a certificate, because only a standalone container states the format and
+// the encoding.
+func DedupeCryptoAssets(assets []CryptoAssetInfo) []CryptoAssetInfo {
+	// The slice keeps the order the assets were described in; the map holds their positions.
+	deduped := make([]CryptoAssetInfo, 0, len(assets))
+	indexes := make(map[CryptoDescriptor]int, len(assets))
+	for _, asset := range assets {
+		descriptor := asset.Descriptor()
+		index, seen := indexes[descriptor]
+		if !seen {
+			indexes[descriptor] = len(deduped)
+			deduped = append(deduped, asset)
+			continue
+		}
+		kept := deduped[index]
+		if asset.Key != nil && kept.Key != nil && asset.Key.Format != "" && kept.Key.Format == "" {
+			deduped[index] = asset
+		}
+	}
+	return deduped
+}
+
+// CryptoAsset is a cryptographic asset found at a path in a layer.
+type CryptoAsset struct {
+	CryptoAssetInfo
+	FilePath string `json:",omitempty"`
+	Layer    Layer  `json:",omitzero"`
+}
+
+// Clone returns a deep copy of the asset.
+func (a CryptoAsset) Clone() CryptoAsset {
+	a.CryptoAssetInfo = a.CryptoAssetInfo.Clone()
+	return a
+}
+
+// CompareCryptoAssets orders assets by identity and then by the path they were found at.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+	)
 }
