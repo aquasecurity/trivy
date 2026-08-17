@@ -12,9 +12,9 @@ import (
 	"sync"
 
 	"github.com/samber/lo"
-	"github.com/tetratelabs/wazero"
-	"github.com/tetratelabs/wazero/api"
-	wasi "github.com/tetratelabs/wazero/imports/wasi_snapshot_preview1"
+	"github.com/samyfodil/wazy"
+	"github.com/samyfodil/wazy/api"
+	wasi "github.com/samyfodil/wazy/imports/wasi_snapshot_preview1"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/extension"
@@ -87,7 +87,7 @@ type Options struct {
 }
 
 type Manager struct {
-	cache          wazero.CompilationCache
+	cache          wazy.CompilationCache
 	modules        []*wasmModule
 	dir            string
 	enabledModules []string
@@ -100,7 +100,7 @@ func NewManager(ctx context.Context, opts Options) (*Manager, error) {
 	}
 
 	// Create a new WebAssembly Runtime.
-	m.cache = wazero.NewCompilationCache()
+	m.cache = wazy.NewCompilationCache()
 
 	// Load WASM modules in local
 	if err := m.loadModules(ctx); err != nil {
@@ -280,12 +280,12 @@ type wasmModule struct {
 	free     api.Function // Exported by Trivy Wasm SDK
 }
 
-func newWASMPlugin(ctx context.Context, ccache wazero.CompilationCache, code []byte) (*wasmModule, error) {
+func newWASMPlugin(ctx context.Context, ccache wazy.CompilationCache, code []byte) (*wasmModule, error) {
 	mf := &memFS{}
-	config := wazero.NewModuleConfig().WithFS(mf).WithStartFunctions("_initialize")
+	config := wazy.NewModuleConfig().WithFS(mf).WithStartFunctions("_initialize")
 
 	// Create an empty namespace so that multiple modules will not conflict
-	r := wazero.NewRuntimeWithConfig(ctx, wazero.NewRuntimeConfig().WithCompilationCache(ccache))
+	r := wazy.NewRuntimeWithConfig(ctx, wazy.NewRuntimeConfig().WithCompilationCache(ccache))
 
 	// Instantiate a Go-defined module named "env" that exports functions.
 	envBuilder := r.NewHostModuleBuilder("env")
