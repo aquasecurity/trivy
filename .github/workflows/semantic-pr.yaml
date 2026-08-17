@@ -37,6 +37,7 @@ jobs:
             misconf
             secret
             license
+            crypto
 
             # Targets
             image
