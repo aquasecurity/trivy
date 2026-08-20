@@ -29,8 +29,7 @@ var (
 	GOBIN  = filepath.Join(GOPATH, "bin")
 
 	ENV = map[string]string{
-		"CGO_ENABLED":  "0",
-		"GOEXPERIMENT": "jsonv2",
+		"CGO_ENABLED": "0",
 	}
 )
 

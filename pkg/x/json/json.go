@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
+	"errors"
 	"io"
 
 	"golang.org/x/xerrors"
@@ -106,7 +107,8 @@ func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook
 
 		// Check visited set to avoid infinity loops
 		if visited.Contains(start) {
-			return json.SkipFunc
+			// Fall back to the default decoding.
+			return errors.ErrUnsupported
 		}
 		visited.Append(start)
 
