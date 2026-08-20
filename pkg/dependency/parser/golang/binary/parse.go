@@ -56,13 +56,15 @@ func NewParser() *Parser {
 
 // parseStdlibVersion extracts the Go stdlib version from info.GoVersion,
 // which may carry trailing metadata that is not part of the version:
-//   - a GOEXPERIMENT list in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26). 
+//   - a GOEXPERIMENT list in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26).
 //   - a vendor build identifier, e.g. "go1.26.5 (Red Hat 1.26.5-1.el10_2.alma.1)".
 func parseStdlibVersion(goVersion string) string {
 	stdlibVersion := strings.TrimPrefix(goVersion, "go")
-	// A Go version never contains a space, so everything from the first one onward is metadata.
+	// Go itself treats whatever follows the version after a space as a custom build suffix and strips it.
+	// cf. https://github.com/golang/go/blob/c19862e5f8415b4f24b189d065ed739517c548ba/src/cmd/go/internal/gover/toolchain.go#L18-L40
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
-	// Go >=1.26 may instead join the GOEXPERIMENT list with a dash.
+	// Strip the GOEXPERIMENT list, which Go >=1.26 joins with a dash instead of a space.
+	// cf. https://github.com/golang/go/blob/9daaab305c4d1dede9e4f6efdc5e1268a69327e6/src/cmd/go/internal/cache/hash.go#L48-L58
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
 	// Add the `v` prefix to be consistent with module and dependency versions.
 	return fmt.Sprintf("v%s", stdlibVersion)
