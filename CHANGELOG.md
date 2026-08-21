@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.75.0](https://github.com/aquasecurity/trivy/compare/v0.74.0...v0.75.0) (2026-08-21)
+
+
+### Features
+
+* add cryptographic asset model and parser ([#10970](https://github.com/aquasecurity/trivy/issues/10970)) ([64e1715](https://github.com/aquasecurity/trivy/commit/64e17158b838f3154be3c75cd4799d058143ea92))
+
+
+### Bug Fixes
+
+* **go:** restore stdlib version parsing for vendor-patched Go toolchains ([#11119](https://github.com/aquasecurity/trivy/issues/11119)) ([a851889](https://github.com/aquasecurity/trivy/commit/a851889c930eb8a604dec96ad9a783d75e2b6ac6))
+
 ## [0.74.0](https://github.com/aquasecurity/trivy/compare/v0.73.0...v0.74.0) (2026-08-14)
 
 
