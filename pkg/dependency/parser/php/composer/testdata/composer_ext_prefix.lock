@@ -1,0 +1,20 @@
+{
+    "packages": [
+        {
+            "name": "acme/app",
+            "version": "1.0.0",
+            "require": {
+                "php": ">=7.4",
+                "ext-json": "*",
+                "extension/foo": "^1.0"
+            },
+            "license": ["MIT"]
+        },
+        {
+            "name": "extension/foo",
+            "version": "1.2.0",
+            "license": ["MIT"]
+        }
+    ],
+    "packages-dev": []
+}
