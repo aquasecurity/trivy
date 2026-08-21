@@ -746,16 +746,15 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 	contentLower := bytes.ToLower(content)
 
 	for _, rule := range s.Rules {
-		ruleLogger := logger.With("rule_id", rule.ID)
 		// Check if the file path should be scanned by this rule
 		if !rule.MatchPath(filePath) {
-			ruleLogger.Debug("Skipped secret scanning as non-compliant to the rule")
+			logger.Debug("Skipped secret scanning as non-compliant to the rule", log.String("rule_id", rule.ID))
 			continue
 		}
 
 		// Check if the file path should be allowed
 		if rule.AllowPath(filePath) {
-			ruleLogger.Debug("Skipped secret scanning as allowed")
+			logger.Debug("Skipped secret scanning as allowed", log.String("rule_id", rule.ID))
 			continue
 		}
 
@@ -769,7 +768,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 		if len(locs) == 0 {
 			continue
 		}
-		ruleLogger.Debug("Found locations", log.Int("count", len(locs)))
+		logger.Debug("Found locations", log.String("rule_id", rule.ID), log.Int("count", len(locs)))
 
 		localExcludedBlocks := newBlocks(content, rule.ExcludeBlock.Regexes)
 
