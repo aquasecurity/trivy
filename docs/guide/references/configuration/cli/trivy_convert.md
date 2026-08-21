@@ -18,6 +18,7 @@ trivy convert [flags] RESULT_JSON
 ### Options
 
 ```
+      --color string               control colored output (only for 'table' format) (allowed values: auto,always,never) (default "auto")
       --compliance string          compliance report to generate
       --dependency-tree            [EXPERIMENTAL] show dependency origin tree of vulnerable packages
       --exit-code int              specify exit code when any security issues are found
