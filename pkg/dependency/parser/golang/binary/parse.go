@@ -54,14 +54,17 @@ func NewParser() *Parser {
 	}
 }
 
-// parseStdlibVersion extracts the Go stdlib version from info.GoVersion.
-// It strips GOEXPERIMENT suffixes in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26).
+// parseStdlibVersion extracts the Go stdlib version from info.GoVersion,
+// which may carry trailing metadata that is not part of the version:
+//   - a GOEXPERIMENT list in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26).
+//   - a vendor build identifier, e.g. "go1.26.5 (Red Hat 1.26.5-1.el10_2.alma.1)".
 func parseStdlibVersion(goVersion string) string {
-	// Ex: "go1.22.3 X:boringcrypto" (Go <=1.25) or "go1.26.0-X:nodwarf5" (Go >=1.26)
 	stdlibVersion := strings.TrimPrefix(goVersion, "go")
-	// Strip GOEXPERIMENT suffix: " X:foo" (Go <=1.25) or "-X:foo" (Go >=1.26)
+	// Go itself treats whatever follows the version after a space as a custom build suffix and strips it.
+	// cf. https://github.com/golang/go/blob/c19862e5f8415b4f24b189d065ed739517c548ba/src/cmd/go/internal/gover/toolchain.go#L18-L40
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
+	// Strip the GOEXPERIMENT list, which Go >=1.26 joins with a dash instead of a space.
 	// cf. https://github.com/golang/go/blob/9daaab305c4d1dede9e4f6efdc5e1268a69327e6/src/cmd/go/internal/cache/hash.go#L48-L58
-	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " X:")
 	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
 	// Add the `v` prefix to be consistent with module and dependency versions.
 	return fmt.Sprintf("v%s", stdlibVersion)
