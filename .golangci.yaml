@@ -143,6 +143,10 @@ linters:
     testifylint:
       enable-all: true
 
+    modernize:
+      disable:
+        - embedlit
+
   default: none
 
   enable:

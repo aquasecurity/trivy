@@ -147,8 +147,7 @@ func (a *rpmArchiveAnalyzer) generatePURL(pkg *types.Package) *packageurl.Packag
 }
 
 func (a *rpmArchiveAnalyzer) unexpectedError(err error) error {
-	var rerr rpmutils.NoSuchTagError
-	if errors.As(err, &rerr) {
+	if rerr, ok := errors.AsType[rpmutils.NoSuchTagError](err); ok {
 		a.logger.Debug("RPM tag not found", log.Err(rerr))
 		return nil
 	}
