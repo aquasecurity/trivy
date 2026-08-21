@@ -41,9 +41,11 @@ type Option struct {
 	Original string
 
 	// Git repositories
-	RepoBranch string
-	RepoCommit string
-	RepoTag    string
+	RepoBranch      string
+	RepoCommit      string
+	RepoTag         string
+	RepoGitUsername string
+	RepoGitPassword string
 
 	// For image scanning
 	ImageOption types.ImageOptions
