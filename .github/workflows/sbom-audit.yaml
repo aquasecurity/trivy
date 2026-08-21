@@ -1,0 +1,86 @@
+name: SBOM Audit
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/sbom-audit.yaml'
+      - 'examples/workflows/**'
+      - 'contrib/install.sh'
+      - 'contrib/workflows/**'
+  workflow_dispatch:
+    inputs:
+      sbom_path:
+        description: Path to a CycloneDX or SPDX SBOM checked into the repository
+        required: true
+        default: sbom.cdx.json
+  schedule:
+    - cron: '43 2 * * 1'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: sbom-audit-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  sbom-audit:
+    runs-on: ubuntu-2404-2core
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Trivy from repo script
+        run: |
+          set -euo pipefail
+          ./contrib/install.sh -b /usr/local/bin
+          trivy --version
+
+      - name: Validate SBOM path input
+        env:
+          SBOM_PATH_RAW: ${{ github.event.inputs.sbom_path || 'sbom.cdx.json' }}
+        run: |
+          set -euo pipefail
+          SBOM_PATH=$(printf '%s' "$SBOM_PATH_RAW" | tr -d '\r')
+          if ! printf '%s' "$SBOM_PATH" | grep -Eq '^[A-Za-z0-9._/-]+$'; then
+            echo 'Invalid sbom_path input' >&2
+            exit 1
+          fi
+          case "$SBOM_PATH" in
+            /*|../*|*/../*|*".."*)
+              echo 'sbom_path must stay within the repository workspace' >&2
+              exit 1
+              ;;
+          esac
+          printf 'SBOM_PATH=%s\n' "$SBOM_PATH" >> "$GITHUB_ENV"
+
+      - name: Scan SBOM for vulnerabilities and licenses
+        run: |
+          test -f "$SBOM_PATH"
+          trivy sbom \
+            --scanners vuln,license \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-sbom.json \
+            "$SBOM_PATH"
+          trivy convert \
+            --format sarif \
+            --output trivy-sbom.sarif \
+            trivy-sbom.json
+          trivy sbom \
+            --scanners vuln,license \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            "$SBOM_PATH"
+
+      - name: Upload SBOM artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-sbom-artifacts
+          path: |
+            trivy-sbom.json
+            trivy-sbom.sarif

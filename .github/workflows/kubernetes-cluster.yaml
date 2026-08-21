@@ -1,0 +1,93 @@
+name: Kubernetes Cluster Scan
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/kubernetes-cluster.yaml'
+      - 'examples/workflows/**'
+      - 'contrib/install.sh'
+      - 'contrib/workflows/**'
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: Optional namespace to scope the scan
+        required: false
+        default: ''
+  schedule:
+    - cron: '11 4 * * 6'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kubernetes-cluster-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  k8s-scan:
+    runs-on: ubuntu-2404-2core
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Trivy from repo script
+        run: |
+          set -euo pipefail
+          ./contrib/install.sh -b /usr/local/bin
+          trivy --version
+
+      - name: Validate kubeconfig secret presence
+        run: |
+          set -euo pipefail
+          test -n '${{ secrets.KUBECONFIG }}'
+
+      - name: Write kubeconfig
+        run: |
+          set -euo pipefail
+          install -d -m 700 ~/.kube
+          printf '%s' '${{ secrets.KUBECONFIG }}' > ~/.kube/config
+          chmod 600 ~/.kube/config
+
+      - name: Validate namespace input
+        env:
+          NAMESPACE_RAW: ${{ github.event.inputs.namespace }}
+        run: |
+          set -euo pipefail
+          NAMESPACE=$(printf '%s' "$NAMESPACE_RAW" | tr -d '\r')
+          if [ -n "$NAMESPACE" ] && ! printf '%s' "$NAMESPACE" | grep -Eq '^[a-z0-9]([-a-z0-9]*[a-z0-9])?$'; then
+            echo 'Invalid namespace input' >&2
+            exit 1
+          fi
+          printf 'NAMESPACE=%s\n' "$NAMESPACE" >> "$GITHUB_ENV"
+
+      - name: Scan Kubernetes cluster
+        run: |
+          namespace_args=()
+          if [ -n "$NAMESPACE" ]; then
+            namespace_args+=(--include-namespaces "$NAMESPACE")
+          fi
+          trivy k8s \
+            --kubeconfig ~/.kube/config \
+            --report summary \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-k8s.json \
+            "${namespace_args[@]}" \
+            cluster
+          trivy k8s \
+            --kubeconfig ~/.kube/config \
+            --report summary \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            "${namespace_args[@]}" \
+            cluster
+
+      - name: Upload Kubernetes scan artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-k8s-artifacts
+          path: trivy-k8s.json
