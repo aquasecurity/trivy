@@ -1,0 +1,5 @@
+NAME="Hadron Linux"
+PRETTY_NAME="Hadron Linux"
+ID=hadron
+BUILD_ID=rolling
+VERSION_ID="main"
