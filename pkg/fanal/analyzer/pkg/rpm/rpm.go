@@ -53,6 +53,7 @@ var osVendors = []string{
 	"Amazon.com",            // Amazon Linux 2
 	"CentOS",                // CentOS
 	"Fedora Project",        // Fedora
+	"Hummingbird",           // Hummingbird OS
 	"Oracle America",        // Oracle Linux
 	"Red Hat",               // Red Hat
 	"AlmaLinux",             // AlmaLinux
@@ -257,7 +258,14 @@ func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
 	if pkg.Vendor == "" {
 		// Official Amazon packages may not contain `Vendor` field:
 		// https://github.com/aquasecurity/trivy/issues/5887
-		return strings.Contains(pkg.Release, "amzn")
+		if strings.Contains(pkg.Release, "amzn") {
+			return true
+		}
+		// Hummingbird packages may not contain the `Vendor` field
+		if strings.Contains(pkg.Release, ".hum") {
+			return true
+		}
+		return false
 	}
 
 	for _, vendor := range osVendors {
