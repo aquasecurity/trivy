@@ -2,6 +2,7 @@ package walker
 
 import (
 	"bytes"
+	"errors"
 	"io"
 	"os"
 	"sync"
@@ -51,12 +52,18 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 
 			o.filePath = f.Name()
 		} else {
-			b, err := io.ReadAll(o.reader)
-			if err != nil {
+			// The size is known up front, from the archive entry or from the file system,
+			// so the buffer is allocated once here rather than grown step by step the way
+			// io.ReadAll does it.
+			b := make([]byte, max(o.size, 0))
+			n, err := io.ReadFull(o.reader, b)
+			// io.ReadAll returned the bytes it managed to read when the reader ended early,
+			// without an error. Keep that behaviour instead of failing on a partial read.
+			if err != nil && !errors.Is(err, io.EOF) && !errors.Is(err, io.ErrUnexpectedEOF) {
 				o.err = xerrors.Errorf("unable to read the file: %w", err)
 				return
 			}
-			o.content = b
+			o.content = b[:n]
 		}
 	})
 	if o.err != nil {
