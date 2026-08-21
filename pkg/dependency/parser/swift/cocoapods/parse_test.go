@@ -78,6 +78,31 @@ func TestParse(t *testing.T) {
 			name:      "sad path. wrong dep format",
 			inputFile: "testdata/sad.lock",
 		},
+		{
+			// A child dependency without a name carries no information, so it is
+			// skipped and the remaining children are still linked.
+			// cf. #10976
+			name:      "sad path. blank child dependency",
+			inputFile: "testdata/empty-child-dep.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "AppCenter@4.2.0",
+					Name:    "AppCenter",
+					Version: "4.2.0",
+				},
+				{
+					ID:      "AppCenter/Core@4.2.0",
+					Name:    "AppCenter/Core",
+					Version: "4.2.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "AppCenter@4.2.0",
+					DependsOn: []string{"AppCenter/Core@4.2.0"},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
