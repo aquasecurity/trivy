@@ -31,6 +31,14 @@ type artifact struct {
 	Module       bool
 	Relationship ftypes.Relationship
 
+	// MediationOnly marks a dependency that takes part in version mediation but
+	// is not part of the build's compile/runtime classpath (a `test` or
+	// `provided` dependency of the root POM). Maven's nearest-wins mediation
+	// ignores scope, so such a declaration still decides which version of that
+	// group:artifact is resolved. It is never reported as a package and its own
+	// dependencies are never walked.
+	MediationOnly bool
+
 	Locations ftypes.Locations
 
 	// For correctly calculation package ID (hash),

@@ -224,6 +224,7 @@ func (p *Parser) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]ftypes.Packag
 	// Analyze root POM
 	result, err := p.analyze(ctx, root, analysisOptions{
 		rootFilePath: p.rootPath,
+		isRoot:       true,
 	})
 	if err != nil {
 		return nil, nil, xerrors.Errorf("analyze error (%s): %w", p.rootPath, err)
@@ -302,6 +303,23 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			}
 		}
 
+		// A mediation-only declaration claims the group:artifact slot at its own
+		// depth so nearest-wins picks its version, but it is not on the
+		// compile/runtime classpath. Record it and stop: resolving it or walking
+		// its dependencies would cost POM lookups for a subtree that is never
+		// reported.
+		if art.MediationOnly {
+			if !art.IsEmpty() {
+				uniqArtifacts[art.Name()] = artifact{
+					Version:       art.Version,
+					Relationship:  art.Relationship,
+					Locations:     art.Locations,
+					MediationOnly: true,
+				}
+			}
+			continue
+		}
+
 		result, err := p.resolve(ctx, art, rootDepManagement)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
@@ -347,16 +365,26 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			}
 
 			// save only dependency names
-			// version will be determined later
-			dependsOn := xslices.Map(result.dependencies, func(a artifact) string {
-				return a.Name()
-			})
+			// version will be determined later.
+			// Mediation-only declarations are left out: they decide a version but
+			// are not edges of the compile/runtime graph.
+			var dependsOn []string
+			for _, a := range result.dependencies {
+				if a.MediationOnly {
+					continue
+				}
+				dependsOn = append(dependsOn, a.Name())
+			}
 			uniqDeps[packageID(art.Name(), art.Version.String(), root.RootFilePath)] = dependsOn
 		}
 	}
 
 	// Convert to []ftypes.Package and []ftypes.Dependency
 	for name, art := range uniqArtifacts {
+		// Not on the compile/runtime classpath - it only decided the version.
+		if art.MediationOnly {
+			continue
+		}
 		pkg := ftypes.Package{
 			ID:           packageID(name, art.Version.String(), root.RootFilePath),
 			Name:         name,
@@ -412,6 +440,7 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 	result, err := p.analyze(ctx, module, analysisOptions{
 		rootFilePath: module.filePath,
 		repositories: repos,
+		isRoot:       true,
 	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)
@@ -479,6 +508,10 @@ type analysisOptions struct {
 	depManagement []pomDependency // from the root POM
 	rootFilePath  string          // File path of the root POM or module POM
 	repositories  []repository    // Repositories inherited from parent
+	// isRoot marks the POM whose own `test`/`provided` dependencies still take
+	// part in version mediation. Those scopes are not transitive, so they only
+	// matter for the POM that declares them.
+	isRoot bool
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -594,7 +627,22 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 		// Resolve dependencies
 		d = d.Resolve(props, depManagement, rootDepManagement)
 
-		if (d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime") || d.Optional {
+		if d.Optional {
+			continue
+		}
+
+		if d.Scope != "" && d.Scope != "compile" && d.Scope != "runtime" {
+			// `test` and `provided` are not transitive, so they only affect the
+			// POM that declares them. There they still win nearest-wins
+			// mediation, which decides the version every other path to this
+			// group:artifact resolves to. Keep the declaration for that purpose
+			// only: it is not resolved, not walked and not reported.
+			if !opts.isRoot || (d.Scope != "test" && d.Scope != "provided") {
+				continue
+			}
+			art := d.ToArtifact(opts)
+			art.MediationOnly = true
+			dependencies = append(dependencies, art)
 			continue
 		}
 
