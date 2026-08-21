@@ -17,13 +17,11 @@ import (
 
 func main() {
 	if err := run(); err != nil {
-		var exitError *types.ExitError
-		if errors.As(err, &exitError) {
+		if exitError, ok := errors.AsType[*types.ExitError](err); ok {
 			os.Exit(exitError.Code)
 		}
 
-		var userErr *types.UserError
-		if errors.As(err, &userErr) {
+		if userErr, ok := errors.AsType[*types.UserError](err); ok {
 			log.Fatal("Error", log.Err(userErr))
 		}
 

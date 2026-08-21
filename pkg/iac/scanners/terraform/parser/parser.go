@@ -194,8 +194,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		if p.stopOnHCLError {
 			return err
 		}
-		var diags hcl.Diagnostics
-		if errors.As(err, &diags) {
+		if diags, ok := errors.AsType[hcl.Diagnostics](err); ok {
 			errc := p.showParseErrors(p.moduleFS, path, diags)
 			if errc == nil {
 				continue
