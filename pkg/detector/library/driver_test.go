@@ -17,6 +17,12 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
+func TestNewDriver_Node(t *testing.T) {
+	driver, ok := library.NewDriver(ftypes.Node)
+	require.True(t, ok)
+	assert.Equal(t, "node", driver.Type())
+}
+
 func TestDriver_Detect(t *testing.T) {
 	type args struct {
 		pkgName string
