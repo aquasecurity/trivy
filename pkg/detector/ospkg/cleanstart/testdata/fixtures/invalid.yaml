@@ -1,0 +1,9 @@
+- bucket: cleanstart
+  pairs:
+    - bucket: redis
+      pairs:
+        - key: CVE-2025-12345
+          value:
+            FixedVersion:
+              - foo
+              - bar

@@ -79,6 +79,7 @@ nav:
               - Bottlerocket: guide/coverage/os/bottlerocket.md
               - CentOS: guide/coverage/os/centos.md
               - Chainguard: guide/coverage/os/chainguard.md
+              - CleanStart: guide/coverage/os/cleanstart.md
               - CoreOS: guide/coverage/os/coreos.md
               - Debian: guide/coverage/os/debian.md
               - Echo: guide/coverage/os/echo.md
