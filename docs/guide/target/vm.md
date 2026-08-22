@@ -211,7 +211,7 @@ More details are available in the [cache documentation](../configuration/cache.m
 | VMDK disk type              | Support |
 |-----------------------------|:-------:|
 | streamOptimized             |    ✔    |
-| monolithicSparse            |         |
+| monolithicSparse            |    ✔    |
 | vmfs                        |         |
 | vmfsSparse                  |         |
 | twoGbMaxExtentSparse        |         |
