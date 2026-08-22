@@ -20,6 +20,24 @@ func TestCryptoAlgorithmJSON(t *testing.T) {
 	assert.JSONEq(t, `{"Primitive":""}`, string(got))
 }
 
+// TestDigestIdentity checks the value against the SHA-256 vector published for "abc" in
+// FIPS 180-2 appendix B.1, and against the canonical form Validate requires.
+func TestDigestIdentity(t *testing.T) {
+	t.Parallel()
+
+	identity := types.DigestIdentity(types.CryptoMethodSHA256, []byte("abc"))
+	assert.Equal(t, types.CryptoIdentity{
+		Method: types.CryptoMethodSHA256,
+		Value:  "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+	}, identity)
+
+	descriptor := types.CryptoDescriptor{
+		Kind:     types.CryptoKindCertificate,
+		Identity: identity,
+	}
+	require.NoError(t, descriptor.Validate())
+}
+
 func TestCryptoAssetDescriptor(t *testing.T) {
 	t.Parallel()
 
