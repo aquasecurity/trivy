@@ -7,6 +7,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/mldsa"
 	"crypto/rand"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
@@ -226,6 +227,17 @@ func TestParse(t *testing.T) {
 		{
 			name:  "Ed25519 PKCS8 DER",
 			input: fixtures.ed25519DER,
+			want: []found{{
+				kind:     ftypes.CryptoKindKey,
+				keyType:  ftypes.CryptoKeyTypePrivate,
+				method:   ftypes.CryptoMethodSPKISHA256,
+				format:   ftypes.CryptoKeyFormatPKCS8,
+				encoding: ftypes.CryptoEncodingDER,
+			}},
+		},
+		{
+			name:  "ML-DSA PKCS8 DER",
+			input: fixtures.mldsaDER,
 			want: []found{{
 				kind:     ftypes.CryptoKindKey,
 				keyType:  ftypes.CryptoKeyTypePrivate,
@@ -772,6 +784,7 @@ type testFixtures struct {
 	encryptedPEM     []byte
 	rfc1423PEM       []byte
 	ed25519DER       []byte
+	mldsaDER         []byte
 	dsaDER           []byte
 	x25519PKCS8DER   []byte
 	x25519PKIXDER    []byte
@@ -880,6 +893,10 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 	ed25519DER, err := stdx509.MarshalPKCS8PrivateKey(ed25519Private)
 	require.NoError(t, err)
+	mldsaPrivate, err := mldsa.GenerateKey(mldsa.MLDSA44())
+	require.NoError(t, err)
+	mldsaDER, err := stdx509.MarshalPKCS8PrivateKey(mldsaPrivate)
+	require.NoError(t, err)
 	// crypto/x509 parses a DSA key but cannot encode one, so the input comes from pkg/crypto.
 	dsaDER, err := crypto.MarshalPublicKey(&dsa.PublicKey{
 		Parameters: dsa.Parameters{
@@ -941,6 +958,7 @@ func newFixtures(t *testing.T) testFixtures {
 		encryptedPEM:     pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
 		rfc1423PEM:       rfc1423PEM,
 		ed25519DER:       ed25519DER,
+		mldsaDER:         mldsaDER,
 		dsaDER:           dsaDER,
 		x25519PKCS8DER:   x25519PKCS8DER,
 		x25519PKIXDER:    x25519PKIXDER,

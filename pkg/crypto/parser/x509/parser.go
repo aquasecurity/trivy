@@ -6,6 +6,7 @@ import (
 	"crypto/dsa"
 	"crypto/ecdsa"
 	"crypto/ed25519"
+	"crypto/mldsa"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
 	"crypto/x509/pkix"
@@ -378,7 +379,7 @@ func parseEncryptedPKCS8(der []byte) (object, bool) {
 
 func isSupportedPublicKey(key any) bool {
 	switch key.(type) {
-	case *rsa.PublicKey, *dsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey:
+	case *rsa.PublicKey, *dsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey, *mldsa.PublicKey:
 		return true
 	default:
 		return false

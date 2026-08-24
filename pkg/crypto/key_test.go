@@ -5,6 +5,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/mldsa"
 	"crypto/rand"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
@@ -23,6 +24,7 @@ type keyFixtures struct {
 	ecdsaPublic   *ecdsa.PublicKey
 	ed25519Public ed25519.PublicKey
 	dsaPublic     *dsa.PublicKey
+	mldsaPublic   *mldsa.PublicKey
 }
 
 func TestDescribeKey(t *testing.T) {
@@ -76,6 +78,18 @@ func TestDescribeKey(t *testing.T) {
 		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Family:    "DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	mldsaAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.3.17",
+		},
+		Name: "ML-DSA-44",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "ML-DSA",
 			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
@@ -183,6 +197,32 @@ func TestDescribeKey(t *testing.T) {
 				}},
 			},
 			wantAlgorithm: dsaAlgorithm,
+		},
+		{
+			// The parameter set of an ML-DSA key is part of its OID, so the algorithm
+			// carries no parameter and the key size states the length of the encoding.
+			name:     "ML-DSA public key",
+			pub:      fixtures.mldsaPublic,
+			keyType:  ftypes.CryptoKeyTypePublic,
+			format:   ftypes.CryptoKeyFormatPKIX,
+			encoding: ftypes.CryptoEncodingPEM,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: spkiIdentity(t, fixtures.mldsaPublic),
+				Name:     "ML-DSA-44 public key",
+				Key: &ftypes.CryptoKey{
+					// The 1312 bytes an ML-DSA-44 public key always takes.
+					Size:     10496,
+					Format:   ftypes.CryptoKeyFormatPKIX,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: mldsaAlgorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: mldsaAlgorithm,
 		},
 		{
 			// A private key is described through its public projection, so only the key
@@ -347,6 +387,10 @@ func TestMarshalPublicKey(t *testing.T) {
 			pub:  fixtures.dsaPublic,
 		},
 		{
+			name: "ML-DSA",
+			pub:  fixtures.mldsaPublic,
+		},
+		{
 			name:    "unsupported key type",
 			pub:     "not a key",
 			wantErr: "unsupported public key type",
@@ -378,11 +422,14 @@ func newKeyFixtures(t *testing.T) keyFixtures {
 	require.NoError(t, err)
 	ed25519Public, _, err := ed25519.GenerateKey(rand.Reader)
 	require.NoError(t, err)
+	mldsaKey, err := mldsa.GenerateKey(mldsa.MLDSA44())
+	require.NoError(t, err)
 
 	return keyFixtures{
 		rsaPublic:     &rsaKey.PublicKey,
 		ecdsaPublic:   &ecdsaKey.PublicKey,
 		ed25519Public: ed25519Public,
+		mldsaPublic:   mldsaKey.PublicKey(),
 		dsaPublic: &dsa.PublicKey{
 			Parameters: dsa.Parameters{
 				// A 2048-bit modulus, so that the reported key size is a realistic one.
