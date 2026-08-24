@@ -25,7 +25,6 @@ import (
 
 func TestNewArtifact(t *testing.T) {
 	ts := gittest.NewTestServer(t, gittest.Options{})
-	defer ts.Close()
 
 	type args struct {
 		target     string
@@ -167,7 +166,6 @@ func TestNewArtifact(t *testing.T) {
 
 func TestArtifact_Inspect(t *testing.T) {
 	ts := gittest.NewTestServer(t, gittest.Options{})
-	defer ts.Close()
 
 	tests := []struct {
 		name         string
@@ -339,7 +337,6 @@ func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
 		Username: username,
 		Password: password,
 	})
-	t.Cleanup(ts.Close)
 
 	tsURL, err := url.Parse(ts.URL)
 	require.NoError(t, err)
