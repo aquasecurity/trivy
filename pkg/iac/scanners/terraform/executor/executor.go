@@ -131,9 +131,8 @@ func normalizeBlockLables(block *terraform.Block) []string {
 	labels := block.Labels()
 	if block.IsExpanded() {
 		nameLabel := labels[len(labels)-1]
-		idx := strings.LastIndex(nameLabel, "[")
-		if idx != -1 {
-			labels[len(labels)-1] = nameLabel[:idx]
+		if name, _, found := strings.CutLast(nameLabel, "["); found {
+			labels[len(labels)-1] = name
 		}
 	}
 

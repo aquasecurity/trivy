@@ -311,8 +311,8 @@ func classifyVersion(foundVersions [][]string, key, moduleName, val string) {
 func versionPrefix(s string) string {
 	// Trim module part.
 	// e.g. `github.com/aquasecurity/trivy/pkg/Version.version` => `Version.version`
-	if lastIndex := strings.LastIndex(s, "/"); lastIndex > 0 {
-		s = s[lastIndex+1:]
+	if _, base, found := strings.CutLast(s, "/"); found {
+		s = base
 	}
 
 	s, _, _ = strings.Cut(s, ".")

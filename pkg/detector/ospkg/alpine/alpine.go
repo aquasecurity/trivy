@@ -170,7 +170,7 @@ func (s *Scanner) repoRelease(repo *ftypes.Repository) string {
 	}
 	release := repo.Release
 	if strings.Count(release, ".") > 1 {
-		release = release[:strings.LastIndex(release, ".")]
+		release, _, _ = strings.CutLast(release, ".")
 	}
 	return release
 }

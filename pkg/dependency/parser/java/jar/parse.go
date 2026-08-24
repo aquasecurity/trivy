@@ -885,9 +885,8 @@ func (m *manifest) determineGroupID() (string, error) {
 		groupID = m.bundleSymbolicName
 
 		// e.g. "com.fasterxml.jackson.core.jackson-databind" => "com.fasterxml.jackson.core"
-		idx := strings.LastIndex(m.bundleSymbolicName, ".")
-		if idx > 0 {
-			groupID = m.bundleSymbolicName[:idx]
+		if prefix, _, found := strings.CutLast(m.bundleSymbolicName, "."); found {
+			groupID = prefix
 		}
 	case m.implementationVendor != "":
 		groupID = m.implementationVendor

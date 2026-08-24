@@ -94,7 +94,7 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 	// 3.9.3 => 3.9
 	osVer := targetOS.Name
 	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
+		osVer, _, _ = strings.CutLast(osVer, ".")
 	}
 
 	url := fmt.Sprintf(a.apkIndexArchiveURL, osVer)
