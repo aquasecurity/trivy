@@ -42,11 +42,10 @@ func NewScanner() *Scanner {
 
 // Detect scans the packages using amazon scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	osVer = strings.Fields(osVer)[0]
-	// The format `2023.xxx.xxxx` can be used.
-	osVer = osver.Major(osVer)
-	if osVer != "2" && osVer != "2022" && osVer != "2023" {
-		osVer = "1"
+	var ok bool
+	osVer, ok = normalizeVersion(osVer)
+	if !ok {
+		return nil, nil
 	}
 
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
@@ -101,13 +100,26 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	return vulns, nil
 }
 
-// IsSupportedVersion checks if the version is supported.
-func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
-	osVer = strings.Fields(osVer)[0]
+func normalizeVersion(osVer string) (string, bool) {
+	fields := strings.Fields(osVer)
+	if len(fields) == 0 {
+		return "", false
+	}
+	osVer = fields[0]
 	// The format `2023.xxx.xxxx` can be used.
 	osVer = osver.Major(osVer)
 	if osVer != "2" && osVer != "2022" && osVer != "2023" {
 		osVer = "1"
+	}
+	return osVer, true
+}
+
+// IsSupportedVersion checks if the version is supported.
+func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
+	var ok bool
+	osVer, ok = normalizeVersion(osVer)
+	if !ok {
+		return false
 	}
 
 	return osver.Supported(ctx, eolDates, osFamily, osVer)
