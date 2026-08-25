@@ -178,8 +178,13 @@ func (s *SPDX) parsePackage(spdxPkg spdx.Package) (*core.Component, error) {
 	}
 
 	// License
-	if spdxPkg.PackageLicenseDeclared != "NONE" {
-		component.Licenses = strings.Split(spdxPkg.PackageLicenseDeclared, ",")
+	// NONE and NOASSERTION are the two SPDX values that stand in for the absence of a
+	// license, not license identifiers: NONE asserts there is no license, NOASSERTION
+	// asserts nothing either way. The marshaler writes NOASSERTION for every component
+	// it has no licenses for, so reading it back as a license gives such a package one
+	// literally named "NOASSERTION".
+	if declared := spdxPkg.PackageLicenseDeclared; declared != noneField && declared != noAssertionField {
+		component.Licenses = strings.Split(declared, ",")
 	}
 
 	// Source package
