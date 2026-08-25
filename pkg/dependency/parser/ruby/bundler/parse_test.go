@@ -3,6 +3,7 @@ package bundler_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -277,4 +278,14 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}
+}
+
+func TestParser_ParseSkipsEmptyNestedDependency(t *testing.T) {
+	input := "GEM\n  specs:\n    parent (1.0.0)\n      \n"
+
+	pkgs, deps, err := bundler.NewParser().Parse(t.Context(), strings.NewReader(input))
+
+	require.NoError(t, err)
+	assert.Len(t, pkgs, 1)
+	assert.Empty(t, deps)
 }

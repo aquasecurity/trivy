@@ -3,6 +3,7 @@ package mix
 import (
 	"os"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -85,4 +86,14 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equal(t, tt.want, pkgs)
 		})
 	}
+}
+
+func TestParser_ParseSkipsEmptyDependencyBody(t *testing.T) {
+	parser := NewParser()
+
+	pkgs, deps, err := parser.Parse(t.Context(), strings.NewReader(`"x":`))
+
+	require.NoError(t, err)
+	assert.Empty(t, pkgs)
+	assert.Empty(t, deps)
 }

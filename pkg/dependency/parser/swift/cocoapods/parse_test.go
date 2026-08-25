@@ -2,6 +2,7 @@ package cocoapods_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -93,4 +94,16 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
+}
+
+func TestParseSkipsEmptyChildDependency(t *testing.T) {
+	input := `PODS:
+  - Parent (1.0.0):
+    - ""
+`
+
+	gotPkgs, gotDeps, err := cocoapods.NewParser().Parse(t.Context(), strings.NewReader(input))
+	require.NoError(t, err)
+	assert.Equal(t, []ftypes.Package{{ID: "Parent@1.0.0", Name: "Parent", Version: "1.0.0"}}, gotPkgs)
+	assert.Empty(t, gotDeps)
 }
