@@ -478,6 +478,12 @@ func checkOptions(ctx context.Context, opts flag.Options, targetKind TargetKind)
 		)
 	}
 
+	// Check cryptographic asset scanning with a format that cannot carry them
+	if opts.Scanners.Enabled(types.CryptoScanner) && opts.Format != types.FormatCycloneDX {
+		log.WarnContext(ctx, "Cryptographic assets are reported as CycloneDX components and are omitted from other formats",
+			log.String("format", string(opts.Format)))
+	}
+
 	// Check SBOM to SBOM scanning with package filtering flags
 	// For SBOM-to-SBOM scanning (for example, to add vulnerabilities to the SBOM file), we should not modify the scanned file.
 	// cf. https://github.com/aquasecurity/trivy/pull/9439#issuecomment-3295533665
@@ -504,6 +510,11 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 	// Do not perform secret scanning when it is not specified.
 	if !opts.Scanners.Enabled(types.SecretScanner) {
 		analyzers = append(analyzers, analyzer.TypeSecret)
+	}
+
+	// Do not inventory cryptographic assets when it is not specified.
+	if !opts.Scanners.Enabled(types.CryptoScanner) {
+		analyzers = append(analyzers, analyzer.TypeCrypto)
 	}
 
 	// Do not perform misconfiguration scanning when it is not specified.

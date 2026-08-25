@@ -24,6 +24,7 @@ type csArgs struct {
 	Command             string
 	RemoteAddrOption    string
 	Format              types.Format
+	Scanners            []string
 	TemplatePath        string
 	IgnoreUnfixed       bool
 	Severity            []string
@@ -513,6 +514,43 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 	}
 }
 
+// TestClientServerWithCryptoAssets tests the client-server mode with the crypto scanner,
+// whose assets cross the wire in the blob on the way to the server and in the result on
+// the way back.
+//
+// Golden files are shared with TestTarWithCryptoAssets.
+func TestClientServerWithCryptoAssets(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestClientServerWithCryptoAssets when -update flag is set. Golden files should be updated via TestTarWithCryptoAssets.")
+	}
+
+	tests := []struct {
+		name   string
+		args   csArgs
+		golden string
+	}{
+		{
+			name: "cryptographic assets with CycloneDX format",
+			args: csArgs{
+				Format:   "cyclonedx",
+				Scanners: []string{"crypto"},
+				Input:    "testdata/fixtures/images/crypto.tar.gz",
+			},
+			golden: goldenCryptoCDX,
+		},
+	}
+
+	addr, cacheDir := setup(t, setupOptions{})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := setupClient(t, tt.args, addr, cacheDir)
+			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			})
+		})
+	}
+}
+
 // TestClientServerWithCustomOptions tests the client-server mode with custom options.
 //
 // Golden files are shared with TestTar or TestRepository.
@@ -721,6 +759,10 @@ func setupClient(t *testing.T, c csArgs, addr, cacheDir string) []string {
 		}
 	} else {
 		osArgs = append(osArgs, "--format", "json")
+	}
+
+	if len(c.Scanners) != 0 {
+		osArgs = append(osArgs, "--scanners", strings.Join(c.Scanners, ","))
 	}
 
 	if !c.ListAllPackages {

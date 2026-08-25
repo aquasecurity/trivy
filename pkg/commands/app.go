@@ -262,6 +262,13 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 	misconfFlagGroup.CloudformationParamVars = nil // disable '--cf-params'
 	misconfFlagGroup.TerraformTFVars = nil         // disable '--tf-vars'
 
+	scanFlagGroup := flag.NewScanFlagGroup()
+	scanners := flag.ScannersFlag.Clone()
+	// crypto is available for container images only and is never on by default,
+	// so extend the accepted values without touching the default set
+	scanners.Values = append(scanners.Values, string(types.CryptoScanner))
+	scanFlagGroup.Scanners = scanners
+
 	imageFlags := flag.Flags{
 		globalFlags,
 		flag.NewCacheFlagGroup(),
@@ -275,7 +282,7 @@ func NewImageCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		flag.NewRegistryFlagGroup(),
 		flag.NewRegoFlagGroup(),
 		reportFlagGroup,
-		flag.NewScanFlagGroup(),
+		scanFlagGroup,
 		flag.NewSecretFlagGroup(),
 		flag.NewVulnerabilityFlagGroup(),
 	}

@@ -136,7 +136,14 @@ trivy image [flags] IMAGE_NAME
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a format for the compliance report. (allowed values: all,summary) (default "summary")
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
-      --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,license) (default [vuln,secret])
+      --scanners strings                  comma-separated list of what security issues to detect
+                                          Allowed values:
+                                            - vuln
+                                            - misconfig
+                                            - secret
+                                            - license
+                                            - crypto
+                                           (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed

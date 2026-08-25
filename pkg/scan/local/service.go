@@ -165,8 +165,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Store cryptographic assets
 	// They are not findings: the report carries them so that the CycloneDX encoder can
 	// turn them into components.
-	// TODO: gate this on the crypto scanner once types.CryptoScanner exists.
-	if len(target.CryptoAssets) != 0 {
+	if options.Scanners.Enabled(types.CryptoScanner) && len(target.CryptoAssets) != 0 {
 		results = append(results, types.Result{
 			Target:       target.Name,
 			Class:        types.ClassCrypto,
