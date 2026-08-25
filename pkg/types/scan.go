@@ -49,6 +49,9 @@ const (
 
 	// LicenseScanner is the scanner of licenses
 	LicenseScanner Scanner = "license"
+
+	// CryptoScanner is the scanner of cryptographic assets
+	CryptoScanner Scanner = "crypto"
 )
 
 var (

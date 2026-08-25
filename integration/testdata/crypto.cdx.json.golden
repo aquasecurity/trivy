@@ -1,0 +1,690 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.7.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.7",
+  "serialNumber": "urn:uuid:3ff14136-e09f-4df9-80ea-000000000002",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2021-08-25T12:20:30+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "manufacturer": {
+            "name": "Aqua Security Software Ltd."
+          },
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "type": "container",
+      "name": "testdata/fixtures/images/crypto.tar.gz",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:10c6b795459583ec8056ba005242b7eb7083bcedbb73478dfcd6f2c0de50f425"
+        },
+        {
+          "name": "aquasecurity:trivy:DiffID",
+          "value": "sha256:89d0356140300207ccc539081c7ceaa0aa1e75a72a351d329d7f46d1cb4917f2"
+        },
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:ca76a67d56bef0a47137e37fb354c2f3dfe3ab137393af07fb00467468c3de70"
+        },
+        {
+          "name": "aquasecurity:trivy:Reference",
+          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoTag",
+          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto"
+        },
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        },
+        {
+          "name": "aquasecurity:trivy:Size",
+          "value": "23552"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256",
+      "type": "cryptographic-asset",
+      "name": "EC-P-256",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ec.der"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "ellipticCurve": "nist/P-256"
+        },
+        "oid": "1.2.840.10045.2.1"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10045.4.3.2",
+      "type": "cryptographic-asset",
+      "name": "ECDSA-SHA-256",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ec.der"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "ECDSA"
+        },
+        "oid": "1.2.840.10045.4.3.2"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11",
+      "type": "cryptographic-asset",
+      "name": "RSA-PKCS1-1.5-SHA-256",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          },
+          {
+            "location": "etc/ssl/certs/rsa.pem"
+          },
+          {
+            "location": "opt/app/rsa.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "RSASSA-PKCS1"
+        },
+        "oid": "1.2.840.113549.1.1.11"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          },
+          {
+            "location": "etc/ssl/certs/rsa.pem"
+          },
+          {
+            "location": "etc/ssl/private/rsa.key"
+          },
+          {
+            "location": "etc/ssl/public/rsa.pem"
+          },
+          {
+            "location": "opt/app/rsa.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "parameterSetIdentifier": "2048"
+        },
+        "oid": "1.2.840.113549.1.1.1"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.3.101.112",
+      "type": "cryptographic-asset",
+      "name": "Ed25519",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed25519.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "EdDSA"
+        },
+        "oid": "1.3.101.112"
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:0e27acf414bd3bc35faa65f7c3dc2a1675473b4bc4d09fcbdcce304bba13807f",
+      "type": "cryptographic-asset",
+      "name": "leaf.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "5",
+          "subjectName": "CN=leaf.trivy.test",
+          "issuerName": "CN=Trivy Crypto Test CA",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "0e27acf414bd3bc35faa65f7c3dc2a1675473b4bc4d09fcbdcce304bba13807f"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:c658a21d99203f40e36442e97dad7ad0af7e55fc220dfb1c97690ff7da3ff7fd"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:19dc644a554e2b8044aea97b172377885570b1f80eefbb082952aafd04d91e4c",
+      "type": "cryptographic-asset",
+      "name": "Trivy Crypto Test CA",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "4",
+          "subjectName": "CN=Trivy Crypto Test CA",
+          "issuerName": "CN=Trivy Crypto Test CA",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "19dc644a554e2b8044aea97b172377885570b1f80eefbb082952aafd04d91e4c"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE, pathlen:0"
+            },
+            {
+              "commonExtensionName": "keyUsage",
+              "commonExtensionValue": "keyCertSign, cRLSign"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:490847a69ca2fd3e228afc434638b46f50067598491736e2075d03c875f7a651"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:6cb7388390279d7deeefc2007355e8ce4e44361dae6ec5ec769316a638dcb168",
+      "type": "cryptographic-asset",
+      "name": "ec.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ec.der"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "2",
+          "subjectName": "CN=ec.trivy.test",
+          "issuerName": "CN=ec.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "6cb7388390279d7deeefc2007355e8ce4e44361dae6ec5ec769316a638dcb168"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10045.4.3.2"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:0881a89b781d5a1cc674606ee4f97ea5e73630adac03d204b67262d1e4d1d799"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:d04457f3fc68603bb7ff8d8c2544164df21f47f7c6b42691c3e53d66feb6759e",
+      "type": "cryptographic-asset",
+      "name": "rsa.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa.pem"
+          },
+          {
+            "location": "opt/app/rsa.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "1",
+          "subjectName": "CN=rsa.trivy.test",
+          "issuerName": "CN=rsa.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "d04457f3fc68603bb7ff8d8c2544164df21f47f7c6b42691c3e53d66feb6759e"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:FALSE"
+            },
+            {
+              "commonExtensionName": "keyUsage",
+              "commonExtensionValue": "digitalSignature, keyEncipherment"
+            },
+            {
+              "commonExtensionName": "extendedKeyUsage",
+              "commonExtensionValue": "serverAuth, clientAuth"
+            },
+            {
+              "commonExtensionName": "subjectAlternativeName",
+              "commonExtensionValue": "DNS:rsa.trivy.test, email:crypto@trivy.test, IP:127.0.0.1, URI:https://trivy.test/rsa"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:de0caf6d708792c6477d7425061c78607851a599a97734801daaa7815605a7aa",
+      "type": "cryptographic-asset",
+      "name": "ed25519.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed25519.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "3",
+          "subjectName": "CN=ed25519.trivy.test",
+          "issuerName": "CN=ed25519.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "de0caf6d708792c6477d7425061c78607851a599a97734801daaa7815605a7aa"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.112"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:489d4df13ac84b6f26ece3fb767e27a947f07a291c0dc19472b37b151739880d"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:e24d74ed299c3a08e864dd3bd06cfc86dcf85ee13de96c3357e61246e6e8d40c",
+      "type": "cryptographic-asset",
+      "name": "Encrypted PKCS#8 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/private/encrypted.key"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "format": "PKCS#8",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "e24d74ed299c3a08e864dd3bd06cfc86dcf85ee13de96c3357e61246e6e8d40c"
+          }
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:private:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/private/rsa.key"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "size": 2048,
+          "format": "PKCS#8",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:0881a89b781d5a1cc674606ee4f97ea5e73630adac03d204b67262d1e4d1d799",
+      "type": "cryptographic-asset",
+      "name": "EC-P-256 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ec.der"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "0881a89b781d5a1cc674606ee4f97ea5e73630adac03d204b67262d1e4d1d799"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:489d4df13ac84b6f26ece3fb767e27a947f07a291c0dc19472b37b151739880d",
+      "type": "cryptographic-asset",
+      "name": "Ed25519 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed25519.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "489d4df13ac84b6f26ece3fb767e27a947f07a291c0dc19472b37b151739880d"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.112"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:490847a69ca2fd3e228afc434638b46f50067598491736e2075d03c875f7a651",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "490847a69ca2fd3e228afc434638b46f50067598491736e2075d03c875f7a651"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa.pem"
+          },
+          {
+            "location": "etc/ssl/public/rsa.pem"
+          },
+          {
+            "location": "opt/app/rsa.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "format": "PKIX",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:c658a21d99203f40e36442e97dad7ad0af7e55fc220dfb1c97690ff7da3ff7fd",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "c658a21d99203f40e36442e97dad7ad0af7e55fc220dfb1c97690ff7da3ff7fd"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.10045.4.3.2",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.3.101.112",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:certificate:sha256:0e27acf414bd3bc35faa65f7c3dc2a1675473b4bc4d09fcbdcce304bba13807f",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:certificate:sha256:19dc644a554e2b8044aea97b172377885570b1f80eefbb082952aafd04d91e4c",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:certificate:sha256:6cb7388390279d7deeefc2007355e8ce4e44361dae6ec5ec769316a638dcb168",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:certificate:sha256:d04457f3fc68603bb7ff8d8c2544164df21f47f7c6b42691c3e53d66feb6759e",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:certificate:sha256:de0caf6d708792c6477d7425061c78607851a599a97734801daaa7815605a7aa",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:encrypted-pkcs8-sha256:e24d74ed299c3a08e864dd3bd06cfc86dcf85ee13de96c3357e61246e6e8d40c",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:0881a89b781d5a1cc674606ee4f97ea5e73630adac03d204b67262d1e4d1d799",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:489d4df13ac84b6f26ece3fb767e27a947f07a291c0dc19472b37b151739880d",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:490847a69ca2fd3e228afc434638b46f50067598491736e2075d03c875f7a651",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:5bbcd1f09ee2d57b14d3703e0e2d7d73e349260d78b959f2496573c5dc434cca",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:c658a21d99203f40e36442e97dad7ad0af7e55fc220dfb1c97690ff7da3ff7fd",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}
