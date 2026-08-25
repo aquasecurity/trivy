@@ -194,6 +194,7 @@ type BlobInfo struct {
 	Size              int64                      `protobuf:"varint,14,opt,name=size,proto3" json:"size,omitempty"`
 	CreatedBy         string                     `protobuf:"bytes,15,opt,name=created_by,json=createdBy,proto3" json:"created_by,omitempty"`
 	BuildInfo         *common.BuildInfo          `protobuf:"bytes,16,opt,name=build_info,json=buildInfo,proto3" json:"build_info,omitempty"`
+	CryptoAssets      []*common.CryptoAsset      `protobuf:"bytes,17,rep,name=crypto_assets,json=cryptoAssets,proto3" json:"crypto_assets,omitempty"`
 }
 
 func (x *BlobInfo) Reset() {
@@ -336,6 +337,13 @@ func (x *BlobInfo) GetCreatedBy() string {
 func (x *BlobInfo) GetBuildInfo() *common.BuildInfo {
 	if x != nil {
 		return x.BuildInfo
+	}
+	return nil
+}
+
+func (x *BlobInfo) GetCryptoAssets() []*common.CryptoAsset {
+	if x != nil {
+		return x.CryptoAssets
 	}
 	return nil
 }
@@ -645,7 +653,7 @@ var file_rpc_cache_service_proto_rawDesc = []byte{
 	0x66, 0x6f, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79,
 	0x2e, 0x63, 0x61, 0x63, 0x68, 0x65, 0x2e, 0x76, 0x31, 0x2e, 0x41, 0x72, 0x74, 0x69, 0x66, 0x61,
 	0x63, 0x74, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x0c, 0x61, 0x72, 0x74, 0x69, 0x66, 0x61, 0x63, 0x74,
-	0x49, 0x6e, 0x66, 0x6f, 0x22, 0xee, 0x05, 0x0a, 0x08, 0x42, 0x6c, 0x6f, 0x62, 0x49, 0x6e, 0x66,
+	0x49, 0x6e, 0x66, 0x6f, 0x22, 0xae, 0x06, 0x0a, 0x08, 0x42, 0x6c, 0x6f, 0x62, 0x49, 0x6e, 0x66,
 	0x6f, 0x12, 0x25, 0x0a, 0x0e, 0x73, 0x63, 0x68, 0x65, 0x6d, 0x61, 0x5f, 0x76, 0x65, 0x72, 0x73,
 	0x69, 0x6f, 0x6e, 0x18, 0x01, 0x20, 0x01, 0x28, 0x05, 0x52, 0x0d, 0x73, 0x63, 0x68, 0x65, 0x6d,
 	0x61, 0x56, 0x65, 0x72, 0x73, 0x69, 0x6f, 0x6e, 0x12, 0x20, 0x0a, 0x02, 0x6f, 0x73, 0x18, 0x02,
@@ -692,7 +700,11 @@ var file_rpc_cache_service_proto_rawDesc = []byte{
 	0x0a, 0x62, 0x75, 0x69, 0x6c, 0x64, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x10, 0x20, 0x01, 0x28,
 	0x0b, 0x32, 0x17, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e,
 	0x2e, 0x42, 0x75, 0x69, 0x6c, 0x64, 0x49, 0x6e, 0x66, 0x6f, 0x52, 0x09, 0x62, 0x75, 0x69, 0x6c,
-	0x64, 0x49, 0x6e, 0x66, 0x6f, 0x22, 0x60, 0x0a, 0x0e, 0x50, 0x75, 0x74, 0x42, 0x6c, 0x6f, 0x62,
+	0x64, 0x49, 0x6e, 0x66, 0x6f, 0x12, 0x3e, 0x0a, 0x0d, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x5f,
+	0x61, 0x73, 0x73, 0x65, 0x74, 0x73, 0x18, 0x11, 0x20, 0x03, 0x28, 0x0b, 0x32, 0x19, 0x2e, 0x74,
+	0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x43, 0x72, 0x79, 0x70,
+	0x74, 0x6f, 0x41, 0x73, 0x73, 0x65, 0x74, 0x52, 0x0c, 0x63, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x41,
+	0x73, 0x73, 0x65, 0x74, 0x73, 0x22, 0x60, 0x0a, 0x0e, 0x50, 0x75, 0x74, 0x42, 0x6c, 0x6f, 0x62,
 	0x52, 0x65, 0x71, 0x75, 0x65, 0x73, 0x74, 0x12, 0x17, 0x0a, 0x07, 0x64, 0x69, 0x66, 0x66, 0x5f,
 	0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x64, 0x69, 0x66, 0x66, 0x49, 0x64,
 	0x12, 0x35, 0x0a, 0x09, 0x62, 0x6c, 0x6f, 0x62, 0x5f, 0x69, 0x6e, 0x66, 0x6f, 0x18, 0x03, 0x20,
@@ -777,7 +789,8 @@ var file_rpc_cache_service_proto_goTypes = []interface{}{
 	(*common.CustomResource)(nil),   // 16: trivy.common.CustomResource
 	(*common.LicenseFile)(nil),      // 17: trivy.common.LicenseFile
 	(*common.BuildInfo)(nil),        // 18: trivy.common.BuildInfo
-	(*emptypb.Empty)(nil),           // 19: google.protobuf.Empty
+	(*common.CryptoAsset)(nil),      // 19: trivy.common.CryptoAsset
+	(*emptypb.Empty)(nil),           // 20: google.protobuf.Empty
 }
 var file_rpc_cache_service_proto_depIdxs = []int32{
 	8,  // 0: trivy.cache.v1.ArtifactInfo.created:type_name -> google.protobuf.Timestamp
@@ -793,21 +806,22 @@ var file_rpc_cache_service_proto_depIdxs = []int32{
 	10, // 10: trivy.cache.v1.BlobInfo.secrets:type_name -> trivy.common.Secret
 	17, // 11: trivy.cache.v1.BlobInfo.licenses:type_name -> trivy.common.LicenseFile
 	18, // 12: trivy.cache.v1.BlobInfo.build_info:type_name -> trivy.common.BuildInfo
-	2,  // 13: trivy.cache.v1.PutBlobRequest.blob_info:type_name -> trivy.cache.v1.BlobInfo
-	11, // 14: trivy.cache.v1.PutResponse.os:type_name -> trivy.common.OS
-	1,  // 15: trivy.cache.v1.Cache.PutArtifact:input_type -> trivy.cache.v1.PutArtifactRequest
-	3,  // 16: trivy.cache.v1.Cache.PutBlob:input_type -> trivy.cache.v1.PutBlobRequest
-	5,  // 17: trivy.cache.v1.Cache.MissingBlobs:input_type -> trivy.cache.v1.MissingBlobsRequest
-	7,  // 18: trivy.cache.v1.Cache.DeleteBlobs:input_type -> trivy.cache.v1.DeleteBlobsRequest
-	19, // 19: trivy.cache.v1.Cache.PutArtifact:output_type -> google.protobuf.Empty
-	19, // 20: trivy.cache.v1.Cache.PutBlob:output_type -> google.protobuf.Empty
-	6,  // 21: trivy.cache.v1.Cache.MissingBlobs:output_type -> trivy.cache.v1.MissingBlobsResponse
-	19, // 22: trivy.cache.v1.Cache.DeleteBlobs:output_type -> google.protobuf.Empty
-	19, // [19:23] is the sub-list for method output_type
-	15, // [15:19] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	19, // 13: trivy.cache.v1.BlobInfo.crypto_assets:type_name -> trivy.common.CryptoAsset
+	2,  // 14: trivy.cache.v1.PutBlobRequest.blob_info:type_name -> trivy.cache.v1.BlobInfo
+	11, // 15: trivy.cache.v1.PutResponse.os:type_name -> trivy.common.OS
+	1,  // 16: trivy.cache.v1.Cache.PutArtifact:input_type -> trivy.cache.v1.PutArtifactRequest
+	3,  // 17: trivy.cache.v1.Cache.PutBlob:input_type -> trivy.cache.v1.PutBlobRequest
+	5,  // 18: trivy.cache.v1.Cache.MissingBlobs:input_type -> trivy.cache.v1.MissingBlobsRequest
+	7,  // 19: trivy.cache.v1.Cache.DeleteBlobs:input_type -> trivy.cache.v1.DeleteBlobsRequest
+	20, // 20: trivy.cache.v1.Cache.PutArtifact:output_type -> google.protobuf.Empty
+	20, // 21: trivy.cache.v1.Cache.PutBlob:output_type -> google.protobuf.Empty
+	6,  // 22: trivy.cache.v1.Cache.MissingBlobs:output_type -> trivy.cache.v1.MissingBlobsResponse
+	20, // 23: trivy.cache.v1.Cache.DeleteBlobs:output_type -> google.protobuf.Empty
+	20, // [20:24] is the sub-list for method output_type
+	16, // [16:20] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_rpc_cache_service_proto_init() }

@@ -2,6 +2,7 @@ package rpc
 
 import (
 	jsonv2 "encoding/json/v2"
+	"strings"
 	"testing"
 	"time"
 
@@ -12,6 +13,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -1503,6 +1505,125 @@ func TestConvertFromRPCLicenseFiles(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, ConvertFromRPCLicenseFiles(tt.licenseFiles))
+		})
+	}
+}
+
+func TestConvertCryptoAssets(t *testing.T) {
+	layer := ftypes.Layer{
+		Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+		DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+	}
+
+	algorithm := cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Name = "RSA-2048"
+		asset.Identity.Parameters = "key-size=2048"
+		asset.Layer = layer
+	}))
+	key := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Key.Curve = "P-256"
+		asset.Relationships = []ftypes.CryptoRelationship{
+			{
+				Type:         ftypes.CryptoRelationshipUsedWith,
+				RelatedAsset: algorithm.Descriptor(),
+			},
+		}
+		asset.Layer = layer
+	}))
+	certificate := cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+		asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+		asset.Certificate.KeyUsage = []string{"digitalSignature"}
+		asset.Certificate.ExtendedKeyUsage = []string{"serverAuth"}
+		asset.Certificate.DNSNames = []string{"example.test"}
+		asset.Certificate.EmailAddresses = []string{"admin@example.test"}
+		asset.Certificate.IPAddresses = []string{"192.0.2.1"}
+		asset.Certificate.URIs = []string{"https://example.test"}
+		asset.Certificate.BasicConstraintsValid = true
+		asset.Certificate.IsCA = true
+		asset.Certificate.MaxPathLenZero = true
+		asset.Relationships = []ftypes.CryptoRelationship{
+			{
+				Type:         ftypes.CryptoRelationshipSignedWith,
+				RelatedAsset: cryptotest.AlgorithmDescriptor(),
+			},
+			{
+				Type:         ftypes.CryptoRelationshipContains,
+				RelatedAsset: key.Descriptor(),
+			},
+		}
+		asset.Layer = layer
+	}))
+
+	assets := []ftypes.CryptoAsset{
+		certificate,
+		key,
+		algorithm,
+	}
+	for _, asset := range assets {
+		require.NoError(t, asset.Validate())
+	}
+
+	rpcAssets := ConvertToRPCCryptoAssets(assets)
+	assert.Equal(t, "key:public:spki-sha256:"+strings.Repeat("b", 64), rpcAssets[0].Relationships[1].RelatedAsset)
+	assert.Equal(t, assets, ConvertFromRPCCryptoAssets(rpcAssets))
+}
+
+func TestConvertFromRPCCryptoAssets(t *testing.T) {
+	tests := []struct {
+		name   string
+		assets []*common.CryptoAsset
+		want   []ftypes.CryptoAsset
+	}{
+		{
+			name: "empty asset",
+			assets: []*common.CryptoAsset{
+				{},
+			},
+			want: []ftypes.CryptoAsset{
+				{},
+			},
+		},
+		{
+			name: "unparsable relationship target",
+			assets: []*common.CryptoAsset{
+				{
+					Kind: string(ftypes.CryptoKindAlgorithm),
+					Identity: &common.CryptoIdentity{
+						Method: string(ftypes.CryptoMethodOID),
+						Value:  "1.2.840.113549.1.1.1",
+					},
+					Algorithm: &common.CryptoAlgorithm{
+						Primitive: string(ftypes.CryptoPrimitiveUnknown),
+					},
+					Relationships: []*common.CryptoRelationship{
+						{
+							Type:         string(ftypes.CryptoRelationshipUsedWith),
+							RelatedAsset: "key:public:spki-sha256:not-a-digest",
+						},
+					},
+				},
+			},
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method: ftypes.CryptoMethodOID,
+							Value:  "1.2.840.113549.1.1.1",
+						},
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Primitive: ftypes.CryptoPrimitiveUnknown,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ConvertFromRPCCryptoAssets(tt.assets))
 		})
 	}
 }
