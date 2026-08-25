@@ -2,6 +2,7 @@ package report_test
 
 import (
 	"bytes"
+	"encoding/json"
 	"testing"
 	"time"
 
@@ -211,6 +212,97 @@ func TestReportWriter_Template(t *testing.T) {
 			err = w.Write(ctx, inputReport)
 			require.NoError(t, err)
 			assert.Equal(t, tc.expected, got.String())
+		})
+	}
+}
+
+// TestReportWriter_ASFFTemplate renders the ASFF template shipped in contrib/
+// and checks that the package fields arrive intact. Package names and versions
+// are taken from scanned manifests, so they may contain characters that are
+// significant inside a JSON string.
+func TestReportWriter_ASFFTemplate(t *testing.T) {
+	testCases := []struct {
+		name             string
+		pkgName          string
+		installedVersion string
+		fixedVersion     string
+	}{
+		{
+			name:             "plain package name and versions",
+			pkgName:          "libcrypto1.1",
+			installedVersion: "1.1.1c-r0",
+			fixedVersion:     "1.1.1d-r0",
+		},
+		{
+			name:             "double quote in the installed version",
+			pkgName:          "openssl",
+			installedVersion: `1.0", "Injected": "value`,
+			fixedVersion:     "1.1.0",
+		},
+		{
+			name:             "package name ending with a backslash",
+			pkgName:          `openssl\`,
+			installedVersion: "1.0.0",
+			fixedVersion:     "1.1.0",
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := clock.With(t.Context(), time.Date(2020, 8, 10, 7, 28, 17, 958601, time.UTC))
+
+			t.Setenv("AWS_ACCOUNT_ID", "123456789012")
+			t.Setenv("AWS_REGION", "test-region")
+
+			inputReport := types.Report{
+				Results: types.Results{
+					{
+						Target: "alpine:3.10 (alpine 3.10.2)",
+						Type:   "alpine",
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2019-1549",
+								PkgName:          tc.pkgName,
+								InstalledVersion: tc.installedVersion,
+								FixedVersion:     tc.fixedVersion,
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "openssl: information disclosure",
+									Description: "A description.",
+									Severity:    dbTypes.SeverityMedium.String(),
+								},
+							},
+						},
+					},
+				},
+			}
+
+			got := bytes.Buffer{}
+			w, err := report.NewTemplateWriter(&got, "@../../contrib/asff.tpl", "dev")
+			require.NoError(t, err)
+			require.NoError(t, w.Write(ctx, inputReport))
+
+			var asff struct {
+				Findings []struct {
+					Title     string `json:"Title"`
+					Resources []struct {
+						Details struct {
+							Other map[string]string `json:"Other"`
+						} `json:"Details"`
+					} `json:"Resources"`
+				} `json:"Findings"`
+			}
+			require.NoError(t, json.Unmarshal(got.Bytes(), &asff), "ASFF output must be valid JSON")
+
+			require.Len(t, asff.Findings, 1)
+			other := asff.Findings[0].Resources[0].Details.Other
+
+			assert.Equal(t, tc.pkgName, other["PkgName"])
+			assert.Equal(t, tc.installedVersion, other["Installed Package"])
+			assert.Equal(t, tc.fixedVersion, other["Patched Package"])
+			assert.Contains(t, asff.Findings[0].Title, tc.pkgName)
+
+			// A field that escapes its string would show up as an extra key.
+			assert.NotContains(t, other, "Injected")
 		})
 	}
 }

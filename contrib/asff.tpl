@@ -33,7 +33,7 @@
             "Severity": {
                 "Label": "{{ $severity }}"
             },
-            "Title": "Trivy found a vulnerability to {{ .VulnerabilityID }} in container {{ $target }}, related to {{ .PkgName }}",
+            "Title": {{ printf "Trivy found a vulnerability to %s in container %s, related to %s" .VulnerabilityID $target .PkgName | printf "%q" }},
             "Description": {{ escapeString $description | printf "%q" }},
             {{ if not (empty .PrimaryURL) -}}
             "Remediation": {
@@ -55,9 +55,9 @@
                         "Other": {
                             "CVE ID": "{{ .VulnerabilityID }}",
                             "CVE Title": {{ .Title | printf "%q" }},
-                            "PkgName": "{{ .PkgName }}",
-                            "Installed Package": "{{ .InstalledVersion }}",
-                            "Patched Package": "{{ .FixedVersion }}",
+                            "PkgName": {{ .PkgName | printf "%q" }},
+                            "Installed Package": {{ .InstalledVersion | printf "%q" }},
+                            "Patched Package": {{ .FixedVersion | printf "%q" }},
                             "NvdCvssScoreV3": "{{ (index .CVSS (sourceID "nvd")).V3Score }}",
                             "NvdCvssVectorV3": "{{ (index .CVSS (sourceID "nvd")).V3Vector }}",
                             "NvdCvssScoreV2": "{{ (index .CVSS (sourceID "nvd")).V2Score }}",
