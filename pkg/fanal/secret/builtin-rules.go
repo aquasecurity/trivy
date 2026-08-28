@@ -81,7 +81,6 @@ const (
 	quote     = `["']?`
 	connect   = `\s*(:|=>|=)?\s*`
 	endSecret = `[.,]?(\s+|$)`
-	startWord = "([^0-9a-zA-Z_]|^)"
 	endWord   = "([^0-9a-zA-Z_]|$)"
 
 	aws = `aws_?`
