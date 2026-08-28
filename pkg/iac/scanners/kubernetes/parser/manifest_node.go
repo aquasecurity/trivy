@@ -198,25 +198,25 @@ func (n *ManifestNode) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var valPtr any
 	var nodeType TagType
 	switch k := dec.PeekKind(); k {
-	case 't', 'f':
+	case jsontext.KindTrue, jsontext.KindFalse:
 		valPtr = new(bool)
 		nodeType = TagBool
-	case '"':
+	case jsontext.KindString:
 		nodeType = TagStr
 		valPtr = new(string)
-	case '0':
+	case jsontext.KindNumber:
 		nodeType = TagInt
 		valPtr = new(uint64)
-	case '[':
+	case jsontext.KindBeginArray:
 		valPtr = new([]*ManifestNode)
 		nodeType = TagSlice
-	case '{':
+	case jsontext.KindBeginObject:
 		valPtr = new(map[string]*ManifestNode)
 		nodeType = TagMap
-	case 'n':
+	case jsontext.KindNull:
 		// TODO: UnmarshalJSONFrom is called only for the root null
 		return dec.SkipValue()
-	case 0:
+	case jsontext.KindInvalid:
 		return dec.SkipValue()
 	default:
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
