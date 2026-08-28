@@ -720,11 +720,6 @@ var (
 			Version:      "file:bundler-1.0.0.tgz",
 			Dev:          false,
 			Relationship: ftypes.RelationshipUnknown,
-			ExternalReferences: []ftypes.ExternalRef{
-				{
-					Type: ftypes.RefOther,
-				},
-			},
 			Locations: []ftypes.Location{
 				{
 					StartLine: 7,
@@ -738,11 +733,6 @@ var (
 			Version:      "2.0.0",
 			Dev:          false,
 			Relationship: ftypes.RelationshipUnknown,
-			ExternalReferences: []ftypes.ExternalRef{
-				{
-					Type: ftypes.RefOther,
-				},
-			},
 			Locations: []ftypes.Location{
 				{
 					StartLine: 14,

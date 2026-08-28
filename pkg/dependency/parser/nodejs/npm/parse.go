@@ -319,19 +319,25 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for pkgName, dep := range dependencies {
-		pkg := ftypes.Package{
-			ID:           packageID(pkgName, dep.Version),
-			Name:         pkgName,
-			Version:      dep.Version,
-			Dev:          dep.Dev,
-			Relationship: ftypes.RelationshipUnknown, // lockfile v1 schema doesn't have information about direct dependencies
-			ExternalReferences: []ftypes.ExternalRef{
+		var refs []ftypes.ExternalRef
+		// Bundled dependencies have no registry address, so the `resolved` field is empty for them.
+		if dep.Resolved != "" {
+			refs = []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefOther,
 					URL:  string(dep.Resolved),
 				},
-			},
-			Locations: []ftypes.Location{ftypes.Location(dep.Location)},
+			}
+		}
+
+		pkg := ftypes.Package{
+			ID:                 packageID(pkgName, dep.Version),
+			Name:               pkgName,
+			Version:            dep.Version,
+			Dev:                dep.Dev,
+			Relationship:       ftypes.RelationshipUnknown, // lockfile v1 schema doesn't have information about direct dependencies
+			ExternalReferences: refs,
+			Locations:          []ftypes.Location{ftypes.Location(dep.Location)},
 		}
 		pkgs = append(pkgs, pkg)
 
