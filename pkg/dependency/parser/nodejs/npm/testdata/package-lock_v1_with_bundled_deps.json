@@ -1,0 +1,22 @@
+{
+  "name": "work",
+  "version": "1.0.0",
+  "lockfileVersion": 1,
+  "requires": true,
+  "dependencies": {
+    "bundler": {
+      "version": "file:bundler-1.0.0.tgz",
+      "integrity": "sha512-ccltB57BFbPgQjAG5hOvwe7LTY+57tDH4abnFLpEa9HSsYG+fK9YN8UO4eqGIKbgmW3lPGCE97wqmieCYSGTbA==",
+      "requires": {
+        "ms": "^2.0.0"
+      },
+      "dependencies": {
+        "ms": {
+          "version": "2.0.0",
+          "resolved": false,
+          "integrity": "sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A=="
+        }
+      }
+    }
+  }
+}
