@@ -65,7 +65,7 @@ type resolved string
 func (r *resolved) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch kind := dec.PeekKind(); kind {
 	// "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
-	case '"':
+	case jsontext.KindString:
 		var s string
 		if err := json.UnmarshalDecode(dec, &s); err != nil {
 			return err
@@ -73,7 +73,7 @@ func (r *resolved) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 		*r = resolved(s)
 		return nil
 	// `false` means the same as a missing field, so the package is left without a reference.
-	case 't', 'f':
+	case jsontext.KindTrue, jsontext.KindFalse:
 		return dec.SkipValue()
 	default:
 		return xerrors.Errorf("unexpected `resolved` field type: %s", kind)
