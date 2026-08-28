@@ -2,6 +2,8 @@ package npm
 
 import (
 	"context"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"maps"
 	"path"
@@ -34,7 +36,7 @@ type Dependency struct {
 	Dev          bool                  `json:"dev"`
 	Dependencies map[string]Dependency `json:"dependencies"`
 	Requires     map[string]string     `json:"requires"`
-	Resolved     string                `json:"resolved"`
+	Resolved     resolved              `json:"resolved"`
 	xjson.Location
 }
 
@@ -48,11 +50,34 @@ type Package struct {
 	OptionalDependencies map[string]string   `json:"optionalDependencies"`
 	DevDependencies      map[string]string   `json:"devDependencies"`
 	PeerDependencies     map[string]string   `json:"peerDependencies"`
-	Resolved             string              `json:"resolved"`
+	Resolved             resolved            `json:"resolved"`
 	Dev                  bool                `json:"dev"`
 	Link                 bool                `json:"link"`
 	Workspaces           any                 `json:"workspaces"`
 	xjson.Location
+}
+
+// resolved represents the npm "resolved" field, which normally holds the tarball URL.
+// npm 6 writes `false` instead of the URL for bundled dependencies inflated from the lockfile,
+// because their metadata contains no registry address.
+type resolved string
+
+func (r *resolved) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	switch kind := dec.PeekKind(); kind {
+	// "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz"
+	case jsontext.KindString:
+		var s string
+		if err := json.UnmarshalDecode(dec, &s); err != nil {
+			return err
+		}
+		*r = resolved(s)
+		return nil
+	// `false` means the same as a missing field, so the package is left without a reference.
+	case jsontext.KindTrue, jsontext.KindFalse:
+		return dec.SkipValue()
+	default:
+		return xerrors.Errorf("unexpected `resolved` field type: %s", kind)
+	}
 }
 
 type Parser struct {
@@ -120,7 +145,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		if pkg.Resolved != "" {
 			ref = ftypes.ExternalRef{
 				Type: ftypes.RefOther,
-				URL:  pkg.Resolved,
+				URL:  string(pkg.Resolved),
 			}
 		}
 
@@ -224,7 +249,7 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
 	for pkgPath, pkg := range maps.Clone(packages) {
 		for linkPath, link := range links {
-			if !strings.HasPrefix(pkgPath, link.Resolved) {
+			if !strings.HasPrefix(pkgPath, string(link.Resolved)) {
 				continue
 			}
 			// The target doesn't have the "resolved" field, so we need to copy it from the link.
@@ -233,7 +258,7 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 			}
 
 			// Resolve the link package so all packages are located under "node_modules".
-			resolvedPath := strings.ReplaceAll(pkgPath, link.Resolved, linkPath)
+			resolvedPath := strings.ReplaceAll(pkgPath, string(link.Resolved), linkPath)
 			packages[resolvedPath] = pkg
 
 			// Delete the target package
@@ -294,19 +319,25 @@ func (p *Parser) parseV1(dependencies map[string]Dependency, versions map[string
 	var pkgs []ftypes.Package
 	var deps []ftypes.Dependency
 	for pkgName, dep := range dependencies {
-		pkg := ftypes.Package{
-			ID:           packageID(pkgName, dep.Version),
-			Name:         pkgName,
-			Version:      dep.Version,
-			Dev:          dep.Dev,
-			Relationship: ftypes.RelationshipUnknown, // lockfile v1 schema doesn't have information about direct dependencies
-			ExternalReferences: []ftypes.ExternalRef{
+		var refs []ftypes.ExternalRef
+		// Bundled dependencies have no registry address, so the `resolved` field is empty for them.
+		if dep.Resolved != "" {
+			refs = []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefOther,
-					URL:  dep.Resolved,
+					URL:  string(dep.Resolved),
 				},
-			},
-			Locations: []ftypes.Location{ftypes.Location(dep.Location)},
+			}
+		}
+
+		pkg := ftypes.Package{
+			ID:                 packageID(pkgName, dep.Version),
+			Name:               pkgName,
+			Version:            dep.Version,
+			Dev:                dep.Dev,
+			Relationship:       ftypes.RelationshipUnknown, // lockfile v1 schema doesn't have information about direct dependencies
+			ExternalReferences: refs,
+			Locations:          []ftypes.Location{ftypes.Location(dep.Location)},
 		}
 		pkgs = append(pkgs, pkg)
 
