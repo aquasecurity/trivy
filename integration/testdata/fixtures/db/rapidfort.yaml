@@ -17,17 +17,6 @@
             PatchedVersions:
               - "1:10.0p1-15rfubu5.4+rf.0"
             Severity: 3
-# The image also ships stock Ubuntu packages, libpam-modules among them, and
-# this Ubuntu advisory covers the installed 1.5.3-5ubuntu5.6. It must not be
-# reported: the RapidFort driver reads the "rapidfort ubuntu*" buckets only,
-# never Ubuntu's own.
-- bucket: ubuntu 22.04
-  pairs:
-    - bucket: pam
-      pairs:
-        - key: CVE-2024-10041
-          value:
-            FixedVersion: 1.7.0-5ubuntu1
 - bucket: data-source
   pairs:
     - key: rapidfort ubuntu
