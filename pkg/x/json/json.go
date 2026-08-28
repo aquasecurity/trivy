@@ -113,7 +113,7 @@ func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook
 		visited.Append(start)
 
 		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
-		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
+		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
 			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
 		}
 

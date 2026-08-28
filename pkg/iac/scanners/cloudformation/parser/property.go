@@ -134,21 +134,21 @@ func (p *Property) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	var nodeType cftypes.CfType
 
 	switch k := dec.PeekKind(); k {
-	case 't', 'f':
+	case jsontext.KindTrue, jsontext.KindFalse:
 		valPtr = new(bool)
 		nodeType = cftypes.Bool
-	case '"':
+	case jsontext.KindString:
 		valPtr = new(string)
 		nodeType = cftypes.String
-	case '0':
+	case jsontext.KindNumber:
 		return p.parseNumericValue(dec)
-	case '[', 'n':
+	case jsontext.KindBeginArray, jsontext.KindNull:
 		valPtr = new([]*Property)
 		nodeType = cftypes.List
-	case '{':
+	case jsontext.KindBeginObject:
 		valPtr = new(map[string]*Property)
 		nodeType = cftypes.Map
-	case 0:
+	case jsontext.KindInvalid:
 		return dec.SkipValue()
 	default:
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())

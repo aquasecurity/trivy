@@ -44,7 +44,7 @@ func (p *Parameter) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 func unmarshalIntFirst(dec *jsontext.Decoder, v *any) error {
-	if dec.PeekKind() == '0' {
+	if dec.PeekKind() == jsontext.KindNumber {
 		if jval, err := dec.ReadValue(); err != nil {
 			return err
 		} else if v1, err := strconv.ParseInt(string(jval), 10, 64); err == nil {
@@ -100,7 +100,7 @@ func (p *Parameters) UnmarshalJSONFrom(d *jsontext.Decoder) error {
 	(*p) = make(Parameters)
 
 	switch d.PeekKind() {
-	case '{':
+	case jsontext.KindBeginObject:
 		// CodePipeline like format
 		var params struct {
 			Params map[string]any `json:"Parameters"`
@@ -111,7 +111,7 @@ func (p *Parameters) UnmarshalJSONFrom(d *jsontext.Decoder) error {
 		}
 
 		(*p) = params.Params
-	case '[':
+	case jsontext.KindBeginArray:
 		// Original format
 		var params []string
 
