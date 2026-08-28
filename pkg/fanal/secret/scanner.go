@@ -746,15 +746,19 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 	contentLower := bytes.ToLower(content)
 
 	for _, rule := range s.Rules {
+		// Pass the rule ID as a field instead of logger.With, which clones the
+		// logger for every rule and allocates in this hot path.
+		ruleID := log.String("rule_id", rule.ID)
+
 		// Check if the file path should be scanned by this rule
 		if !rule.MatchPath(filePath) {
-			logger.Debug("Skipped secret scanning as non-compliant to the rule", log.String("rule_id", rule.ID))
+			logger.Debug("Skipped secret scanning as non-compliant to the rule", ruleID)
 			continue
 		}
 
 		// Check if the file path should be allowed
 		if rule.AllowPath(filePath) {
-			logger.Debug("Skipped secret scanning as allowed", log.String("rule_id", rule.ID))
+			logger.Debug("Skipped secret scanning as allowed", ruleID)
 			continue
 		}
 
@@ -768,7 +772,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 		if len(locs) == 0 {
 			continue
 		}
-		logger.Debug("Found locations", log.String("rule_id", rule.ID), log.Int("count", len(locs)))
+		logger.Debug("Found locations", ruleID, log.Int("count", len(locs)))
 
 		localExcludedBlocks := newBlocks(content, rule.ExcludeBlock.Regexes)
 
@@ -782,7 +786,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 				Rule:     rule,
 				Location: loc,
 			})
-			logger.Debug("Found secret in chunk", log.String("rule_id", rule.ID), log.Int("start", loc.Start), log.Int("end", loc.End))
+			logger.Debug("Found secret in chunk", ruleID, log.Int("start", loc.Start), log.Int("end", loc.End))
 			copyCensored.Do(func() {
 				censored = make([]byte, len(content))
 				copy(censored, content)
