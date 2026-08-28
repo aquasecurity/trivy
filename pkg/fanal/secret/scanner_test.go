@@ -2162,6 +2162,42 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 		want        types.Secret
 	}{
 		{
+			name: "key glued to a letter in the second chunk",
+			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push the key to the second chunk
+				"prefixAKIA0123456789ABCDEF\n" + // the key does not start at a word boundary
+				strings.Repeat("y", 100), // padding
+			bufferSize:  512,
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want:        types.Secret{FilePath: "test.txt"},
+		},
+		{
+			name: "key at the very start of the second chunk",
+			input: strings.Repeat("x", 384) + // the second chunk starts at bufferSize - overlapSize
+				"AKIA0123456789ABCDEF\n" + // the key starts at offset 0 of that chunk
+				strings.Repeat("y", 200), // padding
+			bufferSize:  512,
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			// The letter in front of the key stays in the first chunk, so the second
+			// chunk has nothing to reject the key by and reports it.
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     "********************",
+						Offset:    384,
+					},
+				},
+			},
+		},
+		{
 			name: "secret in second chunk",
 			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push secret to second chunk
 				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 521
@@ -2592,4 +2628,268 @@ func TestIsSkippedSlashConversion(t *testing.T) {
 			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
 		})
 	}
+}
+
+func TestWordPrefix(t *testing.T) {
+	const (
+		ghpPattern    = `?P<secret>ghp_[0-9a-zA-Z]{36}`
+		hfPattern     = `?P<secret>hf_[A-Za-z0-9]{34,40}`
+		startWordExpr = "([^0-9a-zA-Z_]|^)"
+		endWordExpr   = "([^0-9a-zA-Z_]|$)"
+	)
+	ghp := "ghp_" + strings.Repeat("a", 36) // 40 bytes
+	hf := "hf_" + strings.Repeat("b", 34)   // 37 bytes
+
+	tests := []struct {
+		name       string
+		pattern    string
+		boundaries bool
+		content    string
+		want       [][]int
+	}{
+		{
+			name:    "at the start of the content",
+			pattern: ghpPattern,
+			content: ghp,
+			want:    [][]int{{0, 40}},
+		},
+		{
+			name:    "after punctuation",
+			pattern: ghpPattern,
+			content: `"` + ghp,
+			want:    [][]int{{0, 41}},
+		},
+		{
+			name:    "after a letter",
+			pattern: ghpPattern,
+			content: "x" + ghp,
+		},
+		{
+			name:    "after an underscore",
+			pattern: ghpPattern,
+			content: "_" + ghp,
+		},
+		{
+			name:    "several matches",
+			pattern: ghpPattern,
+			content: ghp + " " + ghp,
+			want: [][]int{
+				{0, 40},
+				{40, 81},
+			},
+		},
+		{
+			name:    "a rejected match does not hide the next one",
+			pattern: ghpPattern,
+			content: "x" + ghp + " " + ghp,
+			want:    [][]int{{41, 82}},
+		},
+		{
+			name:    "after a multi-byte character",
+			pattern: ghpPattern,
+			content: "é" + ghp,
+			want:    [][]int{{0, 42}},
+		},
+		{
+			name:    "after a byte that is not valid UTF-8",
+			pattern: ghpPattern,
+			content: "\x80" + ghp,
+			want:    [][]int{{0, 41}},
+		},
+		{
+			name:    "nothing to find",
+			pattern: ghpPattern,
+			content: "ghp_and nothing else",
+		},
+		{
+			name:       "the trailing boundary is still checked",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    hf + "!",
+			want:       [][]int{{0, 38}},
+		},
+		{
+			name:       "the trailing boundary at the end of the content",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    hf,
+			want:       [][]int{{0, 37}},
+		},
+		{
+			name:       "after a digit, with boundaries",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    "9" + hf + "!",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			re := secret.MustCompileWithoutWordPrefix(tt.pattern)
+			// The same rule as it was compiled before the optimization.
+			ref := secret.MustCompile(startWordExpr + "(" + tt.pattern + ")")
+			if tt.boundaries {
+				re = secret.MustCompileWithBoundaries(tt.pattern)
+				ref = secret.MustCompile(startWordExpr + "(" + tt.pattern + ")" + endWordExpr)
+			}
+			content := []byte(tt.content)
+
+			got := re.FindAllIndex(content, -1)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, ref.FindAllIndex(content, -1), got, "the pattern carrying the boundary finds something else")
+
+			gotSub := re.FindAllSubmatchIndex(content, -1)
+			refSub := ref.FindAllSubmatchIndex(content, -1)
+			require.Len(t, gotSub, len(refSub))
+			for i, m := range gotSub {
+				assert.Equal(t, refSub[i][:2], m[:2], "match %d", i)
+				assert.Equal(t, namedGroup(t, ref, refSub[i]), namedGroup(t, re, m), "secret group of match %d", i)
+			}
+		})
+	}
+}
+
+func TestWordPrefixLimit(t *testing.T) {
+	ghp := "ghp_" + strings.Repeat("a", 36) // 40 bytes
+	re := secret.MustCompileWithoutWordPrefix(`?P<secret>ghp_[0-9a-zA-Z]{36}`)
+	content := []byte(ghp + " " + ghp + " " + ghp)
+
+	tests := []struct {
+		name string
+		n    int
+		want [][]int
+	}{
+		{
+			name: "no limit",
+			n:    -1,
+			want: [][]int{
+				{0, 40},
+				{40, 81},
+				{81, 122},
+			},
+		},
+		{
+			name: "fewer than there are",
+			n:    2,
+			want: [][]int{
+				{0, 40},
+				{40, 81},
+			},
+		},
+		{
+			name: "none",
+			n:    0,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, re.FindAllIndex(content, tt.n))
+		})
+	}
+}
+
+func TestWordPrefixCompile(t *testing.T) {
+	tests := []struct {
+		name    string
+		pattern string
+		panics  bool
+	}{
+		{
+			name:    "start of text",
+			pattern: `^ghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "start of line",
+			pattern: `(?m)^ghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "word boundary",
+			pattern: `\bghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "no word boundary",
+			pattern: `\Bghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "start of text under an alternation",
+			pattern: `gho_[0-9a-zA-Z]{36}|^ghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "end of text is fine, the right side of the content is never cut",
+			pattern: `ghp_[0-9a-zA-Z]{36}$`,
+		},
+		{
+			name:    "a word boundary behind the leading literal is fine",
+			pattern: `ghp_[0-9a-zA-Z]{36}\b`,
+		},
+		{
+			name:    "starts with a character class",
+			pattern: `[gh]hp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "starts with a character that is a boundary itself",
+			pattern: `-ghp_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "matches the empty string",
+			pattern: `(?:ghp_[0-9a-zA-Z]{36})?`,
+			panics:  true,
+		},
+		{
+			name:    "one branch of the alternation opens with a boundary",
+			pattern: `ghp_[0-9a-zA-Z]{36}|-gho_[0-9a-zA-Z]{36}`,
+			panics:  true,
+		},
+		{
+			name:    "every branch of the alternation opens with a word character",
+			pattern: `ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}`,
+		},
+		{
+			name:    "the leading literal is case insensitive",
+			pattern: `(?i)pk_(test|live)_[0-9a-z]{10,32}`,
+		},
+	}
+
+	constructors := []struct {
+		name    string
+		compile func(string) *secret.Regexp
+	}{
+		{"without word prefix", secret.MustCompileWithoutWordPrefix},
+		{"with boundaries", secret.MustCompileWithBoundaries},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			for _, c := range constructors {
+				t.Run(c.name, func(t *testing.T) {
+					compile := func() { c.compile(tt.pattern) }
+					if tt.panics {
+						assert.Panics(t, compile)
+						return
+					}
+					assert.NotPanics(t, compile)
+				})
+			}
+		})
+	}
+}
+
+// namedGroup returns the offsets of the "secret" group of the given match.
+func namedGroup(t *testing.T, re *secret.Regexp, match []int) []int {
+	t.Helper()
+	for i, name := range re.SubexpNames() {
+		if name == "secret" {
+			return match[2*i : 2*i+2]
+		}
+	}
+	t.Fatalf("%q has no secret group", re.String())
+	return nil
 }
