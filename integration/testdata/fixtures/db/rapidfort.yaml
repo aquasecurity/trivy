@@ -1,0 +1,33 @@
+# Fixtures for the rapidfort-ubuntu-2204 image, which carries
+# /usr/share/rapidfort/curated.json and is therefore scanned by the RapidFort
+# driver instead of the Ubuntu one.
+#
+# rf-openssh is a RapidFort rebuild ("+rf" in the version), so its advisories
+# live in the release-less "rapidfort ubuntu" bucket. CVE-2026-3497 is taken
+# from OS/ubuntu/rf-openssh_advisory.json of
+# https://github.com/rapidfort/security-advisories and must be reported.
+- bucket: rapidfort ubuntu
+  pairs:
+    - bucket: rf-openssh
+      pairs:
+        - key: CVE-2026-3497
+          value:
+            VulnerableVersions:
+              - ">=1:10.0p1-12rfubu+rf.0, <1:10.0p1-15rfubu5.4+rf.0"
+            PatchedVersions:
+              - "1:10.0p1-15rfubu5.4+rf.0"
+            Severity: 3
+- bucket: data-source
+  pairs:
+    - key: rapidfort ubuntu
+      value:
+        ID: "rapidfort"
+        BaseID: "ubuntu"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2026-3497
+      value:
+        Title: "Vulnerability in the OpenSSH GSSAPI delta included in various Lin ..."
+        Description: "Vulnerability in the OpenSSH GSSAPI delta included in various Linux distributions. This vulnerability affects the GSSAPI patches added by various Linux distributions and does not affect the OpenSSH upstream project itself. The usage of sshpkt_disconnect() on an error, which does not terminate the process, allows an attacker to send an unexpected GSSAPI message type during the GSSAPI key exchange to the server, which will call the underlying function and continue the execution of the program without setting the related connection variables. As the variables are not initialized to NULL the code later accesses those uninitialized variables, accessing random memory, which could lead to undefined behavior. The recommended workaround is to use ssh_packet_disconnect() instead, which does terminate the process. The impact of the vulnerability depends heavily on the compiler flag hardening configuration."
