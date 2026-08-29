@@ -298,36 +298,71 @@ func (p *PackageURL) String() string {
 
 // ref. https://github.com/package-url/purl-spec/blob/a748c36ad415c8aeffe2b8a4a5d8a50d16d6d85f/PURL-TYPES.rst#oci
 func parseOCI(metadata types.Metadata) (*packageurl.PackageURL, error) {
-	if len(metadata.RepoDigests) == 0 {
-		return nil, nil
+	if len(metadata.RepoDigests) > 0 {
+		digest, err := cn.NewDigest(metadata.RepoDigests[0])
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse digest: %w", err)
+		}
+
+		name := strings.ToLower(digest.RepositoryStr())
+		index := strings.LastIndex(name, "/")
+		if index != -1 {
+			name = name[index+1:]
+		}
+
+		var qualifiers packageurl.Qualifiers
+		if repoURL := digest.Repository.Name(); repoURL != "" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "repository_url",
+				Value: repoURL,
+			})
+		}
+		if arch := metadata.ImageConfig.Architecture; arch != "" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "arch",
+				Value: arch,
+			})
+		}
+
+		return packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
 	}
 
-	digest, err := cn.NewDigest(metadata.RepoDigests[0])
-	if err != nil {
-		return nil, xerrors.Errorf("failed to parse digest: %w", err)
+	if len(metadata.RepoTags) > 0 {
+		tag, err := cn.NewTag(metadata.RepoTags[0])
+		if err != nil {
+			return nil, xerrors.Errorf("failed to parse tag: %w", err)
+		}
+
+		name := strings.ToLower(tag.RepositoryStr())
+		index := strings.LastIndex(name, "/")
+		if index != -1 {
+			name = name[index+1:]
+		}
+
+		var qualifiers packageurl.Qualifiers
+		if repoURL := tag.Repository.Name(); repoURL != "" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "repository_url",
+				Value: repoURL,
+			})
+		}
+		if t := tag.TagStr(); t != "" && t != "latest" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "tag",
+				Value: t,
+			})
+		}
+		if arch := metadata.ImageConfig.Architecture; arch != "" {
+			qualifiers = append(qualifiers, packageurl.Qualifier{
+				Key:   "arch",
+				Value: arch,
+			})
+		}
+
+		return packageurl.NewPackageURL(packageurl.TypeOCI, "", name, "", qualifiers, ""), nil
 	}
 
-	name := strings.ToLower(digest.RepositoryStr())
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		name = name[index+1:]
-	}
-
-	var qualifiers packageurl.Qualifiers
-	if repoURL := digest.Repository.Name(); repoURL != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "repository_url",
-			Value: repoURL,
-		})
-	}
-	if arch := metadata.ImageConfig.Architecture; arch != "" {
-		qualifiers = append(qualifiers, packageurl.Qualifier{
-			Key:   "arch",
-			Value: metadata.ImageConfig.Architecture,
-		})
-	}
-
-	return packageurl.NewPackageURL(packageurl.TypeOCI, "", name, digest.DigestStr(), qualifiers, ""), nil
+	return nil, nil
 }
 
 // ref. https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst#apk
