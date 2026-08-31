@@ -39,6 +39,7 @@ On the other hand, it uses `go.mod` for direct dependencies and `go.sum` for ind
 Go 1.17+ holds actually needed indirect dependencies in `go.mod`, and it reduces false detection.
 `go.sum` in Go 1.16 or less contains all indirect dependencies that are even not needed for compiling.
 If you want to have better detection, please consider updating the Go version in your project.
+See [go.sum](#gomod-gosum) for why `go.sum` is skipped in Go 1.17+ projects.
 
 !!! note
     The Go version doesn't mean your Go tool version, but the Go version in your go.mod.
@@ -59,6 +60,27 @@ If you want to have better detection, please consider updating the Go version in
     ```
     $ go mod tidy -go=1.18
     ```
+
+### go.sum { #gomod-gosum }
+Trivy skips `go.sum` in Go 1.17+ projects, because it lists more modules than the build uses.
+
+A common extra entry is a module that only the tests of your dependencies need. Go leaves such a module out of `go.mod` and never compiles it into your binary, so a vulnerability in it does not affect your project.
+
+`go mod why` tells you whether a module is part of the build. A path that goes through a `.test` package means the module is only needed to build the tests of a dependency.
+
+```
+$ go mod why -m golang.org/x/mod
+# golang.org/x/mod
+example.com/myproject/pkg/database
+github.com/glebarez/sqlite
+github.com/glebarez/go-sqlite
+modernc.org/libc
+modernc.org/libc.test
+modernc.org/ccgo/v4/lib
+golang.org/x/mod/semver
+```
+
+To see exactly what a build linked in, scan the compiled binary instead of the source tree. See [Go Binary](#go-binary).
 
 ### Main Module { #gomod-main }
 Trivy scans only dependencies of the project, and does not detect vulnerabilities of the main module. 
