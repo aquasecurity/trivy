@@ -107,6 +107,10 @@ type Global struct {
 	AllowRules   AllowRules
 	ExcludeBlock ExcludeBlock
 	SkipPatterns []string
+
+	// keywords is the prefilter over the keywords of Rules, built by NewScanner.
+	// A Global assembled by hand has none, and then every rule is scanned.
+	keywords *keywordIndex
 }
 
 // Allow checks if the match is allowed
@@ -241,8 +245,6 @@ type Rule struct {
 	// ASCII word character. The pattern itself must not carry that boundary, so it
 	// has to start with a literal ASCII word character.
 	LeadingWordBoundary bool `yaml:"-"`
-
-	keywordsLower [][]byte // Pre-computed lowercase keywords
 }
 
 func (r Rule) validate() error {
@@ -355,20 +357,6 @@ func (r *Rule) getMatchSubgroupsLocations(matchLocs []int) []Location {
 
 func (r *Rule) MatchPath(path string) bool {
 	return r.Path == nil || r.Path.MatchString(path)
-}
-
-func (r *Rule) MatchKeywords(contentLower []byte) bool {
-	if len(r.Keywords) == 0 {
-		return true
-	}
-
-	for _, kwLower := range r.keywordsLower {
-		if bytes.Contains(contentLower, kwLower) {
-			return true
-		}
-	}
-
-	return false
 }
 
 func (r *Rule) AllowPath(path string) bool {
@@ -533,16 +521,6 @@ func WithOverlapSize(size int) Option {
 	}
 }
 
-// precomputeLowercaseKeywords pre-computes lowercase versions of keywords for a slice of rules
-func precomputeLowercaseKeywords(rules []Rule) {
-	for i := range rules {
-		rules[i].keywordsLower = make([][]byte, len(rules[i].Keywords))
-		for j, kw := range rules[i].Keywords {
-			rules[i].keywordsLower[j] = []byte(strings.ToLower(kw))
-		}
-	}
-}
-
 func NewScanner(config *Config, opts ...Option) Scanner {
 	scanner := Scanner{
 		logger:      log.WithPrefix(log.PrefixSecret),
@@ -565,13 +543,11 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 
 	// Use the default rules
 	if config == nil {
-		// Pre-compute lowercase keywords for builtin rules
-		precomputeLowercaseKeywords(builtinRules)
-
 		scanner.Global = &Global{
 			Rules:        builtinRules,
 			AllowRules:   builtinAllowRules,
 			SkipPatterns: defaultSkipPatterns,
+			keywords:     newKeywordIndex(builtinRules),
 		}
 		return scanner
 	}
@@ -598,9 +574,6 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		return !slices.Contains(config.DisableAllowRuleIDs, v.ID)
 	})
 
-	// Pre-compute lowercase keywords for all rules
-	precomputeLowercaseKeywords(rules)
-
 	skipPatterns := defaultSkipPatterns
 	if config.SkipPatterns != nil {
 		skipPatterns = slices.Clone(*config.SkipPatterns)
@@ -611,6 +584,7 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 		AllowRules:   allowRules,
 		ExcludeBlock: config.ExcludeBlock,
 		SkipPatterns: skipPatterns,
+		keywords:     newKeywordIndex(rules),
 	}
 
 	return scanner
@@ -852,10 +826,10 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 	var findings []types.SecretFinding
 	globalExcludedBlocks := newBlocks(content, s.ExcludeBlock.Regexes)
 
-	// Convert content to lowercase once for all keyword matching
-	contentLower := bytes.ToLower(content)
+	// Collect the keywords the chunk holds, in one pass over it for all rules
+	keywords := s.keywords.find(content)
 
-	for _, rule := range s.Rules {
+	for i, rule := range s.Rules {
 		// Pass the rule ID as a field instead of logger.With, which clones the
 		// logger for every rule and allocates in this hot path.
 		ruleID := log.String("rule_id", rule.ID)
@@ -873,7 +847,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 		}
 
 		// Check if the file content contains keywords and should be scanned
-		if !rule.MatchKeywords(contentLower) {
+		if !s.keywords.hasKeyword(i, keywords) {
 			continue
 		}
 
