@@ -232,24 +232,21 @@ func (a rpmPkgAnalyzer) StaticPaths() []string {
 func splitFileName(filename string) (name, ver, rel string, err error) {
 	filename = strings.TrimSuffix(filename, ".rpm")
 
-	archIndex := strings.LastIndex(filename, ".")
-	if archIndex == -1 {
+	nvr, _, found := strings.CutLast(filename, ".") // Trim arch
+	if !found {
 		return "", "", "", errUnexpectedNameFormat
 	}
 
-	relIndex := strings.LastIndex(filename[:archIndex], "-")
-	if relIndex == -1 {
+	nv, rel, found := strings.CutLast(nvr, "-")
+	if !found {
 		return "", "", "", errUnexpectedNameFormat
 	}
-	rel = filename[relIndex+1 : archIndex]
 
-	verIndex := strings.LastIndex(filename[:relIndex], "-")
-	if verIndex == -1 {
+	name, ver, found = strings.CutLast(nv, "-")
+	if !found {
 		return "", "", "", errUnexpectedNameFormat
 	}
-	ver = filename[verIndex+1 : relIndex]
 
-	name = filename[:verIndex]
 	return name, ver, rel, nil
 }
 
