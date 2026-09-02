@@ -2275,7 +2275,7 @@ func TestMarshaler_Licenses(t *testing.T) {
 		{
 			name: "SPDX ID with non-canonical case",
 			licenses: []string{
-				"BSD-3-clause-Sun",
+				"BSD-3-clause~Sun",
 			},
 			want: &cdx.Licenses{
 				cdx.LicenseChoice{

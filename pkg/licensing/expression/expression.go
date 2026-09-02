@@ -75,7 +75,14 @@ func NormalizeForSPDX(expr Expression) Expression {
 				_, _ = b.WriteRune('-')
 			}
 		}
-		return SimpleExpr{License: b.String(), HasPlus: e.HasPlus}
+		license := b.String()
+		// SPDX license IDs are matched case-insensitively, so use the canonical
+		// casing from the SPDX license list. Only the license itself is looked
+		// up: String() would append "+" or the GNU "-only"/"-or-later" suffix.
+		if id, ok := SPDXLicenseID(license); ok {
+			license = id
+		}
+		return SimpleExpr{License: license, HasPlus: e.HasPlus}
 	case CompoundExpr:
 		if e.Conjunction() == TokenWith {
 			initSpdxExceptions()
