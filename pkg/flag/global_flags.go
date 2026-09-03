@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/log"
+	xstrings "github.com/aquasecurity/trivy/pkg/x/strings"
 )
 
 var (
@@ -41,6 +42,15 @@ var (
 		ConfigName:    "debug",
 		Shorthand:     "d",
 		Usage:         "debug mode",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
+	LogFormatFlag = Flag[string]{
+		Name:          "log-format",
+		ConfigName:    "log-format",
+		Default:       string(log.FormatText),
+		Values:        xstrings.ToStringSlice(log.Formats),
+		Usage:         "log output format",
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
@@ -94,6 +104,7 @@ type GlobalFlagGroup struct {
 	ShowVersion           *Flag[bool] // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
 	Quiet                 *Flag[bool]
 	Debug                 *Flag[bool]
+	LogFormat             *Flag[string]
 	Insecure              *Flag[bool]
 	CACert                *Flag[string]
 	Timeout               *Flag[time.Duration]
@@ -108,6 +119,7 @@ type GlobalOptions struct {
 	ShowVersion           bool
 	Quiet                 bool
 	Debug                 bool
+	LogFormat             log.Format
 	Insecure              bool
 	CACerts               *x509.CertPool
 	Timeout               time.Duration
@@ -122,6 +134,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		ShowVersion:           ShowVersionFlag.Clone(),
 		Quiet:                 QuietFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
+		LogFormat:             LogFormatFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
 		CACert:                CACertFlag.Clone(),
 		Timeout:               TimeoutFlag.Clone(),
@@ -141,6 +154,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.ShowVersion,
 		f.Quiet,
 		f.Debug,
+		f.LogFormat,
 		f.Insecure,
 		f.CACert,
 		f.Timeout,
@@ -180,6 +194,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		ShowVersion:           f.ShowVersion.Value(),
 		Quiet:                 f.Quiet.Value(),
 		Debug:                 f.Debug.Value(),
+		LogFormat:             log.Format(f.LogFormat.Value()),
 		Insecure:              insecure,
 		CACerts:               caCerts,
 		Timeout:               f.Timeout.Value(),
