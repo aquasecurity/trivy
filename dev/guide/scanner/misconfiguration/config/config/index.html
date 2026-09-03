@@ -7488,6 +7488,34 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
+      <a href="../../../../references/compatibility/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compatibility and Stability
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../../../../references/troubleshooting/" class="md-nav__link">
         
   
@@ -8783,7 +8811,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/6d6f6a9c1311667125f0757fc21877551c900d26pkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/0aca1c155414d1960e9f089c3a7ed1471ec966aepkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.

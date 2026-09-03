@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://trivy.dev/dev/guide/configuration/db/">
+        <link rel="canonical" href="https://trivy.dev/dev/guide/references/compatibility/">
       
       
-        <link rel="prev" href="../cache/">
+        <link rel="prev" href="../modes/client-server/">
       
       
-        <link rel="next" href="../others/">
+        <link rel="next" href="../troubleshooting/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Databases - Trivy</title>
+        <title>Compatibility and Stability - Trivy</title>
       
     
     
@@ -75,9 +75,9 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - Databases" />
+<meta property="og:title" content="Trivy - Compatibility and Stability" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://trivy.dev/dev/guide/configuration/db/" />
+<meta property="og:url" content="https://trivy.dev/dev/guide/references/compatibility/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#trivy-databases" class="md-skip">
+        <a href="#compatibility-and-stability" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Databases
+              Compatibility and Stability
             
           </span>
         </div>
@@ -4338,8 +4338,6 @@ You're not viewing the latest version of the documentation.
                 
   
   
-    
-  
   
   
     
@@ -4355,11 +4353,11 @@ You're not viewing the latest version of the documentation.
       
     
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" checked>
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_5" >
         
           
           <label class="md-nav__link" for="__nav_4_5" id="__nav_4_5_label" tabindex="">
@@ -4380,7 +4378,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="true">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_5_label" aria-expanded="false">
           <label class="md-nav__title" for="__nav_4_5">
             <span class="md-nav__icon md-icon"></span>
             
@@ -4398,7 +4396,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../" class="md-nav__link">
+      <a href="../../configuration/" class="md-nav__link">
         
   
   
@@ -4426,7 +4424,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../filtering/" class="md-nav__link">
+      <a href="../../configuration/filtering/" class="md-nav__link">
         
   
   
@@ -4454,7 +4452,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../skipping/" class="md-nav__link">
+      <a href="../../configuration/skipping/" class="md-nav__link">
         
   
   
@@ -4482,7 +4480,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../reporting/" class="md-nav__link">
+      <a href="../../configuration/reporting/" class="md-nav__link">
         
   
   
@@ -4510,7 +4508,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../cache/" class="md-nav__link">
+      <a href="../../configuration/cache/" class="md-nav__link">
         
   
   
@@ -4535,37 +4533,10 @@ You're not viewing the latest version of the documentation.
                 
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Databases
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../../configuration/db/" class="md-nav__link">
         
   
   
@@ -4581,109 +4552,6 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#locations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Locations
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#default-locations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Default Locations
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#db-management-configuration" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        DB Management Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="DB Management Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#database-locations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Database Locations
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#skip-updates" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Skip updates
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#only-update" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Only update
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#remove-databases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remove Databases
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -4696,7 +4564,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../others/" class="md-nav__link">
+      <a href="../../configuration/others/" class="md-nav__link">
         
   
   
@@ -5949,6 +5817,8 @@ You're not viewing the latest version of the documentation.
                 
   
   
+    
+  
   
   
     
@@ -5964,11 +5834,11 @@ You're not viewing the latest version of the documentation.
       
     
     
-    <li class="md-nav__item md-nav__item--section md-nav__item--nested">
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_10" checked>
         
           
           <label class="md-nav__link" for="__nav_4_10" id="__nav_4_10_label" tabindex="">
@@ -5989,7 +5859,7 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_10_label" aria-expanded="false">
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_10_label" aria-expanded="true">
           <label class="md-nav__title" for="__nav_4_10">
             <span class="md-nav__icon md-icon"></span>
             
@@ -6111,7 +5981,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy/" class="md-nav__link">
+      <a href="../configuration/cli/trivy/" class="md-nav__link">
         
   
   
@@ -6139,7 +6009,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_clean/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_clean/" class="md-nav__link">
         
   
   
@@ -6167,7 +6037,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_config/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_config/" class="md-nav__link">
         
   
   
@@ -6195,7 +6065,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_convert/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_convert/" class="md-nav__link">
         
   
   
@@ -6223,7 +6093,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_filesystem/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_filesystem/" class="md-nav__link">
         
   
   
@@ -6251,7 +6121,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_image/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_image/" class="md-nav__link">
         
   
   
@@ -6279,7 +6149,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_kubernetes/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_kubernetes/" class="md-nav__link">
         
   
   
@@ -6359,7 +6229,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_module/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_module/" class="md-nav__link">
         
   
   
@@ -6387,7 +6257,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_module_install/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_module_install/" class="md-nav__link">
         
   
   
@@ -6415,7 +6285,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_module_uninstall/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_module_uninstall/" class="md-nav__link">
         
   
   
@@ -6503,7 +6373,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin/" class="md-nav__link">
         
   
   
@@ -6531,7 +6401,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_info/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_info/" class="md-nav__link">
         
   
   
@@ -6559,7 +6429,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_install/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_install/" class="md-nav__link">
         
   
   
@@ -6587,7 +6457,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_list/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_list/" class="md-nav__link">
         
   
   
@@ -6615,7 +6485,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_run/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_run/" class="md-nav__link">
         
   
   
@@ -6643,7 +6513,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_uninstall/" class="md-nav__link">
         
   
   
@@ -6671,7 +6541,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_update/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_update/" class="md-nav__link">
         
   
   
@@ -6699,7 +6569,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_upgrade/" class="md-nav__link">
         
   
   
@@ -6727,7 +6597,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_plugin_search/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_plugin_search/" class="md-nav__link">
         
   
   
@@ -6815,7 +6685,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_registry/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_registry/" class="md-nav__link">
         
   
   
@@ -6843,7 +6713,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_registry_login/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_registry_login/" class="md-nav__link">
         
   
   
@@ -6871,7 +6741,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_registry_logout/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_registry_logout/" class="md-nav__link">
         
   
   
@@ -6907,7 +6777,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_repository/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_repository/" class="md-nav__link">
         
   
   
@@ -6935,7 +6805,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_rootfs/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_rootfs/" class="md-nav__link">
         
   
   
@@ -6963,7 +6833,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_sbom/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_sbom/" class="md-nav__link">
         
   
   
@@ -6991,7 +6861,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_server/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_server/" class="md-nav__link">
         
   
   
@@ -7019,7 +6889,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_version/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_version/" class="md-nav__link">
         
   
   
@@ -7099,7 +6969,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vex/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vex/" class="md-nav__link">
         
   
   
@@ -7127,7 +6997,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vex_repo_download/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vex_repo_download/" class="md-nav__link">
         
   
   
@@ -7155,7 +7025,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vex_repo_init/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vex_repo_init/" class="md-nav__link">
         
   
   
@@ -7183,7 +7053,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vex_repo_list/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vex_repo_list/" class="md-nav__link">
         
   
   
@@ -7211,7 +7081,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vex_repo/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vex_repo/" class="md-nav__link">
         
   
   
@@ -7247,7 +7117,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/cli/trivy_vm/" class="md-nav__link">
+      <a href="../configuration/cli/trivy_vm/" class="md-nav__link">
         
   
   
@@ -7283,7 +7153,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/configuration/config-file/" class="md-nav__link">
+      <a href="../configuration/config-file/" class="md-nav__link">
         
   
   
@@ -7371,7 +7241,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/modes/standalone/" class="md-nav__link">
+      <a href="../modes/standalone/" class="md-nav__link">
         
   
   
@@ -7399,7 +7269,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/modes/client-server/" class="md-nav__link">
+      <a href="../modes/client-server/" class="md-nav__link">
         
   
   
@@ -7432,10 +7302,37 @@ You're not viewing the latest version of the documentation.
                 
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../../references/compatibility/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Compatibility and Stability
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -7451,6 +7348,70 @@ You're not viewing the latest version of the documentation.
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#stable-interfaces" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Stable Interfaces
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#interfaces-outside-the-compatibility-policy" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Interfaces Outside the Compatibility Policy
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#scan-asset-version-support" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Scan Asset Version Support
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Breaking Changes
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -7463,7 +7424,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/troubleshooting/" class="md-nav__link">
+      <a href="../troubleshooting/" class="md-nav__link">
         
   
   
@@ -7491,7 +7452,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/terminology/" class="md-nav__link">
+      <a href="../terminology/" class="md-nav__link">
         
   
   
@@ -7519,7 +7480,7 @@ You're not viewing the latest version of the documentation.
   
   
     <li class="md-nav__item">
-      <a href="../../references/abbreviations/" class="md-nav__link">
+      <a href="../abbreviations/" class="md-nav__link">
         
   
   
@@ -8559,10 +8520,10 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#locations" class="md-nav__link">
+  <a href="#stable-interfaces" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Locations
+        Stable Interfaces
       
     </span>
   </a>
@@ -8570,10 +8531,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#default-locations" class="md-nav__link">
+  <a href="#interfaces-outside-the-compatibility-policy" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Default Locations
+        Interfaces Outside the Compatibility Policy
       
     </span>
   </a>
@@ -8581,63 +8542,24 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#db-management-configuration" class="md-nav__link">
+  <a href="#scan-asset-version-support" class="md-nav__link">
     <span class="md-ellipsis">
       
-        DB Management Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="DB Management Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#database-locations" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Database Locations
+        Scan Asset Version Support
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#skip-updates" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#breaking-changes" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Skip updates
+        Breaking Changes
       
     </span>
   </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#only-update" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Only update
-      
-    </span>
-  </a>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#remove-databases" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Remove Databases
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -8658,7 +8580,7 @@ You're not viewing the latest version of the documentation.
 
 
   
-    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/configuration/db.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/references/compatibility.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -8666,191 +8588,49 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="trivy-databases">Trivy Databases<a class="headerlink" href="#trivy-databases" title="Permanent link">&para;</a></h1>
-<p>When you install Trivy, the installed artifact contains the scanner engine but is lacking relevant security information needed to make security detections and recommendations.
-These so called "databases" are automatically fetched and maintained by Trivy as needed, so normally you shouldn't notice or worry about them. <br />
-This document elaborates on the database management mechanism and its configuration options.</p>
-<p>Trivy relies on the following databases:</p>
-<table>
-<thead>
-<tr>
-<th>DB</th>
-<th>Artifact name</th>
-<th>Contents</th>
-<th>Purpose</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Vulnerabilities DB</td>
-<td><code>trivy-db</code></td>
-<td>CVE information collected from various feeds</td>
-<td>used only for <a href="../../scanner/vulnerability/">vulnerability scanning</a></td>
-</tr>
-<tr>
-<td>Java DB</td>
-<td><code>trivy-java-db</code></td>
-<td>Index of Java artifacts and their hash digest</td>
-<td>used to identify Java artifacts only in <a href="../../coverage/language/java/">JAR scanning</a></td>
-</tr>
-<tr>
-<td>Checks Bundle</td>
-<td><code>trivy-checks</code></td>
-<td>Logic of misconfiguration checks</td>
-<td>used only in <a href="../../scanner/misconfiguration/check/builtin/">misconfiguration/IaC scanning</a></td>
-</tr>
-</tbody>
-</table>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>This is not an exhaustive list of Trivy's external connectivity requirements.
-There are additional external resources which may be required by specific Trivy features.
-To learn about external connectivity requirements, see the <a href="../../advanced/air-gap/">Advanced Network Scenarios</a>.</p>
-</div>
-<h2 id="locations">Locations<a class="headerlink" href="#locations" title="Permanent link">&para;</a></h2>
-<p>Trivy's databases are published to the following locations:</p>
-<table>
-<thead>
-<tr>
-<th>Registry</th>
-<th>Image Address</th>
-<th>Link</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>GHCR</td>
-<td><code>ghcr.io/aquasecurity/trivy-db</code></td>
-<td><a href="https://ghcr.io/aquasecurity/trivy-db">https://ghcr.io/aquasecurity/trivy-db</a></td>
-</tr>
-<tr>
-<td></td>
-<td><code>ghcr.io/aquasecurity/trivy-java-db</code></td>
-<td><a href="https://ghcr.io/aquasecurity/trivy-java-db">https://ghcr.io/aquasecurity/trivy-java-db</a></td>
-</tr>
-<tr>
-<td></td>
-<td><code>ghcr.io/aquasecurity/trivy-checks</code></td>
-<td><a href="https://ghcr.io/aquasecurity/trivy-checks">https://ghcr.io/aquasecurity/trivy-checks</a></td>
-</tr>
-<tr>
-<td>Docker Hub</td>
-<td><code>aquasec/trivy-db</code></td>
-<td><a href="https://hub.docker.com/r/aquasec/trivy-db">https://hub.docker.com/r/aquasec/trivy-db</a></td>
-</tr>
-<tr>
-<td></td>
-<td><code>aquasec/trivy-java-db</code></td>
-<td><a href="https://hub.docker.com/r/aquasec/trivy-java-db">https://hub.docker.com/r/aquasec/trivy-java-db</a></td>
-</tr>
-<tr>
-<td></td>
-<td><code>aquasec/trivy-checks</code></td>
-<td><a href="https://hub.docker.com/r/aquasec/trivy-checks">https://hub.docker.com/r/aquasec/trivy-checks</a></td>
-</tr>
-<tr>
-<td>AWS ECR</td>
-<td><code>public.ecr.aws/aquasecurity/trivy-db</code></td>
-<td><a href="https://gallery.ecr.aws/aquasecurity/trivy-db">https://gallery.ecr.aws/aquasecurity/trivy-db</a></td>
-</tr>
-<tr>
-<td></td>
-<td><code>public.ecr.aws/aquasecurity/trivy-java-db</code></td>
-<td><a href="https://gallery.ecr.aws/aquasecurity/trivy-java-db">https://gallery.ecr.aws/aquasecurity/trivy-java-db</a></td>
-</tr>
-</tbody>
-</table>
-<p>In addition, images are also available via pull-through cache registries like <a href="https://cloud.google.com/artifact-registry/docs/pull-cached-dockerhub-images">Google Container Registry Mirror</a>.</p>
-<h2 id="default-locations">Default Locations<a class="headerlink" href="#default-locations" title="Permanent link">&para;</a></h2>
-<p>Trivy will attempt to pull images from the following registries in the order specified.</p>
-<ol>
-<li><code>mirror.gcr.io/aquasec</code></li>
-<li><code>ghcr.io/aquasecurity</code></li>
-</ol>
-<p>You can specify additional alternative repositories as explained in the <a href="#database-locations">configuring database locations section</a>.</p>
-<h2 id="db-management-configuration">DB Management Configuration<a class="headerlink" href="#db-management-configuration" title="Permanent link">&para;</a></h2>
-<h3 id="database-locations">Database Locations<a class="headerlink" href="#database-locations" title="Permanent link">&para;</a></h3>
-<p>You can configure Trivy to download databases from alternative locations by using the flags:</p>
+<h1 id="compatibility-and-stability">Compatibility and Stability<a class="headerlink" href="#compatibility-and-stability" title="Permanent link">&para;</a></h1>
+<p>Trivy is designed, distributed, and supported primarily as a CLI application.</p>
+<p>The Trivy project strives to preserve compatibility between releases for documented user-facing interfaces, except for features explicitly marked as experimental or subject to change. Unintended compatibility issues in stable interfaces are generally treated as bugs.</p>
+<h2 id="stable-interfaces">Stable Interfaces<a class="headerlink" href="#stable-interfaces" title="Permanent link">&para;</a></h2>
+<p>The following interfaces documented in the official Trivy documentation are covered by this compatibility policy:</p>
 <ul>
-<li><code>--db-repository</code></li>
-<li><code>--java-db-repository</code></li>
-<li><code>--checks-bundle-repository</code></li>
+<li>CLI commands, subcommands, flags, and arguments</li>
+<li>Configuration file options and environment variables</li>
+<li>Exit codes and the conditions under which they are returned</li>
+<li>Machine-readable output formats</li>
+<li>Data fields used by custom templates</li>
 </ul>
-<p>The value should be an image address in a container registry.</p>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>trivy image --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
-</code></pre></div>
-<p>The flag accepts multiple values, which can be used to specify multiple alternative repository locations. In case of transient errors (e.g. status 429 or 5xx), Trivy will fall back to alternative registries in the order specified.</p>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>trivy image --db-repository my.registry.local/trivy-db --db-repository registry.gitlab.com/gitlab-org/security-products/dependencies/trivy-db alpine
-</code></pre></div>
-<p>The Checks Bundle registry location option does not support fallback through multiple options. This is because in case of a failure pulling the Checks Bundle, Trivy will use the embedded checks as a fallback.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>Setting the repository location flags overrides the default values which include the official db locations. In case you want to preserve the default locations, you should include them in the list you set as repository locations.</p>
-</div>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>When pulling <code>trivy-db</code> or <code>trivy-java-db</code>, if image tag is not specified, Trivy defaults to the db schema number instead of the <code>latest</code> tag.</p>
-</div>
-<h3 id="skip-updates">Skip updates<a class="headerlink" href="#skip-updates" title="Permanent link">&para;</a></h3>
-<p>You can configure Trivy to not attempt to download any or all database(s), using the flags:</p>
+<p>Adding a new command, flag, configuration option, or output field is considered compatible as long as it does not change existing usage.</p>
+<p>When the documentation and implementation disagree, neither is automatically considered authoritative. We determine the intended behavior by considering existing usage, user impact, and consistency with other features, and then correct either the implementation or the documentation.</p>
+<p>Trivy's JSON output includes a <code>SchemaVersion</code> that identifies the output structure. Within the same <code>SchemaVersion</code>, optional fields may be added or omitted, so consumers should ignore unknown fields and must not assume that optional fields are always present. Removing or renaming an existing field, changing its type, or changing its meaning incompatibly generally requires an update to <code>SchemaVersion</code> and is documented as a breaking change in the release notes.</p>
+<h2 id="interfaces-outside-the-compatibility-policy">Interfaces Outside the Compatibility Policy<a class="headerlink" href="#interfaces-outside-the-compatibility-policy" title="Permanent link">&para;</a></h2>
+<p>The following are not part of Trivy's stable user-facing interfaces:</p>
 <ul>
-<li><code>--skip-db-update</code></li>
-<li><code>--skip-java-db-update</code></li>
-<li><code>--skip-check-update</code></li>
+<li>Go packages, types, functions, methods, and other Go APIs in the Trivy repository</li>
+<li>Required versions of Go, Mage, and other build tools, as well as development commands and build scripts</li>
+<li>The exact formatting of terminal output, logs, warnings, error messages, and progress displays</li>
+<li>Scan results, including detected vulnerabilities, misconfigurations, secrets, and licenses, as well as their content and ordering</li>
+<li>Internal formats and protocols, such as caches, vulnerability databases, on-disk data, internal RPC, and Protocol Buffers definitions</li>
+<li>Compatibility between different versions of the Trivy client and Trivy server</li>
+<li>Experimental or preview features, canary builds, and prerelease versions</li>
+<li>Changes in behavior or coverage caused by external specifications, services, platforms, or data sources</li>
 </ul>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>trivy image --skip-db-update --skip-java-db-update --skip-check-update alpine
-</code></pre></div>
-<h3 id="only-update">Only update<a class="headerlink" href="#only-update" title="Permanent link">&para;</a></h3>
-<p>You can ask <code>Trivy</code> to only update the database without performing a scan. This action will ensure Trivy is up to date, and populate Trivy's database cache for subsequent scans.</p>
+<p>Trivy is not designed or supported for use as a Go library. Interfaces outside this policy may be changed or removed without a deprecation period.</p>
+<p>Even if such a change breaks external code or a custom build procedure, it is not, by itself, considered a breaking change to the Trivy CLI. As a rule, these changes are not identified as breaking changes in the release notes or announced separately. Users should not assume that they will be announced in advance.</p>
+<h2 id="scan-asset-version-support">Scan Asset Version Support<a class="headerlink" href="#scan-asset-version-support" title="Permanent link">&para;</a></h2>
+<p>Some <a href="../terminology/#scan-assets">scan assets</a> use versioned formats that are tied to particular Trivy CLI versions:</p>
 <ul>
-<li><code>--download-db-only</code></li>
-<li><code>--download-java-db-only</code></li>
+<li>Vulnerability Database (<a href="https://github.com/aquasecurity/trivy-db">trivy-db</a>): schema version</li>
+<li>Java Index Database (<a href="https://github.com/aquasecurity/trivy-java-db">trivy-java-db</a>): schema version</li>
+<li>Checks Bundle (<a href="https://github.com/aquasecurity/trivy-checks">trivy-checks</a>): major version</li>
 </ul>
-<p>For example:</p>
-<div class="highlight"><pre><span></span><code>trivy image --download-db-only
-</code></pre></div>
-<p>Note that currently there is no option to download only the Checks Bundle.</p>
-<h3 id="remove-databases">Remove Databases<a class="headerlink" href="#remove-databases" title="Permanent link">&para;</a></h3>
-<p><code>trivy clean</code> command removes caches and databases.
-You can select which cache component to remove:</p>
-<table>
-<thead>
-<tr>
-<th>option</th>
-<th>description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>-a</code>/<code>--all</code></td>
-<td>remove all caches</td>
-</tr>
-<tr>
-<td><code>--checks-bundle</code></td>
-<td>remove checks bundle</td>
-</tr>
-<tr>
-<td><code>--java-db</code></td>
-<td>remove Java database</td>
-</tr>
-<tr>
-<td><code>--scan-cache</code></td>
-<td>remove scan cache (container and VM image analysis results)</td>
-</tr>
-<tr>
-<td><code>--vuln-db</code></td>
-<td>remove vulnerability database</td>
-</tr>
-</tbody>
-</table>
-<p>Example:</p>
-<div class="highlight"><pre><span></span><code>$ trivy clean --vuln-db --java-db
-2024-06-24T11:42:31+06:00       INFO    Removing vulnerability database...
-2024-06-24T11:42:31+06:00       INFO    Removing Java database...
-</code></pre></div>
+<p>Each Trivy CLI version is compatible with particular versions of these assets.</p>
+<p>When updates for an older scan asset version end, Trivy CLI versions that depend on it can no longer receive newly published vulnerability information, Java artifact identification data, or misconfiguration checks from that asset.</p>
+<p>Before ending updates for a scan asset version, the Trivy project announces the affected CLI versions, the end date for updates, and the minimum CLI version to which users should upgrade. A scan asset version change is not considered a breaking change to the Trivy CLI. However, because users must upgrade to continue receiving current scan asset updates, it is announced separately from ordinary internal changes.</p>
+<h2 id="breaking-changes">Breaking Changes<a class="headerlink" href="#breaking-changes" title="Permanent link">&para;</a></h2>
+<p>A change that requires users to modify an existing valid use of a stable interface is considered a breaking change.</p>
+<p>When a breaking change is necessary, we identify it in the release notes and provide migration guidance whenever possible. We announce a deprecation before making the change when practical, but do not guarantee a fixed deprecation period for every interface.</p>
+<p>The usual deprecation process may not be possible when responding to an urgent security issue, an incompatible change in an external system, an obvious bug, or a risk of significant false positives, false negatives, data corruption, or other safety issues. Even in these cases, we describe changes with significant user impact in the release notes whenever possible.</p>
 
 
 
@@ -8884,7 +8664,7 @@ You can select which cache component to remove:</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../cache/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Cache">
+          <a href="../modes/client-server/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Client/Server">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -8894,20 +8674,20 @@ You can select which cache component to remove:</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Cache
+                Client/Server
               </div>
             </div>
           </a>
         
         
           
-          <a href="../others/" class="md-footer__link md-footer__link--next" aria-label="Next: Others">
+          <a href="../troubleshooting/" class="md-footer__link md-footer__link--next" aria-label="Next: Troubleshooting">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Others
+                Troubleshooting
               </div>
             </div>
             <div class="md-footer__button md-icon">
