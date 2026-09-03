@@ -37,11 +37,19 @@ Trivy is not designed or supported for use as a Go library. Interfaces outside t
 
 Even if such a change breaks external code or a custom build procedure, it is not, by itself, considered a breaking change to the Trivy CLI. As a rule, these changes are not identified as breaking changes in the release notes or announced separately. Users should not assume that they will be announced in advance.
 
-## Trivy DB Schema
+## Scan Asset Version Support
 
-Each Trivy CLI version supports a specific Trivy DB schema version. When updates for an old DB schema end, older Trivy CLI versions that depend on it can no longer receive newly published vulnerability information.
+Some [scan assets](terminology.md#scan-assets) use versioned formats that are tied to particular Trivy CLI versions:
 
-Before ending updates for an old DB schema, the Trivy project announces the affected CLI versions, the end date for updates, and the minimum CLI version to which users should upgrade. A DB schema change is not considered a breaking change to the Trivy CLI. However, because users must upgrade to continue receiving current security information, it is announced separately from ordinary internal changes.
+- Vulnerability Database ([trivy-db](https://github.com/aquasecurity/trivy-db)): schema version
+- Java Index Database ([trivy-java-db](https://github.com/aquasecurity/trivy-java-db)): schema version
+- Checks Bundle ([trivy-checks](https://github.com/aquasecurity/trivy-checks)): major version
+
+Each Trivy CLI version is compatible with particular versions of these assets.
+
+When updates for an older scan asset version end, Trivy CLI versions that depend on it can no longer receive newly published vulnerability information, Java artifact identification data, or misconfiguration checks from that asset.
+
+Before ending updates for a scan asset version, the Trivy project announces the affected CLI versions, the end date for updates, and the minimum CLI version to which users should upgrade. A scan asset version change is not considered a breaking change to the Trivy CLI. However, because users must upgrade to continue receiving current scan asset updates, it is announced separately from ordinary internal changes.
 
 ## Breaking Changes
 
