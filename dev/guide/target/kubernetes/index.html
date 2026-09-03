@@ -8911,7 +8911,7 @@ If <code>node collector</code> is enabled (default: enabled), Trivy needs a clus
 <p>Trivy requires a complete list of namespaces to exclude specific ones. Therefore, <code>--exclude-namespaces</code> option is only available for cluster roles now.</p>
 </div>
 <p>Example:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>k8s<span class="w"> </span>--report<span class="w"> </span>summary<span class="w"> </span>--exclude-namespace<span class="w"> </span>dev-system,staging-system
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>k8s<span class="w"> </span>--report<span class="w"> </span>summary<span class="w"> </span>--exclude-namespaces<span class="w"> </span>dev-system,staging-system
 </code></pre></div>
 <h2 id="control-plane-and-node-components-vulnerability-scanning">Control Plane and Node Components Vulnerability Scanning<a class="headerlink" href="#control-plane-and-node-components-vulnerability-scanning" title="Permanent link">&para;</a></h2>
 <p>Trivy is capable of discovering Kubernetes control plane (apiserver, controller-manager and etc) and node components(kubelet, kube-proxy and etc), matching them against the <a href="https://github.com/aquasecurity/vuln-list-k8s">official Kubernetes vulnerability database feed</a>, and reporting any vulnerabilities it finds.</p>
