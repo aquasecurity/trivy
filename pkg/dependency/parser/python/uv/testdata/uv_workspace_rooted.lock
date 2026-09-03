@@ -19,6 +19,9 @@ dependencies = [
     { name = "requests" },
 ]
 
+[package.dev-dependencies]
+test = [{ name = "pytest" }]
+
 [[package]]
 name = "b"
 version = "0.1.0"
@@ -26,6 +29,9 @@ source = { editable = "src/b" }
 dependencies = [
     { name = "pillow" },
 ]
+
+[package.dev-dependencies]
+lint = [{ name = "ruff" }]
 
 [[package]]
 name = "click"
@@ -36,8 +42,50 @@ source = { registry = "https://pypi.org/simple" }
 name = "pillow"
 version = "11.0.0"
 source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "idna" },
+]
 
 [[package]]
 name = "requests"
 version = "2.32.3"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "urllib3" },
+]
+
+[[package]]
+name = "pytest"
+version = "8.3.4"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama" },
+]
+
+[[package]]
+name = "ruff"
+version = "0.9.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "tomli" },
+]
+
+[[package]]
+name = "colorama"
+version = "0.4.6"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "idna"
+version = "3.10"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "tomli"
+version = "2.2.1"
+source = { registry = "https://pypi.org/simple" }
+
+[[package]]
+name = "urllib3"
+version = "2.2.3"
 source = { registry = "https://pypi.org/simple" }

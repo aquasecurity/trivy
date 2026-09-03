@@ -2,6 +2,7 @@ package uv
 
 import (
 	"context"
+	"slices"
 	"sort"
 
 	"github.com/BurntSushi/toml"
@@ -29,70 +30,57 @@ type Manifest struct {
 	Members []string `toml:"members"`
 }
 
-func prodDeps(roots []Package, packages map[string]Package) set.Set[string] {
+// prodDeps returns the names of all production dependencies: every package reachable from
+// the root package or a workspace member by following non-dev dependencies.
+func prodDeps(root string, workspaces set.Set[string], packages map[string]Package) set.Set[string] {
 	visited := set.New[string]()
-	for _, root := range roots {
+	if root != "" {
 		walkPackageDeps(root, packages, visited)
+	}
+	for name := range workspaces.Iter() {
+		walkPackageDeps(name, packages, visited)
 	}
 	return visited
 }
 
-func walkPackageDeps(pkg Package, packages map[string]Package, visited set.Set[string]) {
-	if visited.Contains(pkg.Name) {
+func walkPackageDeps(name string, packages map[string]Package, visited set.Set[string]) {
+	if visited.Contains(name) {
 		return
 	}
-	visited.Append(pkg.Name)
+	pkg, exists := packages[name]
+	if !exists {
+		return
+	}
+	visited.Append(name)
 	for depName := range pkg.nonDevDeps().Iter() {
-		depPkg, exists := packages[depName]
-		if !exists {
-			continue
-		}
-		walkPackageDeps(depPkg, packages, visited)
+		walkPackageDeps(depName, packages, visited)
 	}
 }
 
-func (l Lock) roots() ([]Package, error) {
-	var pkgs []Package
+// rootAndWorkspaces walks the lockfile packages once and returns the name of the root
+// package (empty if there is none), the set of workspace member names, and the set of
+// direct dependency names collected from the root and every workspace member. The root
+// and workspaces are the entry points of the dependency graph: everything reachable from
+// them is a production dependency.
+func (l Lock) rootAndWorkspaces() (root string, workspaces, directDeps set.Set[string], err error) {
+	workspaces = set.New[string]()
+	directDeps = set.New[string]()
+
 	for _, pkg := range l.Packages {
-		if pkg.isRoot() {
-			pkgs = append(pkgs, pkg)
+		switch {
+		case pkg.isRoot():
+			if root != "" {
+				return "", nil, nil, xerrors.New("uv lockfile must contain 1 root package")
+			}
+			root = pkg.Name
+			directDeps.Append(pkg.directDeps().Items()...)
+		case slices.Contains(l.Manifest.Members, pkg.Name):
+			workspaces.Append(pkg.Name)
+			directDeps.Append(pkg.directDeps().Items()...)
 		}
 	}
 
-	if len(pkgs) > 1 {
-		return nil, xerrors.New("uv lockfile must contain 1 root package")
-	}
-
-	return pkgs, nil
-}
-
-func (l Lock) workspaceMembers() []Package {
-	members := set.New[string](l.Manifest.Members...)
-	if members.Size() == 0 {
-		return nil
-	}
-
-	var pkgs []Package
-	for _, pkg := range l.Packages {
-		if members.Contains(pkg.Name) {
-			pkgs = append(pkgs, pkg)
-		}
-	}
-	return pkgs
-}
-
-func (l Lock) entryPackages() ([]Package, error) {
-	roots, err := l.roots()
-	if err != nil {
-		return nil, err
-	}
-
-	entries := roots
-	entries = append(entries, l.workspaceMembers()...)
-	if len(entries) == 0 {
-		return nil, xerrors.New("uv lockfile must contain 1 root package")
-	}
-	return entries, nil
+	return root, workspaces, directDeps, nil
 }
 
 type Package struct {
@@ -108,7 +96,6 @@ func (p Package) directDeps() set.Set[string] {
 	deps := p.nonDevDeps()
 	for _, groupDeps := range p.DevDependencies {
 		deps.Append(groupDeps.toSet().Items()...)
-
 	}
 	return deps
 }
@@ -159,23 +146,16 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)
 	}
 
-	entryPackages, err := lock.entryPackages()
+	root, workspaces, directDeps, err := lock.rootAndWorkspaces()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	packages := lock.packages()
-	workspaceMembers := set.New[string](lo.Map(lock.workspaceMembers(), func(pkg Package, _ int) string {
-		return pkg.Name
-	})...)
-	directDeps := set.New[string]()
-	for _, entryPkg := range entryPackages {
-		directDeps.Append(entryPkg.directDeps().Items()...)
-	}
 
 	// Production dependencies are the packages reachable from the root package
 	// or, for workspace lockfiles, any workspace member package.
-	prodDeps := prodDeps(entryPackages, packages)
+	prodDeps := prodDeps(root, workspaces, packages)
 
 	var (
 		pkgs ftypes.Packages
@@ -186,9 +166,9 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
 		switch {
-		case pkg.isRoot():
+		case pkg.Name == root:
 			relationship = ftypes.RelationshipRoot
-		case workspaceMembers.Contains(pkg.Name):
+		case workspaces.Contains(pkg.Name):
 			relationship = ftypes.RelationshipWorkspace
 		case directDeps.Contains(pkg.Name):
 			relationship = ftypes.RelationshipDirect
