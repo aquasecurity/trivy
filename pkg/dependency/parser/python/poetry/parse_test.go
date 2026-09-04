@@ -33,6 +33,13 @@ func TestParser_Parse(t *testing.T) {
 			wantErr:  assert.NoError,
 		},
 		{
+			name:     "dependency with marker-specific constraints (array form)",
+			file:     "testdata/poetry_multiple_constraints.lock",
+			wantPkgs: poetryMultipleConstraints,
+			wantDeps: poetryMultipleConstraintsDeps,
+			wantErr:  assert.NoError,
+		},
+		{
 			name:     "flask + poetry v2",
 			file:     "testdata/poetry_v2_flask.lock",
 			wantPkgs: poetryFlask,
@@ -104,6 +111,24 @@ func TestParseDependency(t *testing.T) {
 				"test": {"5.0.0"},
 			},
 			want: "test@5.0.0",
+		},
+		{
+			name:        "version range as array of marker-specific constraints",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{
+					"version": ">=4.6.0",
+					"markers": "python_version < \"3.15\"",
+				},
+				map[string]any{
+					"version": ">=4.14.0",
+					"markers": "python_version >= \"3.15\"",
+				},
+			},
+			pkgsVersions: map[string][]string{
+				"test": {"4.14.0"},
+			},
+			want: "test@4.14.0",
 		},
 		{
 			name:         "pkgsVersions doesn't contain required version",
