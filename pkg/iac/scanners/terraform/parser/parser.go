@@ -11,6 +11,7 @@ import (
 	"os"
 	"path"
 	"path/filepath"
+	"slices"
 	"sort"
 	"strings"
 
@@ -51,7 +52,8 @@ type Parser struct {
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
 	configsFS         fs.FS
-	skipPaths         []string
+	skipFiles         []string
+	skipDirs          []string
 	// cwd is optional, if left to empty string, 'os.Getwd'
 	// will be used for populating 'path.cwd' in terraform.
 	cwd string
@@ -89,7 +91,8 @@ func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, modul
 	mp.moduleName = moduleName
 	mp.logger = p.logger
 	mp.projectRoot = p.projectRoot
-	mp.skipPaths = p.skipPaths
+	mp.skipFiles = p.skipFiles
+	mp.skipDirs = p.skipDirs
 	mp.options = p.options
 	p.children = append(p.children, mp)
 	for _, option := range p.options {
@@ -172,14 +175,16 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		return fmt.Errorf("read dir: %w", err)
 	}
 
+	skipPaths := utils.CleanSkipPaths(slices.Concat(p.skipFiles, p.skipDirs))
+
 	var paths []string
 	for _, info := range fileInfos {
 		realPath := path.Join(dir, info.Name())
 		if info.IsDir() {
 			continue
 		}
-		if utils.SkipPath(realPath, utils.CleanSkipPaths(p.skipPaths)) {
-			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", p.skipPaths))
+		if utils.SkipPath(realPath, skipPaths) {
+			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", skipPaths))
 			continue
 		}
 		paths = append(paths, realPath)
