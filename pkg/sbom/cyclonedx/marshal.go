@@ -327,12 +327,7 @@ func (m *Marshaler) normalizeLicenses(licenses []string) *cdx.Licenses {
 	// Otherwise use individual LicenseChoice entries with license.id or license.name
 	choices := xslices.Map(expressions, func(expr expression.Expression) cdx.LicenseChoice {
 		if s, ok := expr.(expression.SimpleExpr); ok {
-			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0").
-			// The lookup also canonicalizes the casing, which NormalizeForSPDX
-			// has usually done already. It is repeated here because the early
-			// returns in normalizeLicense never reach the normalizers, and the
-			// CycloneDX schema validates license.id against a case-sensitive
-			// enumeration.
+			// Use license.id for valid SPDX ID (e.g., "MIT", "Apache-2.0")
 			if id, ok := expression.SPDXLicenseID(s.String()); ok {
 				return cdx.LicenseChoice{License: &cdx.License{ID: id}}
 			}

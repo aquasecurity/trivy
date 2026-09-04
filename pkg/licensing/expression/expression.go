@@ -77,8 +77,7 @@ func NormalizeForSPDX(expr Expression) Expression {
 		}
 		license := b.String()
 		// SPDX license IDs are matched case-insensitively, so use the canonical
-		// casing from the SPDX license list. Only the license itself is looked
-		// up: String() would append "+" or the GNU "-only"/"-or-later" suffix.
+		// casing from the SPDX license list.
 		if id, ok := SPDXLicenseID(license); ok {
 			license = id
 		}
