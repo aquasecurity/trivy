@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"os"
 	"path/filepath"
 	"slices"
@@ -181,6 +182,73 @@ language {
 
 	_, err := parser.Load(t.Context())
 	require.NoError(t, err)
+}
+
+// Regression test for https://github.com/aquasecurity/trivy/issues/11192
+func Test_OpenTofuFilePrecedence(t *testing.T) {
+	const (
+		hcl  = `resource "aws_s3_bucket" "test" {}`
+		json = `{"resource": {"aws_s3_bucket": {"test": {}}}}`
+	)
+
+	tests := []struct {
+		name     string
+		files    map[string]string
+		opts     []Option
+		expected []string
+	}{
+		{
+			name: "tofu file shadows tf file",
+			files: map[string]string{
+				"main.tf":   hcl,
+				"main.tofu": hcl,
+			},
+			expected: []string{"main.tofu"},
+		},
+		{
+			name: "tofu json file shadows tf json file",
+			files: map[string]string{
+				"main.tf.json":   json,
+				"main.tofu.json": json,
+			},
+			expected: []string{"main.tofu.json"},
+		},
+		{
+			name: "tofu file does not shadow tf json file",
+			files: map[string]string{
+				"main.tf.json": json,
+				"main.tofu":    hcl,
+			},
+			expected: []string{"main.tf.json", "main.tofu"},
+		},
+		{
+			name: "tf file without a counterpart is kept",
+			files: map[string]string{
+				"main.tf":    hcl,
+				"network.tf": hcl,
+				"main.tofu":  hcl,
+			},
+			expected: []string{"main.tofu", "network.tf"},
+		},
+		{
+			name: "skipped tofu file does not shadow tf file",
+			files: map[string]string{
+				"main.tf":   hcl,
+				"main.tofu": hcl,
+			},
+			opts:     []Option{OptionWithSkipFiles([]string{"main.tofu"})},
+			expected: []string{"main.tf"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			parser := New(testutil.CreateFS(tt.files), "", append(tt.opts, OptionStopOnHCLError(true))...)
+			require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+			assert.ElementsMatch(t, tt.expected, slices.Collect(maps.Keys(parser.Files())))
+		})
+	}
 }
 
 func Test_Modules(t *testing.T) {

@@ -23,6 +23,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type sourceFile struct {
@@ -185,6 +186,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		paths = append(paths, realPath)
 	}
 	sort.Strings(paths)
+	paths = p.filterShadowedByTofu(paths)
 	for _, path := range paths {
 		var err error
 		if err = p.ParseFile(ctx, path); err == nil {
@@ -206,6 +208,48 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 
 	return nil
+}
+
+// tofuExtensions lists the Terraform extensions that have an OpenTofu counterpart.
+var tofuExtensions = []struct {
+	tf   string
+	tofu string
+}{
+	{tf: ".tf.json", tofu: ".tofu.json"},
+	{tf: ".tf", tofu: ".tofu"},
+}
+
+// filterShadowedByTofu drops a Terraform file if the directory also holds an
+// OpenTofu file with the same name, because OpenTofu loads that one instead.
+// The pairing is per extension, so main.tofu shadows main.tf but not main.tf.json.
+func (p *Parser) filterShadowedByTofu(paths []string) []string {
+	known := set.New(paths...)
+
+	shadowedBy := func(path string) (string, bool) {
+		for _, ext := range tofuExtensions {
+			base, ok := strings.CutSuffix(path, ext.tf)
+			if !ok {
+				continue
+			}
+			tofuPath := base + ext.tofu
+			if known.Contains(tofuPath) {
+				return tofuPath, true
+			}
+		}
+		return "", false
+	}
+
+	res := make([]string, 0, len(paths))
+	for _, path := range paths {
+		if tofuPath, ok := shadowedBy(path); ok {
+			p.logger.Info("Skipping file shadowed by an OpenTofu file",
+				log.FilePath(path), log.String("shadowed_by", tofuPath))
+			continue
+		}
+		res = append(res, path)
+	}
+
+	return res
 }
 
 func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
