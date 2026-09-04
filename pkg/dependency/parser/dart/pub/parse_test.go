@@ -74,6 +74,31 @@ func TestParser_Parse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			name:      "overridden dependency",
+			inputFile: "testdata/overridden.lock",
+			want: []ftypes.Package{
+				{
+					ID:           "crypto@3.0.2",
+					Name:         "crypto",
+					Version:      "3.0.2",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "uuid@3.0.6",
+					Name:         "uuid",
+					Version:      "3.0.6",
+					Relationship: ftypes.RelationshipDirect,
+				},
+				{
+					ID:           "meta@1.9.1",
+					Name:         "meta",
+					Version:      "1.9.1",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:      "empty path",
 			inputFile: "testdata/empty.lock",
 			wantErr:   assert.NoError,
