@@ -83,8 +83,9 @@ func NormalizeForSPDX(expr Expression) Expression {
 			}
 		}
 		license := b.String()
-		// SPDX license IDs are matched case-insensitively, so use the canonical
-		// casing from the SPDX license list.
+		// A license can differ from its SPDX ID by a non-canonical separator
+		// (e.g. "BSD-3-clause~Sun") or by case. Separators are replaced above and
+		// the SPDX list is matched case-insensitively, so take the canonical ID.
 		if id, ok := SPDXLicenseID(license); ok {
 			license = id
 		}
