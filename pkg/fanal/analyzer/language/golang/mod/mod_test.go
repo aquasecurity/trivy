@@ -438,3 +438,47 @@ func Test_gomodAnalyzer_Required(t *testing.T) {
 		})
 	}
 }
+
+func Test_lessThanGo117(t *testing.T) {
+	tests := []struct {
+		name      string
+		goVersion string
+		want      bool
+	}{
+		{
+			name:      "Go 1.16",
+			goVersion: "1.16",
+			want:      true,
+		},
+		{
+			name:      "Go 1.16.5",
+			goVersion: "1.16.5",
+			want:      true,
+		},
+		{
+			name:      "Go 1.17",
+			goVersion: "1.17",
+			want:      false,
+		},
+		{
+			name:      "Go 1.17.1",
+			goVersion: "1.17.1",
+			want:      false,
+		},
+		{
+			name:      "Go 1.21",
+			goVersion: "1.21",
+			want:      false,
+		},
+		{
+			name:      "Go 1.22.0",
+			goVersion: "1.22.0",
+			want:      false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, lessThanGo117(tt.goVersion))
+		})
+	}
+}

@@ -19,6 +19,7 @@ func TestParse(t *testing.T) {
 		useMinVersion bool
 		wantPkgs      []ftypes.Package
 		wantDeps      []ftypes.Dependency
+		wantGoVersion string
 	}{
 		{
 			name:          "normal with stdlib",
@@ -27,76 +28,87 @@ func TestParse(t *testing.T) {
 			useMinVersion: true,
 			wantPkgs:      GoModNormal,
 			wantDeps:      GoModNormalDeps,
+			wantGoVersion: "1.22.0",
 		},
 		{
-			name:     "normal",
-			file:     "testdata/normal/go.mod",
-			replace:  true,
-			wantPkgs: GoModNormalWithoutStdlib,
-			wantDeps: GoModNormalWithoutStdlibDeps,
+			name:          "normal",
+			file:          "testdata/normal/go.mod",
+			replace:       true,
+			wantPkgs:      GoModNormalWithoutStdlib,
+			wantDeps:      GoModNormalWithoutStdlibDeps,
+			wantGoVersion: "1.22.0",
 		},
 		{
-			name:     "without go version",
-			file:     "testdata/no-go-version/gomod",
-			replace:  true,
-			wantPkgs: GoModNoGoVersion,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "without go version",
+			file:          "testdata/no-go-version/gomod",
+			replace:       true,
+			wantPkgs:      GoModNoGoVersion,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.16",
 		},
 		{
-			name:     "replace",
-			file:     "testdata/replaced/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplaced,
-			wantDeps: GoModReplacedDeps,
+			name:          "replace",
+			file:          "testdata/replaced/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplaced,
+			wantDeps:      GoModReplacedDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "no replace",
-			file:     "testdata/replaced/go.mod",
-			replace:  false,
-			wantPkgs: GoModUnreplaced,
-			wantDeps: GoModUnreplacedDeps,
+			name:          "no replace",
+			file:          "testdata/replaced/go.mod",
+			replace:       false,
+			wantPkgs:      GoModUnreplaced,
+			wantDeps:      GoModUnreplacedDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "replace with version",
-			file:     "testdata/replaced-with-version/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithVersion,
-			wantDeps: GoModReplacedWithVersionDeps,
+			name:          "replace with version",
+			file:          "testdata/replaced-with-version/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplacedWithVersion,
+			wantDeps:      GoModReplacedWithVersionDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "replaced with version mismatch",
-			file:     "testdata/replaced-with-version-mismatch/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithVersionMismatch,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "replaced with version mismatch",
+			file:          "testdata/replaced-with-version-mismatch/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplacedWithVersionMismatch,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "replaced with local path",
-			file:     "testdata/replaced-with-local-path/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPath,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "replaced with local path",
+			file:          "testdata/replaced-with-local-path/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplacedWithLocalPath,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "replaced with local path and version",
-			file:     "testdata/replaced-with-local-path-and-version/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPathAndVersion,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "replaced with local path and version",
+			file:          "testdata/replaced-with-local-path-and-version/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplacedWithLocalPathAndVersion,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "replaced with local path and version, mismatch",
-			file:     "testdata/replaced-with-local-path-and-version-mismatch/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPathAndVersionMismatch,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "replaced with local path and version, mismatch",
+			file:          "testdata/replaced-with-local-path-and-version-mismatch/go.mod",
+			replace:       true,
+			wantPkgs:      GoModReplacedWithLocalPathAndVersionMismatch,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.17",
 		},
 		{
-			name:     "go 1.16",
-			file:     "testdata/go116/go.mod",
-			replace:  true,
-			wantPkgs: GoMod116,
-			wantDeps: defaultGoDepParserDeps,
+			name:          "go 1.16",
+			file:          "testdata/go116/go.mod",
+			replace:       true,
+			wantPkgs:      GoMod116,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.16",
 		},
 	}
 
@@ -105,11 +117,12 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			gotPkgs, gotDeps, err := NewParser(tt.replace, tt.useMinVersion).Parse(t.Context(), f)
+			gotPkgs, gotDeps, gotVersion, err := NewParser(tt.replace, tt.useMinVersion).Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
+			assert.Equal(t, tt.wantGoVersion, gotVersion)
 		})
 	}
 }

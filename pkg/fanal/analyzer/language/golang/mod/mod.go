@@ -17,7 +17,6 @@ import (
 	"unicode"
 
 	"github.com/samber/lo"
-	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
@@ -48,11 +47,11 @@ var (
 
 type gomodAnalyzer struct {
 	// root go.mod/go.sum
-	modParser language.Parser
+	modParser *mod.Parser
 	sumParser language.Parser
 
 	// go.mod/go.sum in dependencies
-	leafModParser language.Parser
+	leafModParser *mod.Parser
 
 	licenseClassifierConfidenceLevel float64
 
@@ -74,6 +73,17 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 	}, nil
 }
 
+type parserWithVersion struct {
+	*mod.Parser
+	version string
+}
+
+func (p *parserWithVersion) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, ver, err := p.Parser.Parse(ctx, r)
+	p.version = ver
+	return pkgs, deps, err
+}
+
 func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
@@ -82,19 +92,18 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
+		parser := &parserWithVersion{
+			Parser: a.modParser,
+		}
 		// Parse go.mod
-		gomod, err := parse(ctx, input.FS, path, a.modParser)
+		gomod, err := parse(ctx, input.FS, path, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if gomod == nil {
 			return nil
 		}
 
-		shouldMergeGoSum, err := lessThanGo117(input.FS, path)
-		if err != nil {
-			return xerrors.Errorf("parse Go version: %w", err)
-		}
-		if shouldMergeGoSum {
+		if lessThanGo117(parser.version) {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
@@ -249,7 +258,7 @@ func (a *gomodAnalyzer) resolveDeps(ctx context.Context, modDir fs.FS) ([]string
 	}
 
 	// Parse go.mod under $GOPATH/pkg/mod
-	pkgs, _, err := a.leafModParser.Parse(ctx, file)
+	pkgs, _, _, err := a.leafModParser.Parse(ctx, file)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	}
@@ -313,22 +322,8 @@ func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser)
 	return language.Parse(ctx, types.GoModule, path, file, parser)
 }
 
-func lessThanGo117(fsys fs.FS, path string) (bool, error) {
-	contents, err := fs.ReadFile(fsys, path)
-	if err != nil {
-		return false, xerrors.Errorf("read go.mod: %w", err)
-	}
-
-	modFile, err := modfile.Parse(path, contents, nil)
-	if err != nil {
-		return false, xerrors.Errorf("parse go.mod: %w", err)
-	}
-	if modFile.Go == nil {
-		// A go.mod without a go directive predates Go 1.17.
-		return true, nil
-	}
-
-	return goversion.Compare("go"+modFile.Go.Version, "go1.17") < 0, nil
+func lessThanGo117(goVersion string) bool {
+	return goversion.Compare("go"+goVersion, "go1.17") < 0
 }
 
 func mergeGoSum(gomod, gosum *types.Application) {
