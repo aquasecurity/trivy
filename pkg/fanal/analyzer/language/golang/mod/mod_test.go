@@ -274,6 +274,47 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:   "Go 1.17 without indirect dependencies",
+			txtar:  "testdata/go117-no-indirect.txtar",
+			gopath: false,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20211110174639-8257534ffed3",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211110174639-8257534ffed3",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20211110174639-8257534ffed3",
+								Relationship: types.RelationshipDirect,
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:   "sad go.mod",
 			txtar:  "testdata/sad.txtar",
 			gopath: false,
@@ -394,6 +435,50 @@ func Test_gomodAnalyzer_Required(t *testing.T) {
 			a := gomodAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_lessThanGo117(t *testing.T) {
+	tests := []struct {
+		name      string
+		goVersion string
+		want      bool
+	}{
+		{
+			name:      "Go 1.16",
+			goVersion: "1.16",
+			want:      true,
+		},
+		{
+			name:      "Go 1.16.5",
+			goVersion: "1.16.5",
+			want:      true,
+		},
+		{
+			name:      "Go 1.17",
+			goVersion: "1.17",
+			want:      false,
+		},
+		{
+			name:      "Go 1.17.1",
+			goVersion: "1.17.1",
+			want:      false,
+		},
+		{
+			name:      "Go 1.21",
+			goVersion: "1.21",
+			want:      false,
+		},
+		{
+			name:      "Go 1.22.0",
+			goVersion: "1.22.0",
+			want:      false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, lessThanGo117(tt.goVersion))
 		})
 	}
 }

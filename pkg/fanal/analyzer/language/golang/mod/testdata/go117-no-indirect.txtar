@@ -1,0 +1,13 @@
+Test case for Go 1.17+ without indirect dependencies in go.mod.
+go.sum must not be merged, even though it contains a transitive module.
+
+-- go.mod --
+module github.com/org/repo
+
+go 1.17
+
+require github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3
+-- go.sum --
+github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
+github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3 h1:H9IR14rR3+Z13ZH7ay9bs2hHBL7WAqdEJLLr8nhx/Rs=
