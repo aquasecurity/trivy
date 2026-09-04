@@ -46,6 +46,17 @@ If you don't want to scan them, you can use the `--tf-exclude-downloaded-modules
 trivy config --tf-exclude-downloaded-modules ./configs
 ```
 
+### OpenTofu
+Trivy scans OpenTofu files with the `.tofu` and `.tofu.json` extensions the same way it scans Terraform files.
+
+OpenTofu gives a `.tofu` file precedence over a `.tf` file with the same name, so Trivy does the same and skips the shadowed file. The pairing is per extension, which means `main.tofu` shadows `main.tf`, and `main.tofu.json` shadows `main.tf.json`. A `.tf` file without an OpenTofu counterpart is always scanned.
+
+If you keep both variants in a repository and want to scan it as Terraform, skip the OpenTofu files. Note that `.tofu` and `.tofu.json` need separate patterns:
+
+```bash
+trivy config --skip-files "**/*.tofu" --skip-files "**/*.tofu.json" ./configs
+```
+
 ## Secret
 The secret scan is performed on plain text files, with no special treatment for Terraform.
 
