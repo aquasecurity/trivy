@@ -54,9 +54,6 @@ func normalize(expr Expression, fn NormalizeFunc) Expression {
 	return normalized
 }
 
-// NormalizeForSPDX replaces ' ' to '-' in license-id.
-// SPDX license MUST NOT have white space between a license-id.
-// There MUST be white space on either side of the operator "WITH".
 // NormalizeForSPDX rewrites an expression to match the SPDX license expression syntax:
 //   - in a license-id, characters outside the idstring set are replaced with '-'
 //     (a license-id MUST NOT contain white space, while the "WITH" operator MUST be
