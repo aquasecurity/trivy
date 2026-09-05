@@ -34,7 +34,7 @@ func getRepositories(ctx parser.FileContext) (repositories []ecr.Repository) {
 		if imageScanningProp := r.GetProperty("ImageScanningConfiguration"); imageScanningProp.IsNotNil() {
 			repository.ImageScanning = ecr.ImageScanning{
 				Metadata:   imageScanningProp.Metadata(),
-				ScanOnPush: imageScanningProp.GetBoolProperty("ScanOnPush", false),
+				ScanOnPush: imageScanningProp.GetBoolProperty("ScanOnPush"),
 			}
 		}
 
@@ -42,7 +42,7 @@ func getRepositories(ctx parser.FileContext) (repositories []ecr.Repository) {
 			repository.Encryption = ecr.Encryption{
 				Metadata: encProp.Metadata(),
 				Type:     encProp.GetStringProperty("EncryptionType", ecr.EncryptionTypeAES256),
-				KMSKeyID: encProp.GetStringProperty("KmsKey", ""),
+				KMSKeyID: encProp.GetStringProperty("KmsKey"),
 			}
 		}
 

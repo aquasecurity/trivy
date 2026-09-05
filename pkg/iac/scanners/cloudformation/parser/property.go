@@ -226,20 +226,10 @@ func (p *Property) resolveValue() (*Property, bool) {
 }
 
 func (p *Property) GetStringProperty(path string, defaultValue ...string) iacTypes.StringValue {
-	defVal := ""
-	if len(defaultValue) > 0 {
-		defVal = defaultValue[0]
-	}
-
 	if p.IsUnresolved() {
 		return iacTypes.StringUnresolvable(p.Metadata())
 	}
-
-	prop := p.GetProperty(path)
-	if prop.IsNotString() {
-		return p.StringDefault(defVal)
-	}
-	return prop.AsStringValue()
+	return p.GetProperty(path).AsStringValue(firstOrZero(defaultValue))
 }
 
 func (p *Property) StringDefault(defaultValue string) iacTypes.StringValue {
@@ -247,43 +237,22 @@ func (p *Property) StringDefault(defaultValue string) iacTypes.StringValue {
 }
 
 func (p *Property) GetBoolProperty(path string, defaultValue ...bool) iacTypes.BoolValue {
-	defVal := false
-	if len(defaultValue) > 0 {
-		defVal = defaultValue[0]
-	}
-
 	if p.IsUnresolved() {
 		return iacTypes.BoolUnresolvable(p.Metadata())
 	}
 
 	prop := p.GetProperty(path)
-
 	if prop.isFunction() {
 		prop, _ = prop.resolveValue()
 	}
-
-	if prop.IsNotBool() {
-		return p.inferBool(prop, defVal)
-	}
-	return prop.AsBoolValue()
+	return prop.AsBoolValue(firstOrZero(defaultValue))
 }
 
 func (p *Property) GetIntProperty(path string, defaultValue ...int) iacTypes.IntValue {
-	defVal := 0
-	if len(defaultValue) > 0 {
-		defVal = defaultValue[0]
-	}
-
 	if p.IsUnresolved() {
 		return iacTypes.IntUnresolvable(p.Metadata())
 	}
-
-	prop := p.GetProperty(path)
-
-	if prop.IsNotInt() {
-		return p.IntDefault(defVal)
-	}
-	return prop.AsIntValue()
+	return p.GetProperty(path).AsIntValue(firstOrZero(defaultValue))
 }
 
 func (p *Property) BoolDefault(defaultValue bool) iacTypes.BoolValue {
@@ -292,6 +261,10 @@ func (p *Property) BoolDefault(defaultValue bool) iacTypes.BoolValue {
 
 func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
 	return iacTypes.IntDefault(defaultValue, p.Metadata())
+}
+
+func (p *Property) nullProperty() *Property {
+	return &Property{rng: p.rng, parentRange: p.parentRange, logicalId: p.logicalId}
 }
 
 func (p *Property) GetProperty(path string) *Property {
@@ -305,29 +278,23 @@ func (p *Property) GetProperty(path string) *Property {
 	}
 
 	if property.IsNotMap() {
-		return nil
+		return property.nullProperty()
 	}
 
-	for n, p := range property.AsMap() {
-		if n == first {
-			property = p
-			break
-		}
+	child, ok := property.AsMap()[first]
+	if !ok {
+		return property.nullProperty()
 	}
 
-	if len(pathParts) == 1 || property == nil {
-		return property
-	}
-
-	if nestedProperty := property.GetProperty(strings.Join(pathParts[1:], ".")); nestedProperty != nil {
-		if nestedProperty.isFunction() {
-			resolved, _ := nestedProperty.resolveValue()
+	if len(pathParts) == 1 {
+		if child.isFunction() {
+			resolved, _ := child.resolveValue()
 			return resolved
 		}
-		return nestedProperty
+		return child
 	}
 
-	return &Property{}
+	return child.GetProperty(strings.Join(pathParts[1:], "."))
 }
 
 func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Property {
@@ -339,40 +306,6 @@ func (p *Property) deriveResolved(propType cftypes.CfType, propValue any) *Prope
 
 func (p *Property) ParentRange() iacTypes.Range {
 	return p.parentRange
-}
-
-func (p *Property) inferBool(prop *Property, defaultValue bool) iacTypes.BoolValue {
-	if prop.IsString() {
-		if prop.EqualTo("true", IgnoreCase) {
-			return iacTypes.Bool(true, prop.Metadata())
-		}
-		if prop.EqualTo("yes", IgnoreCase) {
-			return iacTypes.Bool(true, prop.Metadata())
-		}
-		if prop.EqualTo("1", IgnoreCase) {
-			return iacTypes.Bool(true, prop.Metadata())
-		}
-		if prop.EqualTo("false", IgnoreCase) {
-			return iacTypes.Bool(false, prop.Metadata())
-		}
-		if prop.EqualTo("no", IgnoreCase) {
-			return iacTypes.Bool(false, prop.Metadata())
-		}
-		if prop.EqualTo("0", IgnoreCase) {
-			return iacTypes.Bool(false, prop.Metadata())
-		}
-	}
-
-	if prop.IsInt() {
-		if prop.EqualTo(0) {
-			return iacTypes.Bool(false, prop.Metadata())
-		}
-		if prop.EqualTo(1) {
-			return iacTypes.Bool(true, prop.Metadata())
-		}
-	}
-
-	return p.BoolDefault(defaultValue)
 }
 
 func (p *Property) String() string {
