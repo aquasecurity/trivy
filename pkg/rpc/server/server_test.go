@@ -16,6 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/rpc"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
 	"github.com/aquasecurity/trivy/pkg/scan/local"
 	"github.com/aquasecurity/trivy/pkg/scan/ospkg"
@@ -525,6 +526,54 @@ func TestCacheServer_PutBlob(t *testing.T) {
 			require.NoError(t, err, tt.name)
 			assert.Equal(t, tt.want, got)
 			cachetest.AssertBlobs(t, c, tt.wantBlobs)
+		})
+	}
+}
+
+func TestCacheServer_GetBlobOS(t *testing.T) {
+	blobID := "sha256:dffd9992ca398466a663c87c92cfea2a2db0ae0cf33fcb99da60eec52addbfc5"
+	blobInfo := ftypes.BlobInfo{
+		SchemaVersion: ftypes.BlobJSONSchemaVersion,
+		DiffID:        blobID,
+		OS: ftypes.OS{
+			Family: ftypes.Alpine,
+			Name:   "3.23",
+		},
+	}
+
+	tests := []struct {
+		name       string
+		setUpCache func(t *testing.T) cache.Cache
+		want       *rpcCache.GetBlobOSResponse
+		wantErr    string
+	}{
+		{
+			name: "happy path",
+			setUpCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob(t.Context(), blobID, blobInfo))
+				return c
+			},
+			want: &rpcCache.GetBlobOSResponse{Os: rpc.ConvertToRPCOS(blobInfo.OS)},
+		},
+		{
+			name: "sad path",
+			setUpCache: func(_ *testing.T) cache.Cache {
+				return cache.NewMemoryCache()
+			},
+			wantErr: "failed to get blob OS from cache",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			s := NewCacheServer(tt.setUpCache(t))
+			got, err := s.GetBlobOS(t.Context(), &rpcCache.GetBlobOSRequest{BlobId: blobID})
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

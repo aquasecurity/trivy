@@ -66,6 +66,15 @@ func (c *MemoryCache) GetBlob(_ context.Context, blobID string) (types.BlobInfo,
 	return blobInfo, nil
 }
 
+// GetBlobOS retrieves OS information from a blob in the memory cache.
+func (c *MemoryCache) GetBlobOS(ctx context.Context, blobID string) (types.OS, error) {
+	blobInfo, err := c.GetBlob(ctx, blobID)
+	if err != nil {
+		return types.OS{}, err
+	}
+	return blobInfo.OS, nil
+}
+
 // MissingBlobs determines the missing artifact and blob information in the memory cache
 func (c *MemoryCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
 	var missingArtifact bool

@@ -1,6 +1,7 @@
 package image_test
 
 import (
+	"context"
 	"math/rand"
 	"testing"
 	"time"
@@ -41,6 +42,94 @@ const (
 	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
 	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
 )
+
+const cachedOSAnalyzerType = analyzer.Type("test-cached-os")
+
+type cachedOSAnalyzer struct{}
+
+func newCachedOSAnalyzer(analyzer.ConfigAnalyzerOptions) (analyzer.ConfigAnalyzer, error) {
+	return cachedOSAnalyzer{}, nil
+}
+
+func (cachedOSAnalyzer) Type() analyzer.Type { return cachedOSAnalyzerType }
+
+func (cachedOSAnalyzer) Version() int { return 1 }
+
+func (cachedOSAnalyzer) Required(osFound types.OS) bool {
+	return osFound.Family == types.Alpine
+}
+
+func (cachedOSAnalyzer) Analyze(context.Context, analyzer.ConfigAnalysisInput) (*analyzer.ConfigAnalysisResult, error) {
+	return &analyzer.ConfigAnalysisResult{
+		HistoryPackages: types.Packages{{Name: "cached-os-detected"}},
+	}, nil
+}
+
+type delayedMemoryCache struct {
+	*cache.MemoryCache
+	missingArtifact bool
+	delays          map[string]time.Duration
+}
+
+func (c *delayedMemoryCache) MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (bool, []string, error) {
+	if c.missingArtifact {
+		return true, nil, nil
+	}
+	return c.MemoryCache.MissingBlobs(ctx, artifactID, blobIDs)
+}
+
+func (c *delayedMemoryCache) GetBlobOS(ctx context.Context, blobID string) (types.OS, error) {
+	select {
+	case <-time.After(c.delays[blobID]):
+	case <-ctx.Done():
+		return types.OS{}, ctx.Err()
+	}
+	return c.MemoryCache.GetBlobOS(ctx, blobID)
+}
+
+func TestArtifact_InspectUsesCachedOSInLayerOrder(t *testing.T) {
+	analyzer.RegisterConfigAnalyzer(cachedOSAnalyzerType, newCachedOSAnalyzer)
+	defer analyzer.DeregisterConfigAnalyzer(cachedOSAnalyzerType)
+
+	randomImage, err := random.Image(100, 2, random.WithSource(rand.NewSource(0)))
+	require.NoError(t, err)
+	img := &fakeImage{Image: randomImage}
+
+	c := &delayedMemoryCache{
+		MemoryCache: cache.NewMemoryCache(),
+		delays:      make(map[string]time.Duration),
+	}
+	a, err := image2.NewArtifact(img, c, artifact.Option{Parallel: 2})
+	require.NoError(t, err)
+	ref, err := a.Inspect(t.Context())
+	require.NoError(t, err)
+	require.Len(t, ref.BlobIDs, 2)
+	require.NoError(t, a.Clean(ref))
+
+	firstBlob, err := c.MemoryCache.GetBlob(t.Context(), ref.BlobIDs[0])
+	require.NoError(t, err)
+	firstBlob.OS = types.OS{Family: types.Alpine, Name: "3.23"}
+	require.NoError(t, c.PutBlob(t.Context(), ref.BlobIDs[0], firstBlob))
+
+	secondBlob, err := c.MemoryCache.GetBlob(t.Context(), ref.BlobIDs[1])
+	require.NoError(t, err)
+	secondBlob.OS = types.OS{Family: types.Ubuntu, Name: "24.04"}
+	require.NoError(t, c.PutBlob(t.Context(), ref.BlobIDs[1], secondBlob))
+
+	// Return the second layer first to ensure completion order cannot affect the merged OS.
+	c.delays[ref.BlobIDs[0]] = 100 * time.Millisecond
+	c.missingArtifact = true
+
+	a, err = image2.NewArtifact(img, c, artifact.Option{Parallel: 2})
+	require.NoError(t, err)
+	ref, err = a.Inspect(t.Context())
+	require.NoError(t, err)
+	require.NoError(t, a.Clean(ref))
+
+	artifactInfo, err := c.GetArtifact(t.Context(), ref.ID)
+	require.NoError(t, err)
+	assert.Equal(t, types.Packages{{Name: "cached-os-detected"}}, artifactInfo.HistoryPackages)
+}
 
 func TestArtifact_Inspect(t *testing.T) {
 	alpinePkgs := types.Packages{
