@@ -56,6 +56,8 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - github
                                             - cosign-vuln
                                            (default "table")
+      --git-password string               password or personal access token to authenticate to a private git repository. TRIVY_GIT_PASSWORD should be used for security reasons.
+      --git-username string               username to authenticate to a private git repository. Defaults to a dummy user, which is enough for token-based authentication.
       --helm-api-versions strings         Available API versions used for Capabilities.APIVersions. This flag is the same as the api-versions flag of the helm template command. (can specify multiple or separate values with commas: policy/v1/PodDisruptionBudget,apps/v1/Deployment)
       --helm-kube-version string          Kubernetes version used for Capabilities.KubeVersion. This flag is the same as the kube-version flag of the helm template command.
       --helm-set strings                  specify Helm values on the command line (can specify multiple or separate values with commas: key1=val1,key2=val2)
