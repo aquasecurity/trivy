@@ -52,7 +52,7 @@ func (d *CryptoDescriptor) UnmarshalJSON(data []byte) error {
 		return xerrors.Errorf("decode descriptor: %w", err)
 	}
 
-	descriptor, err := parseDescriptor(s)
+	descriptor, err := ParseCryptoDescriptor(s)
 	if err != nil {
 		return xerrors.Errorf("parse descriptor: %w", err)
 	}
@@ -132,13 +132,14 @@ func (d CryptoDescriptor) validateParameters() error {
 	if d.Kind != CryptoKindAlgorithm || d.Identity.Method != CryptoMethodOID {
 		return xerrors.Errorf("parameters are only valid for OID algorithm descriptors")
 	}
-	if err := validateAlgorithmParameters(d.Identity.Parameters); err != nil {
+	if err := d.Identity.validateAlgorithmParameter(); err != nil {
 		return xerrors.Errorf("validate algorithm parameters: %w", err)
 	}
 	return nil
 }
 
-func parseDescriptor(s string) (CryptoDescriptor, error) {
+// ParseCryptoDescriptor decodes a canonical descriptor string and validates it.
+func ParseCryptoDescriptor(s string) (CryptoDescriptor, error) {
 	segments := strings.Split(s, ":")
 	var descriptor CryptoDescriptor
 	var valueSegment string
@@ -196,25 +197,51 @@ func parseDescriptor(s string) (CryptoDescriptor, error) {
 	return descriptor, nil
 }
 
-// validateAlgorithmParameters accepts only empty parameters, key-size=<canonical positive
+// CryptoAlgorithmParameter names the property that distinguishes algorithm assets
+// sharing one OID. It is empty for an algorithm whose OID identifies it completely.
+type CryptoAlgorithmParameter string
+
+const (
+	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits.
+	CryptoParameterKeySize CryptoAlgorithmParameter = "key-size"
+	// CryptoParameterCurve distinguishes algorithm assets by curve name.
+	CryptoParameterCurve CryptoAlgorithmParameter = "curve"
+)
+
+// AlgorithmParameter returns the parameter that distinguishes algorithm assets sharing an
+// OID. It reports false when the identity carries none.
+func (i CryptoIdentity) AlgorithmParameter() (CryptoAlgorithmParameter, string, bool) {
+	name, value, found := strings.Cut(i.Parameters, "=")
+	if !found {
+		return "", "", false
+	}
+	return CryptoAlgorithmParameter(name), value, true
+}
+
+// validateAlgorithmParameter accepts only empty parameters, key-size=<canonical positive
 // decimal>, and curve=<non-empty name>.
-func validateAlgorithmParameters(parameters string) error {
-	if parameters == "" {
+func (i CryptoIdentity) validateAlgorithmParameter() error {
+	if i.Parameters == "" {
 		return nil
 	}
-	if value, ok := strings.CutPrefix(parameters, "key-size="); ok {
+	name, value, found := i.AlgorithmParameter()
+	if !found {
+		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
+	}
+
+	switch name {
+	case CryptoParameterKeySize:
 		if !isCanonicalPositiveDecimal(value) {
 			return xerrors.Errorf("key size parameter must be a canonical positive decimal")
 		}
-		return nil
-	}
-	if value, ok := strings.CutPrefix(parameters, "curve="); ok {
+	case CryptoParameterCurve:
 		if value == "" {
 			return xerrors.Errorf("curve parameter must not be empty")
 		}
-		return nil
+	default:
+		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
 	}
-	return xerrors.Errorf("unknown algorithm parameters %q", parameters)
+	return nil
 }
 
 func isLowerSHA256(value string) bool {

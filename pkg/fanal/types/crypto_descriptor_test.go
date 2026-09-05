@@ -311,7 +311,7 @@ func TestCryptoDescriptorMarshalJSON(t *testing.T) {
 	}
 }
 
-func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
+func TestParseCryptoDescriptor(t *testing.T) {
 	t.Parallel()
 
 	hash := strings.Repeat("a", 64)
@@ -323,12 +323,17 @@ func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
 	}{
 		{
 			name: "certificate",
-			in:   `"certificate:sha256:` + hash + `"`,
+			in:   "certificate:sha256:" + hash,
 			want: cryptotest.CertificateDescriptor(),
 		},
 		{
+			name: "public key",
+			in:   "key:public:spki-sha256:" + strings.Repeat("b", 64),
+			want: cryptotest.PublicKeyDescriptor(),
+		},
+		{
 			name: "lowercase percent escape",
-			in:   `"algorithm:oid:1.2.3:key-size%3d2048"`,
+			in:   "algorithm:oid:1.2.3:key-size%3d2048",
 			want: types.CryptoDescriptor{
 				Kind: types.CryptoKindAlgorithm,
 				Identity: types.CryptoIdentity{
@@ -340,7 +345,7 @@ func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
 		},
 		{
 			name: "escaped unreserved byte",
-			in:   `"algorithm:oid:1.2.3:curve%3DP%2D256"`,
+			in:   "algorithm:oid:1.2.3:curve%3DP%2D256",
 			want: types.CryptoDescriptor{
 				Kind: types.CryptoKindAlgorithm,
 				Identity: types.CryptoIdentity{
@@ -352,7 +357,7 @@ func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
 		},
 		{
 			name: "raw plus is a space",
-			in:   `"algorithm:oid:1.2.3:curve%3DP+256"`,
+			in:   "algorithm:oid:1.2.3:curve%3DP+256",
 			want: types.CryptoDescriptor{
 				Kind: types.CryptoKindAlgorithm,
 				Identity: types.CryptoIdentity{
@@ -364,48 +369,164 @@ func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
 		},
 		{
 			name:    "empty",
-			in:      `""`,
+			in:      "",
 			wantErr: `unknown descriptor kind ""`,
 		},
 		{
 			name:    "unknown kind",
-			in:      `"secret:sha256:` + hash + `"`,
+			in:      "secret:sha256:" + hash,
 			wantErr: `unknown descriptor kind "secret"`,
 		},
 		{
 			name:    "missing segment",
-			in:      `"certificate:sha256"`,
+			in:      "certificate:sha256",
 			wantErr: "certificate descriptor must contain 3 segments",
 		},
 		{
 			name:    "extra certificate segment",
-			in:      `"certificate:sha256:` + hash + `:extra"`,
+			in:      "certificate:sha256:" + hash + ":extra",
 			wantErr: "certificate descriptor must contain 3 segments",
 		},
 		{
 			name:    "extra key segment",
-			in:      `"key:public:spki-sha256:` + hash + `:extra"`,
+			in:      "key:public:spki-sha256:" + hash + ":extra",
 			wantErr: "key descriptor must contain 4 segments",
 		},
 		{
 			name:    "extra algorithm segment",
-			in:      `"algorithm:oid:1.2.3:key-size%3D2048:extra"`,
+			in:      "algorithm:oid:1.2.3:key-size%3D2048:extra",
 			wantErr: "algorithm descriptor must contain 3 or 4 segments",
 		},
 		{
 			name:    "malformed short percent escape",
-			in:      `"algorithm:oid:1.2.3:curve%3"`,
+			in:      "algorithm:oid:1.2.3:curve%3",
 			wantErr: `invalid URL escape "%3"`,
 		},
 		{
 			name:    "malformed non hexadecimal percent escape",
-			in:      `"algorithm:oid:1.2.3:curve%XZ"`,
+			in:      "algorithm:oid:1.2.3:curve%XZ",
 			wantErr: `invalid URL escape "%XZ"`,
 		},
 		{
 			name:    "empty parameter segment",
-			in:      `"algorithm:oid:1.2.3:"`,
+			in:      "algorithm:oid:1.2.3:",
 			wantErr: "algorithm descriptor parameters must not be empty",
+		},
+		{
+			name:    "uppercase digest",
+			in:      "certificate:sha256:" + strings.ToUpper(hash),
+			wantErr: "identification value must be 64 lowercase hexadecimal characters",
+		},
+		{
+			name:    "non-canonical OID",
+			in:      "algorithm:oid:1.02.840",
+			wantErr: "identification value must be a canonical OID",
+		},
+		{
+			name:    "method outside the kind",
+			in:      "certificate:spki-sha256:" + hash,
+			wantErr: `certificate descriptor requires identification method "sha256"`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := types.ParseCryptoDescriptor(tt.in)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				assert.Zero(t, got)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestParseCryptoDescriptorRoundTrip(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name string
+		desc types.CryptoDescriptor
+	}{
+		{
+			name: "certificate",
+			desc: cryptotest.CertificateDescriptor(),
+		},
+		{
+			name: "public key",
+			desc: cryptotest.PublicKeyDescriptor(),
+		},
+		{
+			name: "private key",
+			desc: cryptotest.PrivateKeyDescriptor(),
+		},
+		{
+			name: "encrypted private key",
+			desc: cryptotest.EncryptedPrivateKeyDescriptor(),
+		},
+		{
+			name: "RFC 1423 encrypted private key",
+			desc: cryptotest.RFC1423EncryptedPrivateKeyDescriptor(),
+		},
+		{
+			name: "algorithm",
+			desc: cryptotest.AlgorithmDescriptor(),
+		},
+		{
+			name: "algorithm with key size",
+			desc: types.CryptoDescriptor{
+				Kind: types.CryptoKindAlgorithm,
+				Identity: types.CryptoIdentity{
+					Method:     types.CryptoMethodOID,
+					Value:      "1.2.840.113549.1.1.1",
+					Parameters: "key-size=2048",
+				},
+			},
+		},
+		{
+			name: "algorithm with curve",
+			desc: types.CryptoDescriptor{
+				Kind: types.CryptoKindAlgorithm,
+				Identity: types.CryptoIdentity{
+					Method:     types.CryptoMethodOID,
+					Value:      "1.2.840.10045.2.1",
+					Parameters: "curve=P-256",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := types.ParseCryptoDescriptor(tt.desc.String())
+			require.NoError(t, err)
+			assert.Equal(t, tt.desc, got)
+		})
+	}
+}
+
+func TestCryptoDescriptorUnmarshalJSON(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		in      string
+		want    types.CryptoDescriptor
+		wantErr string
+	}{
+		{
+			name: "certificate",
+			in:   `"certificate:sha256:` + strings.Repeat("a", 64) + `"`,
+			want: cryptotest.CertificateDescriptor(),
+		},
+		{
+			name:    "invalid descriptor",
+			in:      `"secret:sha256:` + strings.Repeat("a", 64) + `"`,
+			wantErr: `unknown descriptor kind "secret"`,
 		},
 		{
 			name:    "non-string JSON",

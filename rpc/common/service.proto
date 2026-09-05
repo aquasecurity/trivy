@@ -298,3 +298,61 @@ message LicenseType {
     LICENSE_FILE = 3;
   }
 }
+
+message CryptoAsset {
+  string kind = 1;
+  string key_type = 2;
+  CryptoIdentity identity = 3;
+  string name = 4;
+  CryptoCertificate certificate = 5;
+  CryptoKey key = 6;
+  CryptoAlgorithm algorithm = 7;
+  repeated CryptoRelationship relationships = 8;
+  string file_path = 9;
+  Layer layer = 10;
+}
+
+message CryptoIdentity {
+  string method = 1;
+  string value = 2;
+  string parameters = 3;
+}
+
+message CryptoCertificate {
+  string subject = 1;
+  string issuer = 2;
+  string serial_number = 3;
+  google.protobuf.Timestamp not_before = 4;
+  google.protobuf.Timestamp not_after = 5;
+  string format = 6;
+  string encoding = 7;
+  repeated string key_usage = 8;
+  repeated string extended_key_usage = 9;
+  repeated string dns_names = 10;
+  repeated string email_addresses = 11;
+  repeated string ip_addresses = 12;
+  repeated string uris = 13;
+  bool basic_constraints_valid = 14;
+  bool is_ca = 15;
+  int32 max_path_len = 16;
+  bool max_path_len_zero = 17;
+}
+
+message CryptoKey {
+  int32 size = 1;
+  string curve = 2;
+  string format = 3;
+  string encoding = 4;
+  bool encrypted = 5;
+}
+
+message CryptoAlgorithm {
+  string family = 1;
+  string primitive = 2;
+}
+
+message CryptoRelationship {
+  string type = 1;
+  // related_asset is the canonical string of the target asset descriptor.
+  string related_asset = 2;
+}
