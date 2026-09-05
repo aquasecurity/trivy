@@ -108,7 +108,19 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 			return m, notAffected
 		}
 
-		break // Stop searching for the next VEX document as this repository has higher precedence.
+		// An index entry only says which document covers the package, not that the
+		// repository has anything to say about this vulnerability. Precedence applies to
+		// statements, not to silence, so this repository stops the search only when its
+		// document actually has a statement about this vulnerability and product.
+		// That keeps a deliberate "affected" from being overridden by a lower-priority
+		// "not_affected", while a repository with no statement no longer hides the
+		// statements of the repositories after it.
+		if hasStatement(doc, vuln, product, subComponent) {
+			break // Stop searching for the next VEX document as this repository has higher precedence.
+		}
+		rs.logger.Debug("No VEX statement found in the repository, continuing to the next repository",
+			log.String("vulnerability", vuln.VulnerabilityID), log.String("package", pkgID),
+			log.String("repo", index.Name))
 	}
 	return types.ModifiedFinding{}, false
 }
@@ -135,7 +147,9 @@ func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntr
 }
 
 func (rs *RepositorySet) logVEXFound(pkgID, repoName, repoURL, filePath string) {
-	once, _ := rs.logOnce.LoadOrStore(pkgID, &sync.Once{})
+	// Several repositories can be consulted for the same package, so the log is emitted
+	// once per package and repository, not once per package.
+	once, _ := rs.logOnce.LoadOrStore(pkgID+"|"+repoName, &sync.Once{})
 	once.Do(func() {
 		rs.logger.Debug("VEX found in the repository",
 			log.String("package", pkgID),

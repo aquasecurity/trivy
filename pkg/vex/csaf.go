@@ -34,9 +34,7 @@ func (v *CSAF) Filter(result *types.Result, bom *core.BOM) {
 }
 
 func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct *core.Component) (types.ModifiedFinding, bool) {
-	found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
-		return string(*item.CVE) == vuln.VulnerabilityID
-	})
+	found, ok := v.findVulnerability(vuln.VulnerabilityID)
 	if !ok {
 		return types.ModifiedFinding{}, false
 	}
@@ -46,6 +44,50 @@ func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct
 		return types.ModifiedFinding{}, false
 	}
 	return types.NewModifiedFinding(vuln, status, v.statement(found), v.source), true
+}
+
+// HasStatement reports whether the advisory puts the product in any of the product status
+// groups of the vulnerability, whatever the group is. Listing the product as affected or
+// under investigation is an assertion just like listing it as not affected is, even though
+// it doesn't filter the vulnerability out.
+func (v *CSAF) HasStatement(vuln types.DetectedVulnerability, product, subProduct *core.Component) bool {
+	found, ok := v.findVulnerability(vuln.VulnerabilityID)
+	if !ok || product == nil || product.PkgIdentifier.PURL == nil || found.ProductStatus == nil {
+		return false
+	}
+
+	for _, productRange := range productRanges(found.ProductStatus) {
+		for _, p := range productRange {
+			productID := lo.FromPtr(p)
+			if v.matchProduct(productID, product) {
+				return true
+			}
+			if _, match := v.matchRelationship(productID, product, subProduct); match {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (v *CSAF) findVulnerability(vulnID string) (*csaf.Vulnerability, bool) {
+	return lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
+		return item != nil && item.CVE != nil && string(*item.CVE) == vulnID
+	})
+}
+
+// productRanges returns all the product groups of a product status.
+func productRanges(status *csaf.ProductStatus) []csaf.Products {
+	return []csaf.Products{
+		lo.FromPtr(status.FirstAffected),
+		lo.FromPtr(status.FirstFixed),
+		lo.FromPtr(status.Fixed),
+		lo.FromPtr(status.KnownAffected),
+		lo.FromPtr(status.KnownNotAffected),
+		lo.FromPtr(status.LastAffected),
+		lo.FromPtr(status.Recommended),
+		lo.FromPtr(status.UnderInvestigation),
+	}
 }
 
 func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component) types.FindingStatus {
