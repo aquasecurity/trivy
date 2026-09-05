@@ -14,8 +14,9 @@ const (
 // the certificate structure, while Encoding identifies whether its source
 // representation was PEM or DER.
 type CryptoCertificate struct {
-	Subject               string                  `json:",omitempty"`
-	Issuer                string                  `json:",omitempty"`
+	Subject string `json:",omitempty"`
+	Issuer  string `json:",omitempty"`
+	// SerialNumber is the serial number written in hexadecimal.
 	SerialNumber          string                  `json:",omitempty"`
 	NotBefore             time.Time               `json:",omitzero"`
 	NotAfter              time.Time               `json:",omitzero"`
