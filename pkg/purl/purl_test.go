@@ -526,6 +526,26 @@ func TestNewPackageURL(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "empty package name",
+			typ:  ftypes.NodePkg,
+			pkg: ftypes.Package{
+				Version: "1.0.0",
+			},
+			want: nil,
+		},
+		{
+			// parseMaven turns ":" into "/", which parsePkgName then splits
+			// into empty namespace and empty name; the bottom guard must
+			// catch this even though pkg.Name was not empty on entry.
+			name: "maven name parses to empty",
+			typ:  ftypes.Jar,
+			pkg: ftypes.Package{
+				Name:    ":",
+				Version: "1.0.0",
+			},
+			want: nil,
+		},
 	}
 
 	for _, tc := range testCases {
