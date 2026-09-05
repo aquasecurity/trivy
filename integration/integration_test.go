@@ -68,6 +68,7 @@ const (
 	goldenCentOS7                     = "testdata/centos-7.json.golden"
 	goldenCentOS7IgnoreUnfixed        = "testdata/centos-7-ignore-unfixed.json.golden"
 	goldenCentOS7Medium               = "testdata/centos-7-medium.json.golden"
+	goldenCryptoCDX                   = "testdata/crypto.cdx.json.golden"
 	goldenDebianBuster                = "testdata/debian-buster.json.golden"
 	goldenDebianBusterIgnoreUnfixed   = "testdata/debian-buster-ignore-unfixed.json.golden"
 	goldenDebianStretch               = "testdata/debian-stretch.json.golden"
@@ -309,13 +310,19 @@ func readCycloneDX(t *testing.T, filePath string) *cdx.BOM {
 			return (*bom.Components)[i].Name < (*bom.Components)[j].Name
 		})
 		for i := range *bom.Components {
-			sort.Slice(*(*bom.Components)[i].Properties, func(ii, jj int) bool {
-				return (*(*bom.Components)[i].Properties)[ii].Name < (*(*bom.Components)[i].Properties)[jj].Name
+			properties := (*bom.Components)[i].Properties
+			if properties == nil {
+				continue
+			}
+			sort.Slice(*properties, func(ii, jj int) bool {
+				return (*properties)[ii].Name < (*properties)[jj].Name
 			})
 		}
-		sort.Slice(*bom.Vulnerabilities, func(i, j int) bool {
-			return (*bom.Vulnerabilities)[i].ID < (*bom.Vulnerabilities)[j].ID
-		})
+		if bom.Vulnerabilities != nil {
+			sort.Slice(*bom.Vulnerabilities, func(i, j int) bool {
+				return (*bom.Vulnerabilities)[i].ID < (*bom.Vulnerabilities)[j].ID
+			})
+		}
 	}
 
 	return bom

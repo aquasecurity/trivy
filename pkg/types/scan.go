@@ -49,6 +49,9 @@ const (
 
 	// LicenseScanner is the scanner of licenses
 	LicenseScanner Scanner = "license"
+
+	// CryptoScanner is the scanner of cryptographic assets
+	CryptoScanner Scanner = "crypto"
 )
 
 var (
@@ -101,6 +104,7 @@ type ScanTarget struct {
 	Misconfigurations []types.Misconfiguration
 	Secrets           []types.Secret
 	Licenses          []types.LicenseFile
+	CryptoAssets      []types.CryptoAsset
 
 	// CustomResources hold analysis results from custom analyzers.
 	// It is for extensibility and not used in OSS.

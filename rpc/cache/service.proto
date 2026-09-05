@@ -47,6 +47,7 @@ message BlobInfo {
   int64 size = 14;
   string created_by = 15;
   common.BuildInfo build_info = 16;
+  repeated common.CryptoAsset crypto_assets = 17;
 }
 
 message PutBlobRequest {

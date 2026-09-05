@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/hashicorp/go-multierror"
+	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	cr "github.com/aquasecurity/trivy/pkg/compliance/report"
@@ -30,6 +31,14 @@ func Write(ctx context.Context, report types.Report, option flag.Options) (err e
 	// Call pre-report hooks
 	if err := extension.PreReport(ctx, &report, option); err != nil {
 		return xerrors.Errorf("pre report error: %w", err)
+	}
+
+	// Cryptographic assets become CycloneDX components and have no representation in
+	// the other formats, so they are dropped before the report is written.
+	if option.Format != types.FormatCycloneDX {
+		report.Results = lo.Reject(report.Results, func(r types.Result, _ int) bool {
+			return r.Class == types.ClassCrypto
+		})
 	}
 
 	output, cleanup, err := option.OutputWriter(ctx)
