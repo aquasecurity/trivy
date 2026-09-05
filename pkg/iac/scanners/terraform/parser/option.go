@@ -66,12 +66,12 @@ func OptionWithConfigsFS(fsys fs.FS) Option {
 
 func OptionWithSkipFiles(files []string) Option {
 	return func(p *Parser) {
-		p.skipPaths = files
+		p.skipFiles = files
 	}
 }
 
 func OptionWithSkipDirs(dirs []string) Option {
 	return func(p *Parser) {
-		p.skipPaths = dirs
+		p.skipDirs = dirs
 	}
 }
