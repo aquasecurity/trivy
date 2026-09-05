@@ -152,6 +152,40 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// A version-less "/etc/system-release" (e.g. just "Amazon Linux")
+			// means Amazon Linux 1, so its advisories are used.
+			// cf. #10976
+			name: "version-less system-release",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "bind",
+						Epoch:   32,
+						Version: "9.8.2",
+						Release: "0.68.rc1.85.amzn1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "bind",
+					VulnerabilityID:  "CVE-2020-8625",
+					InstalledVersion: "32:9.8.2-0.68.rc1.85.amzn1",
+					FixedVersion:     "32:9.8.2-0.68.rc1.86.amzn1",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Amazon,
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
+				},
+			},
+		},
+		{
 			name: "Get returns an error",
 			fixtures: []string{
 				"testdata/fixtures/invalid.yaml",
@@ -243,6 +277,27 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osVer:    "2023",
 			},
 			want: true,
+		},
+		{
+			// A version-less "/etc/system-release" (e.g. just "Amazon Linux")
+			// means Amazon Linux 1, so it follows the Amazon Linux 1 EOL date.
+			// cf. #10976
+			name: "empty version",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: true,
+		},
+		{
+			name: "empty version after Amazon Linux 1 EOL",
+			now:  time.Date(2024, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
 		},
 	}
 	for _, tt := range tests {
