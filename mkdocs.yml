@@ -18,6 +18,7 @@ nav:
       - CI/CD:
           - Overview: tutorials/integrations/index.md
           - GitHub Actions: tutorials/integrations/github-actions.md
+          - Workflow Examples: tutorials/integrations/workflow-examples.md
           - CircleCI: tutorials/integrations/circleci.md
           - Travis CI: tutorials/integrations/travis-ci.md
           - GitLab CI: tutorials/integrations/gitlab-ci.md
