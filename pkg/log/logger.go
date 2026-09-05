@@ -29,6 +29,22 @@ const (
 	PrefixCycloneDX        = "cyclonedx"
 )
 
+// Format represents the output format of the logger.
+type Format string
+
+const (
+	// FormatText is the human-readable, colorized output.
+	FormatText Format = "text"
+	// FormatJSON is one JSON object per line, for machine consumption.
+	FormatJSON Format = "json"
+)
+
+// Formats is the list of supported log formats.
+var Formats = []Format{
+	FormatText,
+	FormatJSON,
+}
+
 // Logger is an alias of slog.Logger
 type Logger = slog.Logger
 
@@ -37,11 +53,36 @@ func New(h slog.Handler) *Logger {
 	return slog.New(h)
 }
 
+type initConfig struct {
+	format Format
+}
+
+// InitOption customizes the logger initialization.
+type InitOption func(*initConfig)
+
+// WithFormat sets the output format of the logger. It defaults to [FormatText].
+func WithFormat(format Format) InitOption {
+	return func(c *initConfig) {
+		c.format = format
+	}
+}
+
 // InitLogger initializes the logger variable and flushes the buffered logs if needed.
-func InitLogger(debug, disable bool) {
+func InitLogger(debug, disable bool, opts ...InitOption) {
+	conf := initConfig{format: FormatText}
+	for _, opt := range opts {
+		opt(&conf)
+	}
+
 	level := lo.Ternary(debug, slog.LevelDebug, slog.LevelInfo)
 	out := lo.Ternary(disable, io.Discard, io.Writer(os.Stderr))
-	h := NewHandler(out, &Options{Level: level})
+
+	var h slog.Handler
+	if conf.format == FormatJSON {
+		h = NewJSONHandler(out, &Options{Level: level})
+	} else {
+		h = NewHandler(out, &Options{Level: level})
+	}
 
 	// Flush the buffered logs if needed.
 	if d, ok := slog.Default().Handler().(*DeferredHandler); ok {
@@ -85,9 +126,14 @@ func Errorf(format string, args ...any) { slog.Default().Error(fmt.Sprintf(forma
 // Fatal for logging fatal errors
 func Fatal(msg string, args ...any) {
 	// Fatal errors should be logged to stderr even if the logger is disabled.
-	if h, ok := slog.Default().Handler().(*ColorHandler); ok {
+	switch h := slog.Default().Handler().(type) {
+	case *ColorHandler:
 		h.out = os.Stderr
-	} else {
+	case *JSONHandler:
+		// The writer cannot be swapped in place, so the handler is rebuilt
+		// to keep the output format the user asked for.
+		slog.SetDefault(New(h.withWriter(os.Stderr)))
+	default:
 		slog.SetDefault(New(NewHandler(os.Stderr, &Options{})))
 	}
 	slog.Default().Log(context.Background(), LevelFatal, msg, args...)
