@@ -67,7 +67,7 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 	qualifiers := parseQualifier(pkg)
 	pkg.Epoch = 0 // we moved Epoch to qualifiers so we don't need it in version
 
-	ptype := purlType(t)
+	ptype := purlType(t, pkg.AnalyzedBy)
 	name := pkg.Name
 	ver := utils.FormatVersion(pkg)
 	namespace := ""
@@ -448,8 +448,23 @@ func parseJulia(pkgName, pkgUUID string) (string, string, packageurl.Qualifiers)
 	return namespace, name, qualifiers
 }
 
+var mixedOSPackageTypes = map[ftypes.TargetType]map[ftypes.AnalyzerType]string{
+	ftypes.DHI: {
+		"apk":  packageurl.TypeApk,
+		"dpkg": packageurl.TypeDebian,
+	},
+}
+
+// purlType resolves a target's PURL type, using the package analyzer for OS
+// families that support more than one native package manager.
 // nolint: gocyclo
-func purlType(t ftypes.TargetType) string {
+func purlType(t ftypes.TargetType, analyzedBy ftypes.AnalyzerType) string {
+	if packageTypes, ok := mixedOSPackageTypes[t]; ok {
+		if ptype, ok := packageTypes[analyzedBy]; ok {
+			return ptype
+		}
+	}
+
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		return packageurl.TypeMaven
