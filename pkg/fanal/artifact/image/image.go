@@ -26,8 +26,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/parallel"
 	"github.com/aquasecurity/trivy/pkg/semaphore"
+	"github.com/aquasecurity/trivy/pkg/set"
 	trivyTypes "github.com/aquasecurity/trivy/pkg/types"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
@@ -96,6 +98,17 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 	configFile, err := a.image.ConfigFile()
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("unable to get the image's config file: %w", err)
+	}
+
+	// A multi-platform index may resolve to an attestation-manifest referrer
+	// instead of the real per-platform image (same manifest shape, but its
+	// "layers" are JSON attestation docs, not tar archives). Fail fast with
+	// a clear message instead of a confusing "invalid tar header" later.
+	if manifest, err := a.image.Manifest(); err == nil && attestationOnlyManifest(manifest) {
+		return artifact.Reference{}, xerrors.Errorf(
+			"%s has no container image layers: every layer is an attestation/SBOM artifact (%s); "+
+				"if resolved from a multi-platform index, use the platform image manifest, not its attestation-manifest referrer",
+			a.image.Name(), manifest.Layers[0].MediaType)
 	}
 
 	diffIDs := a.diffIDs(configFile)
@@ -586,6 +599,31 @@ func (a Artifact) uncompressedLayer(diffID string) (string, io.ReadCloser, error
 func (a Artifact) isCompressed(l v1.Layer) bool {
 	_, uncompressed := reflect.TypeOf(l).Elem().FieldByName("UncompressedLayer")
 	return !uncompressed
+}
+
+// attestationArtifactTypes are OCI artifact types used for SBOM/provenance
+// attestations rather than actual filesystem layers.
+var attestationArtifactTypes = set.New(
+	oci.InTotoArtifactType,
+	oci.DSSEEnvelopeArtifactType,
+	oci.SPDXArtifactType,
+	oci.CycloneDXArtifactType,
+	oci.SigstoreBundleArtifactType,
+)
+
+// attestationOnlyManifest reports whether every layer in manifest is a known
+// attestation/SBOM artifact type. An unrecognized media type never trips
+// this, so it can only catch manifests we're certain aren't real images.
+func attestationOnlyManifest(manifest *v1.Manifest) bool {
+	if manifest == nil || len(manifest.Layers) == 0 {
+		return false
+	}
+	for _, layer := range manifest.Layers {
+		if !attestationArtifactTypes.Contains(string(layer.MediaType)) {
+			return false
+		}
+	}
+	return true
 }
 
 func (a Artifact) inspectConfig(ctx context.Context, imageID string, osFound types.OS, config *v1.ConfigFile) error {
