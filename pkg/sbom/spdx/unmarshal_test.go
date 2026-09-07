@@ -401,3 +401,46 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 		})
 	}
 }
+
+// TestUnmarshaler_NoAssertionIsNotALicense covers the round trip a user gets from
+// `trivy convert`: the marshaler writes NOASSERTION as the declared license of every
+// component it has no licenses for, and reading that back must not turn it into a
+// license named "NOASSERTION".
+func TestUnmarshaler_NoAssertionIsNotALicense(t *testing.T) {
+	f, err := os.Open("testdata/happy/no-relationship.json")
+	require.NoError(t, err)
+	defer f.Close()
+
+	var first spdx.SPDX
+	require.NoError(t, json.NewDecoder(f).Decode(&first))
+
+	// the two apm-agent packages declare NONE, so they come back with no licenses
+	for _, c := range first.BOM.Components() {
+		if c.Name == "co.elastic.apm:apm-agent" {
+			require.Empty(t, c.Licenses)
+		}
+	}
+
+	doc, err := spdx.NewMarshaler("test").Marshal(t.Context(), first.BOM)
+	require.NoError(t, err)
+
+	out, err := json.Marshal(doc)
+	require.NoError(t, err)
+
+	var second spdx.SPDX
+	require.NoError(t, json.Unmarshal(out, &second))
+
+	for _, c := range second.BOM.Components() {
+		assert.NotContains(t, c.Licenses, "NOASSERTION", "component %q was given NOASSERTION as a license", c.Name)
+	}
+
+	// the licenses that are real still survive the round trip
+	var licensed int
+	for _, c := range second.BOM.Components() {
+		if c.Name == "Elasticsearch" {
+			assert.Equal(t, []string{"Elastic-2.0"}, c.Licenses)
+			licensed++
+		}
+	}
+	assert.Equal(t, 1, licensed)
+}
