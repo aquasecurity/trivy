@@ -128,7 +128,7 @@ When scanning Java projects, Trivy resolves transitive dependencies by downloadi
     ```
     FATAL Error remote Maven repository returned 429 Too Many Requests for https://repo.maven.apache.org/maven2/.../<artifact>-<version>.pom. Retry-After: 1800.
     The repository blocks all subsequent requests from this IP until the block clears.
-    To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).
+    To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).
     ```
 
 The block applies to *all* subsequent requests from the affected IP for the duration indicated by `Retry-After`, regardless of whether the artifact would otherwise be served from a cache layer. The wait depends on the repository's policy — for Maven Central it is typically tens of minutes on the first violation and grows on repeat — so Trivy fails fast on the first `429` rather than retrying and risking an extended block.
@@ -136,6 +136,7 @@ The block applies to *all* subsequent requests from the affected IP for the dura
 Recommended mitigations:
 
 - **Populate `~/.m2` before scanning.** Run `mvn dependency:resolve` (or any build step that resolves dependencies) so that every POM is cached locally. In CI, cache the `~/.m2` directory between runs (e.g. keyed on `pom.xml` checksums) so subsequent runs reuse the artifacts.
+    - For a multi-module project run `mvn install -DskipTests` instead. Goals that only resolve dependencies cache third-party artifacts, but not the artifacts of your own project — Maven takes those from the reactor, so a module that depends on a sibling module still triggers remote lookups.
 - **Configure mirrors** of the rate-limited repository, so that POM lookups go to a host that isn't blocking you. There are two ways to do it:
     - `<mirrors>` in Maven's [settings.xml][maven-mirror-settings] — the standard mechanism, honored by `mvn` itself as well. A repository is served by a single mirror, so a mirror that is rate-limited too leaves nothing to fall back on.
     - [scan.maven.mirrors][maven-mirrors] in `trivy.yaml` — Trivy-specific, and takes an ordered list of mirrors per repository. A mirror that returns `429` is skipped in favor of the next one, and if the remaining mirrors do not return the artifact, the scan stops and reports the `429`.
