@@ -132,6 +132,45 @@ func Test_pomAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			// The pom that maven-archiver embeds into a built artifact: keep the artifact
+			// itself, mark what it merely declares as Dev.
+			name:      "embedded archive pom",
+			inputFile: "testdata/embedded/META-INF/maven/com.example/example/pom.xml",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Pom,
+						FilePath: "testdata/embedded/META-INF/maven/com.example/example/pom.xml",
+						Packages: types.Packages{
+							{
+								ID:           "com.example:example:1.0.0::645aa3e2",
+								Name:         "com.example:example",
+								Version:      "1.0.0",
+								Licenses:     []string{"Apache 2.0"},
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"com.example:example-api:2.0.0::9f276521",
+								},
+							},
+							{
+								ID:           "com.example:example-api:2.0.0::9f276521",
+								Name:         "com.example:example-api",
+								Version:      "2.0.0",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   32,
+									},
+								},
+								Dev: true,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "unsupported requirement",
 			inputFile: "testdata/requirements/pom.xml",
 			want: &analyzer.AnalysisResult{
@@ -212,6 +251,11 @@ func Test_pomAnalyzer_Required(t *testing.T) {
 			want:     true,
 		},
 		{
+			name:     "embedded archive pom is still analyzed",
+			filePath: "app/META-INF/maven/com.example/example/pom.xml",
+			want:     true,
+		},
+		{
 			name:     "no extension",
 			filePath: "test/pom",
 			want:     false,
@@ -227,6 +271,27 @@ func Test_pomAnalyzer_Required(t *testing.T) {
 			a := pomAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_isEmbeddedArchivePom(t *testing.T) {
+	tests := []struct {
+		filePath string
+		want     bool
+	}{
+		{"META-INF/maven/com.example/example/pom.xml", true},
+		{"app/BOOT-INF/classes/META-INF/maven/com.example/app/pom.xml", true},
+		{"webapp/WEB-INF/classes/META-INF/maven/com.example/webapp/pom.xml", true},
+		{"pom.xml", false},
+		{"project/pom.xml", false},
+		{"maven/com.example/example/pom.xml", false},
+		{"META-INF/maven/pom.xml", false},
+		{"X-META-INF/maven/com.example/example/pom.xml", false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.filePath, func(t *testing.T) {
+			assert.Equal(t, tt.want, isEmbeddedArchivePom(tt.filePath))
 		})
 	}
 }
