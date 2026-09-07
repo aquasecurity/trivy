@@ -341,6 +341,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			want:      types.SBOM{},
 		},
 		{
+			// a null element in an array decodes to a nil pointer
+			name:      "happy path with a null file entry",
+			inputFile: "testdata/happy/null-file-entry.json",
+			want:      types.SBOM{},
+		},
+		{
 			name:      "sad path invalid purl",
 			inputFile: "testdata/sad/invalid-purl.json",
 			wantErr:   "purl is missing type or name",
