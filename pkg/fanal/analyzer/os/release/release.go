@@ -83,6 +83,8 @@ func idToOSFamily(id string) types.OSType {
 		return types.Oracle
 	case "fedora":
 		return types.Fedora
+	case "hadron":
+		return types.Hadron
 	case "alpine":
 		return types.Alpine
 	case "bottlerocket":
