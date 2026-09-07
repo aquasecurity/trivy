@@ -7397,6 +7397,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#endpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8660,6 +8671,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#endpoints" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -9059,6 +9081,10 @@ Total: 8 (UNKNOWN: 0, LOW: 0, MEDIUM: 6, HIGH: 2, CRITICAL: 0)
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$ trivy image --server http://localhost:8080 --token dummy alpine:3.10
 </code></pre></div>
+<h2 id="security-considerations">Security considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p>Clients analyze artifacts locally and upload analysis results, such as package lists, to the server's shared cache. The server uses these results for vulnerability scanning without receiving the original artifact contents. All clients with access to the server must therefore be trusted to submit accurate analysis results.</p>
+<p>The server token controls access to both the scanning and cache APIs. It does not provide per-client permissions or tenant isolation: clients with access can write and delete shared cache entries, affecting scans performed by other clients. Use separate server instances and separate cache storage for mutually untrusted clients, including when using a Redis cache backend.</p>
+<p>The server listens on <code>localhost:4954</code> by default. When exposing it to other hosts, configure <code>--token</code> and restrict network access to trusted clients. Protect connections with HTTPS through a TLS-terminating reverse proxy or an equivalent secure transport, since the server itself serves HTTP.</p>
 <h2 id="endpoints">Endpoints<a class="headerlink" href="#endpoints" title="Permanent link">&para;</a></h2>
 <h3 id="health">Health<a class="headerlink" href="#health" title="Permanent link">&para;</a></h3>
 <p>Checks whether the Trivy server is running. Authentication is not required.</p>
