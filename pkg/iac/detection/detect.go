@@ -102,26 +102,27 @@ func detectTerraform(name string, _ io.ReadSeeker) bool {
 }
 
 func detectTerraformPlanJSON(name string, r io.ReadSeeker) bool {
-	if IsType(name, r, FileTypeJSON) {
-		if resetReader(r) == nil {
-			return false
-		}
-
-		contents := make(map[string]any)
-		err := json.NewDecoder(r).Decode(&contents)
-		if err != nil {
-			return false
-		}
-
-		for _, k := range []string{"terraform_version", "format_version"} {
-			if _, ok := contents[k]; !ok {
-				return false
-			}
-		}
-
-		return true
+	if !isJSON(name) {
+		return false
 	}
-	return false
+
+	data, err := readContent(r)
+	if err != nil || !json.Valid(data) {
+		return false
+	}
+
+	var contents map[string]any
+	if err := json.Unmarshal(data, &contents); err != nil {
+		return false
+	}
+
+	for _, k := range []string{"terraform_version", "format_version"} {
+		if _, ok := contents[k]; !ok {
+			return false
+		}
+	}
+
+	return true
 }
 
 func detectTerraformPlanSnapshot(_ string, r io.ReadSeeker) bool {
@@ -129,23 +130,25 @@ func detectTerraformPlanSnapshot(_ string, r io.ReadSeeker) bool {
 }
 
 func detectCloudFormation(name string, r io.ReadSeeker) bool {
+	data, err := readContent(r)
+	if err != nil {
+		return false
+	}
+
 	sniff := struct {
 		Resources map[string]map[string]any `json:"Resources" yaml:"Resources"`
 	}{}
 
 	switch {
-	case IsType(name, r, FileTypeYAML):
-		if resetReader(r) == nil {
+	case isYAML(name):
+		if err := yaml.Unmarshal(data, &sniff); err != nil {
 			return false
 		}
-		if err := yaml.NewDecoder(r).Decode(&sniff); err != nil {
+	case isJSON(name):
+		if !json.Valid(data) {
 			return false
 		}
-	case IsType(name, r, FileTypeJSON):
-		if resetReader(r) == nil {
-			return false
-		}
-		if err := json.NewDecoder(r).Decode(&sniff); err != nil {
+		if err := json.Unmarshal(data, &sniff); err != nil {
 			return false
 		}
 	default:
@@ -216,64 +219,26 @@ func detectDockerfile(name string, _ io.ReadSeeker) bool {
 }
 
 func detectKubernetes(name string, r io.ReadSeeker) bool {
-	if !IsType(name, r, FileTypeYAML) && !IsType(name, r, FileTypeJSON) {
-		return false
-	}
-	if resetReader(r) == nil {
+	data, err := readContent(r)
+	if err != nil {
 		return false
 	}
 
-	expectedProperties := []string{"apiVersion", "kind", "metadata"}
-
-	if IsType(name, r, FileTypeJSON) {
-		if resetReader(r) == nil {
+	switch {
+	case isJSON(name):
+		if !json.Valid(data) {
 			return false
 		}
-
 		var result map[string]any
-		if err := json.NewDecoder(r).Decode(&result); err != nil {
+		if err := json.Unmarshal(data, &result); err != nil {
 			return false
 		}
-
-		for _, expected := range expectedProperties {
-			if _, ok := result[expected]; !ok {
-				return false
-			}
-		}
-		return true
-	}
-
-	// at this point, we need to inspect bytes
-	var buf bytes.Buffer
-	if _, err := io.Copy(&buf, r); err != nil {
+		return hasK8sManifestFields(result)
+	case isYAML(name):
+		return hasK8sManifestInYAML(data)
+	default:
 		return false
 	}
-	data := buf.Bytes()
-
-	marker := []byte("\n---\n")
-	altMarker := []byte("\r\n---\r\n")
-	if bytes.Contains(data, altMarker) {
-		marker = altMarker
-	}
-
-	for partial := range bytes.SplitSeq(data, marker) {
-		var result map[string]any
-		if err := yaml.Unmarshal(partial, &result); err != nil {
-			continue
-		}
-		match := true
-		for _, expected := range expectedProperties {
-			if _, ok := result[expected]; !ok {
-				match = false
-				break
-			}
-		}
-		if match {
-			return true
-		}
-	}
-
-	return false
 }
 
 func detectAnsible(name string, _ io.ReadSeeker) bool {
@@ -341,6 +306,44 @@ func resetReader(r io.Reader) io.ReadSeeker {
 		return seeker
 	}
 	return ensureSeeker(r)
+}
+
+func readContent(r io.ReadSeeker) ([]byte, error) {
+	if r == nil {
+		return nil, nil
+	}
+	if _, err := r.Seek(0, io.SeekStart); err != nil {
+		return nil, err
+	}
+	return io.ReadAll(r)
+}
+
+func hasK8sManifestFields(result map[string]any) bool {
+	for _, key := range []string{"apiVersion", "kind", "metadata"} {
+		if _, ok := result[key]; !ok {
+			return false
+		}
+	}
+	return true
+}
+
+func hasK8sManifestInYAML(data []byte) bool {
+	marker := []byte("\n---\n")
+	altMarker := []byte("\r\n---\r\n")
+	if bytes.Contains(data, altMarker) {
+		marker = altMarker
+	}
+
+	for partial := range bytes.SplitSeq(data, marker) {
+		var result map[string]any
+		if err := yaml.Unmarshal(partial, &result); err != nil {
+			continue
+		}
+		if hasK8sManifestFields(result) {
+			return true
+		}
+	}
+	return false
 }
 
 func isJSON(name string) bool {
