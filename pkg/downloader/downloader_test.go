@@ -1,8 +1,10 @@
 package downloader_test
 
 import (
+	"io"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"os"
 	"path/filepath"
 	"testing"
@@ -134,6 +136,105 @@ func TestDownloadWithETag(t *testing.T) {
 			assert.Equal(t, tt.wantContent, string(content))
 
 			assert.NoFileExists(t, dst+".backup")
+		})
+	}
+}
+
+func TestGitHubContentTransport(t *testing.T) {
+	tests := []struct {
+		name        string
+		handler     http.HandlerFunc
+		wantContent string
+		wantErr     string
+		checkResp   func(t *testing.T, resp *http.Response)
+	}{
+		{
+			name: "content returned inline",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				assert.Equal(t, "/api/v3/repos/owner/repo/contents/path/to/file.txt", r.URL.Path)
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusOK)
+				_, _ = w.Write([]byte(`{
+					"name": "file.txt",
+					"path": "path/to/file.txt",
+					"encoding": "base64",
+					"content": "aGVsbG8gd29ybGQ=\n"
+				}`))
+			},
+			wantContent: "hello world",
+			checkResp: func(t *testing.T, resp *http.Response) {
+				t.Helper()
+				assert.Equal(t, int64(-1), resp.ContentLength)
+				assert.Empty(t, resp.Header.Get("Content-Length"))
+				assert.Empty(t, resp.Header.Get("Content-Type"))
+			},
+		},
+		{
+			name: "content fetched from download_url",
+			handler: func(w http.ResponseWriter, r *http.Request) {
+				if r.URL.Path == "/api/v3/repos/owner/repo/contents/path/to/file.txt" {
+					w.Header().Set("Content-Type", "application/json")
+					w.WriteHeader(http.StatusOK)
+					downloadURL := "http://" + r.Host + "/download/file.txt"
+					_, _ = w.Write([]byte(`{
+						"name": "file.txt",
+						"path": "path/to/file.txt",
+						"download_url": "` + downloadURL + `"
+					}`))
+					return
+				}
+				if r.URL.Path == "/download/file.txt" {
+					w.WriteHeader(http.StatusOK)
+					_, _ = w.Write([]byte("content from download_url"))
+					return
+				}
+				http.NotFound(w, r)
+			},
+			wantContent: "content from download_url",
+		},
+		{
+			name: "non-2xx response",
+			handler: func(w http.ResponseWriter, _ *http.Request) {
+				w.Header().Set("Content-Type", "application/json")
+				w.WriteHeader(http.StatusNotFound)
+				_, _ = w.Write([]byte(`{"message": "Not Found"}`))
+			},
+			wantErr: "failed to get the file content",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ts := httptest.NewServer(tt.handler)
+			defer ts.Close()
+
+			rawURL := "https://github.com/owner/repo/path/to/file.txt"
+			u, err := url.Parse(rawURL)
+			require.NoError(t, err)
+
+			transport, err := downloader.NewGitHubTransport(u, "", ts.URL)
+			require.NoError(t, err)
+
+			req, err := http.NewRequestWithContext(t.Context(), http.MethodGet, rawURL, http.NoBody)
+			require.NoError(t, err)
+
+			resp, err := transport.RoundTrip(req)
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+
+			require.NoError(t, err)
+			defer resp.Body.Close()
+
+			if tt.checkResp != nil {
+				tt.checkResp(t, resp)
+			}
+
+			got, err := io.ReadAll(resp.Body)
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantContent, string(got))
 		})
 	}
 }
