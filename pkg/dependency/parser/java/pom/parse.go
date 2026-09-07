@@ -1093,7 +1093,7 @@ func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
 				"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
 					"The repository blocks all subsequent requests from this IP until the block clears.\n"+
 					"To avoid this, populate the local Maven cache before scanning "+
-					"(e.g. run `mvn dependency:resolve` (`mvn install` for a multi-module project) and cache ~/.m2 in CI).",
+					"(e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).",
 				req.URL.Redacted(), ra,
 			),
 		},
