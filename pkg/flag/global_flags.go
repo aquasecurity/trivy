@@ -44,6 +44,13 @@ var (
 		Persistent:    true,
 		TelemetrySafe: true,
 	}
+	NoColorFlag = Flag[bool]{
+		Name:          "no-color",
+		ConfigName:    "no-color",
+		Usage:         "disable color output",
+		Persistent:    true,
+		TelemetrySafe: true,
+	}
 	InsecureFlag = Flag[bool]{
 		Name:          "insecure",
 		ConfigName:    "insecure",
@@ -93,6 +100,7 @@ type GlobalFlagGroup struct {
 	ConfigFile            *Flag[string]
 	ShowVersion           *Flag[bool] // spf13/cobra can't override the logic of version printing like VersionPrinter in urfave/cli. -v needs to be defined ourselves.
 	Quiet                 *Flag[bool]
+	NoColor               *Flag[bool]
 	Debug                 *Flag[bool]
 	Insecure              *Flag[bool]
 	CACert                *Flag[string]
@@ -107,6 +115,7 @@ type GlobalOptions struct {
 	ConfigFile            string
 	ShowVersion           bool
 	Quiet                 bool
+	NoColor               bool
 	Debug                 bool
 	Insecure              bool
 	CACerts               *x509.CertPool
@@ -121,6 +130,7 @@ func NewGlobalFlagGroup() *GlobalFlagGroup {
 		ConfigFile:            ConfigFileFlag.Clone(),
 		ShowVersion:           ShowVersionFlag.Clone(),
 		Quiet:                 QuietFlag.Clone(),
+		NoColor:               NoColorFlag.Clone(),
 		Debug:                 DebugFlag.Clone(),
 		Insecure:              InsecureFlag.Clone(),
 		CACert:                CACertFlag.Clone(),
@@ -140,6 +150,7 @@ func (f *GlobalFlagGroup) Flags() []Flagger {
 		f.ConfigFile,
 		f.ShowVersion,
 		f.Quiet,
+		f.NoColor,
 		f.Debug,
 		f.Insecure,
 		f.CACert,
@@ -179,6 +190,7 @@ func (f *GlobalFlagGroup) ToOptions(opts *Options) error {
 		ConfigFile:            f.ConfigFile.Value(),
 		ShowVersion:           f.ShowVersion.Value(),
 		Quiet:                 f.Quiet.Value(),
+		NoColor:               f.NoColor.Value(),
 		Debug:                 f.Debug.Value(),
 		Insecure:              insecure,
 		CACerts:               caCerts,
