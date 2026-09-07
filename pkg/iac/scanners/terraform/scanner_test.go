@@ -920,6 +920,21 @@ resource "aws_s3_bucket" "test" {}
 		assert.Empty(t, results)
 	})
 
+	t.Run("use skip-files and skip-dirs options together", func(t *testing.T) {
+		scanner := New(
+			ScannerWithSkipFiles([]string{"**/modules/*.tf"}),
+			ScannerWithSkipDirs([]string{"**/modules2/**"}),
+			ScannerWithAllDirectories(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
+
+		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
+		require.NoError(t, err)
+
+		assert.Empty(t, results)
+	})
+
 	t.Run("non existing value for skip-files option", func(t *testing.T) {
 		scanner := New(
 			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
