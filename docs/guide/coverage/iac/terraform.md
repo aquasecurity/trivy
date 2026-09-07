@@ -38,9 +38,16 @@ You can provide `tf-vars` files to Trivy to override default values specified in
 trivy config --tf-vars dev.terraform.tfvars ./infrastructure/tf
 ```
 
-### Exclude Downloaded Terraform Modules
+### Remote modules
+
+When scanning Terraform configurations for misconfigurations, Trivy resolves module references and downloads remote modules as needed. Remote module downloads are enabled by default, and their destinations are determined by the module sources specified in the Terraform configuration.
+
+Scanning an untrusted configuration can therefore cause network requests to destinations chosen by its author, including services reachable from the scanning environment. When scanning untrusted configurations, restrict outbound network access to approved module sources and prevent access to sensitive internal services, such as cloud instance metadata endpoints.
+
+#### Exclude Downloaded Terraform Modules
+
 By default, downloaded modules are also scanned.
-If you don't want to scan them, you can use the `--tf-exclude-downloaded-modules` flag.
+If you don't want to scan them, you can use the `--tf-exclude-downloaded-modules` flag. This flag excludes downloaded modules from misconfiguration checks; it does not disable module downloads.
 
 ```bash
 trivy config --tf-exclude-downloaded-modules ./configs
