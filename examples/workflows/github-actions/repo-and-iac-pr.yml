@@ -1,0 +1,59 @@
+name: trivy-repo-and-iac-pr
+
+on:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  trivy-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          trivy --version
+
+      - name: Filesystem scan for dependencies and secrets
+        run: |
+          trivy fs \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,secret \
+            --format sarif \
+            --output trivy-fs.sarif \
+            .
+          trivy fs \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,secret \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: IaC misconfiguration scan
+        run: |
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --format sarif \
+            --output trivy-config.sarif \
+            .
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-pr-sarif
+          path: |
+            trivy-fs.sarif
+            trivy-config.sarif

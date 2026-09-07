@@ -1,0 +1,21 @@
+timeout: 10m
+format: json
+list-all-pkgs: true
+dependency-tree: true
+severity:
+  - HIGH
+  - CRITICAL
+scan:
+  scanners:
+    - vuln
+    - misconfig
+    - secret
+    - license
+  skip-dirs:
+    - vendor
+    - node_modules
+    - .git
+vulnerability:
+  ignore-unfixed: true
+misconfiguration:
+  include-non-failures: false

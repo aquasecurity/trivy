@@ -1,0 +1,83 @@
+name: Image Release Scan
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/image-release.yaml'
+      - 'examples/workflows/**'
+      - 'contrib/install.sh'
+      - 'contrib/workflows/**'
+  workflow_dispatch:
+    inputs:
+      image_ref:
+        description: OCI image reference to scan
+        required: true
+        default: ghcr.io/aquasecurity/trivy:latest
+  schedule:
+    - cron: '33 2 * * 2'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: image-release-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  scan-image:
+    runs-on: ubuntu-2404-2core
+    env:
+      IMAGE_REF_RAW: ${{ github.event.inputs.image_ref || 'ghcr.io/aquasecurity/trivy:latest' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Trivy from repo script
+        run: |
+          set -euo pipefail
+          ./contrib/install.sh -b /usr/local/bin
+          trivy --version
+
+      - name: Validate image reference input
+        env:
+          IMAGE_REF_RAW: ${{ github.event.inputs.image_ref || 'ghcr.io/aquasecurity/trivy:latest' }}
+        run: |
+          set -euo pipefail
+          IMAGE_REF=$(printf '%s' "$IMAGE_REF_RAW" | tr -d '\r')
+          if ! printf '%s' "$IMAGE_REF" | grep -Eq '^[A-Za-z0-9._/:@+-]+$'; then
+            echo 'Invalid image_ref input' >&2
+            exit 1
+          fi
+          printf 'IMAGE_REF=%s\n' "$IMAGE_REF" >> "$GITHUB_ENV"
+
+      - name: Scan image and emit reports
+        run: |
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --format json \
+            --output trivy-image.json \
+            "$IMAGE_REF"
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --format cyclonedx \
+            --output trivy-image.cdx.json \
+            "$IMAGE_REF"
+          trivy image \
+            --severity HIGH,CRITICAL \
+            --ignore-unfixed \
+            --exit-code 1 \
+            "$IMAGE_REF"
+
+      - name: Upload image scan artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-image-artifacts
+          path: |
+            trivy-image.json
+            trivy-image.cdx.json

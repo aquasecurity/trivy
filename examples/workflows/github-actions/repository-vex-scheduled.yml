@@ -1,0 +1,54 @@
+name: trivy-repository-vex-scheduled
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      repository_url:
+        description: Git URL to scan
+        required: true
+        default: https://github.com/aquasecurity/trivy
+
+permissions:
+  contents: read
+
+jobs:
+  repo-scan:
+    runs-on: ubuntu-latest
+    env:
+      REPOSITORY_URL: ${{ github.event.inputs.repository_url || format('https://github.com/{0}', github.repository) }}
+    steps:
+      - name: Install Trivy
+        run: |
+          set -euo pipefail
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin
+          trivy --version
+
+      - name: Scheduled repository scan with VEX context
+        run: |
+          trivy repo \
+            --scanners vuln,misconfig,secret,license \
+            --severity HIGH,CRITICAL \
+            --vex repo \
+            --format json \
+            --output trivy-repo.json \
+            "$REPOSITORY_URL"
+          trivy convert \
+            --format sarif \
+            --output trivy-repo.sarif \
+            trivy-repo.json
+          trivy repo \
+            --scanners vuln,misconfig,secret,license \
+            --severity HIGH,CRITICAL \
+            --vex repo \
+            --exit-code 1 \
+            "$REPOSITORY_URL"
+
+      - name: Upload scheduled repository artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-repository-artifacts
+          path: |
+            trivy-repo.json
+            trivy-repo.sarif

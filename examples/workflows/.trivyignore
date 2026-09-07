@@ -1,0 +1,4 @@
+# Example ignores for workflow demos.
+# Replace these IDs with findings your team has explicitly accepted.
+CVE-2021-99999
+AVD-DS-0002

@@ -1,0 +1,87 @@
+name: Repository VEX Scheduled Scan
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/repository-vex-scheduled.yaml'
+      - 'examples/workflows/**'
+      - 'contrib/install.sh'
+      - 'contrib/workflows/**'
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      repository_url:
+        description: Git URL to scan
+        required: true
+        default: https://github.com/aquasecurity/trivy
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repository-vex-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  repo-scan:
+    runs-on: ubuntu-2404-2core
+    env:
+      REPOSITORY_URL_RAW: ${{ github.event.inputs.repository_url || 'https://github.com/aquasecurity/trivy' }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Trivy from repo script
+        run: |
+          set -euo pipefail
+          ./contrib/install.sh -b /usr/local/bin
+          trivy --version
+
+      - name: Validate repository URL input
+        env:
+          REPOSITORY_URL_RAW: ${{ github.event.inputs.repository_url || 'https://github.com/aquasecurity/trivy' }}
+        run: |
+          set -euo pipefail
+          REPOSITORY_URL=$(printf '%s' "$REPOSITORY_URL_RAW" | tr -d '\r')
+          if ! printf '%s' "$REPOSITORY_URL" | grep -Eq '^https://github\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+/?$'; then
+            echo 'Invalid repository_url input; expected https://github.com/<owner>/<repo>' >&2
+            exit 1
+          fi
+          printf 'REPOSITORY_URL=%s\n' "$REPOSITORY_URL" >> "$GITHUB_ENV"
+
+      - name: Scheduled repository scan with VEX context
+        run: |
+          trivy repo \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,misconfig,secret,license \
+            --severity HIGH,CRITICAL \
+            --vex repo \
+            --format json \
+            --output trivy-repo.json \
+            "$REPOSITORY_URL"
+          trivy convert \
+            --format sarif \
+            --output trivy-repo.sarif \
+            trivy-repo.json
+          trivy repo \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,misconfig,secret,license \
+            --severity HIGH,CRITICAL \
+            --vex repo \
+            --exit-code 1 \
+            "$REPOSITORY_URL"
+
+      - name: Upload scheduled repository artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-repository-artifacts
+          path: |
+            trivy-repo.json
+            trivy-repo.sarif

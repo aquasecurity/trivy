@@ -1,0 +1,73 @@
+name: Repo and IaC PR Scan
+
+on:
+  pull_request:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/repo-and-iac-pr.yaml'
+      - 'examples/workflows/**'
+      - 'contrib/install.sh'
+      - 'contrib/workflows/**'
+      - 'docs/tutorials/integrations/workflow-examples.md'
+      - 'mkdocs.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: repo-and-iac-pr-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trivy-pr:
+    runs-on: ubuntu-2404-2core
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Install Trivy from repo script
+        run: |
+          set -euo pipefail
+          ./contrib/install.sh -b /usr/local/bin
+          trivy --version
+
+      - name: Filesystem scan for dependencies and secrets
+        run: |
+          trivy fs \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,secret \
+            --format sarif \
+            --output trivy-fs.sarif \
+            .
+          trivy fs \
+            --config examples/workflows/trivy.yaml \
+            --ignorefile examples/workflows/.trivyignore \
+            --scanners vuln,secret \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: IaC misconfiguration scan
+        run: |
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --format sarif \
+            --output trivy-config.sarif \
+            .
+          trivy config \
+            --severity HIGH,CRITICAL \
+            --exit-code 1 \
+            .
+
+      - name: Upload SARIF artifacts
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: trivy-pr-sarif
+          path: |
+            trivy-fs.sarif
+            trivy-config.sarif
