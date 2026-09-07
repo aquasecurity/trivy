@@ -347,10 +347,6 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 					Properties: []core.Property{
 						{
-							Name:  core.PropertyFilePath,
-							Value: "/foo/jackson-databind-2.13.4.jar",
-						},
-						{
 							Name:  core.PropertyPkgID,
 							Value: "com.fasterxml.jackson.core:jackson-databind:2.13.4",
 						},
@@ -381,10 +377,6 @@ func TestEncoder_Encode(t *testing.T) {
 						},
 					},
 					Properties: []core.Property{
-						{
-							Name:  core.PropertyFilePath,
-							Value: "/bar/jackson-databind-2.13.4.jar",
-						},
 						{
 							Name:  core.PropertyPkgID,
 							Value: "com.fasterxml.jackson.core:jackson-databind:2.13.4",
@@ -1726,10 +1718,6 @@ var (
 			},
 		},
 		Properties: core.Properties{
-			{
-				Name:  "FilePath",
-				Value: "log4j-core-2.23.1.jar",
-			},
 			{
 				Name:  "PkgID",
 				Value: "org.apache.logging.log4j:log4j-core:2.23.1",
