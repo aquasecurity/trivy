@@ -2630,10 +2630,10 @@ func TestIsSkippedSlashConversion(t *testing.T) {
 	}
 }
 
-func TestWordPrefix(t *testing.T) {
+func TestLeadingWordBoundary(t *testing.T) {
 	const (
-		ghpPattern    = `?P<secret>ghp_[0-9a-zA-Z]{36}`
-		hfPattern     = `?P<secret>hf_[A-Za-z0-9]{34,40}`
+		ghpPattern    = `(?P<secret>ghp_[0-9a-zA-Z]{36})`
+		hfPattern     = `(?P<secret>hf_[A-Za-z0-9]{34,40})`
 		startWordExpr = "([^0-9a-zA-Z_]|^)"
 		endWordExpr   = "([^0-9a-zA-Z_]|$)"
 	)
@@ -2644,20 +2644,30 @@ func TestWordPrefix(t *testing.T) {
 		name       string
 		pattern    string
 		boundaries bool
+		// wholeMatch drops the secret group from the rule, so the reported location
+		// covers the whole match instead of the secret.
+		wholeMatch bool
 		content    string
-		want       [][]int
+		want       []secret.Location
 	}{
 		{
 			name:    "at the start of the content",
 			pattern: ghpPattern,
 			content: ghp,
-			want:    [][]int{{0, 40}},
+			want:    []secret.Location{{Start: 0, End: 40}},
 		},
 		{
 			name:    "after punctuation",
 			pattern: ghpPattern,
 			content: `"` + ghp,
-			want:    [][]int{{0, 41}},
+			want:    []secret.Location{{Start: 1, End: 41}},
+		},
+		{
+			name:       "the boundary character stays in the match the allow rules see",
+			pattern:    ghpPattern,
+			content:    `"` + ghp,
+			wholeMatch: true,
+			want:       []secret.Location{{Start: 0, End: 41}},
 		},
 		{
 			name:    "after a letter",
@@ -2673,28 +2683,28 @@ func TestWordPrefix(t *testing.T) {
 			name:    "several matches",
 			pattern: ghpPattern,
 			content: ghp + " " + ghp,
-			want: [][]int{
-				{0, 40},
-				{40, 81},
+			want: []secret.Location{
+				{Start: 0, End: 40},
+				{Start: 41, End: 81},
 			},
 		},
 		{
 			name:    "a rejected match does not hide the next one",
 			pattern: ghpPattern,
 			content: "x" + ghp + " " + ghp,
-			want:    [][]int{{41, 82}},
+			want:    []secret.Location{{Start: 42, End: 82}},
 		},
 		{
 			name:    "after a multi-byte character",
 			pattern: ghpPattern,
 			content: "é" + ghp,
-			want:    [][]int{{0, 42}},
+			want:    []secret.Location{{Start: 2, End: 42}},
 		},
 		{
 			name:    "after a byte that is not valid UTF-8",
 			pattern: ghpPattern,
 			content: "\x80" + ghp,
-			want:    [][]int{{0, 41}},
+			want:    []secret.Location{{Start: 1, End: 41}},
 		},
 		{
 			name:    "nothing to find",
@@ -2706,14 +2716,14 @@ func TestWordPrefix(t *testing.T) {
 			pattern:    hfPattern,
 			boundaries: true,
 			content:    hf + "!",
-			want:       [][]int{{0, 38}},
+			want:       []secret.Location{{Start: 0, End: 37}},
 		},
 		{
 			name:       "the trailing boundary at the end of the content",
 			pattern:    hfPattern,
 			boundaries: true,
 			content:    hf,
-			want:       [][]int{{0, 37}},
+			want:       []secret.Location{{Start: 0, End: 37}},
 		},
 		{
 			name:       "after a digit, with boundaries",
@@ -2725,171 +2735,171 @@ func TestWordPrefix(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			re := secret.MustCompileWithoutWordPrefix(tt.pattern)
-			// The same rule as it was compiled before the optimization.
-			ref := secret.MustCompile(startWordExpr + "(" + tt.pattern + ")")
+			pattern, refPattern := tt.pattern, startWordExpr+tt.pattern
 			if tt.boundaries {
-				re = secret.MustCompileWithBoundaries(tt.pattern)
-				ref = secret.MustCompile(startWordExpr + "(" + tt.pattern + ")" + endWordExpr)
+				pattern += endWordExpr
+				refPattern += endWordExpr
 			}
+
+			group := "secret"
+			if tt.wholeMatch {
+				group = ""
+			}
+
+			rule := secret.Rule{
+				ID:                  "test",
+				Regex:               secret.MustCompile(pattern),
+				SecretGroupName:     group,
+				LeadingWordBoundary: true,
+			}
+			// The same rule as it was written before the boundary moved out of the pattern.
+			ref := secret.Rule{
+				ID:              "test",
+				Regex:           secret.MustCompile(refPattern),
+				SecretGroupName: group,
+			}
+
+			s := secret.Scanner{Global: &secret.Global{}}
 			content := []byte(tt.content)
 
-			got := re.FindAllIndex(content, -1)
+			got := s.FindLocations(rule, content)
 			assert.Equal(t, tt.want, got)
-			assert.Equal(t, ref.FindAllIndex(content, -1), got, "the pattern carrying the boundary finds something else")
-
-			gotSub := re.FindAllSubmatchIndex(content, -1)
-			refSub := ref.FindAllSubmatchIndex(content, -1)
-			require.Len(t, gotSub, len(refSub))
-			for i, m := range gotSub {
-				assert.Equal(t, refSub[i][:2], m[:2], "match %d", i)
-				assert.Equal(t, namedGroup(t, ref, refSub[i]), namedGroup(t, re, m), "secret group of match %d", i)
-			}
+			assert.Equal(t, s.FindLocations(ref, content), got,
+				"the pattern carrying the boundary reports another secret")
 		})
 	}
 }
 
-func TestWordPrefixLimit(t *testing.T) {
-	ghp := "ghp_" + strings.Repeat("a", 36) // 40 bytes
-	re := secret.MustCompileWithoutWordPrefix(`?P<secret>ghp_[0-9a-zA-Z]{36}`)
-	content := []byte(ghp + " " + ghp + " " + ghp)
-
+func TestLeadingWordBoundaryValidation(t *testing.T) {
 	tests := []struct {
-		name string
-		n    int
-		want [][]int
+		name     string
+		pattern  string
+		boundary bool
+		wantErr  bool
 	}{
 		{
-			name: "no limit",
-			n:    -1,
-			want: [][]int{
-				{0, 40},
-				{40, 81},
-				{81, 122},
-			},
+			name:     "start of text",
+			pattern:  `^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
 		},
 		{
-			name: "fewer than there are",
-			n:    2,
-			want: [][]int{
-				{0, 40},
-				{40, 81},
-			},
+			name:     "start of line",
+			pattern:  `(?m)^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
 		},
 		{
-			name: "none",
-			n:    0,
+			name:     "word boundary",
+			pattern:  `\bghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, re.FindAllIndex(content, tt.n))
-		})
-	}
-}
-
-func TestWordPrefixCompile(t *testing.T) {
-	tests := []struct {
-		name    string
-		pattern string
-		panics  bool
-	}{
 		{
-			name:    "start of text",
+			name:     "no word boundary",
+			pattern:  `\Bghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "start of text under an alternation",
+			pattern:  `gho_[0-9a-zA-Z]{36}|^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "end of text is fine, the right side of the content is never cut",
+			pattern:  `ghp_[0-9a-zA-Z]{36}$`,
+			boundary: true,
+		},
+		{
+			name:     "a word boundary behind the leading literal is fine",
+			pattern:  `ghp_[0-9a-zA-Z]{36}\b`,
+			boundary: true,
+		},
+		{
+			name:     "starts with a character class",
+			pattern:  `[gh]hp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "starts with a character that is a boundary itself",
+			pattern:  `-ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "matches the empty string",
+			pattern:  `(?:ghp_[0-9a-zA-Z]{36})?`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "one branch of the alternation opens with a boundary",
+			pattern:  `ghp_[0-9a-zA-Z]{36}|-gho_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  true,
+		},
+		{
+			name:     "every branch of the alternation opens with a word character",
+			pattern:  `ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}`,
+			boundary: true,
+		},
+		{
+			name:     "the leading literal is case insensitive",
+			pattern:  `(?i)pk_(test|live)_[0-9a-z]{10,32}`,
+			boundary: true,
+		},
+		{
+			name:    "the pattern is free to start with anything without the boundary",
 			pattern: `^ghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
 		},
-		{
-			name:    "start of line",
-			pattern: `(?m)^ghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "word boundary",
-			pattern: `\bghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "no word boundary",
-			pattern: `\Bghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "start of text under an alternation",
-			pattern: `gho_[0-9a-zA-Z]{36}|^ghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "end of text is fine, the right side of the content is never cut",
-			pattern: `ghp_[0-9a-zA-Z]{36}$`,
-		},
-		{
-			name:    "a word boundary behind the leading literal is fine",
-			pattern: `ghp_[0-9a-zA-Z]{36}\b`,
-		},
-		{
-			name:    "starts with a character class",
-			pattern: `[gh]hp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "starts with a character that is a boundary itself",
-			pattern: `-ghp_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "matches the empty string",
-			pattern: `(?:ghp_[0-9a-zA-Z]{36})?`,
-			panics:  true,
-		},
-		{
-			name:    "one branch of the alternation opens with a boundary",
-			pattern: `ghp_[0-9a-zA-Z]{36}|-gho_[0-9a-zA-Z]{36}`,
-			panics:  true,
-		},
-		{
-			name:    "every branch of the alternation opens with a word character",
-			pattern: `ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}`,
-		},
-		{
-			name:    "the leading literal is case insensitive",
-			pattern: `(?i)pk_(test|live)_[0-9a-z]{10,32}`,
-		},
-	}
-
-	constructors := []struct {
-		name    string
-		compile func(string) *secret.Regexp
-	}{
-		{"without word prefix", secret.MustCompileWithoutWordPrefix},
-		{"with boundaries", secret.MustCompileWithBoundaries},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			for _, c := range constructors {
-				t.Run(c.name, func(t *testing.T) {
-					compile := func() { c.compile(tt.pattern) }
-					if tt.panics {
-						assert.Panics(t, compile)
-						return
-					}
-					assert.NotPanics(t, compile)
-				})
+			rule := secret.Rule{
+				ID:                  "test",
+				Regex:               secret.MustCompile(tt.pattern),
+				LeadingWordBoundary: tt.boundary,
 			}
+
+			err := rule.Validate()
+			if tt.wantErr {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), "must start with a literal ASCII word character")
+				return
+			}
+			require.NoError(t, err)
 		})
 	}
 }
 
-// namedGroup returns the offsets of the "secret" group of the given match.
-func namedGroup(t *testing.T, re *secret.Regexp, match []int) []int {
-	t.Helper()
-	for i, name := range re.SubexpNames() {
-		if name == "secret" {
-			return match[2*i : 2*i+2]
-		}
+func TestSecretsSharingOneSeparator(t *testing.T) {
+	hf := "hf_" + strings.Repeat("b", 34) // 37 bytes
+	content := []byte(hf + "!" + hf)
+
+	s := secret.Scanner{Global: &secret.Global{}}
+	rule := secret.Rule{
+		ID:                  "test",
+		Regex:               secret.MustCompile(`(?P<secret>hf_[A-Za-z0-9]{34,40})([^0-9a-zA-Z_]|$)`),
+		SecretGroupName:     "secret",
+		LeadingWordBoundary: true,
 	}
-	t.Fatalf("%q has no secret group", re.String())
-	return nil
+
+	want := []secret.Location{
+		{Start: 0, End: 37},
+		{Start: 38, End: 75},
+	}
+	assert.Equal(t, want, s.FindLocations(rule, content))
+
+	// With the boundary in the pattern the first match eats the separator, and the
+	// second secret has nothing in front of it left to match.
+	ref := secret.Rule{
+		ID:              "test",
+		Regex:           secret.MustCompile(`([^0-9a-zA-Z_]|^)(?P<secret>hf_[A-Za-z0-9]{34,40})([^0-9a-zA-Z_]|$)`),
+		SecretGroupName: "secret",
+	}
+	assert.Equal(t, want[:1], s.FindLocations(ref, content))
 }
