@@ -125,6 +125,19 @@ func TestParser_Parse(t *testing.T) {
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
 		},
+		// cf. #10976: empty, whitespace-only, and operators-only entries must be silently skipped
+		{
+			name: "empty dep entries",
+			file: "testdata/empty_dep_entry.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask", "requests"),
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

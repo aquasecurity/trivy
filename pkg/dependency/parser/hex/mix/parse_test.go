@@ -72,6 +72,24 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty.mix.lock",
 			want:      nil,
 		},
+		// cf. #10976: a line like `"x":` with an empty body must not panic
+		{
+			name:      "malformed empty body",
+			inputFile: "testdata/malformed_empty_body.mix.lock",
+			want: []ftypes.Package{
+				{
+					ID:      "bunt@0.2.0",
+					Name:    "bunt",
+					Version: "0.2.0",
+					Locations: []ftypes.Location{
+						{
+							StartLine: 3,
+							EndLine:   3,
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

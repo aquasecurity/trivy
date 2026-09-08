@@ -261,6 +261,34 @@ func TestParser_Parse(t *testing.T) {
 			wantPkgs: []ftypes.Package{},
 			wantErr:  assert.NoError,
 		},
+		// cf. #10976: a line of exactly 6 spaces in the dep graph section must be skipped without panicking
+		{
+			name: "empty dep graph line",
+			file: "testdata/Gemfile_empty_dep_graph.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:           "pry@0.12.2",
+					Name:         "pry",
+					Version:      "0.12.2",
+					Relationship: ftypes.RelationshipDirect,
+					Locations:    []ftypes.Location{{StartLine: 5, EndLine: 5}},
+				},
+				{
+					ID:           "coderay@1.1.2",
+					Name:         "coderay",
+					Version:      "1.1.2",
+					Relationship: ftypes.RelationshipIndirect,
+					Locations:    []ftypes.Location{{StartLine: 4, EndLine: 4}},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "pry@0.12.2",
+					DependsOn: []string{"coderay@1.1.2"},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

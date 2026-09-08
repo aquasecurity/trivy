@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    coderay (1.1.2)
+    pry (0.12.2)
+      coderay (~> 1.1.0)
+      
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  pry
+
+BUNDLED WITH
+   2.1.4

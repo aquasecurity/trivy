@@ -78,6 +78,29 @@ func TestParse(t *testing.T) {
 			name:      "sad path. wrong dep format",
 			inputFile: "testdata/sad.lock",
 		},
+		// cf. #10976: a child dependency with an empty/whitespace name must be skipped without panicking
+		{
+			name:      "malformed empty child dependency",
+			inputFile: "testdata/malformed_empty_child.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "AppCenter@4.2.0",
+					Name:    "AppCenter",
+					Version: "4.2.0",
+				},
+				{
+					ID:      "AppCenter/Core@4.2.0",
+					Name:    "AppCenter/Core",
+					Version: "4.2.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "AppCenter@4.2.0",
+					DependsOn: []string{"AppCenter/Core@4.2.0"},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

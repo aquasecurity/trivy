@@ -170,6 +170,18 @@ func TestScanner_Detect(t *testing.T) {
 			},
 			wantErr: "failed to get amazon advisories",
 		},
+		// cf. #10976: an empty osVer (e.g. /etc/system-release with no version number) must not panic
+		{
+			name: "empty osVer falls back to AL1",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "",
+				pkgs:  []ftypes.Package{},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -243,6 +255,25 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osVer:    "2023",
 			},
 			want: true,
+		},
+		// cf. #10976: an empty osVer (no version in /etc/system-release) falls back to AL1 and must not panic
+		{
+			name: "empty osVer falls back to AL1 (within support)",
+			now:  time.Date(2020, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: true,
+		},
+		{
+			name: "empty osVer falls back to AL1 (past EOL)",
+			now:  time.Date(2024, 5, 31, 23, 59, 59, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
 		},
 	}
 	for _, tt := range tests {
