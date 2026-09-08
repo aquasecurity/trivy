@@ -2771,41 +2771,46 @@ func TestLeadingWordBoundary(t *testing.T) {
 }
 
 func TestLeadingWordBoundaryValidation(t *testing.T) {
+	const (
+		wantLiteral   = "must start with a literal ASCII word character"
+		wantUnbounded = "must not have an unbounded quantifier"
+	)
+
 	tests := []struct {
 		name     string
 		pattern  string
 		boundary bool
-		wantErr  bool
+		wantErr  string
 	}{
 		{
 			name:     "start of text",
 			pattern:  `^ghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "start of line",
 			pattern:  `(?m)^ghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "word boundary",
 			pattern:  `\bghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "no word boundary",
 			pattern:  `\Bghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "start of text under an alternation",
 			pattern:  `gho_[0-9a-zA-Z]{36}|^ghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "end of text is fine, the right side of the content is never cut",
@@ -2821,25 +2826,55 @@ func TestLeadingWordBoundaryValidation(t *testing.T) {
 			name:     "starts with a character class",
 			pattern:  `[gh]hp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "starts with a character that is a boundary itself",
 			pattern:  `-ghp_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "matches the empty string",
 			pattern:  `(?:ghp_[0-9a-zA-Z]{36})?`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
 		},
 		{
 			name:     "one branch of the alternation opens with a boundary",
 			pattern:  `ghp_[0-9a-zA-Z]{36}|-gho_[0-9a-zA-Z]{36}`,
 			boundary: true,
-			wantErr:  true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "open-ended repeat",
+			pattern:  `ghs_[0-9a-zA-Z._-]{36,}`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "plus",
+			pattern:  `sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "star",
+			pattern:  `ghp_[0-9a-zA-Z]*`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "an unbounded repeat under a quest",
+			pattern:  `ghp_(?:[0-9a-zA-Z]+)?`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "an unbounded tail",
+			pattern:  `ghp_[0-9a-zA-Z]{36}\s+`,
+			boundary: true,
+			wantErr:  wantUnbounded,
 		},
 		{
 			name:     "every branch of the alternation opens with a word character",
@@ -2866,9 +2901,9 @@ func TestLeadingWordBoundaryValidation(t *testing.T) {
 			}
 
 			err := rule.Validate()
-			if tt.wantErr {
+			if tt.wantErr != "" {
 				require.Error(t, err)
-				assert.Contains(t, err.Error(), "must start with a literal ASCII word character")
+				assert.Contains(t, err.Error(), tt.wantErr)
 				return
 			}
 			require.NoError(t, err)
