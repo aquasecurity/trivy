@@ -22,6 +22,7 @@ func TestReportWriter_Template(t *testing.T) {
 		detectedVulns []types.DetectedVulnerability
 		template      string
 		expected      string
+		wantErr       bool
 	}{
 		{
 			name: "happy path",
@@ -189,6 +190,11 @@ func TestReportWriter_Template(t *testing.T) {
 			template:      `{{ lower (env "AWS_ACCOUNT_ID") }}`,
 			expected:      `123456789012`,
 		},
+		{
+			name:     "DNS lookup is unavailable",
+			template: `{{ getHostByName "example.com" }}`,
+			wantErr:  true,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -207,6 +213,10 @@ func TestReportWriter_Template(t *testing.T) {
 			}
 
 			w, err := report.NewTemplateWriter(&got, tc.template, "dev")
+			if tc.wantErr {
+				require.Error(t, err)
+				return
+			}
 			require.NoError(t, err)
 			err = w.Write(ctx, inputReport)
 			require.NoError(t, err)
