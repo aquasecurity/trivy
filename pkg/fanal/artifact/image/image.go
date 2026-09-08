@@ -144,7 +144,7 @@ func (a Artifact) Inspect(ctx context.Context) (ref artifact.Reference, err erro
 		missingImageKey = ""
 	}
 
-	if err = a.inspect(ctx, missingImageKey, missingLayers, baseDiffIDs, layerKeyMap, configFile); err != nil {
+	if err = a.inspect(ctx, missingImageKey, layerKeys, missingLayers, baseDiffIDs, layerKeyMap, configFile); err != nil {
 		return artifact.Reference{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
@@ -390,12 +390,34 @@ func (a Artifact) saveLayer(diffID string) (int64, error) {
 	return io.Copy(f, rc)
 }
 
-func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, baseDiffIDs []string,
+func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, missingLayerKeys, baseDiffIDs []string,
 	layerKeyMap map[string]types.Layer, configFile *v1.ConfigFile) error {
 
-	var osFound types.OS
-	p := parallel.NewPipeline(a.artifactOption.Parallel, false, layerKeys, func(ctx context.Context,
-		layerKey string) (any, error) {
+	missingLayers := lo.SliceToMap(missingLayerKeys, func(layerKey string) (string, struct{}) {
+		return layerKey, struct{}{}
+	})
+	inspectLayerKeys := missingLayerKeys
+	if missingImage != "" {
+		// Config analyzers require OS information from every layer, including cached ones.
+		inspectLayerKeys = layerKeys
+	}
+
+	type layerOSResult struct {
+		key string
+		os  types.OS
+	}
+	layerOS := make(map[string]types.OS, len(inspectLayerKeys))
+	p := parallel.NewPipeline(a.artifactOption.Parallel, false, inspectLayerKeys, func(ctx context.Context,
+		layerKey string) (layerOSResult, error) {
+		if _, missing := missingLayers[layerKey]; !missing {
+			osInfo, err := a.cache.GetBlobOS(ctx, layerKey)
+			if err == nil {
+				return layerOSResult{key: layerKey, os: osInfo}, nil
+			}
+			a.logger.Debug("Unable to get cached layer, analyzing it again",
+				log.String("layer_id", layerKey), log.Err(err))
+		}
+
 		layer := layerKeyMap[layerKey]
 
 		// If it is a base layer, secret scanning should not be performed.
@@ -406,17 +428,15 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 
 		layerInfo, err := a.inspectLayer(ctx, layer, disabledAnalyzers)
 		if err != nil {
-			return nil, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
+			return layerOSResult{}, xerrors.Errorf("failed to analyze layer (%s): %w", layer.DiffID, err)
 		}
 		if err = a.cache.PutBlob(ctx, layerKey, layerInfo); err != nil {
-			return nil, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
+			return layerOSResult{}, xerrors.Errorf("failed to store layer: %s in cache: %w", layerKey, err)
 		}
-		return layerInfo.OS, nil
+		return layerOSResult{key: layerKey, os: layerInfo.OS}, nil
 
-	}, func(res any) error {
-		// To avoid race condition, merge OS info in the onResult function (main goroutine)
-		osInfo := res.(types.OS)
-		osFound.Merge(osInfo)
+	}, func(result layerOSResult) error {
+		layerOS[result.key] = result.os
 		return nil
 	})
 
@@ -425,6 +445,10 @@ func (a Artifact) inspect(ctx context.Context, missingImage string, layerKeys, b
 	}
 
 	if missingImage != "" {
+		var osFound types.OS
+		for _, layerKey := range layerKeys {
+			osFound.Merge(layerOS[layerKey])
+		}
 		if err := a.inspectConfig(ctx, missingImage, osFound, configFile); err != nil {
 			return xerrors.Errorf("unable to analyze config: %w", err)
 		}

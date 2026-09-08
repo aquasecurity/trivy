@@ -146,6 +146,15 @@ func (s *CacheServer) PutBlob(ctx context.Context, in *rpcCache.PutBlobRequest) 
 	return &emptypb.Empty{}, nil
 }
 
+// GetBlobOS gets OS information for a blob from cache.
+func (s *CacheServer) GetBlobOS(ctx context.Context, in *rpcCache.GetBlobOSRequest) (*rpcCache.GetBlobOSResponse, error) {
+	osInfo, err := s.cache.GetBlobOS(ctx, in.BlobId)
+	if err != nil {
+		return nil, teeError(xerrors.Errorf("failed to get blob OS from cache: %w", err))
+	}
+	return &rpcCache.GetBlobOSResponse{Os: rpc.ConvertToRPCOS(osInfo)}, nil
+}
+
 // MissingBlobs returns missing blobs from cache
 func (s *CacheServer) MissingBlobs(ctx context.Context, in *rpcCache.MissingBlobsRequest) (*rpcCache.MissingBlobsResponse, error) {
 	missingArtifact, blobIDs, err := s.cache.MissingBlobs(ctx, in.ArtifactId, in.BlobIds)
