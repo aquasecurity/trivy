@@ -4072,6 +4072,18 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#remote-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote modules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#exclude-downloaded-terraform-modules" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -4079,6 +4091,11 @@ You're not viewing the latest version of the documentation.
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -8635,6 +8652,18 @@ You're not viewing the latest version of the documentation.
 </li>
         
           <li class="md-nav__item">
+  <a href="#remote-modules" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Remote modules
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Remote modules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
   <a href="#exclude-downloaded-terraform-modules" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8642,6 +8671,11 @@ You're not viewing the latest version of the documentation.
       
     </span>
   </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
         
@@ -8832,9 +8866,13 @@ It also evaluates variables, imports, and other elements within Terraform files 
 <p>You can provide <code>tf-vars</code> files to Trivy to override default values specified in the Terraform HCL code.</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--tf-vars<span class="w"> </span>dev.terraform.tfvars<span class="w"> </span>./infrastructure/tf
 </code></pre></div>
-<h3 id="exclude-downloaded-terraform-modules">Exclude Downloaded Terraform Modules<a class="headerlink" href="#exclude-downloaded-terraform-modules" title="Permanent link">&para;</a></h3>
+<h3 id="remote-modules">Remote modules<a class="headerlink" href="#remote-modules" title="Permanent link">&para;</a></h3>
+<p>When scanning Terraform configurations for misconfigurations, Trivy downloads the modules whose source is remote. Downloads are enabled by default and cannot be turned off from the CLI.</p>
+<p>Scanning an untrusted configuration can therefore cause network requests to hosts chosen by its author, including services reachable from the scanning environment. When scanning untrusted configurations, allow outbound traffic only to the module registries and repositories you trust, and block access to sensitive internal services, such as cloud instance metadata endpoints.</p>
+<p>To avoid downloading modules during the scan, run <code>terraform init</code> first in an environment you control and include the resulting <code>.terraform/modules</code> directory with the configuration. Trivy reuses modules from that cache, but may still attempt downloads if a required module cannot be loaded.</p>
+<h4 id="exclude-downloaded-terraform-modules">Exclude Downloaded Terraform Modules<a class="headerlink" href="#exclude-downloaded-terraform-modules" title="Permanent link">&para;</a></h4>
 <p>By default, downloaded modules are also scanned.
-If you don't want to scan them, you can use the <code>--tf-exclude-downloaded-modules</code> flag.</p>
+If you don't want their findings in the report, you can use the <code>--tf-exclude-downloaded-modules</code> flag. The modules are still downloaded and evaluated, but the findings from them are marked as ignored.</p>
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--tf-exclude-downloaded-modules<span class="w"> </span>./configs
 </code></pre></div>
 <h2 id="secret">Secret<a class="headerlink" href="#secret" title="Permanent link">&para;</a></h2>
