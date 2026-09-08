@@ -80,7 +80,8 @@ var (
 const (
 	quote     = `["']?`
 	connect   = `\s*(:|=>|=)?\s*`
-	endSecret = `[.,]?(\s+|$)`
+	endSecret = `[.,]?(\s|$)`
+	startWord = "([^0-9a-zA-Z_]|^)"
 	endWord   = "([^0-9a-zA-Z_]|$)"
 
 	aws = `aws_?`
@@ -156,14 +157,15 @@ var builtinRules = []Rule{
 		// base64url + dot-separated), so they contain `.`, `-` and `_`.
 		// GitHub recommends `ghs_[A-Za-z0-9.\-_]{36,}`. See
 		// https://github.com/aquasecurity/trivy/issues/10591.
-		ID:                  "github-app-token",
-		Category:            CategoryGitHub,
-		Title:               "GitHub App Token",
-		Severity:            "CRITICAL",
-		Regex:               MustCompile(`(?P<secret>(?:ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z._-]{36,}))`),
-		LeadingWordBoundary: true,
-		SecretGroupName:     "secret",
-		Keywords:            []string{"ghu_", "ghs_"},
+		ID:       "github-app-token",
+		Category: CategoryGitHub,
+		Title:    "GitHub App Token",
+		Severity: "CRITICAL",
+		// The unbounded tail of the `ghs_` branch keeps this rule out of the
+		// leading word boundary optimization.
+		Regex:           MustCompile(startWord + `(?P<secret>(?:ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z._-]{36,}))`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ghu_", "ghs_"},
 	},
 	{
 		ID:                  "github-refresh-token",
@@ -1068,14 +1070,15 @@ var builtinRules = []Rule{
 		Keywords:            []string{"T3BlbkFJ"},
 	},
 	{
-		ID:                  "openai-service-api-key",
-		Category:            CategoryOpenAI,
-		Title:               "OpenAI Service API Key",
-		Severity:            "HIGH",
-		Regex:               MustCompile(`(?P<secret>sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20})`),
-		LeadingWordBoundary: true,
-		SecretGroupName:     "secret",
-		Keywords:            []string{"T3BlbkFJ"},
+		ID:       "openai-service-api-key",
+		Category: CategoryOpenAI,
+		Title:    "OpenAI Service API Key",
+		Severity: "HIGH",
+		// The unbounded run before the second dash keeps this rule out of the
+		// leading word boundary optimization.
+		Regex:           MustCompile(startWord + `(?P<secret>sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20})`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
 	},
 	{
 		ID:                  "openai-realtime-client-secret",

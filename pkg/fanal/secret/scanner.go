@@ -144,17 +144,23 @@ func startsWithWordLiteral(re *syntax.Regexp) bool {
 	case syntax.OpCapture, syntax.OpConcat:
 		return len(re.Sub) > 0 && startsWithWordLiteral(re.Sub[0])
 	case syntax.OpAlternate:
-		if len(re.Sub) == 0 {
-			return false
-		}
-		for _, sub := range re.Sub {
-			if !startsWithWordLiteral(sub) {
-				return false
-			}
-		}
-		return true
+		return len(re.Sub) > 0 && lo.EveryBy(re.Sub, startsWithWordLiteral)
 	}
 	return false
+}
+
+// hasUnboundedRepeat reports whether re can match up to the end of the content.
+func hasUnboundedRepeat(re *syntax.Regexp) bool {
+	switch re.Op {
+	case syntax.OpStar, syntax.OpPlus:
+		return true
+	case syntax.OpRepeat:
+		if re.Max == -1 {
+			return true
+		}
+	}
+
+	return slices.ContainsFunc(re.Sub, hasUnboundedRepeat)
 }
 
 func MustCompile(str string) *Regexp {
@@ -252,6 +258,11 @@ func (r Rule) validate() error {
 	if !startsWithWordLiteral(parsed) {
 		return xerrors.Errorf("rule %q: a pattern with leading-word-boundary must start with a literal ASCII word character. "+
 			`The boundary is checked outside the pattern, so ^, \A and \b in front of it are not allowed`, r.ID)
+	}
+
+	if hasUnboundedRepeat(parsed) {
+		return xerrors.Errorf("rule %q: a pattern with leading-word-boundary must not have an unbounded quantifier, "+
+			"because a match that runs to the end of the chunk makes every rejected candidate cost a full pass", r.ID)
 	}
 	return nil
 }
