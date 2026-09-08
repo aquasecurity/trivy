@@ -270,7 +270,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		}
 	}
 
-	if viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
+	if f.IgnoreFile.Value() != "" && viper.IsSet(f.IgnoreFile.ConfigName) && !fsutils.FileExists(f.IgnoreFile.Value()) {
 		return xerrors.Errorf("ignore file not found: %s", f.IgnoreFile.Value())
 	}
 
