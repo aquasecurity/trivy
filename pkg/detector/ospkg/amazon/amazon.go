@@ -42,12 +42,7 @@ func NewScanner() *Scanner {
 
 // Detect scans the packages using amazon scanner
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
-	osVer = strings.Fields(osVer)[0]
-	// The format `2023.xxx.xxxx` can be used.
-	osVer = osver.Major(osVer)
-	if osVer != "2" && osVer != "2022" && osVer != "2023" {
-		osVer = "1"
-	}
+	osVer = majorVersion(osVer)
 
 	log.InfoContext(ctx, "Detecting vulnerabilities...", log.String("os_version", osVer),
 		log.Int("pkg_num", len(pkgs)))
@@ -103,12 +98,22 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 // IsSupportedVersion checks if the version is supported.
 func (s *Scanner) IsSupportedVersion(ctx context.Context, osFamily ftypes.OSType, osVer string) bool {
-	osVer = strings.Fields(osVer)[0]
-	// The format `2023.xxx.xxxx` can be used.
-	osVer = osver.Major(osVer)
-	if osVer != "2" && osVer != "2022" && osVer != "2023" {
-		osVer = "1"
-	}
+	return osver.Supported(ctx, eolDates, osFamily, majorVersion(osVer))
+}
 
-	return osver.Supported(ctx, eolDates, osFamily, osVer)
+// majorVersion returns the Amazon Linux major version.
+func majorVersion(osVer string) string {
+	fields := strings.Fields(osVer)
+	// No real "/etc/system-release" is version-less, so this is defensive only:
+	// fall back to Amazon Linux 1, as for any other unknown version below.
+	// cf. #10976
+	if len(fields) == 0 {
+		return "1"
+	}
+	// The format `2023.xxx.xxxx` can be used.
+	major := osver.Major(fields[0])
+	if major != "2" && major != "2022" && major != "2023" {
+		return "1"
+	}
+	return major
 }
