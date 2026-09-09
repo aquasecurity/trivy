@@ -70,7 +70,8 @@ func resolveVCSUrl(modulePath string) string {
 	return ""
 }
 
-// Parse parses a go.mod file and returns the packages, dependencies, and the Go version declared by the `go` directive (or "1.16" if the directive is omitted).
+// Parse parses a go.mod file and returns the packages, the dependencies and the Go version
+// from the `go` directive ("1.16" if the directive is omitted).
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, string, error) {
 	pkgs := make(map[string]ftypes.Package)
 
