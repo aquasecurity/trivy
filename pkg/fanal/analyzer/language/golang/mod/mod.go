@@ -6,6 +6,7 @@ import (
 	"errors"
 	"fmt"
 	"go/build"
+	goversion "go/version"
 	"io"
 	"io/fs"
 	"os"
@@ -16,6 +17,7 @@ import (
 	"unicode"
 
 	"github.com/samber/lo"
+	"golang.org/x/mod/modfile"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
@@ -88,7 +90,11 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 			return nil
 		}
 
-		if lessThanGo117(gomod) {
+		shouldMergeGoSum, err := lessThanGo117(input.FS, path)
+		if err != nil {
+			return xerrors.Errorf("parse Go version: %w", err)
+		}
+		if shouldMergeGoSum {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
@@ -307,14 +313,22 @@ func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser)
 	return language.Parse(ctx, types.GoModule, path, file, parser)
 }
 
-func lessThanGo117(gomod *types.Application) bool {
-	for _, lib := range gomod.Packages {
-		// The indirect field is populated only in Go 1.17+
-		if lib.Relationship == types.RelationshipIndirect {
-			return false
-		}
+func lessThanGo117(fsys fs.FS, path string) (bool, error) {
+	contents, err := fs.ReadFile(fsys, path)
+	if err != nil {
+		return false, xerrors.Errorf("read go.mod: %w", err)
 	}
-	return true
+
+	modFile, err := modfile.Parse(path, contents, nil)
+	if err != nil {
+		return false, xerrors.Errorf("parse go.mod: %w", err)
+	}
+	if modFile.Go == nil {
+		// A go.mod without a go directive predates Go 1.17.
+		return true, nil
+	}
+
+	return goversion.Compare("go"+modFile.Go.Version, "go1.17") < 0, nil
 }
 
 func mergeGoSum(gomod, gosum *types.Application) {
