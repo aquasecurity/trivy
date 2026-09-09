@@ -138,6 +138,46 @@ func TestContext(t *testing.T) {
 	})
 }
 
+func TestSecretMasking(t *testing.T) {
+	t.Run("sensitive attribute keys", func(t *testing.T) {
+		var buf bytes.Buffer
+		logger := slog.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelDebug}))
+
+		logger.Debug("auth details",
+			"password", "secretpass123",
+			"token", "mytoken456",
+			"api_key", "key-secret-789",
+			"private_key", "-----BEGIN RSA PRIVATE KEY-----xxx-----END RSA PRIVATE KEY-----",
+			slog.Group("registry", slog.String("password", "regpass")),
+			slog.Group("server", slog.String("token", "servtoken")),
+		)
+
+		got := buf.String()
+		wantLines := []string{
+			`DEBUG	auth details	password="********" token="********" api_key="********" private_key="********" registry.password="********" server.token="********"`,
+		}
+		compareLines(t, got, wantLines)
+	})
+
+	t.Run("sensitive text in message and error", func(t *testing.T) {
+		var buf bytes.Buffer
+		logger := slog.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelDebug}))
+
+		logger.Info("connecting to https://admin:password123@registry.example.com/v2/?token=abc123xyz")
+		logger.Error("request failed",
+			log.Err(errors.New("connection failed: password=mysecret, token: tok123")),
+			slog.String("url", "https://user:pass@example.com/repo.git"),
+		)
+
+		got := buf.String()
+		wantLines := []string{
+			`INFO	connecting to https://admin:********@registry.example.com/v2/?token=********`,
+			`ERROR	request failed	err="connection failed: password=********, token: ********" url="https://user:********@example.com/repo.git"`,
+		}
+		compareLines(t, got, wantLines)
+	})
+}
+
 func compareLines(t *testing.T, got string, wantLines []string) {
 	// Strip color codes from the output.
 	got = stripColorCodes(got)
@@ -153,10 +193,20 @@ func compareLines(t *testing.T, got string, wantLines []string) {
 		}
 
 		ss := strings.Split(gotLines[i], "\t")
-		gotLevel, gotMessage, gotAttrs := ss[1], ss[2], ss[3]
+		var gotLevel, gotMessage, gotAttrs string
+		if len(ss) >= 4 {
+			gotLevel, gotMessage, gotAttrs = ss[1], ss[2], ss[3]
+		} else if len(ss) >= 3 {
+			gotLevel, gotMessage = ss[1], ss[2]
+		}
 
-		ss = strings.Split(wantLine, "\t")
-		wantLevel, wantMessage, wantAttrs := ss[0], ss[1], ss[2]
+		wantParts := strings.Split(wantLine, "\t")
+		var wantLevel, wantMessage, wantAttrs string
+		if len(wantParts) >= 3 {
+			wantLevel, wantMessage, wantAttrs = wantParts[0], wantParts[1], wantParts[2]
+		} else if len(wantParts) >= 2 {
+			wantLevel, wantMessage = wantParts[0], wantParts[1]
+		}
 
 		assert.Equal(t, wantLevel, gotLevel)
 		assert.Equal(t, wantMessage, gotMessage)

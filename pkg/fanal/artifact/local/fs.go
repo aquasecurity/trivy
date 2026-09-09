@@ -148,7 +148,7 @@ func extractGitInfo(dir string) (bool, artifact.RepoMetadata, error) {
 		remoteConfig, err = repo.Remote("origin")
 	}
 	if err == nil && len(remoteConfig.Config().URLs) > 0 {
-		metadata.RepoURL = sanitizeRemoteURL(remoteConfig.Config().URLs[0])
+		metadata.RepoURL = SanitizeRemoteURL(remoteConfig.Config().URLs[0])
 	}
 
 	// Check if repository is clean for caching purposes
@@ -367,8 +367,8 @@ func (a Artifact) calcCacheKey() (string, error) {
 	return d.String(), nil
 }
 
-// sanitizeRemoteURL removes credentials (userinfo) from URLs.
-func sanitizeRemoteURL(gitUrl string) string {
+// SanitizeRemoteURL removes credentials (userinfo) and sensitive query parameters from URLs.
+func SanitizeRemoteURL(gitUrl string) string {
 	// Only attempt sanitization for URLs with an explicit scheme.
 	if !strings.Contains(gitUrl, "://") {
 		return gitUrl
@@ -378,6 +378,21 @@ func sanitizeRemoteURL(gitUrl string) string {
 	if u, err := url.Parse(gitUrl); err == nil {
 		// Clear userinfo (username:password)
 		u.User = nil
+		// Clear sensitive query params
+		q := u.Query()
+		modified := false
+		sensitiveParams := []string{"token", "access_token", "api_token", "api_key", "apikey", "secret", "client_secret", "password", "passwd", "pwd", "auth", "key"}
+		for _, p := range sensitiveParams {
+			for k := range q {
+				if strings.EqualFold(k, p) {
+					q.Del(k)
+					modified = true
+				}
+			}
+		}
+		if modified {
+			u.RawQuery = q.Encode()
+		}
 		gitUrl = u.String()
 	}
 

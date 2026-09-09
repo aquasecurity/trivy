@@ -97,12 +97,19 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		return buf
 	}
 
+	if isSensitiveKey(a.Key) || hasSensitiveGroup(groups) {
+		buf = appendKey(buf, groups, a.Key)
+		buf = append(buf, '=')
+		buf = strconv.AppendQuote(buf, maskedSecret)
+		return append(buf, ' ')
+	}
+
 	switch a.Value.Kind() {
 	case slog.KindString:
 		// Quote string values, to make them easy to parse.
 		buf = appendKey(buf, groups, a.Key)
 		buf = append(buf, '=')
-		buf = strconv.AppendQuote(buf, a.Value.String())
+		buf = strconv.AppendQuote(buf, sanitizeText(a.Value.String()))
 	case slog.KindTime:
 		// Write times in a standard way, without the monotonic time.
 		buf = appendKey(buf, groups, a.Key)
@@ -125,9 +132,9 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		buf = appendKey(buf, groups, a.Key)
 		buf = append(buf, '=')
 		if err, ok := a.Value.Any().(error); ok {
-			buf = append(buf, color.HiRedString(strconv.Quote(err.Error()))...)
+			buf = append(buf, color.HiRedString(strconv.Quote(sanitizeText(err.Error())))...)
 		} else {
-			buf = append(buf, a.Value.String()...)
+			buf = append(buf, sanitizeText(a.Value.String())...)
 		}
 	}
 	return append(buf, ' ')
@@ -184,11 +191,15 @@ func (h *ColorHandler) handle(ctx context.Context, buf []byte, r slog.Record) []
 	buf = append(buf, '\t')
 
 	// Message
-	buf = append(buf, h.Prefix(ctx, r)+r.Message...)
+	buf = append(buf, h.Prefix(ctx, r)+sanitizeText(r.Message)...)
 	if r.Level == LevelFatal {
 		// Show the error and return early.
 		format := lo.Ternary(h.opts.Level == slog.LevelDebug, "\n  - %+v\n", "\t%v\n")
-		return fmt.Appendf(buf, format, h.Err(r))
+		err := h.Err(r)
+		if err != nil {
+			err = xerrors.New(sanitizeText(err.Error()))
+		}
+		return fmt.Appendf(buf, format, err)
 	}
 
 	// Attrs
