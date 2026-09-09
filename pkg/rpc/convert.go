@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"cmp"
 	jsonv2 "encoding/json/v2"
 	"strings"
 	"time"
@@ -73,6 +74,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
 			Digest:          pkg.Digest.String(),
+			Digests:         ConvertToRPCPkgDigests(pkg.Digests),
 			Relationship:    int32(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -110,6 +112,34 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
+}
+
+// ConvertToRPCPkgDigests converts []digest.SourcedDigest to []*common.PackageDigest
+func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDigest {
+	var rpcDigests []*common.PackageDigest
+	for _, d := range digests {
+		rpcDigests = append(rpcDigests, &common.PackageDigest{
+			Digest: d.Digest.String(),
+			Source: d.Source.String(),
+		})
+	}
+	return rpcDigests
+}
+
+// ConvertFromRPCPkgDigests converts []*common.PackageDigest to []digest.SourcedDigest
+func ConvertFromRPCPkgDigests(rpcDigests []*common.PackageDigest) []digest.SourcedDigest {
+	if len(rpcDigests) == 0 {
+		return nil
+	}
+
+	digests := make([]digest.SourcedDigest, 0, len(rpcDigests))
+	for _, d := range rpcDigests {
+		digests = append(digests, digest.SourcedDigest{
+			Digest: digest.Digest(d.Digest),
+			Source: cmp.Or(digest.Source(d.Source), digest.SourceUnknown),
+		})
+	}
+	return digests
 }
 
 func ConvertToRPCLocations(pkgLocs []ftypes.Location) []*common.Location {
@@ -224,7 +254,7 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
-		pkgs = append(pkgs, ftypes.Package{
+		p := ftypes.Package{
 			ID:              pkg.Id,
 			Name:            pkg.Name,
 			Version:         pkg.Version,
@@ -251,7 +281,9 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Modularitylabel: pkg.Modularitylabel,
 			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
 			InstalledFiles:  pkg.InstalledFiles,
-		})
+		}
+		p.Digests = ConvertFromRPCPkgDigests(pkg.Digests)
+		pkgs = append(pkgs, p)
 	}
 	return pkgs
 }

@@ -12,6 +12,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -138,6 +139,54 @@ func TestConvertToRpcPkgs(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "package with several digests",
+			args: args{
+				pkgs: []ftypes.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Digests: []digest.SourcedDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: digest.SourceRPMSigMD5,
+							},
+							{
+								Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+								Source: digest.SourceFileContent,
+							},
+							{
+								Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+								Source: digest.SourceUnknown,
+							},
+						},
+					},
+				},
+			},
+			want: []*common.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Layer:   &common.Layer{},
+					Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []*common.PackageDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: "rpm-sigmd5",
+						},
+						{
+							Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							Source: "file-content",
+						},
+						{
+							Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+							Source: "unknown",
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -227,6 +276,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
+					// The peer sent the legacy field only, and it is passed through as such.
 					Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Relationship: ftypes.RelationshipIndirect,
 					Indirect:     true,
@@ -311,6 +361,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Digest: "sha256:8d42b73fc1ddc2e9e66c954966f144665825e69f4ed10c66342ae7c26b38d4e4",
 						DiffID: "sha256:745d171eb8c3d69f788da3a1b053056231ad140b80be71d6869229846a1f3a77",
 					},
+					// The peer sent the legacy field only, and it is passed through as such.
 					Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Relationship: ftypes.RelationshipDirect,
 					Indirect:     false,
@@ -320,6 +371,53 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					Maintainer: "alice@example.com",
 					Repository: ftypes.PackageRepository{
 						Class: ftypes.RepositoryClassThirdParty,
+					},
+				},
+			},
+		},
+		{
+			name: "package with several digests",
+			args: args{
+				rpcPkgs: []*common.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Digests: []*common.PackageDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: "rpm-sigmd5",
+							},
+							{
+								Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+								Source: "file-content",
+							},
+							{
+								Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+								Source: "unknown",
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: digest.SourceRPMSigMD5,
+						},
+						{
+							Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							Source: digest.SourceFileContent,
+						},
+						{
+							Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+							Source: digest.SourceUnknown,
+						},
 					},
 				},
 			},
