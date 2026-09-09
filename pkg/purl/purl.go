@@ -467,6 +467,8 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeGolang
 	case ftypes.Npm, ftypes.NodePkg, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun:
 		return packageurl.TypeNPM
+	case ftypes.Node:
+		return packageurl.TypeGeneric
 	case ftypes.Cocoapods:
 		return packageurl.TypeCocoapods
 	case ftypes.Swift:

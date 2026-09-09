@@ -24,6 +24,7 @@ var (
 		ftypes.CondaPkg:    "Conda",
 		ftypes.GemSpec:     "Ruby",
 		ftypes.NodePkg:     "Node.js",
+		ftypes.Node:        "Node.js",
 		ftypes.Jar:         "Java",
 		ftypes.K8sUpstream: "Kubernetes",
 	}
