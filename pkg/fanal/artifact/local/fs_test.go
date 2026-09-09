@@ -13,6 +13,7 @@ import (
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -73,6 +74,12 @@ func TestArtifact_Inspect(t *testing.T) {
 										Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 										Arch:       "x86_64",
 										Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										Digests: []digest.SourcedDigest{
+											{
+												Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+												Source: digest.SourceAPKInstalledDB,
+											},
+										},
 										InstalledFiles: []string{
 											"lib/libc.musl-x86_64.so.1",
 											"lib/ld-musl-x86_64.so.1",

@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -22,6 +23,12 @@ var pkgs = []types.Package{
 		Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 		Arch:       "x86_64",
 		Digest:     "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"lib/libc.musl-x86_64.so.1",
 			"lib/ld-musl-x86_64.so.1",
@@ -38,6 +45,12 @@ var pkgs = []types.Package{
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
 		Digest:     "sha1:ca124719267cd0bedc2f4cb850a286ac13f0ad44",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:ca124719267cd0bedc2f4cb850a286ac13f0ad44",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"bin/busybox",
 			"bin/sh",
@@ -60,6 +73,12 @@ var pkgs = []types.Package{
 		},
 		Arch:   "x86_64",
 		Digest: "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:a214896150411d72dd1fafdb32d1c6c4855cccfa",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"etc/hosts",
 			"etc/sysctl.conf",
@@ -98,6 +117,12 @@ var pkgs = []types.Package{
 		Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 		Arch:       "x86_64",
 		Digest:     "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:4def7ffaee6aeba700c1d62570326f75cbb8fa25",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"etc/apk/keys/alpine-devel@lists.alpinelinux.org-4d07755e.rsa.pub",
 			"etc/apk/keys/alpine-devel@lists.alpinelinux.org-524d27bb.rsa.pub",
@@ -117,6 +142,12 @@ var pkgs = []types.Package{
 		DependsOn:  []string{"musl@1.1.14-r10"},
 		Arch:       "x86_64",
 		Digest:     "sha1:efd04d34d40aa8eb331480127364c27a8ba760ef",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:efd04d34d40aa8eb331480127364c27a8ba760ef",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"lib/libz.so.1.2.8",
 			"lib/libz.so.1",
@@ -136,6 +167,12 @@ var pkgs = []types.Package{
 		},
 		Arch:   "x86_64",
 		Digest: "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:65c860ff8f103b664f40ba849a3f5a51c69c8beb",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		InstalledFiles: []string{
 			"lib/libcrypto.so.1.0.0",
 			"usr/bin/c_rehash",
@@ -163,6 +200,12 @@ var pkgs = []types.Package{
 		Licenses:   []string{"OpenSSL"},
 		Maintainer: "Timo Teras <timo.teras@iki.fi>",
 		Digest:     "sha1:7120f337e93b2b4c44e0f5f31a15b60dc678ca14",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:7120f337e93b2b4c44e0f5f31a15b60dc678ca14",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
 			"musl@1.1.14-r10",
@@ -182,6 +225,12 @@ var pkgs = []types.Package{
 		Licenses:   []string{"GPL-2.0-only"},
 		Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 		Digest:     "sha1:0990c0acd62b4175818c3a4cc60ed11f14e23bd8",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:0990c0acd62b4175818c3a4cc60ed11f14e23bd8",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		DependsOn: []string{
 			"libcrypto1.0@1.0.2h-r1",
 			"libssl1.0@1.0.2h-r1",
@@ -202,8 +251,14 @@ var pkgs = []types.Package{
 		Licenses:   []string{"GPL-2.0-only"},
 		Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 		Digest:     "sha1:f9bab817c5ad93e92a6218bc0f7596b657c02d90",
-		DependsOn:  []string{"musl@1.1.14-r10"},
-		Arch:       "x86_64",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:f9bab817c5ad93e92a6218bc0f7596b657c02d90",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
+		DependsOn: []string{"musl@1.1.14-r10"},
+		Arch:      "x86_64",
 		InstalledFiles: []string{
 			"usr/bin/scanelf",
 		},
@@ -221,6 +276,12 @@ var pkgs = []types.Package{
 		},
 		Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 		Digest:     "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:608aa1dd39eff7bc6615d3e5e33383750f8f5ecc",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 			"scanelf@1.1.6-r0",
@@ -243,8 +304,14 @@ var pkgs = []types.Package{
 		Licenses:   []string{"GPL-2.0-or-later"},
 		Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 		Digest:     "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
-		DependsOn:  []string{"musl-utils@1.1.14-r10"},
-		Arch:       "x86_64",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:9055bc7afd76cf2672198042f72fc4a5ed4fa961",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
+		DependsOn: []string{"musl-utils@1.1.14-r10"},
+		Arch:      "x86_64",
 		//InstalledFiles: []string{},
 	},
 	{
@@ -256,8 +323,14 @@ var pkgs = []types.Package{
 		Licenses:   []string{"ISC"},
 		Maintainer: "William Pitcock <nenolod@dereferenced.org>",
 		Digest:     "sha1:e6242ac29589c8a84a4b179b491ea7c29fce66a9",
-		DependsOn:  []string{"musl@1.1.14-r10"},
-		Arch:       "x86_64",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:e6242ac29589c8a84a4b179b491ea7c29fce66a9",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
+		DependsOn: []string{"musl@1.1.14-r10"},
+		Arch:      "x86_64",
 		InstalledFiles: []string{
 			"usr/bin/pkgconf",
 			"usr/bin/pkg-config",
@@ -275,8 +348,14 @@ var pkgs = []types.Package{
 		Licenses:   []string{"Public-Domain"},
 		Maintainer: "Carlo Landmeter <clandmeter@gmail.com>",
 		Digest:     "sha1:1464946c3a5f0dd5a67ca1af930fc17af7a74474",
-		DependsOn:  []string{"musl@1.1.14-r10"},
-		Arch:       "x86_64",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:1464946c3a5f0dd5a67ca1af930fc17af7a74474",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
+		DependsOn: []string{"musl@1.1.14-r10"},
+		Arch:      "x86_64",
 		InstalledFiles: []string{
 			"usr/lib/libsqlite3.so.0",
 			"usr/lib/libsqlite3.so.0.8.6",
@@ -291,6 +370,12 @@ var pkgs = []types.Package{
 		Licenses:   []string{"Public-Domain"},
 		Maintainer: "Carlo Landmeter <clandmeter@gmail.com>",
 		Digest:     "sha1:f0bf315ec54828188910e4a665c00bc48bdbdd7d",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:f0bf315ec54828188910e4a665c00bc48bdbdd7d",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		DependsOn: []string{
 			"pkgconf@1.6.0-r0",
 			"sqlite-libs@3.26.0-r3",
@@ -316,6 +401,12 @@ var pkgs = []types.Package{
 		},
 		Maintainer: "Jakub Jirutka <jakub@jirutka.cz>",
 		Digest:     "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+		Digests: []digest.SourcedDigest{
+			{
+				Digest: "sha1:593154f80c440685448e0f52479725d7bc9b678d",
+				Source: digest.SourceAPKInstalledDB,
+			},
+		},
 		DependsOn: []string{
 			"musl@1.1.14-r10",
 		},

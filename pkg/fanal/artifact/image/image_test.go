@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -53,6 +54,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
@@ -99,6 +106,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
 				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
@@ -130,6 +143,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"libssl1.1@1.1.1d-r3",
@@ -151,6 +170,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -179,6 +204,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Arch:       "x86_64",
 			Digest:     "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"etc/ssl/cert.pem",
 			},
@@ -193,6 +224,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"BSD-3-Clause"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
@@ -208,6 +245,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"OpenSSL"},
 			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -237,6 +280,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"OpenSSL"},
 			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
@@ -256,6 +305,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "2.9.1-r0",
 			Licenses:   []string{"ISC"},
 			Digest:     "sha1:b2e5627a56378ea6eeb962a8f33722df9393c1c5",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:b2e5627a56378ea6eeb962a8f33722df9393c1c5",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"ca-certificates-cacert@20191127-r1",
 				"libcrypto1.1@1.1.1d-r3",
@@ -279,6 +334,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"lib/libc.musl-x86_64.so.1",
 				"lib/ld-musl-x86_64.so.1",
@@ -298,6 +359,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Digest:     "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
@@ -321,6 +388,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -339,6 +412,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:3b685152af320120ae8941c740d3376b54e43c10",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:3b685152af320120ae8941c740d3376b54e43c10",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
@@ -358,6 +437,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"Zlib"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
