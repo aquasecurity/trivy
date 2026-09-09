@@ -261,6 +261,25 @@ func TestParser_Parse(t *testing.T) {
 			wantPkgs: []ftypes.Package{},
 			wantErr:  assert.NoError,
 		},
+		{
+			name: "dependency graph line with only whitespace",
+			file: "testdata/Gemfile_whitespace.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:           "dotenv@2.7.2",
+					Name:         "dotenv",
+					Version:      "2.7.2",
+					Relationship: ftypes.RelationshipDirect,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 3,
+							EndLine:   3,
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

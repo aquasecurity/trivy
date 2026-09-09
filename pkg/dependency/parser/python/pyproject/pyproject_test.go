@@ -125,6 +125,18 @@ func TestParser_Parse(t *testing.T) {
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
 		},
+		{
+			name: "empty dependency string",
+			file: "testdata/empty_dep.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask"),
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

@@ -72,6 +72,11 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty.mix.lock",
 			want:      nil,
 		},
+		{
+			name:      "empty dependency body",
+			inputFile: "testdata/invalid.mix.lock",
+			want:      nil,
+		},
 	}
 
 	for _, tt := range tests {

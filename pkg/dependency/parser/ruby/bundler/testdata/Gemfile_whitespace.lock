@@ -1,0 +1,6 @@
+GEM
+  specs:
+    dotenv (2.7.2)
+      
+DEPENDENCIES
+  dotenv

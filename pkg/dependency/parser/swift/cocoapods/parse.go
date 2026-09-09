@@ -56,6 +56,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 					continue
 				}
 				parsedDeps[pkg.Name] = pkg
+				directDeps[pkg.Name] = make([]string, 0)
 
 				children, ok := childDeps.([]any)
 				if !ok {
@@ -63,11 +64,15 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 				}
 
 				for _, childDep := range children {
-					s, ok := childDep.(string)
+					child, ok := childDep.(string)
 					if !ok {
 						return nil, nil, xerrors.Errorf("must be string: %q", childDep)
 					}
-					directDeps[pkg.Name] = append(directDeps[pkg.Name], strings.Fields(s)[0])
+					fields := strings.Fields(child)
+					if len(fields) == 0 {
+						continue
+					}
+					directDeps[pkg.Name] = append(directDeps[pkg.Name], fields[0])
 				}
 			}
 		}

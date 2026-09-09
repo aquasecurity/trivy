@@ -78,6 +78,22 @@ func TestParse(t *testing.T) {
 			name:      "sad path. wrong dep format",
 			inputFile: "testdata/sad.lock",
 		},
+		{
+			name:      "empty dependency string",
+			inputFile: "testdata/empty_dep.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "AppCenter@4.2.0",
+					Name:    "AppCenter",
+					Version: "4.2.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID: "AppCenter@4.2.0",
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
