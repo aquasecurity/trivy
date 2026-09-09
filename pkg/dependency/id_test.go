@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -81,4 +82,27 @@ func TestID(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// TestUID_Digests pins how the collected digests take part in the package hash: their
+// values do, but the source they were acquired from does not. The source is unknown for
+// data that came from an SBOM or an older cache blob, so a UID that depended on it would
+// differ between scans of the very same package.
+func TestUID_Digests(t *testing.T) {
+	pkg := types.Package{
+		Name:    "musl",
+		Version: "1.2.5-r0",
+	}
+
+	withDigest := pkg
+	withDigest.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceAPKInstalledDB)
+	assert.NotEqual(t, dependency.UID("", pkg), dependency.UID("", withDigest))
+
+	sameValueOtherSource := pkg
+	sameValueOtherSource.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceUnknown)
+	assert.Equal(t, dependency.UID("", withDigest), dependency.UID("", sameValueOtherSource))
+
+	otherValue := pkg
+	otherValue.AddDigest("sha1:0000000000000000000000000000000000000000", digest.SourceAPKInstalledDB)
+	assert.NotEqual(t, dependency.UID("", withDigest), dependency.UID("", otherValue))
 }

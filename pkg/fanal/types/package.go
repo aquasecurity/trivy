@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"slices"
 	"strings"
 
 	"github.com/package-url/packageurl-go"
@@ -9,6 +10,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type Relationship int
@@ -227,8 +229,13 @@ type Package struct {
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
 
-	// This is required when using SPDX formats. Otherwise, it will be empty.
+	// Digest is the first collected digest, kept for consumers that predate Digests.
 	Digest digest.Digest `json:",omitempty"`
+
+	// Digests holds every collected digest with the source it was acquired from.
+	// Values with the same algorithm but different sources are kept apart, as they may
+	// cover different bytes.
+	Digests []digest.SourcedDigest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
 	Locations Locations `json:",omitempty"`
@@ -243,6 +250,74 @@ type Package struct {
 
 func (pkg *Package) Empty() bool {
 	return pkg.Name == "" || pkg.Version == ""
+}
+
+// SourcedDigests returns the collected digests with their acquisition sources.
+// Data produced before the sourced digests, such as a cache blob written by an older
+// Trivy version, carries the legacy single digest only. Its acquisition method was not
+// recorded, so it is reported with an unknown source instead of a guessed one.
+func (pkg *Package) SourcedDigests() []digest.SourcedDigest {
+	if len(pkg.Digests) == 0 && pkg.Digest != "" {
+		return []digest.SourcedDigest{
+			{
+				Digest: pkg.Digest,
+				Source: digest.SourceUnknown,
+			},
+		}
+	}
+	return pkg.Digests
+}
+
+// HasDigest reports whether any digest has been collected for the package.
+// It also covers data that carries the legacy single digest only, such as a cache blob
+// written by an older Trivy version.
+func (pkg *Package) HasDigest() bool {
+	return pkg.Digest != "" || len(pkg.Digests) > 0
+}
+
+// AddDigest stores the digest along with the source it was acquired from.
+// Empty values, and values already stored with the same source, are skipped.
+func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
+	if d == "" {
+		return
+	}
+
+	sd := digest.SourcedDigest{
+		Digest: d,
+		Source: src,
+	}
+	if slices.Contains(pkg.Digests, sd) {
+		return
+	}
+	pkg.appendDigest(sd)
+}
+
+// AddDigests stores digests that were not collected by an analyzer, such as those
+// decoded from an SBOM or received over RPC.
+// Their number is chosen by whoever wrote that input, so they are deduplicated in a
+// single pass instead of scanning the stored ones for every value.
+func (pkg *Package) AddDigests(digests []digest.SourcedDigest) {
+	if len(digests) == 0 {
+		return
+	}
+
+	seen := set.New(pkg.Digests...)
+	for _, sd := range digests {
+		if sd.Digest == "" || seen.Contains(sd) {
+			continue
+		}
+		seen.Append(sd)
+		pkg.appendDigest(sd)
+	}
+}
+
+func (pkg *Package) appendDigest(sd digest.SourcedDigest) {
+	pkg.Digests = append(pkg.Digests, sd)
+
+	// Keep the legacy single-digest field in sync with the first collected value.
+	if pkg.Digest == "" {
+		pkg.Digest = sd.Digest
+	}
 }
 
 type Packages []Package
