@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -130,6 +131,17 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
 								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+										Source: digest.SourceRPMSigMD5,
+									},
+									{
+										// A second digest is kept on the package but does not reach the SBOM.
+										Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+										Source: digest.SourceUnknown,
+									},
+								},
 							},
 						},
 					},
@@ -1740,4 +1752,42 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 			assert.Equal(t, tt.wantOtherLicenses, gotOtherLicenses)
 		})
 	}
+}
+
+// TestCalcSPDXID_IgnoresDigestSource ensures the element ID of a package does not depend on
+// how its digest was acquired. The source is unknown for values that came from an SBOM or
+// an older cache blob, so an ID that depended on it would differ between scans of the very
+// same image. The table tests above cannot catch this, as they replace the hasher.
+func TestCalcSPDXID_IgnoresDigestSource(t *testing.T) {
+	component := func(src digest.Source) *core.Component {
+		return &core.Component{
+			Type:    core.TypeLibrary,
+			Name:    "musl",
+			Version: "1.2.5-r0",
+			Files: []core.File{
+				{
+					Path: "lib/apk/db/installed",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+							Source: src,
+						},
+					},
+				},
+			},
+		}
+	}
+
+	known, err := tspdx.CalcSPDXID(hashstructure.Hash, component(digest.SourceAPKInstalledDB))
+	require.NoError(t, err)
+	unknown, err := tspdx.CalcSPDXID(hashstructure.Hash, component(digest.SourceUnknown))
+	require.NoError(t, err)
+	assert.Equal(t, known, unknown)
+
+	// A different digest value must still produce a different ID.
+	other := component(digest.SourceAPKInstalledDB)
+	other.Files[0].Digests[0].Digest = "sha1:0000000000000000000000000000000000000000"
+	changed, err := tspdx.CalcSPDXID(hashstructure.Hash, other)
+	require.NoError(t, err)
+	assert.NotEqual(t, known, changed)
 }

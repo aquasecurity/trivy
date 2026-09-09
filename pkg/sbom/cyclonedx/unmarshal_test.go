@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/cyclonedx"
@@ -870,6 +871,13 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									BOMRef: "@angular/animations@19.2.10",
 								},
 								Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
+								// The SBOM does not record how the digest was acquired.
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
+										Source: digest.SourceUnknown,
+									},
+								},
 							},
 						},
 					},

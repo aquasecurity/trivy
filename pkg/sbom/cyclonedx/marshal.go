@@ -265,12 +265,16 @@ func (*Marshaler) Supplier(supplier string) *cdx.OrganizationalEntity {
 }
 
 func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
-	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.Digest {
+	digests := lo.FlatMap(files, func(file core.File, _ int) []digest.SourcedDigest {
 		return file.Digests
 	})
 	if len(digests) == 0 {
 		return nil
 	}
+	// Emit the first digest only, which keeps the output as it was before packages could
+	// carry several. Placing more of them in the SBOM changes the format for consumers and
+	// is decided separately.
+	digests = digests[:1]
 
 	var cdxHashes []cdx.Hash
 	for _, d := range digests {
@@ -291,7 +295,7 @@ func (m *Marshaler) Hashes(files []core.File) *[]cdx.Hash {
 
 		cdxHashes = append(cdxHashes, cdx.Hash{
 			Algorithm: alg,
-			Value:     d.Encoded(),
+			Value:     d.Value(),
 		})
 	}
 	return &cdxHashes
