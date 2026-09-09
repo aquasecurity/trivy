@@ -77,7 +77,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "3148053bd3cfcabf"
+            "UID": "802d0214dccc2f8f"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -151,7 +151,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "3148053bd3cfcabf"
+            "UID": "802d0214dccc2f8f"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -235,7 +235,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "603cbbc71f2d6dec"
+            "UID": "3e09d28b285109b4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r0",
@@ -309,7 +309,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "603cbbc71f2d6dec"
+            "UID": "3e09d28b285109b4"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -393,7 +393,7 @@
           "PkgName": "musl",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "54bca8ef3ee9e338"
+            "UID": "396674bb239cee3b"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -440,7 +440,7 @@
           "PkgName": "musl-utils",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "792dadf1e7110cf2"
+            "UID": "f19d967e9074130f"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",

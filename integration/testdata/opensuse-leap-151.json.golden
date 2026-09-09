@@ -84,7 +84,7 @@
           "PkgName": "libopenssl1_1",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
-            "UID": "10e12f4783a16c7c"
+            "UID": "30619e77d8999b91"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
@@ -118,7 +118,7 @@
           "PkgName": "openssl-1_1",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
-            "UID": "23c07ff656c4d709"
+            "UID": "819a42d4feb3ca54"
           },
           "InstalledVersion": "1.1.0i-lp151.8.3.1",
           "FixedVersion": "1.1.0i-lp151.8.6.1",
