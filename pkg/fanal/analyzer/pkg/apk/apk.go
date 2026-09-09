@@ -27,7 +27,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 3
+const analyzerVersion = 4
 
 var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 

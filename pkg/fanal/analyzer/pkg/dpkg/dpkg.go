@@ -41,7 +41,7 @@ func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) 
 }
 
 const (
-	analyzerVersion = 6
+	analyzerVersion = 7
 
 	statusFile    = "var/lib/dpkg/status"
 	statusDir     = "var/lib/dpkg/status.d/"
