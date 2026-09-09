@@ -91,7 +91,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	if modFileParsed.Go != nil && modFileParsed.Go.Version != "" {
 		goVersion = modFileParsed.Go.Version
 	}
-	skipIndirect := goversion.Compare(goversion.Lang("go"+goVersion), "go1.17") < 0
+	skipIndirect := goversion.Compare("go"+goVersion, "go1.17") < 0
 
 	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
 	// Show `stdlib` only with `useMinVersion` flag.

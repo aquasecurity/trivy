@@ -114,9 +114,9 @@ func TestParse(t *testing.T) {
 			name:             "go 1.17rc1",
 			file:             "testdata/go117rc1/go.mod",
 			replace:          true,
-			wantPkgs:         GoMod117RC1,
+			wantPkgs:         GoMod116,
 			wantDeps:         defaultGoDepParserDeps,
-			wantSkipIndirect: false,
+			wantSkipIndirect: true,
 		},
 	}
 

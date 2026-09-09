@@ -434,44 +434,6 @@ var (
 		},
 	}
 
-	GoMod117RC1 = []ftypes.Package{
-		{
-			ID:           "github.com/org/repo",
-			Name:         "github.com/org/repo",
-			Relationship: ftypes.RelationshipRoot,
-			ExternalReferences: []ftypes.ExternalRef{
-				{
-					Type: ftypes.RefVCS,
-					URL:  "https://github.com/org/repo",
-				},
-			},
-		},
-		{
-			ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20211224170007-df43bca6b6ff",
-			Name:         "github.com/aquasecurity/go-dep-parser",
-			Version:      "v0.0.0-20211224170007-df43bca6b6ff",
-			Relationship: ftypes.RelationshipDirect,
-			ExternalReferences: []ftypes.ExternalRef{
-				{
-					Type: ftypes.RefVCS,
-					URL:  "https://github.com/aquasecurity/go-dep-parser",
-				},
-			},
-		},
-		{
-			ID:           "gopkg.in/yaml.v3@v3.0.0-20210107192922-496545a6307b",
-			Name:         "gopkg.in/yaml.v3",
-			Version:      "v3.0.0-20210107192922-496545a6307b",
-			Relationship: ftypes.RelationshipIndirect,
-			ExternalReferences: []ftypes.ExternalRef{
-				{
-					Type: ftypes.RefVCS,
-					URL:  "https://github.com/go-yaml/yaml",
-				},
-			},
-		},
-	}
-
 	// execute go mod tidy in no-go-version folder
 	GoModNoGoVersion = []ftypes.Package{
 		{
