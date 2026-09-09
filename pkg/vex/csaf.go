@@ -35,7 +35,7 @@ func (v *CSAF) Filter(result *types.Result, bom *core.BOM) {
 
 func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct *core.Component) (types.ModifiedFinding, bool) {
 	found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
-		return string(*item.CVE) == vuln.VulnerabilityID
+		return matchesVulnerabilityID(item, vuln.VulnerabilityID)
 	})
 	if !ok {
 		return types.ModifiedFinding{}, false
@@ -46,6 +46,36 @@ func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct
 		return types.ModifiedFinding{}, false
 	}
 	return types.NewModifiedFinding(vuln, status, v.statement(found), v.source), true
+}
+
+// matchesVulnerabilityID reports whether the CSAF vulnerability corresponds to
+// the given ID. The `cve` property is optional in CSAF, so it also checks the
+// entries in `ids` (e.g. GHSA identifiers) when no CVE matches.
+func matchesVulnerabilityID(vuln *csaf.Vulnerability, id string) bool {
+	if vuln.CVE != nil && string(*vuln.CVE) == id {
+		return true
+	}
+	for _, vulnID := range vuln.IDs {
+		if vulnID != nil && lo.FromPtr(vulnID.Text) == id {
+			return true
+		}
+	}
+	return false
+}
+
+// vulnerabilityID returns a human-readable identifier for the given CSAF
+// vulnerability, preferring the CVE and falling back to the first `ids` entry.
+// It is only used for logging.
+func vulnerabilityID(vuln *csaf.Vulnerability) string {
+	if vuln.CVE != nil {
+		return string(*vuln.CVE)
+	}
+	for _, id := range vuln.IDs {
+		if id != nil && id.Text != nil {
+			return *id.Text
+		}
+	}
+	return ""
 }
 
 func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component) types.FindingStatus {
@@ -60,7 +90,7 @@ func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Compone
 	for status, productRange := range productStatusMap {
 		for _, p := range productRange {
 			productID := lo.FromPtr(p)
-			logger := v.logger.With(log.String("vulnerability-id", string(*vuln.CVE)),
+			logger := v.logger.With(log.String("vulnerability-id", vulnerabilityID(vuln)),
 				log.String("product-id", string(productID)), log.String("status", string(status)))
 
 			// Check if the product is affected
