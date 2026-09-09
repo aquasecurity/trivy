@@ -70,7 +70,7 @@ func resolveVCSUrl(modulePath string) string {
 	return ""
 }
 
-// Parse parses a go.mod file
+// Parse parses a go.mod file and returns the packages, dependencies, and the Go version declared by the `go` directive (or "1.16" if the directive is omitted).
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, string, error) {
 	pkgs := make(map[string]ftypes.Package)
 
@@ -85,7 +85,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	}
 
 	// Default to Go 1.16 when the go directive is omitted, matching cmd/go behavior.
-	// cf. https://github.com/golang/go/blob/master/src/cmd/go/internal/gover/version.go
+	// cf. https://github.com/golang/go/blob/38d1265e1a015add1d0b8651f5c2ea3f06199765/src/cmd/go/internal/gover/version.go#L15-L24
 	goVersion := "1.16"
 	if modFileParsed.Go != nil && modFileParsed.Go.Version != "" {
 		goVersion = modFileParsed.Go.Version

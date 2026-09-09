@@ -73,6 +73,7 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 	}, nil
 }
 
+// parserWithVersion adapts *mod.Parser, whose Parse returns an extra Go version string, to the 3-return-value language.Parser interface expected by the shared parse() helper below. The version is stashed on the struct so PostAnalyze can still read it after parse() returns.
 type parserWithVersion struct {
 	*mod.Parser
 	version string

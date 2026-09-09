@@ -110,6 +110,14 @@ func TestParse(t *testing.T) {
 			wantDeps:      defaultGoDepParserDeps,
 			wantGoVersion: "1.16",
 		},
+		{
+			name:          "go 1.17rc1",
+			file:          "testdata/go117rc1/go.mod",
+			replace:       true,
+			wantPkgs:      GoMod116,
+			wantDeps:      defaultGoDepParserDeps,
+			wantGoVersion: "1.17rc1",
+		},
 	}
 
 	for _, tt := range tests {

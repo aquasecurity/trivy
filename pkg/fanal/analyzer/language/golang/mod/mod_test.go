@@ -232,6 +232,60 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:   "no go directive",
+			txtar:  "testdata/no-go-directive.txtar",
+			gopath: true,
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.GoModule,
+						FilePath: "go.mod",
+						Packages: types.Packages{
+							{
+								ID:           "github.com/org/repo",
+								Name:         "github.com/org/repo",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/org/repo",
+									},
+								},
+							},
+							{
+								ID:           "github.com/aquasecurity/go-dep-parser@v0.0.0-20230219131432-590b1dfb6edd",
+								Name:         "github.com/aquasecurity/go-dep-parser",
+								Version:      "v0.0.0-20230219131432-590b1dfb6edd",
+								Relationship: types.RelationshipDirect,
+								DependsOn: []string{
+									"github.com/BurntSushi/toml@v0.3.1",
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefVCS,
+										URL:  "https://github.com/aquasecurity/go-dep-parser",
+									},
+								},
+							},
+							{
+								ID:           "github.com/BurntSushi/toml@v0.3.1",
+								Name:         "github.com/BurntSushi/toml",
+								Version:      "v0.3.1",
+								Relationship: types.RelationshipIndirect,
+								Indirect:     true,
+								Licenses: []string{
+									"MIT",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:   "no go.sum",
 			txtar:  "testdata/no-go-sum.txtar",
 			gopath: true,
