@@ -70,19 +70,19 @@ func resolveVCSUrl(modulePath string) string {
 	return ""
 }
 
-// Parse parses a go.mod file and returns the packages, the dependencies and the Go version
-// from the `go` directive ("1.16" if the directive is omitted).
-func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, string, error) {
+// Parse parses a go.mod file and returns the packages, the dependencies and whether
+// indirect dependencies should be skipped based on the `go` directive.
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, bool, error) {
 	pkgs := make(map[string]ftypes.Package)
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, "", xerrors.Errorf("file read error: %w", err)
+		return nil, nil, false, xerrors.Errorf("file read error: %w", err)
 	}
 
 	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
 	if err != nil {
-		return nil, nil, "", xerrors.Errorf("go.mod parse error: %w", err)
+		return nil, nil, false, xerrors.Errorf("go.mod parse error: %w", err)
 	}
 
 	// Default to Go 1.16 when the go directive is omitted, matching cmd/go behavior.
@@ -91,7 +91,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	if modFileParsed.Go != nil && modFileParsed.Go.Version != "" {
 		goVersion = modFileParsed.Go.Version
 	}
-	skipIndirect := goversion.Compare("go"+goVersion, "go1.17") < 0
+	skipIndirect := goversion.Compare(goversion.Lang("go"+goVersion), "go1.17") < 0
 
 	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
 	// Show `stdlib` only with `useMinVersion` flag.
@@ -188,7 +188,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
 
-	return pkgSlice, deps, goVersion, nil
+	return pkgSlice, deps, skipIndirect, nil
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`

@@ -6,7 +6,6 @@ import (
 	"errors"
 	"fmt"
 	"go/build"
-	goversion "go/version"
 	"io"
 	"io/fs"
 	"os"
@@ -73,18 +72,15 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 	}, nil
 }
 
-// parserWithVersion adapts mod.Parser to the language.Parser interface: mod.Parser.Parse
-// returns the Go version as a 4th value, which language.Parser does not have.
-// The version is stashed on the struct so that PostAnalyze can read it after parse() returns.
-// A new instance is needed for each go.mod, since the version belongs to that file alone.
-type parserWithVersion struct {
+// A new parserWithSkipIndirect is needed for each go.mod because the flag belongs to that file alone.
+type parserWithSkipIndirect struct {
 	*mod.Parser
-	version string
+	skipIndirect bool
 }
 
-func (p *parserWithVersion) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
-	pkgs, deps, ver, err := p.Parser.Parse(ctx, r)
-	p.version = ver
+func (p *parserWithSkipIndirect) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, skipIndirect, err := p.Parser.Parse(ctx, r)
+	p.skipIndirect = skipIndirect
 	return pkgs, deps, err
 }
 
@@ -96,7 +92,7 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
-		parser := &parserWithVersion{
+		parser := &parserWithSkipIndirect{
 			Parser: a.modParser,
 		}
 		// Parse go.mod
@@ -107,7 +103,7 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 			return nil
 		}
 
-		if lessThanGo117(parser.version) {
+		if parser.skipIndirect {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
@@ -324,10 +320,6 @@ func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser)
 
 	// Parse go.mod or go.sum
 	return language.Parse(ctx, types.GoModule, path, file, parser)
-}
-
-func lessThanGo117(goVersion string) bool {
-	return goversion.Compare("go"+goVersion, "go1.17") < 0
 }
 
 func mergeGoSum(gomod, gosum *types.Application) {
