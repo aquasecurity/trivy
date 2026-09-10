@@ -72,7 +72,7 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 	}, nil
 }
 
-// parserWithSkipIndirect is created anew for each go.mod, because the flag belongs to that file alone.
+// parserWithSkipIndirect is created a new for each go.mod, because the flag belongs to that file alone.
 type parserWithSkipIndirect struct {
 	*mod.Parser
 	skipIndirect bool
