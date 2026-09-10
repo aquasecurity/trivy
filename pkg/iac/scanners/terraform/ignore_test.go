@@ -556,7 +556,7 @@ resource "aws_s3_bucket" "test" {}
 		rego.WithPolicyReader(strings.NewReader(check)),
 		rego.WithPolicyNamespaces("user"),
 	)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 }
 
 func Test_IgnoreInlineByAllIDs(t *testing.T) {
@@ -589,7 +589,7 @@ func Test_IgnoreInlineByAllIDs(t *testing.T) {
 					rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 					rego.WithPolicyNamespaces("user"),
 				)
-				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+				testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 			})
 		}
 	}
@@ -624,7 +624,7 @@ resource "aws_s3_bucket" "test" {
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
 	)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 }
 
 func TestIgnoreMisconfigInModule(t *testing.T) {
@@ -644,5 +644,5 @@ resource "aws_s3_bucket" "test" {}
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
 	)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 }
