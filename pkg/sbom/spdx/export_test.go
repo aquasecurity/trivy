@@ -8,8 +8,3 @@ import "github.com/spdx/tools-golang/spdx"
 func (m *Marshaler) NormalizeLicenses(licenses []string) (string, []*spdx.OtherLicense) {
 	return m.normalizeLicenses(licenses)
 }
-
-// CalcSPDXID exports calcSPDXID for testing.
-func CalcSPDXID(h Hash, v any) (string, error) {
-	return calcSPDXID(h, v)
-}

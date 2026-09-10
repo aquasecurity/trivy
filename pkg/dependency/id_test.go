@@ -84,9 +84,7 @@ func TestID(t *testing.T) {
 	}
 }
 
-// TestUID_Digests pins how the collected digests take part in the package hash: their values
-// do, but the source they were acquired from does not. The same value can arrive with a known
-// source or without one, and that must not give the package a different identity.
+// TestUID_Digests pins that the collected digests take part in the package hash.
 func TestUID_Digests(t *testing.T) {
 	pkg := types.Package{
 		Name:    "musl",
@@ -96,10 +94,6 @@ func TestUID_Digests(t *testing.T) {
 	withDigest := pkg
 	withDigest.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceAPKInstalledDB)
 	assert.NotEqual(t, dependency.UID("", pkg), dependency.UID("", withDigest))
-
-	sameValueOtherSource := pkg
-	sameValueOtherSource.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceUnknown)
-	assert.Equal(t, dependency.UID("", withDigest), dependency.UID("", sameValueOtherSource))
 
 	otherValue := pkg
 	otherValue.AddDigest("sha1:0000000000000000000000000000000000000000", digest.SourceAPKInstalledDB)

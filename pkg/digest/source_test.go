@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/mitchellh/hashstructure/v2"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -81,42 +80,4 @@ func TestSourcedDigest_JSON(t *testing.T) {
 			assert.Equal(t, tt.sourcedDigest, got)
 		})
 	}
-}
-
-// TestSourcedDigest_Hash pins the contract that hashstructure identifies a sourced digest by
-// its value alone: a known and an unknown source must hash the same.
-func TestSourcedDigest_Hash(t *testing.T) {
-	const value = "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"
-
-	opts := &hashstructure.HashOptions{
-		ZeroNil:      true,
-		SlicesAsSets: true,
-	}
-	hash := func(v any) uint64 {
-		got, err := hashstructure.Hash(v, hashstructure.FormatV2, opts)
-		require.NoError(t, err)
-		return got
-	}
-
-	// A sourced digest has to hash exactly like the bare value it wraps.
-	want := hash(digest.Digest(value))
-
-	for _, src := range []digest.Source{
-		digest.SourceUnknown,
-		digest.SourceAPKInstalledDB,
-		digest.SourceFileContent,
-	} {
-		t.Run("source "+string(src), func(t *testing.T) {
-			assert.Equal(t, want, hash(digest.SourcedDigest{
-				Digest: value,
-				Source: src,
-			}))
-		})
-	}
-
-	// Different values must still hash differently.
-	assert.NotEqual(t, want, hash(digest.SourcedDigest{
-		Digest: "sha1:0000000000000000000000000000000000000000",
-		Source: digest.SourceAPKInstalledDB,
-	}))
 }

@@ -1,7 +1,5 @@
 package digest
 
-import "github.com/mitchellh/hashstructure/v2"
-
 // Source identifies where a digest value was acquired from, so that consumers can tell
 // which bytes it covers: values with the same algorithm may cover different byte ranges.
 type Source string
@@ -56,13 +54,6 @@ const (
 type SourcedDigest struct {
 	Digest Digest `json:",omitempty"`
 	Source Source `json:",omitempty"`
-}
-
-// Hash identifies a digest by its value alone: the source records where a value came from,
-// not what it identifies. hashstructure calls this instead of walking the struct, which
-// keeps the hashes identifying SBOM elements independent of whether the source is known.
-func (s SourcedDigest) Hash() (uint64, error) {
-	return hashstructure.Hash(string(s.Digest), hashstructure.FormatV2, nil)
 }
 
 // Algorithm returns the algorithm of the digest, e.g. sha256.
