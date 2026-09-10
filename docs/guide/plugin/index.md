@@ -11,8 +11,13 @@ They provide a way to extend the core feature set of Trivy, but without requirin
 - They integrate with Trivy, and will show up in Trivy help and subcommands.
 
 !!! warning
-    Trivy plugins available in public are not audited for security.
-    You should install and run third-party plugins at your own risk, since they are arbitrary programs running on your machine.
+    Only install and run plugins from sources you trust. Plugins execute with your permissions and are not sandboxed; see [Security considerations](#security-considerations).
+
+## Security considerations
+
+Trivy plugins are external programs executed with the privileges of the user running Trivy. They inherit the Trivy process's environment variables, which may include credentials, and can access files and network services permitted by the execution environment. Trivy does not sandbox plugins or isolate them from these resources.
+
+Publicly available plugins are not audited for security. Choose plugin sources you trust before installing or running them. In CI, provide only the credentials and permissions required by the plugin, and use an isolated execution environment when additional restrictions are needed.
 
 ## Quickstart
 Trivy helps you discover and install plugins on your machine.
