@@ -7,14 +7,13 @@ import (
 	cdx "github.com/CycloneDX/cyclonedx-go"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
-	"github.com/samber/lo"
-
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
