@@ -211,6 +211,27 @@ func TestPackage_AddDigests(t *testing.T) {
 	}
 }
 
+// TestPackage_AddDigest_LegacyData covers data that carries the legacy digest alone, such as
+// a package decoded from an SBOM. Adding another value must not leave Digest disagreeing with
+// the first element of Digests.
+func TestPackage_AddDigest_LegacyData(t *testing.T) {
+	pkg := types.Package{Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"}
+	pkg.AddDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceFileContent)
+
+	assert.Equal(t, digest.Digest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"), pkg.Digest)
+	assert.Equal(t, []digest.SourcedDigest{
+		{
+			Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+			Source: digest.SourceUnknown,
+		},
+		{
+			Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+			Source: digest.SourceFileContent,
+		},
+	}, pkg.Digests)
+	assert.Equal(t, pkg.Digest, pkg.Digests[0].Digest)
+}
+
 func TestPackage_HasDigest(t *testing.T) {
 	var empty types.Package
 	assert.False(t, empty.HasDigest())

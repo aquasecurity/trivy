@@ -277,10 +277,13 @@ func (pkg *Package) HasDigest() bool {
 
 // AddDigest stores the digest along with the source it was acquired from.
 // Empty values, and values already stored with the same source, are skipped.
+// Data that carries the legacy digest alone keeps it as the first collected value, so that
+// Digest and Digests never disagree.
 func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
 	if d == "" {
 		return
 	}
+	pkg.Digests = pkg.SourcedDigests()
 
 	sd := digest.SourcedDigest{
 		Digest: d,
@@ -292,14 +295,16 @@ func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
 	pkg.appendDigest(sd)
 }
 
-// AddDigests stores digests that were not collected by an analyzer, such as those
-// decoded from an SBOM or received over RPC.
-// Their number is chosen by whoever wrote that input, so they are deduplicated in a
-// single pass instead of scanning the stored ones for every value.
+// AddDigests stores digests that were not collected by an analyzer, such as those decoded
+// from an SBOM or received over RPC.
+// Whoever wrote that input chooses how many values it holds, and nothing bounds that number,
+// so the batch is deduplicated against a set rather than by scanning the stored values for
+// each of them.
 func (pkg *Package) AddDigests(digests []digest.SourcedDigest) {
 	if len(digests) == 0 {
 		return
 	}
+	pkg.Digests = pkg.SourcedDigests()
 
 	seen := set.New(pkg.Digests...)
 	for _, sd := range digests {
