@@ -64,7 +64,7 @@ See [go.sum](#gomod-gosum) for why `go.sum` is skipped in Go 1.17+ projects.
 ### go.sum { #gomod-gosum }
 Trivy skips `go.sum` in Go 1.17+ projects, because it lists more modules than the build uses.
 
-A common extra entry is a module that only the tests of your dependencies need. Go leaves such a module out of `go.mod` and never compiles it into your binary, so a vulnerability in it does not affect your project.
+A common extra entry is a module that another module needs to run its own tests. Go keeps such a module out of `go.mod` and never compiles it into your binary, so a vulnerability in it does not affect your project. Your own tests are a different case. Their dependencies are listed in `go.mod`, and Trivy reports them.
 
 To check whether a module is part of the build, list the dependencies of your packages.
 
