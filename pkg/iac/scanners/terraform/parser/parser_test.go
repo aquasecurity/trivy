@@ -1394,6 +1394,17 @@ resource "test" "this" {
 			expected: 0,
 		},
 		{
+			name: "non-zero count from variable",
+			src: `variable "count" {
+  default = 1
+}
+
+resource "test" "this" {
+  count = var.count
+}`,
+			expected: 1,
+		},
+		{
 			name: "count from variable without default",
 			src: `variable "count" {}
 
@@ -1412,6 +1423,17 @@ resource "test" "this" {
   count = var.enabled ? 1 : 0
 }`,
 			expected: 0,
+		},
+		{
+			name: "non-zero count from conditional",
+			src: `variable "enabled" {
+  default = true
+}
+
+resource "test" "this" {
+  count = var.enabled ? 1 : 0
+}`,
+			expected: 1,
 		},
 	}
 
@@ -3098,7 +3120,7 @@ locals {
 			first = got
 			continue
 		}
-		assert.Equal(t, first, got)
+		require.Equal(t, first, got)
 	}
 }
 
@@ -3161,7 +3183,7 @@ variable "bucket" {}
 
 module "something" {
 	source = "../c"
-	bucket = var.undefined
+	bucket = var.bucket
 }
 `,
 				"modules/c/main.tf": `
@@ -3172,7 +3194,7 @@ resource "aws_s3_bucket" "test" {
 }
 `,
 			},
-			expected: []string{"", ""},
+			expected: []string{"test", ""},
 		},
 		{
 			name: "cached module used twice",
