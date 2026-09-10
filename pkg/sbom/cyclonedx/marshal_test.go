@@ -13,6 +13,8 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
@@ -2462,4 +2464,59 @@ func TestMarshaler_Licenses(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// TestMarshaler_MarshalReport_ReusedBOM covers scanning an existing SBOM, where the BOM comes
+// from the decoder instead of being built from packages. Every hash the input carried has to
+// survive: the single-digest rule applies to what a package contributes, not to a BOM that
+// Trivy is only passing through.
+func TestMarshaler_MarshalReport_ReusedBOM(t *testing.T) {
+	bom := core.NewBOM(core.Options{})
+	root := &core.Component{
+		Type: core.TypeApplication,
+		Name: "report.cdx.json",
+		Root: true,
+	}
+	bom.AddComponent(root)
+
+	component := &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Version: "2.13.4",
+		Files: []core.File{
+			{
+				Digests: []digest.SourcedDigest{
+					{
+						Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+						Source: digest.SourceUnknown,
+					},
+					{
+						Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+						Source: digest.SourceUnknown,
+					},
+				},
+			},
+		},
+	}
+	bom.AddComponent(component)
+	bom.AddRelationship(root, component, core.RelationshipContains)
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	got, err := marshaler.MarshalReport(t.Context(), types.Report{
+		SchemaVersion: 2,
+		ArtifactName:  "report.cdx.json",
+		ArtifactType:  ftypes.TypeCycloneDX,
+		BOM:           bom,
+	})
+	require.NoError(t, err)
+
+	var hashes []cdx.Hash
+	for _, c := range lo.FromPtr(got.Components) {
+		if c.Name == "jackson-databind" {
+			hashes = lo.FromPtr(c.Hashes)
+		}
+	}
+	require.Len(t, hashes, 2)
+	assert.Equal(t, cdx.HashAlgoSHA1, hashes[0].Algorithm)
+	assert.Equal(t, cdx.HashAlgoSHA256, hashes[1].Algorithm)
 }

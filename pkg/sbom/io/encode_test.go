@@ -357,14 +357,11 @@ func TestEncoder_Encode(t *testing.T) {
 					Files: []core.File{
 						{
 							Path: "/foo/jackson-databind-2.13.4.jar",
+							// The package collected two digests, but a component carries one.
 							Digests: []digest.SourcedDigest{
 								{
 									Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
 									Source: digest.SourceJavaArchive,
-								},
-								{
-									Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-									Source: digest.SourceUnknown,
 								},
 							},
 						},

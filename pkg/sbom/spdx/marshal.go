@@ -510,14 +510,6 @@ func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicens
 }
 
 func (m *Marshaler) spdxChecksums(digests []digest.SourcedDigest) []common.Checksum {
-	if len(digests) == 0 {
-		return nil
-	}
-	// Emit the first digest only, which keeps the output as it was before packages could
-	// carry several. Placing more of them in the SBOM changes the format for consumers and
-	// is decided separately.
-	digests = digests[:1]
-
 	var checksums []common.Checksum
 	for _, d := range digests {
 		var alg spdx.ChecksumAlgorithm
