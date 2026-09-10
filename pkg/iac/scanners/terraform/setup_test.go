@@ -49,7 +49,6 @@ func scanFS(t *testing.T, fsys fs.FS, target string, opts ...options.ScannerOpti
 		ScannerWithAllDirectories(true),
 		ScannerWithSkipCachedModules(true),
 		ScannerWithStopOnHCLError(true),
-		ScannerWithSkipDownloaded(true),
 	}
 
 	s := New(append(defaultOpts, opts...)...)

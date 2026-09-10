@@ -788,6 +788,62 @@ resource "aws_s3_bucket" "test" {}
 	})
 }
 
+func TestSkipDownloadedModules(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"main.tf": `module "downloaded" {
+  source = "git::https://github.com/test/bucket"
+}
+
+module "local" {
+  source = "./modules/bucket"
+}`,
+		"modules/bucket/main.tf": `resource "aws_s3_bucket" "local" {
+  bucket = ""
+}`,
+		".terraform/modules/modules.json": `{
+  "Modules": [
+    {"Key": "", "Source": "", "Dir": "."},
+    {
+      "Key": "downloaded",
+      "Source": "git::https://github.com/test/bucket",
+      "Dir": ".terraform/modules/downloaded"
+    }
+  ]
+}`,
+		".terraform/modules/downloaded/main.tf": `resource "aws_s3_bucket" "downloaded" {
+  bucket = ""
+}`,
+	})
+
+	t.Run("skip downloaded modules", func(t *testing.T) {
+		results := scanFS(t, fsys, ".",
+			ScannerWithAllDirectories(false),
+			ScannerWithSkipDownloaded(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
+
+		failed := results.GetFailed()
+		require.Len(t, failed, 1)
+		assert.Equal(t, "modules/bucket/main.tf", failed[0].Range().GetLocalFilename())
+
+		ignored := results.GetIgnored()
+		require.Len(t, ignored, 1)
+		assert.Equal(t, ".terraform/modules/downloaded/main.tf", ignored[0].Range().GetLocalFilename())
+	})
+
+	t.Run("scan downloaded modules", func(t *testing.T) {
+		results := scanFS(t, fsys, ".",
+			ScannerWithAllDirectories(false),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
+
+		assert.Len(t, results.GetFailed(), 2)
+		assert.Empty(t, results.GetIgnored())
+	})
+}
+
 func TestUseRandomProvider(t *testing.T) {
 	fsys := fstest.MapFS{
 		"main.tf": &fstest.MapFile{Data: []byte(`resource "random_id" "suffix" {}
