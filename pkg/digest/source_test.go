@@ -100,7 +100,7 @@ func TestSourcedDigest_Hash(t *testing.T) {
 		return got
 	}
 
-	// The bare value is what the digests hashed to before the source was introduced.
+	// A sourced digest has to hash exactly like the bare value it wraps.
 	want := hash(digest.Digest(value))
 
 	for _, src := range []digest.Source{
