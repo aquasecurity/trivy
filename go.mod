@@ -37,8 +37,8 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.10.0
 	github.com/cenkalti/backoff/v6 v6.0.1
 	github.com/cheggaaa/pb/v3 v3.2.0
-	github.com/containerd/containerd/v2 v2.3.3
-	github.com/containerd/platforms v1.0.0-rc.4
+	github.com/containerd/containerd/v2 v2.3.5
+	github.com/containerd/platforms v1.0.0-rc.5
 	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v29.7.2+incompatible
 	github.com/docker/go-units v0.5.0
@@ -459,8 +459,8 @@ require (
 	k8s.io/apimachinery v0.36.3 // indirect
 	k8s.io/apiserver v0.36.1 // indirect
 	k8s.io/cli-runtime v0.36.1 // indirect
-	k8s.io/client-go v0.36.1 // indirect
-	k8s.io/component-base v0.36.1 // indirect
+	k8s.io/client-go v0.36.3 // indirect
+	k8s.io/component-base v0.36.3 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260319004828-5883c5ee87b9 // indirect
 	k8s.io/kubectl v0.36.1 // indirect
