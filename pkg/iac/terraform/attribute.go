@@ -441,6 +441,12 @@ func (a *Attribute) valueToString(value cty.Value) (result iacTypes.StringValue)
 	switch value.Type() {
 	case cty.String:
 		return iacTypes.String(value.AsString(), a.metadata)
+	case cty.Number, cty.Bool:
+		converted, err := convert.Convert(value, cty.String)
+		if err != nil {
+			return result
+		}
+		return iacTypes.String(converted.AsString(), a.metadata)
 	default:
 		return result
 	}
