@@ -539,6 +539,32 @@ func TestParseApkInfo(t *testing.T) {
 			wantPkgs:  pkgs,
 			wantFiles: files,
 		},
+		{
+			// A malformed database must not pile up digests on a single package.
+			name: "repeated checksum lines in one entry",
+			path: "./testdata/apk-repeated-checksum",
+			wantPkgs: []types.Package{
+				{
+					ID:         "musl@1.1.14-r10",
+					Name:       "musl",
+					Version:    "1.1.14-r10",
+					SrcName:    "musl",
+					SrcVersion: "1.1.14-r10",
+					Licenses:   []string{"MIT"},
+					Maintainer: "Timo Teräs <timo.teras@iki.fi>",
+					Arch:       "x86_64",
+					Digest:     "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+							Source: digest.SourceAPKInstalledDB,
+						},
+					},
+					InstalledFiles: []string{"lib/libc.musl-x86_64.so.1"},
+				},
+			},
+			wantFiles: []string{"lib/libc.musl-x86_64.so.1"},
+		},
 	}
 
 	for _, tt := range tests {
