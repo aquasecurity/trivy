@@ -12,9 +12,17 @@ func (s Source) String() string {
 
 // Acquisition sources of the digests collected by Trivy.
 const (
-	// SourceUnknown is used for values that come from outside Trivy's analyzers, such as an
-	// SBOM. The covered bytes cannot be determined.
+	// SourceUnknown is used for values whose acquisition method is not recorded anywhere,
+	// such as a digest received over RPC without a source. The covered bytes cannot be
+	// determined.
 	SourceUnknown Source = "unknown"
+
+	// SourceSBOM is a digest read from an SBOM document, from component.hashes in CycloneDX
+	// or from the checksums in SPDX. The document may be the scanned target, a file inside the
+	// scanned artifact, or an attestation fetched from a source such as Rekor.
+	// It states the algorithm and the value, but not what the value covers, so the covered
+	// bytes cannot be determined either.
+	SourceSBOM Source = "sbom"
 
 	// SourceRPMSigMD5 is the SIGMD5 tag of the RPM database. It covers the main header and
 	// the payload, not the whole .rpm file.

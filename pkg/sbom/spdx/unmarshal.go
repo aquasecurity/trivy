@@ -268,8 +268,7 @@ func (s *SPDX) unmarshalChecksums(checksums []spdx.Checksum) []digest.SourcedDig
 		}
 		digests = append(digests, digest.SourcedDigest{
 			Digest: digest.NewDigestFromString(alg, h.Value),
-			// The SBOM does not record how the digest was acquired.
-			Source: digest.SourceUnknown,
+			Source: digest.SourceSBOM,
 		})
 	}
 	return digests

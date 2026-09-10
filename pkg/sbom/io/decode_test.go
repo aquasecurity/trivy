@@ -417,20 +417,20 @@ func TestDecoder_Decode_Digests(t *testing.T) {
 			Digests: []digest.SourcedDigest{
 				{
 					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-					Source: digest.SourceUnknown,
+					Source: digest.SourceSBOM,
 				},
 				{
 					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-					Source: digest.SourceUnknown,
+					Source: digest.SourceSBOM,
 				},
 				{
 					// A repeated value is stored once.
 					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-					Source: digest.SourceUnknown,
+					Source: digest.SourceSBOM,
 				},
 				{
 					// An entry without a value is dropped.
-					Source: digest.SourceUnknown,
+					Source: digest.SourceSBOM,
 				},
 			},
 		},
@@ -451,11 +451,11 @@ func TestDecoder_Decode_Digests(t *testing.T) {
 	assert.Equal(t, []digest.SourcedDigest{
 		{
 			Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-			Source: digest.SourceUnknown,
+			Source: digest.SourceSBOM,
 		},
 		{
 			Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-			Source: digest.SourceUnknown,
+			Source: digest.SourceSBOM,
 		},
 	}, pkg.Digests)
 	assert.Equal(t, digest.Digest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"), pkg.Digest)
