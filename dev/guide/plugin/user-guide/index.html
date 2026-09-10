@@ -8830,6 +8830,7 @@ referrer<span class="w">             </span>A<span class="w"> </span>plugin<span
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span><span class="nv">plugin</span><span class="o">=</span>&lt;plugin_name&gt;<span class="w"> </span><span class="o">[</span>--output-plugin-arg<span class="w"> </span>&lt;plugin_flags&gt;<span class="o">]</span><span class="w"> </span>&lt;image_name&gt;
 </code></pre></div>
 <p>Since scan results are passed to the plugin via standard input, plugins must be capable of handling standard input.</p>
+<p>Output plugins execute with the same permissions as other plugins and receive the scan results. See <a href="../#security-considerations">Security considerations</a> before enabling an output plugin.</p>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
 <p>To avoid Trivy hanging, you need to read all data from <code>Stdin</code> before the plugin exits successfully or stops with an error.</p>

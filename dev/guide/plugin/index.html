@@ -5282,6 +5282,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quickstart" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8509,6 +8520,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#quickstart" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8557,9 +8579,11 @@ They provide a way to extend the core feature set of Trivy, but without requirin
 </ul>
 <div class="admonition warning">
 <p class="admonition-title">Warning</p>
-<p>Trivy plugins available in public are not audited for security.
-You should install and run third-party plugins at your own risk, since they are arbitrary programs running on your machine.</p>
+<p>Only install and run plugins from sources you trust. Plugins execute with your permissions and are not sandboxed; see <a href="#security-considerations">Security considerations</a>.</p>
 </div>
+<h2 id="security-considerations">Security considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p>Trivy plugins are external programs executed with the privileges of the user running Trivy. They inherit the Trivy process's environment variables, which may include credentials, and can access files and network services permitted by the execution environment. Trivy does not sandbox plugins or isolate them from these resources.</p>
+<p>Publicly available plugins are not audited for security. Choose plugin sources you trust before installing or running them. In CI, provide only the credentials and permissions required by the plugin, and use an isolated execution environment when additional restrictions are needed.</p>
 <h2 id="quickstart">Quickstart<a class="headerlink" href="#quickstart" title="Permanent link">&para;</a></h2>
 <p>Trivy helps you discover and install plugins on your machine.</p>
 <p>You can install and use a wide variety of Trivy plugins to enhance your experience.</p>
