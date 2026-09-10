@@ -393,8 +393,12 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 								Source: "file-content",
 							},
 							{
+								// An empty source on the wire means the peer did not know it.
 								Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
-								Source: "unknown",
+							},
+							{
+								// An entry without a value is dropped rather than stored.
+								Source: "file-content",
 							},
 						},
 					},

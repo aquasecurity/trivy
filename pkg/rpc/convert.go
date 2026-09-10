@@ -272,7 +272,6 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Layer:           ConvertFromRPCLayer(pkg.Layer),
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
-			Digest:          digest.Digest(pkg.Digest),
 			Relationship:    ftypes.Relationship(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -282,7 +281,10 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
 			InstalledFiles:  pkg.InstalledFiles,
 		}
-		p.Digests = ConvertFromRPCPkgDigests(pkg.Digests)
+		// Going through the package drops empty values, deduplicates and keeps the legacy
+		// field in sync, whatever the peer put into the two fields.
+		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests))
+		p.Digest = cmp.Or(p.Digest, digest.Digest(pkg.Digest))
 		pkgs = append(pkgs, p)
 	}
 	return pkgs
