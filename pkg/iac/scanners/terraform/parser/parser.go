@@ -189,6 +189,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		}
 		paths = append(paths, realPath)
 	}
+	paths = dropShadowedTerraformFiles(paths)
 	sort.Strings(paths)
 	for _, path := range paths {
 		var err error
@@ -211,6 +212,44 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 
 	return nil
+}
+
+// dropShadowedTerraformFiles mirrors the loading rule OpenTofu applies when
+// both language variants of a file exist: main.tofu shadows main.tf, and
+// main.tofu.json shadows main.tf.json. The shadowed file is never loaded by
+// OpenTofu, so scanning it reports findings for a configuration that is not
+// applied. The pairing is per extension family; main.tofu does not shadow
+// main.tf.json.
+func dropShadowedTerraformFiles(paths []string) []string {
+	shadowed := make(map[string]struct{})
+	for _, f := range paths {
+		var twin string
+		switch {
+		case strings.HasSuffix(f, ".tofu"):
+			twin = strings.TrimSuffix(f, ".tofu") + ".tf"
+		case strings.HasSuffix(f, ".tofu.json"):
+			twin = strings.TrimSuffix(f, ".tofu.json") + ".tf.json"
+		default:
+			continue
+		}
+		for _, other := range paths {
+			if other == twin {
+				shadowed[twin] = struct{}{}
+				break
+			}
+		}
+	}
+	if len(shadowed) == 0 {
+		return paths
+	}
+	kept := paths[:0]
+	for _, f := range paths {
+		if _, drop := shadowed[f]; drop {
+			continue
+		}
+		kept = append(kept, f)
+	}
+	return kept
 }
 
 func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
