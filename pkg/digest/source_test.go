@@ -83,10 +83,8 @@ func TestSourcedDigest_JSON(t *testing.T) {
 	}
 }
 
-// TestSourcedDigest_Hash pins the contract that hashstructure identifies a sourced
-// digest by its value alone. SBOM element IDs are hashes of whole components, so a
-// digest whose source is unknown must not produce a different ID than the same value
-// with a known source.
+// TestSourcedDigest_Hash pins the contract that hashstructure identifies a sourced digest by
+// its value alone: a known and an unknown source must hash the same.
 func TestSourcedDigest_Hash(t *testing.T) {
 	const value = "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"
 

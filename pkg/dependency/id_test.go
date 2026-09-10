@@ -84,10 +84,9 @@ func TestID(t *testing.T) {
 	}
 }
 
-// TestUID_Digests pins how the collected digests take part in the package hash: their
-// values do, but the source they were acquired from does not. The source is unknown for
-// data that came from an SBOM or an older cache blob, so a UID that depended on it would
-// differ between scans of the very same package.
+// TestUID_Digests pins how the collected digests take part in the package hash: their values
+// do, but the source they were acquired from does not. The same value can arrive with a known
+// source or without one, and that must not give the package a different identity.
 func TestUID_Digests(t *testing.T) {
 	pkg := types.Package{
 		Name:    "musl",

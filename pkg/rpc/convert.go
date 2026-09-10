@@ -114,7 +114,6 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 	}
 }
 
-// ConvertToRPCPkgDigests converts []digest.SourcedDigest to []*common.PackageDigest
 func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDigest {
 	var rpcDigests []*common.PackageDigest
 	for _, d := range digests {
@@ -126,7 +125,6 @@ func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDig
 	return rpcDigests
 }
 
-// ConvertFromRPCPkgDigests converts []*common.PackageDigest to []digest.SourcedDigest
 func ConvertFromRPCPkgDigests(rpcDigests []*common.PackageDigest) []digest.SourcedDigest {
 	if len(rpcDigests) == 0 {
 		return nil
@@ -281,8 +279,6 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
 			InstalledFiles:  pkg.InstalledFiles,
 		}
-		// Going through the package drops empty values, deduplicates and keeps the legacy
-		// field in sync, whatever the peer put into the two fields.
 		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests))
 		p.Digest = cmp.Or(p.Digest, digest.Digest(pkg.Digest))
 		pkgs = append(pkgs, p)

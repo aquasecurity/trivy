@@ -269,7 +269,6 @@ func TestFSCache_PutBlob(t *testing.T) {
 			wantErr: "database not open",
 		},
 		{
-			// Digests with an unknown source reach a blob when the scanned artifact is an SBOM.
 			name: "package with several digests",
 			args: args{
 				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
@@ -291,7 +290,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 										},
 										{
 											Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-											Source: digest.SourceUnknown,
+											Source: digest.SourceSBOM,
 										},
 									},
 								},
@@ -319,7 +318,7 @@ func TestFSCache_PutBlob(t *testing.T) {
 				            },
 				            {
 				              "Digest": "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-				              "Source": "unknown"
+				              "Source": "sbom"
 				            }
 				          ]
 				        }

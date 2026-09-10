@@ -361,7 +361,6 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Digest: "sha256:8d42b73fc1ddc2e9e66c954966f144665825e69f4ed10c66342ae7c26b38d4e4",
 						DiffID: "sha256:745d171eb8c3d69f788da3a1b053056231ad140b80be71d6869229846a1f3a77",
 					},
-					// The peer sent the legacy field only, and it is passed through as such.
 					Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Relationship: ftypes.RelationshipDirect,
 					Indirect:     false,

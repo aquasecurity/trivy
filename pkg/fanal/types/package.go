@@ -253,9 +253,9 @@ func (pkg *Package) Empty() bool {
 }
 
 // SourcedDigests returns the collected digests with their acquisition sources.
-// Data produced before the sourced digests, such as a cache blob written by an older
-// Trivy version, carries the legacy single digest only. Its acquisition method was not
-// recorded, so it is reported with an unknown source instead of a guessed one.
+// Data produced before the sourced digests, such as a report passed to trivy convert,
+// carries the legacy single digest only. Its acquisition method was not recorded, so it is
+// reported with an unknown source instead of a guessed one.
 func (pkg *Package) SourcedDigests() []digest.SourcedDigest {
 	if len(pkg.Digests) == 0 && pkg.Digest != "" {
 		return []digest.SourcedDigest{
@@ -269,8 +269,7 @@ func (pkg *Package) SourcedDigests() []digest.SourcedDigest {
 }
 
 // HasDigest reports whether any digest has been collected for the package.
-// It also covers data that carries the legacy single digest only, such as a cache blob
-// written by an older Trivy version.
+// It also covers data that carries the legacy single digest only.
 func (pkg *Package) HasDigest() bool {
 	return pkg.Digest != "" || len(pkg.Digests) > 0
 }
@@ -297,9 +296,8 @@ func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
 
 // AddDigests stores digests that were not collected by an analyzer, such as those decoded
 // from an SBOM or received over RPC.
-// Whoever wrote that input chooses how many values it holds, and nothing bounds that number,
-// so the batch is deduplicated against a set rather than by scanning the stored values for
-// each of them.
+// Nothing bounds how many values such input holds, so the batch is deduplicated against a set
+// instead of scanning the stored values for each one.
 func (pkg *Package) AddDigests(digests []digest.SourcedDigest) {
 	if len(digests) == 0 {
 		return

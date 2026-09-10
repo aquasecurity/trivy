@@ -1755,9 +1755,8 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 }
 
 // TestCalcSPDXID_IgnoresDigestSource ensures the element ID of a package does not depend on
-// how its digest was acquired. The source is unknown for values that came from an SBOM or
-// an older cache blob, so an ID that depended on it would differ between scans of the very
-// same image. The table tests above cannot catch this, as they replace the hasher.
+// how its digest was acquired: the same value reaches Trivy both with a known source and
+// without one. The table tests replace the hasher, so only this one can catch it.
 func TestCalcSPDXID_IgnoresDigestSource(t *testing.T) {
 	component := func(src digest.Source) *core.Component {
 		return &core.Component{

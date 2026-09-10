@@ -2467,9 +2467,8 @@ func TestMarshaler_Licenses(t *testing.T) {
 }
 
 // TestMarshaler_MarshalReport_ReusedBOM covers scanning an existing SBOM, where the BOM comes
-// from the decoder instead of being built from packages. Every hash the input carried has to
-// survive: the single-digest rule applies to what a package contributes, not to a BOM that
-// Trivy is only passing through.
+// from the decoder instead of being built from packages. The single-digest rule applies to
+// what a package contributes, so every hash of a BOM that is passed through has to survive.
 func TestMarshaler_MarshalReport_ReusedBOM(t *testing.T) {
 	bom := core.NewBOM(core.Options{})
 	root := &core.Component{

@@ -52,7 +52,6 @@ message Package {
   Layer layer = 11;
   string file_path = 12;
   repeated string depends_on = 14;
-  // the first of digests; prefer digests, which also carries the acquisition sources
   string digest = 16;
   bool dev = 17;
   bool indirect = 18;
@@ -71,12 +70,8 @@ message PackageRepository {
   string class = 1;
 }
 
-// PackageDigest is a digest of the package with the source it was acquired from.
 message PackageDigest {
-  // e.g. sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3
   string digest = 1;
-  // the metadata field or the computation method the digest was acquired from,
-  // e.g. rpm-sigmd5. An empty value means the source is unknown.
   string source = 2;
 }
 

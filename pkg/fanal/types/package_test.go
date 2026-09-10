@@ -270,7 +270,7 @@ func TestPackage_SourcedDigests(t *testing.T) {
 			},
 		},
 		{
-			// e.g. a cache blob written by a Trivy version without the sourced digests
+			// e.g. a report produced by a Trivy version without the sourced digests
 			name: "legacy single digest",
 			pkg: types.Package{
 				Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",

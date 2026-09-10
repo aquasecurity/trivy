@@ -461,16 +461,15 @@ type Package struct {
 	Arch       string         `protobuf:"bytes,5,opt,name=arch,proto3" json:"arch,omitempty"`
 	// src package containing some binary packages
 	// e.g. bind
-	SrcName    string      `protobuf:"bytes,6,opt,name=src_name,json=srcName,proto3" json:"src_name,omitempty"`
-	SrcVersion string      `protobuf:"bytes,7,opt,name=src_version,json=srcVersion,proto3" json:"src_version,omitempty"`
-	SrcRelease string      `protobuf:"bytes,8,opt,name=src_release,json=srcRelease,proto3" json:"src_release,omitempty"`
-	SrcEpoch   int32       `protobuf:"varint,9,opt,name=src_epoch,json=srcEpoch,proto3" json:"src_epoch,omitempty"`
-	Licenses   []string    `protobuf:"bytes,15,rep,name=licenses,proto3" json:"licenses,omitempty"`
-	Locations  []*Location `protobuf:"bytes,20,rep,name=locations,proto3" json:"locations,omitempty"`
-	Layer      *Layer      `protobuf:"bytes,11,opt,name=layer,proto3" json:"layer,omitempty"`
-	FilePath   string      `protobuf:"bytes,12,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
-	DependsOn  []string    `protobuf:"bytes,14,rep,name=depends_on,json=dependsOn,proto3" json:"depends_on,omitempty"`
-	// the first of digests; prefer digests, which also carries the acquisition sources
+	SrcName         string             `protobuf:"bytes,6,opt,name=src_name,json=srcName,proto3" json:"src_name,omitempty"`
+	SrcVersion      string             `protobuf:"bytes,7,opt,name=src_version,json=srcVersion,proto3" json:"src_version,omitempty"`
+	SrcRelease      string             `protobuf:"bytes,8,opt,name=src_release,json=srcRelease,proto3" json:"src_release,omitempty"`
+	SrcEpoch        int32              `protobuf:"varint,9,opt,name=src_epoch,json=srcEpoch,proto3" json:"src_epoch,omitempty"`
+	Licenses        []string           `protobuf:"bytes,15,rep,name=licenses,proto3" json:"licenses,omitempty"`
+	Locations       []*Location        `protobuf:"bytes,20,rep,name=locations,proto3" json:"locations,omitempty"`
+	Layer           *Layer             `protobuf:"bytes,11,opt,name=layer,proto3" json:"layer,omitempty"`
+	FilePath        string             `protobuf:"bytes,12,opt,name=file_path,json=filePath,proto3" json:"file_path,omitempty"`
+	DependsOn       []string           `protobuf:"bytes,14,rep,name=depends_on,json=dependsOn,proto3" json:"depends_on,omitempty"`
 	Digest          string             `protobuf:"bytes,16,opt,name=digest,proto3" json:"digest,omitempty"`
 	Dev             bool               `protobuf:"varint,17,opt,name=dev,proto3" json:"dev,omitempty"`
 	Indirect        bool               `protobuf:"varint,18,opt,name=indirect,proto3" json:"indirect,omitempty"`
@@ -753,16 +752,12 @@ func (x *PackageRepository) GetClass() string {
 	return ""
 }
 
-// PackageDigest is a digest of the package with the source it was acquired from.
 type PackageDigest struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	// e.g. sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3
 	Digest string `protobuf:"bytes,1,opt,name=digest,proto3" json:"digest,omitempty"`
-	// the metadata field or the computation method the digest was acquired from,
-	// e.g. rpm-sigmd5. An empty value means the source is unknown.
 	Source string `protobuf:"bytes,2,opt,name=source,proto3" json:"source,omitempty"`
 }
 

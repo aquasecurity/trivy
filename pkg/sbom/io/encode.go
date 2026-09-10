@@ -454,8 +454,8 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 
 	var files []core.File
 	if digests := pkg.SourcedDigests(); pkg.FilePath != "" || len(digests) > 0 {
-		// A component carries a single digest: the one the package collected first. Putting
-		// more of them into a format changes it for consumers, which is decided separately.
+		// A component carries a single digest: the one the package collected first. What to put
+		// into a format when a package has several is a separate decision.
 		if len(digests) > 1 {
 			digests = digests[:1]
 		}
