@@ -70,8 +70,10 @@ func resolveVCSUrl(modulePath string) string {
 	return ""
 }
 
-// Parse parses a go.mod file and returns the packages, the dependencies and whether
-// indirect dependencies should be skipped based on the `go` directive.
+// Parse parses a go.mod file and returns the packages, the dependencies and whether indirect
+// requirements were skipped. They are skipped for modules below Go 1.17 ("1.16" is assumed when
+// the `go` directive is omitted), whose go.mod is not required to list every transitive
+// dependency. For those the caller should merge go.sum to get the full set.
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, bool, error) {
 	pkgs := make(map[string]ftypes.Package)
 
