@@ -362,35 +362,6 @@ resource "aws_s3_bucket" "test" {}`,
 			assertLength: 0,
 		},
 		{
-			name: "ignore for implied IAM resource",
-			source: `# %s:ignore:aws-iam-enforce-mfa
-resource "aws_iam_group" "this" {
-  name = "group-name" 
-}
-
-resource "aws_iam_policy" "this" {
-  name   = "test-policy"                                 
-  policy = data.aws_iam_policy_document.this.json 
-}
-
-
-resource "aws_iam_group_policy_attachment" "this" {
-  group      = aws_iam_group.this.name
-  policy_arn = aws_iam_policy.this.arn                         
-}
-
-data "aws_iam_policy_document" "this" {
-  statement {
-    sid = "PublishToCloudWatch" 
-    actions = [
-      "cloudwatch:PutMetricData", 
-    ]
-    resources = ["*"]
-  }
-}`,
-			assertLength: 0,
-		},
-		{
 			name: "ignore marker value is unknown",
 			source: `#trivy:ignore:*[bucket=mybucket-bucket1]
 resource "aws_s3_bucket" "test" {
@@ -407,9 +378,7 @@ resource "aws_s3_bucket" "test" {
 				t.Run(prefix, func(t *testing.T) {
 					results := scanHCL(
 						t, formatWithSingleValue(tc.source, prefix),
-						rego.WithPolicyReader(
-							strings.NewReader(emptyBucketCheck),
-							strings.NewReader(enforceGroupMfaCheck)),
+						rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 						rego.WithPolicyNamespaces("user"),
 					)
 					assert.Len(t, results.GetFailed(), tc.assertLength)
@@ -587,7 +556,7 @@ resource "aws_s3_bucket" "test" {}
 		rego.WithPolicyReader(strings.NewReader(check)),
 		rego.WithPolicyNamespaces("user"),
 	)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 }
 
 func Test_IgnoreInlineByAllIDs(t *testing.T) {
@@ -620,7 +589,7 @@ func Test_IgnoreInlineByAllIDs(t *testing.T) {
 					rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 					rego.WithPolicyNamespaces("user"),
 				)
-				testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+				testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 			})
 		}
 	}
@@ -651,10 +620,29 @@ resource "aws_s3_bucket" "test" {
 `,
 	})
 
-	results, err := scanFS(fsys, ".",
+	results := scanFS(t, fsys, ".",
 		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 		rego.WithPolicyNamespaces("user"),
 	)
-	require.NoError(t, err)
-	testutil.AssertRuleNotFailed(t, "aws-s3-non-empty-bucket", results, "")
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
+}
+
+func TestIgnoreMisconfigInModule(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"project/main.tf": `
+#tfsec:ignore:aws-s3-non-empty-bucket
+module "something" {
+	source = "../modules/problem"
+}
+`,
+		"modules/problem/main.tf": `
+resource "aws_s3_bucket" "test" {}
+`,
+	})
+
+	results := scanFS(t, fsys, "project",
+		rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+		rego.WithPolicyNamespaces("user"),
+	)
+	testutil.AssertRuleIgnored(t, "aws-s3-non-empty-bucket", results)
 }

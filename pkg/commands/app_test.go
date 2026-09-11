@@ -3,9 +3,11 @@ package commands
 import (
 	"bytes"
 	"io"
+	"os"
 	"testing"
 
 	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -169,6 +171,12 @@ Check Bundle:
 }
 
 func TestFlags(t *testing.T) {
+	const customConfig = `format: json
+severity: [HIGH]
+scan:
+  scanners: [secret]
+`
+
 	type want struct {
 		format     types.Format
 		severities []dbTypes.Severity
@@ -177,6 +185,7 @@ func TestFlags(t *testing.T) {
 	tests := []struct {
 		name      string
 		arguments []string // 1st argument is path to trivy binaries
+		config    string
 		want      want
 		wantErr   string
 	}{
@@ -288,6 +297,37 @@ func TestFlags(t *testing.T) {
 			},
 		},
 		{
+			name:      "default configuration file",
+			arguments: []string{"test"},
+			config:    customConfig,
+			want: want{
+				format:     types.FormatJSON,
+				severities: []dbTypes.Severity{dbTypes.SeverityHigh},
+				scanners:   types.Scanners{types.SecretScanner, types.SBOMScanner},
+			},
+		},
+		{
+			name: "empty configuration paths",
+			arguments: []string{
+				"test",
+				"--config=",
+				"--ignorefile=",
+				"--secret-config=",
+			},
+			config: customConfig,
+			want: want{
+				format: types.FormatTable,
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityUnknown,
+					dbTypes.SeverityLow,
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+					dbTypes.SeverityCritical,
+				},
+				scanners: types.Scanners{types.VulnerabilityScanner, types.SecretScanner, types.SBOMScanner},
+			},
+		},
+		{
 			name: "invalid format",
 			arguments: []string{
 				"test",
@@ -309,6 +349,12 @@ func TestFlags(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			t.Cleanup(viper.Reset)
+			if tt.config != "" {
+				t.Chdir(t.TempDir())
+				require.NoError(t, os.WriteFile("trivy.yaml", []byte(tt.config), 0o600))
+			}
+
 			globalFlags := flag.NewGlobalFlagGroup()
 			rootCmd := NewRootCommand(globalFlags)
 			rootCmd.SetErr(io.Discard)
@@ -318,6 +364,7 @@ func TestFlags(t *testing.T) {
 				globalFlags,
 				flag.NewReportFlagGroup(),
 				flag.NewScanFlagGroup(),
+				flag.NewSecretFlagGroup(),
 			}
 			cmd := &cobra.Command{
 				Use: "test",

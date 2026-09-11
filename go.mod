@@ -23,7 +23,7 @@ require (
 	github.com/aquasecurity/table v1.11.0
 	github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56
 	github.com/aquasecurity/tml v0.6.1
-	github.com/aquasecurity/trivy-checks v1.12.2-0.20251219190323-79d27547baf5
+	github.com/aquasecurity/trivy-checks v1.12.2-0.20260908095928-2d1b9bec7d6f
 	github.com/aquasecurity/trivy-db v0.0.0-20260813095258-0e0340a01b57
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
@@ -37,8 +37,8 @@ require (
 	github.com/bmatcuk/doublestar/v4 v4.10.0
 	github.com/cenkalti/backoff/v6 v6.0.1
 	github.com/cheggaaa/pb/v3 v3.2.0
-	github.com/containerd/containerd/v2 v2.3.3
-	github.com/containerd/platforms v1.0.0-rc.4
+	github.com/containerd/containerd/v2 v2.3.5
+	github.com/containerd/platforms v1.0.0-rc.5
 	github.com/distribution/reference v0.6.0
 	github.com/docker/cli v29.7.2+incompatible
 	github.com/docker/go-units v0.5.0
@@ -450,7 +450,7 @@ require (
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7 // indirect
-	google.golang.org/grpc v1.83.1 // indirect
+	google.golang.org/grpc v1.83.2 // indirect
 	gopkg.in/evanphx/json-patch.v4 v4.13.0 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/warnings.v0 v0.1.2 // indirect
@@ -459,15 +459,15 @@ require (
 	k8s.io/apimachinery v0.36.3 // indirect
 	k8s.io/apiserver v0.36.1 // indirect
 	k8s.io/cli-runtime v0.36.1 // indirect
-	k8s.io/client-go v0.36.1 // indirect
-	k8s.io/component-base v0.36.1 // indirect
+	k8s.io/client-go v0.36.3 // indirect
+	k8s.io/component-base v0.36.3 // indirect
 	k8s.io/klog/v2 v2.140.0 // indirect
 	k8s.io/kube-openapi v0.0.0-20260319004828-5883c5ee87b9 // indirect
 	k8s.io/kubectl v0.36.1 // indirect
 	modernc.org/libc v1.74.4 // indirect
 	modernc.org/mathutil v1.7.1 // indirect
 	modernc.org/memory v1.11.0 // indirect
-	mvdan.cc/sh/v3 v3.12.0 // indirect
+	mvdan.cc/sh/v3 v3.13.1 // indirect
 	mvdan.cc/xurls/v2 v2.6.0 // indirect
 	oras.land/oras-go/v2 v2.6.2 // indirect
 	pluginrpc.com/pluginrpc v0.5.0 // indirect

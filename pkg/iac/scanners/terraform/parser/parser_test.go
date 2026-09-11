@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bytes"
+	"fmt"
 	"io/fs"
 	"log/slog"
 	"os"
@@ -11,6 +12,7 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/zclconf/go-cty/cty"
@@ -1374,6 +1376,64 @@ func TestCountMetaArgument(t *testing.T) {
   count = 2
 }`,
 			expected: 2,
+		},
+		{
+			name:     "no count",
+			src:      `resource "test" "this" {}`,
+			expected: 1,
+		},
+		{
+			name: "count from variable",
+			src: `variable "count" {
+  default = 0
+}
+
+resource "test" "this" {
+  count = var.count
+}`,
+			expected: 0,
+		},
+		{
+			name: "non-zero count from variable",
+			src: `variable "count" {
+  default = 1
+}
+
+resource "test" "this" {
+  count = var.count
+}`,
+			expected: 1,
+		},
+		{
+			name: "count from variable without default",
+			src: `variable "count" {}
+
+resource "test" "this" {
+  count = var.count
+}`,
+			expected: 1,
+		},
+		{
+			name: "count from conditional",
+			src: `variable "enabled" {
+  default = false
+}
+
+resource "test" "this" {
+  count = var.enabled ? 1 : 0
+}`,
+			expected: 0,
+		},
+		{
+			name: "non-zero count from conditional",
+			src: `variable "enabled" {
+  default = true
+}
+
+resource "test" "this" {
+  count = var.enabled ? 1 : 0
+}`,
+			expected: 1,
 		},
 	}
 
@@ -3016,4 +3076,345 @@ resource "foo" "bar" {
 			require.Len(t, modules, 1)
 		})
 	}
+}
+
+// Test_DeterministicEvaluation checks that repeated evaluation of the same files
+// gives the same blocks in the same order. Expansion walks Go maps, whose iteration
+// order is random, so a dependency on that order would show up as results that
+// change from scan to scan.
+func Test_DeterministicEvaluation(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"first.tf": `
+resource "aws_s3_bucket" "test" {
+  for_each = other.thing
+}
+		`,
+		"second.tf": `
+resource "other" "thing" {
+	for_each = local.list
+}
+		`,
+		"third.tf": `
+locals {
+	list = {
+		a = 1,
+		b = 2,
+	}
+}
+		`,
+	})
+
+	var first []string
+
+	for i := range 100 {
+		parser := New(fsys, "", OptionStopOnHCLError(true))
+		require.NoError(t, parser.ParseFS(t.Context(), "."))
+		modules, err := parser.EvaluateAll(t.Context())
+		require.NoError(t, err)
+
+		got := lo.Map(modules.GetBlocks(), func(block *terraform.Block, _ int) string {
+			return fmt.Sprintf("%s %s", block.FullName(), block.GetMetadata().Range().String())
+		})
+
+		if i == 0 {
+			first = got
+			continue
+		}
+		require.Equal(t, first, got)
+	}
+}
+
+// TestModuleInstances checks that each use of a module gives its own resources,
+// with the values passed to that particular instance.
+func TestModuleInstances(t *testing.T) {
+	tests := []struct {
+		name     string
+		files    map[string]string
+		expected []string
+	}{
+		{
+			name: "module used twice",
+			files: map[string]string{
+				"project/main.tf": `
+module "good" {
+	source = "../modules/problem"
+	bucket = "test"
+}
+
+module "bad" {
+	source = "../modules/problem"
+	bucket = ""
+}
+`,
+				"modules/problem/main.tf": `
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
+}
+`,
+			},
+			expected: []string{"test", ""},
+		},
+		{
+			name: "nested module used twice",
+			files: map[string]string{
+				"project/main.tf": `
+module "good" {
+  source = "../modules/a"
+  bucket = "test"
+}
+
+module "bad" {
+	source = "../modules/a"
+	bucket = ""
+}
+`,
+				"modules/a/main.tf": `
+variable "bucket" {}
+
+module "something" {
+	source = "../../modules/b"
+	bucket = var.bucket
+}
+`,
+				"modules/b/main.tf": `
+variable "bucket" {}
+
+module "something" {
+	source = "../c"
+	bucket = var.bucket
+}
+`,
+				"modules/c/main.tf": `
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
+}
+`,
+			},
+			expected: []string{"test", ""},
+		},
+		{
+			name: "cached module used twice",
+			files: map[string]string{
+				"project/main.tf": `
+module "something" {
+  	source = "/nowhere"
+	bucket = ""
+}
+
+module "something2" {
+	source = "/nowhere"
+  	bucket = ""
+}
+`,
+				"project/.terraform/modules/a/main.tf": `
+variable "bucket" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
+}
+`,
+				"project/.terraform/modules/modules.json": `
+	{"Modules":[{"Key":"something","Source":"/nowhere","Version":"2.35.0","Dir":".terraform/modules/a"},{"Key":"something2","Source":"/nowhere","Version":"2.35.0","Dir":".terraform/modules/a"}]}
+`,
+			},
+			expected: []string{"", ""},
+		},
+		{
+			name: "nested modules with duplicate names and paths",
+			files: map[string]string{
+				"project/main.tf": `
+module "something" {
+  source = "../modules/a"
+  s3_bucket_count = 0
+}
+
+module "something-bad" {
+	source = "../modules/a"
+	s3_bucket_count = 1
+}
+`,
+				"modules/a/main.tf": `
+variable "s3_bucket_count" {
+	default = 0
+}
+module "something" {
+	source = "../b"
+	s3_bucket_count = var.s3_bucket_count
+}
+`,
+				"modules/b/main.tf": `
+variable "s3_bucket_count" {
+	default = 0
+}
+module "something" {
+	source = "../c"
+	s3_bucket_count = var.s3_bucket_count
+}
+`,
+				"modules/c/main.tf": `
+variable "s3_bucket_count" {
+	default = 0
+}
+
+resource "aws_s3_bucket" "test" {
+  count = var.s3_bucket_count
+}
+`,
+			},
+			expected: []string{""},
+		},
+		{
+			name: "reference passed to a module",
+			files: map[string]string{
+				"project/main.tf": `
+resource "some_resource" "this" {
+    name = "test"
+}
+
+module "something" {
+	source = "../modules/a"
+    bucket = some_resource.this.name
+}
+`,
+				"modules/a/main.tf": `
+variable "bucket" {
+    type = string
+}
+
+resource "aws_s3_bucket" "test" {
+  bucket = var.bucket
+}
+`,
+			},
+			expected: []string{"test"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(tt.files)
+			parser := New(fsys, "", OptionStopOnHCLError(true))
+			require.NoError(t, parser.ParseFS(t.Context(), "project"))
+
+			modules, err := parser.EvaluateAll(t.Context())
+			require.NoError(t, err)
+
+			buckets := lo.Map(modules.GetResourcesByType("aws_s3_bucket"),
+				func(res *terraform.Block, _ int) string {
+					attr := res.GetAttribute("bucket")
+					if attr == nil {
+						return ""
+					}
+					name, _ := attr.GetRawValue().(string)
+					return name
+				})
+
+			assert.ElementsMatch(t, tt.expected, buckets)
+		})
+	}
+}
+
+func TestRefToDynamicBlockValue(t *testing.T) {
+	tests := []struct {
+		name      string
+		src       string
+		attribute string
+		expected  any
+	}{
+		{
+			name: "reference by index stays unresolved",
+			src: `resource "something" "this" {
+	dynamic "blah" {
+		for_each = ["a"]
+		content {
+			bucket = ""
+		}
+	}
+}
+
+resource "aws_s3_bucket" "test" {
+  secure = something.this.blah[0].bucket
+}`,
+			attribute: "secure",
+			expected:  nil,
+		},
+		{
+			name: "reference without index resolves",
+			src: `resource "something" "else" {
+	dynamic "blah" {
+		for_each = toset(["test"])
+		content {
+			bucket = blah.value
+		}
+	}
+}
+
+resource "aws_s3_bucket" "test" {
+  bucket = something.else.blah.bucket
+}`,
+			attribute: "bucket",
+			expected:  "test",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := parse(t, map[string]string{"main.tf": tt.src})
+
+			buckets := modules.GetResourcesByType("aws_s3_bucket")
+			require.Len(t, buckets, 1)
+
+			attr := buckets[0].GetAttribute(tt.attribute)
+			require.NotNil(t, attr)
+			assert.Equal(t, tt.expected, attr.GetRawValue())
+		})
+	}
+}
+
+// If this test fails, the go-cty version in go.mod is incompatible with the one hcl uses.
+func TestGoCtyVersionCompatibility(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"project/main.tf": `
+data "aws_vpc" "default" {
+  default = true
+}
+
+module "test" {
+  source     = "../modules/problem/"
+  cidr_block = data.aws_vpc.default.cidr_block
+}`,
+		"modules/problem/main.tf": `variable "cidr_block" {}
+
+variable "open" {
+  default = false
+}
+
+resource "aws_security_group" "this" {
+  name = "Test"
+
+  ingress {
+    description = "HTTPs"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    self        = ! var.open
+    cidr_blocks = var.open ? [var.cidr_block] : null
+  }
+}
+
+resource "aws_s3_bucket" "test" {}`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "project"))
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+
+	assert.Len(t, modules.GetResourcesByType("aws_security_group"), 1)
+	assert.Len(t, modules.GetResourcesByType("aws_s3_bucket"), 1)
 }

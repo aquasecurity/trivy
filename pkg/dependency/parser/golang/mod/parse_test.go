@@ -13,90 +13,110 @@ import (
 
 func TestParse(t *testing.T) {
 	tests := []struct {
-		name          string
-		file          string
-		replace       bool
-		useMinVersion bool
-		wantPkgs      []ftypes.Package
-		wantDeps      []ftypes.Dependency
+		name             string
+		file             string
+		replace          bool
+		useMinVersion    bool
+		wantPkgs         []ftypes.Package
+		wantDeps         []ftypes.Dependency
+		wantSkipIndirect bool
 	}{
 		{
-			name:          "normal with stdlib",
-			file:          "testdata/normal/go.mod",
-			replace:       true,
-			useMinVersion: true,
-			wantPkgs:      GoModNormal,
-			wantDeps:      GoModNormalDeps,
+			name:             "normal with stdlib",
+			file:             "testdata/normal/go.mod",
+			replace:          true,
+			useMinVersion:    true,
+			wantPkgs:         GoModNormal,
+			wantDeps:         GoModNormalDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "normal",
-			file:     "testdata/normal/go.mod",
-			replace:  true,
-			wantPkgs: GoModNormalWithoutStdlib,
-			wantDeps: GoModNormalWithoutStdlibDeps,
+			name:             "normal",
+			file:             "testdata/normal/go.mod",
+			replace:          true,
+			wantPkgs:         GoModNormalWithoutStdlib,
+			wantDeps:         GoModNormalWithoutStdlibDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "without go version",
-			file:     "testdata/no-go-version/gomod",
-			replace:  true,
-			wantPkgs: GoModNoGoVersion,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "without go version",
+			file:             "testdata/no-go-version/gomod",
+			replace:          true,
+			wantPkgs:         GoModNoGoVersion,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: true,
 		},
 		{
-			name:     "replace",
-			file:     "testdata/replaced/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplaced,
-			wantDeps: GoModReplacedDeps,
+			name:             "replace",
+			file:             "testdata/replaced/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplaced,
+			wantDeps:         GoModReplacedDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "no replace",
-			file:     "testdata/replaced/go.mod",
-			replace:  false,
-			wantPkgs: GoModUnreplaced,
-			wantDeps: GoModUnreplacedDeps,
+			name:             "no replace",
+			file:             "testdata/replaced/go.mod",
+			replace:          false,
+			wantPkgs:         GoModUnreplaced,
+			wantDeps:         GoModUnreplacedDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "replace with version",
-			file:     "testdata/replaced-with-version/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithVersion,
-			wantDeps: GoModReplacedWithVersionDeps,
+			name:             "replace with version",
+			file:             "testdata/replaced-with-version/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplacedWithVersion,
+			wantDeps:         GoModReplacedWithVersionDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "replaced with version mismatch",
-			file:     "testdata/replaced-with-version-mismatch/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithVersionMismatch,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "replaced with version mismatch",
+			file:             "testdata/replaced-with-version-mismatch/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplacedWithVersionMismatch,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "replaced with local path",
-			file:     "testdata/replaced-with-local-path/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPath,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "replaced with local path",
+			file:             "testdata/replaced-with-local-path/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplacedWithLocalPath,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "replaced with local path and version",
-			file:     "testdata/replaced-with-local-path-and-version/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPathAndVersion,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "replaced with local path and version",
+			file:             "testdata/replaced-with-local-path-and-version/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplacedWithLocalPathAndVersion,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "replaced with local path and version, mismatch",
-			file:     "testdata/replaced-with-local-path-and-version-mismatch/go.mod",
-			replace:  true,
-			wantPkgs: GoModReplacedWithLocalPathAndVersionMismatch,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "replaced with local path and version, mismatch",
+			file:             "testdata/replaced-with-local-path-and-version-mismatch/go.mod",
+			replace:          true,
+			wantPkgs:         GoModReplacedWithLocalPathAndVersionMismatch,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: false,
 		},
 		{
-			name:     "go 1.16",
-			file:     "testdata/go116/go.mod",
-			replace:  true,
-			wantPkgs: GoMod116,
-			wantDeps: defaultGoDepParserDeps,
+			name:             "go 1.16",
+			file:             "testdata/go116/go.mod",
+			replace:          true,
+			wantPkgs:         GoMod116,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: true,
+		},
+		{
+			name:             "go 1.17rc1",
+			file:             "testdata/go117rc1/gomod",
+			replace:          true,
+			wantPkgs:         GoMod116,
+			wantDeps:         defaultGoDepParserDeps,
+			wantSkipIndirect: true,
 		},
 	}
 
@@ -105,11 +125,12 @@ func TestParse(t *testing.T) {
 			f, err := os.Open(tt.file)
 			require.NoError(t, err)
 
-			gotPkgs, gotDeps, err := NewParser(tt.replace, tt.useMinVersion).Parse(t.Context(), f)
+			gotPkgs, gotDeps, gotSkipIndirect, err := NewParser(tt.replace, tt.useMinVersion).Parse(t.Context(), f)
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
+			assert.Equal(t, tt.wantSkipIndirect, gotSkipIndirect)
 		})
 	}
 }

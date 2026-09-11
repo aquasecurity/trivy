@@ -3,6 +3,7 @@ package mod
 import (
 	"context"
 	"fmt"
+	goversion "go/version"
 	"io"
 	"regexp"
 	"sort"
@@ -69,24 +70,30 @@ func resolveVCSUrl(modulePath string) string {
 	return ""
 }
 
-// Parse parses a go.mod file
-func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+// Parse parses a go.mod file and returns the packages, the dependencies and whether indirect
+// requirements were skipped. They are skipped for modules below Go 1.17 ("1.16" is assumed when
+// the `go` directive is omitted), whose go.mod is not required to list every transitive
+// dependency. For those the caller should merge go.sum to get the full set.
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, bool, error) {
 	pkgs := make(map[string]ftypes.Package)
 
 	goModData, err := io.ReadAll(r)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("file read error: %w", err)
+		return nil, nil, false, xerrors.Errorf("file read error: %w", err)
 	}
 
 	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("go.mod parse error: %w", err)
+		return nil, nil, false, xerrors.Errorf("go.mod parse error: %w", err)
 	}
 
-	skipIndirect := true
-	if modFileParsed.Go != nil { // Old go.mod file may not include the go version. Go version for these files  is less than 1.17
-		skipIndirect = lessThan(modFileParsed.Go.Version, 1, 17)
+	// Default to Go 1.16 when the go directive is omitted, matching cmd/go behavior.
+	// cf. https://github.com/golang/go/blob/38d1265e1a015add1d0b8651f5c2ea3f06199765/src/cmd/go/internal/gover/version.go#L15-L24
+	goVersion := "1.16"
+	if modFileParsed.Go != nil && modFileParsed.Go.Version != "" {
+		goVersion = modFileParsed.Go.Version
 	}
+	skipIndirect := goversion.Compare("go"+goVersion, "go1.17") < 0
 
 	// Use minimal required go version from `toolchain` line (or from `go` line if `toolchain` is omitted) as `stdlib`.
 	// Show `stdlib` only with `useMinVersion` flag.
@@ -183,7 +190,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	pkgSlice := lo.Values(pkgs)
 	sort.Sort(ftypes.Packages(pkgSlice))
 
-	return pkgSlice, deps, nil
+	return pkgSlice, deps, skipIndirect, nil
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`

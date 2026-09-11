@@ -29,6 +29,18 @@ Any setting can be set in a YAML file. By default, config file named `trivy.yaml
 
 The structure and settings of the YAML config file is documented in the [Config file](../references/configuration/config-file.md) document.
 
+### Disabling configuration files
+
+Pass an empty string to `--config` to skip loading `trivy.yaml`. To also skip the default `.trivyignore` and `trivy-secret.yaml` files, pass empty strings to `--ignorefile` and `--secret-config`:
+
+```shell
+trivy --config="" fs --ignorefile="" --secret-config="" /workspace/project
+```
+
+CLI flags and environment variables still apply. Secret scanning continues to use its built-in rules and allow rules. Omitting these flags preserves the default file-loading behavior.
+
+Empty environment variables such as `TRIVY_CONFIG=""`, `TRIVY_IGNOREFILE=""`, and `TRIVY_SECRET_CONFIG=""` are treated as unset and do not disable file loading. Use the CLI flags shown above to disable these files.
+
 ### Security considerations
 
 Trivy loads `trivy.yaml` from the current working directory by default, independently of the scan target. Running Trivy from a repository checkout can therefore load configuration supplied by that repository.

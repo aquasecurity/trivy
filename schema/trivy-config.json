@@ -685,7 +685,7 @@
     },
     "ignorefile": {
       "type": "string",
-      "description": "specify .trivyignore file"
+      "description": "specify .trivyignore file (empty string disables loading)"
     },
     "ignore-policy": {
       "type": "string",
@@ -874,7 +874,7 @@
       "properties": {
         "config": {
           "type": "string",
-          "description": "specify a path to config file for secret scanning"
+          "description": "specify a path to config file for secret scanning (empty string disables loading)"
         }
       }
     },

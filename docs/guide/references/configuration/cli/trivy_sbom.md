@@ -62,7 +62,7 @@ trivy sbom [flags] SBOM_PATH
                                          - end_of_life
       --ignore-unfixed                 display only fixed vulnerabilities
       --ignored-licenses strings       specify a list of license to ignore
-      --ignorefile string              specify .trivyignore file (default ".trivyignore")
+      --ignorefile string              specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --java-db-repository strings     OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
       --list-all-pkgs                  output all packages in the JSON report regardless of vulnerability (default true)
       --no-progress                    suppress progress bar
@@ -152,7 +152,7 @@ trivy sbom [flags] SBOM_PATH
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections

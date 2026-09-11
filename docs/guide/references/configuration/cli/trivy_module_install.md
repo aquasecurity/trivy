@@ -17,7 +17,7 @@ trivy module install [flags] REPOSITORY
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --enable-modules strings    [EXPERIMENTAL] module names to enable
       --generate-default-config   write the default config to trivy-default.yaml

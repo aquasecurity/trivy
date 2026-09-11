@@ -85,7 +85,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
-      --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --ignorefile string                 specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --image-src strings                 image source(s) to use, in priority order (allowed values: docker,containerd,podman,remote) (default [docker,containerd,podman,remote])
       --include-deprecated-checks         include deprecated checks
       --include-kinds strings             indicate the kinds included in scanning (example: node)
@@ -127,7 +127,7 @@ trivy kubernetes [flags] [CONTEXT]
       --report string                     specify a report format for the output (allowed values: all,summary) (default "all")
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,rbac) (default [vuln,misconfig,secret,rbac])
-      --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
+      --secret-config string              specify a path to config file for secret scanning (empty string disables loading) (default "trivy-secret.yaml")
   -s, --severity strings                  severities of security issues to be displayed
                                           Allowed values:
                                             - UNKNOWN
@@ -195,7 +195,7 @@ trivy kubernetes [flags] [CONTEXT]
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections
