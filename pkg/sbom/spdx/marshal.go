@@ -373,7 +373,7 @@ func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation 
 		pkgExtRefs = []*spdx.PackageExternalReference{m.purlExternalReference(c.PkgIdentifier.PURL.String())}
 	}
 
-	var digests []digest.Digest
+	var digests []digest.SourcedDigest
 	for _, f := range c.Files {
 		// The file digests are stored separately.
 		if f.Path != "" {
@@ -509,7 +509,7 @@ func (m *Marshaler) newOtherLicense(license string, text bool) *spdx.OtherLicens
 	return &otherLicense
 }
 
-func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
+func (m *Marshaler) spdxChecksums(digests []digest.SourcedDigest) []common.Checksum {
 	var checksums []common.Checksum
 	for _, d := range digests {
 		var alg spdx.ChecksumAlgorithm
@@ -528,7 +528,7 @@ func (m *Marshaler) spdxChecksums(digests []digest.Digest) []common.Checksum {
 		}
 		checksums = append(checksums, spdx.Checksum{
 			Algorithm: alg,
-			Value:     d.Encoded(),
+			Value:     d.Value(),
 		})
 	}
 
@@ -550,7 +550,7 @@ func (m *Marshaler) spdxFiles(c *core.Component) ([]*spdx.File, error) {
 	return files, nil
 }
 
-func (m *Marshaler) spdxFile(filePath string, digests []digest.Digest) (*spdx.File, error) {
+func (m *Marshaler) spdxFile(filePath string, digests []digest.SourcedDigest) (*spdx.File, error) {
 	pkgID, err := calcSPDXID(m.hasher, filePath)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to get %s package ID: %w", filePath, err)

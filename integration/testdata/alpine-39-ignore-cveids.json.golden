@@ -77,7 +77,7 @@
           "PkgName": "libcrypto1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "3148053bd3cfcabf"
+            "UID": "4c2e06fcb981c785"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",
@@ -161,7 +161,7 @@
           "PkgName": "libssl1.1",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl1.1@1.1.1b-r1?arch=x86_64\u0026distro=3.9.4",
-            "UID": "603cbbc71f2d6dec"
+            "UID": "aa0a5547076415c"
           },
           "InstalledVersion": "1.1.1b-r1",
           "FixedVersion": "1.1.1d-r2",

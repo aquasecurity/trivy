@@ -25,7 +25,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newRPMPkgAnalyzer())
 }
 
-const version = 3
+const version = 4
 
 var (
 	requiredFiles = []string{
@@ -156,13 +156,6 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 			}
 		}
 
-		// RPM DB uses MD5 digest
-		// https://rpm-software-management.github.io/rpm/manual/tags.html#signatures-and-digests
-		var d digest.Digest
-		if pkg.SigMD5 != "" {
-			d = digest.NewDigestFromString(digest.MD5, pkg.SigMD5)
-		}
-
 		var licenses []string
 		if pkg.License != "" {
 			licenses = []string{pkg.License}
@@ -184,8 +177,10 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 			DependsOn:       pkg.Requires, // Will be replaced with package IDs
 			Maintainer:      pkg.Vendor,
 			Repository:      repo,
-			Digest:          d,
 			InstalledFiles:  files,
+		}
+		if pkg.SigMD5 != "" {
+			p.AddDigest(digest.NewDigestFromString(digest.MD5, pkg.SigMD5), digest.SourceRPMSigMD5)
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)

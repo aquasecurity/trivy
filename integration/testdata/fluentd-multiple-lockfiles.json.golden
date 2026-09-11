@@ -34,7 +34,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2",
-            "UID": "8ca99d0ea2f4b0a3",
+            "UID": "575312e53db3c87c",
             "BOMRef": "pkg:deb/debian/bash@5.0-4?distro=debian-10.2"
           },
           "InstalledVersion": "5.0-4",

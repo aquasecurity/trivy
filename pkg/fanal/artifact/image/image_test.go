@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/cachetest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -36,7 +37,7 @@ import (
 
 // Common blob IDs used across multiple test cases to reduce duplication
 const (
-	alpineBaseLayerID     = "sha256:6c42077a82b21707f581759b12a99cc9a593ce35a0d7be4c19c01eb48bd5ba33"
+	alpineBaseLayerID     = "sha256:b16c09c79d37ead0f37afff062d630a63be0abfc806f175cd0d07eceff5f43ca"
 	alpineBaseLayerDiffID = "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"
 	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
 	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
@@ -53,6 +54,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:8f373f5b329c3aaf136eb30c63a387661ee0f3d0",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"busybox@1.31.1-r9",
 				"musl@1.1.24-r2",
@@ -99,6 +106,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Arch:       "x86_64",
 			Digest:     "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:64929f85b7f8b4adbb664d905410312936b79d9b",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5243ef4b.rsa.pub",
 				"etc/apk/keys/alpine-devel@lists.alpinelinux.org-5261cecb.rsa.pub",
@@ -130,6 +143,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:b15ad0c90e4493dfdc948d6b90a8e020da8936ef",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"libssl1.1@1.1.1d-r3",
@@ -151,6 +170,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:a457703d71654811ea28d8d27a5cfc49ece27b34",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -179,6 +204,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Arch:       "x86_64",
 			Digest:     "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:3aeb8a90d7179d2a187782e980a964494e08c5fb",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"etc/ssl/cert.pem",
 			},
@@ -193,6 +224,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"BSD-3-Clause"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:a7bf32bd32c6d3de2d1c4d7e753a0919b998cd01",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl-utils@1.1.24-r2",
 			},
@@ -208,6 +245,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"OpenSSL"},
 			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:dd8fb9a3cce7b2bcf954271da62fb85dac2b106a",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -237,6 +280,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"OpenSSL"},
 			Maintainer: "Timo Teras <timo.teras@iki.fi>",
 			Digest:     "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:938d46e41b3e56b339a3aeb2d02fad3d75728f35",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libcrypto1.1@1.1.1d-r3",
 				"musl@1.1.24-r2",
@@ -256,6 +305,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			SrcVersion: "2.9.1-r0",
 			Licenses:   []string{"ISC"},
 			Digest:     "sha1:b2e5627a56378ea6eeb962a8f33722df9393c1c5",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:b2e5627a56378ea6eeb962a8f33722df9393c1c5",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"ca-certificates-cacert@20191127-r1",
 				"libcrypto1.1@1.1.1d-r3",
@@ -279,6 +334,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Arch:       "x86_64",
 			Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			InstalledFiles: []string{
 				"lib/libc.musl-x86_64.so.1",
 				"lib/ld-musl-x86_64.so.1",
@@ -298,6 +359,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 			Digest:     "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:6d3b45e79dbab444ca7cbfa59e2833203be6fb6a",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 				"scanelf@1.2.4-r0",
@@ -321,6 +388,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:d6147beb32bff803b5d9f83a3bec7ab319087185",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -339,6 +412,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"GPL-2.0-only"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:3b685152af320120ae8941c740d3376b54e43c10",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:3b685152af320120ae8941c740d3376b54e43c10",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"libtls-standalone@2.9.1-r0",
 				"musl@1.1.24-r2",
@@ -358,6 +437,12 @@ func TestArtifact_Inspect(t *testing.T) {
 			Licenses:   []string{"Zlib"},
 			Maintainer: "Natanael Copa <ncopa@alpinelinux.org>",
 			Digest:     "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:acca078ee8baa93e005f57b2fae359c1efd443cd",
+					Source: digest.SourceAPKInstalledDB,
+				},
+			},
 			DependsOn: []string{
 				"musl@1.1.24-r2",
 			},
@@ -524,7 +609,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
+					ID: "sha256:fed5b720b4395f2c56c6a6c5601a595de436cb1c04bd511e9710b87c3d5d90be",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          3061760,
@@ -618,7 +703,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
+					ID: "sha256:db6c6f2f4e18f403abc164137e105d43cc8beae06ec9ab45cb95ff4c9406792c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          15441920,
@@ -719,7 +804,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
+					ID: "sha256:6ff39218a560ee82dcb45411c4c5d0ce192a5af8d7736f85b812fd0a53f84947",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          29696,
@@ -940,7 +1025,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
+					ID: "sha256:eaaba47f90addaddaa6225c354b74651a050a0af5b73a9b972436852a8c69c8d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          6656,
@@ -1857,10 +1942,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
-					"sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
-					"sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
-					"sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
+					"sha256:fed5b720b4395f2c56c6a6c5601a595de436cb1c04bd511e9710b87c3d5d90be",
+					"sha256:db6c6f2f4e18f403abc164137e105d43cc8beae06ec9ab45cb95ff4c9406792c",
+					"sha256:6ff39218a560ee82dcb45411c4c5d0ce192a5af8d7736f85b812fd0a53f84947",
+					"sha256:eaaba47f90addaddaa6225c354b74651a050a0af5b73a9b972436852a8c69c8d",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",
@@ -1968,7 +2053,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:a83985cade3970577a9af328db9c88c0bf15cad40f7d2cf6d76e83882bc8146d",
+					ID: "sha256:763ba8250d4ac1d9eb191bf20477ba2923754f6e998962455d62888fcec311ad",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          3061760,
@@ -1978,7 +2063,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:b109622c2d106193db505762f1f3e78cf0035a69e559caf07c305c92ddb89356",
+					ID: "sha256:719eedecc470cd3e9b5955c540f20a8136350f699343519c981b9f90ddb3afe0",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          15441920,
@@ -1988,7 +2073,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:115f689385cb66077c338c52f2c9d6f3018a18c89be7fe7d23f1645422d7d59d",
+					ID: "sha256:d8bc3f755a79b3a10834c1a32ffbf376819e20ab960de0b946bd4a4d75c9d438",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          29696,
@@ -1999,7 +2084,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:60129d309cd4f16d69262106d6074f37c6d37f6c9089a9710ec96ae067716636",
+					ID: "sha256:66751e6ebd080058a3f093b4dbc25789da7d8b0e59efcff8924f2acd88235e9c",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          6656,
@@ -2015,10 +2100,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:a83985cade3970577a9af328db9c88c0bf15cad40f7d2cf6d76e83882bc8146d",
-					"sha256:b109622c2d106193db505762f1f3e78cf0035a69e559caf07c305c92ddb89356",
-					"sha256:115f689385cb66077c338c52f2c9d6f3018a18c89be7fe7d23f1645422d7d59d",
-					"sha256:60129d309cd4f16d69262106d6074f37c6d37f6c9089a9710ec96ae067716636",
+					"sha256:763ba8250d4ac1d9eb191bf20477ba2923754f6e998962455d62888fcec311ad",
+					"sha256:719eedecc470cd3e9b5955c540f20a8136350f699343519c981b9f90ddb3afe0",
+					"sha256:d8bc3f755a79b3a10834c1a32ffbf376819e20ab960de0b946bd4a4d75c9d438",
+					"sha256:66751e6ebd080058a3f093b4dbc25789da7d8b0e59efcff8924f2acd88235e9c",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",

@@ -14,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/javadb"
@@ -437,6 +438,12 @@ func TestAnalyzerGroup_AnalyzeFile(t *testing.T) {
 								Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 								Arch:       "x86_64",
 								Digest:     "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:cb2316a189ebee5282c4a9bd98794cc2477a74c6",
+										Source: digest.SourceAPKInstalledDB,
+									},
+								},
 								InstalledFiles: []string{
 									"lib/libc.musl-x86_64.so.1",
 									"lib/ld-musl-x86_64.so.1",
@@ -769,15 +776,15 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				Analyzers: map[string]int{
 					"alpine":       1,
 					"apk-repo":     1,
-					"apk":          3,
+					"apk":          4,
 					"bundler":      1,
 					"dpkg-license": 1,
 					"ubuntu":       1,
 					"ubuntu-esm":   1,
 				},
 				PostAnalyzers: map[string]int{
-					"dpkg":   6,
-					"jar":    1,
+					"dpkg":   7,
+					"jar":    2,
 					"poetry": 1,
 				},
 			},
@@ -795,7 +802,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			},
 			want: analyzer.Versions{
 				Analyzers: map[string]int{
-					"apk":     3,
+					"apk":     4,
 					"bundler": 1,
 				},
 				PostAnalyzers: map[string]int{

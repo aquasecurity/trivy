@@ -20,7 +20,7 @@ func init() {
 }
 
 const (
-	version      = 1
+	version      = 2
 	requiredFile = "package.json"
 )
 

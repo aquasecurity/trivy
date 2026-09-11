@@ -217,10 +217,9 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 		if f.Path != "" && pkg.FilePath == "" {
 			pkg.FilePath = f.Path
 		}
-		// An empty path represents a package digest
-		if len(f.Digests) > 0 {
-			pkg.Digest = f.Digests[0]
-		}
+		// The digests of the component's files belong to the package; the decoders give a
+		// component at most one file.
+		pkg.AddDigests(f.Digests)
 	}
 
 	if p.Class() == types.ClassOSPkg {

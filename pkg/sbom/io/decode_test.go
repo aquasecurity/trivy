@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -405,4 +406,57 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			assert.EqualExportedValues(t, tt.wantSBOM, gotSBOM)
 		})
 	}
+}
+
+// TestDecoder_Decode_Digests covers digests that came from an SBOM: an input document may
+// carry several hashes per component, and repeat or leave out values.
+func TestDecoder_Decode_Digests(t *testing.T) {
+	component := *busyboxComponent
+	component.Files = []core.File{
+		{
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
+				},
+				{
+					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+					Source: digest.SourceSBOM,
+				},
+				{
+					// A repeated value is stored once.
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
+				},
+				{
+					// An entry without a value is dropped.
+					Source: digest.SourceSBOM,
+				},
+			},
+		},
+	}
+
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(wolfiOSComponent)
+	bom.AddComponent(&component)
+	bom.AddRelationship(wolfiOSComponent, &component, core.RelationshipContains)
+
+	var gotSBOM types.SBOM
+	require.NoError(t, sbomio.NewDecoder(bom).Decode(t.Context(), &gotSBOM))
+
+	require.Len(t, gotSBOM.Packages, 1)
+	require.Len(t, gotSBOM.Packages[0].Packages, 1)
+	pkg := gotSBOM.Packages[0].Packages[0]
+
+	assert.Equal(t, []digest.SourcedDigest{
+		{
+			Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+			Source: digest.SourceSBOM,
+		},
+		{
+			Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+			Source: digest.SourceSBOM,
+		},
+	}, pkg.Digests)
+	assert.Equal(t, digest.Digest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"), pkg.Digest)
 }
