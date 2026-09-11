@@ -69,7 +69,7 @@ var (
 		Name:       "ignorefile",
 		ConfigName: "ignorefile",
 		Default:    result.DefaultIgnoreFile,
-		Usage:      "specify .trivyignore file",
+		Usage:      "specify .trivyignore file (empty string disables loading)",
 	}
 	IgnorePolicyFlag = Flag[string]{
 		Name:       "ignore-policy",

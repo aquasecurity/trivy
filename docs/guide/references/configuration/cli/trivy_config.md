@@ -45,7 +45,7 @@ trivy config [flags] DIR
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for config
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
-      --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --ignorefile string                 specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-non-failures              include successes, available with '--scanners misconfig'
       --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
@@ -89,7 +89,7 @@ trivy config [flags] DIR
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections

@@ -5,7 +5,7 @@ var (
 		Name:       "secret-config",
 		ConfigName: "secret.config",
 		Default:    "trivy-secret.yaml",
-		Usage:      "specify a path to config file for secret scanning",
+		Usage:      "specify a path to config file for secret scanning (empty string disables loading)",
 	}
 )
 
