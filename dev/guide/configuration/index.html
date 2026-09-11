@@ -4488,6 +4488,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disabling-configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling configuration files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -8539,6 +8556,23 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Configuration File">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#disabling-configuration-files" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Disabling configuration files
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -8592,6 +8626,12 @@ You're not viewing the latest version of the documentation.
 <h2 id="configuration-file">Configuration File<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h2>
 <p>Any setting can be set in a YAML file. By default, config file named <code>trivy.yaml</code> is read from the current directory where Trivy is run. To load configuration from a different file, use the <code>--config</code> flag and specify the config path to load: <code>trivy --config /etc/trivy/myconfig.yaml</code>.</p>
 <p>The structure and settings of the YAML config file is documented in the <a href="../references/configuration/config-file/">Config file</a> document.</p>
+<h3 id="disabling-configuration-files">Disabling configuration files<a class="headerlink" href="#disabling-configuration-files" title="Permanent link">&para;</a></h3>
+<p>Pass an empty string to <code>--config</code> to skip loading <code>trivy.yaml</code>. To also skip the default <code>.trivyignore</code> and <code>trivy-secret.yaml</code> files, pass empty strings to <code>--ignorefile</code> and <code>--secret-config</code>:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>--config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>fs<span class="w"> </span>--ignorefile<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--secret-config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>/workspace/project
+</code></pre></div>
+<p>CLI flags and environment variables still apply. Secret scanning continues to use its built-in rules and allow rules. Omitting these flags preserves the default file-loading behavior.</p>
+<p>Empty environment variables such as <code>TRIVY_CONFIG=""</code>, <code>TRIVY_IGNOREFILE=""</code>, and <code>TRIVY_SECRET_CONFIG=""</code> are treated as unset and do not disable file loading. Use the CLI flags shown above to disable these files.</p>
 
 
 

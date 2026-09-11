@@ -8650,7 +8650,7 @@ You're not viewing the latest version of the documentation.
                                     (default &quot;table&quot;)
   -h, --help                       help for convert
       --ignore-policy string       specify the Rego file path to evaluate each vulnerability
-      --ignorefile string          specify .trivyignore file (default &quot;.trivyignore&quot;)
+      --ignorefile string          specify .trivyignore file (empty string disables loading) (default &quot;.trivyignore&quot;)
       --list-all-pkgs              output all packages in the JSON report regardless of vulnerability (default true)
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
@@ -8671,7 +8671,7 @@ You're not viewing the latest version of the documentation.
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands<a class="headerlink" href="#options-inherited-from-parent-commands" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>      --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default &quot;/path/to/cache&quot;)
-  -c, --config string             config path (default &quot;trivy.yaml&quot;)
+  -c, --config string             config path (empty string disables loading) (default &quot;trivy.yaml&quot;)
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections
