@@ -115,6 +115,60 @@ func TestUnmarshal(t *testing.T) {
 			},
 		},
 		{
+			name: "object on the line after its key",
+			in: []byte(`{
+    "dependencies":
+    {
+        "debug":
+        {
+            "version": "2.6.9"
+        }
+    }
+}`),
+			out: nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"debug": {
+						Version: "2.6.9",
+						Location: xjson.Location{
+							StartLine: 5,
+							EndLine:   7,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "windows line endings",
+			in:   []byte("{\r\n    \"dependencies\": {\r\n        \"debug\": {\r\n            \"version\": \"2.6.9\"\r\n        }\r\n    }\r\n}"),
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"debug": {
+						Version: "2.6.9",
+						Location: xjson.Location{
+							StartLine: 3,
+							EndLine:   5,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "object ending at the end of file",
+			in: []byte(`{
+    "version": "2.6.9"
+}`),
+			out: Dependency{},
+			want: Dependency{
+				Version: "2.6.9",
+				Location: xjson.Location{
+					StartLine: 1,
+					EndLine:   3,
+				},
+			},
+		},
+		{
 			name: "Location for only string",
 			in: []byte(`{
     "version": "0.5",
