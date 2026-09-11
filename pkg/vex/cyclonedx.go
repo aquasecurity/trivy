@@ -10,6 +10,9 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
+// CycloneDX doesn't implement the statementFinder interface: it is only used with
+// `--vex file`, never served from a VEX repository, so nothing needs to tell its
+// statements apart from the absence of a statement.
 type CycloneDX struct {
 	sbom       *core.BOM
 	statements map[string]Statement

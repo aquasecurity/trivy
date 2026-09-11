@@ -74,6 +74,14 @@ func (v *OpenVEX) NotAffected(vuln types.DetectedVulnerability, product, subComp
 	return types.ModifiedFinding{}, false
 }
 
+// HasStatement reports whether the document has a statement about the vulnerability and
+// product, whatever its status. A statement with the "affected" or "under_investigation"
+// status is an assertion just like "not_affected" is, even though it doesn't filter the
+// vulnerability out.
+func (v *OpenVEX) HasStatement(vuln types.DetectedVulnerability, product, subComponent *core.Component) bool {
+	return len(v.Matches(vuln, product, subComponent)) > 0
+}
+
 func (v *OpenVEX) Matches(vuln types.DetectedVulnerability, product, subComponent *core.Component) []openvex.Statement {
 	if product == nil || product.PkgIdentifier.PURL == nil {
 		return nil
