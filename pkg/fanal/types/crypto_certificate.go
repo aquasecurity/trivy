@@ -10,17 +10,16 @@ const (
 	CryptoCertificateFormatX509 CryptoCertificateFormat = "X.509"
 )
 
-// CryptoCertificate contains certificate-specific metadata. Format identifies
-// the certificate structure, while Encoding identifies whether its source
-// representation was PEM or DER.
+// CryptoCertificate contains certificate-specific metadata. Format identifies the
+// certificate structure. How the certificate was encoded belongs to CryptoAsset.
 type CryptoCertificate struct {
-	Subject               string                  `json:",omitempty"`
-	Issuer                string                  `json:",omitempty"`
+	Subject string `json:",omitempty"`
+	Issuer  string `json:",omitempty"`
+	// SerialNumber is the serial number written in hexadecimal.
 	SerialNumber          string                  `json:",omitempty"`
 	NotBefore             time.Time               `json:",omitzero"`
 	NotAfter              time.Time               `json:",omitzero"`
 	Format                CryptoCertificateFormat `json:",omitempty"`
-	Encoding              CryptoEncoding          `json:",omitempty"`
 	KeyUsage              []string                `json:",omitempty"`
 	ExtendedKeyUsage      []string                `json:",omitempty"`
 	DNSNames              []string                `json:",omitempty"`

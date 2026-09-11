@@ -20,6 +20,24 @@ func TestCryptoAlgorithmJSON(t *testing.T) {
 	assert.JSONEq(t, `{"Primitive":""}`, string(got))
 }
 
+// TestDigestIdentity checks the value against the SHA-256 vector published for "abc" in
+// FIPS 180-2 appendix B.1, and against the canonical form Validate requires.
+func TestDigestIdentity(t *testing.T) {
+	t.Parallel()
+
+	identity := types.DigestIdentity(types.CryptoMethodSHA256, []byte("abc"))
+	assert.Equal(t, types.CryptoIdentity{
+		Method: types.CryptoMethodSHA256,
+		Value:  "ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad",
+	}, identity)
+
+	descriptor := types.CryptoDescriptor{
+		Kind:     types.CryptoKindCertificate,
+		Identity: identity,
+	}
+	require.NoError(t, descriptor.Validate())
+}
+
 func TestCryptoAssetDescriptor(t *testing.T) {
 	t.Parallel()
 
@@ -70,7 +88,7 @@ func TestCryptoAssetValidate(t *testing.T) {
 		{
 			name: "DER certificate",
 			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
-				a.Certificate.Encoding = types.CryptoEncodingDER
+				a.Encoding = types.CryptoEncodingDER
 			})),
 			wantErr: "",
 		},
@@ -97,8 +115,8 @@ func TestCryptoAssetValidate(t *testing.T) {
 		{
 			name: "derived public key without format or encoding",
 			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
-				a.Key.Format = ""
-				a.Key.Encoding = ""
+				a.Format = ""
+				a.Encoding = ""
 			})),
 			wantErr: "",
 		},
@@ -196,25 +214,32 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: `unknown certificate format "PEM"`,
 		},
 		{
-			name: "unknown certificate encoding",
+			name: "unknown encoding",
 			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
-				a.Certificate.Encoding = "SSH"
+				a.Encoding = "SSH"
 			})),
-			wantErr: `unknown certificate encoding "SSH"`,
+			wantErr: `unknown encoding "SSH"`,
 		},
 		{
-			name: "unknown key format",
+			name: "unknown key container format",
 			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
-				a.Key.Format = "OpenSSH"
+				a.Format = "OpenSSH"
 			})),
-			wantErr: `unknown key format "OpenSSH"`,
+			wantErr: `unknown key container format "OpenSSH"`,
 		},
 		{
-			name: "unknown key encoding",
-			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
-				a.Key.Encoding = "SSH"
+			name: "key container format on a certificate",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Format = types.CryptoKeyFormatPKCS8
 			})),
-			wantErr: `unknown key encoding "SSH"`,
+			wantErr: `asset kind "certificate" has no key container`,
+		},
+		{
+			name: "encoding on an algorithm",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Encoding = types.CryptoEncodingPEM
+			})),
+			wantErr: `asset kind "algorithm" has no encoded form`,
 		},
 		{
 			name: "unknown primitive",
@@ -411,6 +436,6 @@ func TestCryptoAssetClone(t *testing.T) {
 		assert.Equal(t, source, clone)
 
 		clone.Algorithm.Family = "changed"
-		assert.Equal(t, "RSA", source.Algorithm.Family)
+		assert.Empty(t, source.Algorithm.Family)
 	})
 }
