@@ -74,7 +74,7 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 
 	cleanup = func() { _ = os.RemoveAll(tmpDir) }
 
-	artifactOpt.Original = target
+	artifactOpt.Original = local.SanitizeRemoteURL(target)
 	art, err := local.NewArtifact(tmpDir, c, w, artifactOpt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)

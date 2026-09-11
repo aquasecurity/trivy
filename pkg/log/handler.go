@@ -97,6 +97,13 @@ func (h *ColorHandler) appendAttr(buf []byte, a slog.Attr, groups []string) []by
 		return buf
 	}
 
+	if isSensitiveKey(a.Key) || hasSensitiveGroup(groups) {
+		buf = appendKey(buf, groups, a.Key)
+		buf = append(buf, '=')
+		buf = strconv.AppendQuote(buf, maskedSecret)
+		return append(buf, ' ')
+	}
+
 	switch a.Value.Kind() {
 	case slog.KindString:
 		// Quote string values, to make them easy to parse.

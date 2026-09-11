@@ -138,6 +138,45 @@ func TestContext(t *testing.T) {
 	})
 }
 
+func TestSecretMasking(t *testing.T) {
+	t.Run("sensitive attribute keys", func(t *testing.T) {
+		var buf bytes.Buffer
+		logger := slog.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelDebug}))
+
+		logger.Debug("auth details",
+			"password", "secretpass123",
+			"token", "mytoken456",
+			"api_key", "key-secret-789",
+			"private_key", "-----BEGIN RSA PRIVATE KEY-----xxx-----END RSA PRIVATE KEY-----",
+			slog.Group("registry", slog.String("password", "regpass")),
+			slog.Group("server", slog.String("token", "servtoken")),
+		)
+
+		got := buf.String()
+		wantLines := []string{
+			`DEBUG	auth details	password="********" token="********" api_key="********" private_key="********" registry.password="********" server.token="********"`,
+		}
+		compareLines(t, got, wantLines)
+	})
+
+	t.Run("non-sensitive keys with substring matches", func(t *testing.T) {
+		var buf bytes.Buffer
+		logger := slog.New(log.NewHandler(&buf, &log.Options{Level: slog.LevelDebug}))
+
+		logger.Debug("metrics and config",
+			"tokens", 10,
+			"token_count", 5,
+			"auth_method", "oauth",
+		)
+
+		got := buf.String()
+		wantLines := []string{
+			`DEBUG	metrics and config	tokens=10 token_count=5 auth_method="oauth"`,
+		}
+		compareLines(t, got, wantLines)
+	})
+}
+
 func compareLines(t *testing.T, got string, wantLines []string) {
 	// Strip color codes from the output.
 	got = stripColorCodes(got)

@@ -2657,12 +2657,17 @@ func Test_sanitizeRemoteURL(t *testing.T) {
 			in:   "github.com/org/repo.git",
 			want: "github.com/org/repo.git",
 		},
+		{
+			name: "url with sensitive query params",
+			in:   "https://github.com/org/repo.git?token=secret123&branch=main",
+			want: "https://github.com/org/repo.git?branch=main",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
-			got := sanitizeRemoteURL(tt.in)
+			got := SanitizeRemoteURL(tt.in)
 			assert.Equal(t, tt.want, got)
 		})
 	}
