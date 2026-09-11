@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/internal/hooktest"
 	"github.com/aquasecurity/trivy/pkg/cache"
@@ -1061,6 +1062,53 @@ func TestScanner_Scan(t *testing.T) {
 			},
 			want: types.ScanResponse{
 				Results: nil,
+			},
+		},
+		{
+			name: "happy path with cryptographic assets",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
+				options: types.ScanOptions{
+					PkgTypes:         []string{types.PkgTypeOS},
+					PkgRelationships: ftypes.Relationships,
+					Scanners:         types.Scanners{types.VulnerabilityScanner},
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					DiffID:        "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+					CryptoAssets: []ftypes.CryptoAsset{
+						cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+							asset.FilePath = "etc/ssl/certs/ca.pem"
+						})),
+					},
+				}))
+				return c
+			},
+			want: types.ScanResponse{
+				Results: types.Results{
+					{
+						Target: "alpine:latest",
+						Class:  types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{
+							cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+								asset.FilePath = "etc/ssl/certs/ca.pem"
+								asset.Layer = ftypes.Layer{
+									DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+								}
+							})),
+						},
+					},
+				},
+				Layers: ftypes.Layers{
+					{
+						DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+					},
+				},
 			},
 		},
 		{

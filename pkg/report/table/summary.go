@@ -172,6 +172,11 @@ func (r *summaryRenderer) Render(report types.Report) {
 	t.SetAlignment(alignments...)
 
 	for _, result := range r.splitAggregatedPackages(report.Results) {
+		// Cryptographic assets are an inventory rather than findings, and are reported
+		// in CycloneDX only.
+		if result.Class == types.ClassCrypto {
+			continue
+		}
 		resultType := string(result.Type)
 		switch result.Class {
 		case types.ClassSecret:

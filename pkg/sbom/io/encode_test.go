@@ -1,6 +1,7 @@
 package io_test
 
 import (
+	"strings"
 	"testing"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -9,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -1683,6 +1685,98 @@ func TestEncoder_Encode(t *testing.T) {
 			assert.Equal(t, tt.wantVulns, got.Vulnerabilities())
 		})
 	}
+}
+
+func TestEncoder_EncodeCryptoAssets(t *testing.T) {
+	const (
+		baseLayer = "sha256:2c8b0e3c8d2d4b4e5f6a7b8c9d0e1f2a3b4c5d6e7f8091a2b3c4d5e6f7081920"
+		userLayer = "sha256:9f8e7d6c5b4a39281706f5e4d3c2b1a09f8e7d6c5b4a39281706f5e4d3c2b1a0"
+
+		certificatePath = "etc/ssl/certs/ca.pem"
+		copiedPath      = "opt/app/ca.pem"
+		keyPath         = "opt/app/public.pem"
+	)
+
+	foundAt := func(asset ftypes.CryptoAsset, path, diffID string) ftypes.CryptoAsset {
+		asset.FilePath = path
+		asset.Layer = ftypes.Layer{DiffID: diffID}
+		return asset
+	}
+
+	certificate := cryptotest.CertificateAsset()
+	algorithm := cryptotest.AlgorithmAsset()
+	// A key taken from a certificate states no container of its own.
+	certificateKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Key.Format = ""
+		asset.Key.Encoding = ""
+	}))
+	standaloneKey := cryptotest.PublicKeyAsset()
+
+	report := types.Report{
+		SchemaVersion: 2,
+		ArtifactName:  "debian:12",
+		ArtifactType:  ftypes.TypeContainerImage,
+		Results: types.Results{
+			{
+				Target: "debian:12",
+				Class:  types.ClassCrypto,
+				CryptoAssets: []ftypes.CryptoAsset{
+					foundAt(certificate, certificatePath, baseLayer),
+					foundAt(algorithm, certificatePath, baseLayer),
+					foundAt(certificateKey, certificatePath, baseLayer),
+					// The same certificate copied into the user layer.
+					foundAt(certificate, copiedPath, userLayer),
+					foundAt(algorithm, copiedPath, userLayer),
+					// The key of that certificate, stored in a file of its own.
+					foundAt(standaloneKey, keyPath, userLayer),
+				},
+			},
+		},
+	}
+
+	got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
+	require.NoError(t, err)
+
+	assets := make(map[string]*core.CryptoComponent)
+	for _, component := range got.CryptoComponents() {
+		assets[component.BOMRef()] = component
+	}
+
+	want := map[string]*core.CryptoComponent{
+		"crypto:certificate:sha256:" + strings.Repeat("a", 64): {
+			Asset: certificate.CryptoAssetInfo,
+			Occurrences: []core.Occurrence{
+				{Location: certificatePath},
+				{Location: copiedPath},
+			},
+		},
+		"crypto:algorithm:oid:1.2.840.113549.1.1.1": {
+			Asset: algorithm.CryptoAssetInfo,
+			Occurrences: []core.Occurrence{
+				{Location: certificatePath},
+				{Location: copiedPath},
+			},
+		},
+		"crypto:key:public:spki-sha256:" + strings.Repeat("b", 64): {
+			Asset: standaloneKey.CryptoAssetInfo,
+			Occurrences: []core.Occurrence{
+				{Location: certificatePath},
+				{Location: keyPath},
+			},
+		},
+	}
+
+	require.Len(t, assets, len(want))
+	for bomRef, wantComponent := range want {
+		component, ok := assets[bomRef]
+		require.True(t, ok, bomRef)
+		assert.EqualExportedValues(t, *wantComponent, *component, bomRef)
+	}
+
+	// Cryptographic assets are an inventory, not a dependency of the artifact.
+	assert.Equal(t, map[uuid.UUID][]core.Relationship{
+		got.Root().ID(): nil,
+	}, got.Relationships())
 }
 
 var (
