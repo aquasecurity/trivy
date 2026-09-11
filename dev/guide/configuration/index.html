@@ -4502,6 +4502,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8570,6 +8581,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -8624,14 +8646,23 @@ You're not viewing the latest version of the documentation.
 <div class="highlight"><pre><span></span><code>$ TRIVY_DEBUG=true TRIVY_SEVERITY=CRITICAL trivy image alpine:3.15
 </code></pre></div>
 <h2 id="configuration-file">Configuration File<a class="headerlink" href="#configuration-file" title="Permanent link">&para;</a></h2>
-<p>Any setting can be set in a YAML file. By default, config file named <code>trivy.yaml</code> is read from the current directory where Trivy is run. To load configuration from a different file, use the <code>--config</code> flag and specify the config path to load: <code>trivy --config /etc/trivy/myconfig.yaml</code>.</p>
+<p>Any setting can be set in a YAML file. By default, config file named <code>trivy.yaml</code> is read from the current directory where Trivy is run. To load configuration from a different file, use the <code>--config</code> flag and specify the config path to load: <code>trivy fs --config /etc/trivy/myconfig.yaml /workspace/project</code>.</p>
 <p>The structure and settings of the YAML config file is documented in the <a href="../references/configuration/config-file/">Config file</a> document.</p>
 <h3 id="disabling-configuration-files">Disabling configuration files<a class="headerlink" href="#disabling-configuration-files" title="Permanent link">&para;</a></h3>
 <p>Pass an empty string to <code>--config</code> to skip loading <code>trivy.yaml</code>. To also skip the default <code>.trivyignore</code> and <code>trivy-secret.yaml</code> files, pass empty strings to <code>--ignorefile</code> and <code>--secret-config</code>:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>--config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>fs<span class="w"> </span>--ignorefile<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--secret-config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>/workspace/project
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--ignorefile<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--secret-config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>/workspace/project
 </code></pre></div>
 <p>CLI flags and environment variables still apply. Secret scanning continues to use its built-in rules and allow rules. Omitting these flags preserves the default file-loading behavior.</p>
 <p>Empty environment variables such as <code>TRIVY_CONFIG=""</code>, <code>TRIVY_IGNOREFILE=""</code>, and <code>TRIVY_SECRET_CONFIG=""</code> are treated as unset and do not disable file loading. Use the CLI flags shown above to disable these files.</p>
+<h3 id="security-considerations">Security considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h3>
+<p>Trivy loads <code>trivy.yaml</code> from the current working directory by default, independently of the scan target. Running Trivy from a repository checkout can therefore load configuration supplied by that repository.</p>
+<p>When scanning a remote repository with <code>trivy repo &lt;REPO_URL&gt;</code>, Trivy clones it into a temporary directory and does not automatically load <code>trivy.yaml</code> from that clone. Configuration is still loaded from the directory where Trivy was started.</p>
+<p>Configuration controls Trivy's behavior, including output paths, report templates, filtering, and exit codes. When scanning untrusted content, use <code>--config</code> to select a trusted configuration file outside the checkout. In CI, keep the configuration that determines whether a scan passes or fails outside the control of the code under review.</p>
+<p>Selecting a trusted <code>--config</code> does not disable loading <code>.trivyignore</code> or, when secret scanning is enabled, <code>trivy-secret.yaml</code> from the current working directory. These files can suppress findings or change secret detection rules. Use <code>--ignorefile</code> and <code>--secret-config</code> to select trusted files, or <a href="#disabling-configuration-files">disable their loading</a> when they are not needed.</p>
+<p>For example, use a pipeline-managed configuration and disable the other configuration files when scanning a checkout:</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--config<span class="w"> </span>/opt/ci/trivy.yaml<span class="w"> </span>--ignorefile<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--secret-config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>/workspace/project
+</code></pre></div>
+<p>Templates and other files referenced by the configuration must also come from trusted sources. A trusted configuration file can still reference an untrusted template: relative template paths are resolved from the current working directory, not the configuration file's directory. Use trusted absolute template paths when the working directory contains untrusted content. Templates can read environment variables and include sensitive values in report output.</p>
 
 
 
