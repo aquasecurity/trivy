@@ -215,6 +215,11 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 }
 
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
+	// An empty path explicitly disables the ignore file.
+	if ignoreFile == "" {
+		return IgnoreConfig{}, nil
+	}
+
 	var conf IgnoreConfig
 	if _, err := os.Stat(ignoreFile); errors.Is(err, fs.ErrNotExist) {
 		// .trivyignore doesn't necessarily exist
