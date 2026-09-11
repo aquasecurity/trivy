@@ -284,7 +284,9 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			InstalledFiles:  pkg.InstalledFiles,
 		}
 		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests))
-		p.Digest = cmp.Or(p.Digest, digest.Digest(pkg.Digest))
+		if !p.HasDigest() {
+			p.Digest = digest.Digest(pkg.Digest)
+		}
 		pkgs = append(pkgs, p)
 	}
 	return pkgs
