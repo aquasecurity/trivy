@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type Relationship int
@@ -275,7 +274,7 @@ func (pkg *Package) HasDigest() bool {
 }
 
 // AddDigest stores the digest along with the source it was acquired from.
-// Empty values, and values already stored with the same source, are skipped.
+// Empty values, and values already stored with the same value and source, are skipped.
 // Data that carries the legacy digest alone keeps it as the first collected value, so that
 // Digest and Digests never disagree.
 func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
@@ -296,21 +295,19 @@ func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
 
 // AddDigests stores digests that were not collected by an analyzer, such as those decoded
 // from an SBOM or received over RPC.
-// Nothing bounds how many values such input holds, so the batch is deduplicated against a set
-// instead of scanning the stored values for each one.
 func (pkg *Package) AddDigests(digests []digest.SourcedDigest) {
 	if len(digests) == 0 {
 		return
 	}
-	pkg.Digests = pkg.SourcedDigests()
 
-	seen := set.New(pkg.Digests...)
-	for _, sd := range digests {
-		if sd.Digest == "" || seen.Contains(sd) {
-			continue
-		}
-		seen.Append(sd)
-		pkg.appendDigest(sd)
+	digests = append(slices.Clone(pkg.SourcedDigests()), digests...)
+	pkg.Digests = lo.Uniq(lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
+		return sd.Digest != ""
+	}))
+
+	// Keep the legacy single-digest field in sync with the first collected value.
+	if pkg.Digest == "" && len(pkg.Digests) > 0 {
+		pkg.Digest = pkg.Digests[0].Digest
 	}
 }
 

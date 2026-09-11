@@ -38,14 +38,14 @@ const (
 
 	// SourceJavaArchive is computed by Trivy over a Java archive (JAR/WAR/EAR/PAR,
 	// including nested ones). It covers the complete archive.
-	// Trivy computes it only when an SBOM format is requested.
+	// Trivy computes it only for the cyclonedx, spdx and spdx-json formats.
 	SourceJavaArchive Source = "java-archive"
 
 	// SourceFileContent is computed by Trivy over the metadata file it analyzed, such as
 	// METADATA, PKG-INFO, gemspec, package.json or a conda meta file. It covers that file
 	// rather than the distributed package: for an egg archive, for instance, it covers the
 	// PKG-INFO extracted from the archive.
-	// Trivy computes it only when an SBOM format is requested.
+	// Trivy computes it only for the cyclonedx, spdx and spdx-json formats.
 	SourceFileContent Source = "file-content"
 )
 

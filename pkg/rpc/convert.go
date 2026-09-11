@@ -250,7 +250,11 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 
 // ConvertFromRPCPkgs returns list of Fanal package objects
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
-	var pkgs []ftypes.Package
+	if len(rpcPkgs) == 0 {
+		return nil
+	}
+
+	pkgs := make([]ftypes.Package, 0, len(rpcPkgs))
 	for _, pkg := range rpcPkgs {
 		p := ftypes.Package{
 			ID:              pkg.Id,
