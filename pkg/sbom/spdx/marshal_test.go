@@ -1753,3 +1753,57 @@ func TestMarshaler_normalizeLicenses(t *testing.T) {
 		})
 	}
 }
+
+// TestMarshaler_MarshalReport_ReusedBOM covers scanning an existing SBOM, where the BOM comes
+// from the decoder instead of being built from packages. The single-digest rule applies to
+// what a package contributes, so every checksum of a BOM that is passed through has to survive.
+func TestMarshaler_MarshalReport_ReusedBOM(t *testing.T) {
+	bom := core.NewBOM(core.Options{})
+	root := &core.Component{
+		Type: core.TypeApplication,
+		Name: "report.spdx.json",
+		Root: true,
+	}
+	bom.AddComponent(root)
+
+	component := &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Version: "2.13.4",
+		Files: []core.File{
+			{
+				Digests: []digest.SourcedDigest{
+					{
+						Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+						Source: digest.SourceSBOM,
+					},
+					{
+						Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+						Source: digest.SourceSBOM,
+					},
+				},
+			},
+		},
+	}
+	bom.AddComponent(component)
+	bom.AddRelationship(root, component, core.RelationshipContains)
+
+	ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
+	got, err := tspdx.NewMarshaler("dev").MarshalReport(ctx, types.Report{
+		SchemaVersion: 2,
+		ArtifactName:  "report.spdx.json",
+		ArtifactType:  ftypes.TypeSPDX,
+		BOM:           bom,
+	})
+	require.NoError(t, err)
+
+	var checksums []common.Checksum
+	for _, p := range got.Packages {
+		if p.PackageName == "jackson-databind" {
+			checksums = p.PackageChecksums
+		}
+	}
+	require.Len(t, checksums, 2)
+	assert.Equal(t, common.SHA1, checksums[0].Algorithm)
+	assert.Equal(t, common.SHA256, checksums[1].Algorithm)
+}

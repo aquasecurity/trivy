@@ -375,6 +375,38 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 			},
 		},
 		{
+			// A peer that fills the sourced digests alone still gets the legacy field, derived
+			// from the first of them.
+			name: "digests without the legacy field",
+			args: args{
+				rpcPkgs: []*common.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digests: []*common.PackageDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: "rpm-sigmd5",
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: digest.SourceRPMSigMD5,
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "package with several digests",
 			args: args{
 				rpcPkgs: []*common.Package{
