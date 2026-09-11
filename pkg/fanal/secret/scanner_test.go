@@ -2162,6 +2162,42 @@ func TestSecretScannerWithStreaming(t *testing.T) {
 		want        types.Secret
 	}{
 		{
+			name: "key glued to a letter in the second chunk",
+			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push the key to the second chunk
+				"prefixAKIA0123456789ABCDEF\n" + // the key does not start at a word boundary
+				strings.Repeat("y", 100), // padding
+			bufferSize:  512,
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			want:        types.Secret{FilePath: "test.txt"},
+		},
+		{
+			name: "key at the very start of the second chunk",
+			input: strings.Repeat("x", 384) + // the second chunk starts at bufferSize - overlapSize
+				"AKIA0123456789ABCDEF\n" + // the key starts at offset 0 of that chunk
+				strings.Repeat("y", 200), // padding
+			bufferSize:  512,
+			overlapSize: 128,
+			configPath:  filepath.Join("testdata", "skip-test.yaml"),
+			// The letter in front of the key stays in the first chunk, so the second
+			// chunk has nothing to reject the key by and reports it.
+			want: types.Secret{
+				FilePath: "test.txt",
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     "********************",
+						Offset:    384,
+					},
+				},
+			},
+		},
+		{
 			name: "secret in second chunk",
 			input: strings.Repeat("x", 520) + "\n" + // 520 bytes to push secret to second chunk
 				"AWS_ACCESS_KEY_ID=AKIA0123456789ABCDEF\n" + // at offset 521
@@ -2592,4 +2628,313 @@ func TestIsSkippedSlashConversion(t *testing.T) {
 			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
 		})
 	}
+}
+
+func TestLeadingWordBoundary(t *testing.T) {
+	const (
+		ghpPattern    = `(?P<secret>ghp_[0-9a-zA-Z]{36})`
+		hfPattern     = `(?P<secret>hf_[A-Za-z0-9]{34,40})`
+		startWordExpr = "([^0-9a-zA-Z_]|^)"
+		endWordExpr   = "([^0-9a-zA-Z_]|$)"
+	)
+	ghp := "ghp_" + strings.Repeat("a", 36) // 40 bytes
+	hf := "hf_" + strings.Repeat("b", 34)   // 37 bytes
+
+	tests := []struct {
+		name       string
+		pattern    string
+		boundaries bool
+		// wholeMatch drops the secret group from the rule, so the reported location
+		// covers the whole match instead of the secret.
+		wholeMatch bool
+		content    string
+		want       []secret.Location
+	}{
+		{
+			name:    "at the start of the content",
+			pattern: ghpPattern,
+			content: ghp,
+			want:    []secret.Location{{Start: 0, End: 40}},
+		},
+		{
+			name:    "after punctuation",
+			pattern: ghpPattern,
+			content: `"` + ghp,
+			want:    []secret.Location{{Start: 1, End: 41}},
+		},
+		{
+			name:       "the boundary character stays in the match the allow rules see",
+			pattern:    ghpPattern,
+			content:    `"` + ghp,
+			wholeMatch: true,
+			want:       []secret.Location{{Start: 0, End: 41}},
+		},
+		{
+			name:    "after a letter",
+			pattern: ghpPattern,
+			content: "x" + ghp,
+		},
+		{
+			name:    "after an underscore",
+			pattern: ghpPattern,
+			content: "_" + ghp,
+		},
+		{
+			name:    "several matches",
+			pattern: ghpPattern,
+			content: ghp + " " + ghp,
+			want: []secret.Location{
+				{Start: 0, End: 40},
+				{Start: 41, End: 81},
+			},
+		},
+		{
+			name:    "a rejected match does not hide the next one",
+			pattern: ghpPattern,
+			content: "x" + ghp + " " + ghp,
+			want:    []secret.Location{{Start: 42, End: 82}},
+		},
+		{
+			name:    "after a multi-byte character",
+			pattern: ghpPattern,
+			content: "é" + ghp,
+			want:    []secret.Location{{Start: 2, End: 42}},
+		},
+		{
+			name:    "after a byte that is not valid UTF-8",
+			pattern: ghpPattern,
+			content: "\x80" + ghp,
+			want:    []secret.Location{{Start: 1, End: 41}},
+		},
+		{
+			name:    "nothing to find",
+			pattern: ghpPattern,
+			content: "ghp_and nothing else",
+		},
+		{
+			name:       "the trailing boundary is still checked",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    hf + "!",
+			want:       []secret.Location{{Start: 0, End: 37}},
+		},
+		{
+			name:       "the trailing boundary at the end of the content",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    hf,
+			want:       []secret.Location{{Start: 0, End: 37}},
+		},
+		{
+			name:       "after a digit, with boundaries",
+			pattern:    hfPattern,
+			boundaries: true,
+			content:    "9" + hf + "!",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			pattern, refPattern := tt.pattern, startWordExpr+tt.pattern
+			if tt.boundaries {
+				pattern += endWordExpr
+				refPattern += endWordExpr
+			}
+
+			group := "secret"
+			if tt.wholeMatch {
+				group = ""
+			}
+
+			rule := secret.Rule{
+				ID:                  "test",
+				Regex:               secret.MustCompile(pattern),
+				SecretGroupName:     group,
+				LeadingWordBoundary: true,
+			}
+			// The same rule as it was written before the boundary moved out of the pattern.
+			ref := secret.Rule{
+				ID:              "test",
+				Regex:           secret.MustCompile(refPattern),
+				SecretGroupName: group,
+			}
+
+			s := secret.Scanner{Global: &secret.Global{}}
+			content := []byte(tt.content)
+
+			got := s.FindLocations(rule, content)
+			assert.Equal(t, tt.want, got)
+			assert.Equal(t, s.FindLocations(ref, content), got,
+				"the pattern carrying the boundary reports another secret")
+		})
+	}
+}
+
+func TestLeadingWordBoundaryValidation(t *testing.T) {
+	const (
+		wantLiteral   = "must start with a literal ASCII word character"
+		wantUnbounded = "must not have an unbounded quantifier"
+	)
+
+	tests := []struct {
+		name     string
+		pattern  string
+		boundary bool
+		wantErr  string
+	}{
+		{
+			name:     "start of text",
+			pattern:  `^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "start of line",
+			pattern:  `(?m)^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "word boundary",
+			pattern:  `\bghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "no word boundary",
+			pattern:  `\Bghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "start of text under an alternation",
+			pattern:  `gho_[0-9a-zA-Z]{36}|^ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "end of text is fine, the right side of the content is never cut",
+			pattern:  `ghp_[0-9a-zA-Z]{36}$`,
+			boundary: true,
+		},
+		{
+			name:     "a word boundary behind the leading literal is fine",
+			pattern:  `ghp_[0-9a-zA-Z]{36}\b`,
+			boundary: true,
+		},
+		{
+			name:     "starts with a character class",
+			pattern:  `[gh]hp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "starts with a character that is a boundary itself",
+			pattern:  `-ghp_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "matches the empty string",
+			pattern:  `(?:ghp_[0-9a-zA-Z]{36})?`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "one branch of the alternation opens with a boundary",
+			pattern:  `ghp_[0-9a-zA-Z]{36}|-gho_[0-9a-zA-Z]{36}`,
+			boundary: true,
+			wantErr:  wantLiteral,
+		},
+		{
+			name:     "open-ended repeat",
+			pattern:  `ghs_[0-9a-zA-Z._-]{36,}`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "plus",
+			pattern:  `sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "star",
+			pattern:  `ghp_[0-9a-zA-Z]*`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "an unbounded repeat under a quest",
+			pattern:  `ghp_(?:[0-9a-zA-Z]+)?`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "an unbounded tail",
+			pattern:  `ghp_[0-9a-zA-Z]{36}\s+`,
+			boundary: true,
+			wantErr:  wantUnbounded,
+		},
+		{
+			name:     "every branch of the alternation opens with a word character",
+			pattern:  `ghp_[0-9a-zA-Z]{36}|gho_[0-9a-zA-Z]{36}`,
+			boundary: true,
+		},
+		{
+			name:     "the leading literal is case insensitive",
+			pattern:  `(?i)pk_(test|live)_[0-9a-z]{10,32}`,
+			boundary: true,
+		},
+		{
+			name:    "the pattern is free to start with anything without the boundary",
+			pattern: `^ghp_[0-9a-zA-Z]{36}`,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			rule := secret.Rule{
+				ID:                  "test",
+				Regex:               secret.MustCompile(tt.pattern),
+				LeadingWordBoundary: tt.boundary,
+			}
+
+			err := rule.Validate()
+			if tt.wantErr != "" {
+				require.Error(t, err)
+				assert.Contains(t, err.Error(), tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+		})
+	}
+}
+
+func TestSecretsSharingOneSeparator(t *testing.T) {
+	hf := "hf_" + strings.Repeat("b", 34) // 37 bytes
+	content := []byte(hf + "!" + hf)
+
+	s := secret.Scanner{Global: &secret.Global{}}
+	rule := secret.Rule{
+		ID:                  "test",
+		Regex:               secret.MustCompile(`(?P<secret>hf_[A-Za-z0-9]{34,40})([^0-9a-zA-Z_]|$)`),
+		SecretGroupName:     "secret",
+		LeadingWordBoundary: true,
+	}
+
+	want := []secret.Location{
+		{Start: 0, End: 37},
+		{Start: 38, End: 75},
+	}
+	assert.Equal(t, want, s.FindLocations(rule, content))
+
+	// With the boundary in the pattern the first match eats the separator, and the
+	// second secret has nothing in front of it left to match.
+	ref := secret.Rule{
+		ID:              "test",
+		Regex:           secret.MustCompile(`([^0-9a-zA-Z_]|^)(?P<secret>hf_[A-Za-z0-9]{34,40})([^0-9a-zA-Z_]|$)`),
+		SecretGroupName: "secret",
+	}
+	assert.Equal(t, want[:1], s.FindLocations(ref, content))
 }
