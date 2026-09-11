@@ -6,37 +6,46 @@ import (
 	"encoding/json/v2"
 	"errors"
 	"io"
+	"slices"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-// lineReader is a custom reader that tracks line numbers.
+// lineReader is a reader that notes line breaks as the data passes through,
+// so that an input offset can be resolved to a line number.
 type lineReader struct {
-	r    io.Reader
-	line int
+	r      io.Reader
+	offset int64
+
+	// newlineOffsets holds the offset of every "\n" read, in ascending order.
+	newlineOffsets []int64
 }
 
 // NewLineReader creates a new line reader.
 func NewLineReader(r io.Reader) *lineReader {
-	return &lineReader{
-		r:    r,
-		line: 1,
-	}
+	return &lineReader{r: r}
 }
 
 func (lr *lineReader) Read(p []byte) (n int, err error) {
 	n, err = lr.r.Read(p)
-	if n > 0 {
-		// Count the number of newlines in the read buffer
-		lr.line += bytes.Count(p[:n], []byte("\n"))
+	for i := 0; i < n; {
+		j := bytes.IndexByte(p[i:n], '\n')
+		if j < 0 {
+			break
+		}
+		lr.newlineOffsets = append(lr.newlineOffsets, lr.offset+int64(i+j))
+		i += j + 1
 	}
+	lr.offset += int64(n)
 	return n, err
 }
 
-func (lr *lineReader) Line() int {
-	return lr.line
+// Line returns the number of the line holding the given offset.
+func (lr *lineReader) Line(offset int64) int {
+	i, _ := slices.BinarySearch(lr.newlineOffsets, offset)
+	return i + 1
 }
 
 func Unmarshal(data []byte, v any) error {
@@ -118,8 +127,8 @@ func (l *locator) unmarshal[T any](dec *jsontext.Decoder, target T) error {
 	// cf. https://pkg.go.dev/github.com/go-json-experiment/json@v0.0.0-20250223041408-d3c622f1b874#example-WithUnmarshalers-RecordOffsets
 	kind := dec.PeekKind()
 
-	unread := bytes.TrimLeft(dec.UnreadBuffer(), " \n\r\t,:")
-	start := l.r.Line() - bytes.Count(unread, []byte("\n")) // The decoder buffer may have read more lines.
+	unread := dec.UnreadBuffer()
+	start := dec.InputOffset() + int64(len(unread)-len(bytes.TrimLeft(unread, " \n\r\t,:")))
 
 	// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
 	if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
@@ -134,8 +143,8 @@ func (l *locator) unmarshal[T any](dec *jsontext.Decoder, target T) error {
 	}
 
 	location := types.Location{
-		StartLine: start,
-		EndLine:   l.r.Line() - bytes.Count(dec.UnreadBuffer(), []byte("\n")),
+		StartLine: l.r.Line(start),
+		EndLine:   l.r.Line(dec.InputOffset()),
 	}
 
 	for _, h := range l.hooks {
