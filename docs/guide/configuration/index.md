@@ -38,3 +38,5 @@ trivy --config="" fs --ignorefile="" --secret-config="" /workspace/project
 ```
 
 CLI flags and environment variables still apply. Secret scanning continues to use its built-in rules and allow rules. Omitting these flags preserves the default file-loading behavior.
+
+Empty environment variables such as `TRIVY_CONFIG=""`, `TRIVY_IGNOREFILE=""`, and `TRIVY_SECRET_CONFIG=""` are treated as unset and do not disable file loading. Use the CLI flags shown above to disable these files.
