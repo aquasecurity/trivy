@@ -349,9 +349,9 @@ func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
 }
 
 // testInspectArtifact is a helper function to inspect an artifact and assert the results
-func testInspectArtifact(t *testing.T, target, wantRepoURL, wantErr string) {
+func testInspectArtifact(t *testing.T, target, wantRepoURL, wantErr string, artifactOpt artifact.Option) {
 	t.Helper()
-	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
+	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), artifactOpt)
 	t.Cleanup(cleanup)
 
 	if wantErr != "" {
@@ -430,7 +430,84 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 				}
 
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr, artifact.Option{})
+			})
+		}
+	})
+
+	// Test with credentials passed explicitly via --git-username/--git-password
+	t.Run("git credential options", func(t *testing.T) {
+		const defaultGitUsername = "fanal-aquasecurity-scan" // The username Trivy falls back to
+
+		// One server expects a real username, the other only cares about the token
+		namedURL := setupAuthTestServer(t, testUsername, testPassword)
+		tokenURL := setupAuthTestServer(t, defaultGitUsername, testPassword)
+
+		tests := []struct {
+			name        string
+			target      string
+			artifactOpt artifact.Option
+			envVars     map[string]string
+			wantErr     string
+			wantRepoURL string
+		}{
+			{
+				name:   "success with username and password",
+				target: namedURL.String(),
+				artifactOpt: artifact.Option{
+					RepoGitUsername: testUsername,
+					RepoGitPassword: testPassword,
+				},
+				wantRepoURL: namedURL.String(),
+			},
+			{
+				name:   "success with password only, falling back to the default username",
+				target: tokenURL.String(),
+				artifactOpt: artifact.Option{
+					RepoGitPassword: testPassword,
+				},
+				wantRepoURL: tokenURL.String(),
+			},
+			{
+				name:   "credentials take precedence over GITHUB_TOKEN",
+				target: namedURL.String(),
+				artifactOpt: artifact.Option{
+					RepoGitUsername: testUsername,
+					RepoGitPassword: testPassword,
+				},
+				envVars: map[string]string{
+					"GITHUB_TOKEN": "wrongpassword",
+				},
+				wantRepoURL: namedURL.String(),
+			},
+			{
+				name:   "failure with wrong password",
+				target: namedURL.String(),
+				artifactOpt: artifact.Option{
+					RepoGitUsername: testUsername,
+					RepoGitPassword: "wrongpassword",
+				},
+				wantErr: "authentication required",
+			},
+			{
+				name:   "failure with username only",
+				target: namedURL.String(),
+				artifactOpt: artifact.Option{
+					RepoGitUsername: testUsername,
+				},
+				wantErr: "authentication required",
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				// Set test environment variables
+				for key, value := range tt.envVars {
+					t.Setenv(key, value)
+				}
+
+				// Test using helper function
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr, tt.artifactOpt)
 			})
 		}
 	})
@@ -475,7 +552,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr, artifact.Option{})
 			})
 		}
 	})
@@ -500,7 +577,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		require.NoError(t, err)
 
 		// Scan and verify the local cloned directory
-		testInspectArtifact(t, cloneDir, tsURL.String(), "")
+		testInspectArtifact(t, cloneDir, tsURL.String(), "", artifact.Option{})
 	})
 }
 

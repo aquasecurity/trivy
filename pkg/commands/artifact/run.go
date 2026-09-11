@@ -647,6 +647,8 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			RepoBranch:        opts.RepoBranch,
 			RepoCommit:        opts.RepoCommit,
 			RepoTag:           opts.RepoTag,
+			RepoGitUsername:   opts.RepoGitUsername,
+			RepoGitPassword:   opts.RepoGitPassword,
 			SBOMSources:       opts.SBOMSources,
 			RekorURL:          opts.RekorURL,
 			AWSRegion:         opts.Region,

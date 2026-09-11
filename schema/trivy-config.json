@@ -866,6 +866,14 @@
         "tag": {
           "type": "string",
           "description": "pass the tag name to be scanned"
+        },
+        "git-username": {
+          "type": "string",
+          "description": "username to authenticate to a private git repository. Defaults to a dummy user, which is enough for token-based authentication."
+        },
+        "git-password": {
+          "type": "string",
+          "description": "password or personal access token to authenticate to a private git repository. TRIVY_GIT_PASSWORD should be used for security reasons."
         }
       }
     },
