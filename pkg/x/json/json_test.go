@@ -77,12 +77,36 @@ func TestUnmarshal(t *testing.T) {
 							EndLine:   10,
 						},
 						Dependencies: map[string]Dependency{
-							// UnmarshalerWithObjectLocation doesn't support Location for nested objects
 							"debug": {
 								Version: "2.6.9",
 								Location: xjson.Location{
 									StartLine: 6,
 									EndLine:   8,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "objects on the same line",
+			in:   []byte(`{"dependencies": {"body-parser": {"version": "1.18.3", "dependencies": {"debug": {"version": "2.6.9"}}}}}`),
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"body-parser": {
+						Version: "1.18.3",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
+						},
+						Dependencies: map[string]Dependency{
+							"debug": {
+								Version: "2.6.9",
+								Location: xjson.Location{
+									StartLine: 1,
+									EndLine:   1,
 								},
 							},
 						},
