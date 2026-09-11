@@ -496,6 +496,9 @@ This snapshot file can be [submitted][github-sbom-submit] to your GitHub reposit
 
 #### Custom Template
 
+!!! warning "Trusted templates"
+    Only use templates from trusted sources. Templates can read environment variables and include sensitive values in report output.
+
 {% raw %}
 ```
 $ trivy image --format template --template "{{ range . }} {{ .Target }} {{ end }}" golang:1.12-alpine
@@ -530,6 +533,8 @@ Critical: 0, High: 2
 </details>
 
 For other features of sprig, see the official [sprig][sprig] documentation.
+
+The `getHostByName` function is not available in Trivy templates.
 
 #### Load templates from a file
 You can load templates from a file prefixing the template path with an `@`.
