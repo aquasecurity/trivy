@@ -26,7 +26,7 @@ func getClusters(ctx parser.FileContext) (clusters []redshift.Cluster) {
 				Metadata: r.Metadata(),
 				Port:     r.GetIntProperty("Endpoint.Port"),
 			},
-			SubnetGroupName: r.GetStringProperty("ClusterSubnetGroupName", ""),
+			SubnetGroupName: r.GetStringProperty("ClusterSubnetGroupName"),
 		}
 
 		clusters = append(clusters, cluster)

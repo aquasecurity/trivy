@@ -33,7 +33,7 @@ func getListeners(lbr *parser.Resource, ctx parser.FileContext) (listeners []elb
 			listener := elb.Listener{
 				Metadata:       r.Metadata(),
 				Protocol:       r.GetStringProperty("Protocol", "HTTP"),
-				TLSPolicy:      r.GetStringProperty("SslPolicy", ""),
+				TLSPolicy:      r.GetStringProperty("SslPolicy"),
 				DefaultActions: getDefaultListenerActions(r),
 			}
 
