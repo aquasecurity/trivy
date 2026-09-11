@@ -174,6 +174,9 @@ func summarize(specifiedSeverities []dbTypes.Severity, severityCount map[string]
 }
 
 func IsOutputToTerminal(output io.Writer) bool {
+	if color.NoColor {
+		return false
+	}
 	if runtime.GOOS == "windows" {
 		// if its windows, we don't support formatting
 		return false
