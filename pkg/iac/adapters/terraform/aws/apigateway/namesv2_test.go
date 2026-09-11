@@ -22,8 +22,7 @@ resource "aws_apigatewayv2_domain_name" "example" {
 `,
 			expected: []v2.DomainName{
 				{
-					Name:           String(""),
-					SecurityPolicy: String("TLS_1_0"),
+					SecurityPolicy: String("TLS_1_2"),
 				},
 			},
 		},

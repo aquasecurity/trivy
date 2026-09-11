@@ -1,6 +1,7 @@
 package apigateway
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	v2 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v2"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -70,17 +71,17 @@ func getAccessLogging(r *parser.Resource) v2.AccessLogging {
 func adaptDomainNamesV2(fctx parser.FileContext) []v2.DomainName {
 	var domainNames []v2.DomainName
 
-	for _, domainNameResource := range fctx.GetResourcesByType("AWS::ApiGateway::DomainName") {
+	for _, domainNameResource := range fctx.GetResourcesByType("AWS::ApiGatewayV2::DomainName") {
 
 		domainName := v2.DomainName{
 			Metadata:       domainNameResource.Metadata(),
 			Name:           domainNameResource.GetStringProperty("DomainName"),
-			SecurityPolicy: domainNameResource.GetStringProperty("SecurityPolicy"),
+			SecurityPolicy: domainNameResource.GetStringProperty("SecurityPolicy", apigateway.DefaultSecurityPolicy),
 		}
 
 		if domainNameCfgs := domainNameResource.GetProperty("DomainNameConfigurations"); domainNameCfgs.IsList() {
 			for _, domainNameCfg := range domainNameCfgs.AsList() {
-				domainName.SecurityPolicy = domainNameCfg.GetStringProperty("SecurityPolicy")
+				domainName.SecurityPolicy = domainNameCfg.GetStringProperty("SecurityPolicy", apigateway.DefaultSecurityPolicy)
 			}
 		}
 
