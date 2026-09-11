@@ -68,9 +68,11 @@ A common extra entry is a module that another module needs to run its own tests.
 
 To check whether a module is part of the build, list the dependencies of your packages.
 
+{% raw %}
 ```
 $ go list -deps -f '{{with .Module}}{{.Path}}{{end}}' ./... | grep -Fx 'golang.org/x/mod'
 ```
+{% endraw %}
 
 Empty output means the module is not in the build. Add the `-test` flag to also cover the tests of your own packages.
 
