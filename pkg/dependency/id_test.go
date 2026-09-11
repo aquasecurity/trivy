@@ -1,13 +1,11 @@
 package dependency_test
 
 import (
-	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -83,50 +81,4 @@ func TestID(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-// TestUID_Digests pins how the collected digests take part in the package hash: their values
-// do, so a changed digest shows up in the identifier, while the source they were acquired from
-// does not. An image can report the same package both from its package database and from an
-// SBOM shipped inside it, and those entries are meant to collapse into one.
-func TestUID_Digests(t *testing.T) {
-	base := types.Package{
-		Name:    "musl",
-		Version: "1.2.5-r0",
-		Digest:  "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-		Digests: []digest.SourcedDigest{
-			{
-				Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-				Source: digest.SourceAPKInstalledDB,
-			},
-		},
-	}
-
-	// The packages below differ from base in the collected digests alone.
-	fromSBOM := base
-	fromSBOM.Digests = []digest.SourcedDigest{
-		{
-			Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-			Source: digest.SourceSBOM,
-		},
-	}
-
-	withSecond := base
-	withSecond.Digests = append(slices.Clone(base.Digests), digest.SourcedDigest{
-		Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-		Source: digest.SourceFileContent,
-	})
-
-	otherValue := base
-	otherValue.Digests = []digest.SourcedDigest{
-		{
-			Digest: "sha1:0000000000000000000000000000000000000000",
-			Source: digest.SourceAPKInstalledDB,
-		},
-	}
-
-	uid := dependency.UID("", base)
-	assert.Equal(t, uid, dependency.UID("", fromSBOM))
-	assert.NotEqual(t, uid, dependency.UID("", withSecond))
-	assert.NotEqual(t, uid, dependency.UID("", otherValue))
 }

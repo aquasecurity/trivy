@@ -192,11 +192,9 @@ type File struct {
 	// SPDX: package.files[].fileName
 	Path string
 
-	// Digests are hashes that uniquely identify the component, each with the source
-	// it was acquired from. A file can have several digests with different algorithms,
-	// like SHA1, SHA256, etc., and the same algorithm may be acquired from several sources.
-	// Neither format has a field for the source, so it is available to the serializers
-	// but is dropped when marshaling.
+	// Digests are hashes that uniquely identify the component, each with the source it was
+	// acquired from. A file can have several digests with different algorithms, like SHA1,
+	// SHA256, etc., and the same algorithm may be acquired from several sources.
 	// CycloneDX: component.hashes
 	// SPDX: package.files[].checksums
 	Digests []digest.SourcedDigest

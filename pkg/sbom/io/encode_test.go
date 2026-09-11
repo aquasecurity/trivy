@@ -115,6 +115,8 @@ func TestEncoder_Encode(t *testing.T) {
 								Version:  "2.13.4",
 								FilePath: "/foo/jackson-databind-2.13.4.jar",
 								Digest:   "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+								// The digests below are synthetic, put together for this test: only the
+								// first of them reaches a component.
 								Digests: []digest.SourcedDigest{
 									{
 										Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",

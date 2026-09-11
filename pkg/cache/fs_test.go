@@ -269,6 +269,8 @@ func TestFSCache_PutBlob(t *testing.T) {
 			wantErr: "database not open",
 		},
 		{
+			// The digests below are synthetic, put together for this test to exercise the
+			// serialization of a package that carries more than one value.
 			name: "package with several digests",
 			args: args{
 				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",

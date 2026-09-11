@@ -11,24 +11,23 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-func TestPackage_AddDigest(t *testing.T) {
-	type added struct {
-		digest digest.Digest
-		source digest.Source
-	}
+// TestPackage_Digests covers both ways of storing digests: one at a time, as the analyzers do,
+// and in a batch, as the SBOM decoder and the RPC converter do.
+func TestPackage_Digests(t *testing.T) {
 	tests := []struct {
 		name        string
-		added       []added
+		pkg         types.Package
+		add         func(pkg *types.Package)
 		wantDigest  digest.Digest
 		wantDigests []digest.SourcedDigest
 	}{
 		{
-			name: "multiple algorithms",
-			added: []added{
-				{"md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceRPMSigMD5},
-				{"sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable},
-			},
 			// The legacy field keeps the first collected value.
+			name: "multiple algorithms",
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceRPMSigMD5)
+				pkg.AddDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable)
+			},
 			wantDigest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
 			wantDigests: []digest.SourcedDigest{
 				{
@@ -43,9 +42,9 @@ func TestPackage_AddDigest(t *testing.T) {
 		},
 		{
 			name: "same algorithm from different sources",
-			added: []added{
-				{"sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable},
-				{"sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061", digest.SourceFileContent},
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable)
+				pkg.AddDigest("sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061", digest.SourceFileContent)
 			},
 			wantDigest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
 			wantDigests: []digest.SourcedDigest{
@@ -61,112 +60,93 @@ func TestPackage_AddDigest(t *testing.T) {
 		},
 		{
 			name: "same value from different sources",
-			added: []added{
-				{"sha1:901a7b55410321c4d35543506cff2a8613ef5aa2", digest.SourceJavaArchive},
-				{"sha1:901a7b55410321c4d35543506cff2a8613ef5aa2", digest.SourceUnknown},
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceJavaArchive)
+				pkg.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceSBOM)
 			},
-			wantDigest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+			wantDigest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 			wantDigests: []digest.SourcedDigest{
 				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 					Source: digest.SourceJavaArchive,
 				},
 				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
 				},
 			},
 		},
 		{
 			name: "the same digest added twice",
-			added: []added{
-				{"sha1:901a7b55410321c4d35543506cff2a8613ef5aa2", digest.SourceAPKInstalledDB},
-				{"sha1:901a7b55410321c4d35543506cff2a8613ef5aa2", digest.SourceAPKInstalledDB},
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceAPKInstalledDB)
+				pkg.AddDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceAPKInstalledDB)
 			},
-			wantDigest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+			wantDigest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 			wantDigests: []digest.SourcedDigest{
 				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 					Source: digest.SourceAPKInstalledDB,
 				},
 			},
 		},
 		{
 			name: "empty digest",
-			added: []added{
-				{"", digest.SourceRPMSigMD5},
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("", digest.SourceRPMSigMD5)
 			},
 		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			var pkg types.Package
-			for _, a := range tt.added {
-				pkg.AddDigest(a.digest, a.source)
-			}
-
-			assert.Equal(t, tt.wantDigest, pkg.Digest)
-			assert.Equal(t, tt.wantDigests, pkg.Digests)
-		})
-	}
-}
-
-func TestPackage_AddDigests(t *testing.T) {
-	tests := []struct {
-		name        string
-		pkg         types.Package
-		added       []digest.SourcedDigest
-		wantDigest  digest.Digest
-		wantDigests []digest.SourcedDigest
-	}{
 		{
-			name: "several digests at once",
-			added: []digest.SourcedDigest{
+			name: "a batch at once",
+			add: func(pkg *types.Package) {
+				pkg.AddDigests([]digest.SourcedDigest{
+					{
+						Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+						Source: digest.SourceSBOM,
+					},
+					{
+						Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+						Source: digest.SourceSBOM,
+					},
+				})
+			},
+			wantDigest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+			wantDigests: []digest.SourcedDigest{
 				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
 				},
 				{
 					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-					Source: digest.SourceUnknown,
-				},
-			},
-			wantDigest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-			wantDigests: []digest.SourcedDigest{
-				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
-				},
-				{
-					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-					Source: digest.SourceUnknown,
+					Source: digest.SourceSBOM,
 				},
 			},
 		},
 		{
-			name: "duplicates and empty values are dropped",
-			added: []digest.SourcedDigest{
-				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
-				},
-				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
-				},
-				{Source: digest.SourceUnknown},
+			name: "a batch with duplicates and empty values",
+			add: func(pkg *types.Package) {
+				pkg.AddDigests([]digest.SourcedDigest{
+					{
+						Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+						Source: digest.SourceSBOM,
+					},
+					{
+						Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+						Source: digest.SourceSBOM,
+					},
+					{Source: digest.SourceSBOM},
+				})
 			},
-			wantDigest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+			wantDigest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 			wantDigests: []digest.SourcedDigest{
 				{
-					Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
-					Source: digest.SourceUnknown,
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
 				},
 			},
 		},
 		{
-			name: "values already collected are not repeated",
+			name: "a batch on top of what is already collected",
 			pkg: types.Package{
 				Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
 				Digests: []digest.SourcedDigest{
@@ -176,15 +156,17 @@ func TestPackage_AddDigests(t *testing.T) {
 					},
 				},
 			},
-			added: []digest.SourcedDigest{
-				{
-					Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
-					Source: digest.SourceRPMSigMD5,
-				},
-				{
-					Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
-					Source: digest.SourceUnknown,
-				},
+			add: func(pkg *types.Package) {
+				pkg.AddDigests([]digest.SourcedDigest{
+					{
+						Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Source: digest.SourceRPMSigMD5,
+					},
+					{
+						Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Source: digest.SourceSBOM,
+					},
+				})
 			},
 			wantDigest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
 			wantDigests: []digest.SourcedDigest{
@@ -194,7 +176,27 @@ func TestPackage_AddDigests(t *testing.T) {
 				},
 				{
 					Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Source: digest.SourceSBOM,
+				},
+			},
+		},
+		{
+			// Adding to data that carries the legacy digest alone must not leave Digest
+			// disagreeing with the first element of Digests.
+			name: "on top of legacy data",
+			pkg:  types.Package{Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"},
+			add: func(pkg *types.Package) {
+				pkg.AddDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceFileContent)
+			},
+			wantDigest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+			wantDigests: []digest.SourcedDigest{
+				{
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
 					Source: digest.SourceUnknown,
+				},
+				{
+					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+					Source: digest.SourceFileContent,
 				},
 			},
 		},
@@ -203,33 +205,12 @@ func TestPackage_AddDigests(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			pkg := tt.pkg
-			pkg.AddDigests(tt.added)
+			tt.add(&pkg)
 
 			assert.Equal(t, tt.wantDigest, pkg.Digest)
 			assert.Equal(t, tt.wantDigests, pkg.Digests)
 		})
 	}
-}
-
-// TestPackage_AddDigest_LegacyData covers data that carries the legacy digest alone, such as
-// a package decoded from an SBOM. Adding another value must not leave Digest disagreeing with
-// the first element of Digests.
-func TestPackage_AddDigest_LegacyData(t *testing.T) {
-	pkg := types.Package{Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"}
-	pkg.AddDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceFileContent)
-
-	assert.Equal(t, digest.Digest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"), pkg.Digest)
-	assert.Equal(t, []digest.SourcedDigest{
-		{
-			Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-			Source: digest.SourceUnknown,
-		},
-		{
-			Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-			Source: digest.SourceFileContent,
-		},
-	}, pkg.Digests)
-	assert.Equal(t, pkg.Digest, pkg.Digests[0].Digest)
 }
 
 func TestPackage_HasDigest(t *testing.T) {
