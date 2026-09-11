@@ -541,6 +541,40 @@ func TestNewPackageURL(t *testing.T) {
 	}
 }
 
+func TestNewPackageURL_DHI(t *testing.T) {
+	tests := []struct {
+		name string
+		os   ftypes.OS
+		pkg  ftypes.Package
+		want string
+	}{
+		{
+			name: "APK package",
+			os:   ftypes.OS{Family: ftypes.DHI, Name: "3.24"},
+			pkg: ftypes.Package{
+				Name: "coreutils", Version: "9.11-r0", Arch: "aarch64", AnalyzedBy: analyzer.TypeApk,
+			},
+			want: "pkg:apk/dhi/coreutils@9.11-r0?arch=aarch64&distro=3.24",
+		},
+		{
+			name: "Debian package",
+			os:   ftypes.OS{Family: ftypes.DHI, Name: "13"},
+			pkg: ftypes.Package{
+				Name: "coreutils", Version: "9.7-3+dhi3", Arch: "arm64", AnalyzedBy: analyzer.TypeDpkg,
+			},
+			want: "pkg:deb/dhi/coreutils@9.7-3%2Bdhi3?arch=arm64&distro=dhi-13",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := purl.New(ftypes.DHI, types.Metadata{OS: &tt.os}, tt.pkg)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got.String())
+		})
+	}
+}
+
 func TestFromString(t *testing.T) {
 	testCases := []struct {
 		name    string

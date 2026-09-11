@@ -250,6 +250,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "Docker Hardened Images",
+			inputFile: "testdata/dhi",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.DHI,
+					Name:   "3.24",
+				},
+			},
+		},
+		{
 			name:      "Bottlerocket",
 			inputFile: "testdata/bottlerocket",
 			want: &analyzer.AnalysisResult{

@@ -60,6 +60,12 @@ func (o *OS) Merge(newOS OS) {
 
 	supplier := o.Supplier
 	switch {
+	// DHI images also contain their Alpine or Debian lineage release files. The
+	// explicit ID=dhi identity from os-release must win regardless of analyzer order.
+	case newOS.Family == DHI:
+		*o = newOS
+	case o.Family == DHI:
+		// Keep the DHI identity when a lineage-specific analyzer completes later.
 	// OLE also has /etc/redhat-release and it detects OLE as RHEL by mistake.
 	// In that case, OS must be overwritten with the content of /etc/oracle-release.
 	// There is the same problem between Debian and Ubuntu.
