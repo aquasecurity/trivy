@@ -76,7 +76,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2%20%28Karoo%29",
-            "UID": "8058a802323488f1"
+            "UID": "5a9e866744e82bce"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-12.amzn2.0.1",
@@ -149,7 +149,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-9.amzn2.0.1?arch=x86_64\u0026distro=amazon-2%20%28Karoo%29",
-            "UID": "8058a802323488f1"
+            "UID": "5a9e866744e82bce"
           },
           "InstalledVersion": "7.61.1-9.amzn2.0.1",
           "FixedVersion": "7.61.1-11.amzn2.0.2",

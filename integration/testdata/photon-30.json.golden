@@ -86,7 +86,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/bash@4.4.18-1.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "f15dcd97e5f85a4a"
+            "UID": "28f4d0bb664bfad7"
           },
           "InstalledVersion": "4.4.18-1.ph3",
           "FixedVersion": "4.4.18-2.ph3",
@@ -151,7 +151,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "4f785436284e7240"
+            "UID": "74ab2099a5aa0b36"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",
@@ -224,7 +224,7 @@
           "PkgName": "curl-libs",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/photon/curl-libs@7.61.1-4.ph3?arch=x86_64\u0026distro=photon-3.0",
-            "UID": "eb1cfab729b054f7"
+            "UID": "18014afe38ce093a"
           },
           "InstalledVersion": "7.61.1-4.ph3",
           "FixedVersion": "7.61.1-5.ph3",

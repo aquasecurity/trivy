@@ -85,9 +85,10 @@ func TestID(t *testing.T) {
 	}
 }
 
-// TestUID_Digests pins that the collected digests take part in the package hash, values and
-// sources alike: an image can carry the same package twice, once found by its own analyzer and
-// once read from an SBOM shipped inside it, and those two must not collapse into one identity.
+// TestUID_Digests pins how the collected digests take part in the package hash: their values
+// do, so a changed digest shows up in the identifier, while the source they were acquired from
+// does not. An image can report the same package both from its package database and from an
+// SBOM shipped inside it, and those entries are meant to collapse into one.
 func TestUID_Digests(t *testing.T) {
 	base := types.Package{
 		Name:    "musl",
@@ -125,7 +126,7 @@ func TestUID_Digests(t *testing.T) {
 	}
 
 	uid := dependency.UID("", base)
-	assert.NotEqual(t, uid, dependency.UID("", fromSBOM))
+	assert.Equal(t, uid, dependency.UID("", fromSBOM))
 	assert.NotEqual(t, uid, dependency.UID("", withSecond))
 	assert.NotEqual(t, uid, dependency.UID("", otherValue))
 }

@@ -76,7 +76,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/amazon/curl@7.61.1-11.91.amzn1?arch=x86_64\u0026distro=amazon-AMI%20release%202018.03",
-            "UID": "a99fdffa00a55eed"
+            "UID": "68fd3f1ad2a38ef6"
           },
           "InstalledVersion": "7.61.1-11.91.amzn1",
           "FixedVersion": "7.61.1-12.93.amzn1",

@@ -77,7 +77,7 @@
           "PkgName": "musl",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "d93dd3510148636a"
+            "UID": "bcb00cc2c0b22746"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
@@ -124,7 +124,7 @@
           "PkgName": "musl-utils",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
-            "UID": "9cc27da518e9498c"
+            "UID": "1e01f6837333f3a7"
           },
           "InstalledVersion": "1.1.20-r4",
           "FixedVersion": "1.1.20-r5",
