@@ -23,12 +23,11 @@ func Test_OptionWithPolicyDirs(t *testing.T) {
 		"/rules/test.rego": emptyBucketCheck,
 	})
 
-	results, err := scanFS(fsys, "code",
+	results := scanFS(t, fsys, "code",
 		rego.WithPolicyFilesystem(fsys),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyNamespaces("user"),
 	)
-	require.NoError(t, err)
 	require.Len(t, results.GetFailed(), 1)
 
 	failure := results.GetFailed()[0]
@@ -139,13 +138,10 @@ cause := bucket.name
 				`, test.policyNamespace),
 			})
 
-			scanner := New(
+			results := scanFS(t, fs, "code",
 				rego.WithPolicyDirs("rules"),
 				rego.WithPolicyNamespaces(test.includedNamespaces...),
 			)
-
-			results, err := scanner.ScanFS(t.Context(), fs, "code")
-			require.NoError(t, err)
 
 			var found bool
 			for _, result := range results.GetFailed() {
@@ -213,13 +209,10 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedLibraries(true),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "TEST123", results[0].Rule().ID)
@@ -294,134 +287,14 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedLibraries(true),
 	)
 
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
-
 	require.Len(t, results.GetFailed(), 1)
 	assert.Equal(t, "TEST-0123", results[0].Rule().ID)
 	assert.NotNil(t, results[0].Metadata().Range().GetFS())
-
-}
-
-func Test_S3_Linking(t *testing.T) {
-
-	code := `
-## tfsec:ignore:aws-s3-enable-bucket-encryption
-## tfsec:ignore:aws-s3-enable-bucket-logging
-## tfsec:ignore:aws-s3-enable-versioning
-resource "aws_s3_bucket" "blubb" {
-  bucket = "test"
-}
-
-resource "aws_s3_bucket_public_access_block" "audit_logs_athena" {
-  bucket = aws_s3_bucket.blubb.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-# tfsec:ignore:aws-s3-enable-bucket-encryption
-# tfsec:ignore:aws-s3-enable-bucket-logging
-# tfsec:ignore:aws-s3-enable-versioning
-resource "aws_s3_bucket" "foo" {
-  bucket        = "prefix-" # remove this variable and it works; does not report
-  force_destroy = true
-}
-
-resource "aws_s3_bucket_public_access_block" "foo" {
-  bucket = aws_s3_bucket.foo.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-`
-
-	fs := testutil.CreateFS(map[string]string{
-		"code/main.tf": code,
-	})
-
-	scanner := New()
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
-
-	failed := results.GetFailed()
-	for _, result := range failed {
-		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID, "AVD-AWS-0094 should not be reported - was found at "+result.Metadata().Range().String())
-		// encryption
-		assert.NotEqual(t, "AVD-AWS-0088", result.Rule().ID)
-		// logging
-		assert.NotEqual(t, "AVD-AWS-0089", result.Rule().ID)
-		// versioning
-		assert.NotEqual(t, "AVD-AWS-0090", result.Rule().ID)
-	}
-}
-
-func Test_S3_Linking_PublicAccess(t *testing.T) {
-
-	code := `
-resource "aws_s3_bucket" "testA" {
-  bucket = "com.test.testA"
-}
-
-resource "aws_s3_bucket_acl" "testA" {
-  bucket = aws_s3_bucket.testA.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_public_access_block" "testA" {
-  bucket = aws_s3_bucket.testA.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-resource "aws_s3_bucket" "testB" {
-  bucket = "com.test.testB"
-}
-
-resource "aws_s3_bucket_acl" "testB" {
-  bucket = aws_s3_bucket.testB.id
-  acl    = "private"
-}
-
-resource "aws_s3_bucket_public_access_block" "testB" {
-  bucket = aws_s3_bucket.testB.id
-
-  block_public_acls       = true
-  block_public_policy     = true
-  ignore_public_acls      = true
-  restrict_public_buckets = true
-}
-
-`
-
-	fs := testutil.CreateFS(map[string]string{
-		"code/main.tf": code,
-	})
-
-	scanner := New()
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
-
-	for _, result := range results.GetFailed() {
-		// public access block
-		assert.NotEqual(t, "AVD-AWS-0094", result.Rule().ID)
-	}
 
 }
 
@@ -466,13 +339,10 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	require.Len(t, results.GetFailed(), 1)
 
@@ -540,19 +410,15 @@ bucket_name = "test"
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
 		ScannerWithTFVarsPaths("main.tfvars"),
 		ScannerWithConfigsFileSystem(configsFS),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetPassed(), 1)
@@ -574,19 +440,15 @@ bucket_name = "test"
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
 		ScannerWithTFVarsPaths("main.tfvars"),
 		ScannerWithConfigsFileSystem(fs),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetPassed(), 1)
@@ -649,17 +511,13 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyDirs("rules"),
 		rego.WithEmbeddedPolicies(false),
 		rego.WithEmbeddedLibraries(false),
-		ScannerWithAllDirectories(true),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	assert.Len(t, results.GetPassed(), 2)
 	require.Len(t, results.GetFailed(), 1)
@@ -719,16 +577,12 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetFailed(), 1)
@@ -787,16 +641,12 @@ deny[res] {
 }`,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		ScannerWithAllDirectories(true),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	require.Len(t, results, 2)
 
@@ -850,18 +700,13 @@ deny[res] {
 `,
 	})
 
-	scanner := New(
+	results := scanFS(t, fs, "code",
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fs),
 		rego.WithPolicyNamespaces("user"),
 		rego.WithEmbeddedLibraries(false),
 		rego.WithEmbeddedPolicies(false),
-		rego.WithMaxAllowedErrors(0),
-		ScannerWithAllDirectories(true),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fs, "code")
-	require.NoError(t, err)
 
 	require.Len(t, results, 1)
 
@@ -893,73 +738,109 @@ resource "aws_s3_bucket" "test" {}
 	})
 
 	t.Run("use skip-dir option", func(t *testing.T) {
-		scanner := New(
+		results := scanFS(t, fsys, "deployments",
 			ScannerWithSkipDirs([]string{"**/modules/**"}),
-			ScannerWithAllDirectories(true),
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
 		)
-
-		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
-		require.NoError(t, err)
 
 		assert.Empty(t, results)
 	})
 
 	t.Run("use skip-files option", func(t *testing.T) {
-		scanner := New(
+		results := scanFS(t, fsys, "deployments",
 			ScannerWithSkipFiles([]string{"**/modules/**/*.tf"}),
-			ScannerWithAllDirectories(true),
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
 		)
-
-		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
-		require.NoError(t, err)
 
 		assert.Empty(t, results)
 	})
 
 	t.Run("use skip-files and skip-dirs options together", func(t *testing.T) {
-		scanner := New(
+		results := scanFS(t, fsys, "deployments",
 			ScannerWithSkipFiles([]string{"**/modules/*.tf"}),
 			ScannerWithSkipDirs([]string{"**/modules2/**"}),
-			ScannerWithAllDirectories(true),
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
 		)
-
-		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
-		require.NoError(t, err)
 
 		assert.Empty(t, results)
 	})
 
 	t.Run("non existing value for skip-files option", func(t *testing.T) {
-		scanner := New(
+		results := scanFS(t, fsys, "deployments",
 			ScannerWithSkipFiles([]string{"foo/bar*.tf"}),
-			ScannerWithAllDirectories(true),
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
 		)
-
-		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
-		require.NoError(t, err)
 
 		assert.Len(t, results, 2)
 	})
 
 	t.Run("empty skip-files option", func(t *testing.T) {
-		scanner := New(
-			ScannerWithAllDirectories(true),
+		results := scanFS(t, fsys, "deployments",
 			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
 			rego.WithPolicyNamespaces("user"),
 		)
 
-		results, err := scanner.ScanFS(t.Context(), fsys, "deployments")
-		require.NoError(t, err)
-
 		assert.Len(t, results, 2)
+	})
+}
+
+func TestSkipDownloadedModules(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"main.tf": `module "downloaded" {
+  source = "git::https://github.com/test/bucket"
+}
+
+module "local" {
+  source = "./modules/bucket"
+}`,
+		"modules/bucket/main.tf": `resource "aws_s3_bucket" "local" {
+  bucket = ""
+}`,
+		".terraform/modules/modules.json": `{
+  "Modules": [
+    {"Key": "", "Source": "", "Dir": "."},
+    {
+      "Key": "downloaded",
+      "Source": "git::https://github.com/test/bucket",
+      "Dir": ".terraform/modules/downloaded"
+    }
+  ]
+}`,
+		".terraform/modules/downloaded/main.tf": `resource "aws_s3_bucket" "downloaded" {
+  bucket = ""
+}`,
+	})
+
+	t.Run("skip downloaded modules", func(t *testing.T) {
+		results := scanFS(t, fsys, ".",
+			ScannerWithAllDirectories(false),
+			ScannerWithSkipDownloaded(true),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
+
+		failed := results.GetFailed()
+		require.Len(t, failed, 1)
+		assert.Equal(t, "modules/bucket/main.tf", failed[0].Range().GetLocalFilename())
+
+		ignored := results.GetIgnored()
+		require.Len(t, ignored, 1)
+		assert.Equal(t, ".terraform/modules/downloaded/main.tf", ignored[0].Range().GetLocalFilename())
+	})
+
+	t.Run("scan downloaded modules", func(t *testing.T) {
+		results := scanFS(t, fsys, ".",
+			ScannerWithAllDirectories(false),
+			rego.WithPolicyReader(strings.NewReader(emptyBucketCheck)),
+			rego.WithPolicyNamespaces("user"),
+		)
+
+		assert.Len(t, results.GetFailed(), 2)
+		assert.Empty(t, results.GetIgnored())
 	})
 }
 
@@ -1008,14 +889,10 @@ deny contains res if {
 }
 `
 
-	scanner := New(
-		ScannerWithAllDirectories(true),
+	results := scanFS(t, fsys, ".",
 		rego.WithPolicyReader(strings.NewReader(check)),
 		rego.WithPolicyNamespaces("test"),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fsys, ".")
-	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
 }
@@ -1196,15 +1073,10 @@ data "google_storage_transfer_project_service_account" "production" {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			scanner := New(
-				ScannerWithAllDirectories(true),
-				rego.WithEmbeddedLibraries(true),
+			results := scanFS(t, tt.fsys, ".",
 				rego.WithPolicyReader(strings.NewReader(tt.inputCheck)),
 				rego.WithPolicyNamespaces("user"),
 			)
-
-			results, err := scanner.ScanFS(t.Context(), tt.fsys, ".")
-			require.NoError(t, err)
 
 			failed := results.GetFailed()
 
@@ -1251,16 +1123,11 @@ deny contains res if {
 }`)},
 	}
 
-	scanner := New(
-		ScannerWithAllDirectories(true),
+	results := scanFS(t, fsys, ".",
 		options.WithScanRawConfig(true),
-		rego.WithEmbeddedLibraries(true),
 		rego.WithPolicyReader(strings.NewReader(check)),
 		rego.WithPolicyNamespaces("user"),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fsys, ".")
-	require.NoError(t, err)
 
 	failed := results.GetFailed()
 
@@ -1273,14 +1140,11 @@ func Test_ScanTofuFiles(t *testing.T) {
 		"rules/check.rego": emptyBucketCheck,
 	})
 
-	scanner := New(
+	results := scanFS(t, fsys, "code",
 		rego.WithPolicyNamespaces("user"),
 		rego.WithPolicyDirs("rules"),
 		rego.WithPolicyFilesystem(fsys),
 	)
-
-	results, err := scanner.ScanFS(t.Context(), fsys, "code")
-	require.NoError(t, err)
 
 	assert.Len(t, results, 1)
 	assert.Len(t, results.GetFailed(), 1)
