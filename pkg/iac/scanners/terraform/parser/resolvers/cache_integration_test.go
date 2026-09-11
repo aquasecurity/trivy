@@ -3,7 +3,6 @@
 package resolvers_test
 
 import (
-	"context"
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
@@ -19,10 +18,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 )
-
-type moduleResolver interface {
-	Resolve(context.Context, fs.FS, resolvers.Options) (fs.FS, string, string, bool, error)
-}
 
 func testOptions(t *testing.T, source string) resolvers.Options {
 	return resolvers.Options{
@@ -64,7 +59,7 @@ func TestResolveModuleFromCache(t *testing.T) {
 	tests := []struct {
 		name           string
 		opts           resolvers.Options
-		firstResolver  moduleResolver
+		firstResolver  resolvers.ModuleResolver
 		expectedSubdir string
 		expectedString string
 	}{
@@ -120,19 +115,19 @@ func TestResolveModuleFromCache(t *testing.T) {
 			tt.opts.CacheDir = t.TempDir()
 			tt.opts.Logger = log.WithPrefix("test")
 
-			fsys, _, dir, _, err := tt.firstResolver.Resolve(t.Context(), nil, tt.opts)
+			res, err := tt.firstResolver.Resolve(t.Context(), nil, tt.opts)
 			require.NoError(t, err)
-			assert.Equal(t, tt.expectedSubdir, dir)
+			assert.Equal(t, tt.expectedSubdir, res.Dir)
 
-			b, err := fs.ReadFile(fsys, path.Join(dir, "README.md"))
+			b, err := fs.ReadFile(res.FS, path.Join(res.Dir, "README.md"))
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedString, string(b))
 
-			_, _, dir, _, err = resolvers.Cache.Resolve(t.Context(), fsys, tt.opts)
+			cached, err := resolvers.Cache.Resolve(t.Context(), res.FS, tt.opts)
 			require.NoError(t, err)
-			assert.Equal(t, tt.expectedSubdir, dir)
+			assert.Equal(t, tt.expectedSubdir, cached.Dir)
 
-			b, err = fs.ReadFile(fsys, path.Join(dir, "README.md"))
+			b, err = fs.ReadFile(res.FS, path.Join(cached.Dir, "README.md"))
 			require.NoError(t, err)
 			assert.Equal(t, tt.expectedString, string(b))
 		})
@@ -146,23 +141,23 @@ func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {
 
 	repoURL := gs.URL + "/" + repo + ".git"
 
-	fsys, _, dir, _, err := resolvers.Remote.Resolve(
+	res, err := resolvers.Remote.Resolve(
 		t.Context(), nil,
 		testOptions(t, "git::"+repoURL+"//modules/object"),
 	)
 	require.NoError(t, err)
 
-	b, err := fs.ReadFile(fsys, path.Join(dir, "README.md"))
+	b, err := fs.ReadFile(res.FS, path.Join(res.Dir, "README.md"))
 	require.NoError(t, err)
 	assert.Equal(t, "# S3 bucket object", string(b))
 
-	fsys, _, dir, _, err = resolvers.Remote.Resolve(
+	res, err = resolvers.Remote.Resolve(
 		t.Context(), nil,
 		testOptions(t, "git::"+repoURL+"//modules/notification"),
 	)
 	require.NoError(t, err)
 
-	b, err = fs.ReadFile(fsys, path.Join(dir, "README.md"))
+	b, err = fs.ReadFile(res.FS, path.Join(res.Dir, "README.md"))
 	require.NoError(t, err)
 	assert.Equal(t, "# S3 bucket notification", string(b))
 }

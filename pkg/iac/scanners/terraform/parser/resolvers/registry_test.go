@@ -1,11 +1,16 @@
 package resolvers
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/log"
+	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
@@ -56,6 +61,33 @@ func Test_getPrivateRegistryTokenFromEnvVars_ConvertsSiteNameToEnvVar(t *testing
 			require.NoError(t, err)
 		})
 	}
+}
+
+// The registry may return a location that no other resolver handles.
+// Such a module must not be reported as resolved.
+func Test_registryResolver_UnsupportedDownloadLocation(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/v1/modules/terraform-aws-modules/s3-bucket/aws/download", func(w http.ResponseWriter, _ *http.Request) {
+		w.Header().Set("X-Terraform-Get", "ftp://example.com/module.zip")
+		w.WriteHeader(http.StatusNoContent)
+	})
+	registry := httptest.NewTLSServer(mux)
+	defer registry.Close()
+
+	source := strings.TrimPrefix(registry.URL, "https://") + "/terraform-aws-modules/s3-bucket/aws"
+	opt := Options{
+		Source:         source,
+		OriginalSource: source,
+		AllowDownloads: true,
+		CacheDir:       t.TempDir(),
+		Logger:         log.WithPrefix("test"),
+		Client: &http.Client{
+			Transport: xhttp.NewTransport(xhttp.Options{Insecure: true}).Build(),
+		},
+	}
+
+	_, err := Resolve(t.Context(), nil, opt)
+	require.ErrorContains(t, err, "failed to resolve module")
 }
 
 func Test_resolveVersion(t *testing.T) {
