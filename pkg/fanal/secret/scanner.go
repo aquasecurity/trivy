@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 	"regexp"
+	"regexp/syntax"
 	"slices"
 	"sort"
 	"strings"
@@ -129,21 +130,84 @@ func (g Global) IsSkipped(path string) bool {
 	return false
 }
 
-// Regexp adds unmarshalling from YAML for regexp.Regexp
+// Regexp wraps regexp.Regexp with unmarshalling from YAML.
 type Regexp struct {
 	*regexp.Regexp
 }
 
-func MustCompileWithoutWordPrefix(str string) *Regexp {
-	return MustCompile(fmt.Sprintf("%s(%s)", startWord, str))
+// startsWithWordLiteral reports whether every way re can match begins with a literal
+// ASCII word character. What it cannot prove it rejects.
+func startsWithWordLiteral(re *syntax.Regexp) bool {
+	switch re.Op {
+	case syntax.OpLiteral:
+		return len(re.Rune) > 0 && isWordChar(re.Rune[0])
+	case syntax.OpCapture, syntax.OpConcat:
+		return len(re.Sub) > 0 && startsWithWordLiteral(re.Sub[0])
+	case syntax.OpAlternate:
+		return len(re.Sub) > 0 && lo.EveryBy(re.Sub, startsWithWordLiteral)
+	}
+	return false
 }
 
-func MustCompileWithBoundaries(str string) *Regexp {
-	return MustCompile(fmt.Sprintf("%s(%s)%s", startWord, str, endWord))
+// hasUnboundedRepeat reports whether re can match up to the end of the content.
+func hasUnboundedRepeat(re *syntax.Regexp) bool {
+	switch re.Op {
+	case syntax.OpStar, syntax.OpPlus:
+		return true
+	case syntax.OpRepeat:
+		if re.Max == -1 {
+			return true
+		}
+	}
+
+	return slices.ContainsFunc(re.Sub, hasUnboundedRepeat)
 }
 
 func MustCompile(str string) *Regexp {
 	return &Regexp{regexp.MustCompile(str)}
+}
+
+// findAllFromWordStart walks content the way regexp does and drops the matches that
+// start right after an ASCII word character. A match at the very beginning of content
+// is kept, there is nothing in front of it to reject it by.
+//
+// The reported start is one character before where the pattern matched. Everything else,
+// including the offsets of the named groups, is left untouched.
+func findAllFromWordStart(content []byte, find func([]byte) []int) [][]int {
+	var matches [][]int
+	for pos := 0; pos <= len(content); {
+		m := find(content[pos:])
+		if m == nil {
+			break
+		}
+		for i, idx := range m {
+			if idx >= 0 {
+				m[i] = idx + pos
+			}
+		}
+		start := m[0]
+
+		// The boundary is a character, not a byte, so a multi-byte one in front of
+		// the match counts as a whole. At the start of content there is nothing to
+		// decode and the match is kept.
+		prev, size := utf8.DecodeLastRune(content[:start])
+		if isWordChar(prev) {
+			// This position is out, but a match can still start to the right of it.
+			pos = start + 1
+			continue
+		}
+		m[0] = start - size
+
+		// The leading literal keeps a match from being empty, so pos always grows.
+		pos = m[1]
+		matches = append(matches, m)
+	}
+	return matches
+}
+
+// isWordChar reports whether r belongs to the [0-9a-zA-Z_] class.
+func isWordChar(r rune) bool {
+	return r == '_' || ('0' <= r && r <= '9') || ('a' <= r && r <= 'z') || ('A' <= r && r <= 'Z')
 }
 
 // UnmarshalYAML unmarshals YAML into a regexp.Regexp
@@ -172,7 +236,53 @@ type Rule struct {
 	AllowRules      AllowRules               `yaml:"allow-rules"`
 	ExcludeBlock    ExcludeBlock             `yaml:"exclude-block"`
 	SecretGroupName string                   `yaml:"secret-group-name"`
-	keywordsLower   [][]byte                 // Pre-computed lowercase keywords
+
+	// LeadingWordBoundary keeps only the matches that do not start right after an
+	// ASCII word character. The pattern itself must not carry that boundary, so it
+	// has to start with a literal ASCII word character.
+	LeadingWordBoundary bool `yaml:"-"`
+
+	keywordsLower [][]byte // Pre-computed lowercase keywords
+}
+
+func (r Rule) validate() error {
+	if !r.LeadingWordBoundary || r.Regex == nil {
+		return nil
+	}
+
+	parsed, err := syntax.Parse(r.Regex.String(), syntax.Perl)
+	if err != nil {
+		return xerrors.Errorf("rule %q: cannot parse the pattern: %w", r.ID, err)
+	}
+
+	if !startsWithWordLiteral(parsed) {
+		return xerrors.Errorf("rule %q: a pattern with leading-word-boundary must start with a literal ASCII word character. "+
+			`The boundary is checked outside the pattern, so ^, \A and \b in front of it are not allowed`, r.ID)
+	}
+
+	if hasUnboundedRepeat(parsed) {
+		return xerrors.Errorf("rule %q: a pattern with leading-word-boundary must not have an unbounded quantifier, "+
+			"because a match that runs to the end of the chunk makes every rejected candidate cost a full pass", r.ID)
+	}
+	return nil
+}
+
+// findAllIndex works as regexp.Regexp.FindAllIndex does, and with LeadingWordBoundary
+// it also checks the character in front of every match.
+func (r Rule) findAllIndex(content []byte) [][]int {
+	if !r.LeadingWordBoundary {
+		return r.Regex.FindAllIndex(content, -1)
+	}
+	return findAllFromWordStart(content, r.Regex.FindIndex)
+}
+
+// findAllSubmatchIndex works as regexp.Regexp.FindAllSubmatchIndex does, and with
+// LeadingWordBoundary it also checks the character in front of every match.
+func (r Rule) findAllSubmatchIndex(content []byte) [][]int {
+	if !r.LeadingWordBoundary {
+		return r.Regex.FindAllSubmatchIndex(content, -1)
+	}
+	return findAllFromWordStart(content, r.Regex.FindSubmatchIndex)
 }
 
 func (s *Scanner) FindLocations(r Rule, content []byte) []Location {
@@ -185,7 +295,7 @@ func (s *Scanner) FindLocations(r Rule, content []byte) []Location {
 	}
 
 	var locs []Location
-	indices := r.Regex.FindAllIndex(content, -1)
+	indices := r.findAllIndex(content)
 	for _, index := range indices {
 		loc := Location{
 			Start: index[0],
@@ -203,7 +313,7 @@ func (s *Scanner) FindLocations(r Rule, content []byte) []Location {
 
 func (s *Scanner) FindSubmatchLocations(r Rule, content []byte) []Location {
 	var submatchLocations []Location
-	matchsIndices := r.Regex.FindAllSubmatchIndex(content, -1)
+	matchsIndices := r.findAllSubmatchIndex(content)
 	for _, matchIndices := range matchsIndices {
 		matchLocation := Location{
 			// first two indexes are always start and end of the whole match
