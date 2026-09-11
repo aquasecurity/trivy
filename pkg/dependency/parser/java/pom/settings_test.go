@@ -488,7 +488,7 @@ func Test_ReadSettings(t *testing.T) {
 				t.Setenv(env, settingsDir)
 			}
 
-			gotSettings := readSettings()
+			gotSettings := readSettings("")
 			require.Equal(t, tt.wantSettings, gotSettings)
 		})
 	}
@@ -764,4 +764,52 @@ func Test_effectiveProxies(t *testing.T) {
 			require.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_ReadSettings_Maven4(t *testing.T) {
+	t.Run("root repositories are parsed from settings.xml", func(t *testing.T) {
+		t.Setenv("HOME", filepath.Join("testdata", "settings", "user-with-repositories"))
+		t.Setenv("MAVEN_HOME", "NOT_EXISTING_PATH")
+
+		got := readSettings("")
+		require.Equal(t, []pomRepository{
+			{
+				ID:   "maven4-root",
+				Name: "Maven 4 root repository",
+				URL:  "https://maven4.example.com/repo",
+			},
+		}, got.Repositories)
+	})
+
+	t.Run("project-specific settings from .mvn/settings.xml are loaded", func(t *testing.T) {
+		t.Setenv("HOME", "")
+		t.Setenv("MAVEN_HOME", "NOT_EXISTING_PATH")
+
+		got := readSettings(filepath.Join("testdata", "settings", "project"))
+		require.Equal(t, []Server{
+			{
+				ID:       "project-server",
+				Username: "project-user",
+			},
+		}, got.Servers)
+		require.Equal(t, []pomRepository{
+			{
+				ID:  "project-repo",
+				URL: "https://project.example.com/repo",
+			},
+		}, got.Repositories)
+	})
+
+	t.Run("settings precedence is user over project over global", func(t *testing.T) {
+		t.Setenv("HOME", filepath.Join("testdata", "settings", "precedence-user"))
+		t.Setenv("MAVEN_HOME", filepath.Join("testdata", "settings", "precedence-global"))
+
+		got := readSettings(filepath.Join("testdata", "settings", "precedence-project"))
+		require.Equal(t, []Server{
+			{ID: "shared", Username: "from-user"},
+			{ID: "user-only", Username: "user"},
+			{ID: "project-only", Username: "project"},
+			{ID: "global-only", Username: "global"},
+		}, got.Servers)
+	})
 }
