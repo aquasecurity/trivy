@@ -3,24 +3,9 @@
 Trivy can be customized by tweaking a `trivy.yaml` file.
 The config path can be overridden by the `--config` flag.
 
-An example with default values is [here][example] and a [JSON Schema][schema] is also available.
+An example is [here][example] and a [JSON Schema][schema] is also available.
 
-## Security considerations
-
-Trivy loads `trivy.yaml` from the current working directory by default, independently of the scan target. Running Trivy from a repository checkout can therefore load configuration supplied by that repository.
-
-When scanning a remote repository with `trivy repo <REPO_URL>`, Trivy clones it into a temporary directory and does not automatically load `trivy.yaml` from that clone. Configuration is still loaded from the directory where Trivy was started.
-
-Configuration controls Trivy's behavior, including output paths, report templates, filtering, and exit codes. When scanning untrusted content, use `--config` to select a trusted configuration file outside the checkout. In CI, keep the configuration that determines whether a scan passes or fails outside the control of the code under review.
-
-For example, use a pipeline-managed configuration to scan a checkout:
-
-```shell
-trivy --config /opt/ci/trivy.yaml fs /workspace/project
-```
-
-Templates and other files referenced by the configuration must also come from trusted sources. A trusted configuration file can still reference an untrusted template: relative template paths are resolved from the current working directory, not the configuration file's directory. Use trusted absolute template paths when the working directory contains untrusted content. Templates can read environment variables and include sensitive values in report output.
-
+These samples contain default values for flags.
 ## Global options
 
 ```yaml
