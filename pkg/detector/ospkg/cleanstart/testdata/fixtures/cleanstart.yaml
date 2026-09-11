@@ -1,0 +1,15 @@
+- bucket: cleanstart
+  pairs:
+    - bucket: redis
+      pairs:
+        - key: CVE-2025-12345
+          value:
+            FixedVersion: "7.4.6-r0"
+        - key: CLEANSTART-2026-MZ27698
+          value:
+            FixedVersion: "7.4.6-r0"
+    - bucket: invalid-src
+      pairs:
+        - key: CVE-2025-00001
+          value:
+            FixedVersion: "invalid"
