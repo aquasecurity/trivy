@@ -16,6 +16,7 @@
 --insecure
 --license-full
 --list-all-pkgs
+--log-format
 --misconfig-scanners
 --offline-scan
 --parallel

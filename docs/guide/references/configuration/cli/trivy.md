@@ -37,6 +37,7 @@ trivy [global flags] command [flags] target
       --generate-default-config   write the default config to trivy-default.yaml
   -h, --help                      help for trivy
       --insecure                  allow insecure server connections
+      --log-format string         log output format (allowed values: text,json) (default "text")
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version
