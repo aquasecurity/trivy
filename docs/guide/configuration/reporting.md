@@ -533,6 +533,7 @@ Critical: 0, High: 2
 </details>
 
 For other features of sprig, see the official [sprig][sprig] documentation.
+
 The `getHostByName` function is not available in Trivy templates.
 
 #### Load templates from a file
