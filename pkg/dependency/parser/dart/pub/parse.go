@@ -14,9 +14,10 @@ import (
 )
 
 const (
-	directMain    = "direct main"
-	directDev     = "direct dev"
-	transitiveDep = "transitive"
+	directMain       = "direct main"
+	directDev        = "direct dev"
+	directOverridden = "direct overridden"
+	transitiveDep    = "transitive"
 )
 
 // Parser is a parser for pubspec.lock
@@ -60,7 +61,7 @@ func (p Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, 
 
 		// We would like to exclude dev dependencies, but we cannot identify
 		// which indirect dependencies were introduced by dev dependencies
-		// as there are 3 dependency types, "direct main", "direct dev" and "transitive".
+		// as Pub records the kinds "direct main", "direct dev", "direct overridden" and "transitive".
 		// It will be confusing if we exclude direct dev dependencies and include transitive dev dependencies.
 		// We decided to keep all dev dependencies until Pub will add support for "transitive main" and "transitive dev".
 		pkg := ftypes.Package{
@@ -102,7 +103,7 @@ func (p Parser) findSDKVersion(l *lock, name string, dep Dep) string {
 
 func (p Parser) relationship(dep string) ftypes.Relationship {
 	switch dep {
-	case directMain, directDev:
+	case directMain, directDev, directOverridden:
 		return ftypes.RelationshipDirect
 	case transitiveDep:
 		return ftypes.RelationshipIndirect
