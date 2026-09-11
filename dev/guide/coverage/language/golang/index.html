@@ -3575,6 +3575,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#gomod-gosum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        go.sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gomod-main" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8673,6 +8684,17 @@ You're not viewing the latest version of the documentation.
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#gomod-gosum" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        go.sum
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#gomod-main" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8918,7 +8940,8 @@ Trivy uses Go Vulnerability Database for <a href="https://pkg.go.dev/std">standa
 On the other hand, it uses <code>go.mod</code> for direct dependencies and <code>go.sum</code> for indirect dependencies in Go 1.16 or less.</p>
 <p>Go 1.17+ holds actually needed indirect dependencies in <code>go.mod</code>, and it reduces false detection.
 <code>go.sum</code> in Go 1.16 or less contains all indirect dependencies that are even not needed for compiling.
-If you want to have better detection, please consider updating the Go version in your project.</p>
+If you want to have better detection, please consider updating the Go version in your project.
+See <a href="#gomod-gosum">go.sum</a> for why <code>go.sum</code> is skipped in Go 1.17+ projects.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The Go version doesn't mean your Go tool version, but the Go version in your go.mod.</p>
@@ -8935,6 +8958,14 @@ require (
 <div class="highlight"><pre><span></span><code>$ go mod tidy -go=1.18
 </code></pre></div>
 </div>
+<h3 id="gomod-gosum">go.sum<a class="headerlink" href="#gomod-gosum" title="Permanent link">&para;</a></h3>
+<p>Trivy skips <code>go.sum</code> in Go 1.17+ projects, because it lists more modules than the build uses.</p>
+<p>A common extra entry is a module that another module needs to run its own tests. Go keeps such a module out of <code>go.mod</code> and never compiles it into your binary, so a vulnerability in it does not affect your project. Your own tests are a different case. Their dependencies are listed in <code>go.mod</code>, and Trivy reports them.</p>
+<p>To check whether a module is part of the build, list the dependencies of your packages.</p>
+<div class="highlight"><pre><span></span><code>$ go list -deps -f &#39;{{with .Module}}{{.Path}}{{end}}&#39; ./... | grep -Fx &#39;golang.org/x/mod&#39;
+</code></pre></div>
+<p>Empty output means the module is not in the build. Add the <code>-test</code> flag to also cover the tests of your own packages.</p>
+<p>To see exactly what a build linked in, scan the compiled binary instead of the source tree. See <a href="#go-binary">Go Binary</a>.</p>
 <h3 id="gomod-main">Main Module<a class="headerlink" href="#gomod-main" title="Permanent link">&para;</a></h3>
 <p>Trivy scans only dependencies of the project, and does not detect vulnerabilities of the main module. 
 For example, when scanning the Docker project (Docker's source code with go.mod), Trivy might find vulnerabilities in Go modules that Docker depends on, but won't find vulnerabilities of Docker itself.
