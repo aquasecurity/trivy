@@ -9667,6 +9667,10 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </tbody>
 </table>
 <h4 id="custom-template">Custom Template<a class="headerlink" href="#custom-template" title="Permanent link">&para;</a></h4>
+<div class="admonition warning">
+<p class="admonition-title">Trusted templates</p>
+<p>Only use templates from trusted sources. Templates can read environment variables and include sensitive values in report output.</p>
+</div>
 <div class="highlight"><pre><span></span><code>$ trivy image --format template --template &quot;{{ range . }} {{ .Target }} {{ end }}&quot; golang:1.12-alpine
 </code></pre></div>
 <details>
@@ -9689,6 +9693,7 @@ As an example you can summarize the different classes of issues:</p>
 </details>
 
 <p>For other features of sprig, see the official <a href="https://masterminds.github.io/sprig/">sprig</a> documentation.</p>
+<p>The <code>getHostByName</code> function is not available in Trivy templates.</p>
 <h4 id="load-templates-from-a-file">Load templates from a file<a class="headerlink" href="#load-templates-from-a-file" title="Permanent link">&para;</a></h4>
 <p>You can load templates from a file prefixing the template path with an <code>@</code>.
 The template file must have a <code>.tpl</code> extension.</p>
