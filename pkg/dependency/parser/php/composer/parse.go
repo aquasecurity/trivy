@@ -109,8 +109,8 @@ func (p *Parser) parsePackages(lockPkgs []packageInfo, isDev bool, pkgs map[stri
 		var dependsOn []string
 		for depName := range lpkg.Require {
 			// Require field includes required php version, skip this
-			// Also skip PHP extensions
-			if depName == "php" || strings.HasPrefix(depName, "ext") {
+			// Also skip PHP extensions (platform packages use the "ext-" prefix)
+			if depName == "php" || strings.HasPrefix(depName, "ext-") {
 				continue
 			}
 			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages
