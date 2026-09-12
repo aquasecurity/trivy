@@ -555,6 +555,56 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			// The installed release carries no ".el9_<minor>" marker, so
+			// there is nothing to scope to: highest-wins across every
+			// fixed version, exactly the pre-#11199 behavior.
+			name: "happy path: unmarked release falls back to highest fix",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "9.9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "libtasn1",
+						Version:    "4.16.0",
+						Release:    "1.el9",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "libtasn1",
+						SrcVersion: "4.16.0",
+						SrcRelease: "1.el9",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-9-for-x86_64-baseos-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-99991",
+					VendorIDs: []string{
+						"RHSA-2026:40002",
+					},
+					PkgName:          "libtasn1",
+					InstalledVersion: "4.16.0-1.el9",
+					FixedVersion:     "4.16.0-3.el9_9",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

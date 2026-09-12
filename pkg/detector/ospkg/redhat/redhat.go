@@ -139,6 +139,11 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 	}
 
 	installedVersion := utils.FormatVersion(pkg)
+	// Scope the comparison to the installed package's own minor release.
+	// The minor comes from the package EVR, not osVer: errata attach to
+	// package releases (a 9.7 box can carry a 9.4-built RPM), while osVer
+	// only scopes which DB bucket is read. Keying off osVer would compare
+	// against the wrong stream whenever the two disagree.
 	installedMinor := rhelMinor(installedVersion)
 	for id, advs := range fixedAdvisories {
 		candidates := advs
@@ -228,6 +233,12 @@ var rhelMinorReleasePattern = regexp.MustCompile(`\.el\d+_(\d+)`)
 
 // rhelMinor returns the RHEL minor release embedded in an EVR string
 // (e.g. "0:2.68.4-18.el9_7.2" => "7"), or "" when there is no minor marker.
+//
+// Only the ".el<major>_<minor>" shape matches: EUS releases carry the same
+// pinned-minor shape and scope normally, while tags without a minor part
+// (bare ".el9" majors, Stream builds, rebuilds that drop the marker, or
+// non-RHEL schemes) yield "" and fall back to comparing against every
+// fixed version, i.e. the old highest-wins behavior.
 func rhelMinor(evr string) string {
 	rel := evr
 	if i := strings.LastIndex(evr, "-"); i >= 0 {
