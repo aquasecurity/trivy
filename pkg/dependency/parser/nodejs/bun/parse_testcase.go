@@ -157,4 +157,45 @@ var (
 	}
 
 	multipleWsDeps = []ftypes.Dependency(nil)
+	nestedPkgs     = []ftypes.Package{
+		{
+			ID:           "adm-zip@git+ssh://git@github.com/cthackers/adm-zip.git#ff17ae85000b62b9d159e2520564902724d26c17",
+			Name:         "adm-zip",
+			Version:      "git+ssh://git@github.com/cthackers/adm-zip.git#ff17ae85000b62b9d159e2520564902724d26c17",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 13,
+					EndLine:   13,
+				},
+			},
+		},
+		{
+			ID:           "glob@10.4.5",
+			Name:         "glob",
+			Version:      "10.4.5",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 15,
+					EndLine:   15,
+				},
+			},
+		},
+		{
+			ID:           "minimatch@9.0.5",
+			Name:         "minimatch",
+			Version:      "9.0.5",
+			Relationship: ftypes.RelationshipIndirect,
+			Dev:          true,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 17,
+					EndLine:   17,
+				},
+			},
+		},
+	}
 )
