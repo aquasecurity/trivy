@@ -29,6 +29,12 @@ func TestParse(t *testing.T) {
 			file: "testdata/Pipfile_many.lock",
 			want: pipenvMany,
 		},
+		{
+			// The package name must be normalized (PEP 503) so that e.g.
+			// `zope.interface` matches the same package reported from poetry.lock.
+			file: "testdata/Pipfile_normalize.lock",
+			want: pipenvNormalize,
+		},
 	}
 
 	for _, v := range vectors {

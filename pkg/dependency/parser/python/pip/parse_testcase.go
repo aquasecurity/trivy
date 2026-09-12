@@ -55,6 +55,28 @@ var (
 			},
 		},
 	}
+	requirementsNormalizedNames = []ftypes.Package{
+		{
+			Name:    "zope-interface",
+			Version: "5.4.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 1,
+					EndLine:   1,
+				},
+			},
+		},
+		{
+			Name:    "ruamel-yaml",
+			Version: "0.17.21",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 2,
+					EndLine:   2,
+				},
+			},
+		},
+	}
 	requirementsFlask = []ftypes.Package{
 		{
 			Name:    "click",
