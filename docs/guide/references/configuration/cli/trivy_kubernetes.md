@@ -37,6 +37,7 @@ trivy kubernetes [flags] [CONTEXT]
       --cache-ttl duration                cache TTL when using redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:2")
+      --color string                      control colored output (only for 'table' format) (allowed values: auto,always,never) (default "auto")
       --compliance string                 compliance report to generate
                                           Built-in compliance's:
                                             - k8s-nsa-1.0
