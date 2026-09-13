@@ -130,6 +130,14 @@ func Test_Attribute_AccessorsIgnoreMarks(t *testing.T) {
 		assert.Equal(t, []string{"a"}, attr.GetRawValue())
 	})
 
+	t.Run("list with numbers", func(t *testing.T) {
+		attr := newAttr(t, cty.TupleVal([]cty.Value{cty.NumberIntVal(80), cty.NumberIntVal(443)}))
+		values := attr.AsStringValues()
+		require.Len(t, values, 2)
+		assert.Equal(t, "80", values[0].Value())
+		assert.Equal(t, "443", values[1].Value())
+	})
+
 	t.Run("bool", func(t *testing.T) {
 		attr := newAttr(t, cty.True)
 		assert.True(t, attr.AsBoolValueOrDefault(false, nil).Value())
