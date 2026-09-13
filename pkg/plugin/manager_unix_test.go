@@ -63,7 +63,6 @@ func modifyManifest(t *testing.T, worktree, version string) {
 
 func TestManager_Install(t *testing.T) {
 	gs := setupGitRepository(t, "test_plugin", "testdata/test_plugin/test_plugin")
-	t.Cleanup(gs.Close)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		zr := zip.NewWriter(w)

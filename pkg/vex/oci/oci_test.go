@@ -138,7 +138,6 @@ func setUpReferrerRegistry(t *testing.T, user, password string) string {
 	} else {
 		ts = registrytest.NewServerWithAuth(t, user, password)
 	}
-	t.Cleanup(ts.Close)
 
 	u, err := url.Parse(ts.URL)
 	require.NoError(t, err)

@@ -22,7 +22,10 @@ import (
 // NewServer starts a test registry server with OCI 1.1 referrers support.
 func NewServer(t *testing.T) *httptest.Server {
 	t.Helper()
-	return httptest.NewServer(registry.New(registry.WithReferrersSupport(true)))
+
+	ts := httptest.NewTestServer(t, registry.New(registry.WithReferrersSupport(true)))
+	ts.Start()
+	return ts
 }
 
 // NewServerWithAuth starts a test registry server with OCI 1.1 referrers support
@@ -40,7 +43,10 @@ func NewServerWithAuth(t *testing.T, user, password string) *httptest.Server {
 		}
 		reg.ServeHTTP(w, r)
 	})
-	return httptest.NewServer(handler)
+
+	ts := httptest.NewTestServer(t, handler)
+	ts.Start()
+	return ts
 }
 
 // PushImage pushes the given image to the registry and returns its reference and descriptor.

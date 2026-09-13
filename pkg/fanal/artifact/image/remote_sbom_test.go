@@ -144,7 +144,6 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)
-			defer ts.Close()
 
 			c := cachetest.NewCache(t, nil)
 
@@ -225,7 +224,6 @@ var wantBlobsCycloneDX = []cachetest.WantBlob{
 func TestArtifact_InspectOCIReferrerSBOM(t *testing.T) {
 	// Start a test registry with referrers support
 	ts := registrytest.NewServer(t)
-	defer ts.Close()
 
 	u, err := url.Parse(ts.URL)
 	require.NoError(t, err)

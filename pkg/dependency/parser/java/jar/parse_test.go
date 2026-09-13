@@ -339,7 +339,7 @@ func TestParse(t *testing.T) {
 		},
 	}
 
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		res := apiResponse{
 			Response: response{
 				NumFound: 1,
@@ -387,6 +387,7 @@ func TestParse(t *testing.T) {
 		}
 		_ = json.NewEncoder(w).Encode(res)
 	}))
+	ts.Start()
 
 	for _, v := range vectors {
 		t.Run(v.name, func(t *testing.T) {
