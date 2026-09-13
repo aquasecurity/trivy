@@ -12,7 +12,6 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/redis/go-redis/v9"
-	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -29,8 +28,8 @@ type RedisOptions struct {
 	TLSOptions RedisTLSOptions
 }
 
-func NewRedisOptions(backend, caCert, cert, key string, enableTLS bool) (RedisOptions, error) {
-	tlsOpts, err := NewRedisTLSOptions(caCert, cert, key)
+func NewRedisOptions(backend, caCert, cert, key, tlsServerName string, enableTLS bool) (RedisOptions, error) {
+	tlsOpts, err := NewRedisTLSOptions(caCert, cert, key, tlsServerName)
 	if err != nil {
 		return RedisOptions{}, xerrors.Errorf("redis TLS option error: %w", err)
 	}
@@ -56,20 +55,22 @@ func (o *RedisOptions) BackendMasked() string {
 
 // RedisTLSOptions holds the options for redis cache
 type RedisTLSOptions struct {
-	CACert string
-	Cert   string
-	Key    string
+	CACert     string
+	Cert       string
+	Key        string
+	ServerName string
 }
 
-func NewRedisTLSOptions(caCert, cert, key string) (RedisTLSOptions, error) {
+func NewRedisTLSOptions(caCert, cert, key, serverName string) (RedisTLSOptions, error) {
 	opts := RedisTLSOptions{
-		CACert: caCert,
-		Cert:   cert,
-		Key:    key,
+		CACert:     caCert,
+		Cert:       cert,
+		Key:        key,
+		ServerName: serverName,
 	}
 
-	// If one of redis option not nil, make sure CA, cert, and key provided
-	if !lo.IsEmpty(opts) {
+	// If one of redis CA/cert/key option not nil, make sure CA, cert, and key provided
+	if opts.CACert != "" || opts.Cert != "" || opts.Key != "" {
 		if opts.CACert == "" || opts.Cert == "" || opts.Key == "" {
 			return RedisTLSOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
 		}
@@ -82,8 +83,8 @@ type RedisCache struct {
 	expiration time.Duration
 }
 
-func NewRedisCache(backend, caCertPath, certPath, keyPath string, enableTLS bool, ttl time.Duration) (RedisCache, error) {
-	opts, err := NewRedisOptions(backend, caCertPath, certPath, keyPath, enableTLS)
+func NewRedisCache(backend, caCertPath, certPath, keyPath, tlsServerName string, enableTLS bool, ttl time.Duration) (RedisCache, error) {
+	opts, err := NewRedisOptions(backend, caCertPath, certPath, keyPath, tlsServerName, enableTLS)
 	if err != nil {
 		return RedisCache{}, xerrors.Errorf("failed to create Redis options: %w", err)
 	}
@@ -94,7 +95,8 @@ func NewRedisCache(backend, caCertPath, certPath, keyPath string, enableTLS bool
 		return RedisCache{}, xerrors.Errorf("failed to parse Redis URL: %w", err)
 	}
 
-	if tlsOpts := opts.TLSOptions; !lo.IsEmpty(tlsOpts) {
+	tlsOpts := opts.TLSOptions
+	if tlsOpts.CACert != "" || tlsOpts.Cert != "" || tlsOpts.Key != "" {
 		caCert, cert, err := GetTLSConfig(tlsOpts.CACert, tlsOpts.Cert, tlsOpts.Key)
 		if err != nil {
 			return RedisCache{}, xerrors.Errorf("failed to get TLS config: %w", err)
@@ -104,10 +106,12 @@ func NewRedisCache(backend, caCertPath, certPath, keyPath string, enableTLS bool
 			RootCAs:      caCert,
 			Certificates: []tls.Certificate{cert},
 			MinVersion:   tls.VersionTLS12,
+			ServerName:   tlsOpts.ServerName,
 		}
 	} else if opts.TLS {
 		options.TLSConfig = &tls.Config{
 			MinVersion: tls.VersionTLS12,
+			ServerName: tlsOpts.ServerName,
 		}
 	}
 	return RedisCache{
