@@ -34,7 +34,6 @@ func TestRekor_RetrieveSBOM(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			ts := rekortest.NewServer(t)
-			defer ts.Close()
 
 			// Set the testing URL
 			rc, err := sbom.NewRekor(ts.URL())
