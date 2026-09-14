@@ -2,6 +2,7 @@ package cocoapods_test
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/swift/cocoapods"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func TestParse(t *testing.T) {
@@ -93,4 +95,15 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
+}
+
+func TestParseSkipsEmptyDirectDependency(t *testing.T) {
+	reader, err := xio.NewReadSeekerAt(strings.NewReader("PODS:\n  - AppCenter (4.2.0):\n    - \"   \"\n"))
+	require.NoError(t, err)
+
+	gotPkgs, gotDeps, err := cocoapods.NewParser().Parse(t.Context(), reader)
+
+	require.NoError(t, err)
+	assert.Equal(t, []ftypes.Package{{ID: "AppCenter@4.2.0", Name: "AppCenter", Version: "4.2.0"}}, gotPkgs)
+	assert.Empty(t, gotDeps)
 }

@@ -3,6 +3,7 @@ package pyproject_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -37,6 +38,14 @@ func TestPyProject_MainDeps(t *testing.T) {
 			assert.Equal(t, tt.want, got.MainDeps())
 		})
 	}
+}
+
+func TestParser_ParseSkipsEmptyDependencyEntries(t *testing.T) {
+	p := &pyproject.Parser{}
+	got, err := p.Parse(strings.NewReader("[project]\ndependencies = [\"requests\", \"\"]\n"))
+
+	require.NoError(t, err)
+	assert.Equal(t, set.New[string]("requests"), got.MainDeps())
 }
 
 func TestParser_Parse(t *testing.T) {

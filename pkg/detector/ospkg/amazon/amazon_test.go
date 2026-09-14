@@ -152,6 +152,16 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "empty OS version",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "",
+			},
+		},
+		{
 			name: "Get returns an error",
 			fixtures: []string{
 				"testdata/fixtures/invalid.yaml",
@@ -243,6 +253,15 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 				osVer:    "2023",
 			},
 			want: true,
+		},
+		{
+			name: "empty OS version",
+			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "",
+			},
+			want: false,
 		},
 	}
 	for _, tt := range tests {

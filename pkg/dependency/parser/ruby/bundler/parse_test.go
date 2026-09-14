@@ -3,6 +3,7 @@ package bundler_test
 import (
 	"fmt"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -10,6 +11,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/ruby/bundler"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -277,4 +279,15 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equalf(t, tt.wantDeps, gotDeps, "Parse(%v)", tt.file)
 		})
 	}
+}
+
+func TestParser_ParseSkipsEmptyDependencyLine(t *testing.T) {
+	reader, err := xio.NewReadSeekerAt(strings.NewReader("      \n"))
+	require.NoError(t, err)
+
+	pkgs, deps, err := bundler.NewParser().Parse(t.Context(), reader)
+
+	require.NoError(t, err)
+	assert.Empty(t, pkgs)
+	assert.Empty(t, deps)
 }

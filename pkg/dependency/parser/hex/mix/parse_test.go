@@ -3,12 +3,14 @@ package mix
 import (
 	"os"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func TestParser_Parse(t *testing.T) {
@@ -85,4 +87,15 @@ func TestParser_Parse(t *testing.T) {
 			assert.Equal(t, tt.want, pkgs)
 		})
 	}
+}
+
+func TestParser_ParseSkipsEmptyBody(t *testing.T) {
+	reader, err := xio.NewReadSeekerAt(strings.NewReader("%{\n  \"x\":\n}\n"))
+	require.NoError(t, err)
+
+	pkgs, deps, err := NewParser().Parse(t.Context(), reader)
+
+	require.NoError(t, err)
+	assert.Empty(t, pkgs)
+	assert.Empty(t, deps)
 }
