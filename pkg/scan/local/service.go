@@ -119,6 +119,7 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 		Misconfigurations: mergeMisconfigurations(targetName, detail),
 		Secrets:           mergeSecrets(targetName, detail),
 		Licenses:          detail.Licenses,
+		CryptoAssets:      detail.CryptoAssets,
 		CustomResources:   detail.CustomResources,
 	}
 
@@ -160,6 +161,18 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	// Scan licenses
 	results = append(results, s.scanLicenses(target, options)...)
+
+	// Store cryptographic assets
+	// They are not findings: the report carries them so that the CycloneDX encoder can
+	// turn them into components.
+	// TODO: gate this on the crypto scanner once types.CryptoScanner exists.
+	if len(target.CryptoAssets) != 0 {
+		results = append(results, types.Result{
+			Target:       target.Name,
+			Class:        types.ClassCrypto,
+			CryptoAssets: target.CryptoAssets,
+		})
+	}
 
 	// For WASM plugins and custom analyzers
 	if len(target.CustomResources) != 0 {

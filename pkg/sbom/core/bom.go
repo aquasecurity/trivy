@@ -75,6 +75,10 @@ type BOM struct {
 	components    map[uuid.UUID]*Component
 	relationships map[uuid.UUID][]Relationship
 
+	// cryptoComponents are the cryptographic assets of the BOM. They are an inventory and
+	// take no part in the dependency graph, so they are kept outside components.
+	cryptoComponents []*CryptoComponent
+
 	// externalReferences is a list of documents that are referenced from this BOM but hosted elsewhere.
 	// They are currently used to look for linked VEX documents
 	externalReferences []ExternalReference
@@ -203,6 +207,50 @@ func (f File) IsEmpty() bool {
 	return f.Path == "" && len(f.Digests) == 0
 }
 
+// CryptoComponent describes a cryptographic asset: a certificate, a key or an algorithm.
+// It is kept apart from Component, which describes software.
+type CryptoComponent struct {
+	// Asset is what the component describes. Its identity is derived from content and does
+	// not depend on where the asset was found.
+	// CycloneDX: component.cryptoProperties
+	// SPDX: N/A
+	Asset ftypes.CryptoAssetInfo
+
+	// Occurrences are the places the asset was found at. One component is merged from the
+	// assets of several files and layers, and each of them becomes an occurrence.
+	// CycloneDX: component.evidence.occurrences
+	// SPDX: N/A
+	Occurrences []Occurrence
+}
+
+// BOMRef returns the reference of the component, derived from the asset identity.
+func (c *CryptoComponent) BOMRef() string {
+	return CryptoBOMRef(c.Asset.Descriptor())
+}
+
+// Clone creates a deep copy of the CryptoComponent
+func (c *CryptoComponent) Clone() *CryptoComponent {
+	return &CryptoComponent{
+		Asset:       c.Asset.Clone(),
+		Occurrences: slices.Clone(c.Occurrences),
+	}
+}
+
+// CryptoBOMRef returns the BOM reference of the component describing an asset.
+//
+// The prefix scopes cryptographic assets in a namespace shared with package components,
+// whose reference is a package URL.
+func CryptoBOMRef(descriptor ftypes.CryptoDescriptor) string {
+	return "crypto:" + descriptor.String()
+}
+
+// Occurrence is a place a component was found at.
+type Occurrence struct {
+	// Location is the path of the file the component was found in.
+	// CycloneDX: component.evidence.occurrences[].location
+	Location string
+}
+
 type Property struct {
 	Name      string
 	Value     string
@@ -279,6 +327,10 @@ func (b *BOM) AddComponent(c *Component) {
 	b.components[c.id] = c
 }
 
+func (b *BOM) AddCryptoComponent(c *CryptoComponent) {
+	b.cryptoComponents = append(b.cryptoComponents, c)
+}
+
 func (b *BOM) AddRelationship(parent, child *Component, relationshipType RelationshipType) {
 	// Check the wrong parent to avoid `panic`
 	if parent == nil {
@@ -346,6 +398,10 @@ func (b *BOM) Components() map[uuid.UUID]*Component {
 	return b.components
 }
 
+func (b *BOM) CryptoComponents() []*CryptoComponent {
+	return b.cryptoComponents
+}
+
 func (b *BOM) Relationships() map[uuid.UUID][]Relationship {
 	return b.relationships
 }
@@ -392,6 +448,11 @@ func (b *BOM) Clone() *BOM {
 
 		// Deep copy components
 		components: lo.MapValues(b.components, func(c *Component, _ uuid.UUID) *Component {
+			return c.Clone()
+		}),
+
+		// Deep copy cryptographic components
+		cryptoComponents: lo.Map(b.cryptoComponents, func(c *CryptoComponent, _ int) *CryptoComponent {
 			return c.Clone()
 		}),
 

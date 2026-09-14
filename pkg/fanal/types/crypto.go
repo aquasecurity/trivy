@@ -1,6 +1,9 @@
 package types
 
 import (
+	"cmp"
+	"crypto/sha256"
+	"encoding/hex"
 	"slices"
 
 	"github.com/samber/lo"
@@ -42,6 +45,16 @@ type CryptoIdentity struct {
 	Parameters string               `json:",omitempty"`
 }
 
+// DigestIdentity identifies material by the SHA-256 digest of its canonical form. The
+// method states which form that is.
+func DigestIdentity(method CryptoIdentityMethod, canonical []byte) CryptoIdentity {
+	digest := sha256.Sum256(canonical)
+	return CryptoIdentity{
+		Method: method,
+		Value:  hex.EncodeToString(digest[:]),
+	}
+}
+
 // CryptoEncoding identifies the outer encoding of source cryptographic data.
 type CryptoEncoding string
 
@@ -52,14 +65,14 @@ const (
 	CryptoEncodingDER CryptoEncoding = "DER"
 )
 
-// CryptoAsset describes a format-neutral cryptographic asset.
-type CryptoAsset struct {
+// CryptoAssetInfo describes a format-neutral cryptographic asset. Its identity is derived
+// from the material itself, so material found in several places has one description. The
+// format and the encoding describe the container the material was read from.
+type CryptoAssetInfo struct {
 	Kind     CryptoKind     `json:",omitempty"`
 	KeyType  CryptoKeyType  `json:",omitempty"`
 	Identity CryptoIdentity `json:",omitzero"`
 	Name     string         `json:",omitempty"`
-	FilePath string         `json:",omitempty"`
-	Layer    Layer          `json:",omitzero"`
 
 	Certificate   *CryptoCertificate   `json:",omitempty"`
 	Key           *CryptoKey           `json:",omitempty"`
@@ -68,7 +81,7 @@ type CryptoAsset struct {
 }
 
 // Descriptor returns the comparable identity projected from the asset.
-func (a *CryptoAsset) Descriptor() CryptoDescriptor {
+func (a CryptoAssetInfo) Descriptor() CryptoDescriptor {
 	return CryptoDescriptor{
 		Kind:     a.Kind,
 		KeyType:  a.KeyType,
@@ -77,7 +90,7 @@ func (a *CryptoAsset) Descriptor() CryptoDescriptor {
 }
 
 // Validate checks the intrinsic asset invariants.
-func (a *CryptoAsset) Validate() error {
+func (a CryptoAssetInfo) Validate() error {
 	descriptor := a.Descriptor()
 	if err := descriptor.Validate(); err != nil {
 		return xerrors.Errorf("validate descriptor: %w", err)
@@ -123,9 +136,84 @@ func (a *CryptoAsset) Validate() error {
 	return nil
 }
 
-// Clone returns a deep copy of the asset.
-func (a *CryptoAsset) Clone() CryptoAsset {
-	clone := *a
+// CompareCryptoAssets orders assets by identity and then by the path and the layer they
+// were found at. One asset can be found at the same path in several layers, so the layer
+// is what tells those apart.
+func CompareCryptoAssets(a, b CryptoAsset) int {
+	return cmp.Or(
+		cmp.Compare(a.Kind, b.Kind),
+		cmp.Compare(a.KeyType, b.KeyType),
+		cmp.Compare(a.Identity.Method, b.Identity.Method),
+		cmp.Compare(a.Identity.Value, b.Identity.Value),
+		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		cmp.Compare(a.FilePath, b.FilePath),
+		cmp.Compare(a.Layer.DiffID, b.Layer.DiffID),
+	)
+}
+
+// LinkCryptoKeyPairs points every private key at the public key derived from it, when both
+// were found. A public key states nothing about the existence of a private one, so the
+// reference runs in one direction only.
+//
+// The two halves are told apart by the key type and share an identity, since a key is
+// identified by the digest of its SubjectPublicKeyInfo. An encrypted container is left
+// alone, because its identity is the digest of the container, which never equals the
+// digest of a SubjectPublicKeyInfo.
+//
+// The link is added to every asset that carries the description, not to the first of them,
+// so that deduplication cannot drop it.
+func LinkCryptoKeyPairs(assets []CryptoAsset) {
+	public := make(map[CryptoIdentity]CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
+			Type:         CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
+}
+
+// DedupeCryptoAssets collapses descriptions that share an identity, keeping the first of
+// each. A key described by a container of its own replaces the same key taken from a
+// certificate, because only a standalone container states the format and the encoding.
+func DedupeCryptoAssets(assets []CryptoAssetInfo) []CryptoAssetInfo {
+	// The slice keeps the order the assets were described in; the map holds their positions.
+	deduped := make([]CryptoAssetInfo, 0, len(assets))
+	indexes := make(map[CryptoDescriptor]int, len(assets))
+	for _, asset := range assets {
+		descriptor := asset.Descriptor()
+		index, seen := indexes[descriptor]
+		if !seen {
+			indexes[descriptor] = len(deduped)
+			deduped = append(deduped, asset)
+			continue
+		}
+		kept := deduped[index]
+		if asset.Key != nil && kept.Key != nil && asset.Key.Format != "" && kept.Key.Format == "" {
+			deduped[index] = asset
+		}
+	}
+	return deduped
+}
+
+// Clone returns a deep copy of the description.
+func (a CryptoAssetInfo) Clone() CryptoAssetInfo {
+	clone := a
 	clone.Relationships = slices.Clone(a.Relationships)
 	if a.Certificate != nil {
 		clone.Certificate = new(*a.Certificate)
@@ -145,7 +233,7 @@ func (a *CryptoAsset) Clone() CryptoAsset {
 	return clone
 }
 
-func (a *CryptoAsset) validateCertificate() error {
+func (a CryptoAssetInfo) validateCertificate() error {
 	if a.Certificate.Format != CryptoCertificateFormatX509 {
 		return xerrors.Errorf("unknown certificate format %q", a.Certificate.Format)
 	}
@@ -163,7 +251,7 @@ func (a *CryptoAsset) validateCertificate() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateKey() error {
+func (a CryptoAssetInfo) validateKey() error {
 	if a.Key.Size < 0 {
 		return xerrors.Errorf("key size must not be negative")
 	}
@@ -186,11 +274,25 @@ func (a *CryptoAsset) validateKey() error {
 	return nil
 }
 
-func (a *CryptoAsset) validateAlgorithm() error {
+func (a CryptoAssetInfo) validateAlgorithm() error {
 	switch a.Algorithm.Primitive {
 	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
 	default:
 		return xerrors.Errorf("unknown algorithm primitive %q", a.Algorithm.Primitive)
 	}
 	return nil
+}
+
+// CryptoAsset is a described asset together with the file it was found in. The layer is
+// set for a target that has layers and stays empty otherwise.
+type CryptoAsset struct {
+	CryptoAssetInfo
+	FilePath string `json:",omitempty"`
+	Layer    Layer  `json:",omitzero"`
+}
+
+// Clone returns a deep copy of the asset.
+func (a CryptoAsset) Clone() CryptoAsset {
+	a.CryptoAssetInfo = a.CryptoAssetInfo.Clone()
+	return a
 }

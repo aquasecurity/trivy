@@ -152,6 +152,10 @@ func (m *Marshaler) marshalComponents() (*[]cdx.Component, error) {
 		cdxComponents = append(cdxComponents, *c)
 	}
 
+	for _, component := range m.bom.CryptoComponents() {
+		cdxComponents = append(cdxComponents, m.marshalCryptoComponent(component))
+	}
+
 	// CycloneDX requires an empty slice rather than a nil slice
 	if len(cdxComponents) == 0 {
 		return &[]cdx.Component{}, nil
@@ -181,6 +185,16 @@ func (m *Marshaler) marshalDependencies() *[]cdx.Dependency {
 		dependencies = append(dependencies, cdx.Dependency{
 			Ref:          ref,
 			Dependencies: &deps,
+		})
+	}
+
+	// A cryptographic asset depends on nothing, and CycloneDX tells that apart from unknown
+	// dependencies only by the component being declared as an empty element of the graph.
+	// https://cyclonedx.org/docs/1.7/json/#dependencies
+	for _, component := range m.bom.CryptoComponents() {
+		dependencies = append(dependencies, cdx.Dependency{
+			Ref:          component.BOMRef(),
+			Dependencies: &[]string{},
 		})
 	}
 
