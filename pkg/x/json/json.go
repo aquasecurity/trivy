@@ -89,12 +89,13 @@ func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Un
 	return unmarshaler[T](r, false, hooks...)
 }
 
-func unmarshaler[T any](r *lineReader, skip bool, hooks ...DecodeHook) *json.Unmarshalers {
+func unmarshaler[T any](r *lineReader, skipFirstCall bool, hooks ...DecodeHook) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
-		// json.UnmarshalDecode below passes the same value to this function again.
-		// ErrUnsupported leaves that repeated call to the default decoding and breaks the recursion.
-		if skip {
-			skip = false
+		// json.UnmarshalDecode below calls this function for the same target first,
+		// so ErrUnsupported hands that call to the default decoding and breaks the recursion.
+		// The flag is reset to let nested values of the same type record their locations.
+		if skipFirstCall {
+			skipFirstCall = false
 			return errors.ErrUnsupported
 		}
 
@@ -110,9 +111,16 @@ func unmarshaler[T any](r *lineReader, skip bool, hooks ...DecodeHook) *json.Unm
 		unread := bytes.TrimLeft(dec.UnreadBuffer(), " \n\r\t,:")
 		start := r.Line() - bytes.Count(unread, []byte("\n")) // The decoder buffer may have read more lines.
 
-		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
-		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
-			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
+		if _, ok := any(target).(json.UnmarshalerFrom); !ok {
+			// null leaves the target zeroed, so there is no location to record.
+			if kind == jsontext.KindNull {
+				return errors.ErrUnsupported
+			}
+
+			// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
+			if kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
+				return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
+			}
 		}
 
 		if err := json.UnmarshalDecode(dec, target, json.WithUnmarshalers(unmarshaler[T](r, true, hooks...))); err != nil {
