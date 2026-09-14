@@ -137,60 +137,29 @@ func TestKeywordIndex(t *testing.T) {
 	}
 }
 
-// The index folds ASCII case only, and this pins the places where that answers
-// differently from the Unicode lowercasing the scanner used before. wantUnicode
-// is what the old search found there, and it is filled in only for the rows
-// where the two disagree.
+// The index folds ASCII case only, and this pins the one place where that
+// answers differently from the Unicode lowercasing the scanner used before.
 func TestKeywordIndexFoldsASCIIOnly(t *testing.T) {
 	kelvin := "sK_test_0123456789" // U+212A KELVIN SIGN in place of K
-	germanRules := []Rule{{ID: "german", Keywords: []string{"ÖL"}}}
 
-	tests := []struct {
-		name        string
-		rules       []Rule
-		content     string
-		want        []string
-		wantUnicode []string
-	}{
-		{
-			name:        "non-ascii character in the content",
-			rules:       keywordTestRules,
-			content:     kelvin,
-			want:        []string{"no-keywords"},
-			wantUnicode: []string{"twilio", "stripe", "no-keywords"},
-		},
-		{
-			name:    "non-ascii keyword as written",
-			rules:   germanRules,
-			content: "provider = ÖL",
-			want:    []string{"german"},
-		},
-		{
-			// Only the ASCII part of the keyword ignores case.
-			name:    "ascii letter of the keyword in the other case",
-			rules:   germanRules,
-			content: "provider = Öl",
-			want:    []string{"german"},
-		},
-		{
-			name:        "non-ascii letter of the keyword in the other case",
-			rules:       germanRules,
-			content:     "provider = öl",
-			wantUnicode: []string{"german"},
-		},
+	assert.Equal(t, []string{"no-keywords"}, candidateRules(keywordTestRules, []byte(kelvin)))
+	assert.Equal(t, []string{"twilio", "stripe", "no-keywords"},
+		searchEachKeywordUnicode(keywordTestRules, []byte(kelvin)))
+}
+
+// A keyword with a letter that has a case outside ASCII would be found in the
+// one spelling it is written in, so the rule is left out of the index and runs
+// on every chunk.
+func TestKeywordIndexNonASCIIKeyword(t *testing.T) {
+	rules := []Rule{
+		{ID: "aws", Keywords: []string{"AWS"}},
+		{ID: "german", Keywords: []string{"ÖL"}},
 	}
 
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, candidateRules(tt.rules, []byte(tt.content)))
-
-			wantUnicode := tt.wantUnicode
-			if wantUnicode == nil {
-				wantUnicode = tt.want
-			}
-			assert.Equal(t, wantUnicode, searchEachKeywordUnicode(tt.rules, []byte(tt.content)))
-		})
+	for _, content := range []string{"nothing here", "provider = ÖL", "provider = öl"} {
+		assert.Equal(t, []string{"german"}, candidateRules(rules, []byte(content)), content)
 	}
+	assert.Equal(t, []string{"aws", "german"}, candidateRules(rules, []byte("provider = aws")))
 }
 
 // Without a keyword to look for there is no index, and every rule runs.

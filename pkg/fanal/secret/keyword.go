@@ -3,6 +3,10 @@ package secret
 import (
 	"cmp"
 	"slices"
+	"unicode"
+	"unicode/utf8"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // keywordIndex finds the keywords of a set of rules in content and reports
@@ -13,7 +17,8 @@ import (
 // Matching ignores ASCII case. The keywords are folded when the index is built
 // and the content is folded as it is read. Unicode case is not folded, so a
 // keyword spelled with a non-ASCII character that lowercases into ASCII, such
-// as U+212A KELVIN SIGN, is not found.
+// as U+212A KELVIN SIGN, is not found. A rule whose keyword holds a non-ASCII
+// letter is left out of the index and runs on every chunk.
 //
 // A keywordIndex is safe for concurrent use by multiple goroutines.
 type keywordIndex struct {
@@ -50,7 +55,9 @@ const (
 // newKeywordIndex builds an index over the keywords of the given rules.
 // It returns nil when no rule has keywords.
 func newKeywordIndex(rules []Rule) *keywordIndex {
-	patterns, ids := collectKeywords(rules)
+	warnUnusableKeywords(rules)
+
+	patterns, ruleKeywords := collectKeywords(rules)
 	if len(patterns) == 0 {
 		return nil
 	}
@@ -60,7 +67,7 @@ func newKeywordIndex(rules []Rule) *keywordIndex {
 	})
 
 	idx := &keywordIndex{
-		ruleMasks:  buildRuleMasks(rules, ids),
+		ruleMasks:  buildRuleMasks(ruleKeywords, len(patterns)),
 		keywords:   len(patterns),
 		maxKeyword: len(longest),
 	}
@@ -68,41 +75,41 @@ func newKeywordIndex(rules []Rule) *keywordIndex {
 	return idx
 }
 
-// collectKeywords returns the unique folded keywords of the rules, in the order
-// they appear. The map holds the id of every keyword, which is its position in
-// the slice.
-func collectKeywords(rules []Rule) ([]string, map[string]int32) {
+// collectKeywords returns the unique folded keywords of the rules and the ids
+// each rule looks for. A rule left out of the index looks for none.
+func collectKeywords(rules []Rule) ([]string, [][]int32) {
 	var patterns []string
-	ids := make(map[string]int32)
-	for _, rule := range rules {
-		for _, keyword := range rule.Keywords {
-			folded := foldASCIIString(keyword)
-			if folded == "" {
-				continue
-			}
-			if _, ok := ids[folded]; ok {
-				continue
-			}
-			ids[folded] = int32(len(patterns))
-			patterns = append(patterns, folded)
-		}
-	}
-	return patterns, ids
-}
-
-// buildRuleMasks returns the set of keyword ids of each rule, in the order the
-// rules were given.
-func buildRuleMasks(rules []Rule, ids map[string]int32) []bitset {
-	masks := make([]bitset, len(rules))
+	idByKeyword := make(map[string]int32)
+	ruleKeywords := make([][]int32, len(rules))
 	for i, rule := range rules {
-		// An empty keyword occurs in any content, so a rule that has one always
-		// runs, as does a rule with no keywords. Both keep a nil mask.
-		if len(rule.Keywords) == 0 || slices.Contains(rule.Keywords, "") {
+		if !indexedKeywords(rule) {
 			continue
 		}
-		mask := newBitset(len(ids))
 		for _, keyword := range rule.Keywords {
-			mask.add(ids[foldASCIIString(keyword)])
+			folded := foldASCIIString(keyword)
+			id, ok := idByKeyword[folded]
+			if !ok {
+				id = int32(len(patterns))
+				idByKeyword[folded] = id
+				patterns = append(patterns, folded)
+			}
+			ruleKeywords[i] = append(ruleKeywords[i], id)
+		}
+	}
+	return patterns, ruleKeywords
+}
+
+// buildRuleMasks turns the keyword ids of each rule into a set. A rule without
+// ids keeps a nil mask.
+func buildRuleMasks(ruleKeywords [][]int32, keywords int) []bitset {
+	masks := make([]bitset, len(ruleKeywords))
+	for i, keywordIDs := range ruleKeywords {
+		if len(keywordIDs) == 0 {
+			continue
+		}
+		mask := newBitset(keywords)
+		for _, id := range keywordIDs {
+			mask.add(id)
 		}
 		masks[i] = mask
 	}
@@ -301,6 +308,44 @@ func foldASCIIString(s string) string {
 		folded[i] = foldASCII(c)
 	}
 	return string(folded)
+}
+
+// indexedKeywords reports whether the rule is looked up in the index. A rule
+// with no keywords keeps no mask and runs on every chunk, and so does a rule
+// with a keyword the index cannot look up.
+func indexedKeywords(rule Rule) bool {
+	return len(rule.Keywords) > 0 && !slices.ContainsFunc(rule.Keywords, unusableKeyword)
+}
+
+// unusableKeyword reports whether the index cannot look the keyword up. An empty
+// keyword occurs in any content, and a keyword with a non-ASCII letter is found
+// only where it is written as in the rule.
+func unusableKeyword(keyword string) bool {
+	return keyword == "" || hasNonASCIICase(keyword)
+}
+
+func warnUnusableKeywords(rules []Rule) {
+	logger := log.WithPrefix(log.PrefixSecret)
+	for _, rule := range rules {
+		for _, keyword := range rule.Keywords {
+			if unusableKeyword(keyword) {
+				logger.Warn("The keyword cannot be used to skip content, and the rule runs on every chunk",
+					log.String("rule_id", rule.ID), log.String("keyword", keyword))
+			}
+		}
+	}
+}
+
+// hasNonASCIICase reports whether s holds a non-ASCII letter written in one of
+// several cases. Only ASCII case is folded, so such a keyword would be found
+// where it is written as in the rule and missed everywhere else.
+func hasNonASCIICase(s string) bool {
+	for _, r := range s {
+		if r >= utf8.RuneSelf && unicode.SimpleFold(r) != r {
+			return true
+		}
+	}
+	return false
 }
 
 // bitset is a set of keyword ids, packed 64 to a word.
