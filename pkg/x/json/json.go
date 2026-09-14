@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // lineReader is a custom reader that tracks line numbers.
@@ -84,15 +83,22 @@ var SetLocationHook = DecodeHook{
 // To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
-	visited := set.New[int]()
 	if len(hooks) == 0 {
 		hooks = []DecodeHook{SetLocationHook}
 	}
-	return unmarshaler[T](r, visited, hooks...)
+	return unmarshaler[T](r, false, hooks...)
 }
 
-func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook) *json.Unmarshalers {
+func unmarshaler[T any](r *lineReader, skipFirstCall bool, hooks ...DecodeHook) *json.Unmarshalers {
 	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
+		// json.UnmarshalDecode below calls this function for the same target first,
+		// so ErrUnsupported hands that call to the default decoding and breaks the recursion.
+		// The flag is reset to let nested values of the same type record their locations.
+		if skipFirstCall {
+			skipFirstCall = false
+			return errors.ErrUnsupported
+		}
+
 		// Decoder.InputOffset reports the offset after the last token,
 		// but we want to record the offset before the next token.
 		//
@@ -105,19 +111,19 @@ func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook
 		unread := bytes.TrimLeft(dec.UnreadBuffer(), " \n\r\t,:")
 		start := r.Line() - bytes.Count(unread, []byte("\n")) // The decoder buffer may have read more lines.
 
-		// Check visited set to avoid infinity loops
-		if visited.Contains(start) {
-			// Fall back to the default decoding.
-			return errors.ErrUnsupported
-		}
-		visited.Append(start)
+		if _, ok := any(target).(json.UnmarshalerFrom); !ok {
+			// null leaves the target zeroed, so there is no location to record.
+			if kind == jsontext.KindNull {
+				return errors.ErrUnsupported
+			}
 
-		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
-		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
-			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
+			// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
+			if kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
+				return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
+			}
 		}
 
-		if err := json.UnmarshalDecode(dec, target, json.WithUnmarshalers(unmarshaler[T](r, visited, hooks...))); err != nil {
+		if err := json.UnmarshalDecode(dec, target, json.WithUnmarshalers(unmarshaler[T](r, true, hooks...))); err != nil {
 			return err
 		}
 
