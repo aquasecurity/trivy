@@ -119,10 +119,12 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	imgs, err := c.ListImages(ctx, searchFilters...)
 	if err != nil {
+		_ = c.Close()
 		return nil, cleanup, xerrors.Errorf("failed to list images from containerd client: %w", err)
 	}
 
 	if len(imgs) < 1 {
+		_ = c.Close()
 		return nil, cleanup, xerrors.Errorf("image not found in containerd store: %s", imageName)
 	}
 
