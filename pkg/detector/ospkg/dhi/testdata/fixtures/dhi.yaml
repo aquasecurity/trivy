@@ -1,15 +1,32 @@
+# Shape produced by trivy-db's OSV parser for DHI advisories:
+# ranges become VulnerableVersions constraints and PatchedVersions,
+# FixedVersion is never set.
 - bucket: dhi alpine 3.24
   pairs:
     - bucket: coreutils
       pairs:
         - key: DHI-CVE-2016-2781-coreutils
           value:
-            FixedVersion: "9.11-r1"
+            VulnerableVersions: ["<9.11-r1"]
+            PatchedVersions: ["9.11-r1"]
             Arches: [aarch64]
+    - bucket: busybox
+      pairs:
+        # Unfixed advisory: {"introduced": "0"} with no fixed event.
+        - key: DHI-CVE-2099-0001-busybox
+          value: {}
+    - bucket: openssl
+      pairs:
+        # Two ranges: {"introduced": "0", "fixed": "3.5.1-r0"}, {"introduced": "3.5.2-r0", "fixed": "3.5.3-r0"}
+        - key: DHI-CVE-2099-0002-openssl
+          value:
+            VulnerableVersions: ["<3.5.1-r0", ">=3.5.2-r0, <3.5.3-r0"]
+            PatchedVersions: ["3.5.1-r0", "3.5.3-r0"]
 - bucket: dhi debian 13
   pairs:
     - bucket: coreutils
       pairs:
         - key: DHI-CVE-2017-18018-coreutils
           value:
-            FixedVersion: "9.7-3+dhi4"
+            VulnerableVersions: ["<9.7-3+dhi4"]
+            PatchedVersions: ["9.7-3+dhi4"]
