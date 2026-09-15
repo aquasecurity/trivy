@@ -186,6 +186,10 @@ func TestScanner_Detect(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+	t.Run("empty version does not panic", func(t *testing.T) {
+		ctx := clock.With(t.Context(), time.Now())
+		assert.False(t, amazon.NewScanner().IsSupportedVersion(ctx, "amazon", ""))
+	})
 }
 
 func TestScanner_IsSupportedVersion(t *testing.T) {
