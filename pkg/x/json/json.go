@@ -90,7 +90,9 @@ func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Un
 		r:     r,
 		hooks: hooks,
 	}
-	return json.UnmarshalFromFunc(l.unmarshal[T])
+	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
+		return l.unmarshal(dec, target)
+	})
 }
 
 // locator records the location of each decoded value.
@@ -101,7 +103,7 @@ type locator struct {
 	skipNextCall bool
 }
 
-func (l *locator) unmarshal[T any](dec *jsontext.Decoder, target T) error {
+func (l *locator) unmarshal(dec *jsontext.Decoder, target any) error {
 	// json.UnmarshalDecode below calls this method for the same target first,
 	// so ErrUnsupported hands that call to the default decoding and breaks the recursion.
 	// The flag is reset to let nested values record their locations.
@@ -122,7 +124,7 @@ func (l *locator) unmarshal[T any](dec *jsontext.Decoder, target T) error {
 	unread := bytes.TrimLeft(dec.UnreadBuffer(), " \n\r\t,:")
 	start := l.r.Line() - bytes.Count(unread, []byte("\n")) // The decoder buffer may have read more lines.
 
-	if _, ok := any(target).(json.UnmarshalerFrom); !ok {
+	if _, ok := target.(json.UnmarshalerFrom); !ok {
 		// null leaves the target zeroed, so there is no location to record.
 		if kind == jsontext.KindNull {
 			return errors.ErrUnsupported
