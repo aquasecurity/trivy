@@ -4,13 +4,13 @@ import (
 	"context"
 	"fmt"
 	"slices"
+	"strings"
 
-	apkVersion "github.com/knqyf263/go-apk-version"
-	debVersion "github.com/knqyf263/go-deb-version"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/version"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
@@ -28,6 +28,11 @@ func NewScanner() *Scanner {
 }
 
 // Detect finds release-scoped DHI advisories and applies the package manager's version semantics.
+//
+// DHI advisories are ingested from OSV, so trivy-db stores their ranges as
+// VulnerableVersions constraints (e.g. "<9.11-r1") and PatchedVersions, never
+// as a single FixedVersion. An advisory without any VulnerableVersions is
+// unfixed and applies to every installed version.
 func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository, pkgs []ftypes.Package) ([]types.DetectedVulnerability, error) {
 	log.InfoContext(ctx, "Detecting DHI vulnerabilities...", log.String("os_version", osVer), log.Int("pkg_num", len(pkgs)))
 
@@ -38,7 +43,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			pkgName = pkg.Name
 		}
 
-		lineage := packageLineage(pkg)
+		lineage, comparer := packageLineage(pkg)
 		if lineage == "" {
 			log.DebugContext(ctx, "Skipping DHI package with unknown package type", log.String("package", pkg.Name))
 			continue
@@ -52,7 +57,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			if len(adv.Arches) > 0 && !slices.Contains(adv.Arches, pkg.Arch) {
 				continue
 			}
-			if !isVulnerable(ctx, pkg, adv) {
+			if !isVulnerable(ctx, utils.FormatSrcVersion(pkg), adv, comparer) {
 				continue
 			}
 
@@ -62,7 +67,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				PkgID:            pkg.ID,
 				PkgName:          pkg.Name,
 				InstalledVersion: utils.FormatVersion(pkg),
-				FixedVersion:     adv.FixedVersion,
+				FixedVersion:     strings.Join(adv.PatchedVersions, ", "),
 				PkgIdentifier:    pkg.Identifier,
 				Status:           adv.Status,
 				Layer:            pkg.Layer,
@@ -74,41 +79,35 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 	return vulns, nil
 }
 
-func isVulnerable(ctx context.Context, pkg ftypes.Package, adv dbTypes.Advisory) bool {
-	if adv.FixedVersion == "" {
+// isVulnerable reports whether installedVersion satisfies any of the advisory's
+// vulnerable version constraints under the package manager's version semantics.
+func isVulnerable(ctx context.Context, installedVersion string, adv dbTypes.Advisory, comparer version.Comparer) bool {
+	// No constraints means the advisory is unfixed: every version is affected.
+	if len(adv.VulnerableVersions) == 0 {
 		return true
 	}
-
-	installed := utils.FormatSrcVersion(pkg)
-	switch packageType(pkg) {
-	case "apk":
-		installedVersion, err := apkVersion.NewVersion(installed)
-		if err != nil {
-			log.DebugContext(ctx, "Failed to parse installed APK version", log.String("version", installed), log.Err(err))
-			return false
-		}
-		fixedVersion, err := apkVersion.NewVersion(adv.FixedVersion)
-		if err != nil {
-			log.DebugContext(ctx, "Failed to parse fixed APK version", log.String("version", adv.FixedVersion), log.Err(err))
-			return false
-		}
-		return installedVersion.LessThan(fixedVersion)
-	case "deb":
-		installedVersion, err := debVersion.NewVersion(installed)
-		if err != nil {
-			log.DebugContext(ctx, "Failed to parse installed Debian version", log.String("version", installed), log.Err(err))
-			return false
-		}
-		fixedVersion, err := debVersion.NewVersion(adv.FixedVersion)
-		if err != nil {
-			log.DebugContext(ctx, "Failed to parse fixed Debian version", log.String("version", adv.FixedVersion), log.Err(err))
-			return false
-		}
-		return installedVersion.LessThan(fixedVersion)
-	default:
-		log.DebugContext(ctx, "Skipping DHI package with unknown package type", log.String("package", pkg.Name))
+	if installedVersion == "" {
 		return false
 	}
+
+	for _, constraintStr := range adv.VulnerableVersions {
+		constraints, err := version.NewConstraints(constraintStr, comparer)
+		if err != nil {
+			log.DebugContext(ctx, "Failed to parse DHI version constraints",
+				log.String("constraints", constraintStr), log.Err(err))
+			continue
+		}
+		satisfied, err := constraints.Check(installedVersion)
+		if err != nil {
+			log.DebugContext(ctx, "Failed to check DHI version constraints",
+				log.String("version", installedVersion), log.String("constraints", constraintStr), log.Err(err))
+			continue
+		}
+		if satisfied {
+			return true
+		}
+	}
+	return false
 }
 
 func packageType(pkg ftypes.Package) string {
@@ -130,14 +129,16 @@ func packageType(pkg ftypes.Package) string {
 	}
 }
 
-func packageLineage(pkg ftypes.Package) string {
+// packageLineage returns the DHI advisory lineage and the version comparer
+// that matches the package's native package manager.
+func packageLineage(pkg ftypes.Package) (string, version.Comparer) {
 	switch packageType(pkg) {
 	case "apk":
-		return "alpine"
+		return "alpine", version.NewAPKComparer()
 	case "deb":
-		return "debian"
+		return "debian", version.NewDEBComparer()
 	default:
-		return ""
+		return "", nil
 	}
 }
 
