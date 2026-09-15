@@ -44,6 +44,9 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			return unicode.IsSpace(r) || r == ','
 		})
 		if len(ss) < 8 { // In the case where <required deps> array is empty: s == 8, in other cases s > 8
+			if len(ss) == 0 {
+				continue
+			}
 			// git repository doesn't have dependency version
 			// skip these dependencies
 			if !strings.Contains(ss[0], ":git") {
