@@ -168,6 +168,17 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "UNKNOWN",
 		},
 		{
+			name: "unparsable license name",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryNotice: {
+					expression.MIT,
+				},
+			},
+			licenseName:  "The MIT License (MIT)",
+			wantCategory: types.CategoryUnknown,
+			wantSeverity: "UNKNOWN",
+		},
+		{
 			// `Unlicensed` is a special license name in npm.
 			// It means the developer does not grant anyone the right to use the private or unpublished package under any circumstances.
 			name: "'unlicensed' npm license as unknown",
