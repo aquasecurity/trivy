@@ -82,6 +82,9 @@ var SetLocationHook = DecodeHook{
 //
 // To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
+//
+// The returned unmarshalers read line numbers from r and keep decoding state,
+// so they serve a single decode of that document and cannot be used concurrently.
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
 	if len(hooks) == 0 {
 		hooks = []DecodeHook{SetLocationHook}
@@ -96,7 +99,8 @@ func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Un
 }
 
 // locator records the location of each decoded value.
-// One locator serves the whole document, so that json/v2 reuses the type lookups it has cached.
+// One locator and its unmarshalers serve the whole document,
+// so json/v2 reuses the per-type lookups cached in the unmarshalers.
 type locator struct {
 	r            *lineReader
 	hooks        []DecodeHook
@@ -136,9 +140,10 @@ func (l *locator) unmarshal(dec *jsontext.Decoder, target any) error {
 		}
 	}
 
-	// The decoder carries this locator in its options, so nested values are intercepted
-	// without passing the unmarshalers again.
-	// The flag is cleared right after the call, so it never applies to an unrelated value.
+	// The decoder options already hold the unmarshalers wrapping this locator,
+	// so nested values are intercepted as well.
+	// The nested call may be handled elsewhere and never reach this method,
+	// so the flag is cleared here too.
 	l.skipNextCall = true
 	err := json.UnmarshalDecode(dec, target)
 	l.skipNextCall = false
