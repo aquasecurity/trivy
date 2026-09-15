@@ -136,8 +136,11 @@ func (l *locator) unmarshal[T any](dec *jsontext.Decoder, target T) error {
 
 	// The decoder carries this locator in its options, so nested values are intercepted
 	// without passing the unmarshalers again.
+	// The flag is cleared right after the call, so it never applies to an unrelated value.
 	l.skipNextCall = true
-	if err := json.UnmarshalDecode(dec, target); err != nil {
+	err := json.UnmarshalDecode(dec, target)
+	l.skipNextCall = false
+	if err != nil {
 		return err
 	}
 
