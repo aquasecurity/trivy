@@ -299,15 +299,18 @@ func parseDERObject(der []byte) (object, error) {
 }
 
 // certificateObject parses a certificate and reads the OID of its signature algorithm out
-// of the same bytes.
+// of the encoded algorithm identifier.
 func certificateObject(der []byte) (object, error) {
 	parsed, err := stdx509.ParseCertificate(der)
 	if err != nil {
 		return object{}, errMalformedCrypto
 	}
 
-	oid, ok := signatureAlgorithmOID(parsed.Raw)
-	if !ok {
+	// The OID is read from the encoding because crypto/x509 reports the algorithm as an
+	// enumeration, and an algorithm it does not recognize collapses into a single unknown
+	// value.
+	var signature pkix.AlgorithmIdentifier
+	if _, err := asn1.Unmarshal(parsed.RawSignatureAlgorithm, &signature); err != nil {
 		return object{}, errMalformedCrypto
 	}
 
@@ -315,26 +318,9 @@ func certificateObject(der []byte) (object, error) {
 		kind: objectCertificate,
 		certificate: certificate{
 			Certificate:  parsed,
-			signatureOID: oid,
+			signatureOID: signature.Algorithm.String(),
 		},
 	}, nil
-}
-
-// signatureAlgorithmOID reads the signature algorithm OID out of certificate DER. The OID
-// is read from the encoding because crypto/x509 reports the algorithm as an enumeration,
-// and an algorithm it does not recognize collapses into a single unknown value.
-func signatureAlgorithmOID(der []byte) (string, bool) {
-	// The signed part is consumed as a raw value only to reach the algorithm that follows
-	// it. The signature value after the algorithm is left out, because encoding/asn1
-	// tolerates elements of a sequence that the target struct does not declare.
-	var parsed struct {
-		TBSCertificate     asn1.RawValue
-		SignatureAlgorithm pkix.AlgorithmIdentifier
-	}
-	if _, err := asn1.Unmarshal(der, &parsed); err != nil {
-		return "", false
-	}
-	return parsed.SignatureAlgorithm.Algorithm.String(), true
 }
 
 // privateKeyToObject converts a private key to an object containing its public projection.
