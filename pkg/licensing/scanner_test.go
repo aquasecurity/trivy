@@ -170,11 +170,11 @@ func TestScanner_Scan(t *testing.T) {
 		{
 			name: "unparsable license name",
 			categories: map[types.LicenseCategory][]string{
-				types.CategoryNotice: {
-					expression.MIT,
+				types.CategoryReciprocal: {
+					expression.CDDL10,
 				},
 			},
-			licenseName:  "The MIT License (MIT)",
+			licenseName:  "CDDL + GPLv2 with classpath exception",
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},
