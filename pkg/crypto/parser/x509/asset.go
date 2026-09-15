@@ -1,6 +1,7 @@
 package x509
 
 import (
+	"cmp"
 	"context"
 	stdx509 "crypto/x509"
 	"encoding/asn1"
@@ -41,15 +42,17 @@ func describeCertificate(
 	cert certificate,
 	encoding ftypes.CryptoEncoding,
 ) ([]ftypes.CryptoAsset, error) {
+	// The full distinguished name is reported, because a certificate authority often
+	// identifies itself by organization alone and carries no common name.
+	subject := cert.Subject.String()
+
 	info := ftypes.CryptoAssetInfo{
 		Kind:     ftypes.CryptoKindCertificate,
 		Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, cert.Raw),
-		Name:     certificateName(cert.Certificate),
+		Name:     cmp.Or(cert.Subject.CommonName, subject),
 
 		Certificate: &ftypes.CryptoCertificate{
-			// The full distinguished name is reported, because a certificate authority
-			// often identifies itself by organization alone and carries no common name.
-			Subject:          cert.Subject.String(),
+			Subject:          subject,
 			Issuer:           cert.Issuer.String(),
 			SerialNumber:     cert.SerialNumber.Text(16),
 			NotBefore:        cert.NotBefore,
@@ -156,15 +159,6 @@ func describeEncryptedPrivateKey(obj object) ([]ftypes.CryptoAsset, error) {
 		Format:          obj.keyFormat,
 		Encoding:        obj.encoding,
 	}}, nil
-}
-
-// certificateName prefers the common name and falls back to the full distinguished
-// name, which is the only subject identifier some certificates carry.
-func certificateName(cert *stdx509.Certificate) string {
-	if cert.Subject.CommonName != "" {
-		return cert.Subject.CommonName
-	}
-	return cert.Subject.String()
 }
 
 // keyUsageBits lists every RFC 5280 key usage bit. The order is fixed so that a
