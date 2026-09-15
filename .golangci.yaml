@@ -137,6 +137,7 @@ linters:
         - -SA4023 # Impossible comparison of interface value with untyped nil
         - -SA4032 # Comparing runtime.GOOS or runtime.GOARCH against impossible value
         - -SA5011 # Possible nil pointer dereference
+        - -SA9005 # Marshaling a struct with no exported fields, unaware of the json/v2 methods
         - -ST1003 # Poorly chosen identifier
         - -ST1012 # Poorly chosen name for error variable
 

@@ -1,7 +1,8 @@
 package types
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"strings"
 )
@@ -16,62 +17,42 @@ type Metadata struct {
 	parent         *Metadata
 }
 
-func (m Metadata) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
-		"range":        m.rnge,
-		"ref":          m.ref,
-		"managed":      m.isManaged,
-		"default":      m.isDefault,
-		"explicit":     m.isExplicit,
-		"unresolvable": m.isUnresolvable,
-		"parent":       m.parent,
+// metadataJSON mirrors the unexported fields of [Metadata].
+type metadataJSON struct {
+	Range        Range     `json:"range"`
+	Ref          string    `json:"ref"`
+	Managed      bool      `json:"managed"`
+	Default      bool      `json:"default"`
+	Explicit     bool      `json:"explicit"`
+	Unresolvable bool      `json:"unresolvable"`
+	Parent       *Metadata `json:"parent"`
+}
+
+func (m Metadata) MarshalJSONTo(enc *jsontext.Encoder) error {
+	return json.MarshalEncode(enc, metadataJSON{
+		Range:        m.rnge,
+		Ref:          m.ref,
+		Managed:      m.isManaged,
+		Default:      m.isDefault,
+		Explicit:     m.isExplicit,
+		Unresolvable: m.isUnresolvable,
+		Parent:       m.parent,
 	})
 }
 
-func (m *Metadata) UnmarshalJSON(data []byte) error {
-	var keys map[string]any
-	if err := json.Unmarshal(data, &keys); err != nil {
+func (m *Metadata) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	var raw metadataJSON
+	if err := json.UnmarshalDecode(dec, &raw); err != nil {
 		return err
 	}
-	if keys["range"] != nil {
-		raw, err := json.Marshal(keys["range"])
-		if err != nil {
-			return err
-		}
-		var r Range
-		if err := json.Unmarshal(raw, &r); err != nil {
-			return err
-		}
-		m.rnge = r
-	}
-	if keys["ref"] != nil {
-		m.ref = keys["ref"].(string)
-	}
-	if keys["managed"] != nil {
-		m.isManaged = keys["managed"].(bool)
-	}
-	if keys["default"] != nil {
-		m.isDefault = keys["default"].(bool)
-	}
-	if keys["explicit"] != nil {
-		m.isExplicit = keys["explicit"].(bool)
-	}
-	if keys["unresolvable"] != nil {
-		m.isUnresolvable = keys["unresolvable"].(bool)
-	}
-	if keys["parent"] != nil {
-		if _, ok := keys["parent"].(map[string]any); ok {
-			raw, err := json.Marshal(keys["parent"])
-			if err != nil {
-				return err
-			}
-			var parent Metadata
-			if err := json.Unmarshal(raw, &parent); err != nil {
-				return err
-			}
-			m.parent = &parent
-		}
-	}
+
+	m.rnge = raw.Range
+	m.ref = raw.Ref
+	m.isManaged = raw.Managed
+	m.isDefault = raw.Default
+	m.isExplicit = raw.Explicit
+	m.isUnresolvable = raw.Unresolvable
+	m.parent = raw.Parent
 	return nil
 }
 
