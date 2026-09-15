@@ -39,6 +39,12 @@ func TestPyProject_MainDeps(t *testing.T) {
 	}
 }
 
+func TestDependencies_UnmarshalTOML_EmptyRequirement(t *testing.T) {
+	var deps pyproject.Dependencies
+	require.NoError(t, deps.UnmarshalTOML([]any{""}))
+	assert.Empty(t, deps.Items())
+}
+
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
 		name    string
