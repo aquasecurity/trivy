@@ -21,6 +21,9 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	if err := validateReportArguments(opts); err != nil {
 		return err
 	}
+	if normalizeComplianceReportFormat(&opts) {
+		log.WarnContext(ctx, `Compliance table reports only support summary output; using "--report summary" instead`)
+	}
 	var artifacts []*k8sArtifacts.Artifact
 	var err error
 	switch opts.Format {
@@ -58,6 +61,15 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 	}
 	runner := newRunner(opts, cluster.GetCurrentContext())
 	return runner.run(ctx, artifacts)
+}
+
+func normalizeComplianceReportFormat(opts *flag.Options) bool {
+	if opts.Compliance.Spec.ID == "" || opts.Format != types.FormatTable || opts.ReportFormat != "all" {
+		return false
+	}
+
+	opts.ReportFormat = "summary"
+	return true
 }
 
 func nodeCollectorOptions(ctx context.Context, opts flag.Options) []trivyk8s.NodeCollectorOption {
