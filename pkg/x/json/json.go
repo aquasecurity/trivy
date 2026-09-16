@@ -84,7 +84,8 @@ var SetLocationHook = DecodeHook{
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 //
 // The returned unmarshalers read line numbers from r and keep decoding state,
-// so they serve a single decode of that document and cannot be used concurrently.
+// so they must not be used concurrently or with another reader.
+// Pass them to the decoder as is: the nested decode relies on the decoder options carrying them.
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
 	if len(hooks) == 0 {
 		hooks = []DecodeHook{SetLocationHook}
@@ -142,10 +143,10 @@ func (l *locator) unmarshal(dec *jsontext.Decoder, target any) error {
 
 	// The decoder options already hold the unmarshalers wrapping this locator,
 	// so nested values are intercepted as well.
-	// The nested call may be handled elsewhere and never reach this method,
-	// so the flag is cleared here too.
 	l.skipNextCall = true
 	err := json.UnmarshalDecode(dec, target)
+	// UnmarshalFromFunc returns io.EOF without calling this method when the decoder is already at EOF,
+	// so the flag is cleared explicitly.
 	l.skipNextCall = false
 	if err != nil {
 		return err
