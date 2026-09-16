@@ -146,6 +146,35 @@ func TestUnmarshal(t *testing.T) {
 			},
 		},
 		{
+			name: "null followed by sibling objects",
+			in: []byte(`{"dependencies": {
+"a": null,
+"b": {"version": "1.0.0"},
+"c": null,
+"d": {"version": "2.0.0"}}}`),
+			out: nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"a": {},
+					"b": {
+						Version: "1.0.0",
+						Location: xjson.Location{
+							StartLine: 3,
+							EndLine:   3,
+						},
+					},
+					"c": {},
+					"d": {
+						Version: "2.0.0",
+						Location: xjson.Location{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "Location for only string",
 			in: []byte(`{
     "version": "0.5",
