@@ -94,7 +94,7 @@ func describeCertificate(
 	case errors.Is(err, crypto.ErrNoCanonicalForm):
 		log.DebugContext(ctx, "Certificate key not described", log.Err(err))
 	case err != nil:
-		return nil, err
+		return nil, xerrors.Errorf("describe certificate key: %w", err)
 	default:
 		info.Relationships = append(info.Relationships, ftypes.CryptoRelationship{
 			Type:         ftypes.CryptoRelationshipContains,
@@ -126,7 +126,7 @@ func describeStandaloneKey(
 		log.DebugContext(ctx, "Key not described", log.Err(err))
 		return nil, nil
 	case err != nil:
-		return nil, err
+		return nil, xerrors.Errorf("describe %s key: %w", keyType, err)
 	}
 	return []ftypes.CryptoAsset{
 		{

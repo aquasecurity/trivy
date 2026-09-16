@@ -80,9 +80,8 @@ var (
 // Parse describes the cryptographic material a file carries as assets, each stating
 // filePath and the container it was read from.
 //
-// Material that cannot be read is logged and skipped. An error means the description
-// itself failed, which is a bug here rather than a problem with the input, and the assets
-// described before it are returned along with it.
+// Material that cannot be read is logged and skipped. An error means a parsed object
+// could not be described.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
@@ -91,7 +90,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	for _, obj := range parse(ctx, content) {
 		described, err := objectToAssets(ctx, obj)
 		if err != nil {
-			return assets, err
+			return nil, err
 		}
 		for _, asset := range described {
 			asset.FilePath = filePath
