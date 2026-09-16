@@ -130,3 +130,16 @@ var algorithms = map[string]algorithm{
 		primitive: ftypes.CryptoPrimitiveSignature,
 	},
 }
+
+// lookupAlgorithm reports what the catalog knows about an OID. An OID the table does not
+// list is named by the OID itself and its primitive is unknown, because every other
+// attribute comes from the table.
+func lookupAlgorithm(oid string) algorithm {
+	if found, known := algorithms[oid]; known {
+		return found
+	}
+	return algorithm{
+		name:      oid,
+		primitive: ftypes.CryptoPrimitiveUnknown,
+	}
+}

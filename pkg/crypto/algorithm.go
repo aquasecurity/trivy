@@ -9,15 +9,7 @@ import (
 // DescribeAlgorithm describes the algorithm an OID identifies. The size and the curve
 // belong to the key the algorithm is used with and are zero for a signature algorithm.
 func DescribeAlgorithm(oid string, size int, curve string) ftypes.CryptoAssetInfo {
-	found, known := algorithms[oid]
-	if !known {
-		// An unrecognized OID is still reported, named by the OID itself. It states no
-		// family, no primitive and no parameter, because all three come from the catalog.
-		found = algorithm{
-			name:      oid,
-			primitive: ftypes.CryptoPrimitiveUnknown,
-		}
-	}
+	found := lookupAlgorithm(oid)
 
 	name := found.name
 	var parameters string
