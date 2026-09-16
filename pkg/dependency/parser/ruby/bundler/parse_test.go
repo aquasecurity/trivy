@@ -228,6 +228,18 @@ var (
 			},
 		},
 		{
+			ID:           "rake@13.0.1",
+			Name:         "rake",
+			Version:      "13.0.1",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 8,
+					EndLine:   8,
+				},
+			},
+		},
+		{
 			ID:           "concurrent-ruby@1.1.5",
 			Name:         "concurrent-ruby",
 			Version:      "1.1.5",

@@ -152,8 +152,7 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// A version-less "/etc/system-release" (e.g. just "Amazon Linux")
-			// means Amazon Linux 1, so its advisories are used.
+			// A version-less "/etc/system-release" falls back to Amazon Linux 1.
 			// cf. #10976
 			name: "version-less system-release",
 			fixtures: []string{
@@ -279,8 +278,8 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			want: true,
 		},
 		{
-			// A version-less "/etc/system-release" (e.g. just "Amazon Linux")
-			// means Amazon Linux 1, so it follows the Amazon Linux 1 EOL date.
+			// A version-less "/etc/system-release" falls back to Amazon Linux 1,
+			// so the Amazon Linux 1 EOL date applies.
 			// cf. #10976
 			name: "empty version",
 			now:  time.Date(2020, 12, 1, 0, 0, 0, 0, time.UTC),

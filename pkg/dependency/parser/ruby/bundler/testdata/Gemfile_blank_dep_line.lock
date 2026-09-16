@@ -5,12 +5,14 @@ GEM
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
       
+    rake (13.0.1)
 
 PLATFORMS
   ruby
 
 DEPENDENCIES
   i18n (~> 1.6)
+  rake
 
 BUNDLED WITH
    1.17.2
