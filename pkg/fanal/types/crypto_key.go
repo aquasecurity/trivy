@@ -24,8 +24,8 @@ const (
 	CryptoKeyFormatPKIX CryptoKeyFormat = "PKIX"
 )
 
-// CryptoKey contains key-specific metadata. The container the key was stored in belongs
-// to CryptoAsset, because it describes the file rather than the key.
+// CryptoKey contains key-specific metadata. An encrypted container states only Encrypted,
+// because its size and curve stay inside the ciphertext.
 type CryptoKey struct {
 	Size  int    `json:",omitempty"`
 	Curve string `json:",omitempty"`

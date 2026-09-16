@@ -10,8 +10,7 @@ const (
 	CryptoCertificateFormatX509 CryptoCertificateFormat = "X.509"
 )
 
-// CryptoCertificate contains certificate-specific metadata. Format identifies the
-// certificate structure. How the certificate was encoded belongs to CryptoAsset.
+// CryptoCertificate contains certificate-specific metadata.
 type CryptoCertificate struct {
 	Subject string `json:",omitempty"`
 	Issuer  string `json:",omitempty"`
