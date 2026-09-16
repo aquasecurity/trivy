@@ -10,6 +10,7 @@ import (
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"errors"
+	"fmt"
 	"math/big"
 
 	"golang.org/x/xerrors"
@@ -98,7 +99,7 @@ func keyDetails(pub stdcrypto.PublicKey) (int, string) {
 func publicKeyInfo(pub stdcrypto.PublicKey) (ftypes.CryptoIdentity, string, error) {
 	der, err := MarshalPublicKey(pub)
 	if err != nil {
-		return ftypes.CryptoIdentity{}, "", xerrors.Errorf("%w: %s", ErrNoCanonicalForm, err)
+		return ftypes.CryptoIdentity{}, "", fmt.Errorf("%w: %w", ErrNoCanonicalForm, err)
 	}
 
 	oid, err := subjectPublicKeyOID(der)
