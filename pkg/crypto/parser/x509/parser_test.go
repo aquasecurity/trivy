@@ -2,6 +2,7 @@ package x509_test
 
 import (
 	"bytes"
+	stdcrypto "crypto"
 	"crypto/dsa"
 	"crypto/ecdh"
 	"crypto/ecdsa"
@@ -443,6 +444,72 @@ func TestParseAssets(t *testing.T) {
 		}},
 	}
 
+	ecAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method:     ftypes.CryptoMethodOID,
+			Value:      "1.2.840.10045.2.1",
+			Parameters: "curve=P-256",
+		},
+		Name: "EC-P-256",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+	ecSignatureAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.2.840.10045.4.3.2",
+		},
+		Name: "ECDSA-SHA-256",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "ECDSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	ecCertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: spkiIdentity(t, fixtures.ecdsaCertificate.PublicKey),
+		Name:     "EC-P-256 public key",
+		Key: &ftypes.CryptoKey{
+			Size:  256,
+			Curve: "P-256",
+		},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: ecAlgorithm.Descriptor(),
+		}},
+	}
+
+	// Ed25519 fixes its parameters through the curve, so the algorithm carries none.
+	ed25519Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.112",
+		},
+		Name: "Ed25519",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "EdDSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	ed25519CertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: spkiIdentity(t, fixtures.ed25519Certificate.PublicKey),
+		Name:     "Ed25519 public key",
+		Key: &ftypes.CryptoKey{
+			Size: 256,
+		},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: ed25519Algorithm.Descriptor(),
+		}},
+	}
+
 	// at states where a description was found.
 	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
@@ -513,6 +580,81 @@ func TestParseAssets(t *testing.T) {
 				at(signatureAlgorithm),
 				at(certificateKey),
 				at(rsaAlgorithm),
+			},
+		},
+		{
+			// The key algorithm takes its parameter from the key the certificate carries.
+			name:  "EC certificate",
+			input: certificatePEM(fixtures.ecdsaCertificate),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.ecdsaCertificate.Raw),
+						Name:     "ec.example.test",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:      "CN=ec.example.test",
+							Issuer:       "CN=ec.example.test",
+							SerialNumber: "6",
+							NotBefore:    time.Unix(1, 0).UTC(),
+							NotAfter:     time.Unix(2, 0).UTC(),
+							Format:       ftypes.CryptoCertificateFormatX509,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: ecSignatureAlgorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: ecCertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(ecSignatureAlgorithm),
+				at(ecCertificateKey),
+				at(ecAlgorithm),
+			},
+		},
+		{
+			// One OID describes the signature and the key, so the same algorithm is
+			// described twice.
+			name:  "Ed25519 certificate",
+			input: certificatePEM(fixtures.ed25519Certificate),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.ed25519Certificate.Raw),
+						Name:     "ed25519.example.test",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:      "CN=ed25519.example.test",
+							Issuer:       "CN=ed25519.example.test",
+							SerialNumber: "7",
+							NotBefore:    time.Unix(1, 0).UTC(),
+							NotAfter:     time.Unix(2, 0).UTC(),
+							Format:       ftypes.CryptoCertificateFormatX509,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: ed25519Algorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: ed25519CertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(ed25519Algorithm),
+				at(ed25519CertificateKey),
+				at(ed25519Algorithm),
 			},
 		},
 		{
@@ -773,32 +915,34 @@ func recognized(assets []ftypes.CryptoAsset) []found {
 
 // testFixtures is the parsed material every test reads.
 type testFixtures struct {
-	certificate      *stdx509.Certificate
-	pathLenZero      *stdx509.Certificate
-	noCommonName     *stdx509.Certificate
-	otherCertificate *stdx509.Certificate
-	pssCertificate   *stdx509.Certificate
-	rsaPublic        *rsa.PublicKey
-	certificateDER   []byte
-	certificatePEM   []byte
-	pkcs1DER         []byte
-	pkcs8DER         []byte
-	pkcs8PEM         []byte
-	sec1DER          []byte
-	publicDER        []byte
-	publicPEM        []byte
-	encryptedDER     []byte
-	encryptedPEM     []byte
-	rfc1423PEM       []byte
-	ed25519DER       []byte
-	dsaDER           []byte
-	x25519PKCS8DER   []byte
-	x25519PKIXDER    []byte
-	csrDER           []byte
-	csrPEM           []byte
-	crlDER           []byte
-	crlPEM           []byte
-	unsupportedDER   []byte
+	certificate        *stdx509.Certificate
+	ecdsaCertificate   *stdx509.Certificate
+	ed25519Certificate *stdx509.Certificate
+	pathLenZero        *stdx509.Certificate
+	noCommonName       *stdx509.Certificate
+	otherCertificate   *stdx509.Certificate
+	pssCertificate     *stdx509.Certificate
+	rsaPublic          *rsa.PublicKey
+	certificateDER     []byte
+	certificatePEM     []byte
+	pkcs1DER           []byte
+	pkcs8DER           []byte
+	pkcs8PEM           []byte
+	sec1DER            []byte
+	publicDER          []byte
+	publicPEM          []byte
+	encryptedDER       []byte
+	encryptedPEM       []byte
+	rfc1423PEM         []byte
+	ed25519DER         []byte
+	dsaDER             []byte
+	x25519PKCS8DER     []byte
+	x25519PKIXDER      []byte
+	csrDER             []byte
+	csrPEM             []byte
+	crlDER             []byte
+	crlPEM             []byte
+	unsupportedDER     []byte
 }
 
 // sharedRSAKey is generated once for the package, because generating a 2048-bit key for
@@ -816,6 +960,8 @@ func newFixtures(t *testing.T) testFixtures {
 
 	rsaKey := sharedRSAKey()
 	ecdsaKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	require.NoError(t, err)
+	_, ed25519Key, err := ed25519.GenerateKey(rand.Reader)
 	require.NoError(t, err)
 
 	workload, err := url.Parse("spiffe://example.test/workload")
@@ -872,6 +1018,22 @@ func newFixtures(t *testing.T) testFixtures {
 		NotAfter:     time.Unix(2, 0),
 	}, rsaKey)
 
+	// A certificate whose key algorithm carries the curve of the key as its parameter.
+	ecdsaCertificate := newCertificate(t, &stdx509.Certificate{
+		SerialNumber: big.NewInt(6),
+		Subject:      pkix.Name{CommonName: "ec.example.test"},
+		NotBefore:    time.Unix(1, 0),
+		NotAfter:     time.Unix(2, 0),
+	}, ecdsaKey)
+
+	// A certificate that uses one OID for both its signature and its key.
+	ed25519Certificate := newCertificate(t, &stdx509.Certificate{
+		SerialNumber: big.NewInt(7),
+		Subject:      pkix.Name{CommonName: "ed25519.example.test"},
+		NotBefore:    time.Unix(1, 0),
+		NotAfter:     time.Unix(2, 0),
+	}, ed25519Key)
+
 	// A certificate signed with RSASSA-PSS, whose OID the catalog leaves out.
 	pssCertificate := newCertificate(t, &stdx509.Certificate{
 		SerialNumber:       big.NewInt(5),
@@ -895,9 +1057,7 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 	publicDER, err := stdx509.MarshalPKIXPublicKey(&rsaKey.PublicKey)
 	require.NoError(t, err)
-	_, ed25519Private, err := ed25519.GenerateKey(rand.Reader)
-	require.NoError(t, err)
-	ed25519DER, err := stdx509.MarshalPKCS8PrivateKey(ed25519Private)
+	ed25519DER, err := stdx509.MarshalPKCS8PrivateKey(ed25519Key)
 	require.NoError(t, err)
 	// crypto/x509 parses a DSA key but cannot encode one, so the input comes from pkg/crypto.
 	dsaDER, err := crypto.MarshalPublicKey(&dsa.PublicKey{
@@ -942,41 +1102,43 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 
 	return testFixtures{
-		certificate:      certificate,
-		pathLenZero:      pathLenZero,
-		noCommonName:     noCommonName,
-		otherCertificate: otherCertificate,
-		pssCertificate:   pssCertificate,
-		rsaPublic:        &rsaKey.PublicKey,
-		certificateDER:   certificate.Raw,
-		certificatePEM:   certificatePEM(certificate),
-		pkcs1DER:         stdx509.MarshalPKCS1PrivateKey(rsaKey),
-		pkcs8DER:         pkcs8DER,
-		pkcs8PEM:         pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pkcs8DER}),
-		sec1DER:          sec1DER,
-		publicDER:        publicDER,
-		publicPEM:        pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicDER}),
-		encryptedDER:     encryptedDER,
-		encryptedPEM:     pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
-		rfc1423PEM:       rfc1423PEM,
-		ed25519DER:       ed25519DER,
-		dsaDER:           dsaDER,
-		x25519PKCS8DER:   x25519PKCS8DER,
-		x25519PKIXDER:    x25519PKIXDER,
-		csrDER:           csrDER,
-		csrPEM:           pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}),
-		crlDER:           crlDER,
-		crlPEM:           pem.EncodeToMemory(&pem.Block{Type: "X509 CRL", Bytes: crlDER}),
-		unsupportedDER:   unsupportedDER,
+		certificate:        certificate,
+		ecdsaCertificate:   ecdsaCertificate,
+		ed25519Certificate: ed25519Certificate,
+		pathLenZero:        pathLenZero,
+		noCommonName:       noCommonName,
+		otherCertificate:   otherCertificate,
+		pssCertificate:     pssCertificate,
+		rsaPublic:          &rsaKey.PublicKey,
+		certificateDER:     certificate.Raw,
+		certificatePEM:     certificatePEM(certificate),
+		pkcs1DER:           stdx509.MarshalPKCS1PrivateKey(rsaKey),
+		pkcs8DER:           pkcs8DER,
+		pkcs8PEM:           pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pkcs8DER}),
+		sec1DER:            sec1DER,
+		publicDER:          publicDER,
+		publicPEM:          pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicDER}),
+		encryptedDER:       encryptedDER,
+		encryptedPEM:       pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
+		rfc1423PEM:         rfc1423PEM,
+		ed25519DER:         ed25519DER,
+		dsaDER:             dsaDER,
+		x25519PKCS8DER:     x25519PKCS8DER,
+		x25519PKIXDER:      x25519PKIXDER,
+		csrDER:             csrDER,
+		csrPEM:             pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}),
+		crlDER:             crlDER,
+		crlPEM:             pem.EncodeToMemory(&pem.Block{Type: "X509 CRL", Bytes: crlDER}),
+		unsupportedDER:     unsupportedDER,
 	}
 }
 
 // newCertificate self-signs a template and parses it back, because a template alone has
 // no raw DER to identify and no parsed basic constraints.
-func newCertificate(t *testing.T, template *stdx509.Certificate, key *rsa.PrivateKey) *stdx509.Certificate {
+func newCertificate(t *testing.T, template *stdx509.Certificate, key stdcrypto.Signer) *stdx509.Certificate {
 	t.Helper()
 
-	der, err := stdx509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
+	der, err := stdx509.CreateCertificate(rand.Reader, template, template, key.Public(), key)
 	require.NoError(t, err)
 	certificate, err := stdx509.ParseCertificate(der)
 	require.NoError(t, err)
