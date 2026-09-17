@@ -71,6 +71,13 @@ func TestParse(t *testing.T) {
 		keyType: ftypes.CryptoKeyTypePublic,
 		method:  ftypes.CryptoMethodSPKISHA256,
 	}
+	pemPublicKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePublic,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKIX,
+		encoding: ftypes.CryptoEncodingPEM,
+	}
 
 	tests := []struct {
 		name  string
@@ -155,13 +162,7 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKIX public PEM",
 			input: fixtures.publicPEM,
-			want: []found{{
-				kind:     ftypes.CryptoKindKey,
-				keyType:  ftypes.CryptoKeyTypePublic,
-				method:   ftypes.CryptoMethodSPKISHA256,
-				format:   ftypes.CryptoKeyFormatPKIX,
-				encoding: ftypes.CryptoEncodingPEM,
-			}},
+			want:  []found{pemPublicKey},
 		},
 		{
 			name:  "encrypted PKCS8 DER",
@@ -262,13 +263,31 @@ func TestParse(t *testing.T) {
 			}},
 		},
 		{
-			name:  "certificate bundle",
+			name:  "repeated certificate",
 			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.certificatePEM}, nil),
 			want: []found{
 				pemCertificate,
 				certificateKey,
+			},
+		},
+		{
+			// Both certificates carry the same key.
+			name:  "certificate bundle",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil),
+			want: []found{
 				pemCertificate,
 				certificateKey,
+				pemCertificate,
+			},
+		},
+		{
+			// The key is found twice, because the certificate gives it no container.
+			name:  "certificate and its public key",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.publicPEM}, nil),
+			want: []found{
+				pemCertificate,
+				certificateKey,
+				pemPublicKey,
 			},
 		},
 		{
@@ -658,8 +677,7 @@ func TestParseAssets(t *testing.T) {
 			},
 		},
 		{
-			// One OID describes the signature and the key, so the same algorithm is
-			// described twice.
+			// One OID describes the signature and the key, so the algorithm is reported once.
 			name:  "Ed25519 certificate",
 			input: certificatePEM(fixtures.ed25519Certificate),
 			want: []ftypes.CryptoAsset{
@@ -692,7 +710,6 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(ed25519Algorithm),
 				at(ed25519CertificateKey),
-				at(ed25519Algorithm),
 			},
 		},
 		{
