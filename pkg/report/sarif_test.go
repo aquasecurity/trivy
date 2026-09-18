@@ -751,6 +751,58 @@ func TestReportWriter_Sarif(t *testing.T) {
 	}
 }
 
+func TestReportWriter_Sarif_UnparsableURI(t *testing.T) {
+	tests := []struct {
+		name   string
+		target string
+		want   string
+	}{
+		{
+			name:   "non-GitHub git SSH source",
+			target: "git@bitbucket.org:org/repo.git?ref=v1.0.0/main.tf",
+			want:   "./git@bitbucket.org:org/repo.git%3Fref=v1.0.0/main.tf",
+		},
+		{
+			name:   "bare percent sign",
+			target: "100%.tf",
+			want:   "100%25.tf",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{
+				Output: sarifWritten,
+			}
+			err := w.Write(t.Context(), types.Report{
+				Results: types.Results{
+					{
+						Target: tt.target,
+						Class:  types.ClassConfig,
+						Type:   ftypes.Terraform,
+						Misconfigurations: []types.DetectedMisconfiguration{
+							{
+								ID:       "AVD-AWS-0001",
+								Severity: "HIGH",
+							},
+						},
+					},
+				},
+			})
+			require.NoError(t, err)
+
+			result := &sarif.Report{}
+			err = json.Unmarshal(sarifWritten.Bytes(), result)
+			require.NoError(t, err)
+			require.Len(t, result.Runs, 1)
+			require.Len(t, result.Runs[0].Results, 1)
+			require.Len(t, result.Runs[0].Results[0].Locations, 1)
+			assert.Equal(t, tt.want, *result.Runs[0].Results[0].Locations[0].PhysicalLocation.ArtifactLocation.URI)
+		})
+	}
+}
+
 func TestReportWriter_toSarifErrorLevel(t *testing.T) {
 	tests := []struct {
 		severity        string
