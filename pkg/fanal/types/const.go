@@ -44,6 +44,7 @@ const (
 	Debian             OSType = "debian"
 	Echo               OSType = "echo"
 	Fedora             OSType = "fedora"
+	Hadron             OSType = "hadron"
 	MinimOS            OSType = "minimos"
 	OpenSUSE           OSType = "opensuse"
 	OpenSUSELeap       OSType = "opensuse-leap"
