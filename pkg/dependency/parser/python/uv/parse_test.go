@@ -12,11 +12,12 @@ import (
 
 func TestParser_Parse(t *testing.T) {
 	tests := []struct {
-		name     string
-		file     string
-		wantPkgs []ftypes.Package
-		wantDeps []ftypes.Dependency
-		wantErr  string
+		name      string
+		file      string
+		wantPkgs  []ftypes.Package
+		wantDeps  []ftypes.Dependency
+		wantErr   string
+		wantEmpty bool
 	}{
 		{
 			name:     "normal",
@@ -25,9 +26,21 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: uvNormalDeps,
 		},
 		{
-			name:    "lockfile without root",
-			file:    "testdata/uv_without_root.lock",
-			wantErr: "uv lockfile must contain 1 root package",
+			name:     "workspace without root package",
+			file:     "testdata/uv_workspace_virtual.lock",
+			wantPkgs: uvWorkspaceVirtual,
+			wantDeps: uvWorkspaceVirtualDeps,
+		},
+		{
+			name:     "workspace with root package",
+			file:     "testdata/uv_workspace_rooted.lock",
+			wantPkgs: uvWorkspaceRooted,
+			wantDeps: uvWorkspaceRootedDeps,
+		},
+		{
+			name:      "lockfile without root",
+			file:      "testdata/uv_without_root.lock",
+			wantEmpty: true,
 		},
 		{
 			name:    "multiple roots",
@@ -49,6 +62,11 @@ func TestParser_Parse(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+			if tt.wantEmpty {
+				assert.Empty(t, gotPkgs)
+				assert.Empty(t, gotDeps)
+				return
+			}
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
