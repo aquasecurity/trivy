@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo supplier
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
@@ -74,6 +75,29 @@ func Test_lookupSupplier(t *testing.T) {
 			wantMatch:           library.Candidate,
 			wantPrefix:          "seal go::",
 			wantDefaultComparer: true,
+		},
+		{
+			name:                "echo pip package returns supplier prefix and pep440 comparer",
+			eco:                 ecosystem.Pip,
+			pkgName:             "requests",
+			pkgVer:              "2.14.2+echo.1",
+			wantMatch:           library.Matched,
+			wantPrefix:          "echo pip::",
+			wantDefaultComparer: false,
+		},
+		{
+			name:      "non-echo pip package without version suffix returns no match",
+			eco:       ecosystem.Pip,
+			pkgName:   "requests",
+			pkgVer:    "2.14.2",
+			wantMatch: library.NoMatch,
+		},
+		{
+			name:      "echo version suffix on non-pip ecosystem returns no match",
+			eco:       ecosystem.Npm,
+			pkgName:   "ejs",
+			pkgVer:    "3.1.8+echo.1",
+			wantMatch: library.NoMatch,
 		},
 		{
 			name:      "non-seal pip package returns no match",
