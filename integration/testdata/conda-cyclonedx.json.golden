@@ -53,14 +53,17 @@
       "purl": "pkg:conda/openssl@1.1.1q",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json"
-        },
-        {
           "name": "aquasecurity:trivy:PkgType",
           "value": "conda-pkg"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "miniconda3/envs/testenv/conda-meta/openssl-1.1.1q-h7f8727e_0.json"
+          }
+        ]
+      }
     },
     {
       "bom-ref": "pkg:conda/pip@22.2.2",
@@ -83,14 +86,17 @@
       "purl": "pkg:conda/pip@22.2.2",
       "properties": [
         {
-          "name": "aquasecurity:trivy:FilePath",
-          "value": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
-        },
-        {
           "name": "aquasecurity:trivy:PkgType",
           "value": "conda-pkg"
         }
-      ]
+      ],
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "miniconda3/envs/testenv/conda-meta/pip-22.2.2-py38h06a4308_0.json"
+          }
+        ]
+      }
     }
   ],
   "dependencies": [
