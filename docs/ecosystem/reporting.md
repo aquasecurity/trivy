@@ -27,7 +27,7 @@ Trivy-Streamlit is a Streamlit application that allows you to quickly parse the 
 
 ## Trivy-Vulnerability-Explorer (Community)
 
-This project is a web application that allows to load a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table.
+This project is a web application that allows loading a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table.
 
 👉 Get it at: <https://github.com/dbsystel/trivy-vulnerability-explorer>
 
