@@ -90,6 +90,8 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `affinity`                            | Affinity settings for pod assignment                                              |     |
 | `tolerations`                         | Tolerations for pod assignment                                              |     |
 | `podAnnotations`                      | Annotations for pods created by statefulset                             | `{}` |
+| `livenessProbe`                       | Liveness probe for the main container                                   | See `values.yaml` |
+| `readinessProbe`                      | Readiness probe for the main container                                  | See `values.yaml` |
 
 The above parameters map to the env variables defined in [trivy](https://trivy.dev/docs/latest/configuration/#configuration).
 
