@@ -341,9 +341,12 @@ For the `.trivyignore.yaml` file, you can set ignored IDs separately for `vulner
 
 Available fields:
 
+!!! note
+    At least one of `id`, `purls`, or `paths` must be specified in each entry. When `id` is omitted, the entry matches any finding that satisfies the remaining filters.
+
 | Field      | Required | Type                | Description                                                                                                                                                             |
 |------------|:--------:|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                                                                                          |
+| id         |          | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1]. If not set, the entry matches any finding that satisfies the other filters.              |
 | paths[^2]  |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
@@ -427,6 +430,15 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 ```
 
 </details>
+
+When `id` is omitted, an entry ignores every finding that satisfies the remaining filters. For example, to ignore all vulnerabilities of a package without listing each CVE:
+
+```yaml
+vulnerabilities:
+  - purls:
+      - "pkg:deb/ubuntu/linux-libc-dev"
+    statement: Kernel headers, not exercised at runtime
+```
 
 ### By Rego
 
