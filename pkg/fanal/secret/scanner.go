@@ -823,12 +823,15 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 }
 
 // deduplicateFindings removes duplicate secret findings that may occur at chunk boundaries
+// or from multiple regex matches of the same rule on the same line.
 func (s *Scanner) deduplicateFindings(findings []types.SecretFinding) []types.SecretFinding {
-	// Deduplicate based on rule ID and byte offset
-	// This accurately identifies the same secret across chunk boundaries
-	// Different secrets at the same offset are impossible, so this is safe
+	// Deduplicate based on rule ID and line range.
+	// Offset is intentionally excluded — same rule matching at different byte
+	// positions on the same line(s) produces identical code blocks and should
+	// be reported once. Cross-chunk overlap duplicates share the same adjusted
+	// StartLine/EndLine, so this also handles streaming dedup correctly.
 	return lo.UniqBy(findings, func(f types.SecretFinding) string {
-		return fmt.Sprintf("%s:%d-%d-%d", f.RuleID, f.StartLine, f.EndLine, f.Offset)
+		return fmt.Sprintf("%s:%d-%d", f.RuleID, f.StartLine, f.EndLine)
 	})
 }
 
