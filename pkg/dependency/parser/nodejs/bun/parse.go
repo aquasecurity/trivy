@@ -101,11 +101,15 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		devDirectDeps.Append(lo.Keys(ws.DevDependencies)...)
 	}
 	for pkgName, parsed := range lockFile.Packages {
-		pkgVersion := strings.TrimPrefix(parsed.Identifier, pkgName+"@")
+		// The map key is an install path, which for deduped/nested dependencies
+		// is "parent/child" (e.g. "glob/minimatch") rather than the package name.
+		// The real name and version live in the identifier ("minimatch@9.0.5"),
+		// so derive them from there instead of trimming the key.
+		name, pkgVersion := splitIdentifier(parsed.Identifier)
 		if strings.HasPrefix(pkgVersion, "workspace") {
 			pkgVersion = lockFile.Workspaces[pkgName].Version
 		}
-		pkgId := packageID(pkgName, pkgVersion)
+		pkgId := packageID(name, pkgVersion)
 		isDirect := prodDirectDeps.Contains(pkgName) || devDirectDeps.Contains(pkgName)
 
 		relationship := ftypes.RelationshipIndirect
@@ -117,7 +121,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 		newPkg := ftypes.Package{
 			ID:           pkgId,
-			Name:         pkgName,
+			Name:         name,
 			Version:      pkgVersion,
 			Relationship: relationship,
 			Dev:          true, // Mark all dependencies as Dev. We will handle them later.
@@ -181,6 +185,21 @@ func walkProdPackages(pkgName string, pkgs map[string]ftypes.Package, deps map[s
 	for _, dep := range deps[pkgName] {
 		walkProdPackages(dep, pkgs, deps, visited)
 	}
+}
+
+// splitIdentifier splits a bun lockfile package identifier ("name@version")
+// into its name and version. The version can itself contain "@" (e.g. the git
+// dependency "adm-zip@git+ssh://git@github.com/..."), so it splits at the first
+// "@" after an optional leading "@" of a scoped name ("@types/node@22.15.18").
+func splitIdentifier(identifier string) (name, version string) {
+	start := 0
+	if strings.HasPrefix(identifier, "@") {
+		start = 1
+	}
+	if i := strings.IndexByte(identifier[start:], '@'); i >= 0 {
+		return identifier[:start+i], identifier[start+i+1:]
+	}
+	return identifier, ""
 }
 
 func packageID(name, version string) string {
