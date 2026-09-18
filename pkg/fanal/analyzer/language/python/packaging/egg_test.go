@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -59,6 +60,12 @@ func Test_eggAnalyzer_Analyze(t *testing.T) {
 								},
 								FilePath: "testdata/egg-zip/kitchen-1.2.6-py2.7.egg",
 								Digest:   "sha1:4e13b6e379966771e896ee43cf8e240bf6083dca",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:4e13b6e379966771e896ee43cf8e240bf6083dca",
+										Source: digest.SourceFileContent,
+									},
+								},
 							},
 						},
 					},

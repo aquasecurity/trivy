@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1503,6 +1504,12 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 								Arch:       "amd64",
 								Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
 								Digest:     "sha256:bd8e963c6edcf1c806df97cd73560794c347aa94b9aaaf3b88eea585bb2d2f3c",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:bd8e963c6edcf1c806df97cd73560794c347aa94b9aaaf3b88eea585bb2d2f3c",
+										Source: digest.SourceDpkgAvailable,
+									},
+								},
 							},
 						},
 					},

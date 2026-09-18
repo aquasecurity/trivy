@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
 	"github.com/aquasecurity/trivy/pkg/sbom/spdx"
@@ -201,6 +202,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 								Digest:   "sha1:69e70ec702f9df4ff64024b5fdea4644f1ce6c97",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:69e70ec702f9df4ff64024b5fdea4644f1ce6c97",
+										Source: digest.SourceSBOM,
+									},
+								},
 							},
 						},
 					},
@@ -229,6 +236,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 								FilePath: "node_modules/yargs-parser/package.json",
 								Digest:   "sha1:69e70ec702f9df4ff64024b5fdea4644f1ce6c97",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:69e70ec702f9df4ff64024b5fdea4644f1ce6c97",
+										Source: digest.SourceSBOM,
+									},
+								},
 							},
 						},
 					},
@@ -289,6 +302,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "1.36.0",
 								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Digest:   "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
+										Source: digest.SourceSBOM,
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -304,6 +323,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "1.36.0",
 								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Digest:   "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
+										Source: digest.SourceSBOM,
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
@@ -366,6 +391,16 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 								},
 								Digest: "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
+										Source: digest.SourceSBOM,
+									},
+									{
+										Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+										Source: digest.SourceSBOM,
+									},
+								},
 							},
 						},
 					},

@@ -10,7 +10,6 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -454,10 +453,15 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 	}
 
 	var files []core.File
-	if pkg.FilePath != "" || pkg.Digest != "" {
+	if digests := pkg.SourcedDigests(); pkg.FilePath != "" || len(digests) > 0 {
+		// A component carries a single digest: the one the package collected first. What to put
+		// into a format when a package has several is a separate decision.
+		if len(digests) > 1 {
+			digests = digests[:1]
+		}
 		files = append(files, core.File{
 			Path:    pkg.FilePath,
-			Digests: lo.Ternary(pkg.Digest != "", []digest.Digest{pkg.Digest}, nil),
+			Digests: digests,
 		})
 	}
 

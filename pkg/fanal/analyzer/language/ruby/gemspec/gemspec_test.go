@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -63,6 +64,12 @@ func Test_gemspecLibraryAnalyzer_Analyze(t *testing.T) {
 								},
 								FilePath: "testdata/multiple_licenses.gemspec",
 								Digest:   "sha1:6ba7904180fad7e09f224cd3e4d449ea53401fb9",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:6ba7904180fad7e09f224cd3e4d449ea53401fb9",
+										Source: digest.SourceFileContent,
+									},
+								},
 							},
 						},
 					},

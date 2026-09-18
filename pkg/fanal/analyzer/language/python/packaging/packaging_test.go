@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -35,6 +36,12 @@ func Test_packagingAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"Python license"},
 								FilePath: "distlib-0.3.1.egg-info/PKG-INFO",
 								Digest:   "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:d9d89d8ed3b2b683767c96814c9c5d3e57ef2e1b",
+										Source: digest.SourceFileContent,
+									},
+								},
 							},
 						},
 					},

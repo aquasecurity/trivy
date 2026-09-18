@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	sbomio "github.com/aquasecurity/trivy/pkg/sbom/io"
@@ -113,6 +114,19 @@ func TestEncoder_Encode(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
 								Version:  "2.13.4",
 								FilePath: "/foo/jackson-databind-2.13.4.jar",
+								Digest:   "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+								// The digests below are synthetic, put together for this test: only the
+								// first of them reaches a component.
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+										Source: digest.SourceJavaArchive,
+									},
+									{
+										Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+										Source: digest.SourceUnknown,
+									},
+								},
 								Identifier: ftypes.PkgIdentifier{
 									UID: "A6BD5A2FE5C00E10",
 									PURL: &packageurl.PackageURL{
@@ -128,6 +142,8 @@ func TestEncoder_Encode(t *testing.T) {
 								Name:     "com.fasterxml.jackson.core:jackson-databind",
 								Version:  "2.13.4",
 								FilePath: "/bar/jackson-databind-2.13.4.jar",
+								// Data written before the sourced digests carries the legacy field only.
+								Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "64244651208EC759",
 									PURL: &packageurl.PackageURL{
@@ -343,6 +359,13 @@ func TestEncoder_Encode(t *testing.T) {
 					Files: []core.File{
 						{
 							Path: "/foo/jackson-databind-2.13.4.jar",
+							// The package collected two digests, but a component carries one.
+							Digests: []digest.SourcedDigest{
+								{
+									Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+									Source: digest.SourceJavaArchive,
+								},
+							},
 						},
 					},
 					Properties: []core.Property{
@@ -378,6 +401,13 @@ func TestEncoder_Encode(t *testing.T) {
 					Files: []core.File{
 						{
 							Path: "/bar/jackson-databind-2.13.4.jar",
+							// The acquisition method of a legacy value is not guessed.
+							Digests: []digest.SourcedDigest{
+								{
+									Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
+									Source: digest.SourceUnknown,
+								},
+							},
 						},
 					},
 					Properties: []core.Property{
