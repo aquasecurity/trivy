@@ -233,6 +233,44 @@ func TestWriter_Write(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Regression: packages without a Name (e.g. a local package.json with
+			// no name field) used to produce a malformed PURL like `pkg:npm/@1.0.0`.
+			// buildPurl must now emit an empty PackageUrl instead.
+			name: "package without name produces empty PURL",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "package-lock.json",
+				Results: types.Results{
+					{
+						Target: "package-lock.json",
+						Class:  "lang-pkgs",
+						Type:   "npm",
+						Packages: []ftypes.Package{
+							{
+								Version:      "1.0.0",
+								Relationship: ftypes.RelationshipDirect,
+							},
+						},
+					},
+				},
+			},
+			want: map[string]github.Manifest{
+				"package-lock.json": {
+					Name: "npm",
+					File: &github.File{
+						SrcLocation: "package-lock.json",
+					},
+					Resolved: map[string]github.Package{
+						"": {
+							PackageUrl:   "",
+							Relationship: "direct",
+							Scope:        "runtime",
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
