@@ -40,7 +40,7 @@ require (
 	github.com/containerd/containerd/v2 v2.3.5
 	github.com/containerd/platforms v1.0.0-rc.5
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v29.7.2+incompatible
+	github.com/docker/cli v29.8.0+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.19.0
 	github.com/go-git/go-git/v5 v5.19.2
@@ -77,10 +77,10 @@ require (
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20260422061116-d21e5e4481bb
 	github.com/mattn/go-shellwords v1.0.14
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/moby/buildkit v0.32.2
+	github.com/moby/buildkit v0.33.0
 	github.com/moby/docker-image-spec v1.3.1
-	github.com/moby/moby/api v1.55.0
-	github.com/moby/moby/client v0.5.1
+	github.com/moby/moby/api v1.56.0
+	github.com/moby/moby/client v0.6.0
 	github.com/nikolalohinski/gonja/v2 v2.9.0
 	github.com/open-policy-agent/opa v1.20.2
 	github.com/opencontainers/go-digest v1.0.0
@@ -170,7 +170,7 @@ require (
 	github.com/Masterminds/semver/v3 v3.5.0 // indirect
 	github.com/Masterminds/squirrel v1.5.4 // indirect
 	github.com/Microsoft/go-winio v0.6.3-0.20251027160822-ad3df93bed29 // indirect
-	github.com/Microsoft/hcsshim v0.15.0-rc.1 // indirect
+	github.com/Microsoft/hcsshim v0.15.0-rc.4 // indirect
 	github.com/ProtonMail/go-crypto v1.4.1 // indirect
 	github.com/VividCortex/ewma v1.2.0 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
@@ -346,7 +346,7 @@ require (
 	github.com/moby/sys/sequential v0.7.0 // indirect
 	github.com/moby/sys/signal v0.7.1 // indirect
 	github.com/moby/sys/user v0.4.1 // indirect
-	github.com/moby/sys/userns v0.1.0 // indirect
+	github.com/moby/sys/userns v0.2.0 // indirect
 	github.com/moby/term v0.5.2 // indirect
 	github.com/modern-go/concurrent v0.0.0-20180306012644-bacd9c7ef1dd // indirect
 	github.com/modern-go/reflect2 v1.0.3-0.20250322232337-35a7c28c31ee // indirect
@@ -359,7 +359,7 @@ require (
 	github.com/owenrumney/squealer v1.2.12 // indirect
 	github.com/pandatix/go-cvss v0.6.2 // indirect
 	github.com/pelletier/go-toml v1.9.5 // indirect
-	github.com/pelletier/go-toml/v2 v2.3.1 // indirect
+	github.com/pelletier/go-toml/v2 v2.4.3 // indirect
 	github.com/peterbourgon/diskv v2.0.1+incompatible // indirect
 	github.com/petermattis/goid v0.0.0-20260330135022-df67b199bc81 // indirect
 	github.com/pjbgf/sha1cd v0.6.0 // indirect
@@ -420,7 +420,6 @@ require (
 	go.lsp.dev/pkg v0.0.0-20210717090340-384b27a52fb2 // indirect
 	go.lsp.dev/protocol v0.12.0 // indirect
 	go.lsp.dev/uri v0.3.0 // indirect
-	go.opencensus.io v0.24.0 // indirect
 	go.opentelemetry.io/auto/sdk v1.2.1 // indirect
 	go.opentelemetry.io/contrib/detectors/gcp v1.44.0 // indirect
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.70.0 // indirect
