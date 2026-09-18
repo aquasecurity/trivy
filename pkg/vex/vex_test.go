@@ -184,6 +184,14 @@ var (
 		InstalledVersion: goTransitivePackage.Version,
 		PkgIdentifier:    goTransitivePackage.Identifier,
 	}
+	// The same vulnerability as vuln5, but detected on go-direct1, which is the
+	// product a CSAF relationship relates to rather than its sub-component.
+	vuln6 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2024-0001",
+		PkgName:          goDirectPackage1.Name,
+		InstalledVersion: goDirectPackage1.Version,
+		PkgIdentifier:    goDirectPackage1.Identifier,
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -537,6 +545,31 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goMultiPathResult(types.Result{
 					Vulnerabilities: []types.DetectedVulnerability{vuln5}, // Will not be filtered because of multi paths
+				}),
+			}),
+		},
+		{
+			name: "CSAF with relationships, vulnerability on the related product",
+			args: args{
+				// The statement covers go-transitive as a component of go-direct1,
+				// while the vulnerability is detected on go-direct1 itself.
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vuln6},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-relationships.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{vuln6}, // The statement doesn't apply to the product itself
 				}),
 			}),
 		},
