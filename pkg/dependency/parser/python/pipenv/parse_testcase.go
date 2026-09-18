@@ -11,6 +11,9 @@ var (
 	// pipenv graph --json | jq -rc '.[] | "{\"\(.package.package_name | ascii_downcase)\", \"\(.package.installed_version)\", \"\"},"'
 	// graph doesn't contain information about location of dependency in lock file.
 	// add locations manually
+	pipenvNormalize = []ftypes.Package{
+		{Name: "zope-interface", Version: "5.4.0", Locations: []ftypes.Location{{StartLine: 3, EndLine: 8}}},
+	}
 	pipenvNormal = []ftypes.Package{
 		{Name: "urllib3", Version: "1.24.2", Locations: []ftypes.Location{{StartLine: 65, EndLine: 71}}},
 		{Name: "requests", Version: "2.21.0", Locations: []ftypes.Location{{StartLine: 57, EndLine: 64}}},

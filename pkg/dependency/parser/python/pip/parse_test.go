@@ -63,6 +63,13 @@ func TestParse(t *testing.T) {
 			want:     requirementsUtf16le,
 		},
 		{
+			// Names must be normalized (PEP 503) so that e.g. `zope.interface`
+			// matches the same package reported from poetry.lock/pylock.toml.
+			name:     "names with non-normalized separators",
+			filePath: "testdata/requirements_normalized_names.txt",
+			want:     requirementsNormalizedNames,
+		},
+		{
 			name:     "happy path with templating engine",
 			filePath: "testdata/requirements_with_templating_engine.txt",
 			want:     nil,
