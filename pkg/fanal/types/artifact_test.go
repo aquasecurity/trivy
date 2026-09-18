@@ -123,6 +123,18 @@ func TestOS_Merge(t *testing.T) {
 			want:  OS{Family: Ubuntu, Name: "24.04", Supplier: SupplierSeal},
 		},
 		{
+			name:  "DHI replaces Alpine lineage regardless of analyzer order",
+			os:    OS{Family: Alpine, Name: "3.24.0"},
+			newOS: OS{Family: DHI, Name: "3.24"},
+			want:  OS{Family: DHI, Name: "3.24"},
+		},
+		{
+			name:  "DHI is not replaced by Debian lineage",
+			os:    OS{Family: DHI, Name: "13"},
+			newOS: OS{Family: Debian, Name: "13.0"},
+			want:  OS{Family: DHI, Name: "13"},
+		},
+		{
 			// A supplier carries no family, so it must not trigger the wholesale
 			// overwrite above and wipe the detected OS.
 			name:  "supplier does not replace redhat",
