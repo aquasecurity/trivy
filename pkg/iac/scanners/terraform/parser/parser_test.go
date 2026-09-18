@@ -3418,3 +3418,43 @@ resource "aws_s3_bucket" "test" {}`,
 	assert.Len(t, modules.GetResourcesByType("aws_security_group"), 1)
 	assert.Len(t, modules.GetResourcesByType("aws_s3_bucket"), 1)
 }
+
+func Test_TofuFileShadowsSameNamedTfFile(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"code/main.tf":   `resource "aws_s3_bucket" "shadowed" {}`,
+		"code/main.tofu": `resource "aws_s3_bucket" "applied" {}`,
+		"code/other.tf":  `resource "aws_s3_bucket" "unrelated" {}`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+
+	paths := lo.Keys(parser.Files())
+	assert.ElementsMatch(t, []string{"code/main.tofu", "code/other.tf"}, paths)
+}
+
+func Test_TofuJSONFileShadowsSameNamedTfJSONFile(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"code/main.tf.json":   `{"resource": {"aws_s3_bucket": {"shadowed": {}}}}`,
+		"code/main.tofu.json": `{"resource": {"aws_s3_bucket": {"applied": {}}}}`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+
+	paths := lo.Keys(parser.Files())
+	assert.ElementsMatch(t, []string{"code/main.tofu.json"}, paths)
+}
+
+func Test_TofuFileDoesNotShadowSameNamedTfJSONFile(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"code/main.tf.json": `{"resource": {"aws_s3_bucket": {"kept": {}}}}`,
+		"code/main.tofu":    `resource "aws_s3_bucket" "also_kept" {}`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+
+	paths := lo.Keys(parser.Files())
+	assert.ElementsMatch(t, []string{"code/main.tf.json", "code/main.tofu"}, paths)
+}

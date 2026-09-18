@@ -189,6 +189,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		}
 		paths = append(paths, realPath)
 	}
+	paths = excludeShadowedTfFiles(paths)
 	sort.Strings(paths)
 	for _, path := range paths {
 		var err error
@@ -211,6 +212,47 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 
 	return nil
+}
+
+// excludeShadowedTfFiles drops .tf/.tf.json files that are shadowed by a
+// .tofu/.tofu.json file with the same name in the same directory, matching
+// OpenTofu's own precedence rule (https://opentofu.org/docs/language/files/).
+// Terraform does not recognize the .tofu extension and loads only the .tf
+// file, while OpenTofu loads only the .tofu file, so parsing both leaves
+// Trivy scanning a file that neither tool actually applies. The pairing is
+// per extension family: a .tofu file only shadows a same-named .tf file, and
+// a .tofu.json file only shadows a same-named .tf.json file.
+func excludeShadowedTfFiles(paths []string) []string {
+	tofuStems := make(map[string]struct{})
+	tofuJSONStems := make(map[string]struct{})
+	for _, p := range paths {
+		switch {
+		case strings.HasSuffix(p, ".tofu.json"):
+			tofuJSONStems[strings.TrimSuffix(p, ".tofu.json")] = struct{}{}
+		case strings.HasSuffix(p, ".tofu"):
+			tofuStems[strings.TrimSuffix(p, ".tofu")] = struct{}{}
+		}
+	}
+
+	if len(tofuStems) == 0 && len(tofuJSONStems) == 0 {
+		return paths
+	}
+
+	filtered := make([]string, 0, len(paths))
+	for _, p := range paths {
+		switch {
+		case strings.HasSuffix(p, ".tf.json"):
+			if _, shadowed := tofuJSONStems[strings.TrimSuffix(p, ".tf.json")]; shadowed {
+				continue
+			}
+		case strings.HasSuffix(p, ".tf"):
+			if _, shadowed := tofuStems[strings.TrimSuffix(p, ".tf")]; shadowed {
+				continue
+			}
+		}
+		filtered = append(filtered, p)
+	}
+	return filtered
 }
 
 func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
