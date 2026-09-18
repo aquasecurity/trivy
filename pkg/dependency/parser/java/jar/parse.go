@@ -712,39 +712,47 @@ func parseManifestMainSection(r io.Reader) (manifest, error) {
 
 // addAttribute records one unfolded attribute line of the main section.
 func (m *manifest) addAttribute(line string) {
-	// Skip variables. e.g. Bundle-Name: %bundleName
-	ss := strings.Fields(line)
-	if len(ss) <= 1 || strings.HasPrefix(ss[1], "%") {
+	// Per the manifest grammar a value always starts with a single space
+	// ("value: SPACE *otherchar newline *continuation"), so splitting on the
+	// first ":" and trimming gives the value directly. Skip lines with no
+	// value at all and variables, e.g. Bundle-Name: %bundleName.
+	key, value, ok := strings.Cut(line, ":")
+	value = strings.TrimSpace(value)
+	if !ok || value == "" || strings.HasPrefix(value, "%") {
 		return
 	}
 
 	// It is not determined which fields are present in each application.
 	// In some cases, none of them are included, in which case they cannot be detected.
-	switch {
-	case strings.HasPrefix(line, "Implementation-Version:"):
-		m.implementationVersion = strings.TrimPrefix(line, "Implementation-Version:")
-	case strings.HasPrefix(line, "Implementation-Title:"):
-		m.implementationTitle = strings.TrimPrefix(line, "Implementation-Title:")
-	case strings.HasPrefix(line, "Implementation-Vendor:"):
-		m.implementationVendor = strings.TrimPrefix(line, "Implementation-Vendor:")
-	case strings.HasPrefix(line, "Implementation-Vendor-Id:"):
-		m.implementationVendorId = strings.TrimPrefix(line, "Implementation-Vendor-Id:")
-	case strings.HasPrefix(line, "Specification-Version:"):
-		m.specificationVersion = strings.TrimPrefix(line, "Specification-Version:")
-	case strings.HasPrefix(line, "Specification-Title:"):
-		m.specificationTitle = strings.TrimPrefix(line, "Specification-Title:")
-	case strings.HasPrefix(line, "Specification-Vendor:"):
-		m.specificationVendor = strings.TrimPrefix(line, "Specification-Vendor:")
-	case strings.HasPrefix(line, "Bundle-Version:"):
-		m.bundleVersion = strings.TrimPrefix(line, "Bundle-Version:")
-	case strings.HasPrefix(line, "Bundle-Name:"):
-		m.bundleName = strings.TrimPrefix(line, "Bundle-Name:")
-	case strings.HasPrefix(line, "Bundle-SymbolicName:"):
-		m.bundleSymbolicName = strings.TrimPrefix(line, "Bundle-SymbolicName:")
-	case strings.HasPrefix(line, "Bundle-License:"):
-		m.bundleLicense = strings.TrimPrefix(line, "Bundle-License:")
-	case strings.HasPrefix(line, "Plugin-License-Name"):
-		m.pluginLicenseNames = append(m.pluginLicenseNames, line)
+	switch key {
+	case "Implementation-Version":
+		m.implementationVersion = value
+	case "Implementation-Title":
+		m.implementationTitle = value
+	case "Implementation-Vendor":
+		m.implementationVendor = value
+	case "Implementation-Vendor-Id":
+		m.implementationVendorId = value
+	case "Specification-Version":
+		m.specificationVersion = value
+	case "Specification-Title":
+		m.specificationTitle = value
+	case "Specification-Vendor":
+		m.specificationVendor = value
+	case "Bundle-Version":
+		m.bundleVersion = value
+	case "Bundle-Name":
+		m.bundleName = value
+	case "Bundle-SymbolicName":
+		m.bundleSymbolicName = value
+	case "Bundle-License":
+		m.bundleLicense = value
+	default:
+		// Jenkins plugins declare one or more licenses as Plugin-License-Name,
+		// Plugin-License-Name-1, Plugin-License-Name-2, etc.
+		if key == "Plugin-License-Name" || strings.HasPrefix(key, "Plugin-License-Name-") {
+			m.pluginLicenseNames = append(m.pluginLicenseNames, value)
+		}
 	}
 }
 
@@ -820,38 +828,16 @@ func splitUnquoted(s string, sep byte) []string {
 	return append(fields, s[start:])
 }
 
-// parsePluginLicenseName extracts the license name from a single Jenkins
-// Plugin-License-Name[-N] manifest line, or an empty string when the line is not
-// such an attribute or carries no value.
-func parsePluginLicenseName(line string) string {
-	key, value, ok := strings.Cut(line, ":")
-	if !ok {
-		return ""
-	}
-	if key != "Plugin-License-Name" {
-		if _, ok = strings.CutPrefix(key, "Plugin-License-Name-"); !ok {
-			return ""
-		}
-	}
-	return strings.TrimSpace(value)
-}
-
 // licenseNames returns the license names declared in the manifest: the Jenkins
 // Plugin-License-Name attributes if present, otherwise the OSGi Bundle-License
 // entries resolved to SPDX IDs.
 func (m *manifest) licenseNames() []string {
-	var names []string
-	for _, line := range m.pluginLicenseNames {
-		if name := parsePluginLicenseName(line); name != "" {
-			names = append(names, name)
-		}
+	if len(m.pluginLicenseNames) > 0 {
+		return m.pluginLicenseNames
 	}
-	if len(names) == 0 {
-		names = append(names, parseBundleLicense(m.bundleLicense)...)
-	}
-
-	return names
+	return parseBundleLicense(m.bundleLicense)
 }
+
 func (m *manifest) properties(filePath string) Properties {
 	groupID, err := m.determineGroupID()
 	if err != nil {
@@ -895,7 +881,7 @@ func (m *manifest) determineGroupID() (string, error) {
 	default:
 		return "", xerrors.New("no groupID found")
 	}
-	return strings.TrimSpace(groupID), nil
+	return groupID, nil
 }
 
 func (m *manifest) determineArtifactID() (string, error) {
@@ -910,7 +896,7 @@ func (m *manifest) determineArtifactID() (string, error) {
 	default:
 		return "", xerrors.New("no artifactID found")
 	}
-	return strings.TrimSpace(artifactID), nil
+	return artifactID, nil
 }
 
 func (m *manifest) determineVersion() (string, error) {
@@ -925,7 +911,7 @@ func (m *manifest) determineVersion() (string, error) {
 	default:
 		return "", xerrors.New("no version found")
 	}
-	return strings.TrimSpace(version), nil
+	return version, nil
 }
 
 func removePackageDuplicates(pkgs []ftypes.Package) []ftypes.Package {
