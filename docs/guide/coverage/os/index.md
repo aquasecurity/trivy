@@ -22,6 +22,7 @@ Trivy supports operating systems for
 | [Rocky Linux](rocky.md)                        | 8, 9                                | dnf/yum/rpm      |
 | [Oracle Linux](oracle.md)                      | 5, 6, 7, 8                          | dnf/yum/rpm      |
 | [Azure Linux (CBL-Mariner)](azure.md)          | 1.0, 2.0, 3.0                       | tdnf/dnf/yum/rpm |
+| [Alibaba Cloud Linux](alinux.md)               | 2, 3, 4                             | dnf/yum/rpm      |
 | [Amazon Linux](amazon.md)                      | 1, 2, 2023                          | dnf/yum/rpm      |
 | [openSUSE Leap](suse.md)                       | 42, 15                              | zypper/rpm       |
 | [openSUSE Tumbleweed](suse.md)                 | (n/a)                               | zypper/rpm       |
