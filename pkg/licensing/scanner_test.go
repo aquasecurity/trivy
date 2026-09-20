@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/licensing"
@@ -180,6 +181,19 @@ func TestScanner_Scan(t *testing.T) {
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},
+		{
+			// A category named in the configuration file replaces its own list
+			// only, so a license moved into one stays in whichever built-in
+			// list it came from. The most severe of the two is what applies.
+			name: "license in two categories",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryForbidden: {expression.MIT},
+				types.CategoryNotice:    {expression.MIT},
+			},
+			licenseName:  expression.MIT,
+			wantCategory: types.CategoryForbidden,
+			wantSeverity: "CRITICAL",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -235,6 +249,16 @@ func TestScanner_ScanTextLicense(t *testing.T) {
 			wantCategory: types.CategoryUnknown,
 			wantSeverity: "UNKNOWN",
 		},
+		{
+			name: "text pattern in two categories",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryRestricted: {"text://MIT.*"},
+				types.CategoryNotice:     {"text://MIT.*"},
+			},
+			licenseText:  "MIT License",
+			wantCategory: types.CategoryRestricted,
+			wantSeverity: "HIGH",
+		},
 	}
 
 	for _, tt := range tests {
@@ -244,5 +268,26 @@ func TestScanner_ScanTextLicense(t *testing.T) {
 			assert.Equal(t, tt.wantCategory, gotCategory)
 			assert.Equal(t, tt.wantSeverity, gotSeverity)
 		})
+	}
+}
+
+// A license may end up in more than one category, because a category named in
+// the configuration file replaces its own list and leaves the others at their
+// built-in ones. Ranging over the category map to pick one returned a
+// different category on each call.
+func TestScanner_Scan_IsDeterministic(t *testing.T) {
+	s := licensing.NewScanner(map[types.LicenseCategory][]string{
+		types.CategoryForbidden:    {expression.MIT},
+		types.CategoryRestricted:   expression.RestrictedLicenses,
+		types.CategoryReciprocal:   expression.ReciprocalLicenses,
+		types.CategoryNotice:       expression.NoticeLicenses, // also holds MIT
+		types.CategoryPermissive:   expression.PermissiveLicenses,
+		types.CategoryUnencumbered: expression.UnencumberedLicenses,
+	})
+
+	for range 100 {
+		category, severity := s.Scan(expression.MIT)
+		require.Equal(t, types.CategoryForbidden, category)
+		require.Equal(t, "CRITICAL", severity)
 	}
 }
