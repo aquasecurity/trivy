@@ -42,3 +42,71 @@
         BaseID: "ubuntu"
         Name: "RapidFort Security Advisories"
         URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort debian 12
+      value:
+        ID: "rapidfort"
+        BaseID: "debian"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort Oracle Linux 9
+      value:
+        ID: "rapidfort"
+        BaseID: "oracle-oval"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    # RapidFort's own rebuilds keep the feed's ecosystem and drop the release,
+    # so each feed gets its own bucket instead of all sharing the redhat feed's.
+    - key: rapidfort Oracle Linux
+      value:
+        ID: "rapidfort"
+        BaseID: "oracle-oval"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort rocky
+      value:
+        ID: "rapidfort"
+        BaseID: "rocky"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort alma
+      value:
+        ID: "rapidfort"
+        BaseID: "alma"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort amazon linux
+      value:
+        ID: "rapidfort"
+        BaseID: "amazon"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort debian
+      value:
+        ID: "rapidfort"
+        BaseID: "debian"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort rocky 9
+      value:
+        ID: "rapidfort"
+        BaseID: "rocky"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort rocky 8
+      value:
+        ID: "rapidfort"
+        BaseID: "rocky"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort alma 9
+      value:
+        ID: "rapidfort"
+        BaseID: "alma"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
+    - key: rapidfort amazon linux 2023
+      value:
+        ID: "rapidfort"
+        BaseID: "amazon"
+        Name: "RapidFort Security Advisories"
+        URL: "https://github.com/rapidfort/security-advisories"
