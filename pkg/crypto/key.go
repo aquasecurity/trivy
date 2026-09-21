@@ -5,6 +5,7 @@ import (
 	"crypto/dsa"
 	"crypto/ecdsa"
 	"crypto/ed25519"
+	"crypto/mldsa"
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -90,6 +91,10 @@ func keyDetails(pub stdcrypto.PublicKey) (int, string) {
 	case ed25519.PublicKey:
 		// An Ed25519 key is the raw point, so its length is the key size in bytes.
 		return len(pub) * 8, ""
+	case *mldsa.PublicKey:
+		// An ML-DSA public key is a fixed-length encoding decided by the parameter set, so its
+		// size is the length of that encoding.
+		return pub.Parameters().PublicKeySize() * 8, ""
 	}
 	return 0, ""
 }
