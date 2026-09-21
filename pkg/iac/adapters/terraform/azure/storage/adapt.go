@@ -87,7 +87,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_storage_account") {
-			account := adaptAccount(resource)
+			account := adaptAccount(resource, module)
 			containerResource := module.GetReferencingResources(resource, "azurerm_storage_container", "storage_account_id")
 
 			if len(containerResource) == 0 {
@@ -161,7 +161,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 	return accounts, accountedForContainers, accountedForNetworkRules
 }
 
-func adaptAccount(resource *terraform.Block) storage.Account {
+func adaptAccount(resource *terraform.Block, module *terraform.Module) storage.Account {
 	account := storage.Account{
 		Metadata:     resource.GetMetadata(),
 		NetworkRules: nil,
@@ -187,6 +187,13 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 			KeyVaultKeyId:          iacTypes.StringDefault("", resource.GetMetadata()),
 			UserAssignedIdentityId: iacTypes.StringDefault("", resource.GetMetadata()),
 		},
+	}
+
+	for _, diagnosticSetting := range module.GetReferencingResources(resource, "azurerm_monitor_diagnostic_setting", "target_resource_id") {
+		if hasEnabledLog(diagnosticSetting) {
+			account.DiagnosticLoggingEnabled = iacTypes.Bool(true, diagnosticSetting.GetMetadata())
+			break
+		}
 	}
 
 	networkRulesBlocks := resource.GetBlocks("network_rules")
@@ -248,6 +255,21 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	minTLSVersionAttr := resource.GetAttribute("min_tls_version")
 	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault(minimumTlsVersionOneTwo, resource)
 	return account
+}
+
+func hasEnabledLog(diagnosticSetting *terraform.Block) bool {
+	if len(diagnosticSetting.GetBlocks("enabled_log")) > 0 {
+		return true
+	}
+
+	for _, dynamicBlock := range diagnosticSetting.GetBlocks("dynamic") {
+		labels := dynamicBlock.Labels()
+		if len(labels) > 0 && labels[0] == "enabled_log" {
+			return true
+		}
+	}
+
+	return false
 }
 
 func adaptContainer(resource *terraform.Block) storage.Container {

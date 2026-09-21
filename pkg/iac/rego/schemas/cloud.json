@@ -5723,6 +5723,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.CustomerManagedKey"
         },
+        "diagnosticloggingenabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
         "enforcehttps": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"

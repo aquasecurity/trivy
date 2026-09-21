@@ -219,6 +219,52 @@ func Test_Adapt(t *testing.T) {
 			},
 		},
 		{
+			name: "diagnostic logging targets storage account",
+			terraform: `
+			resource "azurerm_storage_account" "example" {
+				name                     = "storageaccountname"
+				resource_group_name      = "example"
+				location                 = "West Europe"
+				account_tier             = "Standard"
+				account_replication_type = "GRS"
+			}
+
+			resource "azurerm_monitor_diagnostic_setting" "example" {
+				target_resource_id = "${azurerm_storage_account.example.id}/blobServices/default/"
+
+				dynamic "enabled_log" {
+					for_each = ["StorageRead"]
+					content {
+						category = enabled_log.value
+					}
+				}
+			}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					{
+						PublicNetworkAccess:      iacTypes.BoolTest(true),
+						MinimumTLSVersion:        iacTypes.StringTest(minimumTlsVersionOneTwo),
+						EnforceHTTPS:             iacTypes.BoolTest(true),
+						AccountReplicationType:   iacTypes.StringTest("GRS"),
+						DiagnosticLoggingEnabled: iacTypes.BoolTest(true),
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+					},
+					{
+						BlobProperties: storage.BlobProperties{
+							DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+								Days: iacTypes.IntTest(7),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "orphans",
 			terraform: `
 			resource "azurerm_storage_account_network_rules" "test" {
