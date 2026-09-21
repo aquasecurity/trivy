@@ -134,93 +134,97 @@ func Test_resolveVersion(t *testing.T) {
 	}
 }
 
+func newDiscoveryServer(t *testing.T, h http.HandlerFunc) (*httptest.Server, string) {
+	mux := http.NewServeMux()
+	mux.HandleFunc(serviceDiscoveryPath, h)
+	ts := httptest.NewTLSServer(mux)
+	t.Cleanup(ts.Close)
+	return ts, strings.TrimPrefix(ts.URL, "https://")
+}
+
 func Test_registryResolver_modulesEndpoint(t *testing.T) {
 	tests := []struct {
-		name      string
-		discovery http.HandlerFunc
-		want      string // relative to the test server URL; empty means the /v1/modules/ fallback
+		name   string
+		status int // 0 means 200
+		body   string
+		want   string // absolute URL, or path under the test server; empty means defaultModulesPath
 	}{
 		{
 			name: "relative modules.v1 path (Terraform Cloud shape)",
-			discovery: func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(`{"modules.v1":"/api/registry/v1/modules/"}`))
-			},
+			body: `{"modules.v1":"/api/registry/v1/modules/"}`,
 			want: "/api/registry/v1/modules/",
 		},
 		{
 			name: "relative path without trailing slash",
-			discovery: func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(`{"modules.v1":"/registry/modules"}`))
-			},
+			body: `{"modules.v1":"/registry/modules"}`,
 			want: "/registry/modules/",
 		},
 		{
-			name: "no discovery document",
-			discovery: func(w http.ResponseWriter, _ *http.Request) {
-				w.WriteHeader(http.StatusNotFound)
-			},
+			name: "absolute URL",
+			body: `{"modules.v1":"https://modules.example.com/v1/"}`,
+			want: "https://modules.example.com/v1/",
+		},
+		{
+			name:   "no discovery document",
+			status: http.StatusNotFound,
 		},
 		{
 			name: "document without modules.v1",
-			discovery: func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(`{"providers.v1":"/v1/providers/"}`))
-			},
+			body: `{"providers.v1":"/v1/providers/"}`,
 		},
 		{
 			name: "malformed document",
-			discovery: func(w http.ResponseWriter, _ *http.Request) {
-				_, _ = w.Write([]byte(`not json`))
-			},
+			body: `not json`,
+		},
+		{
+			name: "non-https modules.v1",
+			body: `{"modules.v1":"http://modules.example.com/v1/"}`,
 		},
 	}
-
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			mux := http.NewServeMux()
-			mux.HandleFunc(serviceDiscoveryPath, tt.discovery)
-			ts := httptest.NewTLSServer(mux)
-			defer ts.Close()
-			hostname := strings.TrimPrefix(ts.URL, "https://")
-
-			want := ts.URL + defaultModulesPath
-			if tt.want != "" {
-				want = ts.URL + tt.want
+			ts, hostname := newDiscoveryServer(t, func(w http.ResponseWriter, _ *http.Request) {
+				if tt.status != 0 {
+					w.WriteHeader(tt.status)
+				}
+				_, _ = w.Write([]byte(tt.body))
+			})
+			want := tt.want
+			switch {
+			case want == "":
+				want = ts.URL + defaultModulesPath
+			case !strings.HasPrefix(want, "https://"):
+				want = ts.URL + want
 			}
-
 			r := &registryResolver{}
-			got := r.modulesEndpoint(t.Context(), ts.Client(), hostname, log.WithPrefix("test"))
-			assert.Equal(t, want, got)
+			assert.Equal(t, want, r.modulesEndpoint(t.Context(), ts.Client(), hostname, log.WithPrefix("test")))
 		})
 	}
 }
 
-func Test_registryResolver_modulesEndpoint_AbsoluteURL(t *testing.T) {
-	mux := http.NewServeMux()
-	mux.HandleFunc(serviceDiscoveryPath, func(w http.ResponseWriter, _ *http.Request) {
-		_, _ = w.Write([]byte(`{"modules.v1":"https://modules.example.com/v1/"}`))
-	})
-	ts := httptest.NewTLSServer(mux)
-	defer ts.Close()
-
-	r := &registryResolver{}
-	got := r.modulesEndpoint(t.Context(), ts.Client(), strings.TrimPrefix(ts.URL, "https://"), log.WithPrefix("test"))
-	assert.Equal(t, "https://modules.example.com/v1/", got)
-}
-
 func Test_registryResolver_modulesEndpoint_CachesPerHost(t *testing.T) {
 	var calls int
-	mux := http.NewServeMux()
-	mux.HandleFunc(serviceDiscoveryPath, func(w http.ResponseWriter, _ *http.Request) {
+	ts, hostname := newDiscoveryServer(t, func(w http.ResponseWriter, _ *http.Request) {
 		calls++
 		_, _ = w.Write([]byte(`{"modules.v1":"/api/registry/v1/modules/"}`))
 	})
-	ts := httptest.NewTLSServer(mux)
-	defer ts.Close()
-	hostname := strings.TrimPrefix(ts.URL, "https://")
-
 	r := &registryResolver{}
 	first := r.modulesEndpoint(t.Context(), ts.Client(), hostname, log.WithPrefix("test"))
 	second := r.modulesEndpoint(t.Context(), ts.Client(), hostname, log.WithPrefix("test"))
 	assert.Equal(t, first, second)
 	assert.Equal(t, 1, calls)
+}
+
+func Test_registryResolver_modulesEndpoint_RetriesUnreachableHost(t *testing.T) {
+	ts, hostname := newDiscoveryServer(t, func(w http.ResponseWriter, _ *http.Request) {
+		_, _ = w.Write([]byte(`{"modules.v1":"/api/registry/v1/modules/"}`))
+	})
+	r := &registryResolver{}
+	ts.CloseClientConnections()
+	ts.Close()
+	assert.Equal(t, "https://"+hostname+defaultModulesPath,
+		r.modulesEndpoint(t.Context(), ts.Client(), hostname, log.WithPrefix("test")))
+
+	_, ok := r.modulesEndpoints.Load(hostname)
+	assert.False(t, ok, "a transport failure must not be cached")
 }

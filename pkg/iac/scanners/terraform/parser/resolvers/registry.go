@@ -11,7 +11,6 @@ import (
 	"os"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 
 	"golang.org/x/net/idna"
@@ -19,12 +18,12 @@ import (
 	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy/pkg/log"
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type registryResolver struct {
-	client *http.Client
-	// modulesEndpoints caches the discovered "modules.v1" base URL per registry hostname.
-	modulesEndpoints sync.Map
+	client           *http.Client
+	modulesEndpoints xsync.Map[string, string]
 }
 
 var Registry = &registryResolver{
@@ -45,14 +44,12 @@ type moduleVersion struct {
 }
 
 const (
-	registryHostname = "registry.terraform.io"
-	// defaultModulesPath is the module registry base path used when remote service discovery
-	// is unavailable or does not advertise "modules.v1".
-	defaultModulesPath = "/v1/modules/"
-	// serviceDiscoveryPath is the well-known document a Terraform host serves to advertise
-	// where its services live: https://developer.hashicorp.com/terraform/internals/remote-service-discovery
+	registryHostname     = "registry.terraform.io"
+	defaultModulesPath   = "/v1/modules/"
 	serviceDiscoveryPath = "/.well-known/terraform.json"
 )
+
+var errDiscoveryUnreachable = errors.New("service discovery request failed")
 
 // nolint
 func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
@@ -90,10 +87,10 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	moduleName := strings.Join(parts, "/")
-	modulesEndpoint := r.modulesEndpoint(ctx, client, hostname, opt.Logger)
+	moduleUrl := r.modulesEndpoint(ctx, client, hostname, opt.Logger) + moduleName
 
 	if opt.Version != "" {
-		versionUrl := modulesEndpoint + moduleName + "/versions"
+		versionUrl := moduleUrl + "/versions"
 		opt.Logger.Debug("Requesting module versions from registry using",
 			log.String("url", versionUrl))
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionUrl, nil)
@@ -124,11 +121,9 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 			log.String("version", opt.Version), log.String("constraint", inputVersion))
 	}
 
-	var downloadUrl string
-	if opt.Version == "" {
-		downloadUrl = modulesEndpoint + moduleName + "/download"
-	} else {
-		downloadUrl = modulesEndpoint + moduleName + "/" + opt.Version + "/download"
+	downloadUrl := moduleUrl + "/download"
+	if opt.Version != "" {
+		downloadUrl = moduleUrl + "/" + opt.Version + "/download"
 	}
 
 	opt.Logger.Debug("Requesting module source from registry", log.String("url", downloadUrl))
@@ -183,39 +178,39 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	return filesystem, prefix, downloadPath, true, nil
 }
 
-// modulesEndpoint returns the module registry base URL for a hostname, with a trailing slash.
-// It follows Terraform's remote service discovery: the host's /.well-known/terraform.json
-// document names the "modules.v1" endpoint, which may live under any path (Terraform Cloud
-// serves it at /api/registry/v1/modules/). Hosts without discovery fall back to /v1/modules/.
+// modulesEndpoint resolves the "modules.v1" base URL (trailing slash) of a registry host through
+// https://developer.hashicorp.com/terraform/internals/remote-service-discovery, cached per host.
 func (r *registryResolver) modulesEndpoint(ctx context.Context, client *http.Client, hostname string, logger *log.Logger) string {
 	if cached, ok := r.modulesEndpoints.Load(hostname); ok {
-		return cached.(string)
+		return cached
 	}
 
-	fallback := "https://" + hostname + defaultModulesPath
 	endpoint, err := discoverModulesEndpoint(ctx, client, hostname)
 	if err != nil {
+		endpoint = "https://" + hostname + defaultModulesPath
 		logger.Debug("Remote service discovery failed, falling back to the default modules endpoint",
-			log.String("hostname", hostname), log.String("url", fallback), log.Err(err))
-		endpoint = fallback
+			log.String("hostname", hostname), log.String("url", endpoint), log.Err(err))
 	} else {
 		logger.Debug("Discovered module registry endpoint",
 			log.String("hostname", hostname), log.String("url", endpoint))
 	}
 
-	r.modulesEndpoints.Store(hostname, endpoint)
+	// A host that could not be reached may still answer later; only a definitive answer is cached.
+	if !errors.Is(err, errDiscoveryUnreachable) {
+		r.modulesEndpoints.Store(hostname, endpoint)
+	}
 	return endpoint
 }
 
 func discoverModulesEndpoint(ctx context.Context, client *http.Client, hostname string) (string, error) {
-	discoveryUrl := "https://" + hostname + serviceDiscoveryPath
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, discoveryUrl, http.NoBody)
+	discoveryUrl := &url.URL{Scheme: "https", Host: hostname, Path: serviceDiscoveryPath}
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, discoveryUrl.String(), http.NoBody)
 	if err != nil {
 		return "", err
 	}
 	resp, err := client.Do(req)
 	if err != nil {
-		return "", err
+		return "", fmt.Errorf("%w: %w", errDiscoveryUnreachable, err)
 	}
 	defer func() { _ = resp.Body.Close() }()
 	if resp.StatusCode != http.StatusOK {
@@ -232,15 +227,11 @@ func discoverModulesEndpoint(ctx context.Context, client *http.Client, hostname 
 		return "", errors.New("service discovery document does not advertise modules.v1")
 	}
 
-	// The value is either an absolute URL or a path relative to the discovery document.
-	base, err := url.Parse(discoveryUrl)
-	if err != nil {
-		return "", err
-	}
-	modulesUrl, err := base.Parse(services.ModulesV1)
+	modulesUrl, err := discoveryUrl.Parse(services.ModulesV1)
 	if err != nil {
 		return "", fmt.Errorf("invalid modules.v1 endpoint %q: %w", services.ModulesV1, err)
 	}
+	// The registry bearer token is sent to this endpoint, so a plaintext scheme would leak it.
 	if modulesUrl.Scheme != "https" {
 		return "", fmt.Errorf("modules.v1 endpoint %q must use https", services.ModulesV1)
 	}
