@@ -134,13 +134,13 @@ func (f *DBFlagGroup) ToOptions(opts *Options) error {
 	downloadJavaDBOnly := f.DownloadJavaDBOnly.Value()
 
 	if downloadDBOnly && downloadJavaDBOnly {
-		return xerrors.New("--download-db-only and --download-java-db-only options can not be specified both")
+		return xerrors.New("--download-db-only and --download-java-db-only cannot be specified together")
 	}
 	if downloadDBOnly && skipDBUpdate {
-		return xerrors.New("--skip-db-update and --download-db-only options can not be specified both")
+		return xerrors.New("--skip-db-update and --download-db-only cannot be specified together")
 	}
 	if downloadJavaDBOnly && skipJavaDBUpdate {
-		return xerrors.New("--skip-java-db-update and --download-java-db-only options can not be specified both")
+		return xerrors.New("--skip-java-db-update and --download-java-db-only cannot be specified together")
 	}
 
 	var dbRepositories, javaDBRepositories []name.Reference

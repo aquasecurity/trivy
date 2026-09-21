@@ -52,7 +52,7 @@ func TestDBFlagGroup_ToOptions(t *testing.T) {
 				SkipDBUpdate:   true,
 				DownloadDBOnly: true,
 			},
-			wantErr: "--skip-db-update and --download-db-only options can not be specified both",
+			wantErr: "--skip-db-update and --download-db-only cannot be specified together",
 		},
 		{
 			name: "invalid repo",

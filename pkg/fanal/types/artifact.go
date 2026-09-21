@@ -196,6 +196,7 @@ type BlobInfo struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           []Secret           `json:",omitempty"`
 	Licenses          []LicenseFile      `json:",omitempty"`
+	CryptoAssets      []CryptoAsset      `json:",omitempty"`
 
 	// Red Hat distributions have build info per layer.
 	// This information will be embedded into packages when applying layers.
@@ -225,6 +226,7 @@ type ArtifactDetail struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           Secrets            `json:",omitempty"`
 	Licenses          LicenseFiles       `json:",omitempty"`
+	CryptoAssets      []CryptoAsset      `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail

@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -45,7 +44,7 @@ func TestParser_Parse(t *testing.T) {
   "resources": []
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				root := createMetadata(fsys, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
+				root := createMetadata(fsys, filename, 0, 0, "", nil)
 				metadata := createMetadata(fsys, filename, 1, 13, "", &root)
 				storageMetadata := createMetadata(fsys, filename, 5, 10, "parameters.storagePrefix", &metadata)
 
@@ -114,7 +113,7 @@ func TestParser_Parse(t *testing.T) {
 ]
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
+				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil)
 				fileMetadata := createMetadata(fsys, filename, 1, 46, "", &rootMetadata)
 
 				resourceMetadata := createMetadata(fsys, filename, 6, 44, "resources[0]", &fileMetadata)
@@ -202,7 +201,7 @@ func TestParser_Parse(t *testing.T) {
   }
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil).WithInternal(resolver.NewResolver())
+				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil)
 				fileMetadata := createMetadata(fsys, filename, 1, 14, "", &rootMetadata)
 				resourceMetadata := createMetadata(fsys, filename, 6, 12, "resources.myacc", &fileMetadata)
 				return azure.Deployment{

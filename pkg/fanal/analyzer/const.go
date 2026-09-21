@@ -142,6 +142,11 @@ const (
 	// ========
 	TypeLicenseFile Type = "license-file"
 
+	// ====================
+	// Cryptographic Assets
+	// ====================
+	TypeCrypto Type = "crypto"
+
 	// ========
 	// Secrets
 	// ========

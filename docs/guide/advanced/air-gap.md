@@ -12,6 +12,7 @@ Java Vulnerability Database | Java vulnerability scanning | [Trivy Java DB](../c
 Checks Bundle | Misconfigurations scanning | [Trivy Checks](../scanner/misconfiguration/check/builtin.md)
 VEX Hub | VEX Hub | [VEX Hub](../supply-chain/vex/repo.md)
 Maven Central / Remote Repositories | Java vulnerability scanning | [Java Scanner/Remote Repositories](../coverage/language/java.md#remote-repositories)
+Remote Terraform modules | Terraform misconfiguration scanning | [Remote modules](../coverage/iac/terraform.md#remote-modules)
 
 !!! note
     Trivy is an open source project that relies on public free infrastructure. In case of extreme load, you may encounter rate limiting when Trivy attempts to connect to external resources.

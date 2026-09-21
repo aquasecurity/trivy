@@ -13,7 +13,6 @@ import (
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -41,13 +40,13 @@ type Resources []Resource
 
 func (r *Resources) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch dec.PeekKind() {
-	case '[':
+	case jsontext.KindBeginArray:
 		var arr []Resource
 		if err := json.UnmarshalDecode(dec, &arr); err != nil {
 			return err
 		}
 		*r = arr
-	case '{':
+	case jsontext.KindBeginObject:
 		var m map[string]Resource
 		if err := json.UnmarshalDecode(dec, &m); err != nil {
 			return err
@@ -131,7 +130,7 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 	rootMetadata := types.NewMetadata(
 		types.NewRange(path, 0, 0, "", fsys),
 		"",
-	).WithInternal(resolver.NewResolver())
+	)
 	template.Metadata.SetParentPtr(&rootMetadata)
 	return &template, nil
 }

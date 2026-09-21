@@ -87,7 +87,7 @@ func (a pipLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 		apps = append(apps, *app)
 		return nil
 	}); err != nil {
-		return nil, xerrors.Errorf("pip walt error: %w", err)
+		return nil, xerrors.Errorf("pip walk error: %w", err)
 	}
 
 	return &analyzer.AnalysisResult{

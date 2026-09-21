@@ -1,0 +1,117 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:02fd82086a9213f63a5f97c8860ca31f870944159f07c73bda1824881a1135ac",
+  "ArtifactName": "testdata/fixtures/images/rapidfort-ubuntu-2204.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 179018240,
+    "OS": {
+      "Family": "ubuntu",
+      "Name": "22.04",
+      "Supplier": "rapidfort"
+    },
+    "ImageID": "sha256:99a601cf84e9b8b51bf75792c136ef5c16c5247718811cc2487a0ea7dd65d943",
+    "DiffIDs": [
+      "sha256:80b58c2eed0ce1ebd979abe62f1ae56b6625b784ae8251a89535778208a886a8"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:rapidfort-ubuntu-2204"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:rapidfort-ubuntu-2204",
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2026-08-19T17:53:54.171458816Z",
+      "history": [
+        {
+          "created": "2026-08-19T17:53:54.171458816Z",
+          "created_by": "LABEL maintainer=RapidFort Curation Team \u003crfcurators@rapidfort.com\u003e",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        },
+        {
+          "created": "2026-08-19T17:53:54.171458816Z",
+          "created_by": "COPY / / # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-08-19T17:53:54.171458816Z",
+          "created_by": "CMD [\"/bin/bash\"]",
+          "comment": "buildkit.dockerfile.v0",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:80b58c2eed0ce1ebd979abe62f1ae56b6625b784ae8251a89535778208a886a8"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Labels": {
+          "maintainer": "RapidFort Curation Team \u003crfcurators@rapidfort.com\u003e"
+        },
+        "WorkingDir": "/",
+        "ArgsEscaped": true
+      }
+    },
+    "Layers": [
+      {
+        "Size": 179018240,
+        "Digest": "sha256:c4c53eea826134daf1c57a258722b3e2a748532211abc0a23a42942fad5bb02e",
+        "DiffID": "sha256:80b58c2eed0ce1ebd979abe62f1ae56b6625b784ae8251a89535778208a886a8"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/rapidfort-ubuntu-2204.tar.gz (ubuntu 22.04)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2026-3497",
+          "PkgID": "rf-openssh-client@1:10.0p1-12rfubu+rf.0",
+          "PkgName": "rf-openssh-client",
+          "PkgIdentifier": {
+            "PURL": "pkg:deb/ubuntu/rf-openssh-client@10.0p1-12rfubu%2Brf.0?arch=amd64\u0026distro=ubuntu-22.04\u0026epoch=1",
+            "UID": "6627cc054b5d953c"
+          },
+          "InstalledVersion": "1:10.0p1-12rfubu+rf.0",
+          "FixedVersion": "1:10.0p1-15rfubu5.4+rf.0",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:c4c53eea826134daf1c57a258722b3e2a748532211abc0a23a42942fad5bb02e",
+            "DiffID": "sha256:80b58c2eed0ce1ebd979abe62f1ae56b6625b784ae8251a89535778208a886a8"
+          },
+          "SeveritySource": "rapidfort",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2026-3497",
+          "DataSource": {
+            "ID": "rapidfort",
+            "Name": "RapidFort Security Advisories",
+            "URL": "https://github.com/rapidfort/security-advisories",
+            "BaseID": "ubuntu"
+          },
+          "Fingerprint": "sha256:2d4599f8ca41303955d299e51a01de9cefb74639550360faa526f2b63762f27b",
+          "Title": "Vulnerability in the OpenSSH GSSAPI delta included in various Lin ...",
+          "Description": "Vulnerability in the OpenSSH GSSAPI delta included in various Linux distributions. This vulnerability affects the GSSAPI patches added by various Linux distributions and does not affect the OpenSSH upstream project itself. The usage of sshpkt_disconnect() on an error, which does not terminate the process, allows an attacker to send an unexpected GSSAPI message type during the GSSAPI key exchange to the server, which will call the underlying function and continue the execution of the program without setting the related connection variables. As the variables are not initialized to NULL the code later accesses those uninitialized variables, accessing random memory, which could lead to undefined behavior. The recommended workaround is to use ssh_packet_disconnect() instead, which does terminate the process. The impact of the vulnerability depends heavily on the compiler flag hardening configuration.",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "rapidfort": 3
+          }
+        }
+      ]
+    }
+  ]
+}

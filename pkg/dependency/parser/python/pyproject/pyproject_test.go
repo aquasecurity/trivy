@@ -78,7 +78,9 @@ func TestParser_Parse(t *testing.T) {
 			want: pyproject.PyProject{
 				Project: pyproject.Project{
 					Dependencies: pyproject.Dependencies{
-						Set: set.New[string]("check-wheel-contents", "flask", "pluggy"),
+						// Names are normalized (PEP 503):
+						// `Flask` => `flask`, `typing_extensions` => `typing-extensions`, `ruamel.yaml` => `ruamel-yaml`
+						Set: set.New[string]("check-wheel-contents", "flask", "pluggy", "ruamel-yaml", "typing-extensions"),
 					},
 				},
 				Tool: pyproject.Tool{
@@ -113,6 +115,20 @@ func TestParser_Parse(t *testing.T) {
 						"lint": {
 							Set: set.New[string]("ruff"),
 						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			// A dependency entry that carries no name is skipped.
+			// cf. #10976
+			name: "empty dependency",
+			file: "testdata/empty_dep.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask"),
 					},
 				},
 			},

@@ -12,15 +12,20 @@ import (
 func TestParse(t *testing.T) {
 	const filePath = "test.yaml"
 
+	type lines struct {
+		start int
+		end   int
+	}
+
 	tests := []struct {
-		name            string
-		src             string
-		expectedOffsets []int
+		name          string
+		src           string
+		expectedLines []lines
 	}{
 		{
-			name:            "empty file",
-			src:             "",
-			expectedOffsets: nil,
+			name:          "empty file",
+			src:           "",
+			expectedLines: nil,
 		},
 		{
 			name: "single YAML without separator",
@@ -28,7 +33,7 @@ func TestParse(t *testing.T) {
 apiVersion: v1
 kind: Pod
 `,
-			expectedOffsets: []int{0},
+			expectedLines: []lines{{start: 2, end: 3}},
 		},
 		{
 			name: "multiple YAML documents",
@@ -39,7 +44,7 @@ kind: Pod
 apiVersion: v1
 kind: Service
 `,
-			expectedOffsets: []int{1, 3},
+			expectedLines: []lines{{start: 2, end: 3}, {start: 5, end: 6}},
 		},
 		{
 			name: "YAML with multiple empty blocks",
@@ -50,12 +55,12 @@ kind: Service
 apiVersion: v1
 kind: Pod
 `,
-			expectedOffsets: []int{3},
+			expectedLines: []lines{{start: 5, end: 6}},
 		},
 		{
-			name:            "Windows line endings",
-			src:             "---\r\napiVersion: v1\r\nkind: Pod\r\n",
-			expectedOffsets: []int{1},
+			name:          "Windows line endings",
+			src:           "---\r\napiVersion: v1\r\nkind: Pod\r\n",
+			expectedLines: []lines{{start: 2, end: 3}},
 		},
 	}
 
@@ -63,11 +68,12 @@ kind: Pod
 		t.Run(tt.name, func(t *testing.T) {
 			manifests, err := parser.Parse(t.Context(), strings.NewReader(tt.src), filePath)
 			require.NoError(t, err)
-			require.Len(t, manifests, len(tt.expectedOffsets))
+			require.Len(t, manifests, len(tt.expectedLines))
 
 			for i, manifest := range manifests {
 				require.NotNil(t, manifest.Content)
-				require.Equal(t, tt.expectedOffsets[i], manifest.Content.Offset)
+				require.Equal(t, tt.expectedLines[i].start, manifest.Content.StartLine)
+				require.Equal(t, tt.expectedLines[i].end, manifest.Content.EndLine)
 			}
 		})
 	}

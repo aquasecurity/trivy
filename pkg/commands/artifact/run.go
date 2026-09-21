@@ -653,6 +653,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
 			DetectionPriority: opts.DetectionPriority,
+			MavenMirrors:      opts.MavenMirrors,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{

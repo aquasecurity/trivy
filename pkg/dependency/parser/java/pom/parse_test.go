@@ -2654,3 +2654,43 @@ func setupTxtarRepository(t *testing.T, txtarPath string, reposReplacements map[
 
 	return ts.URL
 }
+
+func TestPomLicenseName(t *testing.T) {
+	tests := []struct {
+		name    string
+		licName string
+		licURL  string
+		want    string
+	}{
+		{
+			name:    "name only",
+			licName: "The Apache Software License, Version 2.0",
+			want:    "The Apache Software License, Version 2.0",
+		},
+		{
+			name:    "name takes precedence over url",
+			licName: "MIT",
+			licURL:  "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:    "MIT",
+		},
+		{
+			name:   "empty name falls back to url resolved to SPDX ID",
+			licURL: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   "Apache-2.0",
+		},
+		{
+			name:   "unresolvable url is skipped",
+			licURL: "https://example.com/my-license",
+			want:   "",
+		},
+		{
+			name: "empty name and url",
+			want: "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, pom.PomLicenseName(tt.licName, tt.licURL))
+		})
+	}
+}

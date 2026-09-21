@@ -94,7 +94,7 @@ We have lots of examples in the [documentation](https://trivy.dev/docs/latest/sc
 
 ## Secret and vulnerability scans
 
-The `trivy config` command does not perform secret and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan you terraform files for exposed secrets and misconfiguraction through the following flags: 
+The `trivy config` command does not perform secret and vulnerability checks out of the box. However, you can specify as part of your `trivy fs` scan that you would like to scan your Terraform files for exposed secrets and misconfiguration through the following flags: 
 
 ```
 trivy fs --scanners secret,misconfig ./

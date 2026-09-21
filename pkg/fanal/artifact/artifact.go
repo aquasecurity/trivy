@@ -33,6 +33,9 @@ type Option struct {
 	FileChecksum      bool // For SPDX
 	DetectionPriority types.DetectionPriority
 
+	// MavenMirrors maps a Maven repository URL to an ordered list of fallback mirror URLs.
+	MavenMirrors map[string][]string
+
 	// Original is the original target location, e.g. "github.com/aquasecurity/trivy"
 	// Currently, it is used only for remote git repositories
 	Original string

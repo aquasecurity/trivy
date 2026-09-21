@@ -13,6 +13,16 @@
       "Class": "license",
       "Licenses": [
         {
+          "Severity": "UNKNOWN",
+          "Category": "unknown",
+          "PkgName": "javax.servlet:javax.servlet-api",
+          "FilePath": "",
+          "Name": "CDDL + GPLv2 with classpath exception",
+          "Text": "",
+          "Confidence": 1,
+          "Link": ""
+        },
+        {
           "Severity": "MEDIUM",
           "Category": "reciprocal",
           "PkgName": "org.eclipse.sisu:org.eclipse.sisu.plexus",

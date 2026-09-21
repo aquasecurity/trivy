@@ -308,9 +308,8 @@ func parseOCI(metadata types.Metadata) (*packageurl.PackageURL, error) {
 	}
 
 	name := strings.ToLower(digest.RepositoryStr())
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		name = name[index+1:]
+	if _, base, found := strings.CutLast(name, "/"); found {
+		name = base
 	}
 
 	var qualifiers packageurl.Qualifiers
@@ -518,12 +517,8 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 }
 
 func parsePkgName(name string) (string, string) {
-	var namespace string
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
+	if namespace, base, found := strings.CutLast(name, "/"); found {
+		return namespace, base
 	}
-	return namespace, name
-
+	return "", name
 }

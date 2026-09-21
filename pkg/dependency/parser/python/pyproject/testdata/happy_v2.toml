@@ -8,9 +8,11 @@ authors = [
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
-    "flask(>=1.0,<2.0)",
+    "Flask(>=1.0,<2.0)",
     "check-wheel-contents==0.6.1",
     "pluggy[pre-commit,tox] (==0.13.1)",
+    "typing_extensions>=4",
+    "ruamel.yaml (>=0.18)",
 ]
 
 [tool.poetry.dependencies]

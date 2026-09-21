@@ -55,29 +55,32 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 	var rpcPkgs []*common.Package
 	for _, pkg := range pkgs {
 		rpcPkgs = append(rpcPkgs, &common.Package{
-			Id:           pkg.ID,
-			Name:         pkg.Name,
-			Version:      pkg.Version,
-			Release:      pkg.Release,
-			Epoch:        int32(pkg.Epoch),
-			Arch:         pkg.Arch,
-			Identifier:   ConvertToRPCPkgIdentifier(pkg.Identifier),
-			Dev:          pkg.Dev,
-			SrcName:      pkg.SrcName,
-			SrcVersion:   pkg.SrcVersion,
-			SrcRelease:   pkg.SrcRelease,
-			SrcEpoch:     int32(pkg.SrcEpoch),
-			Licenses:     pkg.Licenses,
-			Locations:    ConvertToRPCLocations(pkg.Locations),
-			Layer:        ConvertToRPCLayer(pkg.Layer),
-			FilePath:     pkg.FilePath,
-			DependsOn:    pkg.DependsOn,
-			Digest:       pkg.Digest.String(),
-			Relationship: int32(pkg.Relationship),
-			Indirect:     pkg.Indirect,
-			Maintainer:   pkg.Maintainer,
-			AnalyzedBy:   string(pkg.AnalyzedBy),
-			Repository:   ConvertToRPCPackageRepository(pkg.Repository),
+			Id:              pkg.ID,
+			Name:            pkg.Name,
+			Version:         pkg.Version,
+			Release:         pkg.Release,
+			Epoch:           int32(pkg.Epoch),
+			Arch:            pkg.Arch,
+			Identifier:      ConvertToRPCPkgIdentifier(pkg.Identifier),
+			Dev:             pkg.Dev,
+			SrcName:         pkg.SrcName,
+			SrcVersion:      pkg.SrcVersion,
+			SrcRelease:      pkg.SrcRelease,
+			SrcEpoch:        int32(pkg.SrcEpoch),
+			Licenses:        pkg.Licenses,
+			Locations:       ConvertToRPCLocations(pkg.Locations),
+			Layer:           ConvertToRPCLayer(pkg.Layer),
+			FilePath:        pkg.FilePath,
+			DependsOn:       pkg.DependsOn,
+			Digest:          pkg.Digest.String(),
+			Relationship:    int32(pkg.Relationship),
+			Indirect:        pkg.Indirect,
+			Maintainer:      pkg.Maintainer,
+			AnalyzedBy:      string(pkg.AnalyzedBy),
+			Repository:      ConvertToRPCPackageRepository(pkg.Repository),
+			Modularitylabel: pkg.Modularitylabel,
+			BuildInfo:       ConvertToRPCBuildInfo(pkg.BuildInfo),
+			InstalledFiles:  pkg.InstalledFiles,
 		})
 	}
 	return rpcPkgs
@@ -222,29 +225,32 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
 		pkgs = append(pkgs, ftypes.Package{
-			ID:           pkg.Id,
-			Name:         pkg.Name,
-			Version:      pkg.Version,
-			Release:      pkg.Release,
-			Epoch:        int(pkg.Epoch),
-			Arch:         pkg.Arch,
-			Identifier:   ConvertFromRPCPkgIdentifier(pkg.Identifier),
-			Dev:          pkg.Dev,
-			SrcName:      pkg.SrcName,
-			SrcVersion:   pkg.SrcVersion,
-			SrcRelease:   pkg.SrcRelease,
-			SrcEpoch:     int(pkg.SrcEpoch),
-			Licenses:     pkg.Licenses,
-			Locations:    ConvertFromRPCLocation(pkg.Locations),
-			Layer:        ConvertFromRPCLayer(pkg.Layer),
-			FilePath:     pkg.FilePath,
-			DependsOn:    pkg.DependsOn,
-			Digest:       digest.Digest(pkg.Digest),
-			Relationship: ftypes.Relationship(pkg.Relationship),
-			Indirect:     pkg.Indirect,
-			Maintainer:   pkg.Maintainer,
-			AnalyzedBy:   ftypes.AnalyzerType(pkg.AnalyzedBy),
-			Repository:   ConvertFromRPCPackageRepository(pkg.Repository),
+			ID:              pkg.Id,
+			Name:            pkg.Name,
+			Version:         pkg.Version,
+			Release:         pkg.Release,
+			Epoch:           int(pkg.Epoch),
+			Arch:            pkg.Arch,
+			Identifier:      ConvertFromRPCPkgIdentifier(pkg.Identifier),
+			Dev:             pkg.Dev,
+			SrcName:         pkg.SrcName,
+			SrcVersion:      pkg.SrcVersion,
+			SrcRelease:      pkg.SrcRelease,
+			SrcEpoch:        int(pkg.SrcEpoch),
+			Licenses:        pkg.Licenses,
+			Locations:       ConvertFromRPCLocation(pkg.Locations),
+			Layer:           ConvertFromRPCLayer(pkg.Layer),
+			FilePath:        pkg.FilePath,
+			DependsOn:       pkg.DependsOn,
+			Digest:          digest.Digest(pkg.Digest),
+			Relationship:    ftypes.Relationship(pkg.Relationship),
+			Indirect:        pkg.Indirect,
+			Maintainer:      pkg.Maintainer,
+			AnalyzedBy:      ftypes.AnalyzerType(pkg.AnalyzedBy),
+			Repository:      ConvertFromRPCPackageRepository(pkg.Repository),
+			Modularitylabel: pkg.Modularitylabel,
+			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
+			InstalledFiles:  pkg.InstalledFiles,
 		})
 	}
 	return pkgs
@@ -413,6 +419,7 @@ func ConvertToRPCPolicyMetadata(policy ftypes.PolicyMetadata) *common.PolicyMeta
 	return &common.PolicyMetadata{
 		Id:                 policy.ID,
 		AdvId:              policy.AVDID,
+		Aliases:            policy.Aliases,
 		Type:               policy.Type,
 		Title:              policy.Title,
 		Description:        policy.Description,
@@ -512,6 +519,10 @@ func ConvertFromRPCCustomResources(rpcCustomResources []*common.CustomResource) 
 }
 
 func ConvertFromRPCCode(rpcCode *common.Code) ftypes.Code {
+	if rpcCode == nil {
+		return ftypes.Code{}
+	}
+
 	var lines []ftypes.Line
 	for _, line := range rpcCode.Lines {
 		lines = append(lines, ftypes.Line{
@@ -718,6 +729,7 @@ func ConvertFromRPCPolicyMetadata(rpcPolicy *common.PolicyMetadata) ftypes.Polic
 	return ftypes.PolicyMetadata{
 		ID:                 rpcPolicy.Id,
 		AVDID:              rpcPolicy.AdvId,
+		Aliases:            rpcPolicy.Aliases,
 		Type:               rpcPolicy.Type,
 		Title:              rpcPolicy.Title,
 		Description:        rpcPolicy.Description,
@@ -836,6 +848,7 @@ func ConvertFromRPCMisconfResults(rpcResults []*common.MisconfResult) []ftypes.M
 	for _, r := range rpcResults {
 		results = append(results, ftypes.MisconfResult{
 			Namespace:      r.Namespace,
+			Query:          r.Query,
 			Message:        r.Message,
 			PolicyMetadata: ConvertFromRPCPolicyMetadata(r.PolicyMetadata),
 			CauseMetadata:  ConvertFromRPCCauseMetadata(r.CauseMetadata),
@@ -1025,6 +1038,7 @@ func ConvertToMisconfResults(results []ftypes.MisconfResult) []*common.MisconfRe
 	for _, r := range results {
 		rpcResults = append(rpcResults, &common.MisconfResult{
 			Namespace:      r.Namespace,
+			Query:          r.Query,
 			Message:        r.Message,
 			PolicyMetadata: ConvertToRPCPolicyMetadata(r.PolicyMetadata),
 			CauseMetadata:  ConvertToRPCCauseMetadata(r.CauseMetadata),

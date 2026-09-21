@@ -128,7 +128,7 @@ By default, all namespaces will be included in cluster scanning.
 Example:
 
 ```sh
-trivy k8s --report summary --exclude-namespace dev-system,staging-system
+trivy k8s --report summary --exclude-namespaces dev-system,staging-system
 ```
 
 ## Control Plane and Node Components Vulnerability Scanning

@@ -310,7 +310,7 @@ type Server struct {
 }
 
 func NewServer(t *testing.T) *Server {
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	ts := httptest.NewTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		switch r.URL.Path {
 		case "/api/v1/index/retrieve":
 			var params models.SearchIndex
@@ -343,16 +343,13 @@ func NewServer(t *testing.T) *Server {
 			assert.NoError(t, err)
 		}
 	}))
+	ts.Start()
 
 	return &Server{ts: ts}
 }
 
 func (s *Server) URL() string {
 	return s.ts.URL
-}
-
-func (s *Server) Close() {
-	s.ts.Close()
 }
 
 func mustMarshal(v any) []byte {

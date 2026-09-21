@@ -613,6 +613,9 @@ scan:
   # Same as '--file-patterns'
   file-patterns: []
 
+  maven:
+    mirrors: []
+
   # Same as '--offline-scan'
   offline: false
 

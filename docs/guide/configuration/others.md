@@ -167,7 +167,15 @@ Trivy periodically checks for updates and notices, and displays a message to the
 Updates checking is non-blocking and has no impact on scanning time, performance, results, or any user experience aspect besides displaying the message.  
 You can disable updates checking by specifying the `--skip-version-check` flag.
 
+!!! note
+    The version check and [telemetry](#telemetry) share a single request to `check.trivy.dev`, so the request is still sent unless telemetry is disabled as well.
+    See [Check updates service](../advanced/air-gap.md#check-updates-service) for details.
+
 ## Telemetry
 
 Trivy collected usage data for product improvement. More details in the [Telemetry document](../advanced/telemetry.md).
 You can disable telemetry collection using the `--disable-telemetry` flag.
+
+!!! note
+    The [version check](#check-for-updates) and telemetry share a single request to `check.trivy.dev`, so the request is still sent unless the version check is disabled as well.
+    See [Check updates service](../advanced/air-gap.md#check-updates-service) for details.

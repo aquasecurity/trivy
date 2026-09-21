@@ -8,7 +8,6 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
-	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/resolver"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -73,10 +72,6 @@ func (p *Parser) convertTemplate(template *Template) *azure.Deployment {
 		Variables:   nil,
 		Resources:   nil,
 		Outputs:     nil,
-	}
-
-	if r, ok := template.Metadata.Internal().(resolver.Resolver); ok {
-		r.SetDeployment(&deployment)
 	}
 
 	// TODO: the references passed here should probably not be the name - maybe params.NAME.DefaultValue?

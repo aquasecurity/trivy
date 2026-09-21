@@ -14,8 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-type EvalContext struct{}
-
 type Kind string
 
 const (
@@ -116,12 +114,12 @@ func (v *Value) SetMetadata(m *types.Metadata) {
 
 func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch k := dec.PeekKind(); k {
-	case 't', 'f':
+	case jsontext.KindTrue, jsontext.KindFalse:
 		v.Kind = KindBoolean
 		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
 		}
-	case '"':
+	case jsontext.KindString:
 		var s string
 		if err := json.UnmarshalDecode(dec, &s); err != nil {
 			return err
@@ -133,7 +131,7 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			v.Kind = KindString
 			v.rLit = s
 		}
-	case '0':
+	case jsontext.KindNumber:
 		v.Kind = KindNumber
 		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
@@ -143,20 +141,20 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 				v.rLit = i
 			}
 		}
-	case '[':
+	case jsontext.KindBeginArray:
 		v.Kind = KindArray
 		if err := json.UnmarshalDecode(dec, &v.rArr); err != nil {
 			return err
 		}
-	case '{':
+	case jsontext.KindBeginObject:
 		v.Kind = KindObject
 		if err := json.UnmarshalDecode(dec, &v.rMap); err != nil {
 			return err
 		}
-	case 'n':
+	case jsontext.KindNull:
 		// TODO: UnmarshalJSONFrom is called only for the root null
 		return dec.SkipValue()
-	case 0:
+	case jsontext.KindInvalid:
 		return dec.SkipValue()
 	default:
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())
@@ -165,8 +163,6 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 func (v Value) AsString() string {
-	v.Resolve()
-
 	if v.Kind != KindString {
 		return ""
 	}
@@ -175,7 +171,6 @@ func (v Value) AsString() string {
 }
 
 func (v Value) AsBool() bool {
-	v.Resolve()
 	if v.Kind != KindBoolean {
 		return false
 	}
@@ -183,7 +178,6 @@ func (v Value) AsBool() bool {
 }
 
 func (v Value) AsInt() int {
-	v.Resolve()
 	if v.Kind != KindNumber {
 		return 0
 	}
@@ -191,7 +185,6 @@ func (v Value) AsInt() int {
 }
 
 func (v Value) AsFloat() float64 {
-	v.Resolve()
 	if v.Kind != KindNumber {
 		return 0
 	}
@@ -199,7 +192,6 @@ func (v Value) AsFloat() float64 {
 }
 
 func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntValue {
-	v.Resolve()
 	if v.Kind != KindNumber {
 		return types.Int(defaultValue, metadata)
 	}
@@ -207,7 +199,6 @@ func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntVa
 }
 
 func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.BoolValue {
-	v.Resolve()
 	if v.Kind == KindString {
 		if boolTrueValues.Contains(v.rLit.(string)) {
 			return types.Bool(true, metadata)
@@ -231,7 +222,6 @@ func (v Value) EqualTo(value any) bool {
 }
 
 func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types.StringValue {
-	v.Resolve()
 	if v.Kind != KindString {
 		return types.StringDefault(defaultValue, metadata)
 	}
@@ -239,7 +229,6 @@ func (v Value) AsStringValue(defaultValue string, metadata types.Metadata) types
 }
 
 func (v Value) GetMapValue(key string) Value {
-	v.Resolve()
 	if v.Kind != KindObject {
 		return NullValue
 	}
@@ -251,7 +240,6 @@ func (v Value) GetMapValue(key string) Value {
 }
 
 func (v Value) AsMap() map[string]Value {
-	v.Resolve()
 	if v.Kind != KindObject {
 		return nil
 	}
@@ -259,7 +247,6 @@ func (v Value) AsMap() map[string]Value {
 }
 
 func (v Value) AsList() []Value {
-	v.Resolve()
 	if v.Kind != KindArray {
 		return nil
 	}
@@ -279,24 +266,12 @@ func (v Value) Raw() any {
 	}
 }
 
-func (v *Value) Resolve() {
-	if v.Kind != KindExpression {
-		return
-	}
-	// if resolver, ok := v.Metadata.Internal().(Resolver); ok {
-	// 	*v = resolver.ResolveExpression(*v)
-	// }
-}
-
 func (v Value) HasKey(key string) bool {
-	v.Resolve()
 	_, ok := v.rMap[key]
 	return ok
 }
 
 func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
-	v.Resolve()
-
 	switch v.Kind {
 	case KindString:
 		t, err := time.Parse(time.RFC3339, v.rLit.(string))
@@ -319,7 +294,6 @@ func (v Value) AsTimeValue(parentMeta types.Metadata) types.TimeValue {
 }
 
 func (v Value) AsStringValuesList(defaultValue string) (stringValues []types.StringValue) {
-	v.Resolve()
 	if v.Kind != KindArray {
 		return
 	}

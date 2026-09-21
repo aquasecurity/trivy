@@ -37,7 +37,7 @@ func StructToRego(inputValue reflect.Value) map[string]any {
 			continue
 		}
 
-		if _, ok := field.Interface().(types.Metadata); ok && name == "Metadata" {
+		if _, ok := reflect.TypeAssert[types.Metadata](field); ok && name == "Metadata" {
 			continue
 		}
 
@@ -52,13 +52,13 @@ func StructToRego(inputValue reflect.Value) map[string]any {
 
 	if inputValue.Type().Implements(metadataInterface) {
 		returns := inputValue.MethodByName("GetMetadata").Call(nil)
-		if metadata, ok := returns[0].Interface().(types.Metadata); ok {
+		if metadata, ok := reflect.TypeAssert[types.Metadata](returns[0]); ok {
 			output["__defsec_metadata"] = metadata.ToRego()
 		}
 	} else {
 		metaVal := inputValue.FieldByName("Metadata")
 		if metaVal.Kind() == reflect.Struct {
-			if meta, ok := metaVal.Interface().(types.Metadata); ok {
+			if meta, ok := reflect.TypeAssert[types.Metadata](metaVal); ok {
 				output["__defsec_metadata"] = meta.ToRego()
 			}
 		}

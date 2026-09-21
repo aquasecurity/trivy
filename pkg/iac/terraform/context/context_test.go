@@ -53,7 +53,7 @@ func Test_ContextVariablesPreservation(t *testing.T) {
 }
 
 func Test_SetWithMerge(t *testing.T) {
-	hctx := hcl.EvalContext{
+	evalCtx := hcl.EvalContext{
 		Variables: map[string]cty.Value{
 			"my": cty.ObjectVal(map[string]cty.Value{
 				"someValue": cty.ObjectVal(map[string]cty.Value{
@@ -66,7 +66,7 @@ func Test_SetWithMerge(t *testing.T) {
 		},
 	}
 
-	ctx := NewContext(&hctx, nil)
+	ctx := NewContext(&evalCtx, nil)
 
 	val := cty.ObjectVal(map[string]cty.Value{
 		"foo2": cty.StringVal("test2"),
@@ -87,6 +87,33 @@ func Test_SetWithMerge(t *testing.T) {
 	})
 
 	assert.Equal(t, expected, got)
+}
+
+func Test_SetWithMergeOfMarkedValues(t *testing.T) {
+	evalCtx := hcl.EvalContext{
+		Variables: map[string]cty.Value{
+			"local": cty.ObjectVal(map[string]cty.Value{
+				"secrets": cty.ObjectVal(map[string]cty.Value{
+					"foo": cty.StringVal("test"),
+				}).Mark("sensitive"),
+			}).Mark("other"),
+		},
+	}
+
+	ctx := NewContext(&evalCtx, nil)
+
+	ctx.Set(cty.ObjectVal(map[string]cty.Value{
+		"bar": cty.StringVal("test2"),
+	}), "local", "secrets")
+
+	expected := cty.ObjectVal(map[string]cty.Value{
+		"secrets": cty.ObjectVal(map[string]cty.Value{
+			"foo": cty.StringVal("test"),
+			"bar": cty.StringVal("test2"),
+		}).Mark("sensitive"),
+	}).Mark("other")
+
+	assert.Equal(t, expected, ctx.Get("local"))
 }
 
 func Test_ContextVariablesPreservationByDot(t *testing.T) {
@@ -202,6 +229,38 @@ func Test_MergeObjects(t *testing.T) {
 					"bucket": cty.StringVal("test"),
 				}),
 			}),
+		},
+		{
+			name: "marked values",
+			oldVal: cty.ObjectVal(map[string]cty.Value{
+				"this": cty.ObjectVal(map[string]cty.Value{
+					"id": cty.StringVal("some_id"),
+				}).Mark("sensitive"),
+			}),
+			newVal: cty.ObjectVal(map[string]cty.Value{
+				"this": cty.ObjectVal(map[string]cty.Value{
+					"arn": cty.StringVal("some_arn"),
+				}).Mark("sensitive"),
+			}),
+			expected: cty.ObjectVal(map[string]cty.Value{
+				"this": cty.ObjectVal(map[string]cty.Value{
+					"id":  cty.StringVal("some_id"),
+					"arn": cty.StringVal("some_arn"),
+				}).Mark("sensitive"),
+			}),
+		},
+		{
+			name: "marked objects",
+			oldVal: cty.ObjectVal(map[string]cty.Value{
+				"id": cty.StringVal("some_id"),
+			}).Mark("sensitive"),
+			newVal: cty.ObjectVal(map[string]cty.Value{
+				"arn": cty.StringVal("some_arn"),
+			}).Mark("other"),
+			expected: cty.ObjectVal(map[string]cty.Value{
+				"id":  cty.StringVal("some_id"),
+				"arn": cty.StringVal("some_arn"),
+			}).WithMarks(cty.NewValueMarks("sensitive", "other")),
 		},
 	}
 

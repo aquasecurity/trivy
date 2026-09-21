@@ -207,7 +207,7 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 		}
 
 		namespace := getModuleNamespace(module)
-		topLevel := strings.Split(namespace, ".")[0]
+		topLevel, _, _ := strings.Cut(namespace, ".")
 		if !s.ruleNamespaces.Contains(topLevel) {
 			continue
 		}

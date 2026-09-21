@@ -94,18 +94,18 @@ func (a alpineCmdAnalyzer) fetchApkIndexArchive(targetOS types.OS) (*apkIndex, e
 	// 3.9.3 => 3.9
 	osVer := targetOS.Name
 	if strings.Count(osVer, ".") > 1 {
-		osVer = osVer[:strings.LastIndex(osVer, ".")]
+		osVer, _, _ = strings.CutLast(osVer, ".")
 	}
 
 	url := fmt.Sprintf(a.apkIndexArchiveURL, osVer)
 	var reader io.Reader
-	if strings.HasPrefix(url, "file://") {
-		var err error
-		reader, err = builtinos.Open(strings.TrimPrefix(url, "file://"))
+	if filePath, ok := strings.CutPrefix(url, "file://"); ok {
+		f, err := builtinos.Open(filePath)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to read APKINDEX archive file: %w", err)
 		}
-		defer reader.(*builtinos.File).Close()
+		defer f.Close()
+		reader = f
 	} else {
 		// nolint
 		resp, err := http.Get(url)

@@ -28,7 +28,7 @@ func NewScanner(categories map[types.LicenseCategory][]string) Scanner {
 func (s *Scanner) Scan(licenseName string) (types.LicenseCategory, string) {
 	expr, err := expression.Normalize(licenseName, NormalizeLicenseExpression)
 	if err != nil {
-		return types.CategoryUnknown, ""
+		return types.CategoryUnknown, dbTypes.SeverityUnknown.String()
 	}
 	category := s.detectCategory(expr)
 

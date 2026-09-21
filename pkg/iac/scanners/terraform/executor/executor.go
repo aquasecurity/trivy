@@ -131,9 +131,8 @@ func normalizeBlockLables(block *terraform.Block) []string {
 	labels := block.Labels()
 	if block.IsExpanded() {
 		nameLabel := labels[len(labels)-1]
-		idx := strings.LastIndex(nameLabel, "[")
-		if idx != -1 {
-			labels[len(labels)-1] = nameLabel[:idx]
+		if name, _, found := strings.CutLast(nameLabel, "["); found {
+			labels[len(labels)-1] = name
 		}
 	}
 
@@ -148,8 +147,14 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 			continue
 		}
 
-		value := attr.Value()
+		value := attr.MarkedValue()
 		if !value.IsWhollyKnown() {
+			continue
+		}
+
+		// The rendered cause holds resolved values, so unmarking here
+		// would expose a value hidden by sensitive().
+		if value.ContainsMarked() {
 			continue
 		}
 
