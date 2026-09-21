@@ -29,6 +29,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	cryptox509 "github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
@@ -1004,14 +1005,14 @@ func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 	assets, err := cryptox509.Parse(t.Context(), parsedFilePath, content)
 	require.NoError(t, err)
 
-	reported := make(map[ftypes.CryptoDescriptor]struct{}, len(assets))
+	reported := set.New[ftypes.CryptoDescriptor]()
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
-		reported[asset.Descriptor()] = struct{}{}
+		reported.Append(asset.Descriptor())
 	}
 	for i, asset := range assets {
 		for _, relationship := range asset.Relationships {
-			require.Containsf(t, reported, relationship.RelatedAsset, "asset %d", i)
+			require.Truef(t, reported.Contains(relationship.RelatedAsset), "asset %d", i)
 		}
 	}
 	return assets
