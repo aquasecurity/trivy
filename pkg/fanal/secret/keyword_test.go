@@ -297,7 +297,7 @@ func fuzzRules(spec string) []Rule {
 	var rules []Rule
 	for i, line := range strings.Split(spec, "\n") {
 		rule := Rule{ID: strconv.Itoa(i)}
-		for _, keyword := range strings.Split(line, ",") {
+		for keyword := range strings.SplitSeq(line, ",") {
 			if !unusableKeyword(keyword) {
 				rule.Keywords = append(rule.Keywords, keyword)
 			}
