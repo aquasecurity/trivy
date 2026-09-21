@@ -169,8 +169,6 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.12.2-0.20260908095928-2d1b9bec7d6f h1:6ahWZW0sOHMX7I3iMyJpTbOWxKF2RJV7UXxiBzzWSXo=
 github.com/aquasecurity/trivy-checks v1.12.2-0.20260908095928-2d1b9bec7d6f/go.mod h1:X5OcduRKbgtNvrNrDbNJTmVZcmvOy1T4s4LbzSgpUIM=
-github.com/aquasecurity/trivy-db v0.0.0-20260813095258-0e0340a01b57 h1:A3Lz/9ip/qigafSxqBWcu7S8i+tJbQS7DB2V0XibOKs=
-github.com/aquasecurity/trivy-db v0.0.0-20260813095258-0e0340a01b57/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.9.1 h1:bSErQcavKXDh7XMwbGX7Vy//jR5+xhe/bOgfn9G+9lQ=
@@ -1010,8 +1008,8 @@ github.com/ulikunitz/xz v0.5.8/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oW
 github.com/ulikunitz/xz v0.5.16 h1:ld6NyySjx5lowVKwJvMRLnW5nxKX/xnpSiFYZ/Lxur0=
 github.com/ulikunitz/xz v0.5.16/go.mod h1:H9Rt/W6/Qj27PGauhQc6nfCDy7vHpzsOThBSaYDoEhw=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
-github.com/vaibhav-rf/trivy-db v0.0.0-20260917072054-b242ba04207f h1:Ll5DHIfQm/hxtvRCLDeue9Pb3ZWNv7JPHkIunCjnEmw=
-github.com/vaibhav-rf/trivy-db v0.0.0-20260917072054-b242ba04207f/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
+github.com/vaibhav-rf/trivy-db v0.0.0-20260921150221-94c65f7739b5 h1:EH9RJx1BTSDK6nkUyz7bwXm24JDbQ9I6iqJIk8CLh1Q=
+github.com/vaibhav-rf/trivy-db v0.0.0-20260921150221-94c65f7739b5/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
 github.com/valyala/fastjson v1.6.10 h1:/yjJg8jaVQdYR3arGxPE2X5z89xrlhS0eGXdv+ADTh4=
 github.com/valyala/fastjson v1.6.10/go.mod h1:e6FubmQouUNP73jtMLmcbxS6ydWIpOfhz34TSfO3JaE=
 github.com/vektah/gqlparser/v2 v2.5.36 h1:CN9mKVHgMkc+XftdOWIhb4HEL8wKSYkFAqhf8booa7s=

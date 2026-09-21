@@ -489,4 +489,4 @@ tool (
 	sigs.k8s.io/kind
 )
 
-replace github.com/aquasecurity/trivy-db => github.com/vaibhav-rf/trivy-db v0.0.0-20260917072054-b242ba04207f
+replace github.com/aquasecurity/trivy-db => github.com/vaibhav-rf/trivy-db v0.0.0-20260921150221-94c65f7739b5
