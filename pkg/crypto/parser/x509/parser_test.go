@@ -759,7 +759,6 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(mldsaAlgorithm),
 				at(mldsaCertificateKey),
-				at(mldsaAlgorithm),
 			},
 		},
 		{
