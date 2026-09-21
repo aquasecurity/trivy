@@ -86,8 +86,8 @@ var (
 // Material that cannot be read is logged and skipped. An error means a parsed object
 // could not be described.
 //
-// An asset is reported once for each container and encoding it was found in, however many
-// times the file repeats it.
+// An asset is reported once for each container it was found in, and an asset with no
+// container of its own, such as an algorithm, once per file.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
@@ -95,7 +95,6 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	type assetKey struct {
 		descriptor ftypes.CryptoDescriptor
 		format     ftypes.CryptoKeyFormat
-		encoding   ftypes.CryptoEncoding
 	}
 
 	var assets []ftypes.CryptoAsset
@@ -109,7 +108,6 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 			key := assetKey{
 				descriptor: asset.Descriptor(),
 				format:     asset.Format,
-				encoding:   asset.Encoding,
 			}
 
 			if seen.Contains(key) {
