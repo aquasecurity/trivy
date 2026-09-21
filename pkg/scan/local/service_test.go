@@ -52,7 +52,7 @@ var (
 		Version:    "1.1-2build1.1",
 		SrcName:    "libunistring5",
 		SrcVersion: "1.1-2build1.1",
-		Licenses:   []string{"GFDL-NIV-1.2+"},
+		Licenses:   []string{"GFDL-NIV-1.2+", ""}, // Licenses without a name are skipped
 	}
 	railsPkg = ftypes.Package{
 		Name:    "rails",
@@ -91,7 +91,7 @@ var (
 		Layer: ftypes.Layer{
 			DiffID: "sha256:0ea33a93585cf1917ba522b2304634c3073654062d5282c1346322967790ef33",
 		},
-		Licenses: []string{"LGPL"},
+		Licenses: []string{"LGPL", " "}, // Licenses without a name are skipped
 	}
 	urllib3Pkg = ftypes.Package{
 		Name:     "urllib3",
