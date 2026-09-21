@@ -80,7 +80,7 @@ trivy rootfs [flags] ROOTDIR
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
       --ignored-licenses strings          specify a list of license to ignore
-      --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --ignorefile string                 specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
@@ -116,7 +116,7 @@ trivy rootfs [flags] ROOTDIR
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
       --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,license) (default [vuln,secret])
-      --secret-config string              specify a path to config file for secret scanning (default "trivy-secret.yaml")
+      --secret-config string              specify a path to config file for secret scanning (empty string disables loading) (default "trivy-secret.yaml")
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed
                                           Allowed values:
@@ -187,7 +187,7 @@ trivy rootfs [flags] ROOTDIR
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections

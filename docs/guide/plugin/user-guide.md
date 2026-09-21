@@ -187,6 +187,8 @@ $ trivy image --format json --output plugin=<plugin_name> [--output-plugin-arg <
 
 Since scan results are passed to the plugin via standard input, plugins must be capable of handling standard input.
 
+Output plugins execute with the same permissions as other plugins and receive the scan results. See [Security considerations](./index.md#security-considerations) before enabling an output plugin.
+
 !!! warning
     To avoid Trivy hanging, you need to read all data from `Stdin` before the plugin exits successfully or stops with an error.
 

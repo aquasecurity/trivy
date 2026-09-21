@@ -205,6 +205,12 @@ func TestWrite_Sarif(t *testing.T) {
 			wantRootPath: tmpFooRootPath,
 		},
 		{
+			name:         "TypeRepository strips credentials from target in ROOTPATH",
+			artifactType: ftypes.TypeRepository,
+			target:       "https://testuser:testpass@example.com/repo.git",
+			wantRootPath: regexp.MustCompile(`^file:///([A-Z]:/)?[^@]*example\.com/repo\.git/$`),
+		},
+		{
 			name:         "TypeContainerImage does not set ROOTPATH",
 			artifactType: ftypes.TypeContainerImage,
 			target:       "/tmp/foo",

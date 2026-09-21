@@ -2273,6 +2273,19 @@ func TestMarshaler_Licenses(t *testing.T) {
 			},
 		},
 		{
+			name: "SPDX ID with non-canonical case",
+			licenses: []string{
+				"BSD-3-clause~Sun",
+			},
+			want: &cdx.Licenses{
+				cdx.LicenseChoice{
+					License: &cdx.License{
+						ID: "BSD-3-Clause-Sun",
+					},
+				},
+			},
+		},
+		{
 			name: "Unknown SPDX ID",
 			licenses: []string{
 				"no-spdx-id-license",

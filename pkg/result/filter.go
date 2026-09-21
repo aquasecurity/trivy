@@ -304,7 +304,7 @@ func filterFindingsByRego[T types.Finding](
 
 func evaluate[T types.Finding](ctx context.Context, query rego.PreparedEvalQuery, finding T) (bool, error) {
 	type regoInput struct {
-		Data T      `json:",inline"`
+		Data T      `json:",embed"`
 		Type string `json:"Type"`
 	}
 

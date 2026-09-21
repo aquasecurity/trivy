@@ -1087,13 +1087,15 @@ func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
 	if v := resp.Header.Get("Retry-After"); v != "" {
 		ra = fmt.Sprintf(" Retry-After: %s.", v)
 	}
-	return &rateLimitError{err: &types.UserError{
-		Message: fmt.Sprintf(
-			"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
-				"The repository blocks all subsequent requests from this IP until the block clears.\n"+
-				"To avoid this, populate the local Maven cache before scanning "+
-				"(e.g. run `mvn dependency:resolve` and cache ~/.m2 in CI).",
-			req.URL.Redacted(), ra,
-		),
-	}}
+	return &rateLimitError{
+		err: &types.UserError{
+			Message: fmt.Sprintf(
+				"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
+					"The repository blocks all subsequent requests from this IP until the block clears.\n"+
+					"To avoid this, populate the local Maven cache before scanning "+
+					"(e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).",
+				req.URL.Redacted(), ra,
+			),
+		},
+	}
 }

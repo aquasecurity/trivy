@@ -114,12 +114,12 @@ func (v *Value) SetMetadata(m *types.Metadata) {
 
 func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch k := dec.PeekKind(); k {
-	case 't', 'f':
+	case jsontext.KindTrue, jsontext.KindFalse:
 		v.Kind = KindBoolean
 		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
 		}
-	case '"':
+	case jsontext.KindString:
 		var s string
 		if err := json.UnmarshalDecode(dec, &s); err != nil {
 			return err
@@ -131,7 +131,7 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 			v.Kind = KindString
 			v.rLit = s
 		}
-	case '0':
+	case jsontext.KindNumber:
 		v.Kind = KindNumber
 		if err := json.UnmarshalDecode(dec, &v.rLit); err != nil {
 			return err
@@ -141,20 +141,20 @@ func (v *Value) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 				v.rLit = i
 			}
 		}
-	case '[':
+	case jsontext.KindBeginArray:
 		v.Kind = KindArray
 		if err := json.UnmarshalDecode(dec, &v.rArr); err != nil {
 			return err
 		}
-	case '{':
+	case jsontext.KindBeginObject:
 		v.Kind = KindObject
 		if err := json.UnmarshalDecode(dec, &v.rMap); err != nil {
 			return err
 		}
-	case 'n':
+	case jsontext.KindNull:
 		// TODO: UnmarshalJSONFrom is called only for the root null
 		return dec.SkipValue()
-	case 0:
+	case jsontext.KindInvalid:
 		return dec.SkipValue()
 	default:
 		return fmt.Errorf("unexpected token kind %q at %d", k.String(), dec.InputOffset())

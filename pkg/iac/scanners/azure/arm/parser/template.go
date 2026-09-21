@@ -40,13 +40,13 @@ type Resources []Resource
 
 func (r *Resources) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch dec.PeekKind() {
-	case '[':
+	case jsontext.KindBeginArray:
 		var arr []Resource
 		if err := json.UnmarshalDecode(dec, &arr); err != nil {
 			return err
 		}
 		*r = arr
-	case '{':
+	case jsontext.KindBeginObject:
 		var m map[string]Resource
 		if err := json.UnmarshalDecode(dec, &m); err != nil {
 			return err

@@ -33,5 +33,5 @@ func New(rs io.ReadSeeker, cache vm.Cache[string, []byte]) (*io.SectionReader, e
 
 		return vreader, nil
 	}
-	return nil, xerrors.New("virtual machine can not be detected")
+	return nil, xerrors.New("virtual machine disk format cannot be detected")
 }

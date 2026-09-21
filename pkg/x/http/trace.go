@@ -265,8 +265,7 @@ func redactHeaders(headers http.Header) {
 // redactQueryParams redacts sensitive query parameters
 func redactQueryParams(u *url.URL) *url.URL {
 	// Clone URL to avoid modifying the original
-	cloned, _ := url.Parse(u.String())
-
+	cloned := u.Clone()
 	values := cloned.Query()
 	for _, param := range sensitiveQueryParams {
 		for k := range values {

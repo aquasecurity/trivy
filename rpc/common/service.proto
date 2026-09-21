@@ -59,6 +59,9 @@ message Package {
   int32 relationship = 22;
   string analyzed_by = 23;
   PackageRepository repository = 24;
+  string modularitylabel = 25;
+  BuildInfo build_info = 26;
+  repeated string installed_files = 27;
 }
 
 // PackageRepository indicates where the package was distributed from.

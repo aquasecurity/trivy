@@ -109,13 +109,12 @@ func (a dockerfileAnalyzer) Version() int {
 
 // parseVersion parses version from a file name
 func parseVersion(nvr string) string {
-	releaseIndex := strings.LastIndex(nvr, "-")
-	if releaseIndex < 0 {
+	nv, release, found := strings.CutLast(nvr, "-")
+	if !found {
 		return ""
 	}
-	versionIndex := strings.LastIndex(nvr[:releaseIndex], "-")
-	version := nvr[versionIndex+1:]
-	return version
+	_, version, _ := strings.CutLast(nv, "-")
+	return version + "-" + release
 }
 
 type envGetter struct {

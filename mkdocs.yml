@@ -211,6 +211,7 @@ nav:
           - Modes:
               - Standalone: guide/references/modes/standalone.md
               - Client/Server: guide/references/modes/client-server.md
+          - Compatibility and Stability: guide/references/compatibility.md
           - Troubleshooting: guide/references/troubleshooting.md
           - Terminology: guide/references/terminology.md
           - Abbreviations: guide/references/abbreviations.md

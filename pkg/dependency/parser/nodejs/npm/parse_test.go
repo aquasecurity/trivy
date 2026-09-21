@@ -24,6 +24,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmDeps,
 		},
 		{
+			name:     "lock version v1 with bundled dependencies",
+			file:     "testdata/package-lock_v1_with_bundled_deps.json",
+			want:     npmV1WithBundledDepsPkgs,
+			wantDeps: npmV1WithBundledDepsDeps,
+		},
+		{
 			name:     "lock version v2",
 			file:     "testdata/package-lock_v2.json",
 			want:     npmV2Pkgs,

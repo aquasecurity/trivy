@@ -65,6 +65,13 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						Identifier: ftypes.PkgIdentifier{
 							UID: "01",
 						},
+						Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+							Nvr:         "ubi8-container-8.3-227",
+							Arch:        "x86_64",
+						},
+						InstalledFiles: []string{"/usr/bin/binary"},
 					},
 				},
 			},
@@ -103,6 +110,31 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					Identifier: &common.PkgIdentifier{
 						Uid: "01",
 					},
+					Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+					BuildInfo: &common.BuildInfo{
+						ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+						Nvr:         "ubi8-container-8.3-227",
+						Arch:        "x86_64",
+					},
+					InstalledFiles: []string{"/usr/bin/binary"},
+				},
+			},
+		},
+		{
+			name: "package without build info and repository",
+			args: args{
+				pkgs: []ftypes.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+					},
+				},
+			},
+			want: []*common.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Layer:   &common.Layer{},
 				},
 			},
 		},
@@ -125,6 +157,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 		want []ftypes.Package
 	}{
 		{
+			name: "rpm package with modularity label and build info",
 			args: args{
 				rpcPkgs: []*common.Package{
 					{
@@ -158,6 +191,13 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Identifier: &common.PkgIdentifier{
 							Uid: "01",
 						},
+						Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+						BuildInfo: &common.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+							Nvr:         "ubi8-container-8.3-227",
+							Arch:        "x86_64",
+						},
+						InstalledFiles: []string{"/usr/bin/binary"},
 					},
 				},
 			},
@@ -193,10 +233,18 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					Identifier: ftypes.PkgIdentifier{
 						UID: "01",
 					},
+					Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+					BuildInfo: &ftypes.BuildInfo{
+						ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+						Nvr:         "ubi8-container-8.3-227",
+						Arch:        "x86_64",
+					},
+					InstalledFiles: []string{"/usr/bin/binary"},
 				},
 			},
 		},
 		{
+			name: "deb package with maintainer and repository",
 			args: args{
 				rpcPkgs: []*common.Package{
 					{
