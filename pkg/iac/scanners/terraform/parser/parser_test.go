@@ -185,6 +185,33 @@ language {
 	require.NoError(t, err)
 }
 
+// Regression test for https://github.com/aquasecurity/trivy/issues/11192
+func Test_TofuFileShadowsSameNamedTfFile(t *testing.T) {
+	fs := testutil.CreateFS(map[string]string{
+		"main.tf": `
+resource "shadowed" "tf" {}
+`,
+		"main.tofu": `
+resource "loaded" "tofu" {}
+`,
+		"other.tf.json":   `{"resource": {"shadowed_json": {"tf": {}}}}`,
+		"other.tofu.json": `{"resource": {"loaded_json": {"tofu": {}}}}`,
+		"unpaired.tf": `
+resource "unpaired" "tf" {}
+`,
+	})
+
+	parser := New(fs, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	files := parser.Files()
+	assert.NotContains(t, files, "main.tf")
+	assert.Contains(t, files, "main.tofu")
+	assert.NotContains(t, files, "other.tf.json")
+	assert.Contains(t, files, "other.tofu.json")
+	assert.Contains(t, files, "unpaired.tf", "a .tf file with no same-named .tofu file must still be parsed")
+}
+
 func Test_Modules(t *testing.T) {
 
 	fs := testutil.CreateFS(map[string]string{

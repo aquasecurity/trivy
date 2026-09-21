@@ -189,6 +189,7 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		}
 		paths = append(paths, realPath)
 	}
+	paths = filterShadowedFiles(paths, p.logger)
 	sort.Strings(paths)
 	for _, path := range paths {
 		var err error
@@ -211,6 +212,50 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 	}
 
 	return nil
+}
+
+// filterShadowedFiles drops a .tf/.tf.json file when a .tofu/.tofu.json file
+// with the same base name exists in the same directory. OpenTofu and
+// Terraform each load only the file matching their own extension and never
+// see the shadowed one, so parsing both merges two blocks that no evaluator
+// ever sees together, and can report findings for a file that is never
+// actually applied. The pairing matches OpenTofu's own precedence rule: a
+// .tofu file shadows a same-named .tf file, and a .tofu.json file shadows a
+// same-named .tf.json file, but a .tofu file does not shadow a .tf.json file.
+func filterShadowedFiles(paths []string, logger *log.Logger) []string {
+	tofuJSONStems := make(map[string]struct{})
+	tofuStems := make(map[string]struct{})
+	for _, p := range paths {
+		name := path.Base(p)
+		switch {
+		case strings.HasSuffix(name, ".tofu.json"):
+			tofuJSONStems[strings.TrimSuffix(name, ".tofu.json")] = struct{}{}
+		case strings.HasSuffix(name, ".tofu"):
+			tofuStems[strings.TrimSuffix(name, ".tofu")] = struct{}{}
+		}
+	}
+
+	filtered := paths[:0]
+	for _, p := range paths {
+		name := path.Base(p)
+		var stems map[string]struct{}
+		switch {
+		case strings.HasSuffix(name, ".tf.json"):
+			stems = tofuJSONStems
+			name = strings.TrimSuffix(name, ".tf.json")
+		case strings.HasSuffix(name, ".tf"):
+			stems = tofuStems
+			name = strings.TrimSuffix(name, ".tf")
+		}
+		if stems != nil {
+			if _, shadowed := stems[name]; shadowed {
+				logger.Debug("Skipping file shadowed by a same-named .tofu file", log.FilePath(p))
+				continue
+			}
+		}
+		filtered = append(filtered, p)
+	}
+	return filtered
 }
 
 func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
