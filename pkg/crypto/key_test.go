@@ -24,7 +24,8 @@ type keyFixtures struct {
 	ecdsaPublic   *ecdsa.PublicKey
 	ed25519Public ed25519.PublicKey
 	dsaPublic     *dsa.PublicKey
-	mldsaPublic   *mldsa.PublicKey
+	mldsa44Public *mldsa.PublicKey
+	mldsa87Public *mldsa.PublicKey
 }
 
 func TestDescribeKey(t *testing.T) {
@@ -81,13 +82,25 @@ func TestDescribeKey(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
-	mldsaAlgorithm := ftypes.CryptoAssetInfo{
+	mldsa44Algorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
 			Method: ftypes.CryptoMethodOID,
 			Value:  "2.16.840.1.101.3.4.3.17",
 		},
 		Name: "ML-DSA-44",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "ML-DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	mldsa87Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.3.19",
+		},
+		Name: "ML-DSA-87",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Family:    "ML-DSA",
 			Primitive: ftypes.CryptoPrimitiveSignature,
@@ -181,26 +194,42 @@ func TestDescribeKey(t *testing.T) {
 			wantAlgorithm: dsaAlgorithm,
 		},
 		{
-			// The parameter set of an ML-DSA key is part of its OID, so the algorithm
-			// carries no parameter and the key size states the length of the encoding.
-			name:    "ML-DSA public key",
-			pub:     fixtures.mldsaPublic,
+			name:    "ML-DSA-44 public key",
+			pub:     fixtures.mldsa44Public,
 			keyType: ftypes.CryptoKeyTypePublic,
 			wantKey: ftypes.CryptoAssetInfo{
 				Kind:     ftypes.CryptoKindKey,
 				KeyType:  ftypes.CryptoKeyTypePublic,
-				Identity: spkiIdentity(t, fixtures.mldsaPublic),
+				Identity: spkiIdentity(t, fixtures.mldsa44Public),
 				Name:     "ML-DSA-44 public key",
 				Key: &ftypes.CryptoKey{
-					// The 1312 bytes an ML-DSA-44 public key always takes.
-					Size: 10496,
+					Size: 1312 * 8,
 				},
 				Relationships: []ftypes.CryptoRelationship{{
 					Type:         ftypes.CryptoRelationshipUsedWith,
-					RelatedAsset: mldsaAlgorithm.Descriptor(),
+					RelatedAsset: mldsa44Algorithm.Descriptor(),
 				}},
 			},
-			wantAlgorithm: mldsaAlgorithm,
+			wantAlgorithm: mldsa44Algorithm,
+		},
+		{
+			name:    "ML-DSA-87 public key",
+			pub:     fixtures.mldsa87Public,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: spkiIdentity(t, fixtures.mldsa87Public),
+				Name:     "ML-DSA-87 public key",
+				Key: &ftypes.CryptoKey{
+					Size: 2592 * 8,
+				},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: mldsa87Algorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: mldsa87Algorithm,
 		},
 		{
 			// A private key is described through its public projection, so only the key
@@ -335,7 +364,7 @@ func TestMarshalPublicKey(t *testing.T) {
 		},
 		{
 			name: "ML-DSA",
-			pub:  fixtures.mldsaPublic,
+			pub:  fixtures.mldsa44Public,
 		},
 		{
 			name:    "unsupported key type",
@@ -369,14 +398,17 @@ func newKeyFixtures(t *testing.T) keyFixtures {
 	require.NoError(t, err)
 	ed25519Public, _, err := ed25519.GenerateKey(rand.Reader)
 	require.NoError(t, err)
-	mldsaKey, err := mldsa.GenerateKey(mldsa.MLDSA44())
+	mldsa44Key, err := mldsa.GenerateKey(mldsa.MLDSA44())
+	require.NoError(t, err)
+	mldsa87Key, err := mldsa.GenerateKey(mldsa.MLDSA87())
 	require.NoError(t, err)
 
 	return keyFixtures{
 		rsaPublic:     &rsaKey.PublicKey,
 		ecdsaPublic:   &ecdsaKey.PublicKey,
 		ed25519Public: ed25519Public,
-		mldsaPublic:   mldsaKey.PublicKey(),
+		mldsa44Public: mldsa44Key.PublicKey(),
+		mldsa87Public: mldsa87Key.PublicKey(),
 		dsaPublic: &dsa.PublicKey{
 			Parameters: dsa.Parameters{
 				// A 2048-bit modulus, so that the reported key size is a realistic one.
