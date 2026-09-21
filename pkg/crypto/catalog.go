@@ -132,8 +132,10 @@ var algorithms = map[string]algorithm{
 
 	// ML-DSA has an OID per parameter set, each used as both the key and the signature
 	// algorithm, so the parameter set is already part of the identity. The pre-hash
-	// variants FIPS 204 defines carry OIDs of their own, which Go neither produces nor
-	// recognizes, and a certificate signed with one is still described, by its OID alone.
+	// variants FIPS 204 defines carry OIDs of their own, but RFC 9881 section 8.3 forbids
+	// them in X.509, so the table leaves them out and a certificate signed with one is
+	// described by its OID alone.
+	// See https://datatracker.ietf.org/doc/html/rfc9881#section-8.3
 	"2.16.840.1.101.3.4.3.17": {
 		name:      "ML-DSA-44",
 		family:    "ML-DSA",

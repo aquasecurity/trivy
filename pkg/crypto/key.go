@@ -92,7 +92,8 @@ func keyDetails(pub stdcrypto.PublicKey) (int, string) {
 		// An Ed25519 key is the raw point, so its length is the key size in bytes.
 		return len(pub) * 8, ""
 	case *mldsa.PublicKey:
-		// The parameter set fixes the length of every key it produces.
+		// An ML-DSA public key is a fixed-length encoding decided by the parameter set, so its
+		// size is the length of that encoding.
 		return pub.Parameters().PublicKeySize() * 8, ""
 	}
 	return 0, ""
