@@ -36,8 +36,8 @@ func searchEachKeyword(rules []Rule, content []byte) []string {
 	return matchingRules(rules, []byte(foldASCIIString(string(content))), foldASCIIString)
 }
 
-// searchEachKeywordUnicode is how the keywords were searched before the index,
-// over a copy of the content lowercased by Unicode rules.
+// searchEachKeywordUnicode searches for every keyword on its own in a copy of
+// the content lowercased by Unicode rules.
 func searchEachKeywordUnicode(rules []Rule, content []byte) []string {
 	return matchingRules(rules, bytes.ToLower(content), strings.ToLower)
 }
@@ -137,8 +137,9 @@ func TestKeywordIndex(t *testing.T) {
 	}
 }
 
-// The index folds ASCII case only, and this pins the one place where that
-// answers differently from the Unicode lowercasing the scanner used before.
+// The index folds ASCII case only, so a keyword spelled with a non-ASCII
+// character that lowercases into ASCII is found by Unicode lowercasing but not
+// by the index.
 func TestKeywordIndexFoldsASCIIOnly(t *testing.T) {
 	kelvin := "sK_test_0123456789" // U+212A KELVIN SIGN in place of K
 
@@ -188,8 +189,8 @@ func TestKeywordIndexEmptyKeyword(t *testing.T) {
 }
 
 // Over every file in testdata, the index and the plain search have to pick the
-// same rules. The old Unicode search answers as well, so the switch to ASCII
-// folding has to change nothing on real content.
+// same rules, and so does the search over Unicode lowercased content, since
+// ASCII folding must give the same answer on real content.
 func TestKeywordIndexOnTestdata(t *testing.T) {
 	files, err := filepath.Glob(filepath.Join("testdata", "*"))
 	require.NoError(t, err)

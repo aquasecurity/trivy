@@ -37,11 +37,11 @@ type keywordIndex struct {
 	// given. A rule that always runs has a nil mask.
 	ruleMasks []bitset
 
-	// keywords is the number of distinct keywords.
-	keywords int
+	// numKeywords is the number of distinct keywords.
+	numKeywords int
 
-	// maxKeyword is the length of the longest keyword.
-	maxKeyword int
+	// maxKeywordLen is the length of the longest keyword.
+	maxKeywordLen int
 }
 
 const (
@@ -52,8 +52,9 @@ const (
 	matchFlag = uint32(1) << 31
 )
 
-// newKeywordIndex builds an index over the keywords of the given rules.
-// It returns nil when no rule has keywords.
+// newKeywordIndex builds an index over the keywords of the given rules and warns
+// about the keywords it cannot use. It returns nil when no rule is left with
+// keywords to look up.
 func newKeywordIndex(rules []Rule) *keywordIndex {
 	warnUnusableKeywords(rules)
 
@@ -67,9 +68,9 @@ func newKeywordIndex(rules []Rule) *keywordIndex {
 	})
 
 	idx := &keywordIndex{
-		ruleMasks:  buildRuleMasks(ruleKeywords, len(patterns)),
-		keywords:   len(patterns),
-		maxKeyword: len(longest),
+		ruleMasks:     buildRuleMasks(ruleKeywords, len(patterns)),
+		numKeywords:   len(patterns),
+		maxKeywordLen: len(longest),
 	}
 	idx.compile(patterns)
 	return idx
@@ -217,8 +218,8 @@ func (idx *keywordIndex) find(content []byte) bitset {
 	if idx == nil {
 		return nil
 	}
-	found := newBitset(idx.keywords)
-	if len(content) < max(splitLen, idx.maxKeyword) {
+	found := newBitset(idx.numKeywords)
+	if len(content) < max(splitLen, idx.maxKeywordLen) {
 		idx.walk(content, 0, found)
 		return found
 	}
@@ -232,12 +233,14 @@ func (idx *keywordIndex) find(content []byte) bitset {
 	// lying across the split is read by that chain from its first byte. The
 	// halves therefore overlap, and a keyword ending inside the overlap is found
 	// by both chains, which a set does not mind.
-	mid := (len(content) + idx.maxKeyword - 1) / 2
+	mid := (len(content) + idx.maxKeywordLen - 1) / 2
 	first := content[:mid]
-	second := content[mid-idx.maxKeyword+1:]
+	second := content[mid-idx.maxKeywordLen+1:]
 
 	trans := idx.trans
 	s1, s2 := uint32(0), uint32(0)
+	// Both chains step by the same index, so the loop walks only as much of
+	// second as first holds.
 	head := second[:len(first)]
 	for i, c := range first {
 		e1 := trans[s1+uint32(c)]
@@ -255,6 +258,8 @@ func (idx *keywordIndex) find(content []byte) bitset {
 			idx.collect(s2, found)
 		}
 	}
+	// second is one byte longer than first when mid is rounded down. The second
+	// chain goes on over that byte from s2, so a keyword ending on it is found.
 	idx.walk(second[len(first):], s2, found)
 	return found
 }
@@ -277,7 +282,7 @@ func (idx *keywordIndex) walk(content []byte, state uint32, found bitset) {
 // collect adds to found the keywords ending in state. The state must be
 // premultiplied.
 func (idx *keywordIndex) collect(state uint32, found bitset) {
-	for _, id := range idx.outputs[state>>8] {
+	for _, id := range idx.outputs[state/rowLen] {
 		found.add(id)
 	}
 }

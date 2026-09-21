@@ -718,7 +718,7 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 	globalExcludedBlocks := newBlocks(content, s.ExcludeBlock.Regexes)
 
 	// Collect the keywords the chunk holds, in one pass over it for all rules
-	keywords := s.keywords.find(content)
+	found := s.keywords.find(content)
 
 	for i, rule := range s.Rules {
 		// Pass the rule ID as a field instead of logger.With, which clones the
@@ -737,8 +737,8 @@ func (s *Scanner) scanChunk(filePath string, content []byte, binary bool) types.
 			continue
 		}
 
-		// Check if the file content contains keywords and should be scanned
-		if !s.keywords.hasKeyword(i, keywords) {
+		// Skip the rule when the keyword prefilter rules the chunk out
+		if !s.keywords.hasKeyword(i, found) {
 			continue
 		}
 
