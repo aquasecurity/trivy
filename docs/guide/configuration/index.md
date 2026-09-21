@@ -58,3 +58,5 @@ trivy fs --config /opt/ci/trivy.yaml --ignorefile="" --secret-config="" /workspa
 ```
 
 Templates and other files referenced by the configuration must also come from trusted sources. A trusted configuration file can still reference an untrusted template: relative template paths are resolved from the current working directory, not the configuration file's directory. Use trusted absolute template paths when the working directory contains untrusted content. Templates can read environment variables and include sensitive values in report output.
+
+For custom Rego checks selected by the configuration, see the [custom check security considerations](../scanner/misconfiguration/custom/index.md#security-considerations).
