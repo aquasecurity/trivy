@@ -2,8 +2,10 @@ package secret
 
 import (
 	"bytes"
+	"fmt"
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -66,9 +68,33 @@ var keywordTestRules = []Rule{
 	{ID: "no-keywords"},
 }
 
+var nonASCIIRules = []Rule{
+	{ID: "aws", Keywords: []string{"AWS"}},
+	{ID: "german", Keywords: []string{"ÖL"}},
+}
+
+var emptyKeywordRules = []Rule{
+	{ID: "aws", Keywords: []string{"AWS"}},
+	{ID: "empty-keyword", Keywords: []string{"", "AWS"}},
+}
+
+var suffixRules = []Rule{
+	{ID: "access-token", Keywords: []string{"access_token"}},
+	{ID: "token", Keywords: []string{"token"}},
+}
+
+// longKeyword is long enough for find to split any content that holds it.
+var longKeyword = "begin_" + strings.Repeat("x", splitLen)
+
+var longKeywordRules = []Rule{
+	{ID: "long", Keywords: []string{longKeyword}},
+	{ID: "aws", Keywords: []string{"AWS"}},
+}
+
 func TestKeywordIndex(t *testing.T) {
 	tests := []struct {
 		name    string
+		rules   []Rule
 		content string
 		want    []string
 	}{
@@ -126,13 +152,75 @@ func TestKeywordIndex(t *testing.T) {
 			content: "\xff\xfe\xfd AWS_SECRET_ACCESS_KEY",
 			want:    []string{"aws", "no-keywords"},
 		},
+		{
+			// "token" is a suffix of "access_token", so it ends in the same
+			// place and is reported only through the longer keyword's state.
+			name:    "keyword ending a longer keyword",
+			rules:   suffixRules,
+			content: "ACCESS_TOKEN=0123456789",
+			want:    []string{"access-token", "token"},
+		},
+		{
+			name:    "keyword longer than the split",
+			rules:   longKeywordRules,
+			content: "value = " + longKeyword + " end",
+			want:    []string{"long"},
+		},
+		{
+			name:    "keyword longer than the split filling the content",
+			rules:   longKeywordRules,
+			content: longKeyword,
+			want:    []string{"long"},
+		},
+		{
+			// A keyword with a letter that has a case outside ASCII would be
+			// found only as written, so the rule runs on every chunk.
+			name:    "non-ASCII keyword absent",
+			rules:   nonASCIIRules,
+			content: "nothing here",
+			want:    []string{"german"},
+		},
+		{
+			name:    "non-ASCII keyword as written",
+			rules:   nonASCIIRules,
+			content: "provider = ÖL",
+			want:    []string{"german"},
+		},
+		{
+			name:    "non-ASCII keyword in the other case",
+			rules:   nonASCIIRules,
+			content: "provider = öl",
+			want:    []string{"german"},
+		},
+		{
+			name:    "non-ASCII keyword next to an indexed one",
+			rules:   nonASCIIRules,
+			content: "provider = aws",
+			want:    []string{"aws", "german"},
+		},
+		{
+			// An empty keyword occurs in any content, so the rule runs even
+			// when its other keywords are absent.
+			name:    "empty keyword",
+			rules:   emptyKeywordRules,
+			content: "nothing here",
+			want:    []string{"empty-keyword"},
+		},
+		{
+			name:    "empty keyword next to a found one",
+			rules:   emptyKeywordRules,
+			content: "provider = aws",
+			want:    []string{"aws", "empty-keyword"},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := candidateRules(keywordTestRules, []byte(tt.content))
-			assert.ElementsMatch(t, tt.want, got)
-			assert.ElementsMatch(t, searchEachKeyword(keywordTestRules, []byte(tt.content)), got)
+			rules := tt.rules
+			if rules == nil {
+				rules = keywordTestRules
+			}
+			assert.ElementsMatch(t, tt.want, candidateRules(rules, []byte(tt.content)))
 		})
 	}
 }
@@ -148,21 +236,6 @@ func TestKeywordIndexFoldsASCIIOnly(t *testing.T) {
 		searchEachKeywordUnicode(keywordTestRules, []byte(kelvin)))
 }
 
-// A keyword with a letter that has a case outside ASCII would be found in the
-// one spelling it is written in, so the rule is left out of the index and runs
-// on every chunk.
-func TestKeywordIndexNonASCIIKeyword(t *testing.T) {
-	rules := []Rule{
-		{ID: "aws", Keywords: []string{"AWS"}},
-		{ID: "german", Keywords: []string{"ÖL"}},
-	}
-
-	for _, content := range []string{"nothing here", "provider = ÖL", "provider = öl"} {
-		assert.Equal(t, []string{"german"}, candidateRules(rules, []byte(content)), content)
-	}
-	assert.Equal(t, []string{"aws", "german"}, candidateRules(rules, []byte("provider = aws")))
-}
-
 // Without a keyword to look for there is no index, and every rule runs.
 func TestKeywordIndexNotBuilt(t *testing.T) {
 	rules := []Rule{
@@ -176,32 +249,21 @@ func TestKeywordIndexNotBuilt(t *testing.T) {
 		selectedRules(idx, rules, []byte("nothing here")))
 }
 
-// An empty keyword occurs in any content, so a rule that has one always runs,
-// even when its other keywords are absent.
-func TestKeywordIndexEmptyKeyword(t *testing.T) {
-	rules := []Rule{
-		{ID: "aws", Keywords: []string{"AWS"}},
-		{ID: "empty-keyword", Keywords: []string{"", "AWS"}},
-	}
-
-	assert.Equal(t, []string{"empty-keyword"}, candidateRules(rules, []byte("nothing here")))
-	assert.Equal(t, []string{"aws", "empty-keyword"}, candidateRules(rules, []byte("provider = aws")))
-}
-
 // Over every file in testdata, the index and the plain search have to pick the
 // same rules, and so does the search over Unicode lowercased content, since
 // ASCII folding must give the same answer on real content.
 func TestKeywordIndexOnTestdata(t *testing.T) {
-	files, err := filepath.Glob(filepath.Join("testdata", "*"))
+	entries, err := os.ReadDir("testdata")
 	require.NoError(t, err)
-	require.NotEmpty(t, files)
+	require.NotEmpty(t, entries)
 
-	for _, file := range files {
-		content, err := os.ReadFile(file)
-		if err != nil {
-			continue // directories and anything unreadable
+	for _, entry := range entries {
+		if entry.IsDir() {
+			continue
 		}
-		t.Run(filepath.Base(file), func(t *testing.T) {
+		content, err := os.ReadFile(filepath.Join("testdata", entry.Name()))
+		require.NoError(t, err)
+		t.Run(entry.Name(), func(t *testing.T) {
 			want := searchEachKeywordUnicode(builtinRules, content)
 			assert.ElementsMatch(t, want, searchEachKeyword(builtinRules, content))
 			assert.ElementsMatch(t, want, candidateRules(builtinRules, content))
@@ -228,16 +290,41 @@ func TestKeywordIndexAcrossSplit(t *testing.T) {
 	}
 }
 
+// fuzzRules makes a rule of every line of spec, with its keywords separated by
+// commas. Keywords the index cannot use are dropped, since searchEachKeyword
+// does not run such a rule on every chunk.
+func fuzzRules(spec string) []Rule {
+	var rules []Rule
+	for i, line := range strings.Split(spec, "\n") {
+		rule := Rule{ID: strconv.Itoa(i)}
+		for _, keyword := range strings.Split(line, ",") {
+			if !unusableKeyword(keyword) {
+				rule.Keywords = append(rule.Keywords, keyword)
+			}
+		}
+		rules = append(rules, rule)
+	}
+	return rules
+}
+
 func FuzzKeywordIndex(f *testing.F) {
-	f.Add("AWS_SECRET_ACCESS_KEY=0123456789")
-	f.Add("key = sk_test_0123456789")
-	f.Add("\xff\xfe\xfd sk_live_0123456789")
-	f.Add("")
+	const testRules = "AWS\nSK\nsk_test_,sk_live_"
+	f.Add(testRules, "AWS_SECRET_ACCESS_KEY=0123456789")
+	f.Add(testRules, "key = sk_test_0123456789")
+	f.Add(testRules, "\xff\xfe\xfd sk_live_0123456789")
+	f.Add(testRules, "")
+	f.Add("access_token\ntoken", "ACCESS_TOKEN=0123456789")
+	f.Add(longKeyword+"\nx", strings.Repeat(".", splitLen)+longKeyword)
 
-	idx := newKeywordIndex(keywordTestRules)
+	var many []string
+	for i := range 70 {
+		many = append(many, fmt.Sprintf("key%02d", i))
+	}
+	f.Add(strings.Join(many, "\n"), "value = KEY65")
 
-	f.Fuzz(func(t *testing.T, content string) {
-		got := selectedRules(idx, keywordTestRules, []byte(content))
-		assert.ElementsMatch(t, searchEachKeyword(keywordTestRules, []byte(content)), got)
+	f.Fuzz(func(t *testing.T, spec, content string) {
+		rules := fuzzRules(spec)
+		got := candidateRules(rules, []byte(content))
+		assert.ElementsMatch(t, searchEachKeyword(rules, []byte(content)), got)
 	})
 }
