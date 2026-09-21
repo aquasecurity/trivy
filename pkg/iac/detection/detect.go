@@ -107,7 +107,7 @@ func detectTerraformPlanJSON(name string, r io.ReadSeeker) bool {
 	}
 
 	data, err := readContent(r)
-	if err != nil || !json.Valid(data) {
+	if err != nil {
 		return false
 	}
 
@@ -130,6 +130,10 @@ func detectTerraformPlanSnapshot(_ string, r io.ReadSeeker) bool {
 }
 
 func detectCloudFormation(name string, r io.ReadSeeker) bool {
+	if !isYAML(name) && !isJSON(name) {
+		return false
+	}
+
 	data, err := readContent(r)
 	if err != nil {
 		return false
@@ -145,14 +149,9 @@ func detectCloudFormation(name string, r io.ReadSeeker) bool {
 			return false
 		}
 	case isJSON(name):
-		if !json.Valid(data) {
-			return false
-		}
 		if err := json.Unmarshal(data, &sniff); err != nil {
 			return false
 		}
-	default:
-		return false
 	}
 
 	return sniff.Resources != nil
@@ -219,6 +218,10 @@ func detectDockerfile(name string, _ io.ReadSeeker) bool {
 }
 
 func detectKubernetes(name string, r io.ReadSeeker) bool {
+	if !isYAML(name) && !isJSON(name) {
+		return false
+	}
+
 	data, err := readContent(r)
 	if err != nil {
 		return false
@@ -226,9 +229,6 @@ func detectKubernetes(name string, r io.ReadSeeker) bool {
 
 	switch {
 	case isJSON(name):
-		if !json.Valid(data) {
-			return false
-		}
 		var result map[string]any
 		if err := json.Unmarshal(data, &result); err != nil {
 			return false

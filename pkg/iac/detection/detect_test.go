@@ -164,6 +164,20 @@ func Test_Detection(t *testing.T) {
 			},
 		},
 		{
+			name: "terraform plan with trailing data, not a plan",
+			path: "plan.json",
+			r: strings.NewReader(`{
+				"format_version": "0.2",
+				"terraform_version": "1.0.3",
+				"planned_values": {}
+			}{"extra": true}`),
+			// json.Unmarshal rejects trailing data, so this is not a Terraform plan.
+			// detectJSON also rejects it via json.Valid.
+			expected: []FileType{
+				FileTypeAnsible,
+			},
+		},
+		{
 			name: "cloudformation, with reader",
 			path: "main.yaml",
 			r: strings.NewReader(`---
@@ -631,20 +645,25 @@ func BenchmarkIsType_BigFile(b *testing.B) {
 }
 
 // largeOpenAPIYAML returns a valid YAML document that is not a Kubernetes manifest.
+// Path keys are unique so the document remains valid for repeat > 1.
 func largeOpenAPIYAML(repeat int) []byte {
-	chunk := `openapi: "3.0.0"
+	var buf bytes.Buffer
+	buf.WriteString(`openapi: "3.0.0"
 info:
   title: Sample API
   version: 1.0.0
 paths:
-  /items:
+`)
+	for i := 0; i < repeat; i++ {
+		fmt.Fprintf(&buf, `  /items-%d:
     get:
       summary: List items
       responses:
         "200":
           description: OK
-`
-	return bytes.Repeat([]byte(chunk), repeat)
+`, i)
+	}
+	return buf.Bytes()
 }
 
 func benchmarkIsTypeKubernetesYAML(b *testing.B, repeat int) {
@@ -681,9 +700,23 @@ func BenchmarkIsType_CloudFormation_YAML_100x(b *testing.B) {
 	benchmarkIsTypeCloudFormationYAML(b, 100)
 }
 
+// largeTerraformPlanJSON returns a single valid Terraform plan JSON object
+// with many entries under planned_values.
+func largeTerraformPlanJSON(entries int) []byte {
+	var buf bytes.Buffer
+	buf.WriteString(`{"format_version":"0.2","terraform_version":"1.0.0","planned_values":{`)
+	for i := 0; i < entries; i++ {
+		if i > 0 {
+			buf.WriteByte(',')
+		}
+		fmt.Fprintf(&buf, `"resource_%d":{"type":"aws_s3_bucket","name":"bucket_%d","values":{"bucket":"example-%d"}}`, i, i, i)
+	}
+	buf.WriteString(`}}`)
+	return buf.Bytes()
+}
+
 func BenchmarkIsType_TerraformPlanJSON_LargeJSON(b *testing.B) {
-	chunk := []byte(`{"format_version":"0.2","terraform_version":"1.0.0","planned_values":{}}`)
-	data := bytes.Repeat(chunk, 100)
+	data := largeTerraformPlanJSON(100)
 	b.SetBytes(int64(len(data)))
 
 	b.ReportAllocs()
