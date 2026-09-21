@@ -49,7 +49,7 @@ func clusterRun(ctx context.Context, opts flag.Options, cluster k8s.Cluster) err
 			}
 		}
 	default:
-		return xerrors.Errorf(`unknown format %q. Use "json" or "table" or "cyclonedx"`, opts.Format)
+		return xerrors.Errorf(`unknown format %q. Use "json", "table", or "cyclonedx"`, opts.Format)
 	}
 
 	if !opts.DisableNodeCollector && !opts.Quiet {

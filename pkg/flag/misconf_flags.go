@@ -134,7 +134,7 @@ var (
 	AnsibleInventories = Flag[[]string]{
 		Name:       "ansible-inventory",
 		ConfigName: "ansible.inventories",
-		Usage:      "specify inventory host path or comma separated host list",
+		Usage:      "specify inventory host path or a comma-separated host list",
 	}
 	AnsibleExtraVars = Flag[[]string]{
 		Name:       "ansible-extra-vars",

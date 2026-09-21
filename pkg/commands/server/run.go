@@ -44,7 +44,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	if err = db.Init(db.Dir(opts.CacheDir)); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+		return xerrors.Errorf("error in vulnerability DB initialization: %w", err)
 	}
 
 	// Initialize WASM modules

@@ -27,13 +27,13 @@ trivy server [flags]
       --enable-modules strings   [EXPERIMENTAL] module names to enable
   -h, --help                     help for server
       --listen string            listen address in server mode (default "localhost:4954")
-      --module-dir string        specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
+      --module-dir string        specify the directory of the WASM modules to load (default "$HOME/.trivy/modules")
       --no-progress              suppress progress bar
       --password strings         password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --password-stdin           password from stdin. Comma-separated passwords are not supported.
-      --redis-ca string          redis ca file location, if using redis as cache backend
-      --redis-cert string        redis certificate file location, if using redis as cache backend
-      --redis-key string         redis key file location, if using redis as cache backend
+      --redis-ca string          Redis CA file location, if using Redis as cache backend
+      --redis-cert string        Redis certificate file location, if using Redis as cache backend
+      --redis-key string         Redis key file location, if using Redis as cache backend
       --redis-tls                enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string    registry token
       --skip-db-update           skip updating vulnerability database

@@ -44,14 +44,14 @@ func (opts *ValueOptions) MergeValues() (map[string]any, error) {
 	// User specified a value via --set
 	for _, value := range opts.Values {
 		if err := strvals.ParseInto(value, base); err != nil {
-			return nil, fmt.Errorf("failed parsing --set data, %w", err)
+			return nil, fmt.Errorf("failed parsing --set data: %w", err)
 		}
 	}
 
 	// User specified a value via --set-string
 	for _, value := range opts.StringValues {
 		if err := strvals.ParseIntoString(value, base); err != nil {
-			return nil, fmt.Errorf("failed parsing --set-string data %w", err)
+			return nil, fmt.Errorf("failed parsing --set-string data: %w", err)
 		}
 	}
 

@@ -180,9 +180,9 @@ func validateServerSchema(serverAddr string) error {
 	}
 
 	if parsedURL.Scheme == "" {
-		return xerrors.Errorf("server address must include HTTP or HTTPS schema (e.g., http://localhost:4954 or https://localhost:4954)")
+		return xerrors.Errorf("server address must include HTTP or HTTPS scheme (e.g., http://localhost:4954 or https://localhost:4954)")
 	} else if parsedURL.Scheme != "http" && parsedURL.Scheme != "https" {
-		return xerrors.Errorf("server address must use HTTP or HTTPS schema, got '%s' (e.g., use http://localhost:4954 instead of %s)", parsedURL.Scheme, serverAddr)
+		return xerrors.Errorf("server address must use HTTP or HTTPS scheme, got '%s' (e.g., use http://localhost:4954 instead of %s)", parsedURL.Scheme, serverAddr)
 	}
 
 	return nil

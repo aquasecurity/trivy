@@ -30,7 +30,7 @@ trivy kubernetes [flags] [CONTEXT]
 
 ```
       --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
-      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-inventory strings         specify inventory host path or a comma-separated host list
       --ansible-playbook strings          specify playbook file path(s) to scan
       --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
@@ -59,7 +59,7 @@ trivy kubernetes [flags] [CONTEXT]
       --distro string                     [EXPERIMENTAL] specify a distribution, <family>/<version>
       --download-db-only                  download/update vulnerability database but don't run a scan
       --download-java-db-only             download/update Java index database but don't run a scan
-      --exclude-kinds strings             indicate the kinds exclude from scanning (example: node)
+      --exclude-kinds strings             indicate the kinds excluded from scanning (example: node)
       --exclude-namespaces strings        indicate the namespaces excluded from scanning (example: kube-system)
       --exclude-nodes strings             indicate the node labels that the node-collector job should exclude from scanning (example: kubernetes.io/arch:arm64,team:dev)
       --exclude-owned                     exclude resources that have an owner reference
@@ -74,7 +74,7 @@ trivy kubernetes [flags] [CONTEXT]
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for kubernetes
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
-      --ignore-status strings             comma-separated list of vulnerability status to ignore
+      --ignore-status strings             comma-separated list of vulnerability statuses to ignore
                                           Allowed values:
                                             - unknown
                                             - not_affected
@@ -92,7 +92,7 @@ trivy kubernetes [flags] [CONTEXT]
       --include-namespaces strings        indicate the namespaces included in scanning (example: kube-system)
       --include-non-failures              include successes, available with '--scanners misconfig'
       --java-db-repository strings        OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
-      --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
+      --k8s-version string                specify k8s version to validate outdated APIs against (example: 1.21.0)
       --kubeconfig string                 specify the kubeconfig file path to use
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability (default true)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
@@ -116,9 +116,9 @@ trivy kubernetes [flags] [CONTEXT]
       --pkg-types strings                 list of package types (allowed values: os,library) (default [os,library])
       --qps float                         specify the maximum QPS to the master from this client (default 5)
       --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
-      --redis-ca string                   redis ca file location, if using redis as cache backend
-      --redis-cert string                 redis certificate file location, if using redis as cache backend
-      --redis-key string                  redis key file location, if using redis as cache backend
+      --redis-ca string                   Redis CA file location, if using Redis as cache backend
+      --redis-cert string                 Redis certificate file location, if using Redis as cache backend
+      --redis-key string                  Redis key file location, if using Redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
@@ -144,7 +144,7 @@ trivy kubernetes [flags] [CONTEXT]
       --skip-images                       skip the downloading and scanning of images (vulnerabilities and secrets) in the cluster resources
       --skip-java-db-update               skip updating Java index database
       --skip-version-check                suppress notices about version updates and Trivy announcements
-      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
+      --skip-vex-repo-update              [EXPERIMENTAL] skip VEX repository update
   -t, --template string                   output template (file path must have .tpl extension)
       --tf-exclude-downloaded-modules     exclude misconfigurations for downloaded terraform modules
       --tolerations strings               specify node-collector job tolerations (example: key1=value1:NoExecute,key2=value2:NoSchedule)

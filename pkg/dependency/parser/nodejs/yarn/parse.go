@@ -65,7 +65,7 @@ func (s *LineScanner) LineNum(prevNum int) int {
 func parsePattern(target string) (packagename, protocol, version string, err error) {
 	capture := yarnPatternRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
-		return "", "", "", xerrors.New("not package format")
+		return "", "", "", xerrors.New("not a package format")
 	}
 	for i, group := range yarnPatternRegexp.SubexpNames() {
 		switch group {
@@ -96,7 +96,7 @@ func parsePackagePatterns(target string) (packagename, protocol string, patterns
 func getVersion(target string) (version string, err error) {
 	capture := yarnVersionRegexp.FindStringSubmatch(target)
 	if len(capture) < 2 {
-		return "", xerrors.Errorf("failed to parse version: '%s", target)
+		return "", xerrors.Errorf("failed to parse version: %q", target)
 	}
 	return capture[len(capture)-1], nil
 }
@@ -104,7 +104,7 @@ func getVersion(target string) (version string, err error) {
 func getDependency(target string) (name, version string, err error) {
 	capture := yarnDependencyRegexp.FindStringSubmatch(target)
 	if len(capture) < 3 {
-		return "", "", xerrors.New("not dependency")
+		return "", "", xerrors.New("not a dependency")
 	}
 	if !validProtocol(capture[2]) {
 		return "", "", nil

@@ -19,7 +19,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
 
 ```
       --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
-      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-inventory strings         specify inventory host path or a comma-separated host list
       --ansible-playbook strings          specify playbook file path(s) to scan
       --branch string                     pass the branch name to be scanned
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
@@ -64,7 +64,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for repository
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
-      --ignore-status strings             comma-separated list of vulnerability status to ignore
+      --ignore-status strings             comma-separated list of vulnerability statuses to ignore
                                           Allowed values:
                                             - unknown
                                             - not_affected
@@ -75,7 +75,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - fix_deferred
                                             - end_of_life
       --ignore-unfixed                    display only fixed vulnerabilities
-      --ignored-licenses strings          specify a list of license to ignore
+      --ignored-licenses strings          specify a list of licenses to ignore
       --ignorefile string                 specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-dev-deps                  include development dependencies in the report (supported: npm, yarn, gradle)
@@ -85,7 +85,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --license-full                      eagerly look for licenses in source code headers and license files
       --list-all-pkgs                     output all packages in the JSON report regardless of vulnerability (default true)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
-      --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
+      --module-dir string                 specify the directory of the WASM modules to load (default "$HOME/.trivy/modules")
       --no-progress                       suppress progress bar
       --offline-scan                      do not issue API requests to identify dependencies
   -o, --output string                     output file name
@@ -103,9 +103,9 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                            (default [unknown,root,workspace,direct,indirect])
       --pkg-types strings                 list of package types (allowed values: os,library) (default [os,library])
       --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
-      --redis-ca string                   redis ca file location, if using redis as cache backend
-      --redis-cert string                 redis certificate file location, if using redis as cache backend
-      --redis-key string                  redis key file location, if using redis as cache backend
+      --redis-ca string                   Redis CA file location, if using Redis as cache backend
+      --redis-cert string                 Redis certificate file location, if using Redis as cache backend
+      --redis-key string                  Redis key file location, if using Redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
@@ -130,7 +130,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
       --skip-version-check                suppress notices about version updates and Trivy announcements
-      --skip-vex-repo-update              [EXPERIMENTAL] Skip VEX Repository update
+      --skip-vex-repo-update              [EXPERIMENTAL] skip VEX repository update
       --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
       --tag string                        pass the tag name to be scanned
   -t, --template string                   output template (file path must have .tpl extension)

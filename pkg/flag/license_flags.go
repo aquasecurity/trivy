@@ -15,7 +15,7 @@ var (
 	IgnoredLicenses = Flag[[]string]{
 		Name:       "ignored-licenses",
 		ConfigName: "license.ignored",
-		Usage:      "specify a list of license to ignore",
+		Usage:      "specify a list of licenses to ignore",
 	}
 	LicenseConfidenceLevel = Flag[float64]{
 		Name:       "license-confidence-level",

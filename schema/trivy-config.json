@@ -45,15 +45,15 @@
             },
             "ca": {
               "type": "string",
-              "description": "redis ca file location, if using redis as cache backend"
+              "description": "Redis CA file location, if using Redis as cache backend"
             },
             "cert": {
               "type": "string",
-              "description": "redis certificate file location, if using redis as cache backend"
+              "description": "Redis certificate file location, if using Redis as cache backend"
             },
             "key": {
               "type": "string",
-              "description": "redis key file location, if using redis as cache backend"
+              "description": "Redis key file location, if using Redis as cache backend"
             }
           }
         }
@@ -227,7 +227,7 @@
         },
         "k8s-version": {
           "type": "string",
-          "description": "specify k8s version to validate outdated api by it (example: 1.21.0)"
+          "description": "specify k8s version to validate outdated APIs against (example: 1.21.0)"
         },
         "disableNodeCollector": {
           "type": "boolean",
@@ -274,7 +274,7 @@
           "items": {
             "type": "string"
           },
-          "description": "indicate the kinds exclude from scanning (example: node)"
+          "description": "indicate the kinds excluded from scanning (example: node)"
         },
         "includeKinds": {
           "type": "array",
@@ -323,7 +323,7 @@
           "items": {
             "type": "string"
           },
-          "description": "specify a list of license to ignore"
+          "description": "specify a list of licenses to ignore"
         },
         "forbidden": {
           "type": "array",
@@ -508,7 +508,7 @@
           "items": {
             "type": "string"
           },
-          "description": "specify inventory host path or comma separated host list"
+          "description": "specify inventory host path or a comma-separated host list"
         },
         "extra-vars": {
           "type": "array",
@@ -524,7 +524,7 @@
       "properties": {
         "dir": {
           "type": "string",
-          "description": "specify directory to the wasm modules that will be loaded"
+          "description": "specify the directory of the WASM modules to load"
         },
         "enable-modules": {
           "type": "array",
@@ -596,7 +596,7 @@
         },
         "mirrors": {
           "type": "object",
-          "description": "map of hosts and registries for them.",
+          "description": "map of hosts and registries for them",
           "additionalProperties": {
             "type": "array",
             "items": {
@@ -835,7 +835,7 @@
                   "targets"
                 ]
               },
-              "description": "list of Maven repositories and the ordered mirrors that serve each of them."
+              "description": "list of Maven repositories and the ordered mirrors that serve each of them"
             }
           }
         }
@@ -900,7 +900,7 @@
               "end_of_life"
             ]
           },
-          "description": "comma-separated list of vulnerability status to ignore"
+          "description": "comma-separated list of vulnerability statuses to ignore"
         },
         "vex": {
           "type": "array",
@@ -911,7 +911,7 @@
         },
         "skip-vex-repo-update": {
           "type": "boolean",
-          "description": "[EXPERIMENTAL] Skip VEX Repository update"
+          "description": "[EXPERIMENTAL] skip VEX repository update"
         },
         "severity-source": {
           "type": "array",

@@ -33,7 +33,7 @@ func Run(ctx context.Context, opts flag.Options) error {
 
 	if opts.CleanScanCache {
 		if err := cleanScanCache(ctx, opts); err != nil {
-			return xerrors.Errorf("failed to remove scan cache : %w", err)
+			return xerrors.Errorf("failed to remove scan cache: %w", err)
 		}
 	}
 

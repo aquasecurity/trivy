@@ -55,7 +55,7 @@ var (
 				case "misconf", "misconfiguration":
 					return string(types.MisconfigScanner)
 				case "config":
-					log.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for the detail.")
+					log.Warn("'--scanners config' is deprecated. Use '--scanners misconfig' instead. See https://github.com/aquasecurity/trivy/discussions/5586 for details.")
 					return string(types.MisconfigScanner)
 				}
 				return s
@@ -139,7 +139,7 @@ var (
 	}
 	MavenMirrorsFlag = Flag[[]MavenMirror]{
 		ConfigName: "scan.maven.mirrors",
-		Usage:      "list of Maven repositories and the ordered mirrors that serve each of them.",
+		Usage:      "list of Maven repositories and the ordered mirrors that serve each of them",
 	}
 )
 

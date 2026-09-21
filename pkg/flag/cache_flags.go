@@ -42,17 +42,17 @@ var (
 	RedisCACertFlag = Flag[string]{
 		Name:       "redis-ca",
 		ConfigName: "cache.redis.ca",
-		Usage:      "redis ca file location, if using redis as cache backend",
+		Usage:      "Redis CA file location, if using Redis as cache backend",
 	}
 	RedisCertFlag = Flag[string]{
 		Name:       "redis-cert",
 		ConfigName: "cache.redis.cert",
-		Usage:      "redis certificate file location, if using redis as cache backend",
+		Usage:      "Redis certificate file location, if using Redis as cache backend",
 	}
 	RedisKeyFlag = Flag[string]{
 		Name:       "redis-key",
 		ConfigName: "cache.redis.key",
-		Usage:      "redis key file location, if using redis as cache backend",
+		Usage:      "Redis key file location, if using Redis as cache backend",
 	}
 )
 
