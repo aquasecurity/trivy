@@ -33,8 +33,9 @@ This is useful for filtering inputs, as described below.
 
 ## Security considerations
 
-!!! warning "Trusted checks"
-    Only load custom checks from sources you trust. Checks can access the Trivy process's environment variables and make HTTP requests. In CI, use checks and configuration maintained by the pipeline owners. Changes in the repository being scanned should not be able to replace those checks or select different ones.
+Only load custom checks from sources you trust. Checks can access the Trivy process's environment variables and make HTTP requests.
+
+In CI, use checks and configuration maintained by the pipeline owners. Changes in the repository being scanned should not be able to replace those checks or select different ones.
 
 ## Rego format
 A single package must contain only one policy.
