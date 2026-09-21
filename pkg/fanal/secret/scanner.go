@@ -438,7 +438,7 @@ func NewScanner(config *Config, opts ...Option) Scanner {
 			Rules:        builtinRules,
 			AllowRules:   builtinAllowRules,
 			SkipPatterns: defaultSkipPatterns,
-			keywords:     newKeywordIndex(builtinRules),
+			keywords:     builtinKeywordIndex(),
 		}
 		return scanner
 	}

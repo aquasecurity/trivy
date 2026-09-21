@@ -3,6 +3,7 @@ package secret
 import (
 	"cmp"
 	"slices"
+	"sync"
 	"unicode"
 	"unicode/utf8"
 
@@ -75,6 +76,10 @@ func newKeywordIndex(rules []Rule) *keywordIndex {
 	idx.compile(patterns)
 	return idx
 }
+
+var builtinKeywordIndex = sync.OnceValue(func() *keywordIndex {
+	return newKeywordIndex(builtinRules)
+})
 
 // collectKeywords returns the unique folded keywords of the rules and the ids
 // each rule looks for. A rule left out of the index looks for none.
