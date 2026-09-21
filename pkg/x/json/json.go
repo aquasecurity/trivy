@@ -43,6 +43,7 @@ func (lr *lineReader) Read(p []byte) (n int, err error) {
 }
 
 // Line returns the number of the line holding the given offset.
+// An offset on a "\n" belongs to the line it ends.
 func (lr *lineReader) Line(offset int64) int {
 	i, _ := slices.BinarySearch(lr.newlineOffsets, offset)
 	return i + 1
@@ -92,7 +93,7 @@ var SetLocationHook = DecodeHook{
 // To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
 //
-// The returned unmarshalers read line numbers from r and keep decoding state,
+// The returned unmarshalers resolve decoder offsets to lines through r and keep decoding state,
 // so they must not be used concurrently or with another reader.
 // Pass them to the decoder as is: the nested decode relies on the decoder options carrying them.
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
