@@ -146,6 +146,8 @@ rules:
 `keywords` (optional, recommended)
 :   - Keywords are used for pre-regex check filtering.
 - Rules that contain keywords will perform a quick string compare check to make sure the keyword(s) are in the content being scanned.
+- The check ignores case for ASCII letters only.
+- A rule with an empty keyword or a keyword with a non-ASCII letter that has upper and lower case, such as `ö`, skips this check and runs its regex on all content, which makes scanning slower.
 - Ideally these values should either be part of the identifier or unique strings specific to the rule's regex.
 - It is recommended to define for better performance.
 
