@@ -2383,6 +2383,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rego-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8702,6 +8713,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#security-considerations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Security considerations
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#rego-format" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8918,6 +8940,9 @@ Once you finish writing custom checks, you can pass the check files or the direc
 <li>Terraform Plan (JSON/Snapshot)</li>
 </ul>
 <p>This is useful for filtering inputs, as described below.</p>
+<h2 id="security-considerations">Security considerations<a class="headerlink" href="#security-considerations" title="Permanent link">&para;</a></h2>
+<p>Only load custom checks from sources you trust. Checks can access the Trivy process's environment variables and make HTTP requests.</p>
+<p>In CI, use checks and configuration maintained by the pipeline owners. Changes in the repository being scanned should not be able to replace those checks or select different ones.</p>
 <h2 id="rego-format">Rego format<a class="headerlink" href="#rego-format" title="Permanent link">&para;</a></h2>
 <p>A single package must contain only one policy.</p>
 <div class="admonition example">

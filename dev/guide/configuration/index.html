@@ -8663,6 +8663,7 @@ You're not viewing the latest version of the documentation.
 <div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--config<span class="w"> </span>/opt/ci/trivy.yaml<span class="w"> </span>--ignorefile<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>--secret-config<span class="o">=</span><span class="s2">&quot;&quot;</span><span class="w"> </span>/workspace/project
 </code></pre></div>
 <p>Templates and other files referenced by the configuration must also come from trusted sources. A trusted configuration file can still reference an untrusted template: relative template paths are resolved from the current working directory, not the configuration file's directory. Use trusted absolute template paths when the working directory contains untrusted content. Templates can read environment variables and include sensitive values in report output.</p>
+<p>For custom Rego checks selected by the configuration, see the <a href="../scanner/misconfiguration/custom/#security-considerations">custom check security considerations</a>.</p>
 
 
 
