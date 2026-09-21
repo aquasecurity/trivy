@@ -333,8 +333,12 @@ func warnUnusableKeywords(rules []Rule) {
 	logger := log.WithPrefix(log.PrefixSecret)
 	for _, rule := range rules {
 		for _, keyword := range rule.Keywords {
-			if unusableKeyword(keyword) {
-				logger.Warn("The keyword cannot be used to skip content, and the rule runs on every chunk",
+			switch {
+			case keyword == "":
+				logger.Warn("The rule has an empty keyword, so it is checked against all content, which slows down secret scanning",
+					log.String("rule_id", rule.ID))
+			case hasNonASCIICase(keyword):
+				logger.Warn("The keyword has a non-ASCII letter, so the rule is checked against all content, which slows down secret scanning",
 					log.String("rule_id", rule.ID), log.String("keyword", keyword))
 			}
 		}
