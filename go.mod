@@ -245,7 +245,7 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/fluxcd/cli-utils v1.2.2 // indirect
 	github.com/fsnotify/fsnotify v1.10.1 // indirect
-	github.com/fvbommel/sortorder v1.1.0 // indirect
+	github.com/fvbommel/sortorder v1.2.0 // indirect
 	github.com/fxamacker/cbor/v2 v2.9.1 // indirect
 	github.com/go-errors/errors v1.5.1 // indirect
 	github.com/go-git/gcfg v1.5.1-0.20230307220236-3a3c6141e376 // indirect
