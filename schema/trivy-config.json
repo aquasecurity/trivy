@@ -34,14 +34,14 @@
         },
         "ttl": {
           "type": "string",
-          "description": "cache TTL when using redis as cache backend"
+          "description": "cache TTL when using Redis as cache backend"
         },
         "redis": {
           "type": "object",
           "properties": {
             "tls": {
               "type": "boolean",
-              "description": "enable redis TLS with public certificates, if using redis as cache backend"
+              "description": "enable Redis TLS with public certificates, if using Redis as cache backend"
             },
             "ca": {
               "type": "string",

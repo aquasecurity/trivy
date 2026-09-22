@@ -34,7 +34,7 @@ trivy kubernetes [flags] [CONTEXT]
       --ansible-playbook strings          specify playbook file path(s) to scan
       --burst int                         specify the maximum burst for throttle (default 10)
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
-      --cache-ttl duration                cache TTL when using redis as cache backend
+      --cache-ttl duration                cache TTL when using Redis as cache backend
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:2")
       --compliance string                 compliance report to generate
@@ -119,7 +119,7 @@ trivy kubernetes [flags] [CONTEXT]
       --redis-ca string                   Redis CA file location, if using Redis as cache backend
       --redis-cert string                 Redis certificate file location, if using Redis as cache backend
       --redis-key string                  Redis key file location, if using Redis as cache backend
-      --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --redis-tls                         enable Redis TLS with public certificates, if using Redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")

@@ -25,7 +25,7 @@ trivy vm [flags] VM_IMAGE
       --ansible-playbook strings          specify playbook file path(s) to scan
       --aws-region string                 AWS region to scan
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "fs")
-      --cache-ttl duration                cache TTL when using redis as cache backend
+      --cache-ttl duration                cache TTL when using Redis as cache backend
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:2")
       --compliance string                 compliance report to generate
       --config-file-schemas strings       specify paths to JSON configuration file schemas to determine that a file matches some configuration and pass the schema to Rego checks for type checking
@@ -99,7 +99,7 @@ trivy vm [flags] VM_IMAGE
       --redis-ca string                   Redis CA file location, if using Redis as cache backend
       --redis-cert string                 Redis certificate file location, if using Redis as cache backend
       --redis-key string                  Redis key file location, if using Redis as cache backend
-      --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --redis-tls                         enable Redis TLS with public certificates, if using Redis as cache backend
       --rekor-url string                  [EXPERIMENTAL] address of rekor STL server (default "https://rekor.sigstore.dev")
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
