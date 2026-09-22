@@ -46,6 +46,12 @@ func TestScanner_Detect(t *testing.T) {
 						},
 					},
 					{
+						Name:       "linkerd2",
+						Version:    "26.1.3-r0",
+						SrcName:    "linkerd2",
+						SrcVersion: "26.1.3-r0",
+					},
+					{
 						Name:       "invalid",
 						Version:    "invalid",
 						SrcName:    "invalid",
@@ -56,7 +62,7 @@ func TestScanner_Detect(t *testing.T) {
 			want: []types.DetectedVulnerability{
 				{
 					PkgName:          "redis",
-					VulnerabilityID:  "CLEANSTART-2026-MZ27698",
+					VulnerabilityID:  "CVE-2025-12345",
 					InstalledVersion: "7.4.5-r0",
 					FixedVersion:     "7.4.6-r0",
 					Layer: ftypes.Layer{
@@ -68,14 +74,12 @@ func TestScanner_Detect(t *testing.T) {
 						URL:  "https://github.com/cleanstart-dev/cleanstart-security-advisories",
 					},
 				},
+				// An advisory with no upstream CVE is reported under its GHSA.
 				{
-					PkgName:          "redis",
-					VulnerabilityID:  "CVE-2025-12345",
-					InstalledVersion: "7.4.5-r0",
-					FixedVersion:     "7.4.6-r0",
-					Layer: ftypes.Layer{
-						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
-					},
+					PkgName:          "linkerd2",
+					VulnerabilityID:  "GHSA-hr2v-4r36-88hr",
+					InstalledVersion: "26.1.3-r0",
+					FixedVersion:     "26.1.4-r0",
 					DataSource: &dbTypes.DataSource{
 						ID:   vulnerability.CleanStart,
 						Name: "CleanStart Security Advisories",
@@ -100,17 +104,6 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 			want: []types.DetectedVulnerability{
-				{
-					PkgName:          "redis",
-					VulnerabilityID:  "CLEANSTART-2026-MZ27698",
-					InstalledVersion: "7.4.5-r0",
-					FixedVersion:     "7.4.6-r0",
-					DataSource: &dbTypes.DataSource{
-						ID:   vulnerability.CleanStart,
-						Name: "CleanStart Security Advisories",
-						URL:  "https://github.com/cleanstart-dev/cleanstart-security-advisories",
-					},
-				},
 				{
 					PkgName:          "redis",
 					VulnerabilityID:  "CVE-2025-12345",
