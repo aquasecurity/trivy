@@ -350,12 +350,11 @@ func warnUnusableKeywords(rules []Rule) {
 	}
 }
 
-// hasNonASCIICase reports whether s holds a non-ASCII letter written in one of
-// several cases. Only ASCII case is folded, so such a keyword would be found
-// where it is written as in the rule and missed everywhere else.
+// hasNonASCIICase reports whether s holds a non-ASCII letter that folds or
+// lowercases to another letter. U+0130 lowercases to "i" but does not fold.
 func hasNonASCIICase(s string) bool {
 	for _, r := range s {
-		if r >= utf8.RuneSelf && unicode.SimpleFold(r) != r {
+		if r >= utf8.RuneSelf && (unicode.SimpleFold(r) != r || unicode.ToLower(r) != r) {
 			return true
 		}
 	}

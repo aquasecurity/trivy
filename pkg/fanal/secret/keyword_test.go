@@ -199,6 +199,13 @@ func TestKeywordIndex(t *testing.T) {
 			want:    []string{"aws", "german"},
 		},
 		{
+			// U+0130 lowercases to "i" but has no case folding.
+			name:    "non-ASCII keyword that lowercases into ASCII",
+			rules:   []Rule{{ID: "dotted-i", Keywords: []string{"İD"}}},
+			content: "user id",
+			want:    []string{"dotted-i"},
+		},
+		{
 			// An empty keyword occurs in any content, so the rule runs even
 			// when its other keywords are absent.
 			name:    "empty keyword",
