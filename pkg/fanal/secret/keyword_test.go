@@ -295,8 +295,8 @@ func TestKeywordIndexAcrossSplit(t *testing.T) {
 // does not run such a rule on every chunk.
 func fuzzRules(spec string) []Rule {
 	var rules []Rule
-	for i, line := range strings.Split(spec, "\n") {
-		rule := Rule{ID: strconv.Itoa(i)}
+	for line := range strings.SplitSeq(spec, "\n") {
+		rule := Rule{ID: strconv.Itoa(len(rules))}
 		for keyword := range strings.SplitSeq(line, ",") {
 			if !unusableKeyword(keyword) {
 				rule.Keywords = append(rule.Keywords, keyword)

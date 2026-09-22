@@ -174,7 +174,7 @@ func buildTrie(patterns []string) (edges []map[byte]uint32, ends [][]int32) {
 	ends = [][]int32{nil}
 	for id, pattern := range patterns {
 		state := uint32(0)
-		for i := 0; i < len(pattern); i++ {
+		for i := range len(pattern) {
 			c := pattern[i]
 			next, ok := edges[state][c]
 			if !ok {
