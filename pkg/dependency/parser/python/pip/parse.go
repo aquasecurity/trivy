@@ -128,13 +128,19 @@ func rStripByKey(line, key string) string {
 	return line
 }
 
+// removeExtras strips a PEP 508 extras group (e.g. "[crypto]") from a
+// requirement line. It only removes a well-formed "[...]" pair where the
+// opening bracket precedes the closing bracket. Malformed input (a missing
+// bracket or a "]" appearing before "[") is left untouched so that a valid
+// package name is never corrupted.
+// e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0"
 func removeExtras(line string) string {
 	startIndex := strings.Index(line, startExtras)
-	endIndex := strings.Index(line, endExtras) + 1
-	if startIndex != -1 && endIndex != -1 {
-		line = line[:startIndex] + line[endIndex:]
+	endIndex := strings.Index(line, endExtras)
+	if startIndex == -1 || endIndex == -1 || startIndex > endIndex {
+		return line
 	}
-	return line
+	return line[:startIndex] + line[endIndex+1:]
 }
 
 // isNameChar reports whether r is a valid character in a PEP 508 package name.

@@ -87,3 +87,48 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestRemoveExtras(t *testing.T) {
+	tests := []struct {
+		name string
+		line string
+		want string
+	}{
+		{
+			name: "single extra",
+			line: "pyjwt[crypto]==2.1.0",
+			want: "pyjwt==2.1.0",
+		},
+		{
+			name: "multiple extras",
+			line: "celery[redis,pytest]==4.4.7",
+			want: "celery==4.4.7",
+		},
+		{
+			name: "no extras",
+			line: "flask==2.0.0",
+			want: "flask==2.0.0",
+		},
+		{
+			name: "missing closing bracket",
+			line: "pkg[extra==1.0",
+			want: "pkg[extra==1.0",
+		},
+		{
+			name: "stray closing bracket without opening",
+			line: "foo]bar==1.0",
+			want: "foo]bar==1.0",
+		},
+		{
+			name: "empty string",
+			line: "",
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, removeExtras(tt.line))
+		})
+	}
+}
