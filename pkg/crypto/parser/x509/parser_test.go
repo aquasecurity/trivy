@@ -22,12 +22,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	cryptox509 "github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
@@ -70,6 +72,27 @@ func TestParse(t *testing.T) {
 		kind:    ftypes.CryptoKindKey,
 		keyType: ftypes.CryptoKeyTypePublic,
 		method:  ftypes.CryptoMethodSPKISHA256,
+	}
+	pemPublicKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePublic,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKIX,
+		encoding: ftypes.CryptoEncodingPEM,
+	}
+	pemPKCS1PrivateKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePrivate,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKCS1,
+		encoding: ftypes.CryptoEncodingPEM,
+	}
+	pemPKCS8PrivateKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePrivate,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKCS8,
+		encoding: ftypes.CryptoEncodingPEM,
 	}
 
 	tests := []struct {
@@ -122,13 +145,7 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKCS8 PEM",
 			input: fixtures.pkcs8PEM,
-			want: []found{{
-				kind:     ftypes.CryptoKindKey,
-				keyType:  ftypes.CryptoKeyTypePrivate,
-				method:   ftypes.CryptoMethodSPKISHA256,
-				format:   ftypes.CryptoKeyFormatPKCS8,
-				encoding: ftypes.CryptoEncodingPEM,
-			}},
+			want:  []found{pemPKCS8PrivateKey},
 		},
 		{
 			name:  "SEC1 DER",
@@ -155,13 +172,7 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKIX public PEM",
 			input: fixtures.publicPEM,
-			want: []found{{
-				kind:     ftypes.CryptoKindKey,
-				keyType:  ftypes.CryptoKeyTypePublic,
-				method:   ftypes.CryptoMethodSPKISHA256,
-				format:   ftypes.CryptoKeyFormatPKIX,
-				encoding: ftypes.CryptoEncodingPEM,
-			}},
+			want:  []found{pemPublicKey},
 		},
 		{
 			name:  "encrypted PKCS8 DER",
@@ -262,13 +273,31 @@ func TestParse(t *testing.T) {
 			}},
 		},
 		{
-			name:  "certificate bundle",
+			name:  "repeated certificate",
 			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.certificatePEM}, nil),
 			want: []found{
 				pemCertificate,
 				certificateKey,
+			},
+		},
+		{
+			// Both certificates carry the same key.
+			name:  "certificate bundle",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil),
+			want: []found{
 				pemCertificate,
 				certificateKey,
+				pemCertificate,
+			},
+		},
+		{
+			// The key is found twice, because the certificate gives it no container.
+			name:  "certificate and its public key",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.publicPEM}, nil),
+			want: []found{
+				pemCertificate,
+				certificateKey,
+				pemPublicKey,
 			},
 		},
 		{
@@ -277,13 +306,18 @@ func TestParse(t *testing.T) {
 			want: []found{
 				pemCertificate,
 				certificateKey,
-				{
-					kind:     ftypes.CryptoKindKey,
-					keyType:  ftypes.CryptoKeyTypePrivate,
-					method:   ftypes.CryptoMethodSPKISHA256,
-					format:   ftypes.CryptoKeyFormatPKCS8,
-					encoding: ftypes.CryptoEncodingPEM,
-				},
+				pemPKCS8PrivateKey,
+			},
+		},
+		{
+			name: "same key in two containers",
+			input: bytes.Join([][]byte{
+				pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: fixtures.pkcs1DER}),
+				fixtures.pkcs8PEM,
+			}, nil),
+			want: []found{
+				pemPKCS1PrivateKey,
+				pemPKCS8PrivateKey,
 			},
 		},
 		{
@@ -658,8 +692,7 @@ func TestParseAssets(t *testing.T) {
 			},
 		},
 		{
-			// One OID describes the signature and the key, so the same algorithm is
-			// described twice.
+			// One OID describes the signature and the key, so the algorithm is reported once.
 			name:  "Ed25519 certificate",
 			input: certificatePEM(fixtures.ed25519Certificate),
 			want: []ftypes.CryptoAsset{
@@ -692,7 +725,6 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(ed25519Algorithm),
 				at(ed25519CertificateKey),
-				at(ed25519Algorithm),
 			},
 		},
 		{
@@ -728,7 +760,6 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(mldsaAlgorithm),
 				at(mldsaCertificateKey),
-				at(mldsaAlgorithm),
 			},
 		},
 		{
@@ -951,19 +982,38 @@ func TestParseIdentity(t *testing.T) {
 		assert.NotEqual(t, certificate[0].Identity, otherCertificate[0].Identity)
 	})
 
+	t.Run("certificates in one bundle keep their identities", func(t *testing.T) {
+		bundle := parse(t, bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil))
+		certificates := lo.Filter(bundle, func(asset ftypes.CryptoAsset, _ int) bool {
+			return asset.Kind == ftypes.CryptoKindCertificate
+		})
+		require.Len(t, certificates, 2)
+		assert.Equal(t, certificate[0].Identity, certificates[0].Identity)
+		assert.Equal(t, otherCertificate[0].Identity, certificates[1].Identity)
+	})
+
 	t.Run("a certificate and a key file agree on the key they share", func(t *testing.T) {
 		assert.Equal(t, publicKey[0].Identity, certificate[2].Identity)
 	})
 }
 
-// parse describes a file and checks that every asset it reports is valid.
+// parse describes a file and checks that every asset it reports is valid and relates only
+// to assets reported with it.
 func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 	t.Helper()
 
 	assets, err := cryptox509.Parse(t.Context(), parsedFilePath, content)
 	require.NoError(t, err)
+
+	reported := set.New[ftypes.CryptoDescriptor]()
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
+		reported.Append(asset.Descriptor())
+	}
+	for i, asset := range assets {
+		for _, relationship := range asset.Relationships {
+			require.Truef(t, reported.Contains(relationship.RelatedAsset), "asset %d", i)
+		}
 	}
 	return assets
 }

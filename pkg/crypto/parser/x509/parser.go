@@ -13,9 +13,11 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
+	"iter"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // objectKind identifies the kind of parsed cryptographic object.
@@ -83,17 +85,35 @@ var (
 //
 // Material that cannot be read is logged and skipped. An error means a parsed object
 // could not be described.
+//
+// An asset is reported once for each container it was found in, and an asset with no
+// container of its own, such as an algorithm, once per file.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
 
+	type assetKey struct {
+		descriptor ftypes.CryptoDescriptor
+		format     ftypes.CryptoKeyFormat
+	}
+
 	var assets []ftypes.CryptoAsset
-	for _, obj := range parse(ctx, content) {
+	seen := set.New[assetKey]()
+	for obj := range parse(ctx, content) {
 		described, err := objectToAssets(ctx, obj)
 		if err != nil {
 			return nil, err
 		}
 		for _, asset := range described {
+			key := assetKey{
+				descriptor: asset.Descriptor(),
+				format:     asset.Format,
+			}
+
+			if seen.Contains(key) {
+				continue
+			}
+			seen.Append(key)
 			asset.FilePath = filePath
 			assets = append(assets, asset)
 		}
@@ -103,46 +123,49 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 // parse sniffs content because eligible extensions such as .crt, .cer, and .key do not reliably identify PEM or DER.
 // It decodes PEM blocks first, then falls back to DER when no valid PEM block is found.
-func parse(ctx context.Context, content []byte) []object {
-	var objects []object
-	var decodedPEM, recognized bool
-	// pem.Decode scans past malformed leading data and returns the next valid block.
-	for rest := content; ; {
-		block, next := pem.Decode(rest)
-		if block == nil {
-			break
-		}
-		decodedPEM = true
-		rest = next
+func parse(ctx context.Context, content []byte) iter.Seq[object] {
+	return func(yield func(object) bool) {
+		var decodedPEM, recognized bool
+		// pem.Decode scans past malformed leading data and returns the next valid block.
+		for rest := content; ; {
+			block, next := pem.Decode(rest)
+			if block == nil {
+				break
+			}
+			decodedPEM = true
+			rest = next
 
-		obj, err := parsePEMBlock(block)
-		if errors.Is(err, errNotCryptographic) {
-			continue
+			obj, err := parsePEMBlock(block)
+			if errors.Is(err, errNotCryptographic) {
+				continue
+			}
+			recognized = true
+			if err != nil {
+				logParseError(ctx, block.Type, err)
+				continue
+			}
+			if !yield(obj) {
+				return
+			}
 		}
-		recognized = true
+
+		// A decoded PEM file is complete even when none of its blocks is supported.
+		if decodedPEM {
+			if !recognized {
+				log.DebugContext(ctx, "No cryptographic object found")
+			}
+			return
+		}
+
+		// No PEM block was decoded, so try the whole file as DER.
+		obj, err := parseDERObject(content)
 		if err != nil {
-			logParseError(ctx, block.Type, err)
-			continue
+			logParseError(ctx, "", err)
+			return
 		}
-		objects = append(objects, obj)
+		obj.encoding = ftypes.CryptoEncodingDER
+		yield(obj)
 	}
-
-	// A decoded PEM file is complete even when none of its blocks is supported.
-	if decodedPEM {
-		if !recognized {
-			log.DebugContext(ctx, "No cryptographic object found")
-		}
-		return objects
-	}
-
-	// No PEM block was decoded, so try the whole file as DER.
-	obj, err := parseDERObject(content)
-	if err != nil {
-		logParseError(ctx, "", err)
-		return nil
-	}
-	obj.encoding = ftypes.CryptoEncodingDER
-	return []object{obj}
 }
 
 // parsePEMBlock parses a supported PEM block and records its source encoding.
