@@ -39,11 +39,15 @@
         Title: dos
         Description: dos vulnerability
         Severity: HIGH
+        VendorSeverity:
+          alpine: 3
     - key: CVE-2014-0081
       value:
         Title: xss
         Description: xss vulnerability
         Severity: MEDIUM
+        VendorSeverity:
+          ghsa: 2
         References:
           - http://example.com
         LastModifiedDate: "2020-02-01T01:01:00Z"
