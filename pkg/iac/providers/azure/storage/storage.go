@@ -20,6 +20,7 @@ type Account struct {
 	BlobProperties                  BlobProperties
 	AccountReplicationType          iacTypes.StringValue
 	InfrastructureEncryptionEnabled iacTypes.BoolValue
+	DiagnosticLoggingEnabled        iacTypes.BoolValue
 	CustomerManagedKey              CustomerManagedKey
 }
 
