@@ -1671,6 +1671,32 @@ func TestSecretScanner(t *testing.T) {
 			want:          types.Secret{},
 		},
 		{
+			name:          "include when keyword found in another case",
+			configPath:    filepath.Join("testdata", "config-keyword-other-case.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
+			},
+		},
+		{
+			// A rule whose keyword has a non-ASCII letter runs on all content,
+			// even though the keyword is absent.
+			name:          "include when keyword has a non-ASCII letter",
+			configPath:    filepath.Join("testdata", "config-non-ascii-keyword.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
+			},
+		},
+		{
 			name:          "should ignore .md files by default",
 			configPath:    filepath.Join("testdata", "config.yaml"),
 			inputFilePath: filepath.Join("testdata", "secret.md"),
