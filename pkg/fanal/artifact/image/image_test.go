@@ -36,7 +36,7 @@ import (
 
 // Common blob IDs used across multiple test cases to reduce duplication
 const (
-	alpineBaseLayerID     = "sha256:6c42077a82b21707f581759b12a99cc9a593ce35a0d7be4c19c01eb48bd5ba33"
+	alpineBaseLayerID     = "sha256:b157e1789dcb255148b8f61530993278291cadbcca84ecf99505b2a019c3a332"
 	alpineBaseLayerDiffID = "sha256:beee9f30bc1f711043e78d4a2be0668955d4b761d587d6f60c2c8dc081efb203"
 	alpineArtifactID      = "sha256:3c709d2a158be3a97051e10cd0e30f047225cb9505101feb3fadcd395c2e0408"
 	composerImageID       = "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72"
@@ -524,7 +524,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
+					ID: "sha256:3122199c9e7608ce6e72bcb70b6d2a624a377c884de7dff58234263f54b2bd78",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          3061760,
@@ -579,6 +579,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Release:    "0+deb9u1",
 										SrcVersion: "2019a",
 										SrcRelease: "0+deb9u1",
+										DependsOn: []string{
+											"debconf",
+											"debconf-2.0",
+										},
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "all",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
@@ -618,7 +622,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
+					ID: "sha256:43bf1f06685499c75819a844ea40ef0ae053e7d9920d444cdc5322ae22e11108",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          15441920,
@@ -637,6 +641,7 @@ func TestArtifact_Inspect(t *testing.T) {
 										SrcName:    "glibc",
 										SrcVersion: "2.24",
 										SrcRelease: "11+deb9u4",
+										DependsOn:  []string{"libgcc1"},
 										Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
@@ -655,6 +660,11 @@ func TestArtifact_Inspect(t *testing.T) {
 										Release:    "1~deb9u1",
 										SrcVersion: "1.1.0k",
 										SrcRelease: "1~deb9u1",
+										DependsOn: []string{
+											"debconf",
+											"debconf-2.0",
+											"libc6@2.24-11+deb9u4",
+										},
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
@@ -673,6 +683,10 @@ func TestArtifact_Inspect(t *testing.T) {
 										Release:    "1~deb9u1",
 										SrcVersion: "1.1.0k",
 										SrcRelease: "1~deb9u1",
+										DependsOn: []string{
+											"libc6@2.24-11+deb9u4",
+											"libssl1.1@1.1.0k-1~deb9u1",
+										},
 										Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@lists.alioth.debian.org>",
 										Arch:       "amd64",
 										Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
@@ -719,7 +733,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
+					ID: "sha256:2c413fcea3d56f50bc56df349c970cf8da065eb4e319c6cfea1109f43aba434d",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          29696,
@@ -940,7 +954,7 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				},
 				{
-					ID: "sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
+					ID: "sha256:84612c920c817695817dc9015f6a2c3a5679fe64920e7868e2dd7e6ee09e14bc",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						Size:          6656,
@@ -1857,10 +1871,10 @@ func TestArtifact_Inspect(t *testing.T) {
 				Type: types.TypeContainerImage,
 				ID:   "sha256:0bebf0773ffd87baa7c64fbdbdf79a24ae125e3f99a8adebe52d1ccbe6bed16b",
 				BlobIDs: []string{
-					"sha256:75a461ca76eecc6cea981889d69aa1c2dd78c436108be8be1bbc29295520c7d4",
-					"sha256:81afc1747d0fdec7a606c27570313634ae331fab6f13566b23d0f6b3e498c050",
-					"sha256:0778c3e388c54f736a3d6e74ed390a91fdb42c6809f8fb743d4f72acb41a5d6d",
-					"sha256:5a3e3f25fdc97a14d69d99c63dd640cd2d38af5b987b7a95084cce3d835970fb",
+					"sha256:3122199c9e7608ce6e72bcb70b6d2a624a377c884de7dff58234263f54b2bd78",
+					"sha256:43bf1f06685499c75819a844ea40ef0ae053e7d9920d444cdc5322ae22e11108",
+					"sha256:2c413fcea3d56f50bc56df349c970cf8da065eb4e319c6cfea1109f43aba434d",
+					"sha256:84612c920c817695817dc9015f6a2c3a5679fe64920e7868e2dd7e6ee09e14bc",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:58701fd185bda36cab0557bb6438661831267aa4a9e0b54211c4d5317a48aff4",

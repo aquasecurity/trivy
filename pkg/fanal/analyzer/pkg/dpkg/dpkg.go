@@ -41,7 +41,7 @@ func newDpkgAnalyzer(_ analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) 
 }
 
 const (
-	analyzerVersion = 6
+	analyzerVersion = 7
 
 	statusFile    = "var/lib/dpkg/status"
 	statusDir     = "var/lib/dpkg/status.d/"
@@ -147,6 +147,10 @@ func (a dpkgAnalyzer) PostAnalyze(_ context.Context, input analyzer.PostAnalysis
 		return nil, xerrors.Errorf("dpkg walk error: %w", err)
 	}
 
+	// Dependencies are resolved after parsing all status files,
+	// since packages in status.d are stored in separate files.
+	a.consolidateDependencies(packageInfos)
+
 	// Map packages to their respective files.
 	// Third-party packages will NOT have their InstalledFiles populated to avoid filtering out
 	// language packages (npm, pip, etc.) installed by those third-party OS packages.
@@ -244,7 +248,6 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[string]digest.Digest) ([]types.PackageInfo, error) {
 	var pkg *types.Package
 	pkgs := make(map[string]*types.Package)
-	pkgIDs := make(map[string]string)
 
 	scanner := NewScanner(r)
 	for scanner.Scan() {
@@ -258,15 +261,12 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 		if pkg != nil {
 			pkg.Digest = digests[pkg.ID]
 			pkgs[pkg.ID] = pkg
-			pkgIDs[pkg.Name] = pkg.ID
 		}
 	}
 
 	if err := scanner.Err(); err != nil {
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
-
-	a.consolidateDependencies(pkgs, pkgIDs)
 
 	return []types.PackageInfo{
 		{
@@ -375,7 +375,7 @@ func (a dpkgAnalyzer) parseDepends(s string) []string {
 
 			// Store only uniq package names here
 			d = strings.TrimSpace(d)
-			if !slices.Contains(dependencies, d) {
+			if d != "" && !slices.Contains(dependencies, d) {
 				dependencies = append(dependencies, d)
 			}
 		}
@@ -391,18 +391,38 @@ func (a dpkgAnalyzer) trimVersionRequirement(s string) string {
 	return s
 }
 
-func (a dpkgAnalyzer) consolidateDependencies(pkgs map[string]*types.Package, pkgIDs map[string]string) {
-	for _, pkg := range pkgs {
-		// e.g. libc6 => libc6@2.31-13+deb11u4
-		pkg.DependsOn = lo.FilterMap(pkg.DependsOn, func(d string, _ int) (string, bool) {
-			if pkgID, ok := pkgIDs[d]; ok {
-				return pkgID, true
+// consolidateDependencies replaces dependency names with package IDs.
+//
+// Packages in var/lib/dpkg/status.d/ (e.g. distroless images) may depend on packages installed in other layers.
+// Such dependencies can't be resolved here, so their names are kept and resolved after merging layers.
+// Unresolved dependencies of packages in var/lib/dpkg/status are removed, as this file contains all installed packages.
+// cf. https://github.com/aquasecurity/trivy/issues/11264
+func (a dpkgAnalyzer) consolidateDependencies(pkgInfos []types.PackageInfo) {
+	pkgIDs := make(map[string]string)
+	for _, pkgInfo := range pkgInfos {
+		for _, pkg := range pkgInfo.Packages {
+			// Use the same package every time if there are several versions of the package.
+			if pkgID, ok := pkgIDs[pkg.Name]; !ok || pkg.ID < pkgID {
+				pkgIDs[pkg.Name] = pkg.ID
 			}
-			return "", false
-		})
-		sort.Strings(pkg.DependsOn)
-		if len(pkg.DependsOn) == 0 {
-			pkg.DependsOn = nil
+		}
+	}
+
+	for _, pkgInfo := range pkgInfos {
+		keepUnresolved := strings.HasPrefix(pkgInfo.FilePath, statusDir)
+		for i, pkg := range pkgInfo.Packages {
+			// e.g. libc6 => libc6@2.31-13+deb11u4
+			dependsOn := lo.FilterMap(pkg.DependsOn, func(d string, _ int) (string, bool) {
+				if pkgID, ok := pkgIDs[d]; ok {
+					return pkgID, true
+				}
+				return d, keepUnresolved
+			})
+			sort.Strings(dependsOn)
+			if len(dependsOn) == 0 {
+				dependsOn = nil
+			}
+			pkgInfo.Packages[i].DependsOn = dependsOn
 		}
 	}
 }
