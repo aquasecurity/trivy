@@ -184,8 +184,7 @@ var (
 		InstalledVersion: goTransitivePackage.Version,
 		PkgIdentifier:    goTransitivePackage.Identifier,
 	}
-	// The same vulnerability as vuln5, but detected on go-direct1, which is the
-	// product a CSAF relationship relates to rather than its sub-component.
+	// CVE-2024-0001 detected on go-direct1
 	vuln6 = types.DetectedVulnerability{
 		VulnerabilityID:  "CVE-2024-0001",
 		PkgName:          goDirectPackage1.Name,
@@ -549,7 +548,7 @@ func TestFilter(t *testing.T) {
 			}),
 		},
 		{
-			name: "CSAF with relationships, vulnerability on the related product",
+			name: "CSAF with relationships, vulnerability on the parent product, not the sub-component",
 			args: args{
 				// The statement covers go-transitive as a component of go-direct1,
 				// while the vulnerability is detected on go-direct1 itself.

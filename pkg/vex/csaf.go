@@ -93,8 +93,8 @@ func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProdu
 	csaf.RelationshipCategory, bool) {
 
 	// A relationship describes a sub-component within a product, so it can only match
-	// when a sub-component is given. The leaf component is first evaluated on its own,
-	// with no sub-component.
+	// when a sub-component is given. subProduct is nil when a component is evaluated
+	// on its own (see reachRoot).
 	if subProduct == nil {
 		return "", false
 	}
