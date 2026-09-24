@@ -19,13 +19,14 @@ const (
 type Type string
 
 type Options struct {
-	Backend     string
-	CacheDir    string
-	RedisCACert string
-	RedisCert   string
-	RedisKey    string
-	RedisTLS    bool
-	TTL         time.Duration
+	Backend            string
+	CacheDir           string
+	RedisCACert        string
+	RedisCert          string
+	RedisKey           string
+	RedisTLS           bool
+	RedisTLSServerName string
+	TTL                time.Duration
 }
 
 func NewType(backend string) Type {
@@ -52,7 +53,7 @@ func New(opts Options) (Cache, func(), error) {
 	log.Debug("Initializing scan cache...", log.String("type", string(t)))
 	switch t {
 	case TypeRedis:
-		redisCache, err := NewRedisCache(opts.Backend, opts.RedisCACert, opts.RedisCert, opts.RedisKey, opts.RedisTLS, opts.TTL)
+		redisCache, err := NewRedisCache(opts.Backend, opts.RedisCACert, opts.RedisCert, opts.RedisKey, opts.RedisTLSServerName, opts.RedisTLS, opts.TTL)
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to initialize redis cache: %w", err)
 		}
