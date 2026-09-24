@@ -23,6 +23,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/java/sbt"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/julia/pkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/bun"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/node"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/npm"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/pnpm"
