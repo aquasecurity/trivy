@@ -195,6 +195,10 @@ func TestFilter(t *testing.T) {
 	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
 
+	// A scanned SBOM whose root component is the `debian:12` container image.
+	testImageSBOM := core.NewBOM(core.Options{})
+	testImageSBOM.AddComponent(sbomRootComponent())
+
 	// Set up an OCI registry serving a VEX attestation for the `--vex oci` case.
 	registryHost, subjectDigest := setUpRegistry(t)
 
@@ -580,6 +584,8 @@ repositories:
 		{
 			name: "infinity loop for OS packages",
 			args: args{
+				// OS packages are always attached directly to the OS component, so the
+				// dependency cycle between them no longer hides `bash` from the root.
 				// - oci:debian?tag=12
 				//     - pkg:deb/debian/bash@5.3
 				//        - pkg:deb/debian/base-files@5.3
@@ -603,9 +609,70 @@ repositories:
 			},
 			want: imageReport([]types.Result{
 				infinityLoopOSPackagesResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{
-						vuln3,
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "testdata/openvex-oci.json")},
+				}),
+			}),
+		},
+		{
+			name: "infinity loop for language-specific packages",
+			args: args{
+				// The packages form a cycle that is not reachable from the root component,
+				// so `reachRoot` must fail safe and keep the vulnerability.
+				// - .
+				//     - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+				//        - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
+				//     - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
+				//        - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+				report: fsReport([]types.Result{
+					infinityLoopLangPackagesResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln5,
+						},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-nested.json",
+						},
 					},
+				},
+			},
+			want: fsReport([]types.Result{
+				infinityLoopLangPackagesResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln5,
+					},
+				}),
+			}),
+		},
+		{
+			name: "OpenVEX, scanned SBOM keeps the original root component",
+			args: args{
+				// The root component of the scanned SBOM is `pkg:oci/debian`, so the
+				// statement below applies even though the artifact is a JSON file.
+				// - oci:debian (from the SBOM root component)
+				//     - pkg:deb/debian/bash@5.3
+				report: sbomReport(testImageSBOM, []types.Result{
+					bashResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vuln3},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/openvex-oci.json",
+						},
+					},
+				},
+			},
+			want: sbomReport(testImageSBOM, []types.Result{
+				bashResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln3, vulnerableCodeNotInExecutePath, "testdata/openvex-oci.json")},
 				}),
 			}),
 		},
@@ -819,6 +886,39 @@ func fsReport(results types.Results) *types.Report {
 	}
 }
 
+// sbomRootComponent returns the root component of a scanned CycloneDX SBOM file for the
+// `debian:12` container image. The regenerated root component must inherit its type and
+// PURL so that VEX statements about `pkg:oci/debian` still apply.
+func sbomRootComponent() *core.Component {
+	return &core.Component{
+		Root: true,
+		Type: core.TypeContainerImage,
+		Name: "debian:12",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeOCI,
+				Name:    "debian",
+				Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "repository_url",
+						Value: "index.docker.io/library/debian",
+					},
+				},
+			},
+		},
+	}
+}
+
+func sbomReport(bom *core.BOM, results types.Results) *types.Report {
+	return &types.Report{
+		ArtifactName: "debian.cdx.json",
+		ArtifactType: ftypes.TypeCycloneDX,
+		BOM:          bom,
+		Results:      results,
+	}
+}
+
 func springResult(result types.Result) types.Result {
 	result.Type = ftypes.Jar
 	result.Class = types.ClassLangPkg
@@ -867,6 +967,35 @@ func infinityLoopOSPackagesResult(result types.Result) types.Result {
 	result.Packages = []ftypes.Package{
 		bashPkg,
 		baseFilesPkg,
+	}
+
+	return result
+}
+
+// infinityLoopLangPackagesResult builds a language-specific result whose packages form
+// a dependency cycle that is not reachable from the root component. Unlike OS packages,
+// these packages are not attached directly to the parent component, so this still
+// exercises the fail-safe in `reachRoot`.
+func infinityLoopLangPackagesResult(result types.Result) types.Result {
+	result.Type = ftypes.GoModule
+	result.Class = types.ClassLangPkg
+
+	// - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+	//     - pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0
+	//         - pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0
+	goDirect2 := clonePackage(goDirectPackage2)
+	goTransitive := clonePackage(goTransitivePackage)
+
+	// Both packages are indirect so that neither is attached to the parent component.
+	goDirect2.Relationship = ftypes.RelationshipIndirect
+	goTransitive.Relationship = ftypes.RelationshipIndirect
+
+	goDirect2.DependsOn = []string{goTransitive.ID}
+	goTransitive.DependsOn = []string{goDirect2.ID}
+
+	result.Packages = []ftypes.Package{
+		goDirect2,
+		goTransitive,
 	}
 
 	return result

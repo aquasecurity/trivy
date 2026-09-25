@@ -137,6 +137,16 @@ func (e *Encoder) rootComponent(r types.Report) (*core.Component, error) {
 		// e.g. for use in `convert` mode.
 		// See https://github.com/aquasecurity/trivy/issues/6780
 		root.Type = core.TypeFilesystem
+
+		if r.BOM != nil {
+			if c := r.BOM.Root(); c != nil && c.PkgIdentifier.PURL != nil {
+				root.Type = c.Type
+				root.Name = c.Name
+				root.Group = c.Group
+				root.Version = c.Version
+				root.PkgIdentifier.PURL = c.PkgIdentifier.PURL
+			}
+		}
 	}
 
 	if r.Metadata.Size != 0 {
@@ -266,7 +276,7 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 		c := components[pkg.Identifier.UID]
 
 		// Add a relationship between the parent and the package if needed
-		if e.belongToParent(pkg, parents, hasRoot) {
+		if e.belongToParent(pkg, parents, hasRoot, result.Class) {
 			e.bom.AddRelationship(parent, c, core.RelationshipContains)
 		}
 
@@ -500,7 +510,7 @@ func (*Encoder) vulnerability(vuln types.DetectedVulnerability) core.Vulnerabili
 }
 
 // belongToParent determines if a package should be directly included in the parent based on its relationship and dependencies.
-func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages, hasRoot bool) bool {
+func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Packages, hasRoot bool, pkgClass types.ResultClass) bool {
 	// Case 1: Relationship: known , DependsOn: known
 	//         Packages with no parent are included in the parent
 	//         - Relationship:
@@ -517,6 +527,10 @@ func (*Encoder) belongToParent(pkg ftypes.Package, parents map[string]ftypes.Pac
 	// Case 4: Relationship: unknown, DependsOn: known (e.g., GoBinaries, OS packages)
 	//         - Packages with parents: false. These packages are included in the packages from `parents` (e.g. GoBinaries deps and root package).
 	//         - Packages without parents: true. These packages are included in the parent (e.g. OS packages without parents).
+	if pkgClass == types.ClassOSPkg {
+		return true
+	}
+
 	if pkg.Relationship == ftypes.RelationshipDirect {
 		return !hasRoot
 	}
