@@ -140,6 +140,26 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "openSUSE-microos",
+			inputFile: "testdata/opensusemicroos",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.OpenSUSEMicroOS,
+					Name:   "20220412",
+				},
+			},
+		},
+		{
+			name:      "openSUSE-leap-micro",
+			inputFile: "testdata/opensuseleapmicro",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.OpenSUSELeapMicro,
+					Name:   "6.0",
+				},
+			},
+		},
+		{
 			name:      "SUSE Linux Enterprise Server",
 			inputFile: "testdata/sles",
 			want: &analyzer.AnalysisResult{
