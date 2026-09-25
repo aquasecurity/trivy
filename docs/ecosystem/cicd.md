@@ -81,6 +81,13 @@ It has capabilities to fail the pipeline, create issues, alert communication cha
 👉 Get it at: <https://github.com/Comcast/trivy-resource/>
 
 
+## MegaLinter (Community)
+[MegaLinter](https://megalinter.io/) is an open-source linters aggregator that runs 100+ linters and security scanners in CI workflows.
+
+Trivy is embedded out of the box to scan repositories for vulnerabilities, misconfigurations and secrets, and to generate SBOMs.
+
+👉 Get it at: <https://megalinter.io/latest/descriptors/repository_trivy/>
+
 ## SecObserve GitHub actions and GitLab templates (Community)
 [SecObserve GitHub actions and GitLab templates](https://github.com/SecObserve/secobserve_actions_templates) run various vulnerability scanners, providing uniform methods and parameters for launching the tools.
 
