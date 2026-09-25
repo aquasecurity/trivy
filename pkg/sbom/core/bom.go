@@ -44,7 +44,7 @@ const (
 	PropertySrcRelease      = "SrcRelease"
 	PropertySrcEpoch        = "SrcEpoch"
 	PropertyModularitylabel = "Modularitylabel"
-	PropertyFilePath        = "FilePath"
+	PropertyFilePath        = "FilePath" // Deprecated: kept for parsing older SBOMs. CycloneDX output uses `evidence.occurrences`.
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
 
@@ -160,7 +160,7 @@ type Component struct {
 	Supplier string
 
 	// Files is a list of files that are part of the component.
-	// CycloneDX: component.properties
+	// CycloneDX: component.evidence.occurrences, component.hashes
 	// SPDX: files
 	Files []File
 
@@ -188,7 +188,7 @@ func (c *Component) Clone() *Component {
 
 type File struct {
 	// Path is a path of the file.
-	// CycloneDX: N/A
+	// CycloneDX: component.evidence.occurrences[].location
 	// SPDX: package.files[].fileName
 	Path string
 
