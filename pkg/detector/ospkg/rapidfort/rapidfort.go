@@ -26,7 +26,8 @@ import (
 // the last match — the dist tag is the trailing element of the release.
 //
 //	"7.76.1-26.el9_3.3" → el/9    "7.76.1-26.fc43" → fc/43    "7.76.1-26.rf1" → rf/1
-var rpmDistTagRe = regexp.MustCompile(`\.(el|fc|rf)(\d*)`)
+//	"8.5.0-1.amzn2023"  → amzn/2023
+var rpmDistTagRe = regexp.MustCompile(`\.(el|fc|rf|amzn)(\d*)`)
 
 // rpmDistTag returns the RPM dist tag and its trailing digits from a version
 // string, or ("", "") for an untagged RPM.
@@ -39,22 +40,41 @@ func rpmDistTag(ver string) (tag, num string) {
 	return last[1], last[2]
 }
 
+// rfMarkerRe matches a RapidFort rebuild marker in a dpkg version; a stock
+// distribution build never carries one. Three parts, left to right:
+//
+//	[0-9+~.]            Separator before it, so "rf" counts only as its own
+//	                    revision element, never inside a word ("1.0-1surf1").
+//	rf(?:ubu[a-z]*)?    The marker: bare "rf", or "ubu" plus an optional
+//	                    variant suffix ("rfubu", "rfubuntu", "rfubujl").
+//	(?:[^a-z]|$)        Digit, separator or end after it, so a spelling with
+//	                    no "ubu" cannot match on its "rf" prefix ("rfdebian").
+//
+//	match:    0:2.46-10rfubu  0:3.3.3-1rfubuntu0.24.04.1  0:2.43-14.rf
+//	          8.18.0-11rfubujl
+//	no match: 7.81.0-1ubuntu1.15  1.0-1surf1  0:3.2.1-4rfdebian
+var rfMarkerRe = regexp.MustCompile(`[0-9+~.]rf(?:ubu[a-z]*)?(?:[^a-z]|$)`)
+
 // dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
-// RapidFort rebuild marker. The feed uses two conventions: "+rf" (e.g.
-// "0:2.5.2-1build1+rf.1") and "rfubu" (e.g. "0:2.46-10rfubu"). Both signal
-// the same "rf" identifier on the DB side.
+// RapidFort rebuild marker — the same signal the feed annotator writes as the
+// "rf" range identifier, so the routing decision here matches the DB build.
 func dpkgHasRfMarker(ver string) bool {
-	return strings.Contains(ver, "+rf") || strings.Contains(ver, "rfubu")
+	return rfMarkerRe.MatchString(ver)
 }
 
 // getters is package-level because a getter is not tied to a scanner: the
 // release is passed at Get time, so one getter serves both "rapidfort ubuntu
 // 22.04" and the family-level "rapidfort ubuntu".
 var getters = map[ecosystem.Type]rapidfort.VulnSrcGetter{
-	ecosystem.Ubuntu: rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu),
-	ecosystem.Alpine: rapidfort.NewVulnSrcGetter(ecosystem.Alpine),
-	ecosystem.RedHat: rapidfort.NewVulnSrcGetter(ecosystem.RedHat),
-	ecosystem.Fedora: rapidfort.NewVulnSrcGetter(ecosystem.Fedora),
+	ecosystem.Ubuntu:      rapidfort.NewVulnSrcGetter(ecosystem.Ubuntu),
+	ecosystem.Debian:      rapidfort.NewVulnSrcGetter(ecosystem.Debian),
+	ecosystem.Alpine:      rapidfort.NewVulnSrcGetter(ecosystem.Alpine),
+	ecosystem.RedHat:      rapidfort.NewVulnSrcGetter(ecosystem.RedHat),
+	ecosystem.OracleLinux: rapidfort.NewVulnSrcGetter(ecosystem.OracleLinux),
+	ecosystem.Rocky:       rapidfort.NewVulnSrcGetter(ecosystem.Rocky),
+	ecosystem.AlmaLinux:   rapidfort.NewVulnSrcGetter(ecosystem.AlmaLinux),
+	ecosystem.AmazonLinux: rapidfort.NewVulnSrcGetter(ecosystem.AmazonLinux),
+	ecosystem.Fedora:      rapidfort.NewVulnSrcGetter(ecosystem.Fedora),
 }
 
 // Scanner detects vulnerabilities for RapidFort curated images by querying
@@ -80,16 +100,19 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	case ftypes.Ubuntu:
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor // "22.04.1" → "22.04"
+	case ftypes.Debian:
+		s.comparer = version.NewDEBComparer()
+		s.versionTrimmer = version.Major // "12.15" → "12"
 	case ftypes.Alpine:
 		s.comparer = version.NewAPKComparer()
 		s.versionTrimmer = version.Minor // "3.17.2" → "3.17"
-	case ftypes.RedHat:
+	case ftypes.RedHat, ftypes.Oracle, ftypes.Rocky, ftypes.Alma, ftypes.Amazon:
 		s.comparer = version.NewRPMComparer()
-		s.versionTrimmer = version.Major // "9.2" → "9"
+		s.versionTrimmer = version.Major // "9.2" → "9"; Amazon's "2023" is already a major
 	default:
-		// Scanners are only created for Ubuntu/Alpine/RedHat; the DEB comparer
-		// + minor trimmer here is a safe placeholder for any direct caller,
-		// whose packages route to no ecosystem anyway.
+		// Scanners are only created for the families in familyEcosystems; the
+		// DEB comparer + minor trimmer here is a safe placeholder for any direct
+		// caller, whose packages route to no ecosystem anyway.
 		s.comparer = version.NewDEBComparer()
 		s.versionTrimmer = version.Minor
 	}
@@ -97,36 +120,62 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 	return s
 }
 
+// familyEcosystems maps each OS RapidFort curates to the ecosystem its
+// advisories are bucketed under. The RapidFort vulnsrc in trivy-db picks the
+// same ecosystem per OS when it writes those buckets, so the two mappings have
+// to stay in step.
+var familyEcosystems = map[ftypes.OSType]ecosystem.Type{
+	ftypes.Ubuntu: ecosystem.Ubuntu,
+	ftypes.Debian: ecosystem.Debian,
+	ftypes.Alpine: ecosystem.Alpine,
+	ftypes.RedHat: ecosystem.RedHat,
+	ftypes.Oracle: ecosystem.OracleLinux,
+	ftypes.Rocky:  ecosystem.Rocky,
+	ftypes.Alma:   ecosystem.AlmaLinux,
+	ftypes.Amazon: ecosystem.AmazonLinux,
+}
+
 // route picks the (ecosystem, release) pair whose bucket the installed package
 // belongs in. RapidFort's own rebuilds are not tied to a distribution release,
-// so they drop it and land in the family-level bucket of their ecosystem.
+// so they drop it and land in the family-level bucket of their ecosystem — one
+// per feed, which is what keeps an RPM range away from the dpkg comparator.
 func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
-	switch s.baseOS {
-	case ftypes.Ubuntu:
-		if dpkgHasRfMarker(installedVer) {
-			return ecosystem.Ubuntu, ""
-		}
-		return ecosystem.Ubuntu, osVer
-	case ftypes.Alpine:
-		return ecosystem.Alpine, osVer
-	case ftypes.RedHat:
-		switch tag, num := rpmDistTag(installedVer); tag {
-		case "fc":
-			return ecosystem.Fedora, num
-		case "rf":
-			return ecosystem.RedHat, ""
-		case "el":
-			// Use the package's own dist-tag major, not osVer: an .el8
-			// package inside a RHEL 9 image belongs to the Red Hat 8 bucket.
-			return ecosystem.RedHat, num
-		default:
-			// An untagged RPM names no distribution, so it is treated as a
-			// build of the image's own release.
-			return ecosystem.RedHat, osVer
-		}
+	eco, ok := familyEcosystems[s.baseOS]
+	if !ok {
+		// Unsupported base OS: no getter matches the empty ecosystem.
+		return "", osVer
 	}
-	// Unsupported base OS: no getter matches the empty ecosystem.
-	return "", osVer
+
+	switch s.baseOS {
+	// The dpkg families carry the rebuild marker in the package revision;
+	// their distribution packages have no tag to route on.
+	case ftypes.Ubuntu, ftypes.Debian:
+		if dpkgHasRfMarker(installedVer) {
+			return eco, ""
+		}
+		return eco, osVer
+	case ftypes.Alpine:
+		return eco, osVer
+	}
+
+	// The RPM families: the dist tag names the release, and for "fc" the
+	// distribution too.
+	switch tag, num := rpmDistTag(installedVer); tag {
+	case "fc":
+		return ecosystem.Fedora, num
+	case "rf":
+		return eco, ""
+	case "el", "amzn":
+		// Use the package's own dist-tag major, not osVer: an .el8
+		// package inside a RHEL 9 image belongs to the Red Hat 8 bucket.
+		// cmp.Or supplies osVer when the tag carries no major at all
+		// ("7.76.1-26.el"), since that names no release of its own.
+		return eco, cmp.Or(num, osVer)
+	default:
+		// An untagged RPM names no distribution, so it is treated as a build of
+		// the image's own release.
+		return eco, osVer
+	}
 }
 
 // Detect queries the RapidFort advisory DB for vulnerabilities in the given packages.

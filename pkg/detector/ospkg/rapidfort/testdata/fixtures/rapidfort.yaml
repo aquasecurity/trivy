@@ -1,6 +1,16 @@
-# RapidFort advisories, one bucket per distribution: Red Hat (elN), Fedora
-# (fcNN) and RapidFort (rf) each get their own bucket, alongside Ubuntu and
-# Alpine. Each bucket holds a single distribution's ranges.
+# RapidFort advisories, one bucket per distribution: Red Hat, Oracle Linux,
+# Rocky and Alma (elN), Amazon (amznN) and Fedora (fcNN) each get their own
+# bucket, alongside Ubuntu, Debian and Alpine. Each bucket holds a single
+# distribution's ranges.
+#
+# RapidFort's own rebuilds (rf) are split one bucket per feed — "rapidfort Red
+# Hat", "rapidfort Oracle Linux", "rapidfort rocky", "rapidfort alma", "rapidfort
+# amazon linux", "rapidfort debian", "rapidfort ubuntu" — so that RPM and dpkg
+# ranges never share a bucket (the wrong comparator would read them) and so
+# feeds that publish differing ranges for the same rebuild cannot overwrite each
+# other. Every rf bucket below carries a different fix version, so a test that
+# lands in the wrong one fails on the reported FixedVersion instead of passing
+# by accident.
 - bucket: rapidfort ubuntu 22.04
   pairs:
     - bucket: curl
@@ -124,6 +134,124 @@
             PatchedVersions:
               - "7.76.1-26.fc39"
             Severity: 2
+- bucket: rapidfort debian 12
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2024-5535
+          value:
+            VulnerableVersions:
+              - ">=3.0.0, <3.0.14-1~deb12u2"
+            PatchedVersions:
+              - "3.0.14-1~deb12u2"
+            Severity: 4
+- bucket: rapidfort Oracle Linux 9
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.el9, <7.76.1-26.el9_3.3"
+            PatchedVersions:
+              - "7.76.1-26.el9_3.3"
+            Severity: 2
+# RapidFort's own rebuilds inside an Oracle image. The fix version here differs
+# deliberately from the one in the "rapidfort Red Hat" bucket at the bottom of
+# this file: an rf package in an Oracle image must resolve here, not there.
+- bucket: rapidfort Oracle Linux
+  pairs:
+    - bucket: rf-curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.rf, <7.76.1-27.rf1"
+            PatchedVersions:
+              - "7.76.1-27.rf1"
+            Severity: 2
+- bucket: rapidfort rocky 9
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.el9, <7.76.1-26.el9_3.3"
+            PatchedVersions:
+              - "7.76.1-26.el9_3.3"
+            Severity: 2
+# Rocky 8 releases carry a ".rocky" suffix after the el tag
+# (e.g. "7.61.1-15.el8.rocky.6.3"), which must still resolve here.
+- bucket: rapidfort rocky 8
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.61.1-14.el8, <7.61.1-30.el8"
+            PatchedVersions:
+              - "7.61.1-30.el8"
+            Severity: 2
+- bucket: rapidfort alma 9
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.el9, <7.76.1-26.el9_3.3"
+            PatchedVersions:
+              - "7.76.1-26.el9_3.3"
+            Severity: 2
+- bucket: rapidfort amazon linux 2023
+  pairs:
+    - bucket: curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - "<8.5.0-1.amzn2023"
+            PatchedVersions:
+              - "8.5.0-1.amzn2023"
+            Severity: 2
+# RapidFort's own rebuilds inside Rocky, Alma and Amazon images. Like the Oracle
+# bucket above, each carries a distinct fix version so a misrouted rf package
+# shows up as a wrong FixedVersion rather than a silent pass.
+- bucket: rapidfort rocky
+  pairs:
+    - bucket: rf-curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.rf, <7.76.1-28.rf1"
+            PatchedVersions:
+              - "7.76.1-28.rf1"
+            Severity: 2
+- bucket: rapidfort alma
+  pairs:
+    - bucket: rf-curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.rf, <7.76.1-29.rf1"
+            PatchedVersions:
+              - "7.76.1-29.rf1"
+            Severity: 2
+- bucket: rapidfort amazon linux
+  pairs:
+    - bucket: rf-curl
+      pairs:
+        - key: CVE-2023-27536
+          value:
+            VulnerableVersions:
+              - ">=7.76.1-14.rf, <7.76.1-30.rf1"
+            PatchedVersions:
+              - "7.76.1-30.rf1"
+            Severity: 2
 - bucket: rapidfort Red Hat
   pairs:
     - bucket: rf-curl
@@ -143,6 +271,34 @@
               - "<1:3.2.2-20.rf"
             PatchedVersions:
               - "1:3.2.2-20.rf"
+            Severity: 2
+# RapidFort's own dpkg rebuilds inside a Debian image. The Debian feed annotates
+# no identifiers, so the DB build attributes these by the rebuild marker in the
+# version string; the fix here is deliberately distinct from the versioned
+# "rapidfort debian 12" bucket's so a misroute is visible.
+- bucket: rapidfort debian
+  pairs:
+    - bucket: rf-git
+      pairs:
+        - key: CVE-2025-27614
+          value:
+            VulnerableVersions:
+              - ">=0:0, <0:2.48.2-0rfubu"
+            PatchedVersions:
+              - "0:2.48.2-0rfubu"
+            Severity: 2
+    # A real rf-perl range from the Debian feed: the rebuild is introduced as a
+    # "+rf" revision and fixed as a ".rf" build. Neither spelling contains
+    # "rfubu", and the ".rf" one contains no "+rf" either, so both shapes have
+    # to reach this bucket.
+    - bucket: rf-perl
+      pairs:
+        - key: CVE-2024-56406
+          value:
+            VulnerableVersions:
+              - ">=0:5.40.1-12+rf.0, <0:5.42.3-11.rf"
+            PatchedVersions:
+              - "0:5.42.3-11.rf"
             Severity: 2
 - bucket: rapidfort ubuntu
   pairs:
