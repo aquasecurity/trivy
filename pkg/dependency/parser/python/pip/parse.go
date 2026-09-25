@@ -86,7 +86,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		text := scanner.Text()
 		line := strings.ReplaceAll(text, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
-		line = removeExtras(line)
+		line, err := removeExtras(line)
+		if err != nil {
+			return nil, nil, xerrors.Errorf("invalid requirement at line %d: %w", lineNumber, err)
+		}
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
@@ -128,13 +131,25 @@ func rStripByKey(line, key string) string {
 	return line
 }
 
-func removeExtras(line string) string {
+// removeExtras strips a PEP 508 extras group (e.g. "[crypto]") from a
+// requirement line. It only removes a well-formed "[...]" pair where the
+// opening bracket precedes the closing bracket.
+// A line without any extras brackets is returned unchanged.
+// Malformed input (a missing bracket or a "]" appearing before "[") is not a
+// valid requirement (pip rejects such lines), so an error is returned rather
+// than attempting to repair the line.
+// e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0"
+func removeExtras(line string) (string, error) {
 	startIndex := strings.Index(line, startExtras)
-	endIndex := strings.Index(line, endExtras) + 1
-	if startIndex != -1 && endIndex != -1 {
-		line = line[:startIndex] + line[endIndex:]
+	endIndex := strings.Index(line, endExtras)
+	if startIndex == -1 && endIndex == -1 {
+		// No extras group at all.
+		return line, nil
 	}
-	return line
+	if startIndex == -1 || endIndex == -1 || startIndex > endIndex {
+		return "", xerrors.Errorf("unbalanced extras brackets: %q", line)
+	}
+	return line[:startIndex] + line[endIndex+1:], nil
 }
 
 // isNameChar reports whether r is a valid character in a PEP 508 package name.
