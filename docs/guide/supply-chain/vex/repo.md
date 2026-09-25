@@ -103,19 +103,20 @@ You can add repositories with higher priority than the default or even remove th
   url: https://example.com/repo2
 ```
 
-In this configuration, when Trivy detects a vulnerability in a package, it generates a PURL for that package and searches for matching VEX documents in the configured repositories.
+In this configuration, when Trivy detects a vulnerability in a package, it generates a PURL for that package and searches for matching VEX statements in the configured repositories.
 The search process follows this order:
 
-1. Trivy first looks for a VEX document matching the package's PURL in `repo1`.
-2. If no matching VEX document is found in `repo1`, Trivy then searches in `repo2`.
-3. This process continues through all configured repositories until a match is found.
- 
-If a matching VEX document is found in any repository (e.g., `repo1`), the search stops, and Trivy uses that VEX document.
-Subsequent repositories (e.g., `repo2`) are not checked for that specific vulnerability and package combination.
+1. Trivy first looks for a VEX document matching the package's PURL in `repo1`, and for a statement about the detected vulnerability in that document.
+2. If `repo1` has no statement about that vulnerability, Trivy then searches in `repo2`.
+3. This process continues through all configured repositories until a statement is found.
 
-It's important to note that the first matching VEX document found determines the final status of the vulnerability.
+The first statement found determines the final status of the vulnerability.
 For example, if `repo1` states that a package is "Affected" by a vulnerability, this status will be used even if `repo2` states that the same package is "Not Affected" for the same vulnerability.
 The "Affected" status from the higher-priority repository (`repo1`) takes precedence, and Trivy will consider the package as affected by the vulnerability.
+Statuses that don't filter the vulnerability out, such as "Under Investigation", are statements as well and take precedence in the same way.
+
+Note that a repository takes precedence only for the vulnerabilities it has a statement about.
+A repository that merely lists the package in its index, without saying anything about the detected vulnerability, doesn't hide the statements of the repositories after it.
 
 ### Repository Updates
 
