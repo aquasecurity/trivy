@@ -7,6 +7,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -969,6 +970,188 @@ func TestApplyLayers(t *testing.T) {
 						Layer: types.Layer{
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with dpkg dependencies across status.d layers",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:a5789fc40e828c4e7467626e3f69ec5dea8e5da22fe660db8ae6d16f777b0bbf",
+					DiffID:        "sha256:0fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+					OS: types.OS{
+						Family: "debian",
+						Name:   "12.7",
+					},
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libgcc-s1",
+							Packages: types.Packages{
+								{
+									ID:         "libgcc-s1@12.2.0-14",
+									Name:       "libgcc-s1",
+									Version:    "12.2.0",
+									Release:    "14",
+									DependsOn:  []string{"gcc-12-base", "libc6"}, // gcc-12-base is not installed
+									AnalyzedBy: analyzer.TypeDpkg,
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:235c3625d753c5b8a741210c2e7fb26b47a0d02cf49acc631a38dcf847eedf89",
+					DiffID:        "sha256:1fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libc6",
+							Packages: types.Packages{
+								{
+									ID:         "libc6@2.36-9+deb12u7",
+									Name:       "libc6",
+									Version:    "2.36",
+									Release:    "9+deb12u7",
+									DependsOn:  []string{"libgcc-s1"},
+									AnalyzedBy: analyzer.TypeDpkg,
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:dc0fb75e565a59a5824baedc9645656d17bc91c4b31332ee179580fa9f60eacd",
+					DiffID:        "sha256:2fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/dpkg/status.d/libssl3",
+							Packages: types.Packages{
+								{
+									ID:         "libssl3@3.0.14-1~deb12u2",
+									Name:       "libssl3",
+									Version:    "3.0.14",
+									Release:    "1~deb12u2",
+									DependsOn:  []string{"libc6"},
+									AnalyzedBy: analyzer.TypeDpkg,
+								},
+							},
+						},
+						{
+							FilePath: "var/lib/dpkg/status.d/openssl",
+							Packages: types.Packages{
+								{
+									ID:      "openssl@3.0.14-1~deb12u2",
+									Name:    "openssl",
+									Version: "3.0.14",
+									Release: "1~deb12u2",
+									// libssl3 was already resolved by the analyzer as it is in the same layer
+									DependsOn:  []string{"libc6", "libssl3@3.0.14-1~deb12u2"},
+									AnalyzedBy: analyzer.TypeDpkg,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				OS: types.OS{
+					Family: "debian",
+					Name:   "12.7",
+				},
+				Packages: types.Packages{
+					{
+						ID:         "libc6@2.36-9+deb12u7",
+						Name:       "libc6",
+						Version:    "2.36",
+						Release:    "9+deb12u7",
+						DependsOn:  []string{"libgcc-s1@12.2.0-14"},
+						AnalyzedBy: analyzer.TypeDpkg,
+						Identifier: types.PkgIdentifier{
+							UID: "9669a0f73349c761",
+							PURL: &packageurl.PackageURL{
+								Type:       packageurl.TypeDebian,
+								Namespace:  "debian",
+								Name:       "libc6",
+								Version:    "2.36-9+deb12u7",
+								Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "debian-12.7"}},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:235c3625d753c5b8a741210c2e7fb26b47a0d02cf49acc631a38dcf847eedf89",
+							DiffID: "sha256:1fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+						},
+					},
+					{
+						ID:         "libgcc-s1@12.2.0-14",
+						Name:       "libgcc-s1",
+						Version:    "12.2.0",
+						Release:    "14",
+						DependsOn:  []string{"libc6@2.36-9+deb12u7"},
+						AnalyzedBy: analyzer.TypeDpkg,
+						Identifier: types.PkgIdentifier{
+							UID: "af451471d2c64780",
+							PURL: &packageurl.PackageURL{
+								Type:       packageurl.TypeDebian,
+								Namespace:  "debian",
+								Name:       "libgcc-s1",
+								Version:    "12.2.0-14",
+								Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "debian-12.7"}},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:a5789fc40e828c4e7467626e3f69ec5dea8e5da22fe660db8ae6d16f777b0bbf",
+							DiffID: "sha256:0fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+						},
+					},
+					{
+						ID:         "libssl3@3.0.14-1~deb12u2",
+						Name:       "libssl3",
+						Version:    "3.0.14",
+						Release:    "1~deb12u2",
+						DependsOn:  []string{"libc6@2.36-9+deb12u7"},
+						AnalyzedBy: analyzer.TypeDpkg,
+						Identifier: types.PkgIdentifier{
+							UID: "d447cf1608cd5bea",
+							PURL: &packageurl.PackageURL{
+								Type:       packageurl.TypeDebian,
+								Namespace:  "debian",
+								Name:       "libssl3",
+								Version:    "3.0.14-1~deb12u2",
+								Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "debian-12.7"}},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:dc0fb75e565a59a5824baedc9645656d17bc91c4b31332ee179580fa9f60eacd",
+							DiffID: "sha256:2fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
+						},
+					},
+					{
+						ID:      "openssl@3.0.14-1~deb12u2",
+						Name:    "openssl",
+						Version: "3.0.14",
+						Release: "1~deb12u2",
+						DependsOn: []string{
+							"libc6@2.36-9+deb12u7",
+							"libssl3@3.0.14-1~deb12u2",
+						},
+						AnalyzedBy: analyzer.TypeDpkg,
+						Identifier: types.PkgIdentifier{
+							UID: "7be53094dbc1f2cc",
+							PURL: &packageurl.PackageURL{
+								Type:       packageurl.TypeDebian,
+								Namespace:  "debian",
+								Name:       "openssl",
+								Version:    "3.0.14-1~deb12u2",
+								Qualifiers: packageurl.Qualifiers{{Key: "distro", Value: "debian-12.7"}},
+							},
+						},
+						Layer: types.Layer{
+							Digest: "sha256:dc0fb75e565a59a5824baedc9645656d17bc91c4b31332ee179580fa9f60eacd",
+							DiffID: "sha256:2fe0e4a1d3b6e4d1a5b2a2d0d3e3f4c5b6a7980112233445566778899aabbccd",
 						},
 					},
 				},
