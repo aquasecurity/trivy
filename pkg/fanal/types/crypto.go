@@ -150,40 +150,6 @@ func CompareCryptoAssets(a, b CryptoAsset) int {
 	)
 }
 
-// LinkCryptoKeyPairs points every private key at the public key derived from it, when both
-// were found. A public key states nothing about the existence of a private one, so the
-// reference runs in one direction only.
-//
-// The two halves are told apart by the key type and share an identity, since a key is
-// identified by the digest of its SubjectPublicKeyInfo. An encrypted container is left
-// alone, because its identity is the digest of the container, which never equals the
-// digest of a SubjectPublicKeyInfo.
-func LinkCryptoKeyPairs(assets []CryptoAsset) {
-	public := make(map[CryptoIdentity]CryptoDescriptor)
-	for _, asset := range assets {
-		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
-			public[asset.Identity] = asset.Descriptor()
-		}
-	}
-	if len(public) == 0 {
-		return
-	}
-
-	for i, asset := range assets {
-		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
-			continue
-		}
-		descriptor, found := public[asset.Identity]
-		if !found {
-			continue
-		}
-		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
-			Type:         CryptoRelationshipCorrespondsTo,
-			RelatedAsset: descriptor,
-		})
-	}
-}
-
 // Clone returns a deep copy of the description.
 func (a CryptoAssetInfo) Clone() CryptoAssetInfo {
 	clone := a

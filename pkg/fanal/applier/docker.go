@@ -11,6 +11,7 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -215,7 +216,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 	// A key file states nothing about where the other half of the pair was found, so the
 	// two are linked here, once every layer has been applied.
-	ftypes.LinkCryptoKeyPairs(mergedLayer.CryptoAssets)
+	crypto.LinkKeyPairs(mergedLayer.CryptoAssets)
 
 	for _, s := range secretsMap {
 		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
