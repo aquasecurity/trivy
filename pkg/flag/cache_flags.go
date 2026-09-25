@@ -31,28 +31,28 @@ var (
 	CacheTTLFlag = Flag[time.Duration]{
 		Name:       "cache-ttl",
 		ConfigName: "cache.ttl",
-		Usage:      "cache TTL when using redis as cache backend",
+		Usage:      "cache TTL when using Redis as cache backend",
 	}
 	RedisTLSFlag = Flag[bool]{
 		Name:          "redis-tls",
 		ConfigName:    "cache.redis.tls",
-		Usage:         "enable redis TLS with public certificates, if using redis as cache backend",
+		Usage:         "enable Redis TLS with public certificates, if using Redis as cache backend",
 		TelemetrySafe: true,
 	}
 	RedisCACertFlag = Flag[string]{
 		Name:       "redis-ca",
 		ConfigName: "cache.redis.ca",
-		Usage:      "redis ca file location, if using redis as cache backend",
+		Usage:      "Redis CA file location, if using Redis as cache backend",
 	}
 	RedisCertFlag = Flag[string]{
 		Name:       "redis-cert",
 		ConfigName: "cache.redis.cert",
-		Usage:      "redis certificate file location, if using redis as cache backend",
+		Usage:      "Redis certificate file location, if using Redis as cache backend",
 	}
 	RedisKeyFlag = Flag[string]{
 		Name:       "redis-key",
 		ConfigName: "cache.redis.key",
-		Usage:      "redis key file location, if using redis as cache backend",
+		Usage:      "Redis key file location, if using Redis as cache backend",
 	}
 )
 

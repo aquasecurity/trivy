@@ -52,7 +52,7 @@ func TestNew(t *testing.T) {
 				RedisCACert: "testdata/ca-cert.pem",
 				RedisTLS:    true,
 			},
-			wantErr: "you must provide Redis CA, cert and key file path when using TLS",
+			wantErr: "you must provide Redis CA, cert and key file paths when using TLS",
 		},
 		{
 			name: "invalid TLS file paths",

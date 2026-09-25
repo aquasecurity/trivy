@@ -139,7 +139,7 @@ func (pom *pomXML) resolveDependencyVersions() error {
 			} else {
 				// We use simplified logic to resolve properties.
 				// If necessary, update and use the logic for maven pom's
-				return xerrors.Errorf("Unable to resolve %q version. Please open a new discussion to update the Trivy logic.", dep.Version)
+				return xerrors.Errorf("unable to resolve version for %q; please open a new discussion to update the Trivy logic", dep.Version)
 			}
 		}
 	}
