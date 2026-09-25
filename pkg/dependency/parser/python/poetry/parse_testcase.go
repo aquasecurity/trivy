@@ -24,6 +24,16 @@ var (
 	// poetry add pytest@5.4.3 --dev
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
 	// mark dev deps
+	poetryMultipleConstraints = []ftypes.Package{
+		{ID: "attrs@25.1.0", Name: "attrs", Version: "25.1.0"},
+		{ID: "foo@1.0.0", Name: "foo", Version: "1.0.0"},
+		{ID: "typing-extensions@4.14.0", Name: "typing-extensions", Version: "4.14.0"},
+	}
+
+	poetryMultipleConstraintsDeps = []ftypes.Dependency{
+		{ID: "foo@1.0.0", DependsOn: []string{"attrs@25.1.0", "typing-extensions@4.14.0"}},
+	}
+
 	poetryFlask = []ftypes.Package{
 		{ID: "atomicwrites@1.4.1", Name: "atomicwrites", Version: "1.4.1", Dev: true},
 		{ID: "attrs@25.1.0", Name: "attrs", Version: "25.1.0", Dev: true},
