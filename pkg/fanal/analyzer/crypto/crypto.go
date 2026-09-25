@@ -2,7 +2,7 @@ package crypto
 
 import (
 	"context"
-	"io"
+	"errors"
 	"os"
 	"path/filepath"
 
@@ -10,7 +10,9 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 func init() {
@@ -32,8 +34,12 @@ var requiredExtensions = set.NewCaseInsensitive(".pem", ".der", ".crt", ".cer", 
 type cryptoAnalyzer struct{}
 
 func (a *cryptoAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	content, err := io.ReadAll(input.Content)
-	if err != nil {
+	// A file matched by --file-patterns reaches the analyzer without passing Required.
+	content, err := xio.ReadAllWithLimit(input.Content, maxFileSize)
+	if errors.Is(err, xio.ErrLimitExceeded) {
+		logSkippedFile(input.FilePath)
+		return nil, nil
+	} else if err != nil {
 		return nil, xerrors.Errorf("read %s: %w", input.FilePath, err)
 	}
 
@@ -49,10 +55,19 @@ func (a *cryptoAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInp
 
 // Required selects a file by extension and size, without reading its content.
 func (a *cryptoAnalyzer) Required(filePath string, info os.FileInfo) bool {
-	if info.Size() > maxFileSize {
+	if !requiredExtensions.Contains(filepath.Ext(filePath)) {
 		return false
 	}
-	return requiredExtensions.Contains(filepath.Ext(filePath))
+	if info.Size() > maxFileSize {
+		logSkippedFile(filePath)
+		return false
+	}
+	return true
+}
+
+// logSkippedFile reports a file left out of the inventory for its size.
+func logSkippedFile(filePath string) {
+	log.WithPrefix("crypto").Debug("File is too large to read", log.FilePath(filePath))
 }
 
 func (a *cryptoAnalyzer) Type() analyzer.Type {

@@ -9,6 +9,7 @@ import (
 	"encoding/pem"
 	"math/big"
 	"os"
+	"slices"
 	"testing"
 	"time"
 
@@ -65,6 +66,11 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 			name:     "no cryptographic object",
 			filePath: "etc/ssl/certs/request.pem",
 			content:  fixtures.certificateRequestPEM,
+		},
+		{
+			name:     "content over the size limit",
+			filePath: "etc/ssl/certs/server.pem",
+			content:  slices.Concat(fixtures.certificatePEM, make([]byte, maxFileSize)),
 		},
 	}
 
