@@ -1998,6 +1998,22 @@ func TestPom_Parse(t *testing.T) {
 			},
 		},
 		{
+			// The relativePath POM shares only the ArtifactID with the declared
+			// parent (different GroupID), so it must not be treated as the parent
+			// and its dependencies must not be inherited.
+			name:      "relativePath points at a POM with the same ArtifactID but a different GroupID",
+			inputFile: filepath.Join("testdata", "wrong-relative-path-parent", "pom.xml"),
+			local:     true,
+			want: []ftypes.Package{
+				{
+					ID:           "com.example:child:1.0.0::739a5b0b",
+					Name:         "com.example:child",
+					Version:      "1.0.0",
+					Relationship: ftypes.RelationshipRoot,
+				},
+			},
+		},
+		{
 			name:      "dependency without version",
 			inputFile: filepath.Join("testdata", "dep-without-version", "pom.xml"),
 			local:     true,
