@@ -172,6 +172,10 @@ func (r *summaryRenderer) Render(report types.Report) {
 	t.SetAlignment(alignments...)
 
 	for _, result := range r.splitAggregatedPackages(report.Results) {
+		// The summary counts findings, and cryptographic assets are an inventory.
+		if result.Class == types.ClassCrypto {
+			continue
+		}
 		resultType := string(result.Type)
 		switch result.Class {
 		case types.ClassSecret:
