@@ -203,3 +203,23 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestParse_ExtPrefixDependency(t *testing.T) {
+	// A require key such as "extension/foo" starts with "ext" but is a regular
+	// package, not a PHP extension. Only platform extensions use the "ext-"
+	// prefix, so the dependency edge to "extension/foo" must be kept while
+	// "php" and "ext-json" are skipped.
+	f, err := os.Open("testdata/composer_ext_prefix.lock")
+	require.NoError(t, err)
+	defer f.Close()
+
+	_, gotDeps, err := NewParser().Parse(t.Context(), f)
+	require.NoError(t, err)
+
+	assert.Equal(t, []ftypes.Dependency{
+		{
+			ID:        "acme/app@1.0.0",
+			DependsOn: []string{"extension/foo@1.2.0"},
+		},
+	}, gotDeps)
+}
