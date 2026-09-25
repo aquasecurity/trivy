@@ -167,6 +167,11 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		return nil, "", "", true, fmt.Errorf("no source was found for the registry at %s", hostname)
 	}
 
+	opt.Source, err = resolveDownloadLocation(downloadUrl, opt.Source)
+	if err != nil {
+		return nil, "", "", true, err
+	}
+
 	opt.Logger.Debug("Module resolved via registry to new source",
 		log.String("source", opt.Source), log.String("name", moduleName))
 
@@ -240,6 +245,25 @@ func discoverModulesEndpoint(ctx context.Context, client *http.Client, hostname 
 		endpoint += "/"
 	}
 	return endpoint, nil
+}
+
+// resolveDownloadLocation turns a relative download location ("/", "./" or "../" prefixed) into an
+// absolute URL against the download endpoint, as the module registry protocol allows. Anything else,
+// including go-getter forced sources such as "git::https://...", is returned unchanged.
+// https://developer.hashicorp.com/terraform/internals/module-registry-protocol#download-source-code-for-a-specific-module-version
+func resolveDownloadLocation(downloadUrl, location string) (string, error) {
+	if !strings.HasPrefix(location, "/") && !strings.HasPrefix(location, "./") && !strings.HasPrefix(location, "../") {
+		return location, nil
+	}
+	base, err := url.Parse(downloadUrl)
+	if err != nil {
+		return "", fmt.Errorf("invalid download url %q: %w", downloadUrl, err)
+	}
+	ref, err := url.Parse(location)
+	if err != nil {
+		return "", fmt.Errorf("invalid relative download location %q: %w", location, err)
+	}
+	return base.ResolveReference(ref).String(), nil
 }
 
 func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {

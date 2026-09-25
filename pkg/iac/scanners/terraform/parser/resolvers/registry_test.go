@@ -134,6 +134,54 @@ func Test_resolveVersion(t *testing.T) {
 	}
 }
 
+func Test_resolveDownloadLocation(t *testing.T) {
+	const downloadUrl = "https://gitlab.example.com/api/v4/packages/terraform/modules/v1/group/name/system/2.1.0/download"
+
+	tests := []struct {
+		name     string
+		location string
+		want     string
+	}{
+		{
+			name:     "absolute https URL is kept",
+			location: "https://archivist.example.com/v1/object/abc?archive=tgz",
+			want:     "https://archivist.example.com/v1/object/abc?archive=tgz",
+		},
+		{
+			name:     "go-getter forced source is kept",
+			location: "git::https://github.com/org/repo?ref=v1.0.0",
+			want:     "git::https://github.com/org/repo?ref=v1.0.0",
+		},
+		{
+			name:     "s3 source is kept",
+			location: "s3::https://s3.amazonaws.com/bucket/module.zip",
+			want:     "s3::https://s3.amazonaws.com/bucket/module.zip",
+		},
+		{
+			name:     "host-relative path (GitLab shape)",
+			location: "/api/v4/packages/terraform/modules/v1/group/name/system/2.1.0/file?token=&archive=tgz",
+			want:     "https://gitlab.example.com/api/v4/packages/terraform/modules/v1/group/name/system/2.1.0/file?token=&archive=tgz",
+		},
+		{
+			name:     "dot-relative path",
+			location: "./file?archive=tgz",
+			want:     "https://gitlab.example.com/api/v4/packages/terraform/modules/v1/group/name/system/2.1.0/file?archive=tgz",
+		},
+		{
+			name:     "parent-relative path",
+			location: "../archive.tgz",
+			want:     "https://gitlab.example.com/api/v4/packages/terraform/modules/v1/group/name/system/archive.tgz",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := resolveDownloadLocation(downloadUrl, tt.location)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
 func newDiscoveryServer(t *testing.T, h http.HandlerFunc) (*httptest.Server, string) {
 	mux := http.NewServeMux()
 	mux.HandleFunc(serviceDiscoveryPath, h)
