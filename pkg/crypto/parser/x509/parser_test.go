@@ -61,6 +61,11 @@ func TestParse(t *testing.T) {
 		"DEK-Info":  "AES-256-CBC,00112233445566778899AABBCCDDEEFF",
 	}
 	rfc1423Ciphertext := []byte{0x01, 0x02, 0x03, 0x04}
+	oversizedRSAKey, err := asn1.Marshal(struct {
+		Version int
+		N       *big.Int
+	}{N: new(big.Int).Lsh(big.NewInt(1), 16384)})
+	require.NoError(t, err)
 
 	pemCertificate := found{
 		kind:     ftypes.CryptoKindCertificate,
@@ -370,6 +375,14 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKCS8 under RSA PRIVATE KEY",
 			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: fixtures.pkcs8DER}),
+		},
+		{
+			name:  "oversized RSA modulus PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: oversizedRSAKey}),
+		},
+		{
+			name:  "oversized RSA modulus DER",
+			input: oversizedRSAKey,
 		},
 		{
 			name:  "certificate request under CERTIFICATE",

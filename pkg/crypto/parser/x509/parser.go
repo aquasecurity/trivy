@@ -14,6 +14,7 @@ import (
 	"encoding/pem"
 	"errors"
 	"iter"
+	"math/big"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -74,17 +75,34 @@ type encryptedPrivateKeyInfo struct {
 	EncryptedData []byte
 }
 
+// maxRSAModulusBits is the longest RSA modulus of a private key that the parser reads.
+const maxRSAModulusBits = 16384
+
+// rsaPrivateKeyHead holds the leading fields of an RSA private key in PKCS#1.
+type rsaPrivateKeyHead struct {
+	Version int
+	N       *big.Int
+}
+
+// pkcs8Head holds the leading fields of a PKCS#8 private key.
+type pkcs8Head struct {
+	Version    int
+	Algo       pkix.AlgorithmIdentifier
+	PrivateKey []byte
+}
+
 var (
 	errNotCryptographic  = errors.New("not cryptographic")
 	errUnsupportedCrypto = errors.New("unsupported cryptographic object")
 	errMalformedCrypto   = errors.New("malformed cryptographic object")
+	errOversizedKey      = errors.New("oversized private key")
 )
 
 // Parse describes the cryptographic material a file carries as assets, each stating
 // filePath and the container it was read from.
 //
 // Material that cannot be read is logged and skipped. An error means a parsed object
-// could not be described.
+// could not be described or ctx was canceled.
 //
 // An asset is reported once for each container it was found in, and an asset with no
 // container of its own, such as an algorithm, once per file.
@@ -118,6 +136,9 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 			assets = append(assets, asset)
 		}
 	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
 	return assets, nil
 }
 
@@ -127,7 +148,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 	return func(yield func(object) bool) {
 		var decodedPEM, recognized bool
 		// pem.Decode scans past malformed leading data and returns the next valid block.
-		for rest := content; ; {
+		for rest := content; ctx.Err() == nil; {
 			block, next := pem.Decode(rest)
 			if block == nil {
 				break
@@ -147,6 +168,10 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 			if !yield(obj) {
 				return
 			}
+		}
+
+		if ctx.Err() != nil {
+			return
 		}
 
 		// A decoded PEM file is complete even when none of its blocks is supported.
@@ -224,23 +249,11 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "CERTIFICATE":
 		return certificateObject(der)
 	case "PRIVATE KEY":
-		privateKey, err := stdx509.ParsePKCS8PrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+		return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
 	case "RSA PRIVATE KEY":
-		privateKey, err := stdx509.ParsePKCS1PrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+		return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS1, stdx509.ParsePKCS1PrivateKey)
 	case "EC PRIVATE KEY":
-		privateKey, err := stdx509.ParseECPrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+		return privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
 	case "PUBLIC KEY":
 		publicKey, err := stdx509.ParsePKIXPublicKey(der)
 		if err != nil {
@@ -277,22 +290,54 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	}
 }
 
+// privateKeyObject parses a private key and projects it to its public key.
+func privateKeyObject[K any](der []byte, format ftypes.CryptoKeyFormat, parseKey func([]byte) (K, error)) (object, error) {
+	// crypto/x509 validates an RSA key with arithmetic whose cost grows with the modulus.
+	if oversizedRSAKey(der) {
+		return object{}, errOversizedKey
+	}
+
+	privateKey, err := parseKey(der)
+	if err != nil {
+		return object{}, errMalformedCrypto
+	}
+	return privateKeyToObject(privateKey, format)
+}
+
+// oversizedRSAKey reports whether der holds an RSA private key in PKCS#1, bare or wrapped
+// in PKCS#8, whose modulus is longer than maxRSAModulusBits.
+func oversizedRSAKey(der []byte) bool {
+	var p8 pkcs8Head
+	if _, err := asn1.Unmarshal(der, &p8); err == nil {
+		der = p8.PrivateKey
+	}
+
+	var key rsaPrivateKeyHead
+	if _, err := asn1.Unmarshal(der, &key); err != nil {
+		return false
+	}
+	return key.N.BitLen() > maxRSAModulusBits
+}
+
 func parseDERObject(der []byte) (object, error) {
 	// The target ASN.1 DER structures have no common outer discriminator, so try their schema-specific parsers in order.
 	if obj, err := certificateObject(der); err == nil {
 		return obj, nil
 	}
 
-	if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
-	}
+	// An oversized key is left to the parsers that do not validate what they read.
+	if !oversizedRSAKey(der) {
+		if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
+			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+		}
 
-	if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
-	}
+		if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
+			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+		}
 
-	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+		if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
+			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+		}
 	}
 
 	if publicKey, err := stdx509.ParsePKIXPublicKey(der); err == nil {
@@ -409,6 +454,8 @@ func logParseError(ctx context.Context, pemType string, err error) {
 		log.DebugContext(ctx, "Unsupported cryptographic object", attrs...)
 	case errors.Is(err, errMalformedCrypto):
 		log.WarnContext(ctx, "Malformed cryptographic object", attrs...)
+	case errors.Is(err, errOversizedKey):
+		log.DebugContext(ctx, "Private key is too large to read", attrs...)
 	default:
 		log.DebugContext(ctx, "No cryptographic object found", attrs...)
 	}
