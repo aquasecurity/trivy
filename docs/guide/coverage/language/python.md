@@ -12,13 +12,14 @@ The following scanners are supported for package managers.
 | uv              |  ✓   |       ✓       |    -    |
 | pylock          |  ✓   |       ✓       |    -    |
 
-In addition, Trivy supports these formats of Python packages: `egg`, `wheel` and `conda`.
+In addition, Trivy supports these formats of Python packages: `egg`, `wheel`, `zipapp` and `conda`.
 The following scanners are supported for Python packages.
 
 | Packaging | SBOM | Vulnerability | License |
 |-----------|:----:|:-------------:|:-------:|
 | Egg       |  ✓   |       ✓       |    ✓    |
 | Wheel     |  ✓   |       ✓       |    ✓    |
+| Zipapp    |  ✓   |       ✓       |    ✓    |
 | Conda     |  ✓   |       -       |    -    |
 
 
@@ -163,6 +164,9 @@ Trivy looks for `*.egg-info`, `*.egg-info/METADATA`, `*.egg-info/PKG-INFO`, `*.e
 
 ### Wheel
 Trivy looks for `.dist-info/METADATA` to identify Python packages.
+
+### Zipapp
+Trivy looks for installed package metadata in Python zip applications with `.pyz` and `.pyzw` extensions.
 
 [^1]: Trivy checks `python`, `python3`, `python2` and `python.exe` file names.
 [^2]: Also `pylock.<identifier>.toml` per [PEP 751][pep-751].
