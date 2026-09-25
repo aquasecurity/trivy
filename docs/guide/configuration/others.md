@@ -161,6 +161,31 @@ When we want to get the image `alpine` with the settings above. The logic will b
 2. Try to get the image from `mirror.without.image/library/alpine`, but we get an error because this registry doesn't have this image (but most likely it will be an error about authorization).
 3. Get the image from `index.docker.io` (the original registry).
 
+## Log Format
+
+Logs are written to stderr in a human-readable format by default.
+Use `--log-format json` to emit one JSON object per line instead, which is easier for log aggregators such as Splunk, Loki or Datadog to ingest.
+
+```shell
+$ trivy image --log-format json alpine:3.15
+```
+
+```json
+{"time":"2025-01-01T00:00:00.000000000Z","level":"INFO","msg":"Vulnerability scanning is enabled"}
+{"time":"2025-01-01T00:00:00.000000000Z","level":"INFO","prefix":"vulndb","msg":"Need to update DB"}
+```
+
+The log prefix, which is rendered as `[vulndb]` in the text output, becomes a separate `prefix` field.
+
+This is most useful for long-running processes such as the [server](../../getting-started/installation.md):
+
+```shell
+$ trivy server --log-format json --listen localhost:8080
+```
+
+!!! note
+    The flag only affects logs. It does not affect the scan report, which is controlled by `--format`.
+
 ## Check for updates
 
 Trivy periodically checks for updates and notices, and displays a message to the user with recommendations.  

@@ -9,6 +9,14 @@
       "type": "boolean",
       "description": "debug mode"
     },
+    "log-format": {
+      "type": "string",
+      "description": "log output format",
+      "enum": [
+        "text",
+        "json"
+      ]
+    },
     "insecure": {
       "type": "boolean",
       "description": "allow insecure server connections"

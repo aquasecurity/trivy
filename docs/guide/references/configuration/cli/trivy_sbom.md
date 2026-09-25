@@ -156,6 +156,7 @@ trivy sbom [flags] SBOM_PATH
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections
+      --log-format string         log output format (allowed values: text,json) (default "text")
   -q, --quiet                     suppress progress bar and log output
       --timeout duration          timeout (default 5m0s)
   -v, --version                   show version

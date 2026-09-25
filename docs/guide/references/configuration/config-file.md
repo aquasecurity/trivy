@@ -22,6 +22,9 @@ debug: false
 # Same as '--insecure'
 insecure: false
 
+# Same as '--log-format'
+log-format: "text"
+
 # Same as '--quiet'
 quiet: false
 
