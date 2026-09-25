@@ -16,6 +16,7 @@ func TestParse(t *testing.T) {
 		filePath      string
 		useMinVersion bool
 		want          []ftypes.Package
+		wantErr       bool
 	}{
 		{
 			name:     "happy path",
@@ -73,6 +74,11 @@ func TestParse(t *testing.T) {
 			useMinVersion: true,
 			want:          requirementsCompatibleVersions,
 		},
+		{
+			name:     "malformed extras bracket",
+			filePath: "testdata/requirements_invalid_extras.txt",
+			wantErr:  true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -81,6 +87,10 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			got, _, err := NewParser(tt.useMinVersion).Parse(t.Context(), f)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
@@ -90,9 +100,10 @@ func TestParse(t *testing.T) {
 
 func TestRemoveExtras(t *testing.T) {
 	tests := []struct {
-		name string
-		line string
-		want string
+		name    string
+		line    string
+		want    string
+		wantErr bool
 	}{
 		{
 			name: "single extra",
@@ -110,14 +121,19 @@ func TestRemoveExtras(t *testing.T) {
 			want: "flask==2.0.0",
 		},
 		{
-			name: "missing closing bracket",
-			line: "pkg[extra==1.0",
-			want: "pkg[extra==1.0",
+			name:    "missing closing bracket",
+			line:    "pkg[extra==1.0",
+			wantErr: true,
 		},
 		{
-			name: "stray closing bracket without opening",
-			line: "foo]bar==1.0",
-			want: "foo]bar==1.0",
+			name:    "stray closing bracket without opening",
+			line:    "foo]bar==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "closing bracket before opening",
+			line:    "foo]bar[x]==1.0",
+			wantErr: true,
 		},
 		{
 			name: "empty string",
@@ -128,7 +144,13 @@ func TestRemoveExtras(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, removeExtras(tt.line))
+			got, err := removeExtras(tt.line)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
