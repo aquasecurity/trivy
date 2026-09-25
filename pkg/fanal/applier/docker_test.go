@@ -1631,6 +1631,45 @@ func TestApplyLayers(t *testing.T) {
 			},
 		},
 		{
+			name: "a key pair whose public half is whited out",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					DiffID:        "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+					CryptoAssets: []types.CryptoAsset{
+						cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.FilePath = "etc/ssl/certs/server.pem"
+						})),
+					},
+				},
+				{
+					SchemaVersion: 2,
+					Digest:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					DiffID:        "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+					WhiteoutFiles: []string{"etc/ssl/certs/server.pem"},
+					CryptoAssets: []types.CryptoAsset{
+						cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+							asset.FilePath = "etc/ssl/private/server.key"
+						})),
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				CryptoAssets: []types.CryptoAsset{
+					// The private key refers to nothing, because the public half went with
+					// the file that held it.
+					cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+						asset.FilePath = "etc/ssl/private/server.key"
+						asset.Layer = types.Layer{
+							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
+						}
+					})),
+				},
+			},
+		},
+		{
 			name: "custom resource origin layer lookup",
 			inputLayers: []types.BlobInfo{
 				{
