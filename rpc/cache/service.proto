@@ -11,6 +11,7 @@ option go_package = "github.com/aquasecurity/trivy/rpc/cache;cache";
 service Cache {
   rpc PutArtifact(PutArtifactRequest) returns (google.protobuf.Empty);
   rpc PutBlob(PutBlobRequest) returns (google.protobuf.Empty);
+  rpc GetBlobOS(GetBlobOSRequest) returns (GetBlobOSResponse);
   rpc MissingBlobs(MissingBlobsRequest) returns (MissingBlobsResponse);
   rpc DeleteBlobs(DeleteBlobsRequest) returns (google.protobuf.Empty);
 }
@@ -52,6 +53,14 @@ message BlobInfo {
 message PutBlobRequest {
   string diff_id = 1;
   BlobInfo blob_info = 3;
+}
+
+message GetBlobOSRequest {
+  string blob_id = 1;
+}
+
+message GetBlobOSResponse {
+  common.OS os = 1;
 }
 
 message PutResponse {

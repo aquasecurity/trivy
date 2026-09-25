@@ -25,6 +25,9 @@ type ArtifactCache interface {
 	// MissingBlobs returns missing blob IDs such as layer IDs in cache
 	MissingBlobs(ctx context.Context, artifactID string, blobIDs []string) (missingArtifact bool, missingBlobIDs []string, err error)
 
+	// GetBlobOS gets OS information detected from a blob
+	GetBlobOS(ctx context.Context, blobID string) (types.OS, error)
+
 	// PutArtifact stores artifact information such as image metadata in cache
 	PutArtifact(ctx context.Context, artifactID string, artifactInfo types.ArtifactInfo) (err error)
 
