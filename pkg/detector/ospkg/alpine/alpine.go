@@ -48,9 +48,10 @@ var eolDates = map[string]time.Time{
 	"3.18": time.Date(2025, 5, 9, 23, 59, 59, 0, time.UTC),
 	"3.19": time.Date(2025, 11, 1, 23, 59, 59, 0, time.UTC),
 	"3.20": time.Date(2026, 4, 1, 23, 59, 59, 0, time.UTC),
-	"3.21": time.Date(2026, 12, 5, 23, 59, 59, 0, time.UTC),
-	"3.22": time.Date(2027, 4, 30, 23, 59, 59, 0, time.UTC),
+	"3.21": time.Date(2026, 11, 1, 23, 59, 59, 0, time.UTC),
+	"3.22": time.Date(2027, 5, 1, 23, 59, 59, 0, time.UTC),
 	"3.23": time.Date(2027, 11, 1, 23, 59, 59, 0, time.UTC),
+	"3.24": time.Date(2028, 6, 1, 23, 59, 59, 0, time.UTC),
 	"edge": time.Date(9999, 1, 1, 0, 0, 0, 0, time.UTC),
 }
 
