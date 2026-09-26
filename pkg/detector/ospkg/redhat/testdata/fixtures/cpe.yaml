@@ -12,6 +12,9 @@
         - key: "rhel-7-server-rpms"
           value:
             - 0
+        - key: "rhel-9-for-x86_64-baseos-rpms"
+          value:
+            - 5
     - bucket: nvr
       pairs:
         - key: "ubi8-init-container-8.0-7-x86_64"
@@ -30,3 +33,5 @@
           value: "cpe:/a:redhat:enterprise_linux:8::appstream"
         - key: "4"
           value: "cpe:/o:redhat:enterprise_linux:8::baseos"
+        - key: "5"
+          value: "cpe:/o:redhat:enterprise_linux:9::baseos"

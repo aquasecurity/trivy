@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"slices"
 	"sort"
+	"strings"
 	"time"
 
 	version "github.com/knqyf263/go-rpm-version"
@@ -111,9 +112,13 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 		return nil, xerrors.Errorf("failed to get Red Hat advisories: %w", err)
 	}
 
-	// Choose the latest fixed version for each CVE-ID (empty for unpatched vulns).
-	// Take the single RHSA-ID with the latest fixed version (for patched vulns).
+	// Group advisories per CVE-ID, keeping every fixed version. Red Hat ships
+	// one errata per minor release for the same CVE, so the advisories for a
+	// CVE are compared against the installed package's own minor release: a
+	// package already carrying that fix is not vulnerable just because a
+	// newer minor rebuilt the package at a higher version (cf. #11199).
 	uniqAdvisories := make(map[string]dbTypes.Advisory)
+	fixedAdvisories := make(map[string][]dbTypes.Advisory)
 	for _, adv := range advisories {
 		// If Arches for advisory are empty or pkg.Arch is "noarch", then any Arches are affected
 		if len(adv.Arches) != 0 && pkg.Arch != "noarch" {
@@ -122,13 +127,48 @@ func (s *Scanner) detect(osVer string, pkg ftypes.Package) ([]types.DetectedVuln
 			}
 		}
 
-		if a, ok := uniqAdvisories[adv.VulnerabilityID]; ok {
-			if version.NewVersion(a.FixedVersion).LessThan(version.NewVersion(adv.FixedVersion)) {
+		if adv.FixedVersion == "" {
+			// Unpatched entries only stand in when nothing fixes the CVE:
+			// an entry with a fix always wins (cf. #8061).
+			if _, ok := uniqAdvisories[adv.VulnerabilityID]; !ok {
 				uniqAdvisories[adv.VulnerabilityID] = adv
 			}
-		} else {
-			uniqAdvisories[adv.VulnerabilityID] = adv
+			continue
 		}
+		fixedAdvisories[adv.VulnerabilityID] = append(fixedAdvisories[adv.VulnerabilityID], adv)
+	}
+
+	installedVersion := utils.FormatVersion(pkg)
+	// Scope the comparison to the installed package's own minor release.
+	// The minor comes from the package EVR, not osVer: errata attach to
+	// package releases (a 9.7 box can carry a 9.4-built RPM), while osVer
+	// only scopes which DB bucket is read. Keying off osVer would compare
+	// against the wrong stream whenever the two disagree.
+	installedMinor := rhelMinor(installedVersion)
+	for id, advs := range fixedAdvisories {
+		candidates := advs
+		if installedMinor != "" {
+			var scoped []dbTypes.Advisory
+			for _, adv := range advs {
+				if rhelMinor(adv.FixedVersion) == installedMinor {
+					scoped = append(scoped, adv)
+				}
+			}
+			// Fall back to every fixed version when the installed minor has
+			// no advisory of its own: same as the old highest-wins behavior,
+			// so nothing new is ever missed.
+			if len(scoped) > 0 {
+				candidates = scoped
+			}
+		}
+		// Take the single RHSA-ID with the latest fixed version.
+		winner := candidates[0]
+		for _, adv := range candidates[1:] {
+			if version.NewVersion(winner.FixedVersion).LessThan(version.NewVersion(adv.FixedVersion)) {
+				winner = adv
+			}
+		}
+		uniqAdvisories[id] = winner
 	}
 
 	var vulns []types.DetectedVulnerability
@@ -184,6 +224,31 @@ func addModularNamespace(name, label string) string {
 		}
 	}
 	return name
+}
+
+// Match the minor release marker Red Hat stamps into RPM release strings
+// (e.g. "18.el9_7.2" carries minor "7"), but not bare major markers like
+// "100.el9", EUS suffixes aside.
+var rhelMinorReleasePattern = regexp.MustCompile(`\.el\d+_(\d+)`)
+
+// rhelMinor returns the RHEL minor release embedded in an EVR string
+// (e.g. "0:2.68.4-18.el9_7.2" => "7"), or "" when there is no minor marker.
+//
+// Only the ".el<major>_<minor>" shape matches: EUS releases carry the same
+// pinned-minor shape and scope normally, while tags without a minor part
+// (bare ".el9" majors, Stream builds, rebuilds that drop the marker, or
+// non-RHEL schemes) yield "" and fall back to comparing against every
+// fixed version, i.e. the old highest-wins behavior.
+func rhelMinor(evr string) string {
+	rel := evr
+	if i := strings.LastIndex(evr, "-"); i >= 0 {
+		rel = evr[i+1:]
+	}
+	m := rhelMinorReleasePattern.FindStringSubmatch(rel)
+	if m == nil {
+		return ""
+	}
+	return m[1]
 }
 
 // Match generic version suffixes like "__8", "__9", "__10", but preserve EUS suffixes like "__9_DOT_2".
