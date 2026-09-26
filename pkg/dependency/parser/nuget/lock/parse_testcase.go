@@ -1024,4 +1024,56 @@ var (
 			},
 		},
 	}
+
+	// docker run --rm -i -t mcr.microsoft.com/dotnet/sdk:9.0
+	// cd /usr/local/src
+	// dotnet new classlib -f net9.0
+	// sed -i 's~TargetFramework>net9.0</TargetFramework~TargetFrameworks>net8.0;net9.0</TargetFrameworks~' src.csproj
+	// dotnet add package Microsoft.Extensions.DependencyInjection --version 9.0.0
+	// add to src.csproj by hand:
+	//   <ItemGroup Condition="'$(TargetFramework)' == 'net9.0'">
+	//     <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+	//   </ItemGroup>
+	// dotnet restore --use-lock-file
+	// Abstractions is "Direct" for net9.0 and "Transitive" for net8.0
+	nuGetMultiRelationship = []ftypes.Package{
+		{
+			ID:           "Microsoft.Extensions.DependencyInjection@9.0.0",
+			Name:         "Microsoft.Extensions.DependencyInjection",
+			Version:      "9.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 5,
+					EndLine:   13,
+				},
+				{
+					StartLine: 21,
+					EndLine:   29,
+				},
+			},
+		},
+		{
+			ID:           "Microsoft.Extensions.DependencyInjection.Abstractions@9.0.0",
+			Name:         "Microsoft.Extensions.DependencyInjection.Abstractions",
+			Version:      "9.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 14,
+					EndLine:   18,
+				},
+				{
+					StartLine: 30,
+					EndLine:   35,
+				},
+			},
+		},
+	}
+	nuGetMultiRelationshipDeps = []ftypes.Dependency{
+		{
+			ID:        "Microsoft.Extensions.DependencyInjection@9.0.0",
+			DependsOn: []string{"Microsoft.Extensions.DependencyInjection.Abstractions@9.0.0"},
+		},
+	}
 )
