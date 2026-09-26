@@ -25,6 +25,12 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: uvNormalDeps,
 		},
 		{
+			name:     "multiple versions of the same package",
+			file:     "testdata/uv_multiple_versions.lock",
+			wantPkgs: uvMultipleVersions,
+			wantDeps: uvMultipleVersionsDeps,
+		},
+		{
 			name:    "lockfile without root",
 			file:    "testdata/uv_without_root.lock",
 			wantErr: "uv lockfile must contain 1 root package",

@@ -49,4 +49,52 @@ var (
 		{ID: "pytest@8.3.4", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.2.2", "iniconfig@2.0.0", "packaging@24.2", "pluggy@1.5.0", "tomli@2.2.1"}},
 		{ID: "requests@2.32.0", DependsOn: []string{"certifi@2024.12.14", "charset-normalizer@3.4.0", "idna@3.10", "urllib3@2.2.3"}},
 	}
+
+	// uv 0.10.12
+	// pyproject.toml of the "forkdemo" project, locked with `uv lock`:
+	//   requires-python = ">=3.9"
+	//   dependencies = [
+	//     "numpy>=1.24,<2; python_version < '3.10'",
+	//     "numpy>=2.1; python_version >= '3.10'",
+	//     "pandas>=2.0",
+	//   ]
+	//   [dependency-groups]
+	//   dev = ["pytest>=8"]
+	// The resolution forks by Python version, so numpy, pandas, pytest and iniconfig are locked
+	// in several versions. pytz is only required by pandas 2.3.3, which is a production dependency.
+	// sdist and wheels entries are removed from the lock file.
+	uvMultipleVersions = []ftypes.Package{
+		{ID: "forkdemo@0.1.0", Name: "forkdemo", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
+		{ID: "numpy@1.26.4", Name: "numpy", Version: "1.26.4", Relationship: ftypes.RelationshipDirect},
+		{ID: "numpy@2.2.6", Name: "numpy", Version: "2.2.6", Relationship: ftypes.RelationshipDirect},
+		{ID: "numpy@2.4.6", Name: "numpy", Version: "2.4.6", Relationship: ftypes.RelationshipDirect},
+		{ID: "numpy@2.5.3", Name: "numpy", Version: "2.5.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "pandas@2.3.3", Name: "pandas", Version: "2.3.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "pandas@3.0.6", Name: "pandas", Version: "3.0.6", Relationship: ftypes.RelationshipDirect},
+		{ID: "pytest@8.4.2", Name: "pytest", Version: "8.4.2", Relationship: ftypes.RelationshipDirect, Dev: true},
+		{ID: "pytest@9.1.1", Name: "pytest", Version: "9.1.1", Relationship: ftypes.RelationshipDirect, Dev: true},
+		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "exceptiongroup@1.3.1", Name: "exceptiongroup", Version: "1.3.1", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "iniconfig@2.1.0", Name: "iniconfig", Version: "2.1.0", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "iniconfig@2.3.0", Name: "iniconfig", Version: "2.3.0", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "packaging@26.3", Name: "packaging", Version: "26.3", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "pluggy@1.6.0", Name: "pluggy", Version: "1.6.0", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "pygments@2.21.0", Name: "pygments", Version: "2.21.0", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "python-dateutil@2.9.0.post0", Name: "python-dateutil", Version: "2.9.0.post0", Relationship: ftypes.RelationshipIndirect},
+		{ID: "pytz@2026.4", Name: "pytz", Version: "2026.4", Relationship: ftypes.RelationshipIndirect},
+		{ID: "six@1.17.0", Name: "six", Version: "1.17.0", Relationship: ftypes.RelationshipIndirect},
+		{ID: "tomli@2.4.1", Name: "tomli", Version: "2.4.1", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "typing-extensions@4.16.0", Name: "typing-extensions", Version: "4.16.0", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "tzdata@2026.4", Name: "tzdata", Version: "2026.4", Relationship: ftypes.RelationshipIndirect},
+	}
+
+	uvMultipleVersionsDeps = []ftypes.Dependency{
+		{ID: "exceptiongroup@1.3.1", DependsOn: []string{"typing-extensions@4.16.0"}},
+		{ID: "forkdemo@0.1.0", DependsOn: []string{"numpy@1.26.4", "numpy@2.2.6", "numpy@2.4.6", "numpy@2.5.3", "pandas@2.3.3", "pandas@3.0.6", "pytest@8.4.2", "pytest@9.1.1"}},
+		{ID: "pandas@2.3.3", DependsOn: []string{"numpy@1.26.4", "numpy@2.2.6", "python-dateutil@2.9.0.post0", "pytz@2026.4", "tzdata@2026.4"}},
+		{ID: "pandas@3.0.6", DependsOn: []string{"numpy@2.4.6", "numpy@2.5.3", "python-dateutil@2.9.0.post0", "tzdata@2026.4"}},
+		{ID: "pytest@8.4.2", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.3.1", "iniconfig@2.1.0", "packaging@26.3", "pluggy@1.6.0", "pygments@2.21.0", "tomli@2.4.1"}},
+		{ID: "pytest@9.1.1", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.3.1", "iniconfig@2.3.0", "packaging@26.3", "pluggy@1.6.0", "pygments@2.21.0", "tomli@2.4.1"}},
+		{ID: "python-dateutil@2.9.0.post0", DependsOn: []string{"six@1.17.0"}},
+	}
 )
