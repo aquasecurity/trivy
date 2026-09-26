@@ -8,12 +8,16 @@ import (
 	"crypto/ed25519"
 	"crypto/mldsa"
 	"crypto/rsa"
+	"crypto/sha256"
 	stdx509 "crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
 	"iter"
+	"maps"
+	"slices"
+	"strings"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -125,7 +129,10 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 // It decodes PEM blocks first, then falls back to DER when no valid PEM block is found.
 func parse(ctx context.Context, content []byte) iter.Seq[object] {
 	return func(yield func(object) bool) {
-		var decodedPEM, recognized bool
+		var decodedPEM bool
+		// Blocks that carry the same bytes describe the same material, so only the first
+		// one of them is parsed and described.
+		recognizedBlocks := set.New[blockKey]()
 		// pem.Decode scans past malformed leading data and returns the next valid block.
 		for rest := content; ; {
 			block, next := pem.Decode(rest)
@@ -135,11 +142,16 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 			decodedPEM = true
 			rest = next
 
+			key := newBlockKey(block)
+			if recognizedBlocks.Contains(key) {
+				continue
+			}
+
 			obj, err := parsePEMBlock(block)
 			if errors.Is(err, errNotCryptographic) {
 				continue
 			}
-			recognized = true
+			recognizedBlocks.Append(key)
 			if err != nil {
 				logParseError(ctx, block.Type, err)
 				continue
@@ -151,7 +163,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 
 		// A decoded PEM file is complete even when none of its blocks is supported.
 		if decodedPEM {
-			if !recognized {
+			if recognizedBlocks.Size() == 0 {
 				log.DebugContext(ctx, "No cryptographic object found")
 			}
 			return
@@ -166,6 +178,37 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 		obj.encoding = ftypes.CryptoEncodingDER
 		yield(obj)
 	}
+}
+
+// blockKey identifies a PEM block by everything its parsing reads. Headers belong to it
+// because they select the encrypted branch and an encrypted key is identified by the
+// re-encoded block that carries them.
+type blockKey struct {
+	pemType string
+	headers string
+	digest  [sha256.Size]byte
+}
+
+func newBlockKey(block *pem.Block) blockKey {
+	return blockKey{
+		pemType: block.Type,
+		headers: joinHeaders(block.Headers),
+		digest:  sha256.Sum256(block.Bytes),
+	}
+}
+
+// joinHeaders writes header names and values in a fixed order, because map iteration has none.
+func joinHeaders(headers map[string]string) string {
+	if len(headers) == 0 {
+		return ""
+	}
+
+	var joined strings.Builder
+	for _, name := range slices.Sorted(maps.Keys(headers)) {
+		// A header value holds no newline, so the separator cannot occur inside one.
+		joined.WriteString(name + ": " + headers[name] + "\n")
+	}
+	return joined.String()
 }
 
 // parsePEMBlock parses a supported PEM block and records its source encoding.

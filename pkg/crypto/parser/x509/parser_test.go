@@ -281,6 +281,28 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// Only the headers tell an encrypted container from a plain key.
+			name: "same bytes with and without RFC 1423 headers",
+			input: bytes.Join([][]byte{
+				pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: fixtures.pkcs1DER}),
+				pem.EncodeToMemory(&pem.Block{
+					Type:    "RSA PRIVATE KEY",
+					Headers: rfc1423Headers,
+					Bytes:   fixtures.pkcs1DER,
+				}),
+			}, nil),
+			want: []found{
+				pemPKCS1PrivateKey,
+				{
+					kind:     ftypes.CryptoKindKey,
+					keyType:  ftypes.CryptoKeyTypePrivate,
+					method:   ftypes.CryptoMethodEncryptedRFC1423SHA256,
+					format:   ftypes.CryptoKeyFormatPKCS1,
+					encoding: ftypes.CryptoEncodingPEM,
+				},
+			},
+		},
+		{
 			// Both certificates carry the same key.
 			name:  "certificate bundle",
 			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil),
