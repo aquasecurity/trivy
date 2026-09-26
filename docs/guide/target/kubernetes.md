@@ -224,10 +224,16 @@ trivy k8s --scanners=secret --report=summary
 trivy k8s --scanners=misconfig --report=summary
 ```
 
-The supported output formats are `table`, which is the default, and `json`.
+The supported output formats are `table`, which is the default, `json`, `cyclonedx`, and `template`.
 
 ```
 trivy k8s --format json -o results.json cluster
+```
+
+You can render the report with a custom Go template using `--format template --template @report.tpl`:
+
+```
+trivy k8s --format template --template @report.tpl cluster
 ```
 
 <details>

@@ -588,6 +588,28 @@ Severities: C=CRITICAL H=HIGH M=MEDIUM L=LOW U=UNKNOWN`,
 	}
 }
 
+func TestWriter_Template(t *testing.T) {
+	t.Setenv("TRIVY_DISABLE_VEX_NOTICE", "true")
+
+	output := bytes.Buffer{}
+	opt := report.Option{
+		Format:   types.FormatTemplate,
+		Report:   report.AllReport,
+		Output:   &output,
+		Template: `{{ range .Resources }}{{ .Kind }}/{{ .Name }}{{ end }}`,
+	}
+
+	k8sReport := report.Report{
+		Resources: []report.Resource{
+			{Kind: "Pod", Name: "nginx"},
+		},
+	}
+
+	err := Write(t.Context(), k8sReport, opt)
+	require.NoError(t, err)
+	assert.Equal(t, "Pod/nginx", output.String())
+}
+
 const ansi = "[\u001B\u009B][[\\]()#;?]*(?:(?:(?:[a-zA-Z\\d]*(?:;[a-zA-Z\\d]*)*)?\u0007)|(?:(?:\\d{1,4}(?:;\\d{0,4})*)?[\\dA-PRZcf-ntqry=><~]))"
 
 var ansiRegexp = regexp.MustCompile(ansi)
