@@ -34,6 +34,7 @@ type Option struct {
 	ColumnHeading []string
 	Scanners      types.Scanners
 	APIVersion    string
+	Template      string
 }
 
 // Report represents a kubernetes scan report

@@ -47,6 +47,14 @@ func Write(ctx context.Context, k8sreport report.Report, option report.Option) e
 	case types.FormatCycloneDX:
 		w := report.NewCycloneDXWriter(option.Output, cdx.BOMFileFormatJSON, option.APIVersion)
 		return w.Write(ctx, k8sreport.BOM)
+	case types.FormatTemplate:
+		writer := report.TemplateWriter{
+			Output:   option.Output,
+			Report:   option.Report,
+			Template: option.Template,
+			Version:  option.APIVersion,
+		}
+		return writer.Write(k8sreport)
 	}
 	return nil
 }
