@@ -85,7 +85,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "2d0430c9abbc973"
+            "UID": "b7a153ee2ac4120c"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-11.el8",
@@ -157,7 +157,7 @@
           "PkgName": "curl",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/oracle/curl@7.61.1-8.el8?arch=x86_64\u0026distro=oracle-8.0",
-            "UID": "2d0430c9abbc973"
+            "UID": "b7a153ee2ac4120c"
           },
           "InstalledVersion": "7.61.1-8.el8",
           "FixedVersion": "7.61.1-12.el8",

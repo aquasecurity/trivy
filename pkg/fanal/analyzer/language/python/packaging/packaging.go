@@ -28,7 +28,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypePythonPkg, newPackagingAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &packagingAnalyzer{

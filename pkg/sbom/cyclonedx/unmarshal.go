@@ -258,8 +258,8 @@ func (b *BOM) unmarshalLicenses(l *cdx.Licenses) []string {
 	return licenses
 }
 
-func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.Digest {
-	var digests []digest.Digest
+func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.SourcedDigest {
+	var digests []digest.SourcedDigest
 	for _, h := range lo.FromPtr(hashes) {
 		var alg digest.Algorithm
 		switch h.Algorithm {
@@ -275,7 +275,10 @@ func (b *BOM) unmarshalHashes(hashes *[]cdx.Hash) []digest.Digest {
 			log.Warn("Unsupported hash algorithm", log.String("algorithm", string(h.Algorithm)))
 			continue
 		}
-		digests = append(digests, digest.NewDigestFromString(alg, h.Value))
+		digests = append(digests, digest.SourcedDigest{
+			Digest: digest.NewDigestFromString(alg, h.Value),
+			Source: digest.SourceSBOM,
+		})
 	}
 	return digests
 }
