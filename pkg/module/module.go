@@ -223,6 +223,20 @@ func freePtr(ctx context.Context, freeFn api.Function, ptrSize uint64) {
 	_, _ = freeFn.Call(ctx, uint64(ptr), uint64(size))
 }
 
+// freeInput releases WASM memory previously allocated for an input at ptr
+// with the given size. The guest free function takes both arguments;
+// calling it with only the pointer fails arity validation and leaks the
+// allocation.
+func freeInput(ctx context.Context, freeFn interface {
+	Call(ctx context.Context, params ...uint64) ([]uint64, error)
+}, ptr, size uint64) {
+	if freeFn == nil || ptr == 0 {
+		return
+	}
+	// We're ignoring the error result to avoid overshadowing any preceding error.
+	_, _ = freeFn.Call(ctx, ptr, size)
+}
+
 // unmarshal reads memory at ptrSize, unmarshals JSON into v, but does not free automatically.
 // The caller must ensure the pointer is freed if needed.
 func unmarshal(mem api.Memory, ptrSize uint64, v any) error {
@@ -461,7 +475,7 @@ func (m *wasmModule) Analyze(ctx context.Context, input analyzer.AnalysisInput) 
 	if err != nil {
 		return nil, xerrors.Errorf("failed to write string to memory: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) // nolint: errcheck
+	defer freeInput(ctx, m.free, inputPtr, inputSize)
 
 	// 2. Call analyze
 	analyzeRes, err := m.analyze.Call(ctx, inputPtr, inputSize)
@@ -511,7 +525,7 @@ func (m *wasmModule) PostScan(ctx context.Context, results types.Results) (types
 	if err != nil {
 		return nil, xerrors.Errorf("post scan marshal error: %w", err)
 	}
-	defer m.free.Call(ctx, inputPtr) //nolint: errcheck
+	defer freeInput(ctx, m.free, inputPtr, inputSize)
 
 	analyzeRes, err := m.postScan.Call(ctx, inputPtr, inputSize)
 	if err != nil {
