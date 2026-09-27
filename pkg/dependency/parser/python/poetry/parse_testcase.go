@@ -3,6 +3,16 @@ package poetry
 import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 var (
+	poetryMultipleConstraints = []ftypes.Package{
+		{ID: "attrs@25.1.0", Name: "attrs", Version: "25.1.0"},
+		{ID: "foo@1.0.0", Name: "foo", Version: "1.0.0"},
+		{ID: "typing-extensions@4.14.0", Name: "typing-extensions", Version: "4.14.0"},
+	}
+
+	poetryMultipleConstraintsDeps = []ftypes.Dependency{
+		{ID: "foo@1.0.0", DependsOn: []string{"attrs@25.1.0", "typing-extensions@4.14.0"}},
+	}
+
 	// docker run --name poetry --rm -it python@sha256:e1141f10176d74d1a0e87a7c0a0a5a98dd98ec5ac12ce867768f40c6feae2fd9 sh
 	// apk add curl
 	// curl -sSL https://install.python-poetry.org | POETRY_VERSION=1.1.7 python3 -
@@ -24,16 +34,6 @@ var (
 	// poetry add pytest@5.4.3 --dev
 	// poetry show -a | awk '{gsub(/\(!\)/, ""); printf("{ID: \""$1"@"$2"\", Name: \""$1"\", Version: \""$2"\"},\n") }'
 	// mark dev deps
-	poetryMultipleConstraints = []ftypes.Package{
-		{ID: "attrs@25.1.0", Name: "attrs", Version: "25.1.0"},
-		{ID: "foo@1.0.0", Name: "foo", Version: "1.0.0"},
-		{ID: "typing-extensions@4.14.0", Name: "typing-extensions", Version: "4.14.0"},
-	}
-
-	poetryMultipleConstraintsDeps = []ftypes.Dependency{
-		{ID: "foo@1.0.0", DependsOn: []string{"attrs@25.1.0", "typing-extensions@4.14.0"}},
-	}
-
 	poetryFlask = []ftypes.Package{
 		{ID: "atomicwrites@1.4.1", Name: "atomicwrites", Version: "1.4.1", Dev: true},
 		{ID: "attrs@25.1.0", Name: "attrs", Version: "25.1.0", Dev: true},

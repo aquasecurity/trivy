@@ -131,6 +131,26 @@ func TestParseDependency(t *testing.T) {
 			want: "test@4.14.0",
 		},
 		{
+			name:        "only the second array constraint matches",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{"version": ">=1.0,<2.0"},
+				map[string]any{"version": ">=2.0"},
+			},
+			pkgsVersions: map[string][]string{"test": {"2.5.0"}},
+			want:         "test@2.5.0",
+		},
+		{
+			name:        "no array constraint matches",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{"version": ">=1.0,<2.0"},
+				map[string]any{"version": ">=2.0,<3.0"},
+			},
+			pkgsVersions: map[string][]string{"test": {"3.0.0"}},
+			wantErr:      "no matched version found",
+		},
+		{
 			name:         "pkgsVersions doesn't contain required version",
 			packageName:  "test",
 			versionRange: ">=1.0.0",
