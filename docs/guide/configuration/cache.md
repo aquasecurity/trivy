@@ -96,6 +96,14 @@ $ trivy server --cache-backend redis://localhost:6379 \
   --redis-key /path/to/key.pem
 ```
 
+If the TLS certificate's server name (as verified during the TLS handshake) doesn't match the hostname you connect to,
+for example when connecting through an SSH tunnel, load balancer, or IP address, override it with `--redis-tls-server-name`.
+
+```
+$ trivy server --cache-backend redis://localhost:6379 --redis-tls \
+  --redis-tls-server-name redis.example.com
+```
+
 [trivy-db]: ./db.md
 [trivy-java-db]: ./db.md
 [misconf-checks]: ../scanner/misconfiguration/check/builtin.md

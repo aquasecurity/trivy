@@ -559,13 +559,14 @@ func (o *Options) FilterOpts() result.FilterOptions {
 // CacheOpts returns options for scan cache
 func (o *Options) CacheOpts() cache.Options {
 	return cache.Options{
-		Backend:     o.CacheBackend,
-		CacheDir:    o.CacheDir,
-		RedisCACert: o.RedisCACert,
-		RedisCert:   o.RedisCert,
-		RedisKey:    o.RedisKey,
-		RedisTLS:    o.RedisTLS,
-		TTL:         o.CacheTTL,
+		Backend:            o.CacheBackend,
+		CacheDir:           o.CacheDir,
+		RedisCACert:        o.RedisCACert,
+		RedisCert:          o.RedisCert,
+		RedisKey:           o.RedisKey,
+		RedisTLS:           o.RedisTLS,
+		RedisTLSServerName: o.RedisTLSServerName,
+		TTL:                o.CacheTTL,
 	}
 }
 

@@ -60,6 +60,7 @@ trivy config [flags] DIR
       --redis-cert string                 redis certificate file location, if using redis as cache backend
       --redis-key string                  redis key file location, if using redis as cache backend
       --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --redis-tls-server-name string      redis TLS server name to verify against, if using redis as cache backend over TLS
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
