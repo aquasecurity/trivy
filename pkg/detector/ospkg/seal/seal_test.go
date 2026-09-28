@@ -119,6 +119,10 @@ func TestScanner_Detect(t *testing.T) {
 					VulnerabilityID:  "CVE-2023-6992",
 					InstalledVersion: "1.2.8-r2",
 					FixedVersion:     "1.2.8-r25341999",
+					SeveritySource:   "seal",
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: "HIGH",
+					},
 					DataSource: &dbTypes.DataSource{
 						ID:     "seal",
 						Name:   "Seal Security Database",

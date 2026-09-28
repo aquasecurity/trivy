@@ -124,7 +124,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 			if adv.Severity != dbTypes.SeverityUnknown {
 				// Package-specific severity
-				vuln.SeveritySource = adv.DataSource.BaseID
+				vuln.SeveritySource = adv.DataSource.ID
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: adv.Severity.String(),
 				}
