@@ -97,7 +97,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				DataSource:       adv.DataSource,
 			}
 
-			// We add the severity from the base OS, so we need to keep the severity level from the base OS (as SeveritySource).
+			// Package-specific severity from the Root.io feed
 			if adv.Severity != dbTypes.SeverityUnknown {
 				vuln.Vulnerability = dbTypes.Vulnerability{
 					Severity: adv.Severity.String(),
