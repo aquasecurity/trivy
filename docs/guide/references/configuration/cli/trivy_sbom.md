@@ -140,6 +140,7 @@ trivy sbom [flags] SBOM_PATH
                                          - julia
                                          - bottlerocket
                                          - echo
+                                         - echo-osv
                                          - minimos
                                          - rootio
                                          - rapidfort

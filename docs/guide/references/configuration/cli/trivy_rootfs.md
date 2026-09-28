@@ -175,6 +175,7 @@ trivy rootfs [flags] ROOTDIR
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort

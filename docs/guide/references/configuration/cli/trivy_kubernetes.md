@@ -183,6 +183,7 @@ trivy kubernetes [flags] [CONTEXT]
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort
