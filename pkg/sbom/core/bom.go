@@ -249,6 +249,11 @@ type Occurrence struct {
 	// Location is the path of the file the component was found in.
 	// CycloneDX: component.evidence.occurrences[].location
 	Location string
+
+	// LayerDiffID is the layer the file was found in. It is empty for a target that has no
+	// layers.
+	// CycloneDX: component.evidence.occurrences[].additionalContext
+	LayerDiffID string
 }
 
 type Property struct {

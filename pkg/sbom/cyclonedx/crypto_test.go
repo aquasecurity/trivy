@@ -23,6 +23,9 @@ var (
 	publicKeyDigest   = strings.Repeat("b", 64)
 	encryptedDigest   = strings.Repeat("c", 64)
 
+	baseLayerDiffID = "sha256:" + strings.Repeat("1", 64)
+	userLayerDiffID = "sha256:" + strings.Repeat("2", 64)
+
 	signatureAlgorithmDescriptor = ftypes.CryptoDescriptor{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
@@ -341,6 +344,7 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 						},
 					},
 					FilePath: "etc/ssl/certs/ca-certificates.crt",
+					Layer:    ftypes.Layer{DiffID: baseLayerDiffID},
 				},
 				{
 					CryptoAssetInfo: ftypes.CryptoAssetInfo{
@@ -356,6 +360,7 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 						},
 					},
 					FilePath: "opt/app/server.crt",
+					Layer:    ftypes.Layer{DiffID: userLayerDiffID},
 				},
 			},
 			want: []cdx.Component{
@@ -373,8 +378,14 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 					},
 					Evidence: &cdx.Evidence{
 						Occurrences: &[]cdx.EvidenceOccurrence{
-							{Location: "etc/ssl/certs/ca-certificates.crt"},
-							{Location: "opt/app/server.crt"},
+							{
+								Location:          "etc/ssl/certs/ca-certificates.crt",
+								AdditionalContext: "aquasecurity:trivy:LayerDiffID=" + baseLayerDiffID,
+							},
+							{
+								Location:          "opt/app/server.crt",
+								AdditionalContext: "aquasecurity:trivy:LayerDiffID=" + userLayerDiffID,
+							},
 						},
 					},
 				},

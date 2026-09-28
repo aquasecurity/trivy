@@ -217,13 +217,20 @@ func cryptoPrimitive(primitive ftypes.CryptoPrimitive) cdx.CryptoPrimitive {
 
 // evidence reports where the component was found. A cryptographic asset is merged by
 // identity, so one component has an occurrence per file it was found in.
+//
+// CycloneDX 1.7 has no structured field for the layer of an occurrence, so the layer goes to
+// additionalContext as a Trivy-specific name-value pair.
 func (*Marshaler) evidence(occurrences []core.Occurrence) *cdx.Evidence {
 	if len(occurrences) == 0 {
 		return nil
 	}
 
 	found := xslices.Map(occurrences, func(occurrence core.Occurrence) cdx.EvidenceOccurrence {
-		return cdx.EvidenceOccurrence{Location: occurrence.Location}
+		o := cdx.EvidenceOccurrence{Location: occurrence.Location}
+		if occurrence.LayerDiffID != "" {
+			o.AdditionalContext = Namespace + core.PropertyLayerDiffID + "=" + occurrence.LayerDiffID
+		}
+		return o
 	})
 	return &cdx.Evidence{Occurrences: &found}
 }

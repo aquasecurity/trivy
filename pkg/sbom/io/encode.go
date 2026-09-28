@@ -316,8 +316,12 @@ func (e *Encoder) encodeCryptoAssets(results types.Results) {
 		}
 
 		// An occurrence states where the asset was found and nothing about how it was
-		// stored there, so one file that holds the material twice states it once.
-		occurrence := core.Occurrence{Location: asset.FilePath}
+		// stored there, so one file that holds the material twice states it once. The same
+		// path in several layers gives an occurrence per layer.
+		occurrence := core.Occurrence{
+			Location:    asset.FilePath,
+			LayerDiffID: asset.Layer.DiffID,
+		}
 		if !slices.Contains(occurrences[descriptor], occurrence) {
 			occurrences[descriptor] = append(occurrences[descriptor], occurrence)
 		}

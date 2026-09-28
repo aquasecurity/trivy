@@ -1726,6 +1726,8 @@ func TestEncoder_EncodeCryptoAssets(t *testing.T) {
 					foundAt(certificateKey, certificatePath, baseLayer),
 					// The same certificate copied into the user layer.
 					foundAt(certificate, copiedPath, userLayer),
+					// The same certificate rewritten at its path in the user layer.
+					foundAt(certificate, certificatePath, userLayer),
 					foundAt(algorithm, copiedPath, userLayer),
 					// The key of that certificate, stored in a file of its own.
 					foundAt(standaloneKey, keyPath, userLayer),
@@ -1746,22 +1748,23 @@ func TestEncoder_EncodeCryptoAssets(t *testing.T) {
 		"crypto:certificate:sha256:" + strings.Repeat("a", 64): {
 			Asset: certificate.CryptoAssetInfo,
 			Occurrences: []core.Occurrence{
-				{Location: certificatePath},
-				{Location: copiedPath},
+				{Location: certificatePath, LayerDiffID: baseLayer},
+				{Location: certificatePath, LayerDiffID: userLayer},
+				{Location: copiedPath, LayerDiffID: userLayer},
 			},
 		},
 		"crypto:algorithm:oid:1.2.840.113549.1.1.1": {
 			Asset: algorithm.CryptoAssetInfo,
 			Occurrences: []core.Occurrence{
-				{Location: certificatePath},
-				{Location: copiedPath},
+				{Location: certificatePath, LayerDiffID: baseLayer},
+				{Location: copiedPath, LayerDiffID: userLayer},
 			},
 		},
 		"crypto:key:public:spki-sha256:" + strings.Repeat("b", 64): {
 			Asset: standaloneKey.CryptoAssetInfo,
 			Occurrences: []core.Occurrence{
-				{Location: certificatePath},
-				{Location: keyPath},
+				{Location: certificatePath, LayerDiffID: baseLayer},
+				{Location: keyPath, LayerDiffID: userLayer},
 			},
 		},
 	}
