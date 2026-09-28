@@ -246,7 +246,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	if dependencyTree {
 		log.Info(`"--dependency-tree" only shows the dependents of vulnerable packages. ` +
 			`Note that it is the reverse of the usual dependency tree, which shows the packages that depend on the vulnerable package. ` +
-			`It supports limited package managers. Please see the document for the detail.`)
+			`It supports limited package managers. Please see the documentation for details.`)
 		if format != types.FormatTable {
 			log.Warn(`"--dependency-tree" can be used only with "--format table".`)
 		}
@@ -296,7 +296,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 
 func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
 	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
-		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance : %v", compliance)
+		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance: %v", compliance)
 	}
 
 	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())

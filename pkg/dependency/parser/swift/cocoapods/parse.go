@@ -65,7 +65,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 				for _, childDep := range children {
 					s, ok := childDep.(string)
 					if !ok {
-						return nil, nil, xerrors.Errorf("must be string: %q", childDep)
+						return nil, nil, xerrors.Errorf("must be a string: %q", childDep)
 					}
 					fields := strings.Fields(s)
 					if len(fields) == 0 {

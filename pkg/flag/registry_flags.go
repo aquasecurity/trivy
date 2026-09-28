@@ -34,7 +34,7 @@ var (
 	}
 	RegistryMirrorsFlag = Flag[map[string][]string]{
 		ConfigName: "registry.mirrors",
-		Usage:      "map of hosts and registries for them.",
+		Usage:      "map of hosts and registries for them",
 	}
 )
 

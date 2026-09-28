@@ -901,7 +901,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	if lastRateLimitErr != nil {
 		return nil, lastRateLimitErr
 	}
-	return nil, xerrors.Errorf("the POM was not found in remote remoteRepositories")
+	return nil, xerrors.Errorf("the POM was not found in remote repositories")
 }
 
 func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths []string) (*http.Request, error) {

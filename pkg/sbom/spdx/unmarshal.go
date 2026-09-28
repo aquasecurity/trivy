@@ -42,7 +42,7 @@ func (tv *TVDecoder) Decode(v any) error {
 
 	a, ok := v.(*SPDX)
 	if !ok {
-		return xerrors.Errorf("invalid struct type tag-value decoder needed SPDX struct")
+		return xerrors.Errorf("invalid struct type: tag-value decoder requires SPDX struct")
 	}
 	if err = a.unmarshal(spdxDocument); err != nil {
 		return xerrors.Errorf("failed to unmarshal spdx: %w", err)
