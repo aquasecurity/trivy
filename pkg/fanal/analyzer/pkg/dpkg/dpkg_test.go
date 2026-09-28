@@ -1565,6 +1565,82 @@ func Test_dpkgAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:  "status dir",
+			txtar: "testdata/status-dir.txtar",
+			want: &analyzer.AnalysisResult{
+				PackageInfos: []types.PackageInfo{
+					{
+						FilePath: "var/lib/dpkg/status.d/libc6",
+						Packages: []types.Package{
+							{
+								ID:         "libc6@2.36-9+deb12u7",
+								Name:       "libc6",
+								Version:    "2.36",
+								Release:    "9+deb12u7",
+								SrcName:    "glibc",
+								SrcVersion: "2.36",
+								SrcRelease: "9+deb12u7",
+								// libgcc-s1 is not in this layer, so it is resolved after merging layers
+								DependsOn: []string{
+									"libgcc-s1",
+								},
+								Maintainer: "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+								Arch:       "amd64",
+								Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+								InstalledFiles: []string{
+									"/usr/lib/x86_64-linux-gnu/libc.so.6",
+								},
+							},
+						},
+					},
+					{
+						FilePath: "var/lib/dpkg/status.d/libssl3",
+						Packages: []types.Package{
+							{
+								ID:         "libssl3@3.0.14-1~deb12u2",
+								Name:       "libssl3",
+								Version:    "3.0.14",
+								Release:    "1~deb12u2",
+								SrcName:    "openssl",
+								SrcVersion: "3.0.14",
+								SrcRelease: "1~deb12u2",
+								DependsOn: []string{
+									"libc6@2.36-9+deb12u7",
+								},
+								Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>",
+								Arch:       "amd64",
+								Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+							},
+						},
+					},
+					{
+						FilePath: "var/lib/dpkg/status.d/openssl",
+						Packages: []types.Package{
+							{
+								ID:         "openssl@3.0.14-1~deb12u2",
+								Name:       "openssl",
+								Version:    "3.0.14",
+								Release:    "1~deb12u2",
+								SrcName:    "openssl",
+								SrcVersion: "3.0.14",
+								SrcRelease: "1~deb12u2",
+								DependsOn: []string{
+									"libc6@2.36-9+deb12u7",
+									"libssl3@3.0.14-1~deb12u2",
+								},
+								Maintainer: "Debian OpenSSL Team <pkg-openssl-devel@alioth-lists.debian.net>",
+								Arch:       "amd64",
+								Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+							},
+						},
+					},
+				},
+				SystemInstalledFiles: []string{
+					"/usr/lib/x86_64-linux-gnu/libc.so.6",
+				},
+			},
+		},
+		{
 			name:  "third-party package",
 			txtar: "testdata/third-party.txtar",
 			want: &analyzer.AnalysisResult{

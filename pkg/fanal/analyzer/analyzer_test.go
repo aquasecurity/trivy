@@ -776,7 +776,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 					"ubuntu-esm":   1,
 				},
 				PostAnalyzers: map[string]int{
-					"dpkg":   6,
+					"dpkg":   7,
 					"jar":    1,
 					"poetry": 1,
 				},

@@ -221,6 +221,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		mergedLayer.Licenses = nil
 	}
 
+	// Resolve dpkg dependencies before calculating UIDs, as UIDs depend on them.
+	resolveDpkgDependencies(mergedLayer.Packages)
+
 	for i, pkg := range mergedLayer.Packages {
 		// Skip lookup for SBOMs obtained from container images (pkg.Layer is already set).
 		if lo.IsEmpty(pkg.Layer) {
@@ -316,6 +319,44 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	mergedLayer.Sort()
 
 	return mergedLayer
+}
+
+// resolveDpkgDependencies replaces dependency names of dpkg packages with package IDs.
+//
+// Packages in var/lib/dpkg/status.d/ (e.g. distroless images) may be installed in different layers,
+// so the dpkg analyzer keeps names of dependencies it can't resolve (e.g. "libc6")
+// instead of package IDs (e.g. "libc6@2.36-9+deb12u7").
+// Dependencies that are not installed in the image are removed.
+// cf. https://github.com/aquasecurity/trivy/issues/11264
+func resolveDpkgDependencies(pkgs []ftypes.Package) {
+	pkgIDs := make(map[string]string)
+	for _, pkg := range pkgs {
+		if pkg.AnalyzedBy != analyzer.TypeDpkg {
+			continue
+		}
+		// Use the same package every time if there are several versions of the package.
+		if pkgID, ok := pkgIDs[pkg.Name]; !ok || pkg.ID < pkgID {
+			pkgIDs[pkg.Name] = pkg.ID
+		}
+	}
+
+	for i, pkg := range pkgs {
+		if pkg.AnalyzedBy != analyzer.TypeDpkg || len(pkg.DependsOn) == 0 {
+			continue
+		}
+		dependsOn := lo.FilterMap(pkg.DependsOn, func(dep string, _ int) (string, bool) {
+			// Package IDs (<name>@<version>) are already resolved by the analyzer.
+			// '@' is not allowed in Debian package names.
+			if strings.Contains(dep, "@") {
+				return dep, true
+			}
+			pkgID, ok := pkgIDs[dep]
+			return pkgID, ok
+		})
+		slices.Sort(dependsOn)
+		// Don't modify DependsOn in place, as it is shared with the input layers.
+		pkgs[i].DependsOn = xslices.ZeroToNil(slices.Compact(dependsOn))
+	}
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {
