@@ -86,13 +86,16 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		text := scanner.Text()
 		line := strings.ReplaceAll(text, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
+		line = rStripByKey(line, commentMarker)
+		line = rStripByKey(line, endColon)
+		line = rStripByKey(line, hashMarker)
+		// Extras are removed only after comments, environment markers and options
+		// are stripped, so that brackets in those parts don't affect the result.
+		// e.g. "flask==2.0.0 # see [notes"
 		line, err := removeExtras(line)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("invalid requirement at line %d: %w", lineNumber, err)
 		}
-		line = rStripByKey(line, commentMarker)
-		line = rStripByKey(line, endColon)
-		line = rStripByKey(line, hashMarker)
 
 		s := p.splitLine(line)
 		if len(s) != 2 {
