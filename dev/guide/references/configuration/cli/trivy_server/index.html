@@ -8635,20 +8635,20 @@ You're not viewing the latest version of the documentation.
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
 <div class="highlight"><pre><span></span><code>      --cache-backend string     [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default &quot;fs&quot;)
-      --cache-ttl duration       cache TTL when using redis as cache backend
+      --cache-ttl duration       cache TTL when using Redis as cache backend
       --db-repository strings    OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
       --download-db-only         download/update vulnerability database but don&#39;t run a scan
       --enable-modules strings   [EXPERIMENTAL] module names to enable
   -h, --help                     help for server
       --listen string            listen address in server mode (default &quot;localhost:4954&quot;)
-      --module-dir string        specify directory to the wasm modules that will be loaded (default &quot;$HOME/.trivy/modules&quot;)
+      --module-dir string        specify the directory of the WASM modules to load (default &quot;$HOME/.trivy/modules&quot;)
       --no-progress              suppress progress bar
       --password strings         password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --password-stdin           password from stdin. Comma-separated passwords are not supported.
-      --redis-ca string          redis ca file location, if using redis as cache backend
-      --redis-cert string        redis certificate file location, if using redis as cache backend
-      --redis-key string         redis key file location, if using redis as cache backend
-      --redis-tls                enable redis TLS with public certificates, if using redis as cache backend
+      --redis-ca string          Redis CA file location, if using Redis as cache backend
+      --redis-cert string        Redis certificate file location, if using Redis as cache backend
+      --redis-key string         Redis key file location, if using Redis as cache backend
+      --redis-tls                enable Redis TLS with public certificates, if using Redis as cache backend
       --registry-token string    registry token
       --skip-db-update           skip updating vulnerability database
       --token string             for authentication in client/server mode
