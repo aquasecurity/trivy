@@ -94,7 +94,11 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		// e.g. "flask==2.0.0 # see [notes"
 		line, err := removeExtras(line)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("invalid requirement at line %d: %w", lineNumber, err)
+			// pip rejects such lines, but a parser error would make all packages from this file disappear,
+			// so we skip only the malformed line, the same way as for invalid names/versions.
+			p.logger.Debug("Invalid extras in requirements.txt.", log.Int("line", lineNumber),
+				log.String("text", text), log.Err(err))
+			continue
 		}
 
 		s := p.splitLine(line)
@@ -150,7 +154,7 @@ func removeExtras(line string) (string, error) {
 		return line, nil
 	}
 	if startIndex == -1 || endIndex == -1 || startIndex > endIndex {
-		return "", xerrors.Errorf("unbalanced extras brackets: %q", line)
+		return "", xerrors.New("unbalanced extras brackets")
 	}
 	return line[:startIndex] + line[endIndex+1:], nil
 }

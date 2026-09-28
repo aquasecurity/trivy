@@ -321,4 +321,57 @@ var (
 			},
 		},
 	}
+
+	requirementsInvalidExtras = []ftypes.Package{
+		{
+			Name:    "click",
+			Version: "8.0.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 1,
+					EndLine:   1,
+				},
+			},
+		},
+		{
+			Name:    "flask",
+			Version: "2.0.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 3,
+					EndLine:   3,
+				},
+			},
+		},
+		{
+			Name:    "pyjwt",
+			Version: "2.1.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 7,
+					EndLine:   7,
+				},
+			},
+		},
+		{
+			Name:    "Jinja2",
+			Version: "3.0.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 10,
+					EndLine:   10,
+				},
+			},
+		},
+		{
+			Name:    "requests",
+			Version: "2.28.0",
+			Locations: []ftypes.Location{
+				{
+					StartLine: 11,
+					EndLine:   11,
+				},
+			},
+		},
+	}
 )

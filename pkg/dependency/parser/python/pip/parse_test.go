@@ -16,7 +16,6 @@ func TestParse(t *testing.T) {
 		filePath      string
 		useMinVersion bool
 		want          []ftypes.Package
-		wantErr       bool
 	}{
 		{
 			name:     "happy path",
@@ -75,9 +74,9 @@ func TestParse(t *testing.T) {
 			want:          requirementsCompatibleVersions,
 		},
 		{
-			name:     "malformed extras bracket",
+			name:     "malformed extras are skipped, brackets in comments are ignored",
 			filePath: "testdata/requirements_invalid_extras.txt",
-			wantErr:  true,
+			want:     requirementsInvalidExtras,
 		},
 	}
 
@@ -87,10 +86,6 @@ func TestParse(t *testing.T) {
 			require.NoError(t, err)
 
 			got, _, err := NewParser(tt.useMinVersion).Parse(t.Context(), f)
-			if tt.wantErr {
-				require.Error(t, err)
-				return
-			}
 			require.NoError(t, err)
 
 			assert.Equal(t, tt.want, got)
@@ -146,7 +141,7 @@ func TestRemoveExtras(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := removeExtras(tt.line)
 			if tt.wantErr {
-				require.Error(t, err)
+				require.ErrorContains(t, err, "unbalanced extras brackets")
 				return
 			}
 			require.NoError(t, err)
