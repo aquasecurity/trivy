@@ -44,17 +44,19 @@ $ cosign attest --key /path/to/cosign.key --type spdx --predicate sbom.spdx.json
 ## Keyless signing
 
 You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).
+The following example uses Cosign v2 or later. With Cosign v2.2.0 or later, Rekor does not retain the attestation payload by default. [Verify and export it from the OCI registry](#scanning) for scanning; see the [Rekor SBOM source limitations](rekor.md) for older Cosign versions.
 
 ```bash
-# The cyclonedx type is supported in Cosign v1.10.0 or later.
 $ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
-# The following command uploads SBOM attestation to the public Rekor instance.
-$ COSIGN_EXPERIMENTAL=1 cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
+# Cosign publishes the attestation to the OCI registry and records signing evidence in Rekor.
+$ cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
 ```
 
-You can verify attestations.
+You can verify attestations by specifying the expected signer identity and OIDC issuer.
 ```bash
-$ COSIGN_EXPERIMENTAL=1 cosign verify-attestation --type cyclonedx <IMAGE>
+$ cosign verify-attestation --type cyclonedx \
+    --certificate-identity <SIGNER_IDENTITY> \
+    --certificate-oidc-issuer <OIDC_ISSUER> <IMAGE>
 ```
 
 ## Scanning

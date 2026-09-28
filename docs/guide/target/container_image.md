@@ -433,7 +433,7 @@ To enable this functionality, you need to specify the `--sbom-sources` flag.
 The following two sources are supported:
 
 - OCI Registry (`oci`)
-- Rekor (`rekor`)
+- Rekor (`rekor`, legacy attestations only)
 
 Example:
 
