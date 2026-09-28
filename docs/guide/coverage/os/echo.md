@@ -28,13 +28,17 @@ See [here](../../scanner/vulnerability.md#data-sources).
 Same as [Debian](debian.md#license).
 
 ## Language Packages
-Echo also provides patched versions of Python packages.
-Trivy identifies them by an Echo local version segment `+echo.N` at the end of the version (for example, `requests` `2.14.2+echo.1`).
+Echo provides patched versions of language packages.
+Trivy identifies them by the version suffix and uses Echo's own security advisories from the [Echo OSV feed][osv-feed] for them instead of the upstream ones.
 
-For these packages, Trivy uses Echo's own security advisories from the [Echo OSV feed][osv-feed] instead of the upstream ones.
-Other packages in the same project are scanned as usual.
+| Ecosystem                       | Version Suffix | Example                    |
+|---------------------------------|----------------|----------------------------|
+| [Python](../language/python.md) | `+echo.N`      | `requests` `2.14.2+echo.1` |
 
-Only pip packages are supported.
+Other packages, including those from other ecosystems, are scanned against the upstream advisories as usual.
+
+!!! note
+    These packages are detected regardless of the OS, including filesystem and repository scans.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [advisory]: https://advisory.echohq.com/data.json

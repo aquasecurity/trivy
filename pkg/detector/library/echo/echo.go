@@ -33,7 +33,6 @@ func (echoSupplier) Name() string {
 }
 
 // Match determines whether a package is provided by Echo.
-// It expects a normalized package name (see vulnerability.NormalizePkgName).
 // Echo packages are identified by a trailing "+echo.N" segment in the version string,
 // where N is a numeric revision (e.g. "2.14.2+echo.1").
 // The "+echo.N" local segment cannot collide with real PyPI versions, so a
