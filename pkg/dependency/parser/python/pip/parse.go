@@ -110,7 +110,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 
 		if !isValidName(s[0]) || !isValidVersion(s[1]) {
-			p.logger.Debug("Invalid package name/version in requirements.txt.", log.String("line", text))
+			p.logger.Debug("Invalid package name/version in requirements.txt.", log.Int("line", lineNumber),
+				log.String("text", text))
 			continue
 		}
 
