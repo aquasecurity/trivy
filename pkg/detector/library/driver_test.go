@@ -461,19 +461,22 @@ func TestDriver_Detect(t *testing.T) {
 			},
 			libType: ftypes.PythonPkg,
 			args: args{
-				pkgName: "requests",
-				pkgVer:  "2.14.2+echo.1",
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.1",
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID:  "CVE-2023-32681",
-					PkgName:          "requests",
-					InstalledVersion: "2.14.2+echo.1",
-					FixedVersion:     "2.14.2+echo.999",
+					VulnerabilityID: "CVE-2026-24049",
+					VendorIDs: []string{
+						"ECHO-3d34-cec5-cf72",
+					},
+					PkgName:          "wheel",
+					InstalledVersion: "0.45.1+echo.1",
+					FixedVersion:     "0.45.1+echo.2",
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo-osv",
 						Name: "Echo OSV",
-						URL:  "https://advisory.echohq.com/osv",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
 					},
 				},
 			},

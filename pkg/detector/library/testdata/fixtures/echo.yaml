@@ -1,10 +1,12 @@
 - bucket: "echo pip::Echo OSV"
   pairs:
-    - bucket: requests
+    - bucket: wheel
       pairs:
-        - key: CVE-2023-32681
+        - key: CVE-2026-24049
           value:
+            VendorIDs:
+              - ECHO-3d34-cec5-cf72
             PatchedVersions:
-              - "2.14.2+echo.999"
+              - "0.45.1+echo.2"
             VulnerableVersions:
-              - ">= 2.14.2+echo.1, < 2.14.2+echo.999"
+              - "<0.45.1+echo.2"

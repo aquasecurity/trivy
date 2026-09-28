@@ -18,24 +18,10 @@ func TestEchoSupplier_Match(t *testing.T) {
 		want    library.MatchResult
 	}{
 		{
-			name:    "pip package with +echo.1 suffix",
+			name:    "pip package with +echo.N suffix",
 			eco:     ecosystem.Pip,
 			pkgName: "requests",
 			pkgVer:  "2.14.2+echo.1",
-			want:    library.Matched,
-		},
-		{
-			name:    "pip package with +echo.999 suffix",
-			eco:     ecosystem.Pip,
-			pkgName: "django",
-			pkgVer:  "4.2.8+echo.999",
-			want:    library.Matched,
-		},
-		{
-			name:    "pip package with +echo.2 suffix",
-			eco:     ecosystem.Pip,
-			pkgName: "flask",
-			pkgVer:  "3.0.0+echo.2",
 			want:    library.Matched,
 		},
 		{
@@ -53,24 +39,10 @@ func TestEchoSupplier_Match(t *testing.T) {
 			want:    library.NoMatch,
 		},
 		{
-			name:    "npm package is not supported",
+			name:    "non-pip ecosystem is not supported",
 			eco:     ecosystem.Npm,
 			pkgName: "ejs",
 			pkgVer:  "3.1.8+echo.1",
-			want:    library.NoMatch,
-		},
-		{
-			name:    "go package is not supported",
-			eco:     ecosystem.Go,
-			pkgName: "golang.org/x/crypto",
-			pkgVer:  "0.26.0+echo.1",
-			want:    library.NoMatch,
-		},
-		{
-			name:    "maven package is not supported",
-			eco:     ecosystem.Maven,
-			pkgName: "org.apache.logging.log4j:log4j-core",
-			pkgVer:  "2.13.3+echo.1",
 			want:    library.NoMatch,
 		},
 		{
@@ -101,12 +73,26 @@ func TestEchoSupplier_Match(t *testing.T) {
 			pkgVer:  "2.14.2+echo.beta",
 			want:    library.NoMatch,
 		},
+		{
+			name:    "pip package with characters after the echo number",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.14.2+echo.1foo",
+			want:    library.NoMatch,
+		},
+		{
+			name:    "pip package with another segment after the echo number",
+			eco:     ecosystem.Pip,
+			pkgName: "requests",
+			pkgVer:  "2.14.2+echo.1.2",
+			want:    library.NoMatch,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			v := echoSupplier{}
-			got := v.Match(tt.eco, tt.pkgName, tt.pkgVer)
+			e := echoSupplier{}
+			got := e.Match(tt.eco, tt.pkgName, tt.pkgVer)
 			require.Equal(t, tt.want, got)
 		})
 	}

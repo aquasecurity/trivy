@@ -27,5 +27,15 @@ See [here](../../scanner/vulnerability.md#data-sources).
 ## License
 Same as [Debian](debian.md#license).
 
+## Language Packages
+Echo also provides patched versions of Python packages.
+Trivy identifies them by an Echo local version segment `+echo.N` at the end of the version (for example, `requests` `2.14.2+echo.1`).
+
+For these packages, Trivy uses Echo's own security advisories from the [Echo OSV feed][osv-feed] instead of the upstream ones.
+Other packages in the same project are scanned as usual.
+
+Only pip packages are supported.
+
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [advisory]: https://advisory.echohq.com/data.json
+[osv-feed]: https://advisory.echohq.com/osv/all.zip

@@ -1,6 +1,7 @@
 package echo
 
 import (
+	"fmt"
 	"regexp"
 
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
@@ -11,7 +12,7 @@ import (
 
 // echoLocalSegmentRe matches the Echo-specific PEP 440 local version segment,
 // e.g. "+echo.1" in "2.14.2+echo.1".
-var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+`)
+var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+$`)
 
 func init() {
 	library.RegisterSupplier(echoSupplier{
@@ -33,7 +34,7 @@ func (echoSupplier) Name() string {
 
 // Match determines whether a package is provided by Echo.
 // It expects a normalized package name (see vulnerability.NormalizePkgName).
-// Echo packages are identified by a "+echo.N" segment in the version string,
+// Echo packages are identified by a trailing "+echo.N" segment in the version string,
 // where N is a numeric revision (e.g. "2.14.2+echo.1").
 // The "+echo.N" local segment cannot collide with real PyPI versions, so a
 // suffix match is authoritative (Matched) rather than a Candidate.
@@ -49,7 +50,7 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 
 // BucketPrefix returns the supplier-specific advisory bucket prefix.
 func (e echoSupplier) BucketPrefix(eco ecosystem.Type) string {
-	return e.Name() + " " + string(eco) + "::"
+	return fmt.Sprintf("%s %s::", e.Name(), eco)
 }
 
 // Comparer returns a version comparer for the given ecosystem.

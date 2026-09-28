@@ -86,20 +86,6 @@ func Test_lookupSupplier(t *testing.T) {
 			wantDefaultComparer: false,
 		},
 		{
-			name:      "non-echo pip package without version suffix returns no match",
-			eco:       ecosystem.Pip,
-			pkgName:   "requests",
-			pkgVer:    "2.14.2",
-			wantMatch: library.NoMatch,
-		},
-		{
-			name:      "echo version suffix on non-pip ecosystem returns no match",
-			eco:       ecosystem.Npm,
-			pkgName:   "ejs",
-			pkgVer:    "3.1.8+echo.1",
-			wantMatch: library.NoMatch,
-		},
-		{
 			name:      "non-seal pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
