@@ -169,7 +169,7 @@ func unpackedChartExists(fsys fs.FS, archivePath string) bool {
 	if path.IsAbs(name) {
 		return false
 	}
-	firstComponent := strings.SplitN(name, "/", 2)[0]
+	firstComponent, _, _ := strings.Cut(name, "/")
 	if firstComponent == "." || firstComponent == ".." {
 		return false
 	}

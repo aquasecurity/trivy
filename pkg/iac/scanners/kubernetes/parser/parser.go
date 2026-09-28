@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+var separatorRegex = regexp.MustCompile(`(?m:^---\r?\n)`)
+
 func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 	contents, err := io.ReadAll(r)
 	if err != nil {
@@ -28,15 +30,24 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 
 	var manifests []*Manifest
 
-	re := regexp.MustCompile(`(?m:^---\r?\n)`)
 	offset := 0
-	for _, partial := range re.Split(string(contents), -1) {
+	for i, partial := range separatorRegex.Split(string(contents), -1) {
+		if i > 0 {
+			// The separator line is dropped by the split.
+			offset++
+		}
+
 		manifest, err := ManifestFromYAML(path, []byte(partial))
 		if err != nil {
 			return nil, err
 		}
 		if manifest.Content != nil {
-			manifest.Content.Offset = offset
+			// Each document is parsed on its own, so its lines are counted from the
+			// start of the document. Shift them to point at the place in the file.
+			manifest.Content.Walk(func(n *ManifestNode) {
+				n.StartLine += offset
+				n.EndLine += offset
+			})
 			manifests = append(manifests, manifest)
 		}
 
@@ -48,7 +59,7 @@ func Parse(_ context.Context, r io.Reader, path string) ([]*Manifest, error) {
 
 func countLines(s string) int {
 	if s == "" {
-		return 1
+		return 0
 	}
 
 	count := strings.Count(s, "\n")

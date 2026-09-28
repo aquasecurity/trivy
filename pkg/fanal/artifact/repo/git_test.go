@@ -25,7 +25,6 @@ import (
 
 func TestNewArtifact(t *testing.T) {
 	ts := gittest.NewTestServer(t, gittest.Options{})
-	defer ts.Close()
 
 	type args struct {
 		target     string
@@ -167,7 +166,6 @@ func TestNewArtifact(t *testing.T) {
 
 func TestArtifact_Inspect(t *testing.T) {
 	ts := gittest.NewTestServer(t, gittest.Options{})
-	defer ts.Close()
 
 	tests := []struct {
 		name         string
@@ -339,7 +337,6 @@ func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
 		Username: username,
 		Password: password,
 	})
-	t.Cleanup(ts.Close)
 
 	tsURL, err := url.Parse(ts.URL)
 	require.NoError(t, err)
@@ -349,7 +346,7 @@ func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
 }
 
 // testInspectArtifact is a helper function to inspect an artifact and assert the results
-func testInspectArtifact(t *testing.T, target, wantRepoURL, wantErr string) {
+func testInspectArtifact(t *testing.T, target, wantRepoURL, wantName, wantErr string) {
 	t.Helper()
 	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
 	t.Cleanup(cleanup)
@@ -366,6 +363,9 @@ func testInspectArtifact(t *testing.T, target, wantRepoURL, wantErr string) {
 
 	// Verify the RepoURL
 	assert.Equal(t, wantRepoURL, ref.RepoMetadata.RepoURL)
+
+	// Verify the artifact Name
+	assert.Equal(t, wantName, ref.Name)
 
 	// Verify we have blob IDs (indicating successful scan)
 	assert.NotEmpty(t, ref.BlobIDs)
@@ -390,6 +390,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 			envVars     map[string]string
 			wantErr     string
 			wantRepoURL string
+			wantName    string
 		}{
 			{
 				name:   "success with GITHUB_TOKEN",
@@ -398,6 +399,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 					"GITHUB_TOKEN": testPassword,
 				},
 				wantRepoURL: tsURL.String(),
+				wantName:    tsURL.String(),
 			},
 			{
 				name:   "success with GITLAB_TOKEN",
@@ -406,6 +408,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 					"GITLAB_TOKEN": testPassword,
 				},
 				wantRepoURL: tsURL.String(),
+				wantName:    tsURL.String(),
 			},
 			{
 				name:    "failure without token",
@@ -430,7 +433,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 				}
 
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantName, tt.wantErr)
 			})
 		}
 	})
@@ -453,12 +456,14 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 			name        string
 			target      string
 			wantRepoURL string
+			wantName    string
 			wantErr     string
 		}{
 			{
 				name:        "success with embedded credentials",
 				target:      makeTarget(testUsername, testPassword),
 				wantRepoURL: tsURL.String(),
+				wantName:    tsURL.String(),
 			},
 			{
 				name:    "failure with wrong password",
@@ -475,7 +480,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantErr)
+				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantName, tt.wantErr)
 			})
 		}
 	})
@@ -500,7 +505,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		require.NoError(t, err)
 
 		// Scan and verify the local cloned directory
-		testInspectArtifact(t, cloneDir, tsURL.String(), "")
+		testInspectArtifact(t, cloneDir, tsURL.String(), cloneDir, "")
 	})
 }
 

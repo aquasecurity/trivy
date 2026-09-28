@@ -67,7 +67,13 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 					if !ok {
 						return nil, nil, xerrors.Errorf("must be string: %q", childDep)
 					}
-					directDeps[pkg.Name] = append(directDeps[pkg.Name], strings.Fields(s)[0])
+					fields := strings.Fields(s)
+					if len(fields) == 0 {
+						// A child dependency without a name carries no information.
+						// cf. #10976
+						continue
+					}
+					directDeps[pkg.Name] = append(directDeps[pkg.Name], fields[0])
 				}
 			}
 		}

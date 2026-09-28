@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
 )
@@ -75,7 +76,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	})
 
 	// First pass: collect all packages
-	pkgs, projectNameVer := p.collectPackages(depsFile, targetLibs, targetLibsFound)
+	pkgs, rootPkgID := p.collectPackages(depsFile, targetLibs, targetLibsFound)
 	if len(pkgs) == 0 {
 		return nil, nil, nil
 	}
@@ -87,7 +88,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return pkgSlice, nil, nil
 	}
 
-	directDeps := lo.MapToSlice(targetLibs[projectNameVer].Dependencies, packageID)
+	directDeps := lo.MapToSlice(targetLibs[rootPkgID].Dependencies, packageID)
 
 	// Second pass: build dependency graph + fill Relationships from targets section
 	deps := p.buildDependencyGraph(pkgs, targetLibs, directDeps)
@@ -98,11 +99,13 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, nil
 }
 
-// collectPackages builds the package map from the `libraries` section, returning the
-// packages keyed by ID and the ID of the root project (empty if none was found).
+// collectPackages builds the package map from the `libraries` section. It returns
+// the packages keyed by ID and the ID of the root project ("" if it couldn't be
+// determined). When a root is found, the root project is marked `RelationshipRoot`
+// and the other project libraries `RelationshipWorkspace`.
 func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[string]TargetLib, targetLibsFound bool) (map[string]ftypes.Package, string) {
-	var projectNameVer string
 	pkgs := make(map[string]ftypes.Package, len(depsFile.Libraries))
+	var projects []string
 
 	for nameVer, lib := range depsFile.Libraries {
 		name, version, ok := strings.Cut(nameVer, "/")
@@ -137,20 +140,48 @@ func (p *Parser) collectPackages(depsFile dotNetDependencies, targetLibs map[str
 			Locations: []ftypes.Location{ftypes.Location(lib.Location)},
 		}
 
-		// Identify root package
 		if strings.EqualFold(lib.Type, "project") {
-			if projectNameVer != "" {
-				p.logger.Warn("Multiple root projects found in .deps.json", log.String("existing_root", projectNameVer), log.String("new_root", id))
-				continue
-			}
-			projectNameVer = id
-			pkg.Relationship = ftypes.RelationshipRoot
+			projects = append(projects, id)
 		}
 
 		pkgs[pkg.ID] = pkg
 	}
 
-	return pkgs, projectNameVer
+	rootPkgID := p.rootProject(projects, targetLibs)
+	if rootPkgID != "" {
+		for _, project := range projects {
+			pkg := pkgs[project]
+			pkg.Relationship = lo.Ternary(project == rootPkgID, ftypes.RelationshipRoot, ftypes.RelationshipWorkspace)
+			pkgs[project] = pkg
+		}
+	}
+
+	return pkgs, rootPkgID
+}
+
+// rootProject returns the pkgID of the root application project:
+// the only `type: project` that no other library depends on in the `targets` graph.
+// It returns "" when there isn't exactly one such project, so we don't guess the root on a non-standard file.
+func (p *Parser) rootProject(projects []string, targetLibs map[string]TargetLib) string {
+	referenced := set.New[string]()
+	for _, lib := range targetLibs {
+		for name, version := range lib.Dependencies {
+			referenced.Append(packageID(name, version))
+		}
+	}
+
+	var roots []string
+	for _, project := range projects {
+		if !referenced.Contains(project) {
+			roots = append(roots, project)
+		}
+	}
+	if len(roots) == 1 {
+		return roots[0]
+	}
+
+	p.logger.Debug("Unable to determine the root project in .deps.json", log.Int("candidates", len(roots)))
+	return ""
 }
 
 // buildDependencyGraph fills the Relationship field of each package and builds the
@@ -159,10 +190,10 @@ func (p *Parser) buildDependencyGraph(pkgs map[string]ftypes.Package, targetLibs
 	var deps ftypes.Dependencies
 	for pkgID, pkg := range pkgs {
 		// Fill relationship field for package
-		// If Root package didn't find or don't have dependencies, skip setting Relationship,
+		// If Root package wasn't found or doesn't have dependencies, skip setting Relationship,
 		// because most likely file is broken.
-		// Root package Relationship is already set
-		if len(directDeps) > 0 && pkg.Relationship != ftypes.RelationshipRoot {
+		// Root and workspace package relationships are already set.
+		if len(directDeps) > 0 && pkg.Relationship == ftypes.RelationshipUnknown {
 			pkg.Relationship = lo.Ternary(slices.Contains(directDeps, pkgID), ftypes.RelationshipDirect, ftypes.RelationshipIndirect)
 			pkgs[pkgID] = pkg
 		}

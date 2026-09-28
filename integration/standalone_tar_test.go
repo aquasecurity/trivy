@@ -372,6 +372,14 @@ func TestTar(t *testing.T) {
 			golden: goldenMariner10,
 		},
 		{
+			name: "rapidfort ubuntu 22.04",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/rapidfort-ubuntu-2204.tar.gz",
+			},
+			golden: goldenRapidFortUbuntu2204,
+		},
+		{
 			name: "busybox with Cargo.lock integration",
 			args: args{
 				Format: types.FormatJSON,

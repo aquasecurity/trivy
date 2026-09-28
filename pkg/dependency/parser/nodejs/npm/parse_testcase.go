@@ -692,6 +692,63 @@ var (
 		},
 	}
 
+	// docker run --name node --rm -it node:14 sh
+	//
+	// Build a package that bundles its dependency. Bundling only works for a packed package,
+	// installing a directory would give a symlink instead.
+	// mkdir bundler && cd bundler
+	// npm init --force
+	// npm install ms@2.0.0 --save-bundle
+	// npm pack && mv bundler-1.0.0.tgz ..
+	//
+	// Install it and rebuild the lockfile from `node_modules`.
+	// cd .. && npm init --force
+	// npm install ./bundler-1.0.0.tgz
+	// rm -rf node_modules && npm install
+	// rm package-lock.json && npm install
+	//
+	// The last 2 commands are what produces `"resolved": false`.
+	// npm installs the bundled `ms` from the lockfile, where the entry has no `resolved` field,
+	// saves `_resolved: false` into `node_modules/bundler/node_modules/ms/package.json`
+	// and copies that value into the lockfile when rebuilding it from `node_modules`.
+	//
+	// packages are filled manually
+	npmV1WithBundledDepsPkgs = []ftypes.Package{
+		{
+			ID:           "bundler@file:bundler-1.0.0.tgz",
+			Name:         "bundler",
+			Version:      "file:bundler-1.0.0.tgz",
+			Dev:          false,
+			Relationship: ftypes.RelationshipUnknown,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 7,
+					EndLine:   20,
+				},
+			},
+		},
+		{
+			ID:           "ms@2.0.0",
+			Name:         "ms",
+			Version:      "2.0.0",
+			Dev:          false,
+			Relationship: ftypes.RelationshipUnknown,
+			Locations: []ftypes.Location{
+				{
+					StartLine: 14,
+					EndLine:   18,
+				},
+			},
+		},
+	}
+
+	npmV1WithBundledDepsDeps = []ftypes.Dependency{
+		{
+			ID:        "bundler@file:bundler-1.0.0.tgz",
+			DependsOn: []string{"ms@2.0.0"},
+		},
+	}
+
 	// ... and
 	// npm i --lockfile-version 2
 	// same as npmV1Pkgs but change `Indirect` field to false for `body-parser@1.18.3`, `finalhandler@1.1.1`, `@babel/helper-string-parser@7.19.4`, `promise@8.3.0` and `ms@1.0.0`  packages.

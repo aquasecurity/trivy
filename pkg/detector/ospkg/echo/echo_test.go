@@ -267,3 +267,48 @@ func TestScanner_Detect(t *testing.T) {
 		})
 	}
 }
+
+func TestScanner_FilterPackages(t *testing.T) {
+	// Echo publishes advisories for software Debian does not ship, which users
+	// install from the vendor's own repository, so those packages must be kept.
+	thirdParty := ftypes.Package{
+		Name: "docker-compose-plugin",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassThirdParty,
+		},
+	}
+	official := ftypes.Package{
+		Name: "curl",
+		Repository: ftypes.PackageRepository{
+			Class: ftypes.RepositoryClassOfficial,
+		},
+	}
+
+	tests := []struct {
+		name string
+		pkgs []ftypes.Package
+		want []ftypes.Package
+	}{
+		{
+			name: "package from a third-party repository is kept",
+			pkgs: []ftypes.Package{thirdParty},
+			want: []ftypes.Package{thirdParty},
+		},
+		{
+			name: "package from an official repository is kept",
+			pkgs: []ftypes.Package{official},
+			want: []ftypes.Package{official},
+		},
+		{
+			name: "no package is dropped",
+			pkgs: []ftypes.Package{official, thirdParty},
+			want: []ftypes.Package{official, thirdParty},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, NewScanner().FilterPackages(t.Context(), tt.pkgs))
+		})
+	}
+}

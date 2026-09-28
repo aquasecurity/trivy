@@ -143,6 +143,10 @@ linters:
     testifylint:
       enable-all: true
 
+    modernize:
+      disable:
+        - embedlit
+
   default: none
 
   enable:
@@ -198,7 +202,7 @@ linters:
     warn-unused: true
 
 run:
-  go: "1.26"
+  go: "1.27"
   timeout: 30m
 
 formatters:

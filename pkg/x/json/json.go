@@ -4,39 +4,49 @@ import (
 	"bytes"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
+	"errors"
 	"io"
+	"slices"
 
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/set"
 )
 
-// lineReader is a custom reader that tracks line numbers.
+// lineReader is a reader that notes line breaks as the data passes through,
+// so that an input offset can be resolved to a line number.
 type lineReader struct {
-	r    io.Reader
-	line int
+	r      io.Reader
+	offset int64
+
+	// newlineOffsets holds the offset of every "\n" read, in ascending order.
+	newlineOffsets []int64
 }
 
 // NewLineReader creates a new line reader.
 func NewLineReader(r io.Reader) *lineReader {
-	return &lineReader{
-		r:    r,
-		line: 1,
-	}
+	return &lineReader{r: r}
 }
 
 func (lr *lineReader) Read(p []byte) (n int, err error) {
 	n, err = lr.r.Read(p)
-	if n > 0 {
-		// Count the number of newlines in the read buffer
-		lr.line += bytes.Count(p[:n], []byte("\n"))
+	for i := 0; i < n; {
+		j := bytes.IndexByte(p[i:n], '\n')
+		if j < 0 {
+			break
+		}
+		lr.newlineOffsets = append(lr.newlineOffsets, lr.offset+int64(i+j))
+		i += j + 1
 	}
+	lr.offset += int64(n)
 	return n, err
 }
 
-func (lr *lineReader) Line() int {
-	return lr.line
+// Line returns the number of the line holding the given offset.
+// An offset on a "\n" belongs to the line it ends.
+func (lr *lineReader) Line(offset int64) int {
+	i, _ := slices.BinarySearch(lr.newlineOffsets, offset)
+	return i + 1
 }
 
 func Unmarshal(data []byte, v any) error {
@@ -82,54 +92,86 @@ var SetLocationHook = DecodeHook{
 //
 // To use UnmarshalerWithLocation for primitive types, you must implement the [json.UnmarshalerFrom] interface for those objects.
 // cf. https://pkg.go.dev/github.com/go-json-experiment/json#UnmarshalerFrom
+//
+// The returned unmarshalers resolve decoder offsets to lines through r and keep decoding state,
+// so they must not be used concurrently or with another reader.
+// Pass them to the decoder as is: the nested decode relies on the decoder options carrying them.
 func UnmarshalerWithLocation[T any](r *lineReader, hooks ...DecodeHook) *json.Unmarshalers {
-	visited := set.New[int]()
 	if len(hooks) == 0 {
 		hooks = []DecodeHook{SetLocationHook}
 	}
-	return unmarshaler[T](r, visited, hooks...)
+	l := &locator{
+		r:     r,
+		hooks: hooks,
+	}
+	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
+		return l.unmarshal(dec, target)
+	})
 }
 
-func unmarshaler[T any](r *lineReader, visited set.Set[int], hooks ...DecodeHook) *json.Unmarshalers {
-	return json.UnmarshalFromFunc(func(dec *jsontext.Decoder, target T) error {
-		// Decoder.InputOffset reports the offset after the last token,
-		// but we want to record the offset before the next token.
-		//
-		// Call Decoder.PeekKind to buffer enough to reach the next token.
-		// Add the number of leading whitespace, commas, and colons
-		// to locate the start of the next token.
-		// cf. https://pkg.go.dev/github.com/go-json-experiment/json@v0.0.0-20250223041408-d3c622f1b874#example-WithUnmarshalers-RecordOffsets
-		kind := dec.PeekKind()
+// locator records the location of each decoded value.
+// One locator and its unmarshalers serve the whole document,
+// so json/v2 reuses the per-type lookups cached in the unmarshalers.
+type locator struct {
+	r            *lineReader
+	hooks        []DecodeHook
+	skipNextCall bool
+}
 
-		unread := bytes.TrimLeft(dec.UnreadBuffer(), " \n\r\t,:")
-		start := r.Line() - bytes.Count(unread, []byte("\n")) // The decoder buffer may have read more lines.
+func (l *locator) unmarshal(dec *jsontext.Decoder, target any) error {
+	// json.UnmarshalDecode below calls this method for the same target first,
+	// so ErrUnsupported hands that call to the default decoding and breaks the recursion.
+	// The flag is reset to let nested values record their locations.
+	if l.skipNextCall {
+		l.skipNextCall = false
+		return errors.ErrUnsupported
+	}
 
-		// Check visited set to avoid infinity loops
-		if visited.Contains(start) {
-			return json.SkipFunc
+	// Decoder.InputOffset reports the offset after the last token,
+	// but we want to record the offset before the next token.
+	//
+	// Call Decoder.PeekKind to buffer enough to reach the next token.
+	// Add the number of leading whitespace, commas, and colons
+	// to locate the start of the next token.
+	// cf. https://pkg.go.dev/github.com/go-json-experiment/json@v0.0.0-20250223041408-d3c622f1b874#example-WithUnmarshalers-RecordOffsets
+	kind := dec.PeekKind()
+
+	unread := dec.UnreadBuffer()
+	start := dec.InputOffset() + int64(len(unread)-len(bytes.TrimLeft(unread, " \n\r\t,:")))
+
+	if _, ok := target.(json.UnmarshalerFrom); !ok {
+		// null leaves the target zeroed, so there is no location to record.
+		if kind == jsontext.KindNull {
+			return errors.ErrUnsupported
 		}
-		visited.Append(start)
 
 		// Return more detailed error for cases when UnmarshalJSONFrom is not implemented for primitive type.
-		if _, ok := any(target).(json.UnmarshalerFrom); !ok && kind != '[' && kind != '{' {
+		if kind != jsontext.KindBeginArray && kind != jsontext.KindBeginObject {
 			return xerrors.Errorf("structures with single primitive type should implement UnmarshalJSONFrom: %T", target)
 		}
+	}
 
-		if err := json.UnmarshalDecode(dec, target, json.WithUnmarshalers(unmarshaler[T](r, visited, hooks...))); err != nil {
-			return err
+	// The decoder options already hold the unmarshalers wrapping this locator,
+	// so nested values are intercepted as well.
+	l.skipNextCall = true
+	err := json.UnmarshalDecode(dec, target)
+	// UnmarshalFromFunc returns io.EOF without calling this method when the decoder is already at EOF,
+	// so the flag is cleared explicitly.
+	l.skipNextCall = false
+	if err != nil {
+		return err
+	}
+
+	location := types.Location{
+		StartLine: l.r.Line(start),
+		EndLine:   l.r.Line(dec.InputOffset()),
+	}
+
+	for _, h := range l.hooks {
+		if h.After != nil {
+			h.After(dec, target, location)
 		}
+	}
 
-		location := types.Location{
-			StartLine: start,
-			EndLine:   r.Line() - bytes.Count(dec.UnreadBuffer(), []byte("\n")),
-		}
-
-		for _, h := range hooks {
-			if h.After != nil {
-				h.After(dec, target, location)
-			}
-		}
-
-		return nil
-	})
+	return nil
 }

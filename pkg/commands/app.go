@@ -157,6 +157,10 @@ func loadPluginCommands() []*cobra.Command {
 }
 
 func initConfig(configFile string, pathChanged bool) error {
+	if configFile == "" {
+		return nil
+	}
+
 	// Read from config
 	viper.SetConfigFile(configFile)
 	viper.SetConfigType("yaml")

@@ -115,14 +115,14 @@ func (r *Resource) UnmarshalYAML(node *yaml.Node) error {
 
 func (r *Resource) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 	switch dec.PeekKind() {
-	case '{':
+	case jsontext.KindBeginObject:
 		var i resourceInner
 		if err := json.UnmarshalDecode(dec, &i); err != nil {
 			return err
 		}
 		r.typ = i.Type
 		r.properties = i.Properties
-	case '[':
+	case jsontext.KindBeginArray:
 		var raw Property
 		if err := json.UnmarshalDecode(dec, &raw); err != nil {
 			return err

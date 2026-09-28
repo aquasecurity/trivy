@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"slices"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -19,7 +18,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/oci"
-	"github.com/aquasecurity/trivy/pkg/remote"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
@@ -60,20 +59,13 @@ func (a Artifact) inspectOCIReferrerSBOM(ctx context.Context) (artifact.Referenc
 		return artifact.Reference{}, xerrors.Errorf("repo digest error: %w", err)
 	}
 
-	// Fetch referrers
-	index, err := remote.Referrers(ctx, digest, a.artifactOption.ImageOption.RegistryOptions)
+	// Fetch referrers carrying a supported SBOM artifact type
+	descs, err := oci.Referrers(ctx, digest, a.artifactOption.ImageOption.RegistryOptions,
+		set.New(oci.SupportedSBOMArtifactTypes...))
 	if err != nil {
 		return artifact.Reference{}, xerrors.Errorf("unable to fetch referrers: %w", err)
 	}
-	manifest, err := index.IndexManifest()
-	if err != nil {
-		return artifact.Reference{}, xerrors.Errorf("unable to get manifest: %w", err)
-	}
-	for _, m := range lo.FromPtr(manifest).Manifests {
-		// Unsupported artifact type
-		if !slices.Contains(oci.SupportedSBOMArtifactTypes, m.ArtifactType) {
-			continue
-		}
+	for _, m := range descs {
 		res, err := a.parseReferrer(ctx, digest.Context().String(), m)
 		if err != nil {
 			a.logger.Warn("Error with SBOM via OCI referrers",

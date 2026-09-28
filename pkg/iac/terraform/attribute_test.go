@@ -89,6 +89,59 @@ func Test_Attribute_AsMapValue(t *testing.T) {
 	}
 }
 
+func Test_Attribute_Marks(t *testing.T) {
+	val := cty.StringVal("secret").Mark("sensitive")
+	attr := newTestAttribute(t, "val", map[string]cty.Value{"val": val})
+
+	assert.False(t, attr.Value().IsMarked())
+	assert.True(t, attr.MarkedValue().IsMarked())
+	assert.True(t, attr.NullableValue().IsMarked())
+}
+
+func Test_Attribute_AccessorsIgnoreMarks(t *testing.T) {
+	newAttr := func(t *testing.T, val cty.Value) *Attribute {
+		t.Helper()
+		return newTestAttribute(t, "val", map[string]cty.Value{"val": val.Mark("sensitive")})
+	}
+
+	t.Run("string", func(t *testing.T) {
+		attr := newAttr(t, cty.StringVal("secret"))
+		assert.Equal(t, "secret", attr.AsStringValueOrDefault("", nil).Value())
+		assert.Equal(t, []byte("secret"), attr.AsBytesValueOrDefault(nil, nil).Value())
+		assert.True(t, attr.Equals("secret"))
+		assert.False(t, attr.IsEmpty())
+		assert.True(t, attr.IsResolvable())
+		assert.Equal(t, cty.String, attr.Type())
+	})
+
+	t.Run("object", func(t *testing.T) {
+		attr := newAttr(t, cty.ObjectVal(map[string]cty.Value{"env": cty.StringVal("staging")}))
+		assert.Equal(t, map[string]string{"env": "staging"}, attr.AsMapValue().Value())
+		assert.True(t, attr.IsIterable())
+		assert.True(t, attr.Contains("env"))
+		require.NoError(t, attr.Each(func(_, _ cty.Value) {}))
+	})
+
+	t.Run("list", func(t *testing.T) {
+		attr := newAttr(t, cty.TupleVal([]cty.Value{cty.StringVal("a")}))
+		values := attr.AsStringValues()
+		require.Len(t, values, 1)
+		assert.Equal(t, "a", values[0].Value())
+		assert.Equal(t, []string{"a"}, attr.GetRawValue())
+	})
+
+	t.Run("bool", func(t *testing.T) {
+		attr := newAttr(t, cty.True)
+		assert.True(t, attr.AsBoolValueOrDefault(false, nil).Value())
+	})
+
+	t.Run("number", func(t *testing.T) {
+		attr := newAttr(t, cty.NumberIntVal(42))
+		assert.Equal(t, 42, attr.AsIntValueOrDefault(0, nil).Value())
+		assert.True(t, attr.Equals(42))
+	})
+}
+
 func Test_AllReferences(t *testing.T) {
 	cases := []struct {
 		input string
@@ -192,6 +245,184 @@ func Test_AllReferences_JSON(t *testing.T) {
 			}
 
 			require.ElementsMatch(t, tt.expected, humanRefs)
+		})
+	}
+}
+
+func Test_Attribute_Contains(t *testing.T) {
+	const asgTags = `[
+	{
+		"key"                 = "Name"
+		"propagate_at_launch" = "true"
+		"value"               = "couchbase-seb-develop-dev"
+	},
+	{
+		"key"                 = "app"
+		"propagate_at_launch" = "true"
+		"value"               = "myapp"
+	}
+]`
+
+	tests := []struct {
+		name       string
+		expr       string
+		value      string
+		ignoreCase bool
+		expected   bool
+	}{
+		{
+			name:     "substring of a string",
+			expr:     `"bucketName"`,
+			value:    "etNa",
+			expected: true,
+		},
+		{
+			name:     "string without the value",
+			expr:     `"public-read"`,
+			value:    "private",
+			expected: false,
+		},
+		{
+			name:     "key of a map",
+			expr:     `{ Department = "Finance" }`,
+			value:    "Department",
+			expected: true,
+		},
+		{
+			name:     "element of a list",
+			expr:     `["10.0.0.0/16", "172.0.0.0/8"]`,
+			value:    "172.0.0.0/8",
+			expected: true,
+		},
+		{
+			name:     "value in a list of maps",
+			expr:     asgTags,
+			value:    "Name",
+			expected: true,
+		},
+		{
+			name:     "value in the second map of a list",
+			expr:     asgTags,
+			value:    "app",
+			expected: true,
+		},
+		{
+			name:     "value missing from a list of maps",
+			expr:     asgTags,
+			value:    "NotThere",
+			expected: false,
+		},
+		{
+			name:       "element of a list with a different case",
+			expr:       `["Foo", "Bar"]`,
+			value:      "foo",
+			ignoreCase: true,
+			expected:   true,
+		},
+		{
+			name:     "element of a list with a different case and no option",
+			expr:     `["Foo", "Bar"]`,
+			value:    "foo",
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, tt.expr, nil)
+			if tt.ignoreCase {
+				assert.Equal(t, tt.expected, attr.Contains(tt.value, IgnoreCase))
+			} else {
+				assert.Equal(t, tt.expected, attr.Contains(tt.value))
+			}
+		})
+	}
+}
+
+func Test_Attribute_IsEmpty(t *testing.T) {
+	tests := []struct {
+		name     string
+		expr     string
+		expected bool
+	}{
+		{
+			name:     "string with a value",
+			expr:     `"public-read"`,
+			expected: false,
+		},
+		{
+			name:     "empty string",
+			expr:     `""`,
+			expected: true,
+		},
+		{
+			name:     "map with a key",
+			expr:     `{ Department = "Finance" }`,
+			expected: false,
+		},
+		{
+			name:     "empty map",
+			expr:     `{}`,
+			expected: true,
+		},
+		{
+			name:     "list with an element",
+			expr:     `["0.0.0.0/0"]`,
+			expected: false,
+		},
+		{
+			name:     "empty list",
+			expr:     `[]`,
+			expected: true,
+		},
+		{
+			name:     "zero number",
+			expr:     `0`,
+			expected: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.expected, newTestAttribute(t, tt.expr, nil).IsEmpty())
+		})
+	}
+}
+
+func Test_Attribute_IsTrueAndIsFalse(t *testing.T) {
+	tests := []struct {
+		name    string
+		expr    string
+		isTrue  bool
+		isFalse bool
+	}{
+		{
+			name:   "boolean true",
+			expr:   `true`,
+			isTrue: true,
+		},
+		{
+			name:   "string true",
+			expr:   `"true"`,
+			isTrue: true,
+		},
+		{
+			name:    "boolean false",
+			expr:    `false`,
+			isFalse: true,
+		},
+		{
+			name:    "string false",
+			expr:    `"false"`,
+			isFalse: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, tt.expr, nil)
+			assert.Equal(t, tt.isTrue, attr.IsTrue())
+			assert.Equal(t, tt.isFalse, attr.IsFalse())
 		})
 	}
 }

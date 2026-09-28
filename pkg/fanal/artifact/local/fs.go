@@ -201,6 +201,7 @@ func (a Artifact) Inspect(ctx context.Context) (artifact.Reference, error) {
 	opts := analyzer.AnalysisOptions{
 		Offline:      a.artifactOption.Offline,
 		FileChecksum: a.artifactOption.FileChecksum,
+		MavenMirrors: a.artifactOption.MavenMirrors,
 	}
 
 	// Prepare filesystem for post analysis

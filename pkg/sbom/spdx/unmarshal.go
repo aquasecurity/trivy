@@ -108,9 +108,12 @@ func (s *SPDX) unmarshal(spdxDocument *spdx.Document) error {
 
 // parseFiles parses Relationships and finds filepaths for packages
 func (s *SPDX) parseFiles(spdxDocument *spdx.Document) {
-	fileSPDXIdentifierMap := lo.SliceToMap(spdxDocument.Files, func(file *spdx.File) (common.ElementID, *spdx.File) {
-		return file.FileSPDXIdentifier, file
-	})
+	// A null element in the files array decodes to a nil pointer.
+	fileSPDXIdentifierMap := lo.SliceToMap(
+		lo.Filter(spdxDocument.Files, func(file *spdx.File, _ int) bool { return file != nil }),
+		func(file *spdx.File) (common.ElementID, *spdx.File) {
+			return file.FileSPDXIdentifier, file
+		})
 
 	for _, rel := range spdxDocument.Relationships {
 		if rel.Relationship != common.TypeRelationshipContains && rel.Relationship != "CONTAIN" {
@@ -150,6 +153,10 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]
 	// Convert packages into components
 	components := make(map[common.ElementID]*core.Component)
 	for _, pkg := range spdxDocument.Packages {
+		// A null element in the packages array decodes to a nil pointer.
+		if pkg == nil {
+			continue
+		}
 		component, err := s.parsePackage(*pkg)
 		if err != nil {
 			return nil, xerrors.Errorf("failed to parse package: %w", err)

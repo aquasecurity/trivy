@@ -11,6 +11,24 @@ This feature allows you to automatically use VEX during container image scanning
 Trivy can automatically discover and utilize VEX attestations for container images during scanning by using the `--vex oci` flag.
 This process enhances vulnerability detection results by incorporating the information from the VEX attestation.
 
+Trivy discovers attestations in the following layouts:
+
+- An **OCI 1.1 referrer** holding a Sigstore bundle, which is the default for `cosign attest` since Cosign v3.
+- An **OCI 1.1 referrer** holding a DSSE envelope or a bare in-toto statement under the generic `application/vnd.in-toto+json` artifact type, as published by tools such as Docker Scout.
+- The **legacy `.att` tag**, which is the default for Cosign v2.
+
+The referrer layout takes precedence; Trivy falls back to the legacy `.att` tag when no VEX referrer is found.
+
+Since a single artifact type covers every kind of attestation, an image usually exposes SBOM and provenance referrers next to the VEX one.
+Trivy uses the `in-toto.io/predicate-type` annotation to pick the VEX attestation without downloading the others, and falls back to inspecting the attestation itself when a referrer carries no annotation.
+A referrer Trivy cannot decode is skipped rather than failing the scan.
+
+!!! note
+    The annotation is optional:
+
+    - If any referrer is annotated as OpenVEX, Trivy uses only those referrers, even when none of them can be fetched or decoded.
+    - If no referrer is annotated as OpenVEX, Trivy downloads the unannotated referrers and inspects their contents.
+
 To use this feature, follow these three steps:
 
 1. Create a VEX document
@@ -116,6 +134,10 @@ $ trivy image --vex oci --show-suppressed <IMAGE>
 ```
 
 The `<IMAGE>` specified in these commands must be the same as the one to which you attached the VEX attestation.
+
+!!! warning "Signatures are not verified"
+    Trivy does not verify the signature of the discovered VEX attestation.
+    Anyone able to push to the image's repository can attach a VEX attestation that suppresses findings, so use `--vex oci` only with registries you trust.
 
 [purl]: https://github.com/package-url/purl-spec
 [qualifiers]: https://github.com/package-url/purl-spec/blob/master/PURL-TYPES.rst

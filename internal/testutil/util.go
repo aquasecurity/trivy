@@ -46,6 +46,15 @@ func AssertRuleNotFailed(t *testing.T, ruleID string, results scan.Results, mess
 	assert.True(t, passedExists, append([]any{message}, args...)...)
 }
 
+// AssertRuleIgnored checks that the rule was triggered and its result was ignored.
+func AssertRuleIgnored(t *testing.T, ruleID string, results scan.Results) {
+	t.Helper()
+	ignored := lo.Filter(results, func(res scan.Result, _ int) bool {
+		return res.Status() == scan.StatusIgnored
+	})
+	assert.True(t, ruleIDInResults(ruleID, ignored), "rule %q must be ignored", ruleID)
+}
+
 func ruleIDInResults(ruleID string, results scan.Results) bool {
 	for _, res := range results {
 		if res.Rule().CanonicalID() == ruleID {

@@ -50,8 +50,10 @@ jobs:
           permission-contents: write
           permission-pull-requests: write
 
-      - name: Install Release Please CLI
-        run: npm install release-please -g
+      # TODO: use googleapis/release-please-action once #1220 is fixed.
+      # cf. https://github.com/googleapis/release-please-action/issues/1220
+      - name: Install Release Please CLI # zizmor: ignore[adhoc-packages]
+        run: npm install release-please@17.11.1 -g
 
       - name: Release Please
         env:
@@ -65,7 +67,8 @@ jobs:
 
   release-tag:
     runs-on: ubuntu-2404-2core
-    if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+    # Skip the branch-creation push (created == true) to avoid re-running on the duplicate tag.
+    if: ${{ startsWith(github.event.head_commit.message, 'release:') && !github.event.created }}
     steps:
       # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
       # Therefore, we need to parse the version ourselves.
@@ -114,7 +117,8 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
+          # GITHUB_TOKEN cannot be a ruleset bypass actor; use the App token to bypass the merge queue rule.
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const releaseBranch = process.env.RELEASE_BRANCH;
             await github.rest.git.createRef({

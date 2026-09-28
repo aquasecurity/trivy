@@ -314,6 +314,10 @@ func (s Service) scanOSPackageLicenses(packages []ftypes.Package, scanner licens
 	var licenses []types.DetectedLicense
 	for _, pkg := range packages {
 		for _, license := range pkg.Licenses {
+			// A license without a name can't be evaluated, so don't report it.
+			if strings.TrimSpace(license) == "" {
+				continue
+			}
 			licenses = append(licenses, toDetectedLicense(scanner, license, pkg.Name, ""))
 		}
 	}
@@ -331,6 +335,10 @@ func (s Service) scanApplicationLicenses(apps []ftypes.Application, scanner lice
 		var langLicenses []types.DetectedLicense
 		for _, lib := range app.Packages {
 			for _, license := range lib.Licenses {
+				// A license without a name can't be evaluated, so don't report it.
+				if strings.TrimSpace(license) == "" {
+					continue
+				}
 				// Lock files use app.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L245-L246
 				// Applications use lib.FilePath - https://github.com/aquasecurity/trivy/blob/6ccc0a554b07b05fd049f882a1825a0e1e0aabe1/pkg/fanal/types/artifact.go#L93-L94
 				filePath := lo.Ternary(lib.FilePath != "", lib.FilePath, app.FilePath)

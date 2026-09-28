@@ -35,6 +35,12 @@ func TestNormalize(t *testing.T) {
 			want:    "LGPL-2.1-only OR MIT OR BSD-3-Clause",
 		},
 		{
+			name:    "SPDX, non-canonical case",
+			license: "BSD-3-clause~Sun",
+			fn:      NormalizeForSPDX,
+			want:    "BSD-3-Clause-Sun",
+		},
+		{
 			name:    "upper",
 			license: "LGPL-2.1-only OR MIT",
 			fn:      func(license Expression) Expression { return SimpleExpr{strings.ToUpper(license.String()), false} },

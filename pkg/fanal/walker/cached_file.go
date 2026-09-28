@@ -51,8 +51,9 @@ func (o *cachedFile) Open() (xio.ReadSeekCloserAt, error) {
 
 			o.filePath = f.Name()
 		} else {
-			b, err := io.ReadAll(o.reader)
-			if err != nil {
+			// size comes from the tar header or fs.FileInfo, so the buffer is allocated once.
+			b := make([]byte, max(o.size, 0))
+			if _, err := io.ReadFull(o.reader, b); err != nil {
 				o.err = xerrors.Errorf("unable to read the file: %w", err)
 				return
 			}

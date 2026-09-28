@@ -6,7 +6,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 )
 
-const defaultSizeThreshold = int64(100) << 20 // 200MB
+const defaultSizeThreshold = int64(100) << 20 // 100MB
 
 var defaultSkipDirs = []string{
 	"**/.git",

@@ -84,6 +84,7 @@ const (
 	goldenOracleLinux8                = "testdata/oraclelinux-8.json.golden"
 	goldenPhoton30                    = "testdata/photon-30.json.golden"
 	goldenPom                         = "testdata/pom.json.golden"
+	goldenRapidFortUbuntu2204         = "testdata/rapidfort-ubuntu-2204.json.golden"
 	goldenRockyLinux8                 = "testdata/rockylinux-8.json.golden"
 	goldenSecrets                     = "testdata/secrets.json.golden"
 	goldenSecretsASFF                 = "testdata/secrets.asff.golden"

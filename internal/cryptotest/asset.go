@@ -1,0 +1,114 @@
+// Package cryptotest provides cryptographic asset fixtures for tests.
+package cryptotest
+
+import (
+	"strings"
+
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+)
+
+// Option customizes an Asset fixture.
+type Option func(*types.CryptoAsset)
+
+// WithMutate applies mutate after constructing a complete Asset fixture.
+func WithMutate(mutate func(*types.CryptoAsset)) Option {
+	return mutate
+}
+
+// CertificateAsset returns a valid certificate asset.
+func CertificateAsset(opts ...Option) types.CryptoAsset {
+	asset := types.CryptoAsset{
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind: types.CryptoKindCertificate,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodSHA256,
+				Value:  strings.Repeat("a", 64),
+			},
+			Name: "example.test",
+			Certificate: &types.CryptoCertificate{
+				Subject:      "CN=example.test",
+				Issuer:       "CN=Example Test CA",
+				SerialNumber: "1",
+				Format:       types.CryptoCertificateFormatX509,
+			},
+		},
+		FilePath: "/etc/example.pem",
+		Encoding: types.CryptoEncodingPEM,
+	}
+	return applyOptions(asset, opts)
+}
+
+// PublicKeyAsset returns a valid public key asset.
+func PublicKeyAsset(opts ...Option) types.CryptoAsset {
+	asset := types.CryptoAsset{
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind:    types.CryptoKindKey,
+			KeyType: types.CryptoKeyTypePublic,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodSPKISHA256,
+				Value:  strings.Repeat("b", 64),
+			},
+			Key: &types.CryptoKey{
+				Size: 2048,
+			},
+		},
+		FilePath: "/etc/example-public.pem",
+		Format:   types.CryptoKeyFormatPKIX,
+		Encoding: types.CryptoEncodingPEM,
+	}
+	return applyOptions(asset, opts)
+}
+
+// PrivateKeyAsset returns a valid private key asset.
+func PrivateKeyAsset(opts ...Option) types.CryptoAsset {
+	asset := PublicKeyAsset()
+	asset.KeyType = types.CryptoKeyTypePrivate
+	asset.FilePath = "/etc/example-private.pem"
+	asset.Format = types.CryptoKeyFormatPKCS8
+	return applyOptions(asset, opts)
+}
+
+// EncryptedPrivateKeyAsset returns a valid encrypted private key asset.
+func EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
+	asset := PrivateKeyAsset()
+	asset.Identity.Method = types.CryptoMethodEncryptedPKCS8SHA256
+	asset.FilePath = "/etc/example-encrypted-private.pem"
+	asset.Key.Encrypted = true
+	return applyOptions(asset, opts)
+}
+
+// RFC1423EncryptedPrivateKeyAsset returns a valid RFC 1423 encrypted private key asset.
+func RFC1423EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
+	asset := EncryptedPrivateKeyAsset()
+	asset.Identity.Method = types.CryptoMethodEncryptedRFC1423SHA256
+	asset.Format = types.CryptoKeyFormatPKCS1
+	return applyOptions(asset, opts)
+}
+
+// AlgorithmAsset returns a valid algorithm asset.
+func AlgorithmAsset(opts ...Option) types.CryptoAsset {
+	asset := types.CryptoAsset{
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind: types.CryptoKindAlgorithm,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodOID,
+				Value:  "1.2.840.113549.1.1.1",
+			},
+			Name: "RSA",
+			// rsaEncryption identifies both signature and encryption keys, so the primitive
+			// stays unknown and the family stays empty, as the algorithm catalog describes it.
+			Algorithm: &types.CryptoAlgorithm{
+				Primitive: types.CryptoPrimitiveUnknown,
+			},
+		},
+		FilePath: "/etc/example-algorithm.pem",
+	}
+	return applyOptions(asset, opts)
+}
+
+func applyOptions(asset types.CryptoAsset, opts []Option) types.CryptoAsset {
+	for _, opt := range opts {
+		opt(&asset)
+	}
+	return asset
+}

@@ -1,6 +1,8 @@
 package flag
 
 import (
+	"cmp"
+	"net/url"
 	"runtime"
 	"slices"
 	"strings"
@@ -135,7 +137,22 @@ var (
 		ConfigName: "scan.disable-telemetry",
 		Usage:      "disable sending anonymous usage data to Aqua",
 	}
+	MavenMirrorsFlag = Flag[[]MavenMirror]{
+		ConfigName: "scan.maven.mirrors",
+		Usage:      "list of Maven repositories and the ordered mirrors that serve each of them.",
+	}
 )
+
+// MavenMirror maps a Maven repository to the mirrors that serve it.
+// A list is used instead of a map because viper lowercases map keys in the config
+// file, which would break the case-sensitive path of a repository URL.
+type MavenMirror struct {
+	// Source is the URL of the mirrored repository.
+	Source string `mapstructure:"source"`
+
+	// Targets are the URLs of the mirrors serving Source, tried in order.
+	Targets []string `mapstructure:"targets"`
+}
 
 type ScanFlagGroup struct {
 	SkipDirs          *Flag[[]string]
@@ -151,6 +168,7 @@ type ScanFlagGroup struct {
 	DistroFlag        *Flag[string]
 	SkipVersionCheck  *Flag[bool]
 	DisableTelemetry  *Flag[bool]
+	MavenMirrors      *Flag[[]MavenMirror]
 }
 
 type ScanOptions struct {
@@ -167,6 +185,10 @@ type ScanOptions struct {
 	Distro            ftypes.OS
 	SkipVersionCheck  bool
 	DisableTelemetry  bool
+	// MavenMirrors maps a Maven repository URL to an ordered list of mirror URLs
+	// that serve it (tried in order as fallbacks). It is applied by the pom parser
+	// as the lowest-priority mirrors, on top of the mirrors from settings.xml.
+	MavenMirrors map[string][]string
 }
 
 func NewScanFlagGroup() *ScanFlagGroup {
@@ -184,6 +206,7 @@ func NewScanFlagGroup() *ScanFlagGroup {
 		DistroFlag:        DistroFlag.Clone(),
 		SkipVersionCheck:  SkipVersionCheckFlag.Clone(),
 		DisableTelemetry:  DisableTelemetryFlag.Clone(),
+		MavenMirrors:      MavenMirrorsFlag.Clone(),
 	}
 }
 
@@ -206,6 +229,7 @@ func (f *ScanFlagGroup) Flags() []Flagger {
 		f.DistroFlag,
 		f.SkipVersionCheck,
 		f.DisableTelemetry,
+		f.MavenMirrors,
 	}
 }
 
@@ -233,6 +257,11 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 		}
 	}
 
+	mavenMirrors, err := parseMavenMirrors(f.MavenMirrors.Value())
+	if err != nil {
+		return err
+	}
+
 	opts.ScanOptions = ScanOptions{
 		Target:            target,
 		SkipDirs:          f.SkipDirs.Value(),
@@ -247,6 +276,57 @@ func (f *ScanFlagGroup) ToOptions(opts *Options) error {
 		Distro:            distro,
 		SkipVersionCheck:  f.SkipVersionCheck.Value(),
 		DisableTelemetry:  f.DisableTelemetry.Value(),
+		MavenMirrors:      mavenMirrors,
 	}
 	return nil
+}
+
+// parseMavenMirrors validates the configured Maven mirrors and indexes them by source
+// repository. It returns an error on the first invalid entry — an unusable URL (either a
+// source or a target), a source without mirrors, or a source configured twice. URLs must be
+// http(s) URLs with a host, so a bare repository id such as "central" or a non-http scheme
+// is rejected.
+func parseMavenMirrors(mirrors []MavenMirror) (map[string][]string, error) {
+	if len(mirrors) == 0 {
+		return nil, nil
+	}
+
+	parsed := make(map[string][]string, len(mirrors))
+	for _, mirror := range mirrors {
+		// A URL may carry userinfo, so never echo it raw: redact before pointing at an entry.
+		if !isValidMirrorURL(mirror.Source) {
+			return nil, xerrors.New("invalid Maven repository URL in 'scan.maven.mirrors'")
+		}
+		src, _ := url.Parse(mirror.Source)
+		if len(mirror.Targets) == 0 {
+			return nil, xerrors.Errorf("no mirror URLs configured in 'scan.maven.mirrors' for %s", src.Redacted())
+		}
+		for _, target := range mirror.Targets {
+			if !isValidMirrorURL(target) {
+				return nil, xerrors.Errorf("invalid Maven mirror URL in 'scan.maven.mirrors' for %s", src.Redacted())
+			}
+		}
+		// The parser looks a repository up by the same key: without credentials, with a
+		// lower-cased host and with a cleaned path. Entries differing only by those collapse
+		// into one key there, so they are duplicates and are rejected here.
+		src.User = nil
+		src.Host = strings.ToLower(src.Host)
+		src.Path = cmp.Or(src.Path, "/")
+		key := src.JoinPath(".").String()
+		if _, ok := parsed[key]; ok {
+			return nil, xerrors.Errorf("duplicate Maven repository in 'scan.maven.mirrors': %s", src.Redacted())
+		}
+		parsed[key] = mirror.Targets
+	}
+	return parsed, nil
+}
+
+// isValidMirrorURL reports whether raw is a usable Maven repository or mirror URL: it
+// must parse to an http/https URL with a host.
+func isValidMirrorURL(raw string) bool {
+	u, err := url.Parse(raw)
+	if err != nil {
+		return false
+	}
+	return (u.Scheme == "http" || u.Scheme == "https") && u.Host != ""
 }

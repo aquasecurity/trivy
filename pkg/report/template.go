@@ -63,6 +63,9 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	// Overwrite functions
 	maps.Copy(templateFuncMap, CustomTemplateFuncMap)
 
+	// Network access is not an intended use of report templates.
+	delete(templateFuncMap, "getHostByName")
+
 	tmpl, err := template.New("output template").Funcs(templateFuncMap).Parse(outputTemplate)
 	if err != nil {
 		return nil, xerrors.Errorf("error parsing template: %w", err)
