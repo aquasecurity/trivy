@@ -111,6 +111,11 @@ func TestRemoveExtras(t *testing.T) {
 			want: "celery==4.4.7",
 		},
 		{
+			name: "empty extras",
+			line: "pkg[]==1.0",
+			want: "pkg==1.0",
+		},
+		{
 			name: "no extras",
 			line: "flask==2.0.0",
 			want: "flask==2.0.0",
@@ -128,6 +133,21 @@ func TestRemoveExtras(t *testing.T) {
 		{
 			name:    "closing bracket before opening",
 			line:    "foo]bar[x]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "extra closing bracket",
+			line:    "celery[redis]]==4.4.7",
+			wantErr: true,
+		},
+		{
+			name:    "nested brackets",
+			line:    "pkg[a[b]]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "second extras group",
+			line:    "pkg[a][b]==1.0",
 			wantErr: true,
 		},
 		{

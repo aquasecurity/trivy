@@ -139,12 +139,10 @@ func rStripByKey(line, key string) string {
 }
 
 // removeExtras strips a PEP 508 extras group (e.g. "[crypto]") from a
-// requirement line. It only removes a well-formed "[...]" pair where the
-// opening bracket precedes the closing bracket.
-// A line without any extras brackets is returned unchanged.
-// Malformed input (a missing bracket or a "]" appearing before "[") is not a
-// valid requirement (pip rejects such lines), so an error is returned rather
-// than attempting to repair the line.
+// requirement line. A line without any extras brackets is returned unchanged.
+// Unbalanced brackets (a missing "[" or "]", a "]" before "[", or more than one
+// bracket of either kind) are not a valid requirement and pip rejects such lines,
+// so an error is returned rather than attempting to repair the line.
 // e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0"
 func removeExtras(line string) (string, error) {
 	startIndex := strings.Index(line, startExtras)
@@ -153,7 +151,8 @@ func removeExtras(line string) (string, error) {
 		// No extras group at all.
 		return line, nil
 	}
-	if startIndex == -1 || endIndex == -1 || startIndex > endIndex {
+	if startIndex == -1 || endIndex < startIndex ||
+		strings.Count(line, startExtras) != 1 || strings.Count(line, endExtras) != 1 {
 		return "", xerrors.New("unbalanced extras brackets")
 	}
 	return line[:startIndex] + line[endIndex+1:], nil
