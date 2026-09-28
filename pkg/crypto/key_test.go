@@ -10,11 +10,13 @@ import (
 	"crypto/rsa"
 	stdx509 "crypto/x509"
 	"math/big"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -385,6 +387,95 @@ func TestMarshalPublicKey(t *testing.T) {
 			parsed, err := stdx509.ParsePKIXPublicKey(der)
 			require.NoError(t, err)
 			assert.Equal(t, tt.pub, parsed)
+		})
+	}
+}
+
+func TestLinkKeyPairs(t *testing.T) {
+	t.Parallel()
+
+	publicKey := cryptotest.PublicKeyAsset()
+	otherPublicKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Identity.Value = strings.Repeat("d", 64)
+		asset.FilePath = "etc/ssl/certs/other.pem"
+	}))
+	correspondsTo := ftypes.CryptoRelationship{
+		Type:         ftypes.CryptoRelationshipCorrespondsTo,
+		RelatedAsset: publicKey.Descriptor(),
+	}
+	privateKeyAt := func(path string, relationships ...ftypes.CryptoRelationship) ftypes.CryptoAsset {
+		return cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+			asset.FilePath = path
+			asset.Relationships = relationships
+		}))
+	}
+
+	tests := []struct {
+		name   string
+		assets []ftypes.CryptoAsset
+		want   []ftypes.CryptoAsset
+	}{
+		{
+			name:   "a private key found without its public half",
+			assets: []ftypes.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+			want:   []ftypes.CryptoAsset{privateKeyAt("etc/ssl/private/server.key")},
+		},
+		{
+			name: "a private key and the public key derived from it",
+			assets: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				publicKey,
+			},
+			want: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "another public key of the same size",
+			assets: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				otherPublicKey,
+				publicKey,
+			},
+			want: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				otherPublicKey,
+				publicKey,
+			},
+		},
+		{
+			name: "the same private key found in two files",
+			assets: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key"),
+				privateKeyAt("opt/app/server.key"),
+				publicKey,
+			},
+			want: []ftypes.CryptoAsset{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				privateKeyAt("opt/app/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "an encrypted container is identified by the container itself",
+			assets: []ftypes.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+			want: []ftypes.CryptoAsset{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+
+			crypto.LinkKeyPairs(tt.assets)
+			assert.Equal(t, tt.want, tt.assets)
 		})
 	}
 }
