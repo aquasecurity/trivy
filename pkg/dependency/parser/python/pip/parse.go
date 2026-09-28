@@ -89,15 +89,11 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
-		// Extras are removed only after comments, environment markers and options
-		// are stripped, so that brackets in those parts don't affect the result.
-		// e.g. "flask==2.0.0 # see [notes"
 		line, err := removeExtras(line)
 		if err != nil {
-			// pip rejects such lines, but a parser error would make all packages from this file disappear,
-			// so we skip only the malformed line, the same way as for invalid names/versions.
-			p.logger.Debug("Invalid extras in requirements.txt.", log.Int("line", lineNumber),
-				log.String("text", text), log.Err(err))
+			// Skip only this line: returning an error would drop all packages from the file.
+			p.logger.Debug("Invalid extras in requirements.txt.", log.Int("line_number", lineNumber),
+				log.String("line", text), log.Err(err))
 			continue
 		}
 
@@ -110,8 +106,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 
 		if !isValidName(s[0]) || !isValidVersion(s[1]) {
-			p.logger.Debug("Invalid package name/version in requirements.txt.", log.Int("line", lineNumber),
-				log.String("text", text))
+			p.logger.Debug("Invalid package name/version in requirements.txt.", log.Int("line_number", lineNumber),
+				log.String("line", text))
 			continue
 		}
 
@@ -139,21 +135,15 @@ func rStripByKey(line, key string) string {
 	return line
 }
 
-// removeExtras strips a PEP 508 extras group (e.g. "[crypto]") from a
-// requirement line. A line without any extras brackets is returned unchanged.
-// Unbalanced brackets (a missing "[" or "]", a "]" before "[", or more than one
-// bracket of either kind) are not a valid requirement and pip rejects such lines,
-// so an error is returned rather than attempting to repair the line.
-// e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0"
+// removeExtras strips the extras group, e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0".
+// Malformed brackets are rejected with an error, the same way pip does.
 func removeExtras(line string) (string, error) {
 	startIndex := strings.Index(line, startExtras)
 	endIndex := strings.Index(line, endExtras)
 	if startIndex == -1 && endIndex == -1 {
-		// No extras group at all.
 		return line, nil
 	}
-	if startIndex == -1 || endIndex < startIndex ||
-		strings.Count(line, startExtras) != 1 || strings.Count(line, endExtras) != 1 {
+	if endIndex < startIndex || strings.Count(line, startExtras) != 1 || strings.Count(line, endExtras) != 1 {
 		return "", xerrors.New("unbalanced extras brackets")
 	}
 	return line[:startIndex] + line[endIndex+1:], nil
