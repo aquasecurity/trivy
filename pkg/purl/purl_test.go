@@ -984,8 +984,7 @@ func TestPackageURL_LangType(t *testing.T) {
 	}
 }
 
-// A purl type that Class reports as unknown is dropped by the SBOM decoder, so
-// every type New can emit has to land in one of the two known classes.
+// A purl type that Class reports as unknown is dropped by the SBOM decoder.
 func TestPackageURL_Class(t *testing.T) {
 	tests := []struct {
 		name string
@@ -1017,6 +1016,16 @@ func TestPackageURL_Class(t *testing.T) {
 			purl: packageurl.PackageURL{
 				Type:      packageurl.TypeRPM,
 				Namespace: "redhat",
+				Name:      "glibc",
+				Version:   "2.34-60",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "centos stream",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "centos-stream",
 				Name:      "glibc",
 				Version:   "2.34-60",
 			},
@@ -1063,7 +1072,7 @@ func TestPackageURL_Class(t *testing.T) {
 			want: types.ClassLangPkg,
 		},
 		{
-			name: "a type trivy does not produce",
+			name: "unsupported type",
 			purl: packageurl.PackageURL{
 				Type:    "huggingface",
 				Name:    "distilbert-base-uncased",
