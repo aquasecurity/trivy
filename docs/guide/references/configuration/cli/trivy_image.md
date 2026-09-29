@@ -167,7 +167,6 @@ trivy image [flags] IMAGE_NAME
                                           Allowed values:
                                             - nvd
                                             - redhat
-                                            - redhat-oval
                                             - debian
                                             - ubuntu
                                             - alpine

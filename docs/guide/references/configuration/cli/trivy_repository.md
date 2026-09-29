@@ -145,7 +145,6 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                           Allowed values:
                                             - nvd
                                             - redhat
-                                            - redhat-oval
                                             - debian
                                             - ubuntu
                                             - alpine
