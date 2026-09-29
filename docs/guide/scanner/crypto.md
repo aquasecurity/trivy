@@ -2,13 +2,13 @@
 
 Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials): the certificates and keys themselves, plus the algorithms they use. The result is part of the CycloneDX report, next to the software components.
 
-The scanner is off by default. Enable it with `--scanners crypto` and ask for CycloneDX output.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
 ```
 
-Cryptographic assets have no representation in the other report formats, so they are omitted from them and Trivy warns when you ask for one.
+Cryptographic assets have no representation in the other report formats, so Trivy rejects `--scanners crypto` with any of them.
 
 ## What is scanned
 

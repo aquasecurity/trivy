@@ -488,6 +488,11 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
+	// Cryptographic assets are reported only as CycloneDX components
+	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX {
+		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx'")
+	}
+
 	return nil
 }
 
