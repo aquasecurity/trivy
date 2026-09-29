@@ -1,0 +1,24 @@
+- bucket: "pip::GitHub Security Advisory Pip"
+  pairs:
+    - bucket: werkzeug
+      pairs:
+        - key: CVE-2019-14806
+          value:
+            PatchedVersions:
+              - 0.15.3
+            VulnerableVersions:
+              - < 0.15.3
+        - key: CVE-2020-28724
+          value:
+            PatchedVersions:
+              - 0.11.6
+            VulnerableVersions:
+              - < 0.11.6
+    - bucket: setuptools
+      pairs:
+        - key: CVE-2022-40897
+          value:
+            PatchedVersions:
+              - 65.5.1
+            VulnerableVersions:
+              - < 65.5.1

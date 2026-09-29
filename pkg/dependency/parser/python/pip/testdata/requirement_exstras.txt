@@ -1,0 +1,2 @@
+pyjwt[crypto]==2.1.0
+celery[redis, pytest]==4.4.7

@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "debug": "latest"
+  },
+  "devDependencies" : {
+    "js-tokens": "^9.0.0"
+  }
+}

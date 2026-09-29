@@ -1,0 +1,320 @@
+package binary
+
+import (
+	"context"
+	"debug/buildinfo"
+	"fmt"
+	"runtime/debug"
+	"sort"
+	"strings"
+
+	"github.com/mattn/go-shellwords"
+	"github.com/spf13/pflag"
+	"golang.org/x/mod/module"
+	"golang.org/x/mod/semver"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
+)
+
+var (
+	ErrUnrecognizedExe = xerrors.New("unrecognized executable format")
+	ErrNonGoBinary     = xerrors.New("non go binary")
+
+	// defaultVersionPrefixes contains common prefixes used in -ldflags version keys
+	defaultVersionPrefixes = set.NewCaseInsensitive("main", "common", "version", "cmd")
+)
+
+// convertError detects buildinfo.errUnrecognizedFormat and convert to
+// ErrUnrecognizedExe and convert buildinfo.errNotGoExe to ErrNonGoBinary
+func convertError(err error) error {
+	errText := err.Error()
+	if strings.HasSuffix(errText, "unrecognized file format") {
+		return ErrUnrecognizedExe
+	}
+	if strings.HasSuffix(errText, "not a Go executable") {
+		return ErrNonGoBinary
+	}
+
+	return err
+}
+
+type Parser struct {
+	logger *log.Logger
+}
+
+func NewParser() *Parser {
+	return &Parser{
+		logger: log.WithPrefix("gobinary"),
+	}
+}
+
+// parseStdlibVersion extracts the Go stdlib version from info.GoVersion,
+// which may carry trailing metadata that is not part of the version:
+//   - a GOEXPERIMENT list in both formats: " X:foo" (Go <=1.25) and "-X:foo" (Go >=1.26).
+//   - a vendor build identifier, e.g. "go1.26.5 (Red Hat 1.26.5-1.el10_2.alma.1)".
+func parseStdlibVersion(goVersion string) string {
+	stdlibVersion := strings.TrimPrefix(goVersion, "go")
+	// Go itself treats whatever follows the version after a space as a custom build suffix and strips it.
+	// cf. https://github.com/golang/go/blob/c19862e5f8415b4f24b189d065ed739517c548ba/src/cmd/go/internal/gover/toolchain.go#L18-L40
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, " ")
+	// Strip the GOEXPERIMENT list, which Go >=1.26 joins with a dash instead of a space.
+	// cf. https://github.com/golang/go/blob/9daaab305c4d1dede9e4f6efdc5e1268a69327e6/src/cmd/go/internal/cache/hash.go#L48-L58
+	stdlibVersion, _, _ = strings.Cut(stdlibVersion, "-X:")
+	// Add the `v` prefix to be consistent with module and dependency versions.
+	return fmt.Sprintf("v%s", stdlibVersion)
+}
+
+// Parse scans file to try to report the Go and module versions.
+func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
+	info, err := buildinfo.Read(r)
+	if err != nil {
+		return nil, nil, convertError(err)
+	}
+
+	stdlibVersion := parseStdlibVersion(info.GoVersion)
+
+	ldflags := p.ldFlags(info.Settings)
+	pkgs := make(ftypes.Packages, 0, len(info.Deps)+2)
+	pkgs = append(pkgs, ftypes.Package{
+		// Add the Go version used to build this binary.
+		ID:           dependency.ID(ftypes.GoBinary, "stdlib", stdlibVersion),
+		Name:         "stdlib",
+		Version:      stdlibVersion,
+		Relationship: ftypes.RelationshipDirect, // Considered a direct dependency as the main module depends on the standard packages.
+	})
+
+	for _, dep := range info.Deps {
+		// binaries with old go version may incorrectly add module in Deps
+		// In this case Path == "", Version == "Devel"
+		// we need to skip this
+		if dep.Path == "" {
+			continue
+		}
+
+		mod := dep
+		if dep.Replace != nil {
+			mod = dep.Replace
+		}
+
+		version := p.checkVersion(mod.Path, mod.Version)
+		pkgs = append(pkgs, ftypes.Package{
+			ID:           dependency.ID(ftypes.GoBinary, mod.Path, version),
+			Name:         mod.Path,
+			Version:      version,
+			Relationship: ftypes.RelationshipUnknown,
+		})
+	}
+
+	// There are times when gobinaries don't contain Main information.
+	// e.g. `Go` binaries (e.g. `go`, `gofmt`, etc.)
+	var deps []ftypes.Dependency
+	if info.Main.Path != "" {
+		// Only binaries installed with `go install` contain semver version of the main module.
+		// Other binaries use the `(devel)` version, but still may contain a stamped version
+		// set via `go build -ldflags='-X main.version=<semver>'`, so we fallback to this as.
+		// as a secondary source.
+		// See https://github.com/aquasecurity/trivy/issues/1837#issuecomment-1832523477.
+		version := p.checkVersion(info.Main.Path, info.Main.Version)
+		ldflagsVersion := p.ParseLDFlags(info.Main.Path, ldflags)
+		elfVersion := p.elfSymbolVersion(r, info.Main.Path)
+		version = p.chooseMainVersion(version, ldflagsVersion, elfVersion)
+
+		root := ftypes.Package{
+			ID:           dependency.ID(ftypes.GoBinary, info.Main.Path, version),
+			Name:         info.Main.Path,
+			Version:      version,
+			Relationship: ftypes.RelationshipRoot,
+		}
+
+		depIDs := xslices.Map(pkgs, func(pkg ftypes.Package) string {
+			return pkg.ID
+		})
+		sort.Strings(depIDs)
+
+		deps = []ftypes.Dependency{
+			{
+				ID:        root.ID,
+				DependsOn: depIDs, // Consider all packages as dependencies of the main module.
+			},
+		}
+		// Add main module
+		pkgs = append(pkgs, root)
+	}
+
+	sort.Sort(pkgs)
+	return pkgs, deps, nil
+}
+
+// checkVersion detects `(devel)` versions, removes them and adds a debug message about it.
+func (p *Parser) checkVersion(name, version string) string {
+	if version == "(devel)" {
+		p.logger.Debug("Unable to detect main module's dependency version - `(devel)` is used", log.String("dependency", name))
+		return ""
+	}
+	return version
+}
+
+// chooseMainVersion determines which version to use for the main module.
+// The priority order is:
+//  1. Build info version (if it is a real semver, e.g. "v1.2.3" from `go install`)
+//  2. ldflags version (e.g. `-ldflags "-X main.version=v1.0.0"`)
+//  3. ELF symbol table version (fallback when `-trimpath` hides `-ldflags`)
+//  4. Original version as-is (may be empty or a pseudo-version)
+//
+// Examples:
+//
+//	chooseMainVersion("v1.2.3", "v1.0.0", "v1.0.0") => "v1.2.3"  (real semver wins)
+//	chooseMainVersion("v0.0.0-2024...", "v1.0.0", "") => "v1.0.0" (ldflags over pseudo)
+//	chooseMainVersion("v0.0.0-2024...", "", "v2.0.0") => "v2.0.0" (ELF over pseudo)
+//	chooseMainVersion("", "", "")                     => ""        (nothing available)
+func (p *Parser) chooseMainVersion(version, ldflagsVersion, elfVersion string) string {
+	switch {
+	case version != "" && !module.IsPseudoVersion(version):
+		return version
+	case ldflagsVersion != "":
+		return ldflagsVersion
+	case elfVersion != "":
+		return elfVersion
+	default:
+		return version
+	}
+}
+
+func (p *Parser) ldFlags(settings []debug.BuildSetting) []string {
+	for _, setting := range settings {
+		if setting.Key != "-ldflags" {
+			continue
+		}
+
+		flags, err := shellwords.Parse(setting.Value)
+		if err != nil {
+			p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
+			return nil
+		}
+
+		return flags
+	}
+	return nil
+}
+
+// ParseLDFlags attempts to parse the binary's version from any `-ldflags` passed to `go build` at build time.
+func (p *Parser) ParseLDFlags(name string, flags []string) string {
+	p.logger.Debug("Parsing dependency's build info settings", "dependency", name, "-ldflags", flags)
+	fset := pflag.NewFlagSet("ldflags", pflag.ContinueOnError)
+	// This prevents the flag set from erroring out if other flags were provided.
+	// This helps keep the implementation small, so that only the -X flag is needed.
+	fset.ParseErrorsAllowlist.UnknownFlags = true
+	// The shorthand name is needed here because setting the full name
+	// to `X` will cause the flag set to look for `--X` instead of `-X`.
+	// The flag can also be set multiple times, so a string slice is needed
+	// to handle that edge case.
+	var x map[string]string
+	fset.StringToStringVarP(&x, "", "X", nil, "")
+	// Init `help` flag to avoid error in flags with `h` (e.g. `-lpthread`)
+	fset.BoolP("help", "h", false, "just to disable the built-in help flag")
+	if err := fset.Parse(flags); err != nil {
+		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
+		return ""
+	}
+
+	// foundVersions contains discovered versions by type.
+	// foundVersions doesn't contain duplicates. Versions are filled into first corresponding category.
+	// Possible elements(categories):
+	//   [0]: Versions using format `github.com/<module_owner>/<module_name>/cmd/**/*.<version>=x.x.x`
+	//   [1]: Versions that use prefixes from `defaultVersionPrefixes`
+	//   [2]: Other versions
+	var foundVersions = make([][]string, 3)
+	for key, val := range x {
+		// It's valid to set the -X flags with quotes so we trim any that might
+		// have been provided: Ex:
+		//
+		// -X main.version=1.0.0
+		// -X=main.version=1.0.0
+		// -X 'main.version=1.0.0'
+		// -X='main.version=1.0.0'
+		// -X="main.version=1.0.0"
+		// -X "main.version=1.0.0"
+		key = strings.TrimLeft(key, `'`)
+		val = strings.TrimRight(val, `'`)
+		if isVersionXKey(key) && isValidSemVer(val) {
+			classifyVersion(foundVersions, key, name, val)
+		}
+	}
+
+	return p.chooseVersion(name, foundVersions)
+}
+
+// chooseVersion chooses version from found versions
+// Categories order:
+// module name with `cmd` => versions with default prefixes => other versions
+// See more in https://github.com/aquasecurity/trivy/issues/6702#issuecomment-2122271427
+func (p *Parser) chooseVersion(moduleName string, vers [][]string) string {
+	for _, versions := range vers {
+		// Versions for this category was not found
+		if len(versions) == 0 {
+			continue
+		}
+
+		// More than 1 version for one category.
+		// Use empty version.
+		if len(versions) > 1 {
+			p.logger.Debug("Unable to detect dependency version. `-ldflags` build info settings contain more than one version. Empty version used.", log.String("dependency", moduleName))
+			return ""
+		}
+		return versions[0]
+	}
+
+	p.logger.Debug("Unable to detect dependency version. `-ldflags` build info settings don't contain version flag. Empty version used.", log.String("dependency", moduleName))
+	return ""
+}
+
+func isVersionXKey(key string) bool {
+	key = strings.ToLower(key)
+	// The check for a 'ver' prefix enables the parser to pick up Trivy's own version value that's set.
+	return strings.HasSuffix(key, ".version") || strings.HasSuffix(key, ".ver")
+}
+
+func isValidSemVer(ver string) bool {
+	// semver.IsValid strictly checks for the v prefix so prepending 'v'
+	// here and checking validity again increases the chances that we
+	// parse a valid semver version.
+	return semver.IsValid(ver) || semver.IsValid("v"+ver)
+}
+
+// classifyVersion categorizes a version value into one of three priority tiers
+// based on its key:
+//
+//	[0]: <module_path>/cmd/**/*.version
+//	[1]: defaultVersionPrefixes (main, common, version, cmd)
+//	[2]: other
+func classifyVersion(foundVersions [][]string, key, moduleName, val string) {
+	switch {
+	case strings.HasPrefix(key, moduleName+"/cmd/"):
+		foundVersions[0] = append(foundVersions[0], val)
+	case defaultVersionPrefixes.Contains(versionPrefix(key)):
+		foundVersions[1] = append(foundVersions[1], val)
+	default:
+		foundVersions[2] = append(foundVersions[2], val)
+	}
+}
+
+// versionPrefix returns version prefix from `-ldflags` flag key
+// e.g.
+//   - `github.com/aquasecurity/trivy/pkg/version/app.ver` => `version`
+//   - `github.com/google/go-containerregistry/cmd/crane/common.ver` => `common`
+func versionPrefix(s string) string {
+	// Trim module part.
+	// e.g. `github.com/aquasecurity/trivy/pkg/Version.version` => `Version.version`
+	if _, base, found := strings.CutLast(s, "/"); found {
+		s = base
+	}
+
+	s, _, _ = strings.Cut(s, ".")
+	return strings.ToLower(s)
+}

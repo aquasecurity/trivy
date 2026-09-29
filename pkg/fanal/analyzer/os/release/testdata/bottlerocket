@@ -1,0 +1,11 @@
+NAME=Bottlerocket
+ID=bottlerocket
+VERSION="1.34.0 (aws-ecs-2)"
+PRETTY_NAME="Bottlerocket OS 1.34.0 (aws-ecs-2)"
+VARIANT_ID=aws-ecs-2
+VERSION_ID=1.34.0
+BUILD_ID=18d04e52
+HOME_URL="https://github.com/bottlerocket-os/bottlerocket"
+SUPPORT_URL="https://github.com/bottlerocket-os/bottlerocket/discussions"
+BUG_REPORT_URL="https://github.com/bottlerocket-os/bottlerocket/issues"
+DOCUMENTATION_URL="https://bottlerocket.dev"

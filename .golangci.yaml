@@ -1,0 +1,227 @@
+issues:
+  max-issues-per-linter: 0
+  max-same-issues: 0
+
+linters:
+  settings:
+    depguard:
+      rules:
+        main:
+          list-mode: lax
+          deny:
+            # Cannot use gomodguard, which examines go.mod, as "golang.org/x/exp/slices" is not a module and doesn't appear in go.mod.
+            - pkg: "golang.org/x/exp/slices"
+              desc: "Use 'slices' instead"
+            - pkg: "golang.org/x/exp/maps"
+              desc: "Use 'maps' or 'github.com/samber/lo' instead"
+            - pkg: "io/ioutil"
+              desc: "io/ioutil is deprecated. Use 'io' or 'os' instead"
+    dupl:
+      threshold: 100
+    errcheck:
+      check-type-assertions: true
+      check-blank: true
+    gocritic:
+      disabled-checks:
+        - appendAssign
+        - commentedOutCode
+        - hugeParam
+        - importShadow # FIXME
+        - indexAlloc
+        - rangeValCopy
+        - regexpSimplify
+        - sloppyReassign
+        - unnamedResult
+        - whyNoLint
+      enabled-tags:
+        - diagnostic
+        - style
+        - performance
+        - experimental
+        - opinionated
+      settings:
+        ruleguard:
+          failOn: all
+          rules: "${base-path}/misc/lint/rules.go"
+    gocyclo:
+      # Next highest complexity candidate: ApplyLayers in pkg/fanal/applier/docker.go (score: 28)
+      min-complexity: 20
+    gomodguard_v2:
+      blocked:
+        - module: github.com/hashicorp/go-version
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/Masterminds/semver
+          recommendations:
+            - github.com/aquasecurity/go-version
+          reason: "`aquasecurity/go-version` is designed for our use-cases"
+        - module: github.com/liamg/memoryfs
+          recommendations:
+            - github.com/aquasecurity/trivy/pkg/mapfs
+    gosec:
+      excludes:
+        - G101
+        - G114
+        - G115
+        - G117 # Potential exposure of secrets in values marshaled by JSON/YAML/XML/TOML
+        - G118 # Context propagation failures that can cause goroutine/resource leaks
+        - G122 # filepath.Walk/WalkDir symlink TOCTOU race risks
+        - G204
+        - G304
+        - G402
+        - G703 # Path traversal via taint analysis
+        - G704 # SSRF via taint analysis
+        - G705 # XSS via taint analysis
+        - G709 # Unsafe deserialization of untrusted data via taint analysis
+    govet:
+      disable:
+        - shadow
+    misspell:
+      locale: US
+      ignore-rules:
+        - behaviour
+        - licence
+        - optimise
+        - simmilar
+    perfsprint:
+      # Optimizes even if it requires an int or uint type cast.
+      int-conversion: true
+      # Optimizes into `err.Error()` even if it is only equivalent for non-nil errors.
+      err-error: true
+      # Optimizes `fmt.Errorf`.
+      errorf: true
+      # Optimizes `fmt.Sprintf` with only one argument.
+      sprintf1: false
+      # Optimizes into strings concatenation.
+      strconcat: false
+      # Optimizes string concatenation in a loop.
+      concat-loop: false
+    revive:
+      max-open-files: 2048
+      # https://github.com/mgechev/revive/blob/HEAD/RULES_DESCRIPTIONS.md
+      rules:
+        - name: bool-literal-in-expr
+        - name: context-as-argument
+          arguments:
+            - allowTypesBefore: "*testing.T"
+        - name: duplicated-imports
+        - name: early-return
+          arguments:
+            - preserve-scope
+        - name: if-return
+        - name: increment-decrement
+        - name: indent-error-flow
+          arguments:
+            - preserve-scope
+        - name: range
+        - name: range-val-address
+        - name: superfluous-else
+          arguments:
+            - preserve-scope
+        - name: time-equal
+        - name: unnecessary-stmt
+        - name: unused-parameter
+        - name: use-any
+
+    staticcheck:
+      checks:
+        - all
+        - -QF1008 # Omit embedded fields from selector expression
+        - -S1007  # Simplify regular expression by using raw string literal
+        - -S1011  # Use a single append to concatenate two slices
+        - -S1023  # Omit redundant control flow
+        - -SA1019 # Using a deprecated function, variable, constant or field
+        - -SA1024 # A string cutset contains duplicate characters
+        - -SA4004 # The loop exits unconditionally after one iteration
+        - -SA4023 # Impossible comparison of interface value with untyped nil
+        - -SA4032 # Comparing runtime.GOOS or runtime.GOARCH against impossible value
+        - -SA5011 # Possible nil pointer dereference
+        - -ST1003 # Poorly chosen identifier
+        - -ST1012 # Poorly chosen name for error variable
+
+    testifylint:
+      enable-all: true
+
+    modernize:
+      disable:
+        - embedlit
+
+  default: none
+
+  enable:
+    - bodyclose
+    - depguard
+    - gocritic
+    - gocyclo
+    - gomodguard_v2
+    - gosec
+    - govet
+    - ineffassign
+    - misspell
+    - perfsprint
+    - revive
+    - staticcheck
+    - testifylint
+    - unconvert
+    - unused
+    - usestdlibvars
+    - usetesting
+    - modernize
+
+  exclusions:
+    generated: lax
+    paths:
+      - "pkg/iac/scanners/terraform/parser/funcs" # copies of Terraform functions
+    rules:
+      - path: ".*_test.go$"
+        linters:
+          - gosec
+          - unused
+      - path: ".*_test.go$"
+        linters:
+          - govet
+        text: "copylocks:"
+      - path: ".*_test.go$"
+        linters:
+          - gocritic
+        text: "commentFormatting:"
+      - path: ".*_test.go$"
+        linters:
+          - gocritic
+        text: "exitAfterDefer:"
+      - path: ".*_test.go$"
+        linters:
+          - gocritic
+        text: "importShadow:"
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    warn-unused: true
+
+run:
+  go: "1.27"
+  timeout: 30m
+
+formatters:
+  enable:
+    - gci
+    - gofmt
+
+  exclusions:
+    generated: lax
+
+  settings:
+    gci:
+      sections:
+        - standard
+        - default
+        - prefix(github.com/aquasecurity/)
+        - blank
+        - dot
+    gofmt:
+      simplify: false
+
+version: "2"

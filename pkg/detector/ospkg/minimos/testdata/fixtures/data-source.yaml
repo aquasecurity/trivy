@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: minimos
+      value:
+        ID: "minimos"
+        Name: "MinimOS Secdb"
+        URL: "https://packages.mini.dev/advisories/secdb/security.json"

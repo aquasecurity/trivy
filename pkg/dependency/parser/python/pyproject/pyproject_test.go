@@ -1,0 +1,157 @@
+package pyproject_test
+
+import (
+	"fmt"
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/python/pyproject"
+	"github.com/aquasecurity/trivy/pkg/set"
+)
+
+func TestPyProject_MainDeps(t *testing.T) {
+	tests := []struct {
+		name string
+		file string
+		want set.Set[string]
+	}{
+		{
+			name: "with optional dependencies only",
+			file: "testdata/happy_with_optional_only.toml",
+			want: set.New[string]("pytest", "ruff"),
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := &pyproject.Parser{}
+			got, err := p.Parse(f)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.want, got.MainDeps())
+		})
+	}
+}
+
+func TestParser_Parse(t *testing.T) {
+	tests := []struct {
+		name    string
+		file    string
+		want    pyproject.PyProject
+		wantErr assert.ErrorAssertionFunc
+	}{
+		{
+			name: "happy path",
+			file: "testdata/happy.toml",
+			want: pyproject.PyProject{
+				Tool: pyproject.Tool{
+					Poetry: pyproject.Poetry{
+						Dependencies: pyproject.Dependencies{
+							Set: set.New[string]("flask", "python", "requests", "virtualenv"),
+						},
+						Groups: map[string]pyproject.Group{
+							"dev": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("pytest"),
+								},
+							},
+							"lint": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("ruff"),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "happy path v2",
+			file: "testdata/happy_v2.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						// Names are normalized (PEP 503):
+						// `Flask` => `flask`, `typing_extensions` => `typing-extensions`, `ruamel.yaml` => `ruamel-yaml`
+						Set: set.New[string]("check-wheel-contents", "flask", "pluggy", "ruamel-yaml", "typing-extensions"),
+					},
+				},
+				Tool: pyproject.Tool{
+					Poetry: pyproject.Poetry{
+						Dependencies: pyproject.Dependencies{
+							Set: set.New[string]("annotated-types", "python"),
+						},
+						Groups: map[string]pyproject.Group{
+							"dev": {
+								Dependencies: pyproject.Dependencies{
+									Set: set.New[string]("pytest"),
+								},
+							},
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name: "with optional dependencies",
+			file: "testdata/happy_with_optional.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("click", "requests"),
+					},
+					OptionalDependencies: map[string]pyproject.Dependencies{
+						"dev": {
+							Set: set.New[string]("pytest"),
+						},
+						"lint": {
+							Set: set.New[string]("ruff"),
+						},
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			// A dependency entry that carries no name is skipped.
+			// cf. #10976
+			name: "empty dependency",
+			file: "testdata/empty_dep.toml",
+			want: pyproject.PyProject{
+				Project: pyproject.Project{
+					Dependencies: pyproject.Dependencies{
+						Set: set.New[string]("flask"),
+					},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
+			name:    "sad path",
+			file:    "testdata/sad.toml",
+			wantErr: assert.Error,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.file)
+			require.NoError(t, err)
+			defer f.Close()
+
+			p := &pyproject.Parser{}
+			got, err := p.Parse(f)
+			if !tt.wantErr(t, err, fmt.Sprintf("Parse(%v)", tt.file)) {
+				return
+			}
+			assert.Equalf(t, tt.want, got, "Parse(%v)", tt.file)
+		})
+	}
+}

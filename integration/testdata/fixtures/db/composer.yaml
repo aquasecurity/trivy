@@ -1,0 +1,10 @@
+- bucket: "composer::GitHub Security Advisory Composer"
+  pairs:
+    - bucket: guzzlehttp/psr7
+      pairs:
+        - key: CVE-2022-24775
+          value:
+            PatchedVersions:
+              - 1.8.4
+            VulnerableVersions:
+              - < 1.8.4

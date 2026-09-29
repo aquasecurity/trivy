@@ -1,0 +1,21 @@
+C:Q1dCsKJvMnxtpg1CoCw+thiaWORo8=
+P:musl
+V:1.2.3-r5
+A:aarch64
+S:397125
+I:675840
+T:the musl c library (libc) implementation
+U:https://musl.libc.org/
+L:MIT
+o:musl
+m:Timo Teräs <timo.teras@iki.fi>
+t:1684510151
+c:b12380f8608f8cdd44347db413e8937ac4a5565b
+p:so:libc.musl-aarch64.so.1=1
+F:lib
+R:ld-musl-aarch64.so.1
+a:0:0:755
+Z:Q17HWoHxeSxkUYleHiHuyks+G3edE=
+R:libc.musl-aarch64.so.1
+a:0:0:777
+Z:Q14RpiCEfZIqcg1XDcVqp8QEpc9ks=

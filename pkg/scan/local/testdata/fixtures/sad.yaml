@@ -1,0 +1,15 @@
+- bucket: alpine 3.11
+  pairs:
+    - bucket: musl
+      pairs:
+        - key: CVE-2020-9999
+          value:
+            FixedVersion:
+              - "invalid"
+- bucket: "rubygems::uby-advisory-db"
+  pairs:
+    - bucket: rails
+      pairs:
+        - key: CVE-2014-0081
+          value:
+            PatchedVersions: "invalid"

@@ -1,0 +1,62 @@
+- bucket: data-source
+  pairs:
+    - key: go::GitLab Advisory Database Community
+      value:
+        ID: "glad"
+        Name: "GitLab Advisory Database Community"
+        URL:  "https://gitlab.com/gitlab-org/advisories-community"
+    - key: composer::GitLab Advisory Database Community
+      value:
+        ID: "glad"
+        Name: "GitLab Advisory Database Community"
+        URL:  "https://gitlab.com/gitlab-org/advisories-community"
+    - key: composer::php-security-advisories
+      value:
+        ID: "php-security-advisories"
+        Name: "PHP Security Advisories Database"
+        URL:  "https://github.com/FriendsOfPHP/security-advisories"
+    - key: rubygems::ruby-advisory-db
+      value:
+        ID: "ruby-advisory-db"
+        Name: "Ruby Advisory Database"
+        URL:  "https://github.com/rubysec/ruby-advisory-db"
+    - key: "pip::GitHub Security Advisory Pip"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Pip"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+    - key: "go::GitHub Security Advisory Go"
+      value:
+        ID: "ghsa"
+        Name: "GitHub Security Advisory Go"
+        URL: "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago"
+    - key: "julia::Julia Ecosystem Security Advisories"
+      value:
+        ID: "julia"
+        Name: "Julia Ecosystem Security Advisories"
+        URL: "https://github.com/JuliaLang/SecurityAdvisories.jl"
+    - key: "seal pip::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal rubygems::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal npm::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal go::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"
+    - key: "seal maven::Seal Security Database"
+      value:
+        ID: "seal"
+        Name: "Seal Security Database"
+        URL: "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip"

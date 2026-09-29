@@ -1,0 +1,106 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/composer",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": "composer.lock",
+      "Class": "lang-pkgs",
+      "Type": "composer",
+      "Packages": [
+        {
+          "ID": "guzzlehttp/guzzle@7.4.4",
+          "Name": "guzzlehttp/guzzle",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/guzzle@7.4.4",
+            "UID": "bc13d175ea3245db"
+          },
+          "Version": "7.4.4",
+          "Licenses": [
+            "MIT"
+          ],
+          "Relationship": "direct",
+          "DependsOn": [
+            "guzzlehttp/psr7@1.8.3"
+          ],
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 129
+            }
+          ],
+          "AnalyzedBy": "composer"
+        },
+        {
+          "ID": "guzzlehttp/psr7@1.8.3",
+          "Name": "guzzlehttp/psr7",
+          "Identifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "57beb2412ee42604"
+          },
+          "Version": "1.8.3",
+          "Licenses": [
+            "MIT"
+          ],
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 130,
+              "EndLine": 245
+            }
+          ],
+          "AnalyzedBy": "composer"
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-24775",
+          "PkgID": "guzzlehttp/psr7@1.8.3",
+          "PkgName": "guzzlehttp/psr7",
+          "PkgIdentifier": {
+            "PURL": "pkg:composer/guzzlehttp/psr7@1.8.3",
+            "UID": "57beb2412ee42604"
+          },
+          "InstalledVersion": "1.8.3",
+          "FixedVersion": "1.8.4",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-24775",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Composer",
+            "URL": "https://github.com/advisories?query=type%%3Areviewed+ecosystem%%3Acomposer"
+          },
+          "Fingerprint": "sha256:59ce4eb8bdfe3bbdf3187ec7d5fd51beb0ce398c8377a3be0d811b002df8ec0b",
+          "Title": "Improper Input Validation in guzzlehttp/psr7",
+          "Description": "### Impact\nIn proper header parsing. An attacker could sneak in a new line character and pass untrusted values. \n\n### Patches\nThe issue is patched in 1.8.4 and 2.1.1.\n\n### Workarounds\nThere are no known workarounds.\n",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-20"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://github.com/guzzle/psr7/security/advisories/GHSA-q7rv-6hp3-vh96",
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-24775"
+          ],
+          "PublishedDate": "2022-03-25T19:26:33Z",
+          "LastModifiedDate": "2022-06-14T20:02:29Z"
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,88 @@
+package packagejson
+
+import (
+	"encoding/json"
+	"io"
+	"regexp"
+
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
+)
+
+var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
+
+type Parser struct{}
+
+func NewParser() *Parser {
+	return &Parser{}
+}
+
+func (p *Parser) Parse(r io.Reader) (Package, error) {
+	var pkgJSON packageJSON
+	if err := json.NewDecoder(r).Decode(&pkgJSON); err != nil {
+		return Package{}, xerrors.Errorf("JSON decode error: %w", err)
+	}
+
+	if !IsValidName(pkgJSON.Name) {
+		return Package{}, xerrors.Errorf("Name can only contain URL-friendly characters")
+	}
+
+	var id string
+	// Name and version fields are optional
+	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
+	if pkgJSON.Name != "" && pkgJSON.Version != "" {
+		id = dependency.ID(ftypes.NodePkg, pkgJSON.Name, pkgJSON.Version)
+	}
+
+	return Package{
+		Package: ftypes.Package{
+			ID:       id,
+			Name:     pkgJSON.Name,
+			Version:  pkgJSON.Version,
+			Licenses: pkgJSON.License.Names(),
+		},
+		Dependencies:         pkgJSON.Dependencies,
+		OptionalDependencies: pkgJSON.OptionalDependencies,
+		DevDependencies:      pkgJSON.DevDependencies,
+		Workspaces:           ParseWorkspaces(pkgJSON.Workspaces),
+	}, nil
+}
+
+// ParseWorkspaces returns slice of workspaces
+// `workspaces` field supports 2 types -
+// string array and map with `packages` key only
+// cf. https://github.com/npm/map-workspaces#usage
+func ParseWorkspaces(val any) []string {
+	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/d9516961f8a5b0e65a457808070147b5a866f60b/src/schemas/json/package.json#L777
+	switch ws := val.(type) {
+	// Workspace as object (map[string][]string)
+	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
+	case map[string]any:
+		// Take only workspaces for `packages`:
+		// cf . https://github.com/npm/map-workspaces#usage
+		if pkgsWorkspaces, ok := ws["packages"]; ok {
+			return xslices.Map(pkgsWorkspaces.([]any), func(workspace any) string {
+				return workspace.(string)
+			})
+		}
+	// Workspace as string array
+	// e.g.   "workspaces": ["packages/*", "backend"],
+	case []any:
+		return xslices.Map(ws, func(workspace any) string {
+			return workspace.(string)
+		})
+	}
+	return nil
+}
+
+func IsValidName(name string) bool {
+	// Name is optional field
+	// https://docs.npmjs.com/cli/v9/configuring-npm/package-json#name
+	if name == "" {
+		return true
+	}
+	return nameRegexp.MatchString(name)
+}

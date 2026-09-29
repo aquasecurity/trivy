@@ -1,0 +1,34 @@
+{
+ "graph_lock": {
+  "nodes": {
+   "0": {
+    "options": "o",
+    "requires": [
+     "1"
+    ],
+    "path": "conanfile.txt",
+    "context": "host"
+   },
+   "1": {
+    "ref": "openssl/3.0.5",
+    "options": "",
+    "requires": [
+     "2"
+    ],
+    "package_id": "",
+    "prev": "0",
+    "context": "host"
+   },
+   "2": {
+    "ref": "zlib/1.2.12",
+    "options": "",
+    "package_id": "",
+    "prev": "0",
+    "context": "host"
+   }
+  },
+  "revisions_enabled": false
+ },
+ "version": "0.4",
+ "profile_host": "[settings]\narch=x86_64\narch_build=x86_64\nbuild_type=Release\ncompiler=gcc\ncompiler.libcxx=libstdc++\ncompiler.version=9\nos=Linux\nos_build=Linux\n[options]\n[build_requires]\n[env]\n"
+}

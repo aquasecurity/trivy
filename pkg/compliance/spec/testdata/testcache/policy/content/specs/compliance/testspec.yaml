@@ -1,0 +1,15 @@
+spec:
+  id: test-spec-1.2
+  title: Test Spec
+  description: This is a test spec
+  version: "1.2"
+  relatedResources:
+    - https://www.google.ca
+  controls:
+    - id: "1.1"
+      name: moar-testing
+      description: |-
+        Test needs foo bar baz
+      checks:
+        - id: AVD-TEST-1234
+      severity: LOW

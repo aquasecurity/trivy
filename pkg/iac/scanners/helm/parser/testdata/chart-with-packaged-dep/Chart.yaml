@@ -1,0 +1,14 @@
+apiVersion: v2
+name: with-tarred-dep
+description: Test With Tarred Dependencies
+type: application
+version: 0.1.1
+appVersion: "1.0"
+sources:
+  - https://github.com/test/with-tarred-dep
+dependencies:
+  - name: common
+    repository: https://charts.bitnami.com/bitnami
+    tags:
+      - bitnami-common
+    version: 1.16.1

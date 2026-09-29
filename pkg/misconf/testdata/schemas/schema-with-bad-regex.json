@@ -1,0 +1,9 @@
+{
+    "$id": "https://example.com/test.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "patternProperties": {
+        "^(?![\\.0-9]).": { "type": "string" },
+        "test\\Z": { "type": "string" }
+    }
+}

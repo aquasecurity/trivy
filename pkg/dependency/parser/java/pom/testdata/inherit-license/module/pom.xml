@@ -1,0 +1,10 @@
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.example.app</groupId>
+    <artifactId>my-app</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <packaging>pom</packaging>
+  <artifactId>module</artifactId>
+</project>

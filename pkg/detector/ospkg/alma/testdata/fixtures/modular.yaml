@@ -1,0 +1,12 @@
+- bucket: alma 8
+  pairs:
+    - bucket: nginx:1.14::nginx
+      pairs:
+        - key: CVE-2019-9511
+          value:
+            FixedVersion: "1:1.14.1-9.module_el8.3.0+2165+af250afe.alma"
+    - bucket: httpd:2.4::httpd
+      pairs:
+        - key: CVE-2020-35452
+          value:
+            FixedVersion: "2.4.37-47.module_el8.6.0+2872+fe0ff7aa.1.alma"

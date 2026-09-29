@@ -1,0 +1,16 @@
+{
+  "name": "Test Repository",
+  "description": "Test Repository",
+  "versions": {
+    "v0": {
+      "spec_version": "v0.1",
+      "locations": [
+        {
+          "url": "Must be filled in tests"
+        }
+      ],
+      "update_interval": "24h"
+    }
+  },
+  "latest_version": "v0"
+}

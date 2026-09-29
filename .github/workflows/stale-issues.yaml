@@ -1,0 +1,19 @@
+name: "Stale PR's"
+on:
+  schedule:
+    - cron: '0 0 * * *'
+jobs:
+  stale:
+    timeout-minutes: 1
+    runs-on: ubuntu-2404-2core
+    steps:
+    - uses: actions/stale@4391f3da665fdf50b6810c1a66712fb9ba21aa93 # v11.0.0
+      with:
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        stale-pr-message: 'This PR is stale because it has been labeled with inactivity.'
+        exempt-pr-labels: 'lifecycle/active'
+        stale-pr-label: 'lifecycle/stale'
+        days-before-stale: 60
+        days-before-issue-stale: '-1'
+        days-before-close: 20
+        days-before-issue-close: '-1'

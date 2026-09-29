@@ -1,0 +1,858 @@
+package jar_test
+
+import (
+	"archive/zip"
+	"bytes"
+	"encoding/json"
+	"net/http"
+	"net/http/httptest"
+	"os"
+	"sort"
+	"strings"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+)
+
+var (
+	// cd testdata/testimage/maven && docker build -t test .
+	// docker run --rm --name test -it test bash
+	// mvn dependency:list
+	// mvn dependency:tree -Dscope=compile -Dscope=runtime | awk '/:tree/,/BUILD SUCCESS/' | awk 'NR > 1 { print }' | head -n -2 | awk '{print $NF}' | awk -F":" '{printf("{\""$1":"$2"\", \""$4 "\", \"\"},\n")}'
+	// paths filled in manually
+	wantMaven = []ftypes.Package{
+		{
+			Name:     "com.example:web-app",
+			Version:  "1.0-SNAPSHOT",
+			FilePath: "testdata/maven.war",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.9.10.6",
+			Licenses: []string{"Apache-2.0"},
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-databind-2.9.10.6.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-annotations",
+			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-annotations-2.9.10.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-core",
+			Version:  "2.9.10",
+			Licenses: []string{"Apache-2.0"},
+			FilePath: "testdata/maven.war/WEB-INF/lib/jackson-core-2.9.10.jar",
+		},
+		{
+			Name:     "com.cronutils:cron-utils",
+			Version:  "9.1.2",
+			FilePath: "testdata/maven.war/WEB-INF/lib/cron-utils-9.1.2.jar",
+			Licenses: []string{"Apache 2.0"},
+		},
+		{
+			Name:     "org.slf4j:slf4j-api",
+			Version:  "1.7.30",
+			FilePath: "testdata/maven.war/WEB-INF/lib/slf4j-api-1.7.30.jar",
+		},
+		{
+			Name:     "org.glassfish:javax.el",
+			Version:  "3.0.0",
+			FilePath: "testdata/maven.war/WEB-INF/lib/javax.el-3.0.0.jar",
+			Licenses: []string{"CDDL + GPLv2 with classpath exception"},
+		},
+		{
+			Name:     "org.apache.commons:commons-lang3",
+			Version:  "3.11",
+			FilePath: "testdata/maven.war/WEB-INF/lib/commons-lang3-3.11.jar",
+			Licenses: []string{"Apache-2.0"},
+		},
+	}
+
+	// cd testdata/testimage/gradle && docker build -t test .
+	// docker run --rm --name test -it test bash
+	// gradle app:dependencies --configuration implementation | grep "[+\]---" | cut -d" " -f2 | awk -F":" '{printf("{\""$1":"$2"\", \""$3"\", \"\"},\n")}'
+	// paths filled in manually
+	wantGradle = []ftypes.Package{
+		{
+			Name:     "commons-dbcp:commons-dbcp",
+			Version:  "1.4",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-dbcp-1.4.jar",
+			Licenses: []string{"Apache-2.0"},
+		},
+		{
+			Name:     "commons-pool:commons-pool",
+			Version:  "1.6",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-pool-1.6.jar",
+			Licenses: []string{"Apache-2.0"},
+		},
+		{
+			Name:     "log4j:log4j",
+			Version:  "1.2.17",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			Name:     "org.apache.commons:commons-compress",
+			Version:  "1.19",
+			FilePath: "testdata/gradle.war/WEB-INF/lib/commons-compress-1.19.jar",
+			Licenses: []string{"Apache-2.0"},
+		},
+	}
+
+	// manually created
+	wantSHA1 = []ftypes.Package{
+		{
+			Name:     "org.springframework:spring-core",
+			Version:  "5.3.3",
+			FilePath: "testdata/test.jar",
+		},
+	}
+
+	// offline
+	wantOffline = []ftypes.Package{
+		{
+			Name:     "org.springframework:Spring Framework",
+			Version:  "2.5.6.SEC03",
+			FilePath: "testdata/test.jar",
+		},
+	}
+
+	// manually created
+	wantHeuristic = []ftypes.Package{
+		{
+			Name:     "com.example:heuristic",
+			Version:  "1.0.0-SNAPSHOT",
+			FilePath: "testdata/heuristic-1.0.0-SNAPSHOT.jar",
+		},
+	}
+
+	// manually created
+	wantFatjar = []ftypes.Package{
+		{
+			Name:     "com.google.guava:failureaccess",
+			Version:  "1.0.1",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+		},
+		{
+			Name:     "com.google.guava:guava",
+			Version:  "29.0-jre",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+		},
+		{
+			Name:     "com.google.guava:listenablefuture",
+			Version:  "9999.0-empty-to-avoid-conflict-with-guava",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+		},
+		{
+			Name:     "com.google.j2objc:j2objc-annotations",
+			Version:  "1.3",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			Name:     "org.apache.hadoop.thirdparty:hadoop-shaded-guava",
+			Version:  "1.1.0-SNAPSHOT",
+			FilePath: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+		},
+	}
+
+	// manually created
+	wantNestedJar = []ftypes.Package{
+		{
+			Name:     "test:nested",
+			Version:  "0.0.1",
+			FilePath: "testdata/nested.jar",
+		},
+		{
+			Name:     "test:nested2",
+			Version:  "0.0.2",
+			FilePath: "testdata/nested.jar/META-INF/jars/nested2.jar",
+		},
+		{
+			Name:     "test:nested3",
+			Version:  "0.0.3",
+			FilePath: "testdata/nested.jar/META-INF/jars/nested2.jar/META-INF/jars/nested3.jar",
+		},
+	}
+
+	// Manually created.
+	// Files of `io.quarkus.gizmo.gizmo-1.1.jar` (gizmo:1.1.0 (from sha1)):
+	//├── bar
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.13.4)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.12.3)
+	//├── foo
+	//│   ├── bar
+	//│   │   └── pom.properties (jackson-databind:2.12.3)
+	//│   └── foo
+	//│       └── pom.properties (jackson-databind:2.13.4)
+	//├── jars
+	//│   ├── log4j-1.2.16.jar (log4j:1.2.16)
+	//│   └── log4j-1.2.17.jar (log4j:1.2.17)
+	//└── META-INF
+	//    ├── INDEX.LIST
+	//    ├── MANIFEST.MF
+	//    └── maven
+	//        └── io.quarkus.gizmo
+	//            └── gizmo
+	//                ├── pom.properties (gizmo:1.1)
+	//                └── pom.xml
+	wantDuplicatesJar = []ftypes.Package{
+		{
+			Name:     "io.quarkus.gizmo:gizmo",
+			Version:  "1.1",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			Name:     "log4j:log4j",
+			Version:  "1.2.16",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.16.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			Name:     "log4j:log4j",
+			Version:  "1.2.17",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar/jars/log4j-1.2.17.jar",
+			Licenses: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.12.3",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+		},
+		{
+			Name:     "com.fasterxml.jackson.core:jackson-databind",
+			Version:  "2.13.4",
+			FilePath: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+		},
+	}
+
+	// Manually created: a jar that packs more than one LICENSE file
+	// (root LICENSE + META-INF/LICENSE.txt) and declares no license in pom.xml.
+	// The owner of the license is ambiguous, so no license is attached.
+	wantMultiLicense = []ftypes.Package{
+		{
+			Name:     "com.example:multi-license",
+			Version:  "1.0.0",
+			FilePath: "testdata/multi-license-1.0.0.jar",
+		},
+	}
+
+	// Manually created: a Jenkins plugin with license information in MANIFEST.MF.
+	wantJenkinsPlugin = []ftypes.Package{
+		{
+			Name:     "com.example:jenkins-plugin",
+			Version:  "1.0.0",
+			FilePath: "testdata/license-from-jenkins-plugin.jar",
+			Licenses: []string{
+				"Apache License, Version 2.0",
+				"MIT License",
+			},
+		},
+	}
+)
+
+type apiResponse struct {
+	Response response `json:"response"`
+}
+
+type response struct {
+	NumFound int   `json:"numFound"`
+	Docs     []doc `json:"docs"`
+}
+
+type doc struct {
+	ID           string `json:"id"`
+	GroupID      string `json:"g"`
+	ArtifactID   string `json:"a"`
+	Version      string `json:"v"`
+	P            string `json:"p"`
+	VersionCount int    `json:"versionCount"`
+}
+
+func TestParse(t *testing.T) {
+	vectors := []struct {
+		name    string
+		file    string // Test input file
+		offline bool
+		want    []ftypes.Package
+	}{
+		{
+			name: "maven",
+			file: "testdata/maven.war",
+			want: wantMaven,
+		},
+		{
+			name: "gradle",
+			file: "testdata/gradle.war",
+			want: wantGradle,
+		},
+		{
+			name: "nested jars",
+			file: "testdata/nested.jar",
+			want: wantNestedJar,
+		},
+		{
+			name: "sha1 search",
+			file: "testdata/test.jar",
+			want: wantSHA1,
+		},
+		{
+			name:    "offline",
+			file:    "testdata/test.jar",
+			offline: true,
+			want:    wantOffline,
+		},
+		{
+			name: "artifactId search",
+			file: "testdata/heuristic-1.0.0-SNAPSHOT.jar",
+			want: wantHeuristic,
+		},
+		{
+			name: "fat jar",
+			file: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
+			want: wantFatjar,
+		},
+		{
+			name: "duplicate libraries",
+			file: "testdata/io.quarkus.gizmo.gizmo-1.1.jar",
+			want: wantDuplicatesJar,
+		},
+		{
+			name: "multiple packed license files",
+			file: "testdata/multi-license-1.0.0.jar",
+			want: wantMultiLicense,
+		},
+		{
+			name:    "jenkins plugin manifest license",
+			file:    "testdata/license-from-jenkins-plugin.jar",
+			offline: true,
+			want:    wantJenkinsPlugin,
+		},
+	}
+
+	ts := httptest.NewTestServer(t, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		res := apiResponse{
+			Response: response{
+				NumFound: 1,
+			},
+		}
+
+		switch {
+		case strings.Contains(r.URL.Query().Get("q"), "springframework"):
+			res.Response.NumFound = 0
+		case strings.Contains(r.URL.Query().Get("q"), "c666f5bc47eb64ed3bbd13505a26f58be71f33f0"):
+			res.Response.Docs = []doc{
+				{
+					ID:         "org.springframework.spring-core",
+					GroupID:    "org.springframework",
+					ArtifactID: "spring-core",
+					Version:    "5.3.3",
+				},
+			}
+		case strings.Contains(r.URL.Query().Get("q"), "Gizmo"):
+			res.Response.NumFound = 0
+		case strings.Contains(r.URL.Query().Get("q"), "1c78bbc4d8c58b9af8eee82b84f2c26ec48e9a2b"):
+			res.Response.Docs = []doc{
+				{
+					ID:         "io.quarkus.gizmo.gizmo",
+					GroupID:    "io.quarkus.gizmo",
+					ArtifactID: "gizmo",
+					Version:    "1.1.0",
+				},
+			}
+		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
+			res.Response.Docs = []doc{
+				{
+					ID:           "org.springframework.heuristic",
+					GroupID:      "org.springframework",
+					ArtifactID:   "heuristic",
+					VersionCount: 10,
+				},
+				{
+					ID:           "com.example.heuristic",
+					GroupID:      "com.example",
+					ArtifactID:   "heuristic",
+					VersionCount: 100,
+				},
+			}
+		}
+		_ = json.NewEncoder(w).Encode(res)
+	}))
+	ts.Start()
+
+	for _, v := range vectors {
+		t.Run(v.name, func(t *testing.T) {
+			f, err := os.Open(v.file)
+			require.NoError(t, err)
+
+			stat, err := f.Stat()
+			require.NoError(t, err)
+
+			c := sonatype.New(sonatype.WithURL(ts.URL), sonatype.WithHTTPClient(ts.Client()))
+			p := jar.NewParser(c, jar.WithFilePath(v.file), jar.WithOffline(v.offline), jar.WithSize(stat.Size()))
+
+			got, _, err := p.Parse(t.Context(), f)
+			require.NoError(t, err)
+
+			sort.Sort(ftypes.Packages(got))
+			sort.Sort(ftypes.Packages(v.want))
+
+			assert.Equal(t, v.want, got)
+		})
+	}
+}
+
+func TestParsePluginLicenseNames(t *testing.T) {
+	tests := []struct {
+		name     string
+		manifest string
+		want     []string
+	}{
+		{
+			name:     "plugin license name",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n",
+			want:     []string{"Apache License, Version 2.0"},
+		},
+		{
+			name: "suffixed plugin license names",
+			manifest: "Plugin-License-Name: Apache License, Version 2.0\n" +
+				"Plugin-License-Name-2: MIT License\n",
+			want: []string{
+				"Apache License, Version 2.0",
+				"MIT License",
+			},
+		},
+		{
+			name:     "trims license name",
+			manifest: "Plugin-License-Name:  MIT License  \n",
+			want:     []string{"MIT License"},
+		},
+		{
+			name:     "empty license name",
+			manifest: "Plugin-License-Name: \n",
+		},
+		{
+			name:     "other plugin license attribute",
+			manifest: "Plugin-License-Url: https://opensource.org/licenses/MIT\n",
+		},
+		{
+			name:     "attribute sharing the prefix",
+			manifest: "Plugin-License-NameSpace: MIT License\n",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			m, err := jar.ParseManifest(manifestZipEntry(t, tt.manifest))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, m.PluginLicenseNames())
+		})
+	}
+}
+
+func TestEmbeddedPomGAV(t *testing.T) {
+	tests := []struct {
+		name      string
+		path      string
+		wantGroup string
+		wantArt   string
+		wantOK    bool
+	}{
+		{
+			name:      "valid path",
+			path:      "META-INF/maven/com.example/demo/pom.xml",
+			wantGroup: "com.example",
+			wantArt:   "demo",
+			wantOK:    true,
+		},
+		{
+			name:   "wrong prefix",
+			path:   "BOOT-INF/classes/pom.xml",
+			wantOK: false,
+		},
+		{
+			name:   "not pom.xml",
+			path:   "META-INF/maven/com.example/demo/pom.properties",
+			wantOK: false,
+		},
+		{
+			name:   "missing artifactId",
+			path:   "META-INF/maven/com.example/pom.xml",
+			wantOK: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			groupID, artifactID, ok := jar.EmbeddedPomGAV(tt.path)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.wantGroup, groupID)
+			assert.Equal(t, tt.wantArt, artifactID)
+		})
+	}
+}
+
+func TestDecodePomLicenses(t *testing.T) {
+	tests := []struct {
+		name string
+		xml  string
+		want []string
+	}{
+		{
+			name: "single license",
+			xml:  `<project><licenses><license><name>Apache-2.0</name></license></licenses></project>`,
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "multiple licenses",
+			xml:  `<project><licenses><license><name>MIT</name></license><license><name>Apache-2.0</name></license></licenses></project>`,
+			want: []string{"MIT", "Apache-2.0"},
+		},
+		{
+			name: "name with surrounding whitespace",
+			xml:  "<project><licenses><license><name>  Apache-2.0\n  </name></license></licenses></project>",
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "empty name is skipped",
+			xml:  `<project><licenses><license><name></name></license></licenses></project>`,
+			want: nil,
+		},
+		{
+			name: "no licenses block (parent only)",
+			xml:  `<project><parent><groupId>com.example</groupId></parent></project>`,
+			want: nil,
+		},
+		{
+			name: "empty name falls back to url resolved to SPDX ID",
+			xml:  `<project><licenses><license><name></name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"Apache-2.0"},
+		},
+		{
+			name: "name takes precedence over url",
+			xml:  `<project><licenses><license><name>The Apache Software License, Version 2.0</name><url>https://www.apache.org/licenses/LICENSE-2.0.txt</url></license></licenses></project>`,
+			want: []string{"The Apache Software License, Version 2.0"},
+		},
+		{
+			name: "unresolvable url is skipped",
+			xml:  `<project><licenses><license><name></name><url>https://example.com/my-license</url></license></licenses></project>`,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.DecodePomLicenses(strings.NewReader(tt.xml))
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestIsJarLicenseFile(t *testing.T) {
+	tests := []struct {
+		name string
+		path string
+		want bool
+	}{
+		{
+			name: "LICENSE at root",
+			path: "LICENSE",
+			want: true,
+		},
+		{
+			name: "LICENSE.txt at root",
+			path: "LICENSE.txt",
+			want: true,
+		},
+		{
+			name: "license under META-INF",
+			path: "META-INF/LICENSE",
+			want: true,
+		},
+		{
+			name: "copyright at root",
+			path: "COPYRIGHT",
+			want: true,
+		},
+		{
+			name: "nested archive named license.jar",
+			path: "license.jar",
+			want: false,
+		},
+		{
+			name: "nested archive named copyright.war under META-INF",
+			path: "META-INF/copyright.war",
+			want: false,
+		},
+		{
+			name: "vendored license with prefix",
+			path: "META-INF/FastDoubleParser-LICENSE",
+			want: false,
+		},
+		{
+			name: "license in subdirectory",
+			path: "META-INF/licenses/LICENSE",
+			want: false,
+		},
+		{
+			name: "unrelated file",
+			path: "com/example/Main.class",
+			want: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, jar.IsJarLicenseFile(tt.path))
+		})
+	}
+}
+
+func TestParseBundleLicense(t *testing.T) {
+	tests := []struct {
+		name   string
+		header string
+		want   []string
+	}{
+		{
+			name:   "empty",
+			header: "",
+			want:   nil,
+		},
+		{
+			name:   "SPDX ID",
+			header: "Apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "SPDX ID is case-insensitive and canonicalized",
+			header: "apache-2.0",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "license URL",
+			header: "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "OSGi structured form resolved via link",
+			header: `"Apache License 2.0";link="https://www.apache.org/licenses/LICENSE-2.0";description="Apache 2"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "name is an SPDX ID, link ignored",
+			header: `"MIT";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "multiple entries",
+			header: "Apache-2.0, https://opensource.org/licenses/MIT",
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "comma inside a quoted description does not split the entry",
+			header: `Apache-2.0;description="Apache License, Version 2.0";link="https://www.apache.org/licenses/LICENSE-2.0"`,
+			want:   []string{"Apache-2.0"},
+		},
+		{
+			name:   "comma inside a quoted name does not split the entry",
+			header: `"Eclipse Public License, Version 1.0";link="http://www.eclipse.org/legal/epl-v10.html"`,
+			want:   []string{"EPL-1.0"},
+		},
+		{
+			name:   "semicolon inside a quoted name does not start an attribute",
+			header: `"Custom; License";link="https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "spaces around the attribute assignment",
+			header: `"Custom" ; link = "https://opensource.org/licenses/MIT"`,
+			want:   []string{"MIT"},
+		},
+		{
+			name:   "escaped quote does not end the quoted value",
+			header: `Apache-2.0;description="one \"quote",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "separator inside a value ending with an escaped quote",
+			header: `Apache-2.0;description="a \"quoted\" word, and a comma",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "escaped backslash does not escape the closing quote",
+			header: `Apache-2.0;description="ends with a backslash\\",MIT`,
+			want:   []string{"Apache-2.0", "MIT"},
+		},
+		{
+			name:   "EXTERNAL token is skipped",
+			header: "<<EXTERNAL>>",
+			want:   nil,
+		},
+		{
+			name:   "free text is skipped",
+			header: "My Company License",
+			want:   nil,
+		},
+		{
+			name:   "unresolvable link is skipped",
+			header: `"Custom";link="https://example.com/license"`,
+			want:   nil,
+		},
+		{
+			name:   "resolvable and unresolvable entries mixed",
+			header: "Apache-2.0, My Company License",
+			want:   []string{"Apache-2.0"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, jar.ParseBundleLicense(tt.header))
+		})
+	}
+}
+
+// TestParseManifestFolding verifies that a header value wrapped onto the next
+// line (continued by a single leading space, as MANIFEST.MF folds long values)
+// is rejoined without inserting a space at the fold point. A value can be folded
+// over any of the newline sequences the manifest grammar allows.
+func TestParseManifestFolding(t *testing.T) {
+	tests := []struct {
+		name string
+		eol  string
+	}{
+		{
+			name: "CRLF",
+			eol:  "\r\n",
+		},
+		{
+			name: "LF",
+			eol:  "\n",
+		},
+		{
+			name: "CR",
+			eol:  "\r",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			mf := "Manifest-Version: 1.0" + tt.eol +
+				"Bundle-License: https://www.apache.org/licenses/LICEN" + tt.eol +
+				" SE-2.0.txt" + tt.eol +
+				"Bundle-Name: Example" + tt.eol
+
+			m, err := jar.ParseManifest(manifestZipEntry(t, mf))
+			require.NoError(t, err)
+			assert.Equal(t, "https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
+		})
+	}
+}
+
+// manifestZipEntry packs the given MANIFEST.MF content into a zip archive and
+// returns its entry, as parseManifest reads the manifest straight from the JAR.
+func manifestZipEntry(t *testing.T, content string) *zip.File {
+	t.Helper()
+
+	var buf bytes.Buffer
+	zw := zip.NewWriter(&buf)
+	w, err := zw.Create("META-INF/MANIFEST.MF")
+	require.NoError(t, err)
+	_, err = w.Write([]byte(content))
+	require.NoError(t, err)
+	require.NoError(t, zw.Close())
+
+	zr, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
+	require.NoError(t, err)
+	return zr.File[0]
+}
+
+func TestManifestProperties(t *testing.T) {
+	tests := []struct {
+		name     string
+		manifest string
+		want     jar.Properties
+	}{
+		{
+			name: "main section only",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: Apache Commons Lang
+Implementation-Version: 3.17.0
+Implementation-Vendor-Id: org.apache.commons
+`,
+			want: jar.Properties{
+				GroupID:    "org.apache.commons",
+				ArtifactID: "Apache Commons Lang",
+				Version:    "3.17.0",
+				FilePath:   "commons-lang3-3.17.0.jar",
+			},
+		},
+		{
+			name: "individual sections do not override the main section",
+			manifest: `Manifest-Version: 1.0
+Implementation-Title: xercesImpl
+Implementation-Version: 2.12.2
+Implementation-Vendor-Id: xerces
+
+Name: org/apache/xerces/xni/
+Implementation-Title: org.apache.xerces.xni
+Implementation-Version: 1.2
+Implementation-Vendor-Id: org.apache.xerces
+`,
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			// The attributes describe a package inside the archive, not the archive itself,
+			// so the artifact stays unidentified and the caller falls back to another source.
+			name: "artifact attributes only in an individual section",
+			manifest: `Manifest-Version: 1.0
+Ant-Version: Apache Ant 1.10.14
+Created-By: 22.0.2+9-70 (Oracle Corporation)
+
+Name: org/apache/tools/ant/
+Implementation-Title: org.apache.tools.ant
+Implementation-Version: 1.10.15
+Implementation-Vendor: Apache Software Foundation
+`,
+			want: jar.Properties{},
+		},
+		{
+			name:     "CRLF line endings",
+			manifest: "Manifest-Version: 1.0\r\nImplementation-Title: xercesImpl\r\nImplementation-Version: 2.12.2\r\nImplementation-Vendor-Id: xerces\r\n\r\nName: org/apache/xerces/xni/\r\nImplementation-Version: 1.2\r\n",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+		{
+			name:     "CR line endings",
+			manifest: "Manifest-Version: 1.0\rImplementation-Title: xercesImpl\rImplementation-Version: 2.12.2\rImplementation-Vendor-Id: xerces\r\rName: org/apache/xerces/xni/\rImplementation-Version: 1.2\r",
+			want: jar.Properties{
+				GroupID:    "xerces",
+				ArtifactID: "xercesImpl",
+				Version:    "2.12.2",
+				FilePath:   "xercesImpl-2.12.2.jar",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := jar.ManifestProperties(strings.NewReader(tt.manifest), tt.want.FilePath)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

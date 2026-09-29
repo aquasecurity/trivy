@@ -1,0 +1,15 @@
+GEM
+  remote: https://rubygems.org/
+  specs:
+    actioncable (5.2.3)
+      actionpack (= 5.2.3)
+    actionpack (5.2.3)
+
+PLATFORMS
+  ruby
+
+DEPENDENCIES
+  actioncable (~> 5.0)
+
+BUNDLED WITH
+   1.17.2

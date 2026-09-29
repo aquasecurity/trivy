@@ -1,0 +1,73 @@
+{
+  "lockVersion": 1,
+  "timestamp": "2024-06-05T13:41:10.992Z",
+  "configurations": [
+    "compile",
+    "runtime",
+    "test"
+  ],
+  "dependencies": [
+    {
+      "org": "org.apache.commons",
+      "name": "commons-lang3",
+      "version": "3.9",
+      "artifacts": [
+        {
+          "name": "commons-lang3.jar",
+          "hash": "sha1:0122c7cee69b53ed4a7681c03d4ee4c0e2765da5"
+        }
+      ],
+      "configurations": [
+        "test",
+        "compile",
+        "runtime"
+      ]
+    },
+    {
+      "org": "org.scala-lang",
+      "name": "scala-library",
+      "version": "2.12.10",
+      "artifacts": [
+        {
+          "name": "scala-library.jar",
+          "hash": "sha1:3509860bc2e5b3da001ed45aca94ffbe5694dbda"
+        }
+      ],
+      "configurations": [
+        "test",
+        "compile",
+        "runtime"
+      ]
+    },
+    {
+      "org" : "org.typelevel",
+      "name" : "cats-core_2.12",
+      "version" : "2.9.0",
+      "artifacts" : [
+        {
+          "name" : "cats-core_2.12.jar",
+          "hash" : "sha1:844f21541d1809008586fbc1172dc02c96476639"
+        }
+      ],
+      "configurations" : [
+        "compile",
+        "runtime",
+        "test"
+      ]
+    },
+    {
+      "org" : "org.scalatest",
+      "name" : "scalatest-core_2.13",
+      "version" : "3.2.15",
+      "artifacts" : [
+        {
+          "name" : "scalatest-core_2.13.jar",
+          "hash" : "sha1:231d1f4049a9fa4bd65c17b806a58180b9f4abe1"
+        }
+      ],
+      "configurations" : [
+        "test"
+      ]
+    }
+  ]
+}

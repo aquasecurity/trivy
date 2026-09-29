@@ -1,0 +1,172 @@
+
+state 0
+	$accept: .license $end 
+
+	IDENT  shift 6
+	'('  shift 5
+	.  error
+
+	license  goto 1
+	simple  goto 3
+	plus  goto 4
+	compound  goto 2
+
+state 1
+	$accept:  license.$end 
+
+	$end  accept
+	.  error
+
+
+state 2
+	license:  compound.    (1)
+	compound:  compound.AND compound 
+	compound:  compound.OR compound 
+	compound:  compound.WITH compound 
+
+	OR  shift 8
+	AND  shift 7
+	WITH  shift 9
+	.  reduce 1 (src line 23)
+
+
+state 3
+	simple:  simple.IDENT 
+	plus:  simple.'+' 
+	compound:  simple.    (5)
+
+	IDENT  shift 10
+	'+'  shift 11
+	.  reduce 5 (src line 48)
+
+
+state 4
+	compound:  plus.    (6)
+
+	.  reduce 6 (src line 52)
+
+
+state 5
+	compound:  '('.compound ')' 
+
+	IDENT  shift 6
+	'('  shift 5
+	.  error
+
+	simple  goto 3
+	plus  goto 4
+	compound  goto 12
+
+state 6
+	simple:  IDENT.    (2)
+
+	.  reduce 2 (src line 32)
+
+
+state 7
+	compound:  compound AND.compound 
+
+	IDENT  shift 6
+	'('  shift 5
+	.  error
+
+	simple  goto 3
+	plus  goto 4
+	compound  goto 13
+
+state 8
+	compound:  compound OR.compound 
+
+	IDENT  shift 6
+	'('  shift 5
+	.  error
+
+	simple  goto 3
+	plus  goto 4
+	compound  goto 14
+
+state 9
+	compound:  compound WITH.compound 
+
+	IDENT  shift 6
+	'('  shift 5
+	.  error
+
+	simple  goto 3
+	plus  goto 4
+	compound  goto 15
+
+state 10
+	simple:  simple IDENT.    (3)
+
+	.  reduce 3 (src line 37)
+
+
+state 11
+	plus:  simple '+'.    (4)
+
+	.  reduce 4 (src line 42)
+
+
+state 12
+	compound:  compound.AND compound 
+	compound:  compound.OR compound 
+	compound:  compound.WITH compound 
+	compound:  '(' compound.')' 
+
+	OR  shift 8
+	AND  shift 7
+	WITH  shift 9
+	')'  shift 16
+	.  error
+
+
+state 13
+	compound:  compound.AND compound 
+	compound:  compound AND compound.    (7)
+	compound:  compound.OR compound 
+	compound:  compound.WITH compound 
+
+	WITH  shift 9
+	.  reduce 7 (src line 55)
+
+
+state 14
+	compound:  compound.AND compound 
+	compound:  compound.OR compound 
+	compound:  compound OR compound.    (8)
+	compound:  compound.WITH compound 
+
+	AND  shift 7
+	WITH  shift 9
+	.  reduce 8 (src line 59)
+
+
+state 15
+	compound:  compound.AND compound 
+	compound:  compound.OR compound 
+	compound:  compound.WITH compound 
+	compound:  compound WITH compound.    (9)
+
+	WITH  shift 9
+	.  reduce 9 (src line 63)
+
+
+state 16
+	compound:  '(' compound ')'.    (10)
+
+	.  reduce 10 (src line 67)
+
+
+10 terminals, 5 nonterminals
+11 grammar rules, 17/16000 states
+0 shift/reduce, 0 reduce/reduce conflicts reported
+54 working sets used
+memory: parser 15/240000
+13 extra closures
+23 shift entries, 1 exceptions
+8 goto entries
+8 entries saved by goto default
+Optimizer space used: output 22/240000
+22 table entries, 0 zero
+maximum spread: 10, maximum offset: 9

@@ -1,0 +1,39 @@
+- bucket: wolfi
+  pairs:
+    - bucket: ansible
+      pairs:
+        - key: CVE-2018-10875
+          value:
+            FixedVersion: "2.6.3-r0"
+        - key: CVE-2019-10217
+          value:
+            FixedVersion: "2.8.4-r0"
+        - key: CVE-2020-1740
+          value:
+            FixedVersion: ""
+            AffectedVersion: "2.6.5"
+        - key: CVE-2021-20191
+          value:
+            FixedVersion: ""
+        - key: CVE-2019-INVALID
+          value:
+            FixedVersion: "invalid"
+    - bucket: jq
+      pairs:
+        - key: CVE-2016-4074
+          value:
+            FixedVersion: "1.6_rc1-r0"
+        - key: CVE-2019-9999
+          value:
+            FixedVersion: "1.6_rc2"
+        - key: CVE-2020-1234
+          value:
+            FixedVersion: "1.6-r1"
+    - bucket: test-src
+      pairs:
+        - key: CVE-2030-0001
+          value:
+            FixedVersion: "0.1.0_alpha_pre2"
+        - key: CVE-2030-0002
+          value:
+            FixedVersion: "0.1.0_alpha2"

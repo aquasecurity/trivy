@@ -1,0 +1,4 @@
+repositories:
+  - name: default
+    url: https://localhost
+    enabled: true

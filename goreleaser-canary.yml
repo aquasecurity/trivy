@@ -1,0 +1,41 @@
+version: 2
+
+project_name: trivy_canary_build
+builds:
+  -
+    main: ./cmd/trivy/
+    binary: trivy
+    ldflags:
+      - -s -w
+      - "-extldflags '-static'"
+      - -X github.com/aquasecurity/trivy/pkg/version/app.ver={{.Version}}
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ignore:
+      - goos: windows
+        goarch: arm64
+
+archives:
+  -
+    formats: [tar.gz]
+    name_template: >-
+      {{ .ProjectName }}_{{ .Version }}_
+      {{- if eq .Os "darwin" }}macOS
+      {{- else}}{{- title .Os }}{{ end }}-
+      {{- if eq .Arch "amd64" }}64bit
+      {{- else if eq .Arch "arm64" }}ARM64
+      {{- else }}{{ .Arch }}{{ end }}
+    files:
+      - README.md
+      - LICENSE
+      - contrib/*.tpl
+    format_overrides:
+      - goos: windows
+        formats: [zip]

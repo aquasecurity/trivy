@@ -1,0 +1,13 @@
+NAME="SLE Micro"
+VERSION="5.4"
+VERSION_ID="5.4"
+PRETTY_NAME="SUSE Linux Enterprise Micro for Rancher 5.4"
+ID="sle-micro-rancher"
+ID_LIKE="suse"
+ANSI_COLOR="0;32"
+CPE_NAME="cpe:/o:suse:sle-micro-rancher:5.4"
+IMAGE_REPO="registry.suse.com/rancher/elemental-teal/5.4"
+IMAGE_TAG="1.2.3-3.2.153"
+IMAGE="registry.suse.com/rancher/elemental-teal/5.4:1.2.3-3.2.153"
+TIMESTAMP=20240419051540
+GRUB_ENTRY_NAME="Elemental"

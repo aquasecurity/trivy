@@ -1,0 +1,62 @@
+{
+  "build": "py38h06a4308_0",
+  "build_number": 0,
+  "channel": "https://repo.anaconda.com/pkgs/main/linux-64",
+  "constrains": [],
+  "depends": [
+    "python >=3.8,<3.9.0a0",
+    "setuptools",
+    "wheel"
+  ],
+  "extracted_package_dir": "/home/user/miniconda3/pkgs/pip-22.2.2-py38h06a4308_0",
+  "features": "",
+  "files": [
+    "bin/pip",
+    "<SNIP>",
+    "lib/python3.8/site-packages/pip/py.typed"
+  ],
+  "fn": "pip-22.2.2-py38h06a4308_0.conda",
+  "legacy_bz2_md5": "2ac9f1cfec65a1e4ef00cc0132ecd753",
+  "legacy_bz2_size": 2849993,
+  "license": "MIT",
+  "license_family": "MIT",
+  "link": {
+    "source": "/home/user/miniconda3/pkgs/pip-22.2.2-py38h06a4308_0",
+    "type": 1
+  },
+  "md5": "ed3e0331e7c614b3148c9911e1fc15e3",
+  "name": "pip",
+  "package_tarball_full_path": "/home/user/miniconda3/pkgs/pip-22.2.2-py38h06a4308_0.conda",
+  "paths_data": {
+    "paths": [
+      {
+        "_path": "bin/pip",
+        "file_mode": "text",
+        "path_type": "hardlink",
+        "prefix_placeholder": "/opt/conda/conda-bld/pip_1664552683240/_h_env_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold_placehold",
+        "sha256": "1110c03ca2fb86e43e8b52a61cd9d7c722b2817fc893a613e1a947f5d7049008",
+        "sha256_in_prefix": "14ed5ba79d096035b83a469e863acbbaadd3ea6ca5f23f79eefa91fa857d3f19",
+        "size_in_bytes": 475
+      },
+      {
+        "_path": "<SNIP>"
+      },
+      {
+        "_path": "lib/python3.8/site-packages/pip/py.typed",
+        "path_type": "hardlink",
+        "sha256": "10156fbcf4539ff788a73e5ee50ced48276b317ed0c1ded53fddd14a82256762",
+        "sha256_in_prefix": "10156fbcf4539ff788a73e5ee50ced48276b317ed0c1ded53fddd14a82256762",
+        "size_in_bytes": 286
+      }
+    ],
+    "paths_version": 1
+  },
+  "requested_spec": "None",
+  "sha256": "3fb76b94cfa5ea9732bfb241b3d234ec0a5a48d16755c3c1ef3c94630f91eb26",
+  "size": 2417732,
+  "subdir": "linux-64",
+  "timestamp": 1664552878795,
+  "track_features": "",
+  "url": "https://repo.anaconda.com/pkgs/main/linux-64/pip-22.2.2-py38h06a4308_0.conda",
+  "version": "22.2.2"
+}

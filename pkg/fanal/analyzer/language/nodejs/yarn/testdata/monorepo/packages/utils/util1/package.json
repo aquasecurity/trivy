@@ -1,0 +1,10 @@
+{
+    "name": "util1",
+    "version": "0.0.0",
+    "dependencies": {
+        "js-tokens": "^8.0.1"
+    },
+    "devDependencies": {
+        "prop-types": "^15.8.1"
+    }
+}

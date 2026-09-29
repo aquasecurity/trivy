@@ -1,0 +1,24 @@
+# Global
+*   @knqyf263 @DmitriyLewen
+
+# SBOM/Vulnerability scanning
+pkg/dependency/  @knqyf263 @DmitriyLewen
+pkg/fanal/       @knqyf263 @DmitriyLewen
+pkg/sbom/        @knqyf263 @DmitriyLewen
+pkg/scanner/     @knqyf263 @DmitriyLewen
+
+# Misconfiguration scanning
+docs/guide/scanner/misconfiguration/  @nikpivkin
+docs/guide/target/aws.md              @nikpivkin
+pkg/fanal/analyzer/config/            @nikpivkin
+pkg/config/aws/                       @nikpivkin
+pkg/iac/                              @nikpivkin
+
+# Helm chart
+helm/trivy/ @afdesk
+# Chart.yaml is bumped automatically by CI, so trivy team may approve it.
+helm/trivy/Chart.yaml @aquasecurity/trivy
+
+# Kubernetes scanning
+pkg/k8s/                         @afdesk
+docs/guide/target/kubernetes.md   @afdesk

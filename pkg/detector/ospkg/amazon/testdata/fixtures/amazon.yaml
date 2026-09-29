@@ -1,0 +1,28 @@
+- bucket: amazon linux 1
+  pairs:
+    - bucket: bind
+      pairs:
+        - key: CVE-2020-8625
+          value:
+            FixedVersion: "32:9.8.2-0.68.rc1.86.amzn1"
+- bucket: amazon linux 2
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2019-9924
+          value:
+            FixedVersion: "4.2.46-34.amzn2"
+- bucket: amazon linux 2022
+  pairs:
+    - bucket: log4j
+      pairs:
+        - key: CVE-2021-44228
+          value:
+            FixedVersion: "2.15.0-1.amzn2022.0.1"
+- bucket: amazon linux 2023
+  pairs:
+    - bucket: protobuf
+      pairs:
+        - key: CVE-2022-1941
+          value:
+            FixedVersion: "3.19.6-1.amzn2023.0.1"

@@ -1,0 +1,138 @@
+package pom
+
+import (
+	"fmt"
+	"strings"
+	"sync"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
+	"github.com/aquasecurity/trivy/pkg/version/doc"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
+)
+
+var (
+	emptyVersionWarn = sync.OnceFunc(func() {
+		log.WithPrefix("pom").Warn("Dependency version cannot be determined. Child dependencies will not be found.",
+			// e.g. https://trivy.dev/docs/latest/coverage/language/java/#empty-dependency-version
+			log.String("details", doc.URL("guide/coverage/language/java/", "empty-dependency-version")))
+	})
+)
+
+type artifact struct {
+	GroupID    string
+	ArtifactID string
+	Version    version
+	Licenses   []string
+
+	Exclusions set.Set[string]
+
+	Module       bool
+	Relationship ftypes.Relationship
+
+	Locations ftypes.Locations
+
+	// For correctly calculation package ID (hash),
+	// We need to store the file paths for root or module artifacts.
+	// For other artifacts, it will be empty.
+	RootFilePath string
+
+	// Repositories got from current POM, upper-level POMs and parent POMs.
+	Repositories []repository
+}
+
+func newArtifact(groupID, artifactID, version string, licenses []string, props map[string]string) artifact {
+	return artifact{
+		GroupID:      evaluateVariable(groupID, props, nil),
+		ArtifactID:   evaluateVariable(artifactID, props, nil),
+		Version:      newVersion(evaluateVariable(version, props, nil)),
+		Licenses:     licenses,
+		Relationship: ftypes.RelationshipIndirect, // default
+	}
+}
+
+func (a artifact) IsEmpty() bool {
+	if a.GroupID == "" || a.ArtifactID == "" {
+		return true
+	}
+	if a.Version.String() == "" {
+		emptyVersionWarn()
+		log.WithPrefix("pom").Debug("Dependency version cannot be determined.",
+			log.String("GroupID", a.GroupID),
+			log.String("ArtifactID", a.ArtifactID),
+		)
+	}
+	return false
+}
+
+func (a artifact) Equal(o artifact) bool {
+	return a.GroupID == o.GroupID || a.ArtifactID == o.ArtifactID || a.Version.String() == o.Version.String()
+}
+
+func (a artifact) ToPOMLicenses() pomLicenses {
+	return pomLicenses{
+		License: xslices.Map(a.Licenses, func(lic string) pomLicense {
+			return pomLicense{Name: lic}
+		}),
+	}
+}
+
+func (a artifact) Inherit(parent artifact) artifact {
+	// inherited from a parent
+	if a.GroupID == "" {
+		a.GroupID = parent.GroupID
+	}
+
+	if len(a.Licenses) == 0 {
+		a.Licenses = parent.Licenses
+	}
+
+	if a.Version.String() == "" {
+		a.Version = parent.Version
+	}
+	return a
+}
+
+func (a artifact) Name() string {
+	return fmt.Sprintf("%s:%s", a.GroupID, a.ArtifactID)
+}
+
+func (a artifact) String() string {
+	return fmt.Sprintf("%s:%s", a.Name(), a.Version)
+}
+
+type version struct {
+	ver  string
+	hard bool
+}
+
+// Only soft and hard requirements for the specified version are supported at the moment.
+func newVersion(s string) version {
+	var hard bool
+	if strings.HasPrefix(s, "[") && strings.HasSuffix(s, "]") {
+		s = strings.Trim(s, "[]")
+		hard = true
+	}
+
+	// TODO: Other requirements are not supported
+	if strings.ContainsAny(s, ",()[]") {
+		s = ""
+	}
+
+	return version{
+		ver:  s,
+		hard: hard,
+	}
+}
+
+func (v1 version) shouldOverride(v2 version) bool {
+	if !v1.hard && v2.hard {
+		return true
+	}
+	return false
+}
+
+func (v1 version) String() string {
+	return v1.ver
+}

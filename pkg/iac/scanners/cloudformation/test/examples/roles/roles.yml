@@ -1,0 +1,51 @@
+Resources:
+  LambdaAPIRole:
+    Type: "AWS::IAM::Role"
+    Properties:
+      RoleName: "${self:service}-${self:provider.stage}-LambdaAPI"
+      Policies:
+        - PolicyName: "${self:service}-${self:provider.stage}-lambda"
+          PolicyDocument:
+            Version: "2012-10-17"
+            Statement:
+              - Effect: Allow
+                Action:
+                  - "logs:CreateLogStream"
+                  - "logs:CreateLogGroup"
+                  - "logs:PutLogEvents"
+                Resource: !Sub "arn:aws:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/${self:service}-${self:provider.stage}*:*"
+        - !If
+          - EnableCrossAccountSnsPublish
+          - PolicyName: "${self:service}-${self:provider.stage}-asngen-sns-publish"
+            PolicyDocument:
+              Version: "2012-10-17"
+              Statement:
+                - Effect: Allow
+                  Action:
+                    - "SNS:Publish"
+                  Resource:
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-PurchaseOrder.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-Vendor.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-Customer.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-Manufacturer.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-ManufacturerItem.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-Item.fifo"
+                    - !Sub "arn:aws:sns:${self:provider.region}:${self:provider.itopia_account_id}:${self:provider.stage}-*-VendorItem.fifo"
+          - !Ref "AWS::NoValue"
+      AssumeRolePolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service:
+                - "lambda.amazonaws.com"
+            Action:
+              - "sts:AssumeRole"
+
+
+
+
+Conditions:
+  EnableCrossAccountSnsPublish: !Equals
+    - ${env:ALLOW_SNS_PUBLISH, true}
+    - true

@@ -1,0 +1,9 @@
+Test case with invalid go.mod in GOPATH pkg/mod directory.
+This tests handling of broken dependency go.mod files.
+
+-- go.mod --
+module github.com/org/repo
+
+go 1.17
+
+require github.com/sad/sad v0.0.1

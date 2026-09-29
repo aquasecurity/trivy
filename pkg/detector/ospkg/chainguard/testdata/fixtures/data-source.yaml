@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: chainguard
+      value:
+        ID: "chainguard"
+        Name: "Chainguard Secdb"
+        URL: "https://packages.cgr.dev/chainguard/security.json"

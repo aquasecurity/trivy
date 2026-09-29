@@ -1,0 +1,18 @@
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: {{CA}}
+    server: {{URL}}
+  name: kind-kind-test
+contexts:
+- context:
+    cluster: kind-kind-test
+    namespace: limitedns
+    user: limiteduser
+  name: limitedcontext
+kind: Config
+preferences: {}
+users:
+- name: limiteduser
+  user:
+    token: {{TOKEN}}

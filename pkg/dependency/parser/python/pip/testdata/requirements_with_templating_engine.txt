@@ -1,0 +1,5 @@
+%ifcookiecutter.command_line_interface|lower=='click'-%}
+foo|bar=='1.2.4'
+foo{bar}==%%
+foo,bar&&foobar==1.2.3
+foo=='invalid-version'

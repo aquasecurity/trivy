@@ -1,0 +1,152 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:b9f31768f6c3908af7de80cff1a9e53c62f46d1bc54aaf3b97b2c922ed9cf1fd",
+  "ArtifactName": "testdata/fixtures/images/opensuse-leap-151.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 105899520,
+    "OS": {
+      "Family": "opensuse-leap",
+      "Name": "15.1",
+      "EOSL": true
+    },
+    "ImageID": "sha256:fef5ad254f6378f08071cfa2daaf05a1ce9857141c944b67a40742e63e65cecc",
+    "DiffIDs": [
+      "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:opensuse-leap-151",
+    "ImageConfig": {
+      "architecture": "amd64",
+      "author": "Fabian Vogt \u003cfvogt@suse.com\u003e",
+      "created": "2019-11-05T15:54:41Z",
+      "history": [
+        {
+          "created": "2019-11-05T15:54:41Z",
+          "created_by": "KIWI 9.17.16"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Labels": {
+          "org.openbuildservice.disturl": "obs://build.opensuse.org/openSUSE:Leap:15.1:Images/images/740264e3294afe7ca32a3ea9deb863d2-opensuse-leap-image:docker",
+          "org.opencontainers.image.created": "2019-11-05T15:54:10.571514200Z",
+          "org.opencontainers.image.description": "Image containing a minimal environment for containers based on openSUSE Leap 15.1.",
+          "org.opencontainers.image.title": "openSUSE Leap 15.1 Base Container",
+          "org.opencontainers.image.url": "https://www.opensuse.org/",
+          "org.opencontainers.image.vendor": "openSUSE Project",
+          "org.opencontainers.image.version": "15.1.3.67",
+          "org.opensuse.base.created": "2019-11-05T15:54:10.571514200Z",
+          "org.opensuse.base.description": "Image containing a minimal environment for containers based on openSUSE Leap 15.1.",
+          "org.opensuse.base.disturl": "obs://build.opensuse.org/openSUSE:Leap:15.1:Images/images/740264e3294afe7ca32a3ea9deb863d2-opensuse-leap-image:docker",
+          "org.opensuse.base.reference": "registry.opensuse.org/opensuse/leap:15.1.3.67",
+          "org.opensuse.base.title": "openSUSE Leap 15.1 Base Container",
+          "org.opensuse.base.url": "https://www.opensuse.org/",
+          "org.opensuse.base.vendor": "openSUSE Project",
+          "org.opensuse.base.version": "15.1.3.67",
+          "org.opensuse.reference": "registry.opensuse.org/opensuse/leap:15.1.3.67"
+        }
+      }
+    },
+    "Layers": [
+      {
+        "Size": 105899520,
+        "Digest": "sha256:5c5a844f54abd051851758624820ae6a08a9d6ddffddaebbb335601c32608fb3",
+        "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/opensuse-leap-151.tar.gz (opensuse-leap 15.1)",
+      "Class": "os-pkgs",
+      "Type": "opensuse-leap",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgID": "libopenssl1_1@1.1.0i-lp151.8.3.1.x86_64",
+          "PkgName": "libopenssl1_1",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse/libopenssl1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
+            "UID": "10e12f4783a16c7c"
+          },
+          "InstalledVersion": "1.1.0i-lp151.8.3.1",
+          "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:5c5a844f54abd051851758624820ae6a08a9d6ddffddaebbb335601c32608fb3",
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "SeveritySource": "suse-cvrf",
+          "PrimaryURL": "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+          "DataSource": {
+            "ID": "suse-cvrf",
+            "Name": "SUSE CVRF",
+            "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
+          },
+          "Fingerprint": "sha256:20fab639050347334f826ff7d076eb534ae2291198f36c46914e3291f2e60320",
+          "Title": "Security update for openssl-1_1",
+          "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "suse-cvrf": 2
+          },
+          "References": [
+            "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        },
+        {
+          "VulnerabilityID": "openSUSE-SU-2020:0062-1",
+          "PkgID": "openssl-1_1@1.1.0i-lp151.8.3.1.x86_64",
+          "PkgName": "openssl-1_1",
+          "PkgIdentifier": {
+            "PURL": "pkg:rpm/opensuse/openssl-1_1@1.1.0i-lp151.8.3.1?arch=x86_64\u0026distro=opensuse-leap-15.1",
+            "UID": "23c07ff656c4d709"
+          },
+          "InstalledVersion": "1.1.0i-lp151.8.3.1",
+          "FixedVersion": "1.1.0i-lp151.8.6.1",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:5c5a844f54abd051851758624820ae6a08a9d6ddffddaebbb335601c32608fb3",
+            "DiffID": "sha256:f7f9ae80878a1c56d8f9ca977a5d844168f7afc0c1429feef9366e713eac06ff"
+          },
+          "SeveritySource": "suse-cvrf",
+          "PrimaryURL": "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+          "DataSource": {
+            "ID": "suse-cvrf",
+            "Name": "SUSE CVRF",
+            "URL": "https://ftp.suse.com/pub/projects/security/cvrf/"
+          },
+          "Fingerprint": "sha256:af7aebe9d7dd2e4d00a9495e5417b647dba0aac27bb49fdf9bc86f76fab8273d",
+          "Title": "Security update for openssl-1_1",
+          "Description": "This update for openssl-1_1 fixes the following issues:\n\nSecurity issue fixed:\n\n- CVE-2019-1551: Fixed an overflow bug in the x64_64 Montgomery squaring procedure used in exponentiation with 512-bit moduli (bsc#1158809).                             \n\nVarious FIPS related improvements were done:\n\n- FIPS: Backport SSH KDF to openssl (jsc#SLE-8789, bsc#1157775).\n- Port FIPS patches from SLE-12 (bsc#1158101).\n- Use SHA-2 in the RSA pairwise consistency check (bsc#1155346).\n\nThis update was imported from the SUSE:SLE-15-SP1:Update update project.",
+          "Severity": "MEDIUM",
+          "VendorSeverity": {
+            "suse-cvrf": 2
+          },
+          "References": [
+            "https://lists.opensuse.org/opensuse-security-announce/2020-01/msg00030.html",
+            "https://www.suse.com/support/security/rating/"
+          ]
+        }
+      ]
+    }
+  ]
+}

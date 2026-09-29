@@ -1,0 +1,9 @@
+Resources:
+  S3BucketOne:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: bucket-one
+  S3BucketTwo:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: bucket-two

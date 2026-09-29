@@ -1,0 +1,24 @@
+- bucket: CBL-Mariner 1.0
+  pairs:
+    - bucket: bind
+      pairs:
+        - key: CVE-2020-8618
+          value:
+            FixedVersion: 0:9.16.3-2.cm1
+        - key: CVE-2019-6470
+          value:
+            FixedVersion: 0:9.16.15-1.cm1
+
+- bucket: CBL-Mariner 2.0
+  pairs:
+    - bucket: vim
+      pairs:
+        - key: CVE-2022-0261
+
+- bucket: Azure Linux 3.0
+  pairs:
+    - bucket: php
+      pairs:
+        - key: CVE-2024-2408
+          value:
+            FixedVersion: 8.3.8-1.azl3

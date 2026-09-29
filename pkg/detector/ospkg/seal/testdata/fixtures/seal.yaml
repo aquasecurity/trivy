@@ -1,0 +1,41 @@
+- bucket: debian 12
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2025-27587
+          value:
+            VulnerableVersions:
+              - "<3.0.16-1~deb12u1"
+            PatchedVersions:
+              - "3.0.16-1~deb12u1"
+            Severity: 1
+- bucket: seal debian
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.21-1+deb11u1, <1.21-1+deb11u1+sp999"
+            PatchedVersions:
+              - "1.21-1+deb11u1+sp999"
+- bucket: seal alpine
+  pairs:
+    - bucket: seal-zlib
+      pairs:
+        - key: CVE-2023-6992
+          value:
+            VulnerableVersions:
+              - ">=1.2.8-r2, <1.2.8-r25341999"
+            PatchedVersions:
+              - "1.2.8-r25341999"
+- bucket: seal Red Hat 6
+  pairs:
+    - bucket: seal-wget
+      pairs:
+        - key: CVE-2024-10524
+          value:
+            VulnerableVersions:
+              - ">=1.12-10.el6, <1.12-10.el6+sp999"
+            PatchedVersions:
+              - "1.12-10.el6+sp999"

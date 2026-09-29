@@ -1,0 +1,171 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:988a8e3eb049d90c20fafb183d0e792c99b8ba28433be1d1e4447a8b5a1adbdf",
+  "ArtifactName": "testdata/fixtures/images/alpine-39.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 5796352,
+    "OS": {
+      "Family": "alpine",
+      "Name": "3.9.4",
+      "EOSL": true
+    },
+    "ImageID": "sha256:055936d3920576da37aa9bc460d70c5f212028bda1c08c0879aedf03d7a66ea1",
+    "DiffIDs": [
+      "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:alpine-39"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:alpine-39",
+    "ImageConfig": {
+      "architecture": "amd64",
+      "container": "c10d36fa368a7ea673683682666758adf35efe98e10989505f4f566b5b18538f",
+      "created": "2019-05-11T00:07:03.510395965Z",
+      "docker_version": "18.06.1-ce",
+      "history": [
+        {
+          "created": "2019-05-11T00:07:03.358250803Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:a86aea1f3a7d68f6ae03397b99ea77f2e9ee901c5c59e59f76f93adbb4035913 in / "
+        },
+        {
+          "created": "2019-05-11T00:07:03.510395965Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/sh\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/sh"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Image": "sha256:09f2bbe58e774849d74dc1391c2e01731896c745c4aba1ecf69a283bdb4b537a",
+        "ArgsEscaped": true
+      }
+    },
+    "Layers": [
+      {
+        "Size": 5796352,
+        "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
+        "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/alpine-39.tar.gz (alpine 3.9.4)",
+      "Class": "os-pkgs",
+      "Type": "alpine",
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-14697",
+          "PkgID": "musl@1.1.20-r4",
+          "PkgName": "musl",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
+            "UID": "54bca8ef3ee9e338"
+          },
+          "InstalledVersion": "1.1.20-r4",
+          "FixedVersion": "1.1.20-r5",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14697",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Fingerprint": "sha256:294b2f8c416dd7b50971286b95e1f2685d7daf3c18957237fa7dc666178b6183",
+          "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "nvd": 4
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2019/08/06/4",
+            "https://security.gentoo.org/glsa/202003-13",
+            "https://www.openwall.com/lists/musl/2019/08/06/1"
+          ],
+          "PublishedDate": "2019-08-06T16:15:00Z",
+          "LastModifiedDate": "2020-03-14T19:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2019-14697",
+          "PkgID": "musl-utils@1.1.20-r4",
+          "PkgName": "musl-utils",
+          "PkgIdentifier": {
+            "PURL": "pkg:apk/alpine/musl-utils@1.1.20-r4?arch=x86_64\u0026distro=3.9.4",
+            "UID": "792dadf1e7110cf2"
+          },
+          "InstalledVersion": "1.1.20-r4",
+          "FixedVersion": "1.1.20-r5",
+          "Status": "fixed",
+          "Layer": {
+            "Digest": "sha256:e7c96db7181be991f19a9fb6975cdbbd73c65f4a2681348e63a141a2192a5f10",
+            "DiffID": "sha256:f1b5933fe4b5f49bbe8258745cf396afe07e625bdab3168e364daf7c956b6b81"
+          },
+          "SeveritySource": "nvd",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14697",
+          "DataSource": {
+            "ID": "alpine",
+            "Name": "Alpine Secdb",
+            "URL": "https://secdb.alpinelinux.org/"
+          },
+          "Fingerprint": "sha256:fae2ab3e458f1237c8202860ac513a204cdc999c3283eba49665d0f1b3b79856",
+          "Description": "musl libc through 1.1.23 has an x87 floating-point stack adjustment imbalance, related to the math/i386/ directory. In some cases, use of this library could introduce out-of-bounds writes that are not present in an application's source code.",
+          "Severity": "CRITICAL",
+          "CweIDs": [
+            "CWE-787"
+          ],
+          "VendorSeverity": {
+            "nvd": 4
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+              "V2Score": 7.5,
+              "V3Score": 9.8
+            }
+          },
+          "References": [
+            "http://www.openwall.com/lists/oss-security/2019/08/06/4",
+            "https://security.gentoo.org/glsa/202003-13",
+            "https://www.openwall.com/lists/musl/2019/08/06/1"
+          ],
+          "PublishedDate": "2019-08-06T16:15:00Z",
+          "LastModifiedDate": "2020-03-14T19:15:00Z"
+        }
+      ]
+    }
+  ]
+}

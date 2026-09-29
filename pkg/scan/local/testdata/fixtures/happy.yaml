@@ -1,0 +1,50 @@
+- bucket: alpine 3.11
+  pairs:
+    - bucket: musl
+      pairs:
+        - key: CVE-2020-9999
+          value:
+            FixedVersion: 1.2.4
+- bucket: "rubygems::GitHub Security Advisory RubyGems"
+  pairs:
+    - bucket: rails
+      pairs:
+        - key: CVE-2014-0081
+          value:
+            PatchedVersions:
+              - "4.0.3"
+              - "3.2.17"
+            VulnerableVersions:
+              - ">= 4.0.0, < 4.0.3"
+              - ">= 3.0.0, < 3.2.17"
+
+- bucket: "composer::GitHub Security Advisory Composer"
+  pairs:
+    - bucket: laravel/framework
+      pairs:
+        - key: CVE-2021-21263
+          value:
+            PatchedVersions:
+              - 8.22.1
+              - 7.30.3
+              - 6.20.12
+            VulnerableVersions:
+              - ">= 8.0.0, < 8.22.1"
+              - ">= 7.0.0, < 7.30.3"
+              - "< 6.20.12"
+- bucket: vulnerability
+  pairs:
+    - key: CVE-2020-9999
+      value:
+        Title: dos
+        Description: dos vulnerability
+        Severity: HIGH
+    - key: CVE-2014-0081
+      value:
+        Title: xss
+        Description: xss vulnerability
+        Severity: MEDIUM
+        References:
+          - http://example.com
+        LastModifiedDate: "2020-02-01T01:01:00Z"
+        PublishedDate: "2020-01-01T01:01:00Z"

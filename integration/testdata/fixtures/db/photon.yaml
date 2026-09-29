@@ -1,0 +1,12 @@
+- bucket: Photon OS 3.0
+  pairs:
+    - bucket: bash
+      pairs:
+        - key: CVE-2019-18276
+          value:
+            FixedVersion: 4.4.18-2.ph3
+    - bucket: curl
+      pairs:
+        - key: CVE-2019-5481
+          value:
+            FixedVersion: 7.61.1-5.ph3

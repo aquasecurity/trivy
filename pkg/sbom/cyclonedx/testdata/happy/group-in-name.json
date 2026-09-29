@@ -1,0 +1,62 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:8366a7c8-229c-4518-b86c-8a1bcf69af01",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2023-06-20T04:32:10+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "dev"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "b0ae8323-eb7b-4be5-bc5c-4849fd795ec0",
+      "type": "application",
+      "name": "spring-web-5.3.22.jar",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+      "type": "library",
+      "name": "org.springframework:spring-web",
+      "version": "5.3.22",
+      "purl": "pkg:maven/org.springframework/spring-web@5.3.22",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "spring-web-5.3.22.jar"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "jar"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "b0ae8323-eb7b-4be5-bc5c-4849fd795ec0",
+      "dependsOn": [
+        "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar"
+      ]
+    },
+    {
+      "ref": "pkg:maven/org.springframework/spring-web@5.3.22?file_path=spring-web-5.3.22.jar",
+      "dependsOn": []
+    }
+  ],
+  "vulnerabilities": []
+}

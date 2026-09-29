@@ -1,0 +1,8 @@
+{
+  "require": {
+    "psr/log": "^1.0"
+  },
+  "require-dev": {
+    "pear/log": "^1.13"
+  }
+}

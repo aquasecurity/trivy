@@ -1,0 +1,13 @@
+spec:
+  id: "0001"
+  title: my-custom-spec
+  description: My fancy spec
+  version: "1.2"
+  controls:
+  - id: "1.1"
+    name: Unencrypted S3 bucket
+    description: |-
+      S3 Buckets should be encrypted to protect the data that is stored within them if access is compromised.
+    checks:
+    - id: AVD-AWS-0088
+    severity: HIGH

@@ -1,0 +1,187 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/uv",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": "uv.lock",
+      "Class": "lang-pkgs",
+      "Type": "uv",
+      "Packages": [
+        {
+          "ID": "uv-test@0.1.0",
+          "Name": "uv-test",
+          "Identifier": {
+            "PURL": "pkg:pypi/uv-test@0.1.0",
+            "UID": "228f4e2a887863ad"
+          },
+          "Version": "0.1.0",
+          "Relationship": "root",
+          "DependsOn": [
+            "click@8.1.3",
+            "werkzeug@0.11.1"
+          ],
+          "AnalyzedBy": "uv"
+        },
+        {
+          "ID": "click@8.1.3",
+          "Name": "click",
+          "Identifier": {
+            "PURL": "pkg:pypi/click@8.1.3",
+            "UID": "f6767aead12b99cf"
+          },
+          "Version": "8.1.3",
+          "Relationship": "direct",
+          "DependsOn": [
+            "colorama@0.4.6"
+          ],
+          "AnalyzedBy": "uv"
+        },
+        {
+          "ID": "werkzeug@0.11.1",
+          "Name": "werkzeug",
+          "Identifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "40cd870d03659073"
+          },
+          "Version": "0.11.1",
+          "Relationship": "direct",
+          "AnalyzedBy": "uv"
+        },
+        {
+          "ID": "colorama@0.4.6",
+          "Name": "colorama",
+          "Identifier": {
+            "PURL": "pkg:pypi/colorama@0.4.6",
+            "UID": "a9b0f41cf3bb79cc"
+          },
+          "Version": "0.4.6",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "AnalyzedBy": "uv"
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2019-14806",
+          "PkgID": "werkzeug@0.11.1",
+          "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "40cd870d03659073"
+          },
+          "InstalledVersion": "0.11.1",
+          "FixedVersion": "0.15.3",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2019-14806",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:aa64e889de7c75491704abe3a427c786acb12261fbffaaa93547c2e67d13c344",
+          "Title": "python-werkzeug: insufficient debugger PIN randomness vulnerability",
+          "Description": "Pallets Werkzeug before 0.15.3, when used with Docker, has insufficient debugger PIN randomness because Docker containers share the same machine id.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-331"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3,
+            "nvd": 3,
+            "redhat": 2,
+            "ubuntu": 1
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:L/Au:N/C:P/I:N/A:N",
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V2Score": 5,
+              "V3Score": 7.5
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.0/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00034.html",
+            "http://lists.opensuse.org/opensuse-security-announce/2019-09/msg00047.html",
+            "https://access.redhat.com/security/cve/CVE-2019-14806",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2019-14806",
+            "https://github.com/advisories/GHSA-gq9m-qvpx-68hc",
+            "https://github.com/pallets/werkzeug/blob/7fef41b120327d3912fbe12fb64f1951496fcf3e/src/werkzeug/debug/__init__.py#L168",
+            "https://github.com/pallets/werkzeug/commit/00bc43b1672e662e5e3b8cecd79e67fc968fa246",
+            "https://nvd.nist.gov/vuln/detail/CVE-2019-14806",
+            "https://palletsprojects.com/blog/werkzeug-0-15-3-released/",
+            "https://ubuntu.com/security/notices/USN-4655-1"
+          ],
+          "PublishedDate": "2019-08-09T15:15:00Z",
+          "LastModifiedDate": "2019-09-11T00:15:00Z"
+        },
+        {
+          "VulnerabilityID": "CVE-2020-28724",
+          "PkgID": "werkzeug@0.11.1",
+          "PkgName": "werkzeug",
+          "PkgIdentifier": {
+            "PURL": "pkg:pypi/werkzeug@0.11.1",
+            "UID": "40cd870d03659073"
+          },
+          "InstalledVersion": "0.11.1",
+          "FixedVersion": "0.11.6",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2020-28724",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Pip",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip"
+          },
+          "Fingerprint": "sha256:18bbe0c4a1942e5d43645bba04a0067358adccbaa71922ba4d269c78100cd018",
+          "Title": "python-werkzeug: open redirect via double slash in the URL",
+          "Description": "Open redirect vulnerability in werkzeug before 0.11.6 via a double slash in the URL.",
+          "Severity": "MEDIUM",
+          "CweIDs": [
+            "CWE-601"
+          ],
+          "VendorSeverity": {
+            "ghsa": 2,
+            "nvd": 2,
+            "redhat": 2,
+            "ubuntu": 2
+          },
+          "CVSS": {
+            "nvd": {
+              "V2Vector": "AV:N/AC:M/Au:N/C:P/I:P/A:N",
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:C/C:L/I:L/A:N",
+              "V2Score": 5.8,
+              "V3Score": 6.1
+            },
+            "redhat": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:R/S:U/C:L/I:L/A:N",
+              "V3Score": 5.4
+            }
+          },
+          "References": [
+            "https://access.redhat.com/security/cve/CVE-2020-28724",
+            "https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2020-28724",
+            "https://github.com/advisories/GHSA-3p3h-qghp-hvh2",
+            "https://github.com/pallets/flask/issues/1639",
+            "https://github.com/pallets/werkzeug/issues/822",
+            "https://github.com/pallets/werkzeug/pull/890/files",
+            "https://nvd.nist.gov/vuln/detail/CVE-2020-28724",
+            "https://ubuntu.com/security/notices/USN-4655-1"
+          ],
+          "PublishedDate": "2020-11-18T15:15:00Z",
+          "LastModifiedDate": "2020-12-01T16:05:00Z"
+        }
+      ]
+    }
+  ]
+}

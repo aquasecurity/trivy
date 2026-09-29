@@ -1,0 +1,38 @@
+Metadata-Version: 2.1
+Name: pyphen
+Version: 0.14.0
+Summary: Pure Python module to hyphenate text
+Keywords: hyphenation
+Author-email: Guillaume Ayoub <contact@courtbouillon.org>
+Maintainer-email: CourtBouillon <contact@courtbouillon.org>
+Requires-Python: >=3.7
+Description-Content-Type: text/x-rst
+Classifier: Development Status :: 4 - Beta
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: GNU General Public License v2 or later (GPLv2+)
+Classifier: License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)
+Classifier: License :: OSI Approved :: Mozilla Public License 1.1 (MPL 1.1)
+Classifier: Programming Language :: Python
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: Implementation :: CPython
+Classifier: Programming Language :: Python :: Implementation :: PyPy
+Classifier: Topic :: Text Processing
+Classifier: Topic :: Text Processing :: Linguistic
+Requires-Dist: sphinx ; extra == "doc"
+Requires-Dist: sphinx_rtd_theme ; extra == "doc"
+Requires-Dist: pytest ; extra == "test"
+Requires-Dist: isort ; extra == "test"
+Requires-Dist: flake8 ; extra == "test"
+Project-URL: Changelog, https://github.com/Kozea/Pyphen/releases
+Project-URL: Code, https://github.com/Kozea/Pyphen
+Project-URL: Documentation, https://pyphen.org/
+Project-URL: Donation, https://opencollective.com/courtbouillon
+Project-URL: Homepage, https://www.courtbouillon.org/pyphen
+Project-URL: Issues, https://github.com/Kozea/Pyphen/issues
+Provides-Extra: doc
+Provides-Extra: test

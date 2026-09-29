@@ -1,0 +1,170 @@
+- bucket: Red Hat
+  pairs:
+    - bucket: vim-minimal
+      pairs:
+        - key: RHSA-2019:1619
+          value:
+            Entries:
+              - FixedVersion: 2:7.4.160-6.el7_6
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2019-12735
+                    Severity: 3
+              - FixedVersion: 2:7.4.160-7.el8_7
+                Affected:
+                  - 2
+                  - 3
+                Cves:
+                  - ID: CVE-2019-12735
+                    Severity: 2
+        - key: CVE-2017-5953
+          value:
+            Entries:
+              - FixedVersion: ""
+                Status: 5
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - Severity: 1
+    - bucket: nss
+      pairs:
+        - key: RHSA-2021:0538
+          value:
+            Entries:
+              - FixedVersion: 0:3.53.1-17.el7_3
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2020-12403
+                    Severity: 3
+        - key: RHSA-2021:0876
+          value:
+            Entries:
+              - FixedVersion: 0:3.36.0-9.el7_6
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2019-17007
+                    Severity: 2
+                  - ID: CVE-2020-12403
+                    Severity: 3
+    - bucket: "php:7.2::php"
+      pairs:
+        - key: RHSA-2020:0322
+          value:
+            Entries:
+              - FixedVersion: "0:7.2.11-1.1.module+el8.0.0+4664+17bd8d65"
+                Affected:
+                  - 2
+                  - 3
+                Cves:
+                  - ID: CVE-2019-11043
+                    Severity: 4
+    - bucket: php
+      pairs:
+        - key: CVE-2006-4023
+          value:
+            Entries:
+              - FixedVersion: ""
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - Severity: 1
+    - bucket: kernel-headers
+      pairs:
+        - key: RHSA-2016:2098
+          value:
+            Entries:
+              - FixedVersion: 0:3.10.0-327.36.3.el7
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2016-5195
+                    Severity: 3
+                Arches:
+                  - ppc64
+                  - ppc64le
+                  - s390x
+                  - x86_64
+        - key: RHSA-2017:0372
+          value:
+            Entries:
+              - FixedVersion: 0:4.5.0-15.2.1.el7
+                Affected:
+                  - 0
+                  - 1
+                Cves:
+                  - ID: CVE-2016-5195
+                    Severity: 3
+                Arches:
+                  - aarch64
+    - bucket: expat
+      pairs:
+        - key: RHSA-2024:6989-2 # created for test only
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-17.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+        - key: RHSA-2024:6989-3 # created for test only
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-18.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+        - key: CVE-2024-45490
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5
+        - key: CVE-2024-45491
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5
+        - key: RHSA-2024:6989
+          value:
+            Entries:
+              - FixedVersion: 0:2.2.5-15.el8_10
+                Affected:
+                  - 4
+                Arches:
+                  - x86_64
+                Cves:
+                  - ID: CVE-2024-45490
+                    Severity: 2
+                  - ID: CVE-2024-45491
+                    Severity: 2
+                  - ID: CVE-2024-45492
+                    Severity: 2
+        - key: CVE-2024-45492
+          value:
+            Entries:
+              - Affected:
+                  - 4
+                Cves:
+                  - Severity: 2
+                Status: 5

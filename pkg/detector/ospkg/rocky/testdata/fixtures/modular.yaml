@@ -1,0 +1,13 @@
+- bucket: rocky 8
+  pairs:
+    - bucket: "nginx:1.16::nginx"
+      pairs:
+        - key: CVE-2021-23017
+          value:
+            FixedVersion: "1:1.16.1-2.module+el8.4.0+543+efbf198b.1"
+            Entries:
+              - FixedVersion: "1:1.16.1-2.module+el8.4.0+543+efbf198b.1"
+                Arches:
+                  - "x86_64"
+                VendorIDs:
+                  - "RLSA-2021:2258"

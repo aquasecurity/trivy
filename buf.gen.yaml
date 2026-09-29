@@ -1,0 +1,13 @@
+version: v2
+plugins:
+  - remote: buf.build/protocolbuffers/go:v1.34.0
+    out: .
+    opt:
+      - paths=source_relative
+  # Using local protoc-gen-twirp since the remote twirp plugin is not available on buf.build
+  - local: protoc-gen-twirp
+    out: .
+    opt:
+      - paths=source_relative
+inputs:
+  - directory: .

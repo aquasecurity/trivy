@@ -1,0 +1,16 @@
+# This file is machine-generated - editing it directly is not advised
+
+julia_version = "1.9.0"
+manifest_format = "2.0"
+project_hash = "f0a796fb78285c02ad123fec6e14c8bac09a2ccc"
+
+[[deps.A]]
+uuid = "ead4f63c-334e-11e9-00e6-e7f0a5f21b60"
+
+    [deps.A.deps]
+    B = "f41f7b98-334e-11e9-1257-49272045fb24"
+
+[[deps.B]]
+uuid = "f41f7b98-334e-11e9-1257-49272045fb24"
+[[deps.B]]
+uuid = "edca9bc6-334e-11e9-3554-9595dbb4349c"

@@ -1,0 +1,39 @@
+name: SPDX licenses cron
+on:
+  schedule:
+    - cron: '0 0 * * 0' # every Sunday at 00:00
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Check if SPDX exceptions
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go
+        uses: ./.github/actions/setup-go
+
+      - name: Install Go tools
+        run: go install tool # GOBIN is added to the PATH by the setup-go action
+
+      - name: Check if SPDX license IDs and exceptions are up-to-date
+        id: exceptions_check
+        run: |
+          mage spdx:updateLicenseEntries
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "Run 'mage spdx:updateLicenseEntries' and push it"
+            echo "send_notify=true" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Slack Notification
+        uses: slackapi/slack-github-action@dcb1066f776dd043e64d0e8ba94ca15cc7e1875d # v4.0.0
+        if: steps.exceptions_check.outputs.send_notify == 'true'
+        with:
+          webhook: ${{ secrets.TRIVY_SLACK_WEBHOOK }}
+          webhook-type: incoming-webhook
+          payload: |
+            text: ":warning: SPDX license IDs and/or exceptions are out of date — <${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}|view run>"

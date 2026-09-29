@@ -1,0 +1,5 @@
+NAME="Alpine Linux"
+ID=alpine
+PRETTY_NAME="Alpine Linux v3.15"
+HOME_URL="https://alpinelinux.org/"
+BUG_REPORT_URL="https://bugs.alpinelinux.org/"

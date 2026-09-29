@@ -1,0 +1,8 @@
+- bucket: CBL-Mariner 1.0
+  pairs:
+    - bucket: vim
+      pairs:
+        - key: CVE-2022-0158 
+          value:
+            FixedVersion: 0:8.2.4082-1.cm1
+        - key: CVE-2022-0261

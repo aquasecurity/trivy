@@ -1,0 +1,25 @@
+{
+  "object": {
+    "pins": [
+      {
+        "package": "Nimble",
+        "repositoryURL": "https://github.com/Quick/Nimble.git",
+        "state": {
+          "branch": null,
+          "revision": "c93f16c25af5770f0d3e6af27c9634640946b068",
+          "version": "9.2.1"
+        }
+      },
+      {
+        "package": "ReactiveSwift",
+        "repositoryURL": "https://github.com/ReactiveCocoa/ReactiveSwift",
+        "state": {
+          "branch": null,
+          "revision": "40c465af19b993344e84355c00669ba2022ca3cd",
+          "version": "7.1.1"
+        }
+      }
+    ]
+  },
+  "version": 1
+}

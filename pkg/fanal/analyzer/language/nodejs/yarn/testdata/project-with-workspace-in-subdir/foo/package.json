@@ -1,0 +1,10 @@
+{
+    "name": "@test/foo",
+    "version": "1.0.0",
+    "repository": "ssh://git@test.com/test.git/foo",
+    "workspaces": [
+        "bar/*"
+    ],
+    "main": "index.js",
+    "license": "MIT"
+}

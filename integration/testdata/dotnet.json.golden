@@ -1,0 +1,95 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/dotnet",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": "datacollector.deps.json",
+      "Class": "lang-pkgs",
+      "Type": "dotnet-core",
+      "Packages": [
+        {
+          "ID": "Microsoft.VisualStudio.TestPlatform.Common/17.2.0-release-20220408-11",
+          "Name": "Microsoft.VisualStudio.TestPlatform.Common",
+          "Identifier": {
+            "PURL": "pkg:nuget/Microsoft.VisualStudio.TestPlatform.Common@17.2.0-release-20220408-11",
+            "UID": "bb3617fb83983d34"
+          },
+          "Version": "17.2.0-release-20220408-11",
+          "Relationship": "root",
+          "Locations": [
+            {
+              "StartLine": 15,
+              "EndLine": 19
+            }
+          ],
+          "AnalyzedBy": "dotnet-core"
+        },
+        {
+          "ID": "Newtonsoft.Json/9.0.1",
+          "Name": "Newtonsoft.Json",
+          "Identifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@9.0.1",
+            "UID": "b4411236cba42a08"
+          },
+          "Version": "9.0.1",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 14
+            }
+          ],
+          "AnalyzedBy": "dotnet-core"
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "GHSA-5crp-9r3c-p9vr",
+          "PkgID": "Newtonsoft.Json/9.0.1",
+          "PkgName": "Newtonsoft.Json",
+          "PkgIdentifier": {
+            "PURL": "pkg:nuget/Newtonsoft.Json@9.0.1",
+            "UID": "b4411236cba42a08"
+          },
+          "InstalledVersion": "9.0.1",
+          "FixedVersion": "13.0.1",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://github.com/advisories/GHSA-5crp-9r3c-p9vr",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Nuget",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Anuget"
+          },
+          "Fingerprint": "sha256:d64b86877361f584534af31e69d7974ef7da7fdebbc024fef7d2fcc8a0b90a1a",
+          "Title": "Improper Handling of Exceptional Conditions in Newtonsoft.Json",
+          "Description": "Newtonsoft.Json prior to version 13.0.1 is vulnerable to Insecure Defaults due to improper handling of expressions with high nesting level that lead to StackOverFlow exception or high CPU and RAM usage.",
+          "Severity": "HIGH",
+          "CweIDs": [
+            "CWE-755"
+          ],
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://alephsecurity.com/2018/10/22/StackOverflowException/",
+            "https://alephsecurity.com/vulns/aleph-2018004"
+          ],
+          "PublishedDate": "2022-06-22T15:08:47Z",
+          "LastModifiedDate": "2022-06-27T18:37:23Z"
+        }
+      ]
+    }
+  ]
+}

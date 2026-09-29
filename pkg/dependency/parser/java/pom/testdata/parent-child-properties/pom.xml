@@ -1,0 +1,36 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <artifactId>child</artifactId>
+
+    <name>child</name>
+    <version>1.2.3</version>
+    <description>Child</description>
+
+    <parent>
+        <groupId>com.example</groupId>
+        <artifactId>parent</artifactId>
+        <version>4.0.3</version>
+        <relativePath>./parent</relativePath>
+    </parent>
+
+    <properties>
+        <bom.version>4.0.0</bom.version>
+        <project.parent.version>1.1.1</project.parent.version>
+        <project.version>2.3.4</project.version>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-dependency</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api3</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+    </dependencies>
+</project>

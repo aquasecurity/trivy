@@ -1,0 +1,1 @@
+{"Modules":[{"Key":"","Source":"","Dir":"."},{"Key":"s3-bucket","Source":"registry.myregistry.org/my-private-module/s3-bucket/aws","Version":"1.0.0","Dir":".terraform/modules/s3-bucket"}]}

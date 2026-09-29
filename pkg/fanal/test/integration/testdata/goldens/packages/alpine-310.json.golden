@@ -1,0 +1,186 @@
+[
+  {
+    "ID": "alpine-baselayout@3.1.2-r0",
+    "Name": "alpine-baselayout",
+    "Version": "3.1.2-r0",
+    "Arch": "x86_64",
+    "SrcName": "alpine-baselayout",
+    "SrcVersion": "3.1.2-r0",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "alpine-keys@2.1-r2",
+    "Name": "alpine-keys",
+    "Version": "2.1-r2",
+    "Arch": "x86_64",
+    "SrcName": "alpine-keys",
+    "SrcVersion": "2.1-r2",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "apk-tools@2.10.4-r2",
+    "Name": "apk-tools",
+    "Version": "2.10.4-r2",
+    "Arch": "x86_64",
+    "SrcName": "apk-tools",
+    "SrcVersion": "2.10.4-r2",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "busybox@1.30.1-r2",
+    "Name": "busybox",
+    "Version": "1.30.1-r2",
+    "Arch": "x86_64",
+    "SrcName": "busybox",
+    "SrcVersion": "1.30.1-r2",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "ca-certificates-cacert@20190108-r0",
+    "Name": "ca-certificates-cacert",
+    "Version": "20190108-r0",
+    "Arch": "x86_64",
+    "SrcName": "ca-certificates",
+    "SrcVersion": "20190108-r0",
+    "Licenses": [
+      "MPL-2.0",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "libc-utils@0.7.1-r0",
+    "Name": "libc-utils",
+    "Version": "0.7.1-r0",
+    "Arch": "x86_64",
+    "SrcName": "libc-dev",
+    "SrcVersion": "0.7.1-r0",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "libcrypto1.1@1.1.1c-r0",
+    "Name": "libcrypto1.1",
+    "Version": "1.1.1c-r0",
+    "Arch": "x86_64",
+    "SrcName": "openssl",
+    "SrcVersion": "1.1.1c-r0",
+    "Licenses": [
+      "OpenSSL"
+    ],
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "libssl1.1@1.1.1c-r0",
+    "Name": "libssl1.1",
+    "Version": "1.1.1c-r0",
+    "Arch": "x86_64",
+    "SrcName": "openssl",
+    "SrcVersion": "1.1.1c-r0",
+    "Licenses": [
+      "OpenSSL"
+    ],
+    "Maintainer": "Timo Teras \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "libtls-standalone@2.9.1-r0",
+    "Name": "libtls-standalone",
+    "Version": "2.9.1-r0",
+    "Arch": "x86_64",
+    "SrcName": "libtls-standalone",
+    "SrcVersion": "2.9.1-r0",
+    "Licenses": [
+      "ISC"
+    ],
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "musl@1.1.22-r3",
+    "Name": "musl",
+    "Version": "1.1.22-r3",
+    "Arch": "x86_64",
+    "SrcName": "musl",
+    "SrcVersion": "1.1.22-r3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "musl-utils@1.1.22-r3",
+    "Name": "musl-utils",
+    "Version": "1.1.22-r3",
+    "Arch": "x86_64",
+    "SrcName": "musl",
+    "SrcVersion": "1.1.22-r3",
+    "Licenses": [
+      "MIT",
+      "BSD-3-Clause",
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "Timo Teräs \u003ctimo.teras@iki.fi\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "scanelf@1.2.3-r0",
+    "Name": "scanelf",
+    "Version": "1.2.3-r0",
+    "Arch": "x86_64",
+    "SrcName": "pax-utils",
+    "SrcVersion": "1.2.3-r0",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "ssl_client@1.30.1-r2",
+    "Name": "ssl_client",
+    "Version": "1.30.1-r2",
+    "Arch": "x86_64",
+    "SrcName": "busybox",
+    "SrcVersion": "1.30.1-r2",
+    "Licenses": [
+      "GPL-2.0-only"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  },
+  {
+    "ID": "zlib@1.2.11-r1",
+    "Name": "zlib",
+    "Version": "1.2.11-r1",
+    "Arch": "x86_64",
+    "SrcName": "zlib",
+    "SrcVersion": "1.2.11-r1",
+    "Licenses": [
+      "Zlib"
+    ],
+    "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+    "AnalyzedBy": "apk"
+  }
+]

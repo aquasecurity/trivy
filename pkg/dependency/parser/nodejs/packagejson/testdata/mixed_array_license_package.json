@@ -1,0 +1,9 @@
+{
+  "name": "mixed-array-license",
+  "version": "1.0.0",
+  "license": [
+    {"type": ""},
+    {"type": "MIT"}
+  ],
+  "dependencies": {}
+}

@@ -1,0 +1,19 @@
+- bucket: "openSUSE Leap 15.1"
+  pairs:
+    - bucket: libopenssl1_1
+      pairs:
+        - key: "openSUSE-SU-2020:0062-1"
+          value:
+            FixedVersion: 1.1.0i-lp151.8.6.1
+    - bucket: openssl-1_1
+      pairs:
+        - key: "openSUSE-SU-2020:0062-1"
+          value:
+            FixedVersion: 1.1.0i-lp151.8.6.1
+- bucket: "openSUSE Tumbleweed"
+  pairs:
+    - bucket: libopenssl3
+      pairs:
+        - key: "openSUSE-SU-2024:13065-1"
+          value:
+            FixedVersion: 3.1.5-9.1 # changed for test

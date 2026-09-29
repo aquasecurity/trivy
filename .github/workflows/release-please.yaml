@@ -1,0 +1,149 @@
+name: Release Please
+
+on:
+  push:
+    branches:
+      - main
+      - 'release/v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        required: true
+        description: 'Release version without the "v" prefix (e.g., 0.51.0)'
+        type: string
+
+jobs:
+  release-please:
+    runs-on: ubuntu-2404-2core
+    if: ${{ !startsWith(github.event.head_commit.message, 'release:') && !github.event.inputs.version }}
+    steps:
+      # GITHUB_TOKEN cannot trigger workflows on PRs it creates, so the release PR
+      # would not run CI — generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      - name: Release Please
+        id: release
+        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+          target-branch: ${{ github.ref_name }}
+
+  manual-release-please:
+    runs-on: ubuntu-2404-2core
+    if: ${{ github.event.inputs.version }}
+    steps:
+      # GITHUB_TOKEN cannot trigger workflows on PRs it creates, so the release PR
+      # would not run CI — generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
+
+      # TODO: use googleapis/release-please-action once #1220 is fixed.
+      # cf. https://github.com/googleapis/release-please-action/issues/1220
+      - name: Install Release Please CLI # zizmor: ignore[adhoc-packages]
+        run: npm install release-please@17.11.1 -g
+
+      - name: Release Please
+        env:
+          RELEASE_VERSION: ${{ github.event.inputs.version }}
+          APP_TOKEN: ${{ steps.app-token.outputs.token }}
+        run: |
+          release-please release-pr --repo-url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY" \
+            --token="$APP_TOKEN" \
+            --release-as="$RELEASE_VERSION" \
+            --target-branch="$GITHUB_REF_NAME"
+
+  release-tag:
+    runs-on: ubuntu-2404-2core
+    # Skip the branch-creation push (created == true) to avoid re-running on the duplicate tag.
+    if: ${{ startsWith(github.event.head_commit.message, 'release:') && !github.event.created }}
+    steps:
+      # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
+      # Therefore, we need to parse the version ourselves.
+      - name: Extract version and PR number from commit message
+        id: extract_info
+        shell: bash
+        env:
+          COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
+        run: |
+          # Take only the first line to avoid git trailers (e.g. Co-authored-by) breaking $GITHUB_OUTPUT
+          FIRST_LINE=${COMMIT_MESSAGE%%$'\n'*}
+          echo "version=$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "pr_number=$( echo "$FIRST_LINE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+
+      # GITHUB_TOKEN cannot trigger the release workflow on the created tag —
+      # generate a GitHub App installation token instead.
+      - name: Generate token
+        id: app-token
+        if: ${{ steps.extract_info.outputs.version }}
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
+          private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+
+      - name: Tag release
+        if: ${{ steps.extract_info.outputs.version }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          VERSION: ${{ steps.extract_info.outputs.version }}
+        with:
+          github-token: ${{ steps.app-token.outputs.token }} # To trigger another workflow
+          script: |
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/tags/v${process.env.VERSION}`,
+              sha: context.sha
+            });
+
+      # When v0.50.0 is released, a release branch "release/v0.50" is created.
+      - name: Create release branch for patch versions
+        if: ${{ endsWith(steps.extract_info.outputs.version, '.0') }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
+        with:
+          # GITHUB_TOKEN cannot be a ruleset bypass actor; use the App token to bypass the merge queue rule.
+          github-token: ${{ steps.app-token.outputs.token }}
+          script: |
+            const releaseBranch = process.env.RELEASE_BRANCH;
+            await github.rest.git.createRef({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              ref: `refs/heads/${releaseBranch}`,
+              sha: context.sha
+            });
+
+
+      # Since skip-github-release is specified, googleapis/release-please-action doesn't delete the label from PR.
+      # This label prevents the subsequent PRs from being created. Therefore, we need to delete it ourselves.
+      # cf. https://github.com/googleapis/release-please?tab=readme-ov-file#release-please-bot-does-not-create-a-release-pr-why
+      - name: Remove the label from PR
+        if: ${{ steps.extract_info.outputs.pr_number }}
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9.0.0
+        env:
+          PR_NUMBER: ${{ steps.extract_info.outputs.pr_number }}
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const prNumber = parseInt(process.env.PR_NUMBER, 10);
+            github.rest.issues.removeLabel({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: prNumber,
+              name: 'autorelease: pending'
+            });

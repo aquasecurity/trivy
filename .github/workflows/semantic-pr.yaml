@@ -1,0 +1,171 @@
+name: "Validate PR Title"
+
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+      - synchronize
+
+jobs:
+  validate:
+    name: Validate PR title
+    runs-on: ubuntu-latest
+    steps:
+      - name: Validate PR title
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          # Valid types
+          VALID_TYPES: |
+            feat
+            fix
+            docs
+            style
+            refactor
+            perf
+            test
+            build
+            ci
+            chore
+            revert
+            release
+          # Valid scopes categorized by area
+          VALID_SCOPES: |
+            # Scanners
+            vuln
+            misconf
+            secret
+            license
+            crypto
+
+            # Targets
+            image
+            fs
+            repo
+            sbom
+            server
+            k8s
+            aws
+            vm
+            plugin
+
+            # OS
+            activestate
+            alpine
+            bottlerocket
+            wolfi
+            chainguard
+            redhat
+            alma
+            rocky
+            mariner
+            oracle
+            debian
+            ubuntu
+            amazon
+            suse
+            photon
+            echo
+            distroless
+            windows
+            minimos
+            rootio
+            seal
+            rapidfort
+
+            # Languages
+            ruby
+            php
+            python
+            nodejs
+            rust
+            dotnet
+            java
+            go
+            c
+            c++
+            elixir
+            dart
+            swift
+            bitnami
+            conda
+            julia
+
+            # Package types
+            os
+            lang
+
+            # IaC
+            kubernetes
+            dockerfile
+            terraform
+            cloudformation
+
+            # Container
+            docker
+            podman
+            containerd
+            oci
+
+            # SBOM
+            sbom
+            spdx
+            cyclonedx
+
+            # Misc
+            cli
+            flag
+            purl
+            vex
+            helm
+            report
+            db
+            parser
+            deps
+        run: |
+          set -euo pipefail
+
+          # Convert env vars to regex alternatives, excluding comments and empty lines
+          TYPES_REGEX=$(echo "$VALID_TYPES" | grep -v '^$' | paste -sd '|')
+          SCOPES_REGEX=$(echo "$VALID_SCOPES" | grep -v '^$' | grep -v '^#' | paste -sd '|')
+
+          # Basic format check (should match: type(scope): description or type: description)
+          FORMAT_REGEX="^[a-z]+(\([a-z0-9+]+\))?!?: .+$"
+          if ! echo "$PR_TITLE" | grep -qE "$FORMAT_REGEX"; then
+            echo "Error: Invalid PR title format"
+            echo "Expected format: <type>(<scope>): <description> or <type>: <description>"
+            echo "Examples:"
+            echo "  feat(vuln): add new vulnerability detection"
+            echo "  fix: correct parsing logic"
+            echo "  docs(kubernetes): update installation guide"
+            echo -e "\nCurrent title: $PR_TITLE"
+            exit 1
+          fi
+
+          # Extract type and scope for validation
+          TYPE=$(echo "$PR_TITLE" | sed -E 's/^([a-z]+)(\([a-z0-9+]+\))?!?: .+$/\1/')
+          SCOPE=$(echo "$PR_TITLE" | sed -E 's/^[a-z]+\(([a-z0-9+]+)\)!?: .+$/\1/; t; s/.*//')
+
+          # Validate type
+          if ! echo "$VALID_TYPES" | grep -qx "$TYPE"; then
+            echo "Error: Invalid type '${TYPE}'"
+            echo -e "\nValid types:"
+            echo "$VALID_TYPES" | grep -v '^$' | sed 's/^/- /'
+            echo -e "\nCurrent title: $PR_TITLE"
+            exit 1
+          fi
+
+          # Validate scope if present
+          if [ -n "$SCOPE" ]; then
+            if ! echo "$VALID_SCOPES" | grep -v '^#' | grep -qx "$SCOPE"; then
+              echo "Error: Invalid scope '${SCOPE}'"
+              echo -e "\nValid scopes:"
+              echo "$VALID_SCOPES" | grep -v '^$' | grep -v '^#' | sed 's/^/- /'
+              echo -e "\nCurrent title: $PR_TITLE"
+              exit 1
+            fi
+          fi
+
+          echo "PR title validation passed ✅"
+          echo "Current title: $PR_TITLE"

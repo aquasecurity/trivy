@@ -1,0 +1,112 @@
+package pnpm
+
+import (
+	"context"
+	"io"
+	"io/fs"
+	"os"
+	"path"
+	"path/filepath"
+
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/pnpm"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language/nodejs/license"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
+	xpath "github.com/aquasecurity/trivy/pkg/x/path"
+)
+
+func init() {
+	analyzer.RegisterPostAnalyzer(analyzer.TypePnpm, newPnpmAnalyzer)
+}
+
+const version = 2
+
+type pnpmAnalyzer struct {
+	logger     *log.Logger
+	lockParser language.Parser
+	license    *license.License
+}
+
+func newPnpmAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
+	return &pnpmAnalyzer{
+		logger:     log.WithPrefix("pnpm"),
+		lockParser: pnpm.NewParser(),
+		license:    license.NewLicense("pnpm", opt.LicenseScannerOption.ClassifierConfidenceLevel),
+	}, nil
+}
+
+func (a pnpmAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
+	var apps []types.Application
+
+	required := func(path string, _ fs.DirEntry) bool {
+		return filepath.Base(path) == types.PnpmLock || input.FilePatterns.Match(path)
+	}
+
+	err := fsutils.WalkDir(input.FS, ".", required, func(filePath string, _ fs.DirEntry, r io.Reader) error {
+		// Find licenses
+		licenses, err := a.license.Traverse(input.FS, path.Join(path.Dir(filePath), "node_modules"))
+		if err != nil {
+			a.logger.Error("Unable to collect licenses", log.Err(err))
+			licenses = make(map[string][]string)
+		}
+
+		// Parse pnpm-lock.yaml
+		app, err := language.Parse(ctx, types.Pnpm, filePath, r, a.lockParser)
+		if err != nil {
+			return xerrors.Errorf("parse error: %w", err)
+		} else if app == nil {
+			return nil
+		}
+
+		// Fill licenses
+		for i, pkg := range app.Packages {
+			// We use snapshots for pnpm package IDs.
+			// But to match licenses, we need to use the ID-building logic as for `package.json` files.
+			id := dependency.ID(types.NodePkg, pkg.Name, pkg.Version)
+			if l, ok := licenses[id]; ok {
+				app.Packages[i].Licenses = l
+			}
+		}
+
+		apps = append(apps, *app)
+
+		return nil
+	})
+	if err != nil {
+		return nil, xerrors.Errorf("pnpm walk error: %w", err)
+	}
+
+	return &analyzer.AnalysisResult{
+		Applications: apps,
+	}, nil
+}
+
+func (a pnpmAnalyzer) Required(filePath string, _ os.FileInfo) bool {
+	fileName := filepath.Base(filePath)
+	// Don't save pnpm-lock.yaml from the `node_modules` directory to avoid duplication and mistakes.
+	if fileName == types.PnpmLock && !xpath.Contains(filePath, "node_modules") {
+		return true
+	}
+
+	// Save package.json files only from the `node_modules` directory.
+	// Required to search for licenses.
+	if fileName == types.NpmPkg && xpath.Contains(filePath, "node_modules") {
+		return true
+	}
+
+	return false
+}
+
+func (a pnpmAnalyzer) Type() analyzer.Type {
+	return analyzer.TypePnpm
+}
+
+func (a pnpmAnalyzer) Version() int {
+	return version
+}

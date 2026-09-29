@@ -1,0 +1,12 @@
+- bucket: "julia::Julia Ecosystem Security Advisories"
+  pairs:
+    - bucket: HTTP
+      pairs:
+        - key: CVE-2025-52479
+          value:
+            PatchedVersions:
+              - 1.10.17
+            VulnerableVersions:
+              - "<1.10.17"
+            VendorIDs:
+              - "JLSEC-2025-1"

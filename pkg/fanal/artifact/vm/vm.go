@@ -1,0 +1,179 @@
+package vm
+
+import (
+	"context"
+	"io"
+	"os"
+	"strings"
+
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
+	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
+	"github.com/aquasecurity/trivy/pkg/fanal/handler"
+	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/walker"
+	"github.com/aquasecurity/trivy/pkg/semaphore"
+)
+
+type Type string
+
+func (t Type) Prefix() string {
+	return string(t) + ":"
+}
+
+const (
+	TypeAMI  Type = "ami"
+	TypeEBS  Type = "ebs"
+	TypeFile Type = "file"
+)
+
+var _ Walker = (*walker.VM)(nil)
+
+type Walker interface {
+	Walk(*io.SectionReader, string, walker.Option, walker.WalkFunc) error
+}
+
+func NewArtifact(target string, c cache.ArtifactCache, w Walker, opt artifact.Option) (artifact.Artifact, error) {
+	handlerManager, err := handler.NewManager(opt)
+	if err != nil {
+		return nil, xerrors.Errorf("handler init error: %w", err)
+	}
+	a, err := analyzer.NewAnalyzerGroup(opt.AnalyzerOptions())
+	if err != nil {
+		return nil, xerrors.Errorf("analyzer group error: %w", err)
+	}
+
+	storage := Storage{
+		cache:          c,
+		analyzer:       a,
+		handlerManager: handlerManager,
+		walker:         w,
+		artifactOption: opt,
+	}
+
+	targetType := detectType(target)
+	switch targetType {
+	case TypeAMI:
+		target = strings.TrimPrefix(target, TypeAMI.Prefix())
+		return newAMI(target, storage, opt.AWSRegion, opt.AWSEndpoint)
+	case TypeEBS:
+		target = strings.TrimPrefix(target, TypeEBS.Prefix())
+		e, err := newEBS(target, storage, opt.AWSRegion, opt.AWSEndpoint)
+		if err != nil {
+			return nil, xerrors.Errorf("new EBS error: %w", err)
+		}
+		return e, nil
+	case TypeFile:
+		target = strings.TrimPrefix(target, TypeFile.Prefix())
+		return newFile(target, storage)
+	}
+	return nil, xerrors.Errorf("unsupported format")
+}
+
+type Storage struct {
+	cache          cache.ArtifactCache
+	analyzer       analyzer.AnalyzerGroup
+	handlerManager handler.Manager
+	walker         Walker
+
+	artifactOption artifact.Option
+}
+
+func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobInfo, error) {
+	// `errgroup` cancels the context after Wait returns, so it can’t be use later.
+	// We need a separate context specifically for Analyze.
+	eg, egCtx := errgroup.WithContext(ctx)
+	limit := semaphore.New(a.artifactOption.Parallel)
+	result := analyzer.NewAnalysisResult()
+
+	opts := analyzer.AnalysisOptions{
+		Offline:      a.artifactOption.Offline,
+		FileChecksum: a.artifactOption.FileChecksum,
+	}
+
+	// Prepare filesystem for post analysis
+	composite, err := a.analyzer.PostAnalyzerFS()
+	if err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("unable to get post analysis filesystem: %w", err)
+	}
+	defer composite.Cleanup()
+
+	// TODO: Always walk from the root directory. Consider whether there is a need to be able to set optional
+	walkErr := a.walker.Walk(r, "/", a.artifactOption.WalkerOption, func(filePath string, info os.FileInfo, opener analyzer.Opener) error {
+		path := strings.TrimPrefix(filePath, "/")
+		if err := a.analyzer.AnalyzeFile(egCtx, eg, limit, result, "/", path, info, opener, nil, opts); err != nil {
+			return xerrors.Errorf("analyze file (%s): %w", path, err)
+		}
+
+		// Skip post analysis if the file is not required
+		analyzerTypes := a.analyzer.RequiredPostAnalyzers(path, info)
+		if len(analyzerTypes) == 0 {
+			return nil
+		}
+
+		// Build filesystem for post analysis
+		tmpFilePath, err := composite.CopyFileToTemp(opener, info)
+		if err != nil {
+			return xerrors.Errorf("failed to copy file to temp: %w", err)
+		}
+
+		if err = composite.CreateLink(analyzerTypes, "", path, tmpFilePath); err != nil {
+			return xerrors.Errorf("failed to write a file: %w", err)
+		}
+
+		return nil
+	})
+
+	// errgroup cancels egCtx when an analysis goroutine fails, so the walk above can
+	// fail with context.Canceled and mask the real cause (e.g. a remote 429).
+	// Surface eg.Wait()'s error first; fall back to the walk error only when the group is clean.
+	if err = eg.Wait(); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("analyze error: %w", err)
+	}
+	if walkErr != nil {
+		return types.BlobInfo{}, xerrors.Errorf("walk vm error: %w", walkErr)
+	}
+
+	// Post-analysis
+	if err = a.analyzer.PostAnalyze(ctx, composite, result, opts); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("post analysis error: %w", err)
+	}
+
+	result.Sort()
+
+	blobInfo := types.BlobInfo{
+		SchemaVersion:   types.BlobJSONSchemaVersion,
+		OS:              result.OS,
+		Repository:      result.Repository,
+		PackageInfos:    result.PackageInfos,
+		Applications:    result.Applications,
+		Secrets:         result.Secrets,
+		Licenses:        result.Licenses,
+		CustomResources: result.CustomResources,
+
+		// For Red Hat
+		BuildInfo: result.BuildInfo,
+	}
+
+	if err = a.handlerManager.PostHandle(ctx, result, &blobInfo); err != nil {
+		return types.BlobInfo{}, xerrors.Errorf("failed to call hooks: %w", err)
+	}
+
+	return blobInfo, nil
+}
+
+func detectType(target string) Type {
+	switch {
+	case strings.HasPrefix(target, TypeAMI.Prefix()):
+		return TypeAMI
+	case strings.HasPrefix(target, TypeEBS.Prefix()):
+		return TypeEBS
+	case strings.HasPrefix(target, TypeFile.Prefix()):
+		return TypeFile
+	default:
+		return TypeFile
+	}
+}

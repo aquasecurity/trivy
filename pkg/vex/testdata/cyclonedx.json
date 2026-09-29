@@ -1,0 +1,44 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "vulnerabilities": [
+    {
+      "id": "CVE-2021-44228",
+      "source": {
+        "name": "NVD",
+        "url": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228"
+      },
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable"
+      },
+      "affects": [
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/org.springframework.boot/spring-boot@2.6.0"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2022-27943",
+      "source": {
+        "name": "ubuntu",
+        "url": "https://git.launchpad.net/ubuntu-cve-tracker"
+      },
+      "affects": [
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:deb/ubuntu/libstdc%2B%2B6@12.3.0-1ubuntu1~22.04?arch=amd64&distro=ubuntu-22.04",
+          "versions": [
+            {
+              "version": "12.3.0-1ubuntu1~22.04",
+              "status": "affected"
+            }
+          ]
+        }
+      ],
+      "analysis": {
+        "state": "not_affected"
+      }
+    }
+  ]
+}

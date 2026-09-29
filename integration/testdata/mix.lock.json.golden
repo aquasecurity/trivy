@@ -1,0 +1,221 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/mixlock",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": "mix.lock",
+      "Class": "lang-pkgs",
+      "Type": "hex",
+      "Packages": [
+        {
+          "ID": "castore@0.1.18",
+          "Name": "castore",
+          "Identifier": {
+            "PURL": "pkg:hex/castore@0.1.18",
+            "UID": "d527b7c47937d54a"
+          },
+          "Version": "0.1.18",
+          "Locations": [
+            {
+              "StartLine": 2,
+              "EndLine": 2
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "jason@1.4.0",
+          "Name": "jason",
+          "Identifier": {
+            "PURL": "pkg:hex/jason@1.4.0",
+            "UID": "61124fecb637123a"
+          },
+          "Version": "1.4.0",
+          "Locations": [
+            {
+              "StartLine": 3,
+              "EndLine": 3
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "phoenix@1.6.13",
+          "Name": "phoenix",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix@1.6.13",
+            "UID": "1ad66010cf0dd9cb"
+          },
+          "Version": "1.6.13",
+          "Locations": [
+            {
+              "StartLine": 4,
+              "EndLine": 4
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "phoenix_html@3.2.0",
+          "Name": "phoenix_html",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_html@3.2.0",
+            "UID": "31ead881cd7a4cf7"
+          },
+          "Version": "3.2.0",
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 5
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "phoenix_pubsub@2.1.1",
+          "Name": "phoenix_pubsub",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_pubsub@2.1.1",
+            "UID": "1127bf230c3815ad"
+          },
+          "Version": "2.1.1",
+          "Locations": [
+            {
+              "StartLine": 6,
+              "EndLine": 6
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "phoenix_template@1.0.0",
+          "Name": "phoenix_template",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_template@1.0.0",
+            "UID": "38842fc89e8ee0eb"
+          },
+          "Version": "1.0.0",
+          "Locations": [
+            {
+              "StartLine": 7,
+              "EndLine": 7
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "phoenix_view@2.0.1",
+          "Name": "phoenix_view",
+          "Identifier": {
+            "PURL": "pkg:hex/phoenix_view@2.0.1",
+            "UID": "3a29d814644268c9"
+          },
+          "Version": "2.0.1",
+          "Locations": [
+            {
+              "StartLine": 8,
+              "EndLine": 8
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "plug@1.14.0",
+          "Name": "plug",
+          "Identifier": {
+            "PURL": "pkg:hex/plug@1.14.0",
+            "UID": "3ae26000ce20e664"
+          },
+          "Version": "1.14.0",
+          "Locations": [
+            {
+              "StartLine": 9,
+              "EndLine": 9
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "plug_crypto@1.2.3",
+          "Name": "plug_crypto",
+          "Identifier": {
+            "PURL": "pkg:hex/plug_crypto@1.2.3",
+            "UID": "5db5d253a7d30c61"
+          },
+          "Version": "1.2.3",
+          "Locations": [
+            {
+              "StartLine": 10,
+              "EndLine": 10
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        },
+        {
+          "ID": "telemetry@1.1.0",
+          "Name": "telemetry",
+          "Identifier": {
+            "PURL": "pkg:hex/telemetry@1.1.0",
+            "UID": "90db2c6e0c05f48f"
+          },
+          "Version": "1.1.0",
+          "Locations": [
+            {
+              "StartLine": 11,
+              "EndLine": 11
+            }
+          ],
+          "AnalyzedBy": "mix-lock"
+        }
+      ],
+      "Vulnerabilities": [
+        {
+          "VulnerabilityID": "CVE-2022-42975",
+          "PkgID": "phoenix@1.6.13",
+          "PkgName": "phoenix",
+          "PkgIdentifier": {
+            "PURL": "pkg:hex/phoenix@1.6.13",
+            "UID": "1ad66010cf0dd9cb"
+          },
+          "InstalledVersion": "1.6.13",
+          "FixedVersion": "1.6.14",
+          "Status": "fixed",
+          "SeveritySource": "ghsa",
+          "PrimaryURL": "https://avd.aquasec.com/nvd/cve-2022-42975",
+          "DataSource": {
+            "ID": "ghsa",
+            "Name": "GitHub Security Advisory Erlang",
+            "URL": "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Aerlang"
+          },
+          "Fingerprint": "sha256:1bb1e08039e33e804cc2999cb56244081c7a90c486e8337344d4f0263f1c28dc",
+          "Title": "Phoenix before 1.6.14 mishandles check_origin wildcarding",
+          "Description": "socket/transport.ex in Phoenix before 1.6.14 mishandles check_origin wildcarding. NOTE: LiveView applications are unaffected by default because of the presence of a LiveView CSRF token.",
+          "Severity": "HIGH",
+          "VendorSeverity": {
+            "ghsa": 3
+          },
+          "CVSS": {
+            "ghsa": {
+              "V3Vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:H/A:N",
+              "V3Score": 7.5
+            }
+          },
+          "References": [
+            "https://nvd.nist.gov/vuln/detail/CVE-2022-42975",
+            "https://github.com/phoenixframework/phoenix/commit/6e7185b33a59e0b1d1c0b4223adf340a73e963ae",
+            "https://hexdocs.pm/phoenix/1.6.14/changelog.html#1-6-14-2022-10-10",
+            "https://github.com/advisories/GHSA-p8f7-22gq-m7j9"
+          ],
+          "PublishedDate": "2022-10-17T12:00:27Z",
+          "LastModifiedDate": "2022-10-18T18:01:44Z"
+        }
+      ]
+    }
+  ]
+}

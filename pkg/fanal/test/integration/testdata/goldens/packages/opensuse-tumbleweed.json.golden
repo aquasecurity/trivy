@@ -1,0 +1,2262 @@
+[
+  {
+    "ID": "aaa_base@84.87+git20240523.10a5692-1.1.x86_64",
+    "Name": "aaa_base",
+    "Version": "84.87+git20240523.10a5692",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "aaa_base",
+    "SrcVersion": "84.87+git20240523.10a5692",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "bash@5.2.26-12.1.x86_64",
+    "Name": "bash",
+    "Version": "5.2.26",
+    "Release": "12.1",
+    "Arch": "x86_64",
+    "SrcName": "bash",
+    "SrcVersion": "5.2.26",
+    "SrcRelease": "12.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "bash-sh@5.2.26-12.1.noarch",
+    "Name": "bash-sh",
+    "Version": "5.2.26",
+    "Release": "12.1",
+    "Arch": "noarch",
+    "SrcName": "bash",
+    "SrcVersion": "5.2.26",
+    "SrcRelease": "12.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "boost-license1_85_0@1.85.0-1.2.noarch",
+    "Name": "boost-license1_85_0",
+    "Version": "1.85.0",
+    "Release": "1.2",
+    "Arch": "noarch",
+    "SrcName": "boost-base",
+    "SrcVersion": "1.85.0",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSL-1.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "branding-openSUSE@84.87.20240405-1.2.noarch",
+    "Name": "branding-openSUSE",
+    "Version": "84.87.20240405",
+    "Release": "1.2",
+    "Arch": "noarch",
+    "SrcName": "branding-openSUSE",
+    "SrcVersion": "84.87.20240405",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND CC-BY-SA-3.0 AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "ca-certificates@2+git20240415.3fe9324-1.1.noarch",
+    "Name": "ca-certificates",
+    "Version": "2+git20240415.3fe9324",
+    "Release": "1.1",
+    "Arch": "noarch",
+    "SrcName": "ca-certificates",
+    "SrcVersion": "2+git20240415.3fe9324",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "ca-certificates-mozilla@2.66-1.2.noarch",
+    "Name": "ca-certificates-mozilla",
+    "Version": "2.66",
+    "Release": "1.2",
+    "Arch": "noarch",
+    "SrcName": "ca-certificates-mozilla",
+    "SrcVersion": "2.66",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "MPL-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "coreutils@9.5-1.1.x86_64",
+    "Name": "coreutils",
+    "Version": "9.5",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "coreutils",
+    "SrcVersion": "9.5",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "cracklib-dict-small@2.9.11-1.4.x86_64",
+    "Name": "cracklib-dict-small",
+    "Version": "2.9.11",
+    "Release": "1.4",
+    "Arch": "x86_64",
+    "SrcName": "cracklib",
+    "SrcVersion": "2.9.11",
+    "SrcRelease": "1.4",
+    "Licenses": [
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "crypto-policies@20230920.570ea89-3.2.noarch",
+    "Name": "crypto-policies",
+    "Version": "20230920.570ea89",
+    "Release": "3.2",
+    "Arch": "noarch",
+    "SrcName": "crypto-policies",
+    "SrcVersion": "20230920.570ea89",
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "curl@8.8.0-1.1.x86_64",
+    "Name": "curl",
+    "Version": "8.8.0",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "curl",
+    "SrcVersion": "8.8.0",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "curl"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "file-magic@5.45-2.2.noarch",
+    "Name": "file-magic",
+    "Version": "5.45",
+    "Release": "2.2",
+    "Arch": "noarch",
+    "SrcName": "file",
+    "SrcVersion": "5.45",
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "filesystem@84.87-15.3.x86_64",
+    "Name": "filesystem",
+    "Version": "84.87",
+    "Release": "15.3",
+    "Arch": "x86_64",
+    "SrcName": "filesystem",
+    "SrcVersion": "84.87",
+    "SrcRelease": "15.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "fillup@1.42-281.1.x86_64",
+    "Name": "fillup",
+    "Version": "1.42",
+    "Release": "281.1",
+    "Arch": "x86_64",
+    "SrcName": "fillup",
+    "SrcVersion": "1.42",
+    "SrcRelease": "281.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "glibc@2.39-9.1.x86_64",
+    "Name": "glibc",
+    "Version": "2.39",
+    "Release": "9.1",
+    "Arch": "x86_64",
+    "SrcName": "glibc",
+    "SrcVersion": "2.39",
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later AND LGPL-2.1-or-later WITH GCC-exception-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "glibc-locale-base@2.39-9.1.x86_64",
+    "Name": "glibc-locale-base",
+    "Version": "2.39",
+    "Release": "9.1",
+    "Arch": "x86_64",
+    "SrcName": "glibc",
+    "SrcVersion": "2.39",
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND MIT AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "gpg-pubkey@29b700a4-62b07e22.",
+    "Name": "gpg-pubkey",
+    "Version": "29b700a4",
+    "Release": "62b07e22",
+    "Arch": "None",
+    "Licenses": [
+      "pubkey"
+    ],
+    "Repository": {
+      "Class": "third-party"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "gpg-pubkey@39db7c82-510a966b.",
+    "Name": "gpg-pubkey",
+    "Version": "39db7c82",
+    "Release": "510a966b",
+    "Arch": "None",
+    "Licenses": [
+      "pubkey"
+    ],
+    "Repository": {
+      "Class": "third-party"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "gpg2@2.4.5-1.1.x86_64",
+    "Name": "gpg2",
+    "Version": "2.4.5",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "gpg2",
+    "SrcVersion": "2.4.5",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "grep@3.11-3.1.x86_64",
+    "Name": "grep",
+    "Version": "3.11",
+    "Release": "3.1",
+    "Arch": "x86_64",
+    "SrcName": "grep",
+    "SrcVersion": "3.11",
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "gzip@1.13-3.1.x86_64",
+    "Name": "gzip",
+    "Version": "1.13",
+    "Release": "3.1",
+    "Arch": "x86_64",
+    "SrcName": "gzip",
+    "SrcVersion": "1.13",
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "krb5@1.21.2-5.1.x86_64",
+    "Name": "krb5",
+    "Version": "1.21.2",
+    "Release": "5.1",
+    "Arch": "x86_64",
+    "SrcName": "krb5",
+    "SrcVersion": "1.21.2",
+    "SrcRelease": "5.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libabsl_lite_2401_0_0@20240116.2-2.1.x86_64",
+    "Name": "libabsl_lite_2401_0_0",
+    "Version": "20240116.2",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "abseil-cpp",
+    "SrcVersion": "20240116.2",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libacl1@2.3.2-2.1.x86_64",
+    "Name": "libacl1",
+    "Version": "2.3.2",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "acl",
+    "SrcVersion": "2.3.2",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libassuan0@2.5.7-1.1.x86_64",
+    "Name": "libassuan0",
+    "Version": "2.5.7",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libassuan",
+    "SrcVersion": "2.5.7",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libattr1@2.5.2-1.2.x86_64",
+    "Name": "libattr1",
+    "Version": "2.5.2",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "attr",
+    "SrcVersion": "2.5.2",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libaudit1@3.1.1-1.6.x86_64",
+    "Name": "libaudit1",
+    "Version": "3.1.1",
+    "Release": "1.6",
+    "Arch": "x86_64",
+    "SrcName": "audit",
+    "SrcVersion": "3.1.1",
+    "SrcRelease": "1.6",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libaugeas0@1.14.1-1.3.x86_64",
+    "Name": "libaugeas0",
+    "Version": "1.14.1",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "augeas",
+    "SrcVersion": "1.14.1",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libblkid1@2.40.1-2.1.x86_64",
+    "Name": "libblkid1",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libboost_thread1_85_0@1.85.0-1.2.x86_64",
+    "Name": "libboost_thread1_85_0",
+    "Version": "1.85.0",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "boost-base",
+    "SrcVersion": "1.85.0",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSL-1.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libbrotlicommon1@1.1.0-1.3.x86_64",
+    "Name": "libbrotlicommon1",
+    "Version": "1.1.0",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "brotli",
+    "SrcVersion": "1.1.0",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libbrotlidec1@1.1.0-1.3.x86_64",
+    "Name": "libbrotlidec1",
+    "Version": "1.1.0",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "brotli",
+    "SrcVersion": "1.1.0",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libbz2-1@1.0.8-5.10.x86_64",
+    "Name": "libbz2-1",
+    "Version": "1.0.8",
+    "Release": "5.10",
+    "Arch": "x86_64",
+    "SrcName": "bzip2",
+    "SrcVersion": "1.0.8",
+    "SrcRelease": "5.10",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libcap-ng0@0.8.5-1.1.x86_64",
+    "Name": "libcap-ng0",
+    "Version": "0.8.5",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libcap-ng",
+    "SrcVersion": "0.8.5",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libcap2@2.70-1.1.x86_64",
+    "Name": "libcap2",
+    "Version": "2.70",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libcap",
+    "SrcVersion": "2.70",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause OR GPL-2.0-only"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libcom_err2@1.47.0-4.2.x86_64",
+    "Name": "libcom_err2",
+    "Version": "1.47.0",
+    "Release": "4.2",
+    "Arch": "x86_64",
+    "SrcName": "e2fsprogs",
+    "SrcVersion": "1.47.0",
+    "SrcRelease": "4.2",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libcrypt1@4.4.36-1.6.x86_64",
+    "Name": "libcrypt1",
+    "Version": "4.4.36",
+    "Release": "1.6",
+    "Arch": "x86_64",
+    "SrcName": "libxcrypt",
+    "SrcVersion": "4.4.36",
+    "SrcRelease": "1.6",
+    "Licenses": [
+      "BSD-2-Clause AND LGPL-2.1-or-later AND BSD-3-Clause AND SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libcurl4@8.8.0-1.1.x86_64",
+    "Name": "libcurl4",
+    "Version": "8.8.0",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "curl",
+    "SrcVersion": "8.8.0",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "curl"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libeconf0@0.6.3-1.1.x86_64",
+    "Name": "libeconf0",
+    "Version": "0.6.3",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libeconf",
+    "SrcVersion": "0.6.3",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libfa1@1.14.1-1.3.x86_64",
+    "Name": "libfa1",
+    "Version": "1.14.1",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "augeas",
+    "SrcVersion": "1.14.1",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libfdisk1@2.40.1-2.1.x86_64",
+    "Name": "libfdisk1",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libffi8@3.4.6-1.1.x86_64",
+    "Name": "libffi8",
+    "Version": "3.4.6",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libffi",
+    "SrcVersion": "3.4.6",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libgcc_s1@14.1.0+git10173-1.1.x86_64",
+    "Name": "libgcc_s1",
+    "Version": "14.1.0+git10173",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "gcc14",
+    "SrcVersion": "14.1.0+git10173",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later WITH GCC-exception-3.1"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libgcrypt20@1.10.3-3.3.x86_64",
+    "Name": "libgcrypt20",
+    "Version": "1.10.3",
+    "Release": "3.3",
+    "Arch": "x86_64",
+    "SrcName": "libgcrypt",
+    "SrcVersion": "1.10.3",
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libglib-2_0-0@2.80.2-1.1.x86_64",
+    "Name": "libglib-2_0-0",
+    "Version": "2.80.2",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "glib2",
+    "SrcVersion": "2.80.2",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libgmp10@6.3.0-3.2.x86_64",
+    "Name": "libgmp10",
+    "Version": "6.3.0",
+    "Release": "3.2",
+    "Arch": "x86_64",
+    "SrcName": "gmp",
+    "SrcVersion": "6.3.0",
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "GPL-2.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libgpg-error0@1.49-1.1.x86_64",
+    "Name": "libgpg-error0",
+    "Version": "1.49",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libgpg-error",
+    "SrcVersion": "1.49",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libgpgme11@1.23.2-4.2.x86_64",
+    "Name": "libgpgme11",
+    "Version": "1.23.2",
+    "Release": "4.2",
+    "Arch": "x86_64",
+    "SrcName": "gpgme",
+    "SrcVersion": "1.23.2",
+    "SrcRelease": "4.2",
+    "Licenses": [
+      "GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libidn2-0@2.3.7-1.2.x86_64",
+    "Name": "libidn2-0",
+    "Version": "2.3.7",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "libidn2",
+    "SrcVersion": "2.3.7",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libkeyutils1@1.6.3-7.2.x86_64",
+    "Name": "libkeyutils1",
+    "Version": "1.6.3",
+    "Release": "7.2",
+    "Arch": "x86_64",
+    "SrcName": "keyutils",
+    "SrcVersion": "1.6.3",
+    "SrcRelease": "7.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libksba8@1.6.6-1.1.x86_64",
+    "Name": "libksba8",
+    "Version": "1.6.6",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libksba",
+    "SrcVersion": "1.6.6",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "(GPL-2.0-or-later OR LGPL-3.0-or-later) AND GPL-3.0-or-later AND MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libldap2@2.6.7-2.1.x86_64",
+    "Name": "libldap2",
+    "Version": "2.6.7",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "openldap2",
+    "SrcVersion": "2.6.7",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "OLDAP-2.8"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "liblua5_4-5@5.4.6-3.3.x86_64",
+    "Name": "liblua5_4-5",
+    "Version": "5.4.6",
+    "Release": "3.3",
+    "Arch": "x86_64",
+    "SrcName": "lua54",
+    "SrcVersion": "5.4.6",
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "liblz4-1@1.9.4-2.8.x86_64",
+    "Name": "liblz4-1",
+    "Version": "1.9.4",
+    "Release": "2.8",
+    "Arch": "x86_64",
+    "SrcName": "lz4",
+    "SrcVersion": "1.9.4",
+    "SrcRelease": "2.8",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "liblzma5@5.6.2-1.1.x86_64",
+    "Name": "liblzma5",
+    "Version": "5.6.2",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "xz",
+    "SrcVersion": "5.6.2",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "0BSD"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libmagic1@5.45-2.2.x86_64",
+    "Name": "libmagic1",
+    "Version": "5.45",
+    "Release": "2.2",
+    "Arch": "x86_64",
+    "SrcName": "file",
+    "SrcVersion": "5.45",
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "BSD-2-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libmount1@2.40.1-2.1.x86_64",
+    "Name": "libmount1",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libncurses6@6.5.20240601-38.1.x86_64",
+    "Name": "libncurses6",
+    "Version": "6.5.20240601",
+    "Release": "38.1",
+    "Arch": "x86_64",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.5.20240601",
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libnghttp2-14@1.61.0-1.1.x86_64",
+    "Name": "libnghttp2-14",
+    "Version": "1.61.0",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "nghttp2",
+    "SrcVersion": "1.61.0",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libnpth0@1.7-1.1.x86_64",
+    "Name": "libnpth0",
+    "Version": "1.7",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "npth",
+    "SrcVersion": "1.7",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "LGPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libnss_usrfiles2@2.27.1-1.2.x86_64",
+    "Name": "libnss_usrfiles2",
+    "Version": "2.27.1",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "libnss_usrfiles",
+    "SrcVersion": "2.27.1",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "LGPL-2.1-only"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libopenssl-3-fips-provider@3.1.4-9.1.x86_64",
+    "Name": "libopenssl-3-fips-provider",
+    "Version": "3.1.4",
+    "Release": "9.1",
+    "Arch": "x86_64",
+    "SrcName": "openssl-3",
+    "SrcVersion": "3.1.4",
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libopenssl3@3.1.4-9.1.x86_64",
+    "Name": "libopenssl3",
+    "Version": "3.1.4",
+    "Release": "9.1",
+    "Arch": "x86_64",
+    "SrcName": "openssl-3",
+    "SrcVersion": "3.1.4",
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libp11-kit0@0.25.3-1.3.x86_64",
+    "Name": "libp11-kit0",
+    "Version": "0.25.3",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "p11-kit",
+    "SrcVersion": "0.25.3",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libpcre2-8-0@10.43-3.1.x86_64",
+    "Name": "libpcre2-8-0",
+    "Version": "10.43",
+    "Release": "3.1",
+    "Arch": "x86_64",
+    "SrcName": "pcre2",
+    "SrcVersion": "10.43",
+    "SrcRelease": "3.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libpopt0@1.19-1.8.x86_64",
+    "Name": "libpopt0",
+    "Version": "1.19",
+    "Release": "1.8",
+    "Arch": "x86_64",
+    "SrcName": "popt",
+    "SrcVersion": "1.19",
+    "SrcRelease": "1.8",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libprocps8@3.3.17-17.1.x86_64",
+    "Name": "libprocps8",
+    "Version": "3.3.17",
+    "Release": "17.1",
+    "Arch": "x86_64",
+    "SrcName": "procps",
+    "SrcVersion": "3.3.17",
+    "SrcRelease": "17.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libprotobuf-lite25_3_0@25.3-11.2.x86_64",
+    "Name": "libprotobuf-lite25_3_0",
+    "Version": "25.3",
+    "Release": "11.2",
+    "Arch": "x86_64",
+    "SrcName": "protobuf",
+    "SrcVersion": "25.3",
+    "SrcRelease": "11.2",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libpsl5@0.21.5-1.2.x86_64",
+    "Name": "libpsl5",
+    "Version": "0.21.5",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "libpsl",
+    "SrcVersion": "0.21.5",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "MIT AND MPL-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libreadline8@8.2.10-1.3.x86_64",
+    "Name": "libreadline8",
+    "Version": "8.2.10",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "readline",
+    "SrcVersion": "8.2.10",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsasl2-3@2.1.28-8.1.x86_64",
+    "Name": "libsasl2-3",
+    "Version": "2.1.28",
+    "Release": "8.1",
+    "Arch": "x86_64",
+    "SrcName": "cyrus-sasl",
+    "SrcVersion": "2.1.28",
+    "SrcRelease": "8.1",
+    "Licenses": [
+      "BSD-4-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libselinux1@3.6-1.3.x86_64",
+    "Name": "libselinux1",
+    "Version": "3.6",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "libselinux",
+    "SrcVersion": "3.6",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsemanage-conf@3.6-2.1.x86_64",
+    "Name": "libsemanage-conf",
+    "Version": "3.6",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "libsemanage",
+    "SrcVersion": "3.6",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsemanage2@3.6-2.1.x86_64",
+    "Name": "libsemanage2",
+    "Version": "3.6",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "libsemanage",
+    "SrcVersion": "3.6",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsepol2@3.6-1.3.x86_64",
+    "Name": "libsepol2",
+    "Version": "3.6",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "libsepol",
+    "SrcVersion": "3.6",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsigc-2_0-0@2.12.1-2.3.x86_64",
+    "Name": "libsigc-2_0-0",
+    "Version": "2.12.1",
+    "Release": "2.3",
+    "Arch": "x86_64",
+    "SrcName": "libsigc++2",
+    "SrcVersion": "2.12.1",
+    "SrcRelease": "2.3",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsmartcols1@2.40.1-2.1.x86_64",
+    "Name": "libsmartcols1",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsolv-tools-base@0.7.29-1.1.x86_64",
+    "Name": "libsolv-tools-base",
+    "Version": "0.7.29",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libsolv",
+    "SrcVersion": "0.7.29",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsqlite3-0@3.46.0-1.1.x86_64",
+    "Name": "libsqlite3-0",
+    "Version": "3.46.0",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "sqlite3",
+    "SrcVersion": "3.46.0",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libssh-config@0.10.6-2.1.x86_64",
+    "Name": "libssh-config",
+    "Version": "0.10.6",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "libssh",
+    "SrcVersion": "0.10.6",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libssh4@0.10.6-2.1.x86_64",
+    "Name": "libssh4",
+    "Version": "0.10.6",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "libssh",
+    "SrcVersion": "0.10.6",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libstdc++6@14.1.0+git10173-1.1.x86_64",
+    "Name": "libstdc++6",
+    "Version": "14.1.0+git10173",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "gcc14",
+    "SrcVersion": "14.1.0+git10173",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later WITH GCC-exception-3.1"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsubid4@4.15.1-1.2.x86_64",
+    "Name": "libsubid4",
+    "Version": "4.15.1",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "shadow",
+    "SrcVersion": "4.15.1",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libsystemd0@255.7-2.1.x86_64",
+    "Name": "libsystemd0",
+    "Version": "255.7",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "systemd",
+    "SrcVersion": "255.7",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libtasn1-6@4.19.0-1.7.x86_64",
+    "Name": "libtasn1-6",
+    "Version": "4.19.0",
+    "Release": "1.7",
+    "Arch": "x86_64",
+    "SrcName": "libtasn1",
+    "SrcVersion": "4.19.0",
+    "SrcRelease": "1.7",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libudev1@255.7-2.1.x86_64",
+    "Name": "libudev1",
+    "Version": "255.7",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "systemd",
+    "SrcVersion": "255.7",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libunistring5@1.2-1.1.x86_64",
+    "Name": "libunistring5",
+    "Version": "1.2",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libunistring",
+    "SrcVersion": "1.2",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-3.0-or-later OR LGPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libusb-1_0-0@1.0.27-1.2.x86_64",
+    "Name": "libusb-1_0-0",
+    "Version": "1.0.27",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "libusb-1_0",
+    "SrcVersion": "1.0.27",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libuuid1@2.40.1-2.1.x86_64",
+    "Name": "libuuid1",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libverto1@0.3.2-3.3.x86_64",
+    "Name": "libverto1",
+    "Version": "0.3.2",
+    "Release": "3.3",
+    "Arch": "x86_64",
+    "SrcName": "libverto",
+    "SrcVersion": "0.3.2",
+    "SrcRelease": "3.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libxml2-2@2.12.7-1.1.x86_64",
+    "Name": "libxml2-2",
+    "Version": "2.12.7",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libxml2",
+    "SrcVersion": "2.12.7",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libyaml-cpp0_8@0.8.0-1.3.x86_64",
+    "Name": "libyaml-cpp0_8",
+    "Version": "0.8.0",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "yaml-cpp",
+    "SrcVersion": "0.8.0",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libz1@1.3.1-1.1.x86_64",
+    "Name": "libz1",
+    "Version": "1.3.1",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "zlib",
+    "SrcVersion": "1.3.1",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "Zlib"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libzck1@1.4.0-2.1.x86_64",
+    "Name": "libzck1",
+    "Version": "1.4.0",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "zchunk",
+    "SrcVersion": "1.4.0",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "BSD-2-Clause AND MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libzstd1@1.5.6-1.1.x86_64",
+    "Name": "libzstd1",
+    "Version": "1.5.6",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "zstd",
+    "SrcVersion": "1.5.6",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-only"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "libzypp@17.34.1-1.1.x86_64",
+    "Name": "libzypp",
+    "Version": "17.34.1",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "libzypp",
+    "SrcVersion": "17.34.1",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "login_defs@4.15.1-1.2.noarch",
+    "Name": "login_defs",
+    "Version": "4.15.1",
+    "Release": "1.2",
+    "Arch": "noarch",
+    "SrcName": "shadow",
+    "SrcVersion": "4.15.1",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "lsb-release@3.3-1.3.noarch",
+    "Name": "lsb-release",
+    "Version": "3.3",
+    "Release": "1.3",
+    "Arch": "noarch",
+    "SrcName": "lsb-release",
+    "SrcVersion": "3.3",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "ncurses-utils@6.5.20240601-38.1.x86_64",
+    "Name": "ncurses-utils",
+    "Version": "6.5.20240601",
+    "Release": "38.1",
+    "Arch": "x86_64",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.5.20240601",
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "netcfg@11.6-13.3.noarch",
+    "Name": "netcfg",
+    "Version": "11.6",
+    "Release": "13.3",
+    "Arch": "noarch",
+    "SrcName": "netcfg",
+    "SrcVersion": "11.6",
+    "SrcRelease": "13.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "openSUSE-build-key@1.0-53.1.x86_64",
+    "Name": "openSUSE-build-key",
+    "Version": "1.0",
+    "Release": "53.1",
+    "Arch": "x86_64",
+    "SrcName": "openSUSE-build-key",
+    "SrcVersion": "1.0",
+    "SrcRelease": "53.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "openSUSE-release@20240607-2943.1.x86_64",
+    "Name": "openSUSE-release",
+    "Version": "20240607",
+    "Release": "2943.1",
+    "Arch": "x86_64",
+    "SrcName": "openSUSE-release",
+    "SrcVersion": "20240607",
+    "SrcRelease": "2943.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "openSUSE-release-appliance-docker@20240607-2943.1.x86_64",
+    "Name": "openSUSE-release-appliance-docker",
+    "Version": "20240607",
+    "Release": "2943.1",
+    "Arch": "x86_64",
+    "SrcName": "openSUSE-release",
+    "SrcVersion": "20240607",
+    "SrcRelease": "2943.1",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "openssl@3.1.4-3.2.noarch",
+    "Name": "openssl",
+    "Version": "3.1.4",
+    "Release": "3.2",
+    "Arch": "noarch",
+    "SrcName": "openssl",
+    "SrcVersion": "3.1.4",
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "openssl-3@3.1.4-9.1.x86_64",
+    "Name": "openssl-3",
+    "Version": "3.1.4",
+    "Release": "9.1",
+    "Arch": "x86_64",
+    "SrcName": "openssl-3",
+    "SrcVersion": "3.1.4",
+    "SrcRelease": "9.1",
+    "Licenses": [
+      "Apache-2.0"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "p11-kit@0.25.3-1.3.x86_64",
+    "Name": "p11-kit",
+    "Version": "0.25.3",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "p11-kit",
+    "SrcVersion": "0.25.3",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "p11-kit-tools@0.25.3-1.3.x86_64",
+    "Name": "p11-kit-tools",
+    "Version": "0.25.3",
+    "Release": "1.3",
+    "Arch": "x86_64",
+    "SrcName": "p11-kit",
+    "SrcVersion": "0.25.3",
+    "SrcRelease": "1.3",
+    "Licenses": [
+      "BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "pam@1.6.1-1.1.x86_64",
+    "Name": "pam",
+    "Version": "1.6.1",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "pam",
+    "SrcVersion": "1.6.1",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later OR BSD-3-Clause"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "patterns-base-fips@20200505-51.1.x86_64",
+    "Name": "patterns-base-fips",
+    "Version": "20200505",
+    "Release": "51.1",
+    "Arch": "x86_64",
+    "SrcName": "patterns-base",
+    "SrcVersion": "20200505",
+    "SrcRelease": "51.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "patterns-base-minimal_base@20200505-51.1.x86_64",
+    "Name": "patterns-base-minimal_base",
+    "Version": "20200505",
+    "Release": "51.1",
+    "Arch": "x86_64",
+    "SrcName": "patterns-base",
+    "SrcVersion": "20200505",
+    "SrcRelease": "51.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "permctl@1699_20240522-1.1.x86_64",
+    "Name": "permctl",
+    "Version": "1699_20240522",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "permissions",
+    "SrcVersion": "1699_20240522",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "permissions@1699_20240522-1.1.x86_64",
+    "Name": "permissions",
+    "Version": "1699_20240522",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "permissions",
+    "SrcVersion": "1699_20240522",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "permissions-config@1699_20240522-1.1.noarch",
+    "Name": "permissions-config",
+    "Version": "1699_20240522",
+    "Release": "1.1",
+    "Arch": "noarch",
+    "SrcName": "permissions",
+    "SrcVersion": "1699_20240522",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "pinentry@1.2.1-3.5.x86_64",
+    "Name": "pinentry",
+    "Version": "1.2.1",
+    "Release": "3.5",
+    "Arch": "x86_64",
+    "SrcName": "pinentry",
+    "SrcVersion": "1.2.1",
+    "SrcRelease": "3.5",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "procps@3.3.17-17.1.x86_64",
+    "Name": "procps",
+    "Version": "3.3.17",
+    "Release": "17.1",
+    "Arch": "x86_64",
+    "SrcName": "procps",
+    "SrcVersion": "3.3.17",
+    "SrcRelease": "17.1",
+    "Licenses": [
+      "GPL-2.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "rpm@4.19.1.1-3.2.x86_64",
+    "Name": "rpm",
+    "Version": "4.19.1.1",
+    "Release": "3.2",
+    "Arch": "x86_64",
+    "SrcName": "rpm",
+    "SrcVersion": "4.19.1.1",
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "rpm-config-SUSE@20240214-1.2.noarch",
+    "Name": "rpm-config-SUSE",
+    "Version": "20240214",
+    "Release": "1.2",
+    "Arch": "noarch",
+    "SrcName": "rpm-config-SUSE",
+    "SrcVersion": "20240214",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "sed@4.9-2.6.x86_64",
+    "Name": "sed",
+    "Version": "4.9",
+    "Release": "2.6",
+    "Arch": "x86_64",
+    "SrcName": "sed",
+    "SrcVersion": "4.9",
+    "SrcRelease": "2.6",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "shadow@4.15.1-1.2.x86_64",
+    "Name": "shadow",
+    "Version": "4.15.1",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "shadow",
+    "SrcVersion": "4.15.1",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "BSD-3-Clause AND GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "system-user-root@20190513-2.16.noarch",
+    "Name": "system-user-root",
+    "Version": "20190513",
+    "Release": "2.16",
+    "Arch": "noarch",
+    "SrcName": "system-user-root",
+    "SrcVersion": "20190513",
+    "SrcRelease": "2.16",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "tar@1.35-2.2.x86_64",
+    "Name": "tar",
+    "Version": "1.35",
+    "Release": "2.2",
+    "Arch": "x86_64",
+    "SrcName": "tar",
+    "SrcVersion": "1.35",
+    "SrcRelease": "2.2",
+    "Licenses": [
+      "GPL-3.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "terminfo-base@6.5.20240601-38.1.x86_64",
+    "Name": "terminfo-base",
+    "Version": "6.5.20240601",
+    "Release": "38.1",
+    "Arch": "x86_64",
+    "SrcName": "ncurses",
+    "SrcVersion": "6.5.20240601",
+    "SrcRelease": "38.1",
+    "Licenses": [
+      "MIT"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "timezone@2024a-3.2.x86_64",
+    "Name": "timezone",
+    "Version": "2024a",
+    "Release": "3.2",
+    "Arch": "x86_64",
+    "SrcName": "timezone",
+    "SrcVersion": "2024a",
+    "SrcRelease": "3.2",
+    "Licenses": [
+      "BSD-3-Clause AND SUSE-Public-Domain"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "util-linux@2.40.1-2.1.x86_64",
+    "Name": "util-linux",
+    "Version": "2.40.1",
+    "Release": "2.1",
+    "Arch": "x86_64",
+    "SrcName": "util-linux",
+    "SrcVersion": "2.40.1",
+    "SrcRelease": "2.1",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "xz@5.6.2-1.1.x86_64",
+    "Name": "xz",
+    "Version": "5.6.2",
+    "Release": "1.1",
+    "Arch": "x86_64",
+    "SrcName": "xz",
+    "SrcVersion": "5.6.2",
+    "SrcRelease": "1.1",
+    "Licenses": [
+      "0BSD AND GPL-2.0-or-later AND GPL-3.0-or-later AND LGPL-2.1-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  },
+  {
+    "ID": "zypper@1.14.73-1.2.x86_64",
+    "Name": "zypper",
+    "Version": "1.14.73",
+    "Release": "1.2",
+    "Arch": "x86_64",
+    "SrcName": "zypper",
+    "SrcVersion": "1.14.73",
+    "SrcRelease": "1.2",
+    "Licenses": [
+      "GPL-2.0-or-later"
+    ],
+    "Maintainer": "openSUSE",
+    "Repository": {
+      "Class": "official"
+    },
+    "AnalyzedBy": "rpm"
+  }
+]

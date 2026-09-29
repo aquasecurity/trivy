@@ -1,0 +1,54 @@
+package attestation
+
+import (
+	"bytes"
+	"encoding/base64"
+	"encoding/json"
+
+	"github.com/in-toto/in-toto-golang/in_toto"
+	"github.com/secure-systems-lab/go-securesystemslib/dsse"
+	"golang.org/x/xerrors"
+)
+
+// CosignPredicate specifies the format of the Custom Predicate.
+// Cosign uses this structure when creating an SBOM attestation.
+// cf. https://github.com/sigstore/cosign/blob/e0547cff64f98585a837a524ff77ff6b47ff5609/pkg/cosign/attestation/attestation.go#L39-L43
+type CosignPredicate struct {
+	Data any
+}
+
+// SigstoreBundle represents the structure of a Sigstore bundle containing a DSSE envelope.
+// This format is used by Cosign v3+ with the new bundle format.
+// cf. https://github.com/sigstore/cosign/blob/main/specs/BUNDLE_SPEC.md
+type SigstoreBundle struct {
+	DSSEEnvelope Statement `json:"dsseEnvelope"`
+}
+
+// Statement holds in-toto statement headers and the predicate.
+// Its UnmarshalJSON decodes a DSSE envelope and unwraps the statement from the
+// envelope's payload, so decode into it only when the input is a DSSE envelope.
+// For a bare in-toto statement (no envelope), decode into in_toto.Statement.
+type Statement in_toto.Statement
+
+func (s *Statement) UnmarshalJSON(b []byte) error {
+	var envelope dsse.Envelope
+	err := json.NewDecoder(bytes.NewReader(b)).Decode(&envelope)
+	if err != nil {
+		return xerrors.Errorf("failed to decode as a dsse envelope: %w", err)
+	}
+	if envelope.PayloadType != in_toto.PayloadType {
+		return xerrors.Errorf("invalid attestation payload type: %s", envelope.PayloadType)
+	}
+
+	decoded, err := base64.StdEncoding.DecodeString(envelope.Payload)
+	if err != nil {
+		return xerrors.Errorf("failed to decode attestation payload: %w", err)
+	}
+
+	statement := (*in_toto.Statement)(s)
+	if err = json.NewDecoder(bytes.NewReader(decoded)).Decode(statement); err != nil {
+		return xerrors.Errorf("failed to decode attestation payload as in-toto statement: %w", err)
+	}
+
+	return nil
+}

@@ -1,0 +1,30 @@
+metadataservice:
+  image:
+    repository: ghcr.io/metal-toolbox/hollow-metadataservice
+    tag: "v0.0.1"
+
+ingress:
+  enabled: true
+  hostnames:
+    - metadata-service.mydomain
+  publicPaths:
+    - $
+    - metadata
+    - userdata
+    - '2009-04-04'
+
+oidc:
+  audience: ""
+  issuer: ""
+  jwksuri: ""
+  rolesClaim: ""
+  userClaim: ""
+
+replicaCount: 1
+resources:
+  limits:
+    cpu: 4
+    memory: 4Gi
+  requests:
+    cpu: 4
+    memory: 4Gi

@@ -1,0 +1,12 @@
+{
+    "runtimeTarget": {
+      "name": ".NETCoreApp,Version=v5.0",
+      "signature": ""
+    },
+    "compilationOptions": {},
+    "targets": {
+      ".NETCoreApp,Version=v5.0": {
+        "ExampleApp1/1.0.0": {
+          "dependencies": {
+            "Newtonsoft.Json": "13.0.1"
+          },

@@ -1,0 +1,10 @@
+This is the Debian prepackaged version of the Time Zone and Daylight 
+Saving Time Data. 
+
+It was downloaded from http://www.iana.org/time-zones
+
+Upstream Author: The Internet Assigned Numbers Authority (IANA)
+Commentary should be addressed to tz@iana.org
+
+Copyright: This database is in the public domain.
+

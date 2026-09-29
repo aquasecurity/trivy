@@ -1,0 +1,8 @@
+
+Summary Report for compliance: NSA
+┌─────┬──────────┬──────────────────────────────────┬────────┬────────┐
+│ ID  │ Severity │           Control Name           │ Status │ Issues │
+├─────┼──────────┼──────────────────────────────────┼────────┼────────┤
+│ 1.0 │  MEDIUM  │ Non-root containers              │  FAIL  │   1    │
+│ 1.1 │   LOW    │ Immutable container file systems │  FAIL  │   1    │
+└─────┴──────────┴──────────────────────────────────┴────────┴────────┘

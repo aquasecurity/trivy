@@ -1,0 +1,171 @@
+package pip
+
+import (
+	"os"
+	"testing"
+
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+)
+
+func TestParse(t *testing.T) {
+	tests := []struct {
+		name          string
+		filePath      string
+		useMinVersion bool
+		want          []ftypes.Package
+	}{
+		{
+			name:     "happy path",
+			filePath: "testdata/requirements_flask.txt",
+			want:     requirementsFlask,
+		},
+		{
+			name:     "happy path with comments",
+			filePath: "testdata/requirements_comments.txt",
+			want:     requirementsComments,
+		},
+		{
+			name:     "happy path with spaces",
+			filePath: "testdata/requirements_spaces.txt",
+			want:     requirementsSpaces,
+		},
+		{
+			name:     "happy path with dependency without version",
+			filePath: "testdata/requirements_no_version.txt",
+			want:     requirementsNoVersion,
+		},
+		{
+			name:     "happy path with operator",
+			filePath: "testdata/requirements_operator.txt",
+			want:     requirementsOperator,
+		},
+		{
+			name:     "happy path with hash",
+			filePath: "testdata/requirements_hash.txt",
+			want:     requirementsHash,
+		},
+		{
+			name:     "happy path with hyphens",
+			filePath: "testdata/requirements_hyphens.txt",
+			want:     requirementsHyphens,
+		},
+		{
+			name:     "happy path with exstras",
+			filePath: "testdata/requirement_exstras.txt",
+			want:     requirementsExtras,
+		},
+		{
+			name:     "happy path. File uses utf16le",
+			filePath: "testdata/requirements_utf16le.txt",
+			want:     requirementsUtf16le,
+		},
+		{
+			name:     "happy path with templating engine",
+			filePath: "testdata/requirements_with_templating_engine.txt",
+			want:     nil,
+		},
+		{
+			name:          "compatible versions",
+			filePath:      "testdata/requirements_compatible.txt",
+			useMinVersion: true,
+			want:          requirementsCompatibleVersions,
+		},
+		{
+			name:     "malformed extras are skipped, brackets in comments are ignored",
+			filePath: "testdata/requirements_invalid_extras.txt",
+			want:     requirementsInvalidExtras,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.filePath)
+			require.NoError(t, err)
+
+			got, _, err := NewParser(tt.useMinVersion).Parse(t.Context(), f)
+			require.NoError(t, err)
+
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestRemoveExtras(t *testing.T) {
+	tests := []struct {
+		name    string
+		line    string
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "single extra",
+			line: "pyjwt[crypto]==2.1.0",
+			want: "pyjwt==2.1.0",
+		},
+		{
+			name: "multiple extras",
+			line: "celery[redis,pytest]==4.4.7",
+			want: "celery==4.4.7",
+		},
+		{
+			name: "empty extras",
+			line: "pkg[]==1.0",
+			want: "pkg==1.0",
+		},
+		{
+			name: "no extras",
+			line: "flask==2.0.0",
+			want: "flask==2.0.0",
+		},
+		{
+			name:    "missing closing bracket",
+			line:    "pkg[extra==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "stray closing bracket without opening",
+			line:    "foo]bar==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "closing bracket before opening",
+			line:    "foo]bar[x]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "extra closing bracket",
+			line:    "celery[redis]]==4.4.7",
+			wantErr: true,
+		},
+		{
+			name:    "nested brackets",
+			line:    "pkg[a[b]]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "second extras group",
+			line:    "pkg[a][b]==1.0",
+			wantErr: true,
+		},
+		{
+			name: "empty string",
+			line: "",
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := removeExtras(tt.line)
+			if tt.wantErr {
+				require.ErrorContains(t, err, "unbalanced extras brackets")
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

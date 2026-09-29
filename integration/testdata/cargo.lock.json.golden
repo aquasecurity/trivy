@@ -1,0 +1,157 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactName": "testdata/fixtures/repo/cargo",
+  "ArtifactType": "repository",
+  "Results": [
+    {
+      "Target": "Cargo.lock",
+      "Class": "lang-pkgs",
+      "Type": "cargo",
+      "Packages": [
+        {
+          "ID": "app@0.1.0",
+          "Name": "app",
+          "Identifier": {
+            "PURL": "pkg:cargo/app@0.1.0",
+            "UID": "f8f61814a1b98c1f"
+          },
+          "Version": "0.1.0",
+          "Relationship": "root",
+          "DependsOn": [
+            "memchr@1.0.2",
+            "regex@1.7.3"
+          ],
+          "Locations": [
+            {
+              "StartLine": 14,
+              "EndLine": 21
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "memchr@1.0.2",
+          "Name": "memchr",
+          "Identifier": {
+            "PURL": "pkg:cargo/memchr@1.0.2",
+            "UID": "536e148edad11c28"
+          },
+          "Version": "1.0.2",
+          "Relationship": "direct",
+          "DependsOn": [
+            "libc@0.2.171"
+          ],
+          "Locations": [
+            {
+              "StartLine": 29,
+              "EndLine": 36
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "regex@1.7.3",
+          "Name": "regex",
+          "Identifier": {
+            "PURL": "pkg:cargo/regex@1.7.3",
+            "UID": "57a64064d2c70151"
+          },
+          "Version": "1.7.3",
+          "Relationship": "direct",
+          "DependsOn": [
+            "aho-corasick@0.7.20",
+            "memchr@2.7.4",
+            "regex-syntax@0.6.29"
+          ],
+          "Locations": [
+            {
+              "StartLine": 44,
+              "EndLine": 53
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "aho-corasick@0.7.20",
+          "Name": "aho-corasick",
+          "Identifier": {
+            "PURL": "pkg:cargo/aho-corasick@0.7.20",
+            "UID": "4f314108cf35f82c"
+          },
+          "Version": "0.7.20",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "DependsOn": [
+            "memchr@2.7.4"
+          ],
+          "Locations": [
+            {
+              "StartLine": 5,
+              "EndLine": 12
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "libc@0.2.171",
+          "Name": "libc",
+          "Identifier": {
+            "PURL": "pkg:cargo/libc@0.2.171",
+            "UID": "5e1e8e550c5392bb"
+          },
+          "Version": "0.2.171",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 23,
+              "EndLine": 27
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "memchr@2.7.4",
+          "Name": "memchr",
+          "Identifier": {
+            "PURL": "pkg:cargo/memchr@2.7.4",
+            "UID": "fad175ee2c904d6a"
+          },
+          "Version": "2.7.4",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 38,
+              "EndLine": 42
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        },
+        {
+          "ID": "regex-syntax@0.6.29",
+          "Name": "regex-syntax",
+          "Identifier": {
+            "PURL": "pkg:cargo/regex-syntax@0.6.29",
+            "UID": "40c17f59020809c"
+          },
+          "Version": "0.6.29",
+          "Indirect": true,
+          "Relationship": "indirect",
+          "Locations": [
+            {
+              "StartLine": 55,
+              "EndLine": 59
+            }
+          ],
+          "AnalyzedBy": "cargo"
+        }
+      ]
+    }
+  ]
+}

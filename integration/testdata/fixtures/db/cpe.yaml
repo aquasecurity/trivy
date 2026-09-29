@@ -1,0 +1,21 @@
+- bucket: Red Hat CPE
+  pairs:
+    - bucket: repository
+      pairs:
+        - key: "rhel-6-server-rpms"
+          value:
+            - 857
+        - key: "rhel-7-server-rpms"
+          value:
+            - 869
+    - bucket: nvr
+      pairs:
+        - key: "ubi7-container-7.7-140-x86_64"
+          value:
+            - 869
+    - bucket: cpe
+      pairs:
+        - key: "857"
+          value: "cpe:/o:redhat:enterprise_linux:6::server"
+        - key: "869"
+          value: "cpe:/o:redhat:enterprise_linux:7::server"

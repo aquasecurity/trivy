@@ -1,0 +1,12 @@
+PODS:
+  - AppCenter (4.2.0):
+    - AppCenter/Analytics (= 4.2.0)
+    - AppCenter/Crashes (= 4.2.0)
+  - AppCenter/Analytics (4.2.0):
+    - AppCenter/Core
+  - AppCenter/Core (4.2.0)
+  - AppCenter/Crashes (4.2.0):
+    - AppCenter/Core
+  - KeychainAccess (4.2.1)
+
+COCOAPODS: 1.11.2

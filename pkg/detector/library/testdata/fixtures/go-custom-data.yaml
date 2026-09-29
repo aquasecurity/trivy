@@ -1,0 +1,18 @@
+- bucket: "go::GitHub Security Advisory Go"
+  pairs:
+    - bucket: github.com/docker/docker
+      pairs:
+        - key: "GHSA-v23v-6jw2-98fq"
+          value:
+            PatchedVersions:
+              - "23.0.15"
+              - "26.1.5"
+              - "27.1.1"
+              - "25.0.6"
+            VulnerableVersions:
+              - ">=19.03.0, <23.0.15"
+              - ">=26.0.0, <26.1.5"
+              - ">=27.0.0, <27.1.1"
+              - ">=24.0.0, <25.0.6"
+            Custom:
+              Severity: 2
