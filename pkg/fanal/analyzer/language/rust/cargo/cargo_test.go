@@ -879,6 +879,61 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "root package is also a workspace root with a member-only dev workspace dependency",
+			file: "testdata/root-package-and-workspace.txtar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 14,
+										EndLine:   20,
+									},
+								},
+								DependsOn: []string{
+									"log@0.4.34",
+								},
+							},
+							{
+								ID:           "member@0.1.0",
+								Name:         "member",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   33,
+									},
+								},
+								DependsOn: []string{},
+							},
+							{
+								ID:           "log@0.4.34",
+								Name:         "log",
+								Version:      "0.4.34",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   26,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "workspace members",
 			file: "testdata/toml-workspace-glob.txtar",
 			want: &analyzer.AnalysisResult{
