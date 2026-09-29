@@ -52,7 +52,7 @@ func (d *CryptoDescriptor) UnmarshalJSON(data []byte) error {
 		return xerrors.Errorf("decode descriptor: %w", err)
 	}
 
-	descriptor, err := ParseCryptoDescriptor(s)
+	descriptor, err := parseDescriptor(s)
 	if err != nil {
 		return xerrors.Errorf("parse descriptor: %w", err)
 	}
@@ -138,8 +138,7 @@ func (d CryptoDescriptor) validateParameters() error {
 	return nil
 }
 
-// ParseCryptoDescriptor decodes a canonical descriptor string and validates it.
-func ParseCryptoDescriptor(s string) (CryptoDescriptor, error) {
+func parseDescriptor(s string) (CryptoDescriptor, error) {
 	segments := strings.Split(s, ":")
 	var descriptor CryptoDescriptor
 	var valueSegment string

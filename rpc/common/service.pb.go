@@ -3175,20 +3175,82 @@ func (x *CryptoAlgorithm) GetPrimitive() string {
 	return ""
 }
 
+type CryptoDescriptor struct {
+	state         protoimpl.MessageState
+	sizeCache     protoimpl.SizeCache
+	unknownFields protoimpl.UnknownFields
+
+	Kind     string          `protobuf:"bytes,1,opt,name=kind,proto3" json:"kind,omitempty"`
+	KeyType  string          `protobuf:"bytes,2,opt,name=key_type,json=keyType,proto3" json:"key_type,omitempty"`
+	Identity *CryptoIdentity `protobuf:"bytes,3,opt,name=identity,proto3" json:"identity,omitempty"`
+}
+
+func (x *CryptoDescriptor) Reset() {
+	*x = CryptoDescriptor{}
+	if protoimpl.UnsafeEnabled {
+		mi := &file_rpc_common_service_proto_msgTypes[34]
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		ms.StoreMessageInfo(mi)
+	}
+}
+
+func (x *CryptoDescriptor) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CryptoDescriptor) ProtoMessage() {}
+
+func (x *CryptoDescriptor) ProtoReflect() protoreflect.Message {
+	mi := &file_rpc_common_service_proto_msgTypes[34]
+	if protoimpl.UnsafeEnabled && x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CryptoDescriptor.ProtoReflect.Descriptor instead.
+func (*CryptoDescriptor) Descriptor() ([]byte, []int) {
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{34}
+}
+
+func (x *CryptoDescriptor) GetKind() string {
+	if x != nil {
+		return x.Kind
+	}
+	return ""
+}
+
+func (x *CryptoDescriptor) GetKeyType() string {
+	if x != nil {
+		return x.KeyType
+	}
+	return ""
+}
+
+func (x *CryptoDescriptor) GetIdentity() *CryptoIdentity {
+	if x != nil {
+		return x.Identity
+	}
+	return nil
+}
+
 type CryptoRelationship struct {
 	state         protoimpl.MessageState
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	Type string `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
-	// related_asset is the canonical string of the target asset descriptor.
-	RelatedAsset string `protobuf:"bytes,2,opt,name=related_asset,json=relatedAsset,proto3" json:"related_asset,omitempty"`
+	Type         string            `protobuf:"bytes,1,opt,name=type,proto3" json:"type,omitempty"`
+	RelatedAsset *CryptoDescriptor `protobuf:"bytes,2,opt,name=related_asset,json=relatedAsset,proto3" json:"related_asset,omitempty"`
 }
 
 func (x *CryptoRelationship) Reset() {
 	*x = CryptoRelationship{}
 	if protoimpl.UnsafeEnabled {
-		mi := &file_rpc_common_service_proto_msgTypes[34]
+		mi := &file_rpc_common_service_proto_msgTypes[35]
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		ms.StoreMessageInfo(mi)
 	}
@@ -3201,7 +3263,7 @@ func (x *CryptoRelationship) String() string {
 func (*CryptoRelationship) ProtoMessage() {}
 
 func (x *CryptoRelationship) ProtoReflect() protoreflect.Message {
-	mi := &file_rpc_common_service_proto_msgTypes[34]
+	mi := &file_rpc_common_service_proto_msgTypes[35]
 	if protoimpl.UnsafeEnabled && x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3214,7 +3276,7 @@ func (x *CryptoRelationship) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CryptoRelationship.ProtoReflect.Descriptor instead.
 func (*CryptoRelationship) Descriptor() ([]byte, []int) {
-	return file_rpc_common_service_proto_rawDescGZIP(), []int{34}
+	return file_rpc_common_service_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *CryptoRelationship) GetType() string {
@@ -3224,11 +3286,11 @@ func (x *CryptoRelationship) GetType() string {
 	return ""
 }
 
-func (x *CryptoRelationship) GetRelatedAsset() string {
+func (x *CryptoRelationship) GetRelatedAsset() *CryptoDescriptor {
 	if x != nil {
 		return x.RelatedAsset
 	}
-	return ""
+	return nil
 }
 
 var File_rpc_common_service_proto protoreflect.FileDescriptor
@@ -3740,20 +3802,30 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x67, 0x6f, 0x72, 0x69, 0x74, 0x68, 0x6d, 0x12, 0x16, 0x0a, 0x06, 0x66, 0x61, 0x6d, 0x69, 0x6c,
 	0x79, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x66, 0x61, 0x6d, 0x69, 0x6c, 0x79, 0x12,
 	0x1c, 0x0a, 0x09, 0x70, 0x72, 0x69, 0x6d, 0x69, 0x74, 0x69, 0x76, 0x65, 0x18, 0x02, 0x20, 0x01,
-	0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69, 0x6d, 0x69, 0x74, 0x69, 0x76, 0x65, 0x22, 0x4d, 0x0a,
-	0x12, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73,
-	0x68, 0x69, 0x70, 0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28,
-	0x09, 0x52, 0x04, 0x74, 0x79, 0x70, 0x65, 0x12, 0x23, 0x0a, 0x0d, 0x72, 0x65, 0x6c, 0x61, 0x74,
-	0x65, 0x64, 0x5f, 0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0c,
-	0x72, 0x65, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x41, 0x73, 0x73, 0x65, 0x74, 0x2a, 0x44, 0x0a, 0x08,
-	0x53, 0x65, 0x76, 0x65, 0x72, 0x69, 0x74, 0x79, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e,
-	0x4f, 0x57, 0x4e, 0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a,
-	0x0a, 0x06, 0x4d, 0x45, 0x44, 0x49, 0x55, 0x4d, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x48, 0x49,
-	0x47, 0x48, 0x10, 0x03, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x52, 0x49, 0x54, 0x49, 0x43, 0x41, 0x4c,
-	0x10, 0x04, 0x42, 0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d,
-	0x2f, 0x61, 0x71, 0x75, 0x61, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x74, 0x72,
-	0x69, 0x76, 0x79, 0x2f, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x3b, 0x63,
-	0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
+	0x28, 0x09, 0x52, 0x09, 0x70, 0x72, 0x69, 0x6d, 0x69, 0x74, 0x69, 0x76, 0x65, 0x22, 0x7b, 0x0a,
+	0x10, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x6f,
+	0x72, 0x12, 0x12, 0x0a, 0x04, 0x6b, 0x69, 0x6e, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52,
+	0x04, 0x6b, 0x69, 0x6e, 0x64, 0x12, 0x19, 0x0a, 0x08, 0x6b, 0x65, 0x79, 0x5f, 0x74, 0x79, 0x70,
+	0x65, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x07, 0x6b, 0x65, 0x79, 0x54, 0x79, 0x70, 0x65,
+	0x12, 0x38, 0x0a, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x18, 0x03, 0x20, 0x01,
+	0x28, 0x0b, 0x32, 0x1c, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f,
+	0x6e, 0x2e, 0x43, 0x72, 0x79, 0x70, 0x74, 0x6f, 0x49, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79,
+	0x52, 0x08, 0x69, 0x64, 0x65, 0x6e, 0x74, 0x69, 0x74, 0x79, 0x22, 0x6d, 0x0a, 0x12, 0x43, 0x72,
+	0x79, 0x70, 0x74, 0x6f, 0x52, 0x65, 0x6c, 0x61, 0x74, 0x69, 0x6f, 0x6e, 0x73, 0x68, 0x69, 0x70,
+	0x12, 0x12, 0x0a, 0x04, 0x74, 0x79, 0x70, 0x65, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x04,
+	0x74, 0x79, 0x70, 0x65, 0x12, 0x43, 0x0a, 0x0d, 0x72, 0x65, 0x6c, 0x61, 0x74, 0x65, 0x64, 0x5f,
+	0x61, 0x73, 0x73, 0x65, 0x74, 0x18, 0x02, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x1e, 0x2e, 0x74, 0x72,
+	0x69, 0x76, 0x79, 0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x43, 0x72, 0x79, 0x70, 0x74,
+	0x6f, 0x44, 0x65, 0x73, 0x63, 0x72, 0x69, 0x70, 0x74, 0x6f, 0x72, 0x52, 0x0c, 0x72, 0x65, 0x6c,
+	0x61, 0x74, 0x65, 0x64, 0x41, 0x73, 0x73, 0x65, 0x74, 0x2a, 0x44, 0x0a, 0x08, 0x53, 0x65, 0x76,
+	0x65, 0x72, 0x69, 0x74, 0x79, 0x12, 0x0b, 0x0a, 0x07, 0x55, 0x4e, 0x4b, 0x4e, 0x4f, 0x57, 0x4e,
+	0x10, 0x00, 0x12, 0x07, 0x0a, 0x03, 0x4c, 0x4f, 0x57, 0x10, 0x01, 0x12, 0x0a, 0x0a, 0x06, 0x4d,
+	0x45, 0x44, 0x49, 0x55, 0x4d, 0x10, 0x02, 0x12, 0x08, 0x0a, 0x04, 0x48, 0x49, 0x47, 0x48, 0x10,
+	0x03, 0x12, 0x0c, 0x0a, 0x08, 0x43, 0x52, 0x49, 0x54, 0x49, 0x43, 0x41, 0x4c, 0x10, 0x04, 0x42,
+	0x31, 0x5a, 0x2f, 0x67, 0x69, 0x74, 0x68, 0x75, 0x62, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x61, 0x71,
+	0x75, 0x61, 0x73, 0x65, 0x63, 0x75, 0x72, 0x69, 0x74, 0x79, 0x2f, 0x74, 0x72, 0x69, 0x76, 0x79,
+	0x2f, 0x72, 0x70, 0x63, 0x2f, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x3b, 0x63, 0x6f, 0x6d, 0x6d,
+	0x6f, 0x6e, 0x62, 0x06, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x33,
 }
 
 var (
@@ -3769,7 +3841,7 @@ func file_rpc_common_service_proto_rawDescGZIP() []byte {
 }
 
 var file_rpc_common_service_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
+var file_rpc_common_service_proto_msgTypes = make([]protoimpl.MessageInfo, 38)
 var file_rpc_common_service_proto_goTypes = []interface{}{
 	(Severity)(0),                    // 0: trivy.common.Severity
 	(LicenseCategory_Enum)(0),        // 1: trivy.common.LicenseCategory.Enum
@@ -3808,11 +3880,12 @@ var file_rpc_common_service_proto_goTypes = []interface{}{
 	(*CryptoCertificate)(nil),        // 34: trivy.common.CryptoCertificate
 	(*CryptoKey)(nil),                // 35: trivy.common.CryptoKey
 	(*CryptoAlgorithm)(nil),          // 36: trivy.common.CryptoAlgorithm
-	(*CryptoRelationship)(nil),       // 37: trivy.common.CryptoRelationship
-	nil,                              // 38: trivy.common.Vulnerability.CvssEntry
-	nil,                              // 39: trivy.common.Vulnerability.VendorSeverityEntry
-	(*timestamppb.Timestamp)(nil),    // 40: google.protobuf.Timestamp
-	(*structpb.Value)(nil),           // 41: google.protobuf.Value
+	(*CryptoDescriptor)(nil),         // 37: trivy.common.CryptoDescriptor
+	(*CryptoRelationship)(nil),       // 38: trivy.common.CryptoRelationship
+	nil,                              // 39: trivy.common.Vulnerability.CvssEntry
+	nil,                              // 40: trivy.common.Vulnerability.VendorSeverityEntry
+	(*timestamppb.Timestamp)(nil),    // 41: google.protobuf.Timestamp
+	(*structpb.Value)(nil),           // 42: google.protobuf.Value
 }
 var file_rpc_common_service_proto_depIdxs = []int32{
 	7,  // 0: trivy.common.PackageInfo.packages:type_name -> trivy.common.Package
@@ -3833,17 +3906,17 @@ var file_rpc_common_service_proto_depIdxs = []int32{
 	0,  // 15: trivy.common.Vulnerability.severity:type_name -> trivy.common.Severity
 	9,  // 16: trivy.common.Vulnerability.pkg_identifier:type_name -> trivy.common.PkgIdentifier
 	18, // 17: trivy.common.Vulnerability.layer:type_name -> trivy.common.Layer
-	38, // 18: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
-	40, // 19: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
-	40, // 20: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
-	41, // 21: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
-	41, // 22: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
+	39, // 18: trivy.common.Vulnerability.cvss:type_name -> trivy.common.Vulnerability.CvssEntry
+	41, // 19: trivy.common.Vulnerability.published_date:type_name -> google.protobuf.Timestamp
+	41, // 20: trivy.common.Vulnerability.last_modified_date:type_name -> google.protobuf.Timestamp
+	42, // 21: trivy.common.Vulnerability.custom_advisory_data:type_name -> google.protobuf.Value
+	42, // 22: trivy.common.Vulnerability.custom_vuln_data:type_name -> google.protobuf.Value
 	17, // 23: trivy.common.Vulnerability.data_source:type_name -> trivy.common.DataSource
-	39, // 24: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
+	40, // 24: trivy.common.Vulnerability.vendor_severity:type_name -> trivy.common.Vulnerability.VendorSeverityEntry
 	23, // 25: trivy.common.CauseMetadata.code:type_name -> trivy.common.Code
 	24, // 26: trivy.common.CauseMetadata.rendered_cause:type_name -> trivy.common.RenderedCause
 	18, // 27: trivy.common.CustomResource.layer:type_name -> trivy.common.Layer
-	41, // 28: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
+	42, // 28: trivy.common.CustomResource.data:type_name -> google.protobuf.Value
 	22, // 29: trivy.common.Code.lines:type_name -> trivy.common.Line
 	23, // 30: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
 	18, // 31: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
@@ -3858,17 +3931,19 @@ var file_rpc_common_service_proto_depIdxs = []int32{
 	34, // 40: trivy.common.CryptoAsset.certificate:type_name -> trivy.common.CryptoCertificate
 	35, // 41: trivy.common.CryptoAsset.key:type_name -> trivy.common.CryptoKey
 	36, // 42: trivy.common.CryptoAsset.algorithm:type_name -> trivy.common.CryptoAlgorithm
-	37, // 43: trivy.common.CryptoAsset.relationships:type_name -> trivy.common.CryptoRelationship
+	38, // 43: trivy.common.CryptoAsset.relationships:type_name -> trivy.common.CryptoRelationship
 	18, // 44: trivy.common.CryptoAsset.layer:type_name -> trivy.common.Layer
-	40, // 45: trivy.common.CryptoCertificate.not_before:type_name -> google.protobuf.Timestamp
-	40, // 46: trivy.common.CryptoCertificate.not_after:type_name -> google.protobuf.Timestamp
-	20, // 47: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
-	0,  // 48: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
-	49, // [49:49] is the sub-list for method output_type
-	49, // [49:49] is the sub-list for method input_type
-	49, // [49:49] is the sub-list for extension type_name
-	49, // [49:49] is the sub-list for extension extendee
-	0,  // [0:49] is the sub-list for field type_name
+	41, // 45: trivy.common.CryptoCertificate.not_before:type_name -> google.protobuf.Timestamp
+	41, // 46: trivy.common.CryptoCertificate.not_after:type_name -> google.protobuf.Timestamp
+	33, // 47: trivy.common.CryptoDescriptor.identity:type_name -> trivy.common.CryptoIdentity
+	37, // 48: trivy.common.CryptoRelationship.related_asset:type_name -> trivy.common.CryptoDescriptor
+	20, // 49: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	0,  // 50: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
+	51, // [51:51] is the sub-list for method output_type
+	51, // [51:51] is the sub-list for method input_type
+	51, // [51:51] is the sub-list for extension type_name
+	51, // [51:51] is the sub-list for extension extendee
+	0,  // [0:51] is the sub-list for field type_name
 }
 
 func init() { file_rpc_common_service_proto_init() }
@@ -4286,6 +4361,18 @@ func file_rpc_common_service_proto_init() {
 			}
 		}
 		file_rpc_common_service_proto_msgTypes[34].Exporter = func(v interface{}, i int) interface{} {
+			switch v := v.(*CryptoDescriptor); i {
+			case 0:
+				return &v.state
+			case 1:
+				return &v.sizeCache
+			case 2:
+				return &v.unknownFields
+			default:
+				return nil
+			}
+		}
+		file_rpc_common_service_proto_msgTypes[35].Exporter = func(v interface{}, i int) interface{} {
 			switch v := v.(*CryptoRelationship); i {
 			case 0:
 				return &v.state
@@ -4304,7 +4391,7 @@ func file_rpc_common_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: file_rpc_common_service_proto_rawDesc,
 			NumEnums:      3,
-			NumMessages:   37,
+			NumMessages:   38,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

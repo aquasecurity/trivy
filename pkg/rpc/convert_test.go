@@ -2,7 +2,6 @@ package rpc
 
 import (
 	jsonv2 "encoding/json/v2"
-	"strings"
 	"testing"
 	"time"
 
@@ -1612,9 +1611,7 @@ func TestConvertCryptoAssets(t *testing.T) {
 		require.NoError(t, asset.Validate())
 	}
 
-	rpcAssets := ConvertToRPCCryptoAssets(assets)
-	assert.Equal(t, "key:public:spki-sha256:"+strings.Repeat("b", 64), rpcAssets[0].Relationships[1].RelatedAsset)
-	assert.Equal(t, assets, ConvertFromRPCCryptoAssets(rpcAssets))
+	assert.Equal(t, assets, ConvertFromRPCCryptoAssets(ConvertToRPCCryptoAssets(assets)))
 }
 
 func TestConvertFromRPCCryptoAssets(t *testing.T) {
@@ -1633,7 +1630,7 @@ func TestConvertFromRPCCryptoAssets(t *testing.T) {
 			},
 		},
 		{
-			name: "unparsable relationship target",
+			name: "invalid relationship target",
 			assets: []*common.CryptoAsset{
 				{
 					Kind: string(ftypes.CryptoKindAlgorithm),
@@ -1646,8 +1643,15 @@ func TestConvertFromRPCCryptoAssets(t *testing.T) {
 					},
 					Relationships: []*common.CryptoRelationship{
 						{
-							Type:         string(ftypes.CryptoRelationshipUsedWith),
-							RelatedAsset: "key:public:spki-sha256:not-a-digest",
+							Type: string(ftypes.CryptoRelationshipUsedWith),
+							RelatedAsset: &common.CryptoDescriptor{
+								Kind:    string(ftypes.CryptoKindKey),
+								KeyType: string(ftypes.CryptoKeyTypePublic),
+								Identity: &common.CryptoIdentity{
+									Method: string(ftypes.CryptoMethodSPKISHA256),
+									Value:  "not-a-digest",
+								},
+							},
 						},
 					},
 				},

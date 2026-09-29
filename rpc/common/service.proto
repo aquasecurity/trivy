@@ -353,8 +353,13 @@ message CryptoAlgorithm {
   string primitive = 2;
 }
 
+message CryptoDescriptor {
+  string kind = 1;
+  string key_type = 2;
+  CryptoIdentity identity = 3;
+}
+
 message CryptoRelationship {
   string type = 1;
-  // related_asset is the canonical string of the target asset descriptor.
-  string related_asset = 2;
+  CryptoDescriptor related_asset = 2;
 }

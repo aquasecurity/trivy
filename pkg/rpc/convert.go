@@ -224,13 +224,9 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset {
 	return xslices.Map(assets, func(asset ftypes.CryptoAsset) *common.CryptoAsset {
 		return &common.CryptoAsset{
-			Kind:    string(asset.Kind),
-			KeyType: string(asset.KeyType),
-			Identity: &common.CryptoIdentity{
-				Method:     string(asset.Identity.Method),
-				Value:      asset.Identity.Value,
-				Parameters: asset.Identity.Parameters,
-			},
+			Kind:          string(asset.Kind),
+			KeyType:       string(asset.KeyType),
+			Identity:      convertToRPCCryptoIdentity(asset.Identity),
 			Name:          asset.Name,
 			Certificate:   convertToRPCCryptoCertificate(asset.Certificate),
 			Key:           convertToRPCCryptoKey(asset.Key),
@@ -289,11 +285,23 @@ func convertToRPCCryptoAlgorithm(algorithm *ftypes.CryptoAlgorithm) *common.Cryp
 	}
 }
 
+func convertToRPCCryptoIdentity(identity ftypes.CryptoIdentity) *common.CryptoIdentity {
+	return &common.CryptoIdentity{
+		Method:     string(identity.Method),
+		Value:      identity.Value,
+		Parameters: identity.Parameters,
+	}
+}
+
 func convertToRPCCryptoRelationships(relationships []ftypes.CryptoRelationship) []*common.CryptoRelationship {
 	return xslices.Map(relationships, func(relationship ftypes.CryptoRelationship) *common.CryptoRelationship {
 		return &common.CryptoRelationship{
-			Type:         string(relationship.Type),
-			RelatedAsset: relationship.RelatedAsset.String(),
+			Type: string(relationship.Type),
+			RelatedAsset: &common.CryptoDescriptor{
+				Kind:     string(relationship.RelatedAsset.Kind),
+				KeyType:  string(relationship.RelatedAsset.KeyType),
+				Identity: convertToRPCCryptoIdentity(relationship.RelatedAsset.Identity),
+			},
 		}
 	})
 }
@@ -778,16 +786,15 @@ func convertFromRPCCryptoAlgorithm(rpcAlgorithm *common.CryptoAlgorithm) *ftypes
 	}
 }
 
-// convertFromRPCCryptoRelationships decodes the descriptor each relationship points at. A
-// descriptor that does not parse names no asset of the report, so the relationship is
-// dropped and the asset itself is kept.
+// convertFromRPCCryptoRelationships returns the relationships of an asset. A relationship
+// with an invalid descriptor is skipped because such a descriptor cannot be encoded to JSON.
 func convertFromRPCCryptoRelationships(rpcRelationships []*common.CryptoRelationship) []ftypes.CryptoRelationship {
 	var relationships []ftypes.CryptoRelationship
 	for _, rpcRelationship := range rpcRelationships {
-		descriptor, err := ftypes.ParseCryptoDescriptor(rpcRelationship.RelatedAsset)
-		if err != nil {
+		descriptor := convertFromRPCCryptoDescriptor(rpcRelationship.RelatedAsset)
+		if err := descriptor.Validate(); err != nil {
 			log.Warn("Invalid cryptographic asset descriptor",
-				log.String("descriptor", rpcRelationship.RelatedAsset), log.Err(err))
+				log.String("descriptor", descriptor.String()), log.Err(err))
 			continue
 		}
 		relationships = append(relationships, ftypes.CryptoRelationship{
@@ -796,6 +803,17 @@ func convertFromRPCCryptoRelationships(rpcRelationships []*common.CryptoRelation
 		})
 	}
 	return relationships
+}
+
+func convertFromRPCCryptoDescriptor(rpcDescriptor *common.CryptoDescriptor) ftypes.CryptoDescriptor {
+	if rpcDescriptor == nil {
+		return ftypes.CryptoDescriptor{}
+	}
+	return ftypes.CryptoDescriptor{
+		Kind:     ftypes.CryptoKind(rpcDescriptor.Kind),
+		KeyType:  ftypes.CryptoKeyType(rpcDescriptor.KeyType),
+		Identity: convertFromRPCCryptoIdentity(rpcDescriptor.Identity),
+	}
 }
 
 func convertFromRPCTime(ts *timestamppb.Timestamp) time.Time {
