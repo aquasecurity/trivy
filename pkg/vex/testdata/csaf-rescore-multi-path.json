@@ -1,0 +1,168 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "vendor",
+      "name": "Example ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "CSAF rescoring with multiple dependency paths",
+    "tracking": {
+      "id": "2026-EVD-005",
+      "status": "final",
+      "version": "1",
+      "initial_release_date": "2026-09-09T00:00:00Z",
+      "current_release_date": "2026-09-09T00:00:00Z"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "bar",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "go-direct1",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v2.0.0",
+                "product": {
+                  "name": "go-direct1 v2.0.0",
+                  "product_id": "go-direct1-v2.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-direct1@v2.0.0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "vendor",
+        "name": "baz",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "go-direct2",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v3.0.0",
+                "product": {
+                  "name": "go-direct2 v3.0.0",
+                  "product_id": "go-direct2-v3.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-direct2@v3.0.0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "category": "vendor",
+        "name": "foo",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "go-transitive",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v4.0.0",
+                "product": {
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "relationships": [
+      {
+        "product_reference": "go-transitive-v4.0.0",
+        "category": "default_component_of",
+        "relates_to_product_reference": "go-direct1-v2.0.0",
+        "full_product_name": {
+          "product_id": "go-direct1-v2.0.0-go-transitive-v4.0.0",
+          "name": "go-direct1-v2.0.0 uses go-transitive"
+        }
+      },
+      {
+        "product_reference": "go-transitive-v4.0.0",
+        "category": "default_component_of",
+        "relates_to_product_reference": "go-direct2-v3.0.0",
+        "full_product_name": {
+          "product_id": "go-direct2-v3.0.0-go-transitive-v4.0.0",
+          "name": "go-direct2-v3.0.0 uses go-transitive"
+        }
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-0001",
+      "scores": [
+        {
+          "products": [
+            "go-direct2-v3.0.0-go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:N/UI:N/S:U/C:L/I:L/A:N",
+            "baseScore": 4.8,
+            "baseSeverity": "MEDIUM"
+          }
+        },
+        {
+          "products": [
+            "go-direct1-v2.0.0-go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "baseScore": 7.5,
+            "baseSeverity": "HIGH"
+          }
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2024-0002",
+      "scores": [
+        {
+          "products": [
+            "go-direct1-v2.0.0-go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "baseScore": 7.5,
+            "baseSeverity": "HIGH"
+          }
+        },
+        {
+          "products": [
+            "go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:H/PR:H/UI:R/S:U/C:L/I:N/A:N",
+            "baseScore": 2.0,
+            "baseSeverity": "LOW"
+          }
+        }
+      ]
+    }
+  ]
+}

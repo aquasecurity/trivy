@@ -1,0 +1,74 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "vendor",
+      "name": "Example ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "CSAF rescoring with unusable scores",
+    "tracking": {
+      "id": "2026-EVD-003",
+      "status": "final",
+      "version": "1",
+      "initial_release_date": "2026-09-09T00:00:00Z",
+      "current_release_date": "2026-09-09T00:00:00Z"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "foo",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "go-transitive",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v4.0.0",
+                "product": {
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2024-0001",
+      "scores": [
+        {
+          "products": [
+            "go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+            "baseSeverity": "CRITICAL"
+          }
+        },
+        {
+          "products": [
+            "go-transitive-v4.0.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "baseScore": 8.1,
+            "baseSeverity": "HIGH"
+          }
+        }
+      ]
+    }
+  ]
+}

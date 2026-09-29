@@ -5,6 +5,11 @@
       "id": "pkg:deb/debian/bash",
       "location": "bash-vex.json",
       "format": "openvex"
+    },
+    {
+      "id": "pkg:golang/github.com/aquasecurity/go-transitive",
+      "location": "csaf-vex.json",
+      "format": "csaf"
     }
   ]
 }

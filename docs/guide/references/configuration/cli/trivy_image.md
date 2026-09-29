@@ -198,6 +198,7 @@ trivy image [flags] IMAGE_NAME
                                             - minimos
                                             - rootio
                                             - rapidfort
+                                            - csaf
                                             - auto
                                            (default [auto])
 ```

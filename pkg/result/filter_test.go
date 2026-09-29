@@ -1,6 +1,9 @@
 package result_test
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -12,6 +15,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/result"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 )
@@ -1262,4 +1266,123 @@ func TestFilter(t *testing.T) {
 			assert.Equal(t, tt.want, tt.args.report)
 		})
 	}
+}
+
+func TestFilter_CSAFSeveritySource(t *testing.T) {
+	pkg := ftypes.Package{
+		ID:      "github.com/aquasecurity/go-transitive@v4.0.0",
+		Name:    "github.com/aquasecurity/go-transitive",
+		Version: "v4.0.0",
+		Identifier: ftypes.PkgIdentifier{
+			UID: "01",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeGolang,
+				Namespace: "github.com/aquasecurity",
+				Name:      "go-transitive",
+				Version:   "v4.0.0",
+			},
+		},
+	}
+	vuln := types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2024-0001",
+		PkgName:          pkg.Name,
+		InstalledVersion: pkg.Version,
+		PkgIdentifier:    pkg.Identifier,
+		Vulnerability: dbTypes.Vulnerability{
+			Severity: dbTypes.SeverityLow.String(),
+		},
+	}
+
+	tests := []struct {
+		name            string
+		severitySources []dbTypes.SourceID
+		want            []types.DetectedVulnerability
+	}{
+		{
+			name:            "rescored severity is used for severity filtering",
+			severitySources: []dbTypes.SourceID{vex.CSAFSeveritySource, "auto"},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  vuln.VulnerabilityID,
+					PkgName:          pkg.Name,
+					InstalledVersion: pkg.Version,
+					PkgIdentifier:    pkg.Identifier,
+					SeveritySource:   vex.CSAFSeveritySource,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+						VendorSeverity: dbTypes.VendorSeverity{
+							vex.CSAFSeveritySource: dbTypes.SeverityCritical,
+						},
+						CVSS: dbTypes.VendorCVSS{
+							vex.CSAFSeveritySource: {
+								V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+								V3Score:  9.8,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:            "csaf severity source is not specified",
+			severitySources: []dbTypes.SourceID{"auto"},
+			want:            nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			report := types.Report{
+				ArtifactName: "test",
+				ArtifactType: ftypes.TypeFilesystem,
+				Results: types.Results{
+					{
+						Target:          "go.mod",
+						Class:           types.ClassLangPkg,
+						Type:            ftypes.GoModule,
+						Packages:        []ftypes.Package{pkg},
+						Vulnerabilities: []types.DetectedVulnerability{vuln},
+					},
+				},
+			}
+			err := result.Filter(t.Context(), report, result.FilterOptions{
+				Severities: []dbTypes.Severity{dbTypes.SeverityCritical},
+				VEXSources: []vex.Source{
+					{
+						Type:     vex.TypeFile,
+						FilePath: "../vex/testdata/csaf-rescore.json",
+					},
+				},
+				VulnSeveritySources: tt.severitySources,
+			})
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, report.Results[0].Vulnerabilities)
+		})
+	}
+}
+
+func TestFilter_LoadsVEXSourcesOnce(t *testing.T) {
+	var requests atomic.Int32
+	server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests.Add(1)
+		http.ServeFile(w, r, "../vex/testdata/csaf-rescore.json")
+	}))
+	t.Cleanup(server.Close)
+
+	report := types.Report{
+		ArtifactType: ftypes.TypeCycloneDX,
+		BOM:          core.NewBOM(core.Options{}),
+	}
+	report.BOM.AddExternalReferences([]core.ExternalReference{
+		{
+			URL:  server.URL,
+			Type: core.ExternalReferenceVEX,
+		},
+	})
+
+	err := result.Filter(t.Context(), report, result.FilterOptions{
+		VEXSources:          []vex.Source{{Type: vex.TypeSBOMReference}},
+		VulnSeveritySources: []dbTypes.SourceID{vex.CSAFSeveritySource, "auto"},
+	})
+	require.NoError(t, err)
+	assert.EqualValues(t, 1, requests.Load())
 }

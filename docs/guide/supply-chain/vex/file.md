@@ -431,6 +431,58 @@ Total: 153 (UNKNOWN: 1, LOW: 82, MEDIUM: 33, HIGH: 32, CRITICAL: 5)
 
 CVE-2019-8457 is no longer shown as it is filtered out according to the given CSAF document.
 
+### Severity from CSAF scores
+In addition to filtering, Trivy can use the [scores][csaf-scores] in CSAF documents as the severity source of detected vulnerabilities.
+This is disabled by default and enabled by adding `csaf` to `--vuln-severity-source`.
+
+```bash
+$ trivy image debian:11.8 --vex debian11.vex.csaf --vuln-severity-source csaf,auto
+...
+2024-01-02T10:28:26.704+0100	INFO	[vex] Rescored the detected vulnerability	{"vulnerability-id": "CVE-2023-5678", "package": "libssl1.1", "from": "MEDIUM", "to": "LOW", "source": "debian11.vex.csaf"}
+```
+
+`--vuln-severity-source` is evaluated in order, so the CSAF score is used only if `csaf` comes before the source that determined the severity.
+For example, with `--vuln-severity-source nvd,csaf`, the CSAF score is used only for vulnerabilities without an NVD severity.
+Since `auto` always determines a severity, sources listed after `auto` are never used.
+
+!!! note
+    Some vendors (e.g. Debian) provide package-specific severities, which Trivy keeps regardless of `--vuln-severity-source`.
+    The order check above only looks at the sources in `--vuln-severity-source`, so a package-specific severity can be replaced by a CSAF score.
+    For example, with `--vuln-severity-source nvd,csaf`, a CSAF score replaces the Debian package-specific severity of a vulnerability without an NVD severity.
+
+!!! note
+    The severity is selected from the vulnerability database first, and CSAF scores are applied afterwards.
+    Without `auto` (e.g. `--vuln-severity-source csaf,nvd`), Trivy may log `No severity found in specified sources` for vulnerabilities that are then rescored with CSAF scores.
+    The log can be ignored for vulnerabilities rescored by CSAF, which are logged as `Rescored the detected vulnerability`.
+
+!!! note
+    VEX repositories may contain CSAF documents, so no warning is logged with `--vex repo` even if the repositories only contain OpenVEX documents.
+    Check the `Rescored the detected vulnerability` log to see which vulnerabilities were rescored.
+
+A CSAF score is applied to a vulnerability as follows:
+
+- CSAF documents from the following VEX sources passed via `--vex` are used: local files, [VEX repositories](./repo.md) and [SBOM references](./sbom-ref.md).
+  For each product, VEX sources are checked in the order they are passed, and the first matching score is used.
+  OpenVEX documents don't contain scores, so they are not used for rescoring.
+
+    !!! note
+        `--vex oci` can't be used for rescoring, because Trivy only discovers OpenVEX attestations in [OCI registries](./oci.md).
+
+- The CVE ID must match, and the score must list the vulnerable package in `products`, either directly or via [relationships][csaf-relationship].
+- Scores that apply to the vulnerable package itself take precedence over those that apply via relationships.
+- For relationships, the nearest parent in the dependency tree is used.
+- If multiple parents match at the same depth, the score with the highest severity is used, followed by the highest base score when severities are equal.
+- If multiple scores match the same package, the first one with a valid base score is used.
+- CVSS v3 is used over CVSS v2. The CVSS v3 `baseSeverity` is used as the severity (`NONE` is converted to `UNKNOWN`).
+  For CVSS v2, the severity is calculated from the base score (`0` = `UNKNOWN`, `< 4.0` = `LOW`, `< 7.0` = `MEDIUM`, otherwise `HIGH`).
+- The severity and CVSS are stored with the `csaf` source (e.g. `SeveritySource`, `VendorSeverity` and `CVSS` in the JSON output).
+
+Rescoring happens before filtering, so `--severity`, `--exit-code` and VEX status filtering use the CSAF severity.
+
+!!! warning
+    CSAF scores can lower severities, so vulnerabilities may no longer match `--severity` or cause `--exit-code` to fail.
+    Only use VEX sources you trust, including VEX repositories and VEX documents referenced by scanned SBOMs.
+
 ## Appendix
 ### PURL matching
 In the context of VEX, Package URLs (PURLs) are utilized to identify specific software packages and their versions.
@@ -579,3 +631,4 @@ Taking all of this into account, Trivy determines that `Module Root Z` is affect
 
 [openvex-subcomponent]: https://github.com/openvex/spec/blob/main/OPENVEX-SPEC.md#subcomponent
 [csaf-relationship]: https://docs.oasis-open.org/csaf/csaf/v2.0/os/csaf-v2.0-os.html#3224-product-tree-property---relationships
+[csaf-scores]: https://docs.oasis-open.org/csaf/csaf/v2.0/os/csaf-v2.0-os.html#32310-vulnerabilities-property---scores

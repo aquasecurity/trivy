@@ -178,6 +178,7 @@ trivy rootfs [flags] ROOTDIR
                                             - minimos
                                             - rootio
                                             - rapidfort
+                                            - csaf
                                             - auto
                                            (default [auto])
 ```

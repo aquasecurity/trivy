@@ -1,9 +1,12 @@
 package vex
 
 import (
+	"math"
+
 	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/samber/lo"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -34,9 +37,7 @@ func (v *CSAF) Filter(result *types.Result, bom *core.BOM) {
 }
 
 func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct *core.Component) (types.ModifiedFinding, bool) {
-	found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
-		return string(*item.CVE) == vuln.VulnerabilityID
-	})
+	found, ok := v.findVulnerability(vuln.VulnerabilityID)
 	if !ok {
 		return types.ModifiedFinding{}, false
 	}
@@ -46,6 +47,27 @@ func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct
 		return types.ModifiedFinding{}, false
 	}
 	return types.NewModifiedFinding(vuln, status, v.statement(found), v.source), true
+}
+
+// Rescore returns the severity and CVSS of the first usable score applicable to the product.
+// Scores apply only to the products they list, either directly or via product relationships.
+func (v *CSAF) Rescore(vuln types.DetectedVulnerability, product, subProduct *core.Component) (SeverityOverride, bool) {
+	found, ok := v.findVulnerability(vuln.VulnerabilityID)
+	if !ok {
+		return SeverityOverride{}, false
+	}
+
+	for _, score := range found.Scores {
+		if score == nil || !v.matchScore(score, product, subProduct) {
+			continue
+		}
+		if override, ok := extractSeverityOverride(score); ok {
+			override.Source = CSAFSeveritySource
+			override.Document = v.source
+			return override, true
+		}
+	}
+	return SeverityOverride{}, false
 }
 
 func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component) types.FindingStatus {
@@ -81,6 +103,9 @@ func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Compone
 }
 
 func (v *CSAF) matchProduct(productID csaf.ProductID, product *core.Component) bool {
+	if product == nil || product.PkgIdentifier.PURL == nil {
+		return false
+	}
 	for _, productPURL := range v.productPURLs(productID) {
 		if productPURL.Match(product.PkgIdentifier.PURL) {
 			return true
@@ -91,11 +116,7 @@ func (v *CSAF) matchProduct(productID csaf.ProductID, product *core.Component) b
 
 func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProduct *core.Component) (
 	csaf.RelationshipCategory, bool) {
-
-	// A relationship describes a sub-component within a product, so it can only match
-	// when a sub-component is given. subProduct is nil when a component is evaluated
-	// on its own (see reachRoot).
-	if subProduct == nil {
+	if product == nil || product.PkgIdentifier.PURL == nil || subProduct == nil || subProduct.PkgIdentifier.PURL == nil {
 		return "", false
 	}
 
@@ -116,13 +137,16 @@ func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProdu
 
 // productPURLs returns a slice of PackageURLs associated to a given product
 func (v *CSAF) productPURLs(product csaf.ProductID) []*purl.PackageURL {
+	if v.advisory.ProductTree == nil {
+		return nil
+	}
 	return v.purlsFromProductIdentificationHelpers(v.advisory.ProductTree.CollectProductIdentificationHelpers(product))
 }
 
 // inspectProductRelationships returns a map of PackageURLs associated to each relationship category
 // iterating over relationships looking for sub-products that might be part of the original product
 func (v *CSAF) inspectProductRelationships(fullProductID csaf.ProductID) map[csaf.RelationshipCategory][]relationship {
-	if v.advisory.ProductTree.RelationShips == nil {
+	if v.advisory.ProductTree == nil || v.advisory.ProductTree.RelationShips == nil {
 		return nil
 	}
 
@@ -175,10 +199,75 @@ func (v *CSAF) purlsFromProductIdentificationHelpers(helpers []*csaf.ProductIden
 
 func (v *CSAF) statement(vuln *csaf.Vulnerability) string {
 	threat, ok := lo.Find(vuln.Threats, func(threat *csaf.Threat) bool {
-		return lo.FromPtr(threat.Category) == csaf.CSAFThreatCategoryImpact
+		return threat != nil && lo.FromPtr(threat.Category) == csaf.CSAFThreatCategoryImpact
 	})
 	if !ok {
 		return ""
 	}
 	return lo.FromPtr(threat.Details)
+}
+
+func (v *CSAF) findVulnerability(vulnID string) (*csaf.Vulnerability, bool) {
+	return lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
+		return item != nil && item.CVE != nil && string(*item.CVE) == vulnID
+	})
+}
+
+func (v *CSAF) matchScore(score *csaf.Score, product, subProduct *core.Component) bool {
+	for _, p := range lo.FromPtr(score.Products) {
+		productID := lo.FromPtr(p)
+		if subProduct == nil && v.matchProduct(productID, product) {
+			return true
+		}
+		if _, match := v.matchRelationship(productID, product, subProduct); match {
+			return true
+		}
+	}
+	return false
+}
+
+// extractSeverityOverride prefers CVSS v3 over CVSS v2. Scores without a valid base score are ignored.
+func extractSeverityOverride(score *csaf.Score) (SeverityOverride, bool) {
+	if score.CVSS3 != nil && score.CVSS3.BaseScore != nil {
+		baseScore := *score.CVSS3.BaseScore
+		severity, ok := parseCVSSSeverity(string(lo.FromPtr(score.CVSS3.BaseSeverity)))
+		if ok && !math.IsNaN(baseScore) && !math.IsInf(baseScore, 0) && baseScore >= 0 && baseScore <= 10 {
+			return SeverityOverride{
+				Severity: severity,
+				CVSS: dbTypes.CVSS{
+					V3Vector: string(lo.FromPtr(score.CVSS3.VectorString)),
+					V3Score:  baseScore,
+				},
+			}, true
+		}
+	}
+
+	if score.CVSS2 != nil && score.CVSS2.BaseScore != nil {
+		baseScore := *score.CVSS2.BaseScore
+		if !math.IsNaN(baseScore) && !math.IsInf(baseScore, 0) && baseScore >= 0 && baseScore <= 10 {
+			return SeverityOverride{
+				Severity: cvss2Severity(baseScore),
+				CVSS: dbTypes.CVSS{
+					V2Vector: string(lo.FromPtr(score.CVSS2.VectorString)),
+					V2Score:  baseScore,
+				},
+			}, true
+		}
+	}
+
+	return SeverityOverride{}, false
+}
+
+// cvss2Severity calculates the severity from the CVSS v2 score as CVSS v2 has no qualitative rating.
+func cvss2Severity(score float64) dbTypes.Severity {
+	switch {
+	case score == 0:
+		return dbTypes.SeverityUnknown
+	case score < 4:
+		return dbTypes.SeverityLow
+	case score < 7:
+		return dbTypes.SeverityMedium
+	default:
+		return dbTypes.SeverityHigh
+	}
 }
