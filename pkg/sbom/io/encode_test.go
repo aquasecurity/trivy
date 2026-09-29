@@ -5,6 +5,7 @@ import (
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -520,6 +521,10 @@ func TestEncoder_Encode(t *testing.T) {
 					},
 				},
 				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
 					{
 						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
 						Type:       core.RelationshipContains,
@@ -1641,6 +1646,371 @@ func TestEncoder_Encode(t *testing.T) {
 			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
 		},
 		{
+			name: "OS packages with multiple parents",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "debian:12",
+				ArtifactType:  ftypes.TypeContainerImage,
+				Metadata: types.Metadata{
+					OS: &ftypes.OS{
+						Family: ftypes.Debian,
+						Name:   "12",
+					},
+				},
+				Results: []types.Result{
+					{
+						Target: "debian:12",
+						Type:   ftypes.Debian,
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "base-files@12.4",
+								Name:    "base-files",
+								Version: "12.4",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "0000000000000001",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "base-files",
+										Version: "12.4",
+									},
+								},
+								DependsOn: []string{
+									"libc6@2.37-15.1",
+								},
+							},
+							{
+								ID:      "coreutils@9.1-1",
+								Name:    "coreutils",
+								Version: "9.1-1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "0000000000000002",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "coreutils",
+										Version: "9.1-1",
+									},
+								},
+								DependsOn: []string{
+									"libc6@2.37-15.1",
+								},
+							},
+							{
+								ID:      "libc6@2.37-15.1",
+								Name:    "libc6",
+								Version: "2.37-15.1",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "0000000000000003",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeDebian,
+										Name:    "libc6",
+										Version: "2.37-15.1",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeContainerImage,
+					Name: "debian:12",
+					Root: true,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type:    core.TypeOS,
+					Name:    "debian",
+					Version: "12",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "os-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "base-files",
+					Version: "12.4",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "base-files@12.4",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "0000000000000001",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "base-files",
+							Version: "12.4",
+						},
+						BOMRef: "pkg:deb/base-files@12.4",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "coreutils",
+					Version: "9.1-1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "coreutils@9.1-1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "0000000000000002",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "coreutils",
+							Version: "9.1-1",
+						},
+						BOMRef: "pkg:deb/coreutils@9.1-1",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): {
+					Type:    core.TypeLibrary,
+					Name:    "libc6",
+					Version: "2.37-15.1",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "libc6@2.37-15.1",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "debian",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "0000000000000003",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeDebian,
+							Name:    "libc6",
+							Version: "2.37-15.1",
+						},
+						BOMRef: "pkg:deb/libc6@2.37-15.1",
+					},
+				},
+			},
+			// `libc6` has two parents, but it must still be listed exactly once
+			// under the OS component so that it is always reachable from the root.
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipContains,
+					},
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000005"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
+			name: "language-specific packages with parents",
+			report: types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  ".",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: []types.Result{
+					{
+						Target: "package-lock.json",
+						Type:   ftypes.Npm,
+						Class:  types.ClassLangPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "express@4.17.3",
+								Name:    "express",
+								Version: "4.17.3",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "0000000000000011",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "express",
+										Version: "4.17.3",
+									},
+								},
+								DependsOn: []string{
+									"accepts@1.3.8",
+								},
+							},
+							{
+								ID:      "accepts@1.3.8",
+								Name:    "accepts",
+								Version: "1.3.8",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "0000000000000012",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeNPM,
+										Name:    "accepts",
+										Version: "1.3.8",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			wantComponents: map[uuid.UUID]*core.Component{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					Type: core.TypeFilesystem,
+					Name: ".",
+					Root: true,
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+					},
+					Properties: []core.Property{
+						{
+							Name:  core.PropertySchemaVersion,
+							Value: "2",
+						},
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					Type: core.TypeApplication,
+					Name: "package-lock.json",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyClass,
+							Value: "lang-pkgs",
+						},
+						{
+							Name:  core.PropertyType,
+							Value: "npm",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000002",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					Type:    core.TypeLibrary,
+					Name:    "express",
+					Version: "4.17.3",
+					SrcFile: "package-lock.json",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "express@4.17.3",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "npm",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "0000000000000011",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeNPM,
+							Name:    "express",
+							Version: "4.17.3",
+						},
+						BOMRef: "pkg:npm/express@4.17.3",
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): {
+					Type:    core.TypeLibrary,
+					Name:    "accepts",
+					Version: "1.3.8",
+					SrcFile: "package-lock.json",
+					Properties: []core.Property{
+						{
+							Name:  core.PropertyPkgID,
+							Value: "accepts@1.3.8",
+						},
+						{
+							Name:  core.PropertyPkgType,
+							Value: "npm",
+						},
+					},
+					PkgIdentifier: ftypes.PkgIdentifier{
+						UID: "0000000000000012",
+						PURL: &packageurl.PackageURL{
+							Type:    packageurl.TypeNPM,
+							Name:    "accepts",
+							Version: "1.3.8",
+						},
+						BOMRef: "pkg:npm/accepts@1.3.8",
+					},
+				},
+			},
+			// Unlike OS packages, `accepts` already has a parent, so it must not be
+			// listed directly under the application component.
+			wantRels: map[uuid.UUID][]core.Relationship{
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000001"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000002"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"),
+						Type:       core.RelationshipContains,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000003"): {
+					{
+						Dependency: uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"),
+						Type:       core.RelationshipDependsOn,
+					},
+				},
+				uuid.MustParse("3ff14136-e09f-4df9-80ea-000000000004"): nil,
+			},
+			wantVulns: make(map[uuid.UUID][]core.Vulnerability),
+		},
+		{
 			name: "invalid digest",
 			report: types.Report{
 				SchemaVersion: 2,
@@ -1683,6 +2053,190 @@ func TestEncoder_Encode(t *testing.T) {
 			assert.Equal(t, tt.wantVulns, got.Vulnerabilities())
 		})
 	}
+}
+
+// TestEncoder_Encode_ForceRegenerate covers the `ForceRegenerate` path, which is used
+// by VEX filtering to rebuild the BOM from the report results. The root component of
+// the regenerated BOM must inherit the type and PURL of the original SBOM root so that
+// VEX statements targeting the original product (e.g. `pkg:oci/debian`) still match.
+func TestEncoder_Encode_ForceRegenerate(t *testing.T) {
+	ociPURL := &packageurl.PackageURL{
+		Type:    packageurl.TypeOCI,
+		Name:    "debian",
+		Version: "sha256:4482958b4461ff7d9fabc24b3a9ab1e9a2c85ece07b2db1840c7cbc01d053e90",
+	}
+
+	tests := []struct {
+		name        string
+		bom         func(t *testing.T) *core.BOM
+		wantName    string
+		wantGroup   string
+		wantVersion string
+		wantType    core.ComponentType
+		wantPURL    *packageurl.PackageURL
+	}{
+		{
+			name: "root component with PURL",
+			bom: func(t *testing.T) *core.BOM {
+				return newTestRootBOM(t, &core.Component{
+					Root:          true,
+					Type:          core.TypeApplication,
+					Name:          "trivy",
+					Group:         "aquasecurity",
+					Version:       "0.57.1",
+					PkgIdentifier: ftypes.PkgIdentifier{PURL: ociPURL},
+				})
+			},
+			wantName:    "trivy",
+			wantGroup:   "aquasecurity",
+			wantVersion: "0.57.1",
+			wantType:    core.TypeApplication,
+			wantPURL:    ociPURL,
+		},
+		{
+			name: "root component without PURL",
+			bom: func(t *testing.T) *core.BOM {
+				return newTestRootBOM(t, &core.Component{
+					Root: true,
+					Type: core.TypeContainerImage,
+					Name: "debian:12",
+				})
+			},
+			wantName: "debian.cdx.json",
+			wantType: core.TypeFilesystem,
+		},
+		{
+			name: "no root component",
+			bom: func(t *testing.T) *core.BOM {
+				return newTestRootBOM(t, &core.Component{
+					Type:          core.TypeLibrary,
+					Name:          "libc6",
+					PkgIdentifier: ftypes.PkgIdentifier{PURL: ociPURL},
+				})
+			},
+			wantName: "debian.cdx.json",
+			wantType: core.TypeFilesystem,
+		},
+		{
+			name: "no BOM",
+			bom: func(_ *testing.T) *core.BOM {
+				return nil
+			},
+			wantName: "debian.cdx.json",
+			wantType: core.TypeFilesystem,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			bom := tt.bom(t)
+			uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+			got, err := sbomio.NewEncoder(sbomio.ForceRegenerate()).Encode(types.Report{
+				SchemaVersion: 2,
+				ArtifactName:  "debian.cdx.json",
+				ArtifactType:  ftypes.TypeCycloneDX,
+				BOM:           bom,
+			})
+			require.NoError(t, err)
+
+			root, found := lo.Find(lo.Values(got.Components()), func(c *core.Component) bool {
+				return c.Root
+			})
+			require.True(t, found, "root component not found")
+
+			assert.Equal(t, tt.wantName, root.Name)
+			assert.Equal(t, tt.wantGroup, root.Group)
+			assert.Equal(t, tt.wantVersion, root.Version)
+			assert.Equal(t, tt.wantType, root.Type)
+			assert.Equal(t, tt.wantPURL, root.PkgIdentifier.PURL)
+		})
+	}
+}
+
+func TestEncoder_Encode_OSDirectPackagesBelongToOSComponent(t *testing.T) {
+	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+	got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(types.Report{
+		SchemaVersion: 2,
+		ArtifactName:  "debian:12",
+		ArtifactType:  ftypes.TypeContainerImage,
+		Metadata: types.Metadata{
+			OS: &ftypes.OS{
+				Family: ftypes.Debian,
+				Name:   "12",
+			},
+		},
+		Results: []types.Result{
+			{
+				Target: "debian:12",
+				Type:   ftypes.Debian,
+				Class:  types.ClassOSPkg,
+				Packages: []ftypes.Package{
+					{
+						ID:      "debian@12",
+						Name:    "debian",
+						Version: "12",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "0000000000000001",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeDebian,
+								Name:    "debian",
+								Version: "12",
+							},
+						},
+						Relationship: ftypes.RelationshipRoot,
+						DependsOn: []string{
+							"bash@5.2.15-2+b7",
+						},
+					},
+					{
+						ID:      "bash@5.2.15-2+b7",
+						Name:    "bash",
+						Version: "5.2.15-2+b7",
+						Identifier: ftypes.PkgIdentifier{
+							UID: "0000000000000002",
+							PURL: &packageurl.PackageURL{
+								Type:    packageurl.TypeDebian,
+								Name:    "bash",
+								Version: "5.2.15-2+b7",
+							},
+						},
+						Relationship: ftypes.RelationshipDirect,
+					},
+				},
+			},
+		},
+	})
+	require.NoError(t, err)
+
+	osComponent, found := lo.Find(lo.Values(got.Components()), func(c *core.Component) bool {
+		return c.Type == core.TypeOS
+	})
+	require.True(t, found, "OS component not found")
+
+	contains := lo.Filter(got.Relationships()[osComponent.ID()], func(rel core.Relationship, _ int) bool {
+		return rel.Type == core.RelationshipContains
+	})
+	assert.Len(t, contains, 2)
+
+	childIDs := lo.Map(contains, func(rel core.Relationship, _ int) uuid.UUID {
+		return rel.Dependency
+	})
+	children := lo.Map(childIDs, func(id uuid.UUID, _ int) *core.Component {
+		return got.Components()[id]
+	})
+	assert.ElementsMatch(t, []string{"debian", "bash"}, lo.Map(children, func(c *core.Component, _ int) string {
+		return c.Name
+	}))
+}
+
+// newTestRootBOM returns a BOM containing only the given component.
+func newTestRootBOM(t *testing.T, c *core.Component) *core.BOM {
+	uuid.SetFakeUUID(t, "2ff14136-e09f-4df9-80ea-%012d")
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(c)
+	return bom
 }
 
 var (
