@@ -263,7 +263,7 @@ func convertToRPCCryptoCertificate(cert *ftypes.CryptoCertificate) *common.Crypt
 		Uris:                  cert.URIs,
 		BasicConstraintsValid: cert.BasicConstraintsValid,
 		IsCa:                  cert.IsCA,
-		MaxPathLen:            int32(cert.MaxPathLen),
+		MaxPathLen:            cert.MaxPathLen,
 		MaxPathLenZero:        cert.MaxPathLenZero,
 	}
 }
@@ -752,7 +752,7 @@ func convertFromRPCCryptoCertificate(rpcCert *common.CryptoCertificate) *ftypes.
 		URIs:                  rpcCert.Uris,
 		BasicConstraintsValid: rpcCert.BasicConstraintsValid,
 		IsCA:                  rpcCert.IsCa,
-		MaxPathLen:            int(rpcCert.MaxPathLen),
+		MaxPathLen:            rpcCert.MaxPathLen,
 		MaxPathLenZero:        rpcCert.MaxPathLenZero,
 	}
 }

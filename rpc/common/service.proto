@@ -338,7 +338,7 @@ message CryptoCertificate {
   repeated string uris = 12;
   bool basic_constraints_valid = 13;
   bool is_ca = 14;
-  int32 max_path_len = 15;
+  int64 max_path_len = 15;
   bool max_path_len_zero = 16;
 }
 
