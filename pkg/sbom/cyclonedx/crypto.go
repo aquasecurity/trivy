@@ -216,7 +216,7 @@ func cryptoPrimitive(primitive ftypes.CryptoPrimitive) cdx.CryptoPrimitive {
 }
 
 // evidence reports where the component was found. A cryptographic asset is merged by
-// identity, so one component has an occurrence per file it was found in.
+// identity, so one component has an occurrence per file and layer it was found in.
 //
 // CycloneDX 1.7 has no structured field for the layer of an occurrence, so the layer goes to
 // additionalContext as a Trivy-specific name-value pair.

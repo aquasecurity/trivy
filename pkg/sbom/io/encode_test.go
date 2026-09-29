@@ -1724,6 +1724,8 @@ func TestEncoder_EncodeCryptoAssets(t *testing.T) {
 					foundAt(certificate, certificatePath, baseLayer),
 					foundAt(algorithm, certificatePath, baseLayer),
 					foundAt(certificateKey, certificatePath, baseLayer),
+					// The certificate file also holds its key in a block of its own.
+					foundAt(standaloneKey, certificatePath, baseLayer),
 					// The same certificate copied into the user layer.
 					foundAt(certificate, copiedPath, userLayer),
 					// The same certificate rewritten at its path in the user layer.
