@@ -942,6 +942,21 @@ func TestPackageURL_LangType(t *testing.T) {
 			want: ftypes.Jar,
 		},
 		{
+			name: "julia",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Example",
+				Version: "0.5.3",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "7876af07-990d-54b4-ab0e-23690620f79a",
+					},
+				},
+			},
+			want: ftypes.Julia,
+		},
+		{
 			name: "k8s",
 			purl: packageurl.PackageURL{
 				Type:    purl.TypeK8s,
@@ -965,6 +980,102 @@ func TestPackageURL_LangType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
+		})
+	}
+}
+
+// A purl type that Class reports as unknown is dropped by the SBOM decoder, so
+// every type New can emit has to land in one of the two known classes.
+func TestPackageURL_Class(t *testing.T) {
+	tests := []struct {
+		name string
+		purl packageurl.PackageURL
+		want types.ResultClass
+	}{
+		{
+			name: "apk",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeApk,
+				Namespace: "alpine",
+				Name:      "musl",
+				Version:   "1.2.3",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "deb",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "libc6",
+				Version:   "2.36-9",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "rpm",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "glibc",
+				Version:   "2.34-60",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "bottlerocket",
+			purl: packageurl.PackageURL{
+				Type:    "bottlerocket",
+				Name:    "glibc",
+				Version: "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "distro",
+						Value: "bottlerocket-1.34.0",
+					},
+				},
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "maven",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
+			},
+			want: types.ClassLangPkg,
+		},
+		{
+			name: "julia",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Example",
+				Version: "0.5.3",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "7876af07-990d-54b4-ab0e-23690620f79a",
+					},
+				},
+			},
+			want: types.ClassLangPkg,
+		},
+		{
+			name: "a type trivy does not produce",
+			purl: packageurl.PackageURL{
+				Type:    "huggingface",
+				Name:    "distilbert-base-uncased",
+				Version: "043235d6088ecd3dd5fb5ca3592b6913fd516027",
+			},
+			want: types.ClassUnknown,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := purl.PackageURL(tt.purl)
+			assert.Equalf(t, tt.want, p.Class(), "Class()")
 		})
 	}
 }

@@ -176,6 +176,8 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Conan
 	case packageurl.TypePub:
 		return ftypes.Pub
+	case packageurl.TypeJulia:
+		return ftypes.Julia
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
 	case TypeK8s:
@@ -199,7 +201,7 @@ func (p *PackageURL) LangType() ftypes.LangType {
 
 func (p *PackageURL) Class() types.ResultClass {
 	switch p.Type {
-	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
+	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM, packageurlTypeBottlerocket:
 		// OS packages
 		return types.ClassOSPkg
 	default:
