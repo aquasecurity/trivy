@@ -658,6 +658,227 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name: "versionless direct dependencies (git and path)",
+			file: "testdata/versionless-direct-deps.txtar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "app@0.1.0",
+								Name:         "app",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipRoot,
+								Locations: []types.Location{
+									{
+										StartLine: 5,
+										EndLine:   13,
+									},
+								},
+								DependsOn: []string{
+									"local@0.1.0",
+									"log@0.4.34",
+									"tantivy-fst@0.5.0",
+								},
+							},
+							{
+								ID:           "local@0.1.0",
+								Name:         "local",
+								Version:      "0.1.0",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 33,
+										EndLine:   38,
+									},
+								},
+								DependsOn: []string{"itoa@1.0.18"},
+							},
+							{
+								ID:           "log@0.4.34",
+								Name:         "log",
+								Version:      "0.4.34",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 40,
+										EndLine:   44,
+									},
+								},
+							},
+							{
+								ID:           "tantivy-fst@0.5.0",
+								Name:         "tantivy-fst",
+								Version:      "0.5.0",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 62,
+										EndLine:   70,
+									},
+								},
+								DependsOn: []string{
+									"byteorder@1.5.0",
+									"regex-syntax@0.8.11",
+									"utf8-ranges@1.0.5",
+								},
+							},
+							{
+								ID:           "byteorder@1.5.0",
+								Name:         "byteorder",
+								Version:      "1.5.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   19,
+									},
+								},
+							},
+							{
+								ID:           "itoa@1.0.18",
+								Name:         "itoa",
+								Version:      "1.0.18",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 27,
+										EndLine:   31,
+									},
+								},
+							},
+							{
+								ID:           "regex-syntax@0.8.11",
+								Name:         "regex-syntax",
+								Version:      "0.8.11",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 56,
+										EndLine:   60,
+									},
+								},
+							},
+							{
+								ID:           "utf8-ranges@1.0.5",
+								Name:         "utf8-ranges",
+								Version:      "1.0.5",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 72,
+										EndLine:   76,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "workspace member dev-dependency is not direct",
+			file: "testdata/workspace-member-dev-dependency.txtar",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "Cargo.lock",
+						Packages: types.Packages{
+							{
+								ID:           "9e8d7cef8bd2c6bf",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"member1@0.1.0",
+									"member2@0.1.0",
+								},
+							},
+							{
+								ID:           "member1@0.1.0",
+								Name:         "member1",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 29,
+										EndLine:   34,
+									},
+								},
+								DependsOn: []string{
+									"gdb-command@0.7.6",
+								},
+							},
+							{
+								ID:           "member2@0.1.0",
+								Name:         "member2",
+								Version:      "0.1.0",
+								Relationship: types.RelationshipWorkspace,
+								Locations: []types.Location{
+									{
+										StartLine: 36,
+										EndLine:   41,
+									},
+								},
+								DependsOn: []string{},
+							},
+							{
+								ID:           "gdb-command@0.7.6",
+								Name:         "gdb-command",
+								Version:      "0.7.6",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 14,
+										EndLine:   21,
+									},
+								},
+								DependsOn: []string{
+									"wait-timeout@0.2.0",
+								},
+							},
+							{
+								ID:           "libc@0.2.150",
+								Name:         "libc",
+								Version:      "0.2.150",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 23,
+										EndLine:   27,
+									},
+								},
+							},
+							{
+								ID:           "wait-timeout@0.2.0",
+								Name:         "wait-timeout",
+								Version:      "0.2.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 78,
+										EndLine:   85,
+									},
+								},
+								DependsOn: []string{"libc@0.2.150"},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "workspace members",
 			file: "testdata/toml-workspace-glob.txtar",
 			want: &analyzer.AnalysisResult{
