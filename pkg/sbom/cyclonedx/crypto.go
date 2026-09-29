@@ -17,6 +17,7 @@ import (
 // enumeration, which qualifies a curve with the body that standardized it. A curve absent
 // from the map is left out, because the enumeration accepts nothing else.
 var ellipticCurves = map[string]string{
+	"P-224": "nist/P-224",
 	"P-256": "nist/P-256",
 	"P-384": "nist/P-384",
 	"P-521": "nist/P-521",
