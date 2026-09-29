@@ -328,6 +328,60 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 			},
 		},
 		{
+			name: "kind without matching details",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindKey,
+						KeyType:  ftypes.CryptoKeyTypePublic,
+						Identity: publicKeyDescriptor.Identity,
+						Name:     "RSA-2048 public key",
+					},
+					FilePath: "opt/app/public.pem",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:key:public:spki-sha256:" + publicKeyDigest,
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "RSA-2048 public key",
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "opt/app/public.pem"},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "unknown kind",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: "protocol",
+						Identity: ftypes.CryptoIdentity{
+							Method: ftypes.CryptoMethodSHA256,
+							Value:  certificateDigest,
+						},
+						Name: "TLS 1.3",
+					},
+					FilePath: "etc/app/tls.conf",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:protocol:sha256:" + certificateDigest,
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "TLS 1.3",
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "etc/app/tls.conf"},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "one asset found in several files",
 			assets: []ftypes.CryptoAsset{
 				{

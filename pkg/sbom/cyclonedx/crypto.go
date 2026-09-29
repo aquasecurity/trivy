@@ -59,7 +59,7 @@ func (m *Marshaler) cryptoProperties(asset ftypes.CryptoAssetInfo) *cdx.CryptoPr
 	}
 
 	// Either the kind is unknown, or the details it names are missing.
-	m.logger.Debug("Skipping the cryptographic asset that has no details matching its kind",
+	m.logger.Debug("Omitting crypto properties of the cryptographic asset that has no details matching its kind",
 		log.String("bom-ref", core.CryptoBOMRef(asset.Descriptor())), log.Any("kind", asset.Kind))
 	return nil
 }
