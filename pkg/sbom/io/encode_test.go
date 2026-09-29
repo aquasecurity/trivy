@@ -1721,6 +1721,8 @@ func TestEncoder_EncodeCryptoAssets(t *testing.T) {
 				Target: "debian:12",
 				Class:  types.ClassCrypto,
 				CryptoAssets: []ftypes.CryptoAsset{
+					// The same certificate rewritten at its path in the user layer.
+					foundAt(certificate, certificatePath, userLayer),
 					foundAt(certificate, certificatePath, baseLayer),
 					foundAt(algorithm, certificatePath, baseLayer),
 					foundAt(certificateKey, certificatePath, baseLayer),
@@ -1728,8 +1730,6 @@ func TestEncoder_EncodeCryptoAssets(t *testing.T) {
 					foundAt(standaloneKey, certificatePath, baseLayer),
 					// The same certificate copied into the user layer.
 					foundAt(certificate, copiedPath, userLayer),
-					// The same certificate rewritten at its path in the user layer.
-					foundAt(certificate, certificatePath, userLayer),
 					foundAt(algorithm, copiedPath, userLayer),
 					// The key of that certificate, stored in a file of its own.
 					foundAt(standaloneKey, keyPath, userLayer),
