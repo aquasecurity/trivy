@@ -8598,14 +8598,16 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 $<span class="w"> </span>cosign<span class="w"> </span>attest<span class="w"> </span>--key<span class="w"> </span>/path/to/cosign.key<span class="w"> </span>--type<span class="w"> </span>spdx<span class="w"> </span>--predicate<span class="w"> </span>sbom.spdx.json<span class="w"> </span>&lt;IMAGE&gt;
 </code></pre></div>
 <h2 id="keyless-signing">Keyless signing<a class="headerlink" href="#keyless-signing" title="Permanent link">&para;</a></h2>
-<p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).</p>
-<div class="highlight"><pre><span></span><code><span class="c1"># The cyclonedx type is supported in Cosign v1.10.0 or later.</span>
-$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>-o<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
-<span class="c1"># The following command uploads SBOM attestation to the public Rekor instance.</span>
-$<span class="w"> </span><span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>cosign<span class="w"> </span>attest<span class="w"> </span>--type<span class="w"> </span>cyclonedx<span class="w"> </span>--predicate<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
+<p>You can use Cosign to sign without keys by authenticating with an OpenID Connect protocol supported by sigstore (Google, GitHub, or Microsoft).
+The following example uses Cosign v2 or later. With Cosign v2.2.0 or later, Rekor does not retain the attestation payload by default. <a href="#scanning">Verify and export it from the OCI registry</a> for scanning; see the <a href="../rekor/">Rekor SBOM source limitations</a> for older Cosign versions.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>-o<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
+<span class="c1"># Cosign publishes the attestation to the OCI registry and records signing evidence in Rekor.</span>
+$<span class="w"> </span>cosign<span class="w"> </span>attest<span class="w"> </span>--type<span class="w"> </span>cyclonedx<span class="w"> </span>--predicate<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
 </code></pre></div>
-<p>You can verify attestations.
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span><span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>cosign<span class="w"> </span>verify-attestation<span class="w"> </span>--type<span class="w"> </span>cyclonedx<span class="w"> </span>&lt;IMAGE&gt;
+<p>You can verify attestations by specifying the expected signer identity and OIDC issuer.
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>cosign<span class="w"> </span>verify-attestation<span class="w"> </span>--type<span class="w"> </span>cyclonedx<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-identity<span class="w"> </span>&lt;SIGNER_IDENTITY&gt;<span class="w"> </span><span class="se">\</span>
+<span class="w">    </span>--certificate-oidc-issuer<span class="w"> </span>&lt;OIDC_ISSUER&gt;<span class="w"> </span>&lt;IMAGE&gt;
 </code></pre></div></p>
 <h2 id="scanning">Scanning<a class="headerlink" href="#scanning" title="Permanent link">&para;</a></h2>
 <p>Trivy can take an SBOM attestation as input and scan for vulnerabilities. Currently, Trivy supports CycloneDX-type attestation.</p>

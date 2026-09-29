@@ -8663,21 +8663,22 @@ You're not viewing the latest version of the documentation.
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
+<div class="admonition warning">
+<p class="admonition-title">Cosign v2.0.0 and later</p>
+<p><code>--sbom-sources rekor</code> cannot read the CycloneDX attestation JSON format used by Cosign v2.0.0 or later. Instead, <a href="../sbom/#scanning">export the attestation with <code>cosign verify-attestation</code></a> and scan the saved file with <code>trivy sbom</code>.</p>
+</div>
+<p>For SBOMs published as <a href="../../../target/container_image/#discover-sbom-referencing-the-container-image">supported OCI referrers</a>, run <code>trivy image --sbom-sources oci &lt;IMAGE&gt;</code>.</p>
+<p>The <code>--sbom-sources rekor</code> flag only supports the legacy CycloneDX attestation format produced by Cosign v1. Cosign v2.0.0 <a href="https://github.com/sigstore/cosign/pull/2718">changed the SBOM's JSON structure</a>, which this flag does not support even when the payload is retained in Rekor. In addition, Cosign v2.2.0 <a href="https://github.com/sigstore/cosign/pull/3113">changed the default Rekor entry type</a> to <code>dsse</code>, so Rekor no longer retains the payload by default.</p>
 <h2 id="container-images">Container images<a class="headerlink" href="#container-images" title="Permanent link">&para;</a></h2>
 <p>Trivy can retrieve SBOM attestation of the specified container image in the <a href="https://github.com/sigstore/rekor">Rekor</a> instance and scan it for vulnerabilities.</p>
 <h3 id="prerequisites">Prerequisites<a class="headerlink" href="#prerequisites" title="Permanent link">&para;</a></h3>
-<ol>
-<li>SBOM attestation stored in Rekor<ul>
-<li>See <a href="../sbom/#keyless-signing">the "Keyless signing" section</a> if you want to upload your SBOM attestation to Rekor.</li>
-</ul>
-</li>
-</ol>
+<p>A CycloneDX SBOM attestation created with Cosign v1.10.0 or later in the v1 series (tested with v1.13.6) must be retained in a Rekor v1 instance for the image.</p>
+<p>To create one with Cosign v1.13.6:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>-o<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
+$<span class="w"> </span><span class="nv">COSIGN_EXPERIMENTAL</span><span class="o">=</span><span class="m">1</span><span class="w"> </span>cosign<span class="w"> </span>attest<span class="w"> </span>--type<span class="w"> </span>cyclonedx<span class="w"> </span>--predicate<span class="w"> </span>sbom.cdx.json<span class="w"> </span>&lt;IMAGE&gt;
+</code></pre></div>
 <h3 id="scanning">Scanning<a class="headerlink" href="#scanning" title="Permanent link">&para;</a></h3>
 <p>You need to pass <code>--sbom-sources rekor</code> so that Trivy will look for SBOM attestation in Rekor.</p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>--sbom-sources</code> can be used only with <code>trivy image</code> at the moment.</p>
-</div>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--sbom-sources<span class="w"> </span>rekor<span class="w"> </span>otms61/alpine:3.7.3<span class="w">                                                                            </span><span class="o">[</span>~/src/github.com/aquasecurity/trivy<span class="o">]</span>
 <span class="m">2022</span>-09-16T17:37:13.258+0900<span class="w">    </span>INFO<span class="w">    </span>Vulnerability<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
 <span class="m">2022</span>-09-16T17:37:13.258+0900<span class="w">    </span>INFO<span class="w">    </span>Secret<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
@@ -8713,14 +8714,8 @@ Total:<span class="w"> </span><span class="m">2</span><span class="w"> </span><s
 <h2 id="non-packaged-binaries">Non-packaged binaries<a class="headerlink" href="#non-packaged-binaries" title="Permanent link">&para;</a></h2>
 <p>Trivy can retrieve SBOM attestation of non-packaged binaries in the <a href="https://github.com/sigstore/rekor">Rekor</a> instance and scan it for vulnerabilities.</p>
 <h3 id="prerequisites_1">Prerequisites<a class="headerlink" href="#prerequisites_1" title="Permanent link">&para;</a></h3>
-<ol>
-<li>SBOM attestation stored in Rekor<ul>
-<li>See <a href="../sbom/#keyless-signing">the "Keyless signing" section</a> if you want to upload your SBOM attestation to Rekor.</li>
-</ul>
-</li>
-</ol>
-<p>Cosign currently does not support keyless signing for blob attestation, so use our plugin at the moment.
-This example uses a cat clone <a href="https://github.com/sharkdp/bat">bat</a> written in Rust.
+<p>A CycloneDX SBOM attestation for the binary must be available in Rekor.</p>
+<p>This example uses a cat clone <a href="https://github.com/sharkdp/bat">bat</a> written in Rust.
 You need to generate SBOM from lock files like <code>Cargo.lock</code> at first.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>git<span class="w"> </span>clone<span class="w"> </span>-b<span class="w"> </span>v0.20.0<span class="w"> </span>https://github.com/sharkdp/bat
 $<span class="w"> </span>trivy<span class="w"> </span>fs<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--output<span class="w"> </span>bat.cdx<span class="w"> </span>./bat/Cargo.lock
