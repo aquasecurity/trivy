@@ -300,6 +300,41 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			// Without CentOSStream in the RPM branch of purlType this falls to the
+			// default and comes out as Type "centos-stream", which Class then
+			// reports as unknown and the SBOM decoder drops.
+			name: "os package with centos stream",
+			typ:  ftypes.CentOSStream,
+			pkg: ftypes.Package{
+				Name:    "glibc",
+				Version: "2.34",
+				Release: "60.el9",
+				Arch:    "x86_64",
+			},
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: ftypes.CentOSStream,
+					Name:   "9",
+				},
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "centos-stream",
+				Name:      "glibc",
+				Version:   "2.34-60.el9",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "x86_64",
+					},
+					{
+						Key:   "distro",
+						Value: "centos-stream-9",
+					},
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
@@ -1016,16 +1051,6 @@ func TestPackageURL_Class(t *testing.T) {
 			purl: packageurl.PackageURL{
 				Type:      packageurl.TypeRPM,
 				Namespace: "redhat",
-				Name:      "glibc",
-				Version:   "2.34-60",
-			},
-			want: types.ClassOSPkg,
-		},
-		{
-			name: "centos stream",
-			purl: packageurl.PackageURL{
-				Type:      packageurl.TypeRPM,
-				Namespace: "centos-stream",
 				Name:      "glibc",
 				Version:   "2.34-60",
 			},
