@@ -147,13 +147,19 @@ var algorithms = map[string]algorithm{
 		strengthBasis: dsaStrengthBasis,
 	},
 
-	// Ed25519 uses one OID as both the key and the signature algorithm, and the curve
-	// fixes its parameters.
+	// Ed25519 and Ed448 each use one OID as both the key and the signature algorithm, and
+	// the curve fixes its parameters.
 	"1.3.101.112": {
 		name:          "Ed25519",
 		family:        "EdDSA",
 		primitive:     ftypes.CryptoPrimitiveSignature,
 		strengthBasis: ed25519StrengthBasis,
+	},
+	"1.3.101.113": {
+		name:          "Ed448",
+		family:        "EdDSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: ed448StrengthBasis,
 	},
 
 	// ML-DSA has an OID per parameter set, each used as both the key and the signature

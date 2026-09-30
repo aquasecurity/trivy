@@ -67,6 +67,7 @@ func TestAssessStrength(t *testing.T) {
 			wantCategory: new(0),
 		},
 		{name: "Ed25519", oid: "1.3.101.112", wantClassical: new(128), wantCategory: new(0)},
+		{name: "Ed448", oid: "1.3.101.113", wantClassical: new(224), wantCategory: new(0)},
 		{name: "ML-DSA-44", oid: "2.16.840.1.101.3.4.3.17", wantCategory: new(2)},
 		{name: "ML-DSA-65", oid: "2.16.840.1.101.3.4.3.18", wantCategory: new(3)},
 		{name: "ML-DSA-87", oid: "2.16.840.1.101.3.4.3.19", wantCategory: new(5)},

@@ -37,6 +37,38 @@ var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 // parsedFilePath is the path every fixture is parsed from.
 const parsedFilePath = "candidate.pem"
 
+// ed448CertificatePEM is a self-signed Ed448 certificate. crypto/x509 cannot produce Ed448,
+// so the certificate comes from OpenSSL:
+//
+//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl req -x509 -newkey ed448 -nodes -keyout /dev/null -subj /CN=ed448 -days 36500'
+const ed448CertificatePEM = `-----BEGIN CERTIFICATE-----
+MIIBgjCCAQKgAwIBAgIUXjC0zfeRr1tKlPH01JudKhbbujIwBQYDK2VxMBAxDjAM
+BgNVBAMMBWVkNDQ4MCAXDTI2MDkzMDE5MjEzNloYDzIxMjYwOTA2MTkyMTM2WjAQ
+MQ4wDAYDVQQDDAVlZDQ0ODBDMAUGAytlcQM6AEe7Olbxb3pqiF3ZlFpZSzKCuIVf
+TGaVwjNrlpmwIfujqX+dS68NgAi8zDuCt/V22LHVpb75i+eJgKNTMFEwHQYDVR0O
+BBYEFEQQUJqc4ai0yXXJ6yg2HcqZ93xhMB8GA1UdIwQYMBaAFEQQUJqc4ai0yXXJ
+6yg2HcqZ93xhMA8GA1UdEwEB/wQFMAMBAf8wBQYDK2VxA3MAapmNjvh52MQOqubx
+gOyTIZvn/PYk1GLkbo/vwuOLzlhXbwgPri/+/REAaEgDT1z2sFFWZtW4uEiAOk7c
+dhs/7xE1qADrTOKPdVDihzknrv7b6ArpxALMVANmMQs60UJiq+olpP3E1ik3G93W
+Vx7bhgEA
+-----END CERTIFICATE-----
+`
+
+// x448CertificatePEM is a certificate for an X448 key, signed with an Ed25519 key. Neither
+// crypto/x509 nor the catalog knows X448, and the certificate comes from OpenSSL:
+//
+//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl genpkey -algorithm ed25519 -out ca.key && openssl genpkey -algorithm x448 | openssl pkey -pubout -out x448.pub && openssl x509 -new -subj /CN=x448 -key ca.key -force_pubkey x448.pub -days 36500'
+const x448CertificatePEM = `-----BEGIN CERTIFICATE-----
+MIIBOzCB7qADAgECAhQ/ypyR9JPJ51E6Zo3JMU+k9OPRTTAFBgMrZXAwDzENMAsG
+A1UEAwwEeDQ0ODAgFw0yNjA5MzAxOTIxNDdaGA8yMTI2MDkwNjE5MjE0N1owDzEN
+MAsGA1UEAwwEeDQ0ODBCMAUGAytlbwM5AI2vRDNDpFDXbWHWQZSQJZMC68HycEje
+lUmdofOaX2Vmm5Z+vvckw36hNbzgxHjZE6Q2IpVTLLTFo0IwQDAdBgNVHQ4EFgQU
+xVYou1Zp7144roqlk6PLLOrFCtIwHwYDVR0jBBgwFoAUbsD0cKe8eRJGavxI6a4B
+HdMHSQcwBQYDK2VwA0EAevJaAE+dQj+/CvhmsSNqV89aQK0Mj71LvZb8s6dqbf6h
+7SDrhK1yzj+q7xsK80PFrz22kr4z4iyPkpQzscaeAQ==
+-----END CERTIFICATE-----
+`
+
 // rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
 // mutate to it. Its values are not consistent with each other.
 func rsaPrivateKeyDER(t *testing.T, mutate func(*cryptox509.PKCS1PrivateKey)) []byte {
@@ -444,12 +476,33 @@ func TestParse(t *testing.T) {
 			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: fixtures.x25519PKCS8DER}),
 		},
 		{
-			name:  "unsupported PKIX key under PUBLIC KEY",
+			name:  "X25519 PKIX public PEM",
 			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.x25519PKIXDER}),
+			want:  []found{pemPublicKey},
 		},
 		{
-			name:  "unsupported X25519 DER",
+			name:  "X25519 PKIX public DER",
 			input: fixtures.x25519PKIXDER,
+			want: []found{{
+				kind:     ftypes.CryptoKindKey,
+				keyType:  ftypes.CryptoKeyTypePublic,
+				method:   ftypes.CryptoMethodSPKISHA256,
+				format:   ftypes.CryptoKeyFormatPKIX,
+				encoding: ftypes.CryptoEncodingDER,
+			}},
+		},
+		{
+			name:  "Ed448 PKIX public PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.ed448Certificate.RawSubjectPublicKeyInfo}),
+			want:  []found{pemPublicKey},
+		},
+		{
+			name:  "malformed Ed25519 key under PUBLIC KEY",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.malformedEd25519PKIXDER}),
+		},
+		{
+			name:  "malformed X25519 key under PUBLIC KEY",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.malformedX25519PKIXDER}),
 		},
 		{
 			name:  "certificate request PEM",
@@ -661,6 +714,57 @@ func TestParseAssets(t *testing.T) {
 		},
 	}
 
+	// crypto/x509 does not parse an Ed448 key, so the key is described from its encoded
+	// form, and its size comes from the OID.
+	ed448Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.113",
+		},
+		Name: "Ed448",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "EdDSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	ed448CertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.ed448Certificate.RawSubjectPublicKeyInfo),
+		Name:     "Ed448 public key",
+		Key: &ftypes.CryptoKey{
+			Size: 456,
+		},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: ed448Algorithm.Descriptor(),
+		}},
+	}
+
+	x448Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.111",
+		},
+		Name: "1.3.101.111",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+	x448CertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.x448Certificate.RawSubjectPublicKeyInfo),
+		Name:     "1.3.101.111 public key",
+		Key:      &ftypes.CryptoKey{},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: x448Algorithm.Descriptor(),
+		}},
+	}
+
 	// at states where a description was found.
 	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
@@ -839,6 +943,94 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(mldsaAlgorithm),
 				at(mldsaCertificateKey),
+			},
+		},
+		{
+			name:  "Ed448 certificate",
+			input: []byte(ed448CertificatePEM),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.ed448Certificate.Raw),
+						Name:     "ed448",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:               "CN=ed448",
+							Issuer:                "CN=ed448",
+							SerialNumber:          "5e30b4cdf791af5b4a94f1f4d49b9d2a16dbba32",
+							NotBefore:             time.Date(2026, time.September, 30, 19, 21, 36, 0, time.UTC),
+							NotAfter:              time.Date(2126, time.September, 6, 19, 21, 36, 0, time.UTC),
+							Format:                ftypes.CryptoCertificateFormatX509,
+							BasicConstraintsValid: true,
+							IsCA:                  true,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: ed448Algorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: ed448CertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(ed448Algorithm),
+				at(ed448CertificateKey),
+			},
+		},
+		{
+			// A key algorithm outside the catalog is named by its OID.
+			name:  "X448 certificate",
+			input: []byte(x448CertificatePEM),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.x448Certificate.Raw),
+						Name:     "x448",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:      "CN=x448",
+							Issuer:       "CN=x448",
+							SerialNumber: "3fca9c91f493c9e7513a668dc9314fa4f4e3d14d",
+							NotBefore:    time.Date(2026, time.September, 30, 19, 21, 47, 0, time.UTC),
+							NotAfter:     time.Date(2126, time.September, 6, 19, 21, 47, 0, time.UTC),
+							Format:       ftypes.CryptoCertificateFormatX509,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: ed25519Algorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: x448CertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(ed25519Algorithm),
+				at(x448CertificateKey),
+				at(x448Algorithm),
+			},
+		},
+		{
+			// The key of a certificate and the same key on its own share an identity.
+			name:  "Ed448 public key",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.ed448Certificate.RawSubjectPublicKeyInfo}),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ed448CertificateKey,
+					FilePath:        parsedFilePath,
+					Format:          ftypes.CryptoKeyFormatPKIX,
+					Encoding:        ftypes.CryptoEncodingPEM,
+				},
+				at(ed448Algorithm),
 			},
 		},
 		{
@@ -1172,6 +1364,8 @@ type testFixtures struct {
 	ecdsaCertificate   *stdx509.Certificate
 	ed25519Certificate *stdx509.Certificate
 	mldsaCertificate   *stdx509.Certificate
+	ed448Certificate   *stdx509.Certificate
+	x448Certificate    *stdx509.Certificate
 	pathLenZero        *stdx509.Certificate
 	noCommonName       *stdx509.Certificate
 	otherCertificate   *stdx509.Certificate
@@ -1195,11 +1389,15 @@ type testFixtures struct {
 	dsaDER             []byte
 	x25519PKCS8DER     []byte
 	x25519PKIXDER      []byte
-	csrDER             []byte
-	csrPEM             []byte
-	crlDER             []byte
-	crlPEM             []byte
-	unsupportedDER     []byte
+	// malformedEd25519PKIXDER is an Ed25519 key with a public value of the wrong length.
+	malformedEd25519PKIXDER []byte
+	// malformedX25519PKIXDER is an X25519 key with a public value of the wrong length.
+	malformedX25519PKIXDER []byte
+	csrDER                 []byte
+	csrPEM                 []byte
+	crlDER                 []byte
+	crlPEM                 []byte
+	unsupportedDER         []byte
 }
 
 // sharedRSAKey is generated once for the package, because generating a 2048-bit key for
@@ -1377,44 +1575,64 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 	x25519PKIXDER, err := stdx509.MarshalPKIXPublicKey(x25519Private.PublicKey())
 	require.NoError(t, err)
+	malformedEd25519PKIXDER, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 112}},
+		SubjectPublicKey: asn1.BitString{Bytes: []byte{1}, BitLength: 8},
+	})
+	require.NoError(t, err)
+	malformedX25519PKIXDER, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 110}},
+		SubjectPublicKey: asn1.BitString{Bytes: []byte{1}, BitLength: 8},
+	})
+	require.NoError(t, err)
 	unsupportedDER, err := asn1.Marshal(struct {
 		Value string
 	}{Value: "unsupported"})
 	require.NoError(t, err)
 
 	return testFixtures{
-		certificate:        certificate,
-		ecdsaCertificate:   ecdsaCertificate,
-		ed25519Certificate: ed25519Certificate,
-		mldsaCertificate:   mldsaCertificate,
-		pathLenZero:        pathLenZero,
-		noCommonName:       noCommonName,
-		otherCertificate:   otherCertificate,
-		pssCertificate:     pssCertificate,
-		rsaPublic:          &rsaKey.PublicKey,
-		multiPrimePublic:   &multiPrimeKey.PublicKey,
-		multiPrimePEM:      pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: stdx509.MarshalPKCS1PrivateKey(multiPrimeKey)}),
-		certificateDER:     certificate.Raw,
-		certificatePEM:     certificatePEM(certificate),
-		pkcs1DER:           stdx509.MarshalPKCS1PrivateKey(rsaKey),
-		pkcs8DER:           pkcs8DER,
-		pkcs8PEM:           pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pkcs8DER}),
-		sec1DER:            sec1DER,
-		publicDER:          publicDER,
-		publicPEM:          pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicDER}),
-		encryptedDER:       encryptedDER,
-		encryptedPEM:       pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
-		rfc1423PEM:         rfc1423PEM,
-		ed25519DER:         ed25519DER,
-		mldsaDER:           mldsaDER,
-		dsaDER:             dsaDER,
-		x25519PKCS8DER:     x25519PKCS8DER,
-		x25519PKIXDER:      x25519PKIXDER,
-		csrDER:             csrDER,
-		csrPEM:             pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}),
-		crlDER:             crlDER,
-		crlPEM:             pem.EncodeToMemory(&pem.Block{Type: "X509 CRL", Bytes: crlDER}),
-		unsupportedDER:     unsupportedDER,
+		certificate:             certificate,
+		ecdsaCertificate:        ecdsaCertificate,
+		ed25519Certificate:      ed25519Certificate,
+		mldsaCertificate:        mldsaCertificate,
+		ed448Certificate:        parseCertificatePEM(t, ed448CertificatePEM),
+		x448Certificate:         parseCertificatePEM(t, x448CertificatePEM),
+		pathLenZero:             pathLenZero,
+		noCommonName:            noCommonName,
+		otherCertificate:        otherCertificate,
+		pssCertificate:          pssCertificate,
+		rsaPublic:               &rsaKey.PublicKey,
+		multiPrimePublic:        &multiPrimeKey.PublicKey,
+		multiPrimePEM:           pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: stdx509.MarshalPKCS1PrivateKey(multiPrimeKey)}),
+		certificateDER:          certificate.Raw,
+		certificatePEM:          certificatePEM(certificate),
+		pkcs1DER:                stdx509.MarshalPKCS1PrivateKey(rsaKey),
+		pkcs8DER:                pkcs8DER,
+		pkcs8PEM:                pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pkcs8DER}),
+		sec1DER:                 sec1DER,
+		publicDER:               publicDER,
+		publicPEM:               pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: publicDER}),
+		encryptedDER:            encryptedDER,
+		encryptedPEM:            pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
+		rfc1423PEM:              rfc1423PEM,
+		ed25519DER:              ed25519DER,
+		mldsaDER:                mldsaDER,
+		dsaDER:                  dsaDER,
+		x25519PKCS8DER:          x25519PKCS8DER,
+		x25519PKIXDER:           x25519PKIXDER,
+		malformedEd25519PKIXDER: malformedEd25519PKIXDER,
+		malformedX25519PKIXDER:  malformedX25519PKIXDER,
+		csrDER:                  csrDER,
+		csrPEM:                  pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}),
+		crlDER:                  crlDER,
+		crlPEM:                  pem.EncodeToMemory(&pem.Block{Type: "X509 CRL", Bytes: crlDER}),
+		unsupportedDER:          unsupportedDER,
 	}
 }
 
@@ -1426,6 +1644,16 @@ func newCertificate(t *testing.T, template *stdx509.Certificate, key stdcrypto.S
 	der, err := stdx509.CreateCertificate(rand.Reader, template, template, key.Public(), key)
 	require.NoError(t, err)
 	certificate, err := stdx509.ParseCertificate(der)
+	require.NoError(t, err)
+	return certificate
+}
+
+func parseCertificatePEM(t *testing.T, content string) *stdx509.Certificate {
+	t.Helper()
+
+	block, _ := pem.Decode([]byte(content))
+	require.NotNil(t, block)
+	certificate, err := stdx509.ParseCertificate(block.Bytes)
 	require.NoError(t, err)
 	return certificate
 }

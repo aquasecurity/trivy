@@ -9,7 +9,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/asn1"
 	"math/big"
+	"slices"
 	"strings"
 	"testing"
 
@@ -269,11 +272,114 @@ func TestDescribeKey(t *testing.T) {
 	}
 }
 
-// TestDescribeKeyNoCanonicalForm covers the key of a certificate whose algorithm
-// crypto/x509 does not recognize, which parsing leaves absent.
 func TestDescribeKeyNoCanonicalForm(t *testing.T) {
 	_, _, err := crypto.DescribeKey(nil, ftypes.CryptoKeyTypePublic)
 	require.ErrorIs(t, err, crypto.ErrNoCanonicalForm)
+}
+
+// TestDescribeRawPublicKey checks that a key described from its encoded form is the same
+// key DescribeKey reports for it, apart from the size and curve it cannot read.
+func TestDescribeRawPublicKey(t *testing.T) {
+	fixtures := newKeyFixtures(t)
+
+	tests := []struct {
+		name string
+		pub  any
+	}{
+		{
+			// RSA carries NULL algorithm parameters.
+			name: "RSA",
+			pub:  fixtures.rsaPublic,
+		},
+		{
+			name: "ECDSA",
+			pub:  fixtures.ecdsaPublic,
+		},
+		{
+			// Ed25519 carries no algorithm parameters.
+			name: "Ed25519",
+			pub:  fixtures.ed25519Public,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			der, err := crypto.MarshalPublicKey(tt.pub)
+			require.NoError(t, err)
+
+			key, algorithm, err := crypto.DescribeRawPublicKey(der, ftypes.CryptoKeyTypePublic)
+			require.NoError(t, err)
+			parsedKey, parsedAlgorithm, err := crypto.DescribeKey(tt.pub, ftypes.CryptoKeyTypePublic)
+			require.NoError(t, err)
+
+			assert.Equal(t, parsedKey.Identity, key.Identity)
+			assert.Equal(t, parsedAlgorithm.Identity.Value, algorithm.Identity.Value)
+
+			require.NoError(t, key.Validate())
+			require.NoError(t, algorithm.Validate())
+		})
+	}
+}
+
+func TestParseSubjectPublicKeyInfo(t *testing.T) {
+	fixtures := newKeyFixtures(t)
+	der, err := crypto.MarshalPublicKey(fixtures.ed25519Public)
+	require.NoError(t, err)
+	extraElement, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+		Extra            int
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 112}},
+		SubjectPublicKey: asn1.BitString{Bytes: []byte(fixtures.ed25519Public), BitLength: len(fixtures.ed25519Public) * 8},
+		Extra:            1,
+	})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name    string
+		spki    []byte
+		want    asn1.ObjectIdentifier
+		wantErr string
+	}{
+		{
+			name: "valid",
+			spki: der,
+			want: asn1.ObjectIdentifier{1, 3, 101, 112},
+		},
+		{
+			name:    "empty",
+			spki:    nil,
+			wantErr: "unmarshal subject public key info",
+		},
+		{
+			name:    "truncated",
+			spki:    der[:len(der)-1],
+			wantErr: "unmarshal subject public key info",
+		},
+		{
+			name:    "trailing data",
+			spki:    append(slices.Clone(der), 0x00),
+			wantErr: "followed by 1 bytes",
+		},
+		{
+			name:    "extra element",
+			spki:    extraElement,
+			wantErr: "does not round-trip",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := crypto.ParseSubjectPublicKeyInfo(tt.spki)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestDescribeEncryptedKey(t *testing.T) {

@@ -1,6 +1,7 @@
 package crypto
 
 import (
+	"bytes"
 	stdcrypto "crypto"
 	"crypto/dsa"
 	"crypto/ecdsa"
@@ -20,7 +21,7 @@ import (
 )
 
 // ErrNoCanonicalForm reports a key that cannot be reduced to SubjectPublicKeyInfo, such as
-// the absent key of a certificate whose algorithm crypto/x509 does not recognize.
+// a key of a type crypto/x509 cannot encode.
 var ErrNoCanonicalForm = errors.New("key has no canonical form")
 
 // DescribeKey describes a key and the algorithm it belongs to. A private key is described
@@ -39,8 +40,45 @@ func DescribeKey(
 
 	size, subgroupSize, curve := keyDetails(pub)
 	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, subgroupSize, curve)
+	return describePublicKey(identity, keyAlgorithm, keyType, size, curve), keyAlgorithm, nil
+}
 
-	key = ftypes.CryptoAssetInfo{
+// DescribeRawPublicKey describes a key from its SubjectPublicKeyInfo DER without decoding
+// the key itself. The algorithm comes from the OID, the curve stays unset, and the size is
+// set only when the OID fixes it. The key is identified by the digest of the
+// SubjectPublicKeyInfo.
+func DescribeRawPublicKey(
+	spki []byte,
+	keyType ftypes.CryptoKeyType,
+) (key, keyAlgorithm ftypes.CryptoAssetInfo, err error) {
+	oid, err := ParseSubjectPublicKeyInfo(spki)
+	if err != nil {
+		return ftypes.CryptoAssetInfo{}, ftypes.CryptoAssetInfo{}, err
+	}
+
+	algorithmOID := oid.String()
+	identity := ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, spki)
+	size := fixedKeySizes[algorithmOID]
+	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, 0, "")
+	return describePublicKey(identity, keyAlgorithm, keyType, size, ""), keyAlgorithm, nil
+}
+
+// fixedKeySizes holds the key size in bits for the algorithms whose OID fixes it. The size
+// is the length of the encoded key, defined by RFC 8032 as the parameter b for EdDSA.
+// See https://www.rfc-editor.org/rfc/rfc8032#section-5.2
+var fixedKeySizes = map[string]int{
+	"1.3.101.113": 456, // Ed448
+}
+
+// describePublicKey describes a key identified by its SubjectPublicKeyInfo.
+func describePublicKey(
+	identity ftypes.CryptoIdentity,
+	keyAlgorithm ftypes.CryptoAssetInfo,
+	keyType ftypes.CryptoKeyType,
+	size int,
+	curve string,
+) ftypes.CryptoAssetInfo {
+	return ftypes.CryptoAssetInfo{
 		Kind:     ftypes.CryptoKindKey,
 		KeyType:  keyType,
 		Identity: identity,
@@ -55,7 +93,6 @@ func DescribeKey(
 			RelatedAsset: keyAlgorithm.Descriptor(),
 		}},
 	}
-	return key, keyAlgorithm, nil
 }
 
 // DescribeEncryptedKey describes an encrypted private key container. Its algorithm, size
@@ -143,12 +180,14 @@ func publicKeyInfo(pub stdcrypto.PublicKey) (ftypes.CryptoIdentity, string, erro
 		return ftypes.CryptoIdentity{}, "", fmt.Errorf("%w: %w", ErrNoCanonicalForm, err)
 	}
 
-	oid, err := subjectPublicKeyOID(der)
+	// The OID is read from the encoding, because PublicKeyAlgorithm is an enumeration that
+	// does not carry it.
+	oid, err := ParseSubjectPublicKeyInfo(der)
 	if err != nil {
 		return ftypes.CryptoIdentity{}, "", xerrors.Errorf("read the algorithm of the encoded key: %w", err)
 	}
 
-	return ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, der), oid, nil
+	return ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, der), oid.String(), nil
 }
 
 // oidDSA identifies a DSA public key, defined by RFC 3279 section 2.3.2.
@@ -201,17 +240,28 @@ func marshalDSAPublicKey(pub *dsa.PublicKey) ([]byte, error) {
 	return der, nil
 }
 
-// subjectPublicKeyOID reads the algorithm OID out of SubjectPublicKeyInfo DER. The OID is
-// read from the encoding rather than from PublicKeyAlgorithm, which is an enumeration that
-// does not carry it.
-func subjectPublicKeyOID(der []byte) (string, error) {
-	// The key itself follows the algorithm and is left unread, because encoding/asn1
-	// tolerates elements of a sequence that the target struct does not declare.
+// ParseSubjectPublicKeyInfo reads the algorithm OID out of SubjectPublicKeyInfo DER.
+func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
 	var info struct {
-		Algorithm pkix.AlgorithmIdentifier
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
 	}
-	if _, err := asn1.Unmarshal(der, &info); err != nil {
-		return "", xerrors.Errorf("unmarshal subject public key info: %w", err)
+	rest, err := asn1.Unmarshal(der, &info)
+	if err != nil {
+		return nil, xerrors.Errorf("unmarshal subject public key info: %w", err)
 	}
-	return info.Algorithm.Algorithm.String(), nil
+	if len(rest) > 0 {
+		return nil, xerrors.Errorf("subject public key info is followed by %d bytes", len(rest))
+	}
+
+	// encoding/asn1 skips elements of a sequence that the target struct does not declare,
+	// and re-encoding drops them, so a structure with extra elements does not round-trip.
+	encoded, err := asn1.Marshal(info)
+	if err != nil {
+		return nil, xerrors.Errorf("marshal subject public key info: %w", err)
+	}
+	if !bytes.Equal(encoded, der) {
+		return nil, xerrors.New("subject public key info does not round-trip")
+	}
+	return info.Algorithm.Algorithm, nil
 }
