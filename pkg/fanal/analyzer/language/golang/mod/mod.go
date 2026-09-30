@@ -46,11 +46,11 @@ var (
 
 type gomodAnalyzer struct {
 	// root go.mod/go.sum
-	modParser language.Parser
+	modParser *mod.Parser
 	sumParser language.Parser
 
 	// go.mod/go.sum in dependencies
-	leafModParser language.Parser
+	leafModParser *mod.Parser
 
 	licenseClassifierConfidenceLevel float64
 
@@ -72,6 +72,18 @@ func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, erro
 	}, nil
 }
 
+// parserWithSkipIndirect is created a new for each go.mod, because the flag belongs to that file alone.
+type parserWithSkipIndirect struct {
+	*mod.Parser
+	skipIndirect bool
+}
+
+func (p *parserWithSkipIndirect) Parse(ctx context.Context, r xio.ReadSeekerAt) ([]types.Package, []types.Dependency, error) {
+	pkgs, deps, skipIndirect, err := p.Parser.Parse(ctx, r)
+	p.skipIndirect = skipIndirect
+	return pkgs, deps, err
+}
+
 func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnalysisInput) (*analyzer.AnalysisResult, error) {
 	var apps []types.Application
 
@@ -80,15 +92,18 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 	}
 
 	err := fsutils.WalkDir(input.FS, ".", required, func(path string, _ fs.DirEntry, _ io.Reader) error {
+		parser := &parserWithSkipIndirect{
+			Parser: a.modParser,
+		}
 		// Parse go.mod
-		gomod, err := parse(ctx, input.FS, path, a.modParser)
+		gomod, err := parse(ctx, input.FS, path, parser)
 		if err != nil {
 			return xerrors.Errorf("parse error: %w", err)
 		} else if gomod == nil {
 			return nil
 		}
 
-		if lessThanGo117(gomod) {
+		if parser.skipIndirect {
 			// e.g. /app/go.mod => /app/go.sum
 			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
@@ -243,7 +258,7 @@ func (a *gomodAnalyzer) resolveDeps(ctx context.Context, modDir fs.FS) ([]string
 	}
 
 	// Parse go.mod under $GOPATH/pkg/mod
-	pkgs, _, err := a.leafModParser.Parse(ctx, file)
+	pkgs, _, _, err := a.leafModParser.Parse(ctx, file)
 	if err != nil {
 		return nil, xerrors.Errorf("parse error: %w", err)
 	}
@@ -305,16 +320,6 @@ func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser)
 
 	// Parse go.mod or go.sum
 	return language.Parse(ctx, types.GoModule, path, file, parser)
-}
-
-func lessThanGo117(gomod *types.Application) bool {
-	for _, lib := range gomod.Packages {
-		// The indirect field is populated only in Go 1.17+
-		if lib.Relationship == types.RelationshipIndirect {
-			return false
-		}
-	}
-	return true
 }
 
 func mergeGoSum(gomod, gosum *types.Application) {

@@ -61,7 +61,7 @@ func getSession(domain, region string, option types.RegistryOptions) (aws.Config
 func (e *ECR) CheckOptions(domain string, option types.RegistryOptions) (intf.RegistryClient, error) {
 	region := determineRegion(domain)
 	if region == "" {
-		return nil, xerrors.Errorf("ECR : %w", types.InvalidURLPattern)
+		return nil, xerrors.Errorf("ECR: %w", types.InvalidURLPattern)
 	}
 
 	cfg, err := getSession(domain, region, option)

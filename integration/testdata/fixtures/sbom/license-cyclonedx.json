@@ -118,6 +118,31 @@
           "value": "pom"
         }
       ]
+    },
+    {
+      "bom-ref": "pkg:maven/javax.servlet/javax.servlet-api@4.0.1",
+      "type": "library",
+      "group": "javax.servlet",
+      "name": "javax.servlet-api",
+      "version": "4.0.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "CDDL + GPLv2 with classpath exception"
+          }
+        }
+      ],
+      "purl": "pkg:maven/javax.servlet/javax.servlet-api@4.0.1",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:PkgID",
+          "value": "javax.servlet:javax.servlet-api:4.0.1"
+        },
+        {
+          "name": "aquasecurity:trivy:PkgType",
+          "value": "pom"
+        }
+      ]
     }
   ],
   "dependencies": [],

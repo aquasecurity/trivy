@@ -17,7 +17,7 @@ var (
 		Name:       "module-dir",
 		ConfigName: "module.dir",
 		Default:    filepath.Join(fsutils.HomeDir(), ".trivy", "modules"),
-		Usage:      "specify directory to the wasm modules that will be loaded",
+		Usage:      "specify the directory of the WASM modules to load",
 		Persistent: true,
 	}
 	EnableModulesFlag = Flag[[]string]{

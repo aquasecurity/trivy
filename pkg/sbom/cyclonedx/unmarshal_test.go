@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -974,4 +975,37 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// Trivy writes cryptographic assets into a CycloneDX document and drops them when reading
+// one back.
+func TestUnmarshaler_CryptographicAssets(t *testing.T) {
+	report := cryptoReport([]ftypes.CryptoAsset{
+		cryptotest.CertificateAsset(),
+		cryptotest.AlgorithmAsset(),
+	})
+
+	marshaler := cyclonedx.NewMarshaler("dev")
+	doc, err := marshaler.MarshalReport(t.Context(), report)
+	require.NoError(t, err)
+
+	var written int
+	for _, component := range *doc.Components {
+		if component.CryptoProperties != nil {
+			written++
+		}
+	}
+	require.Equal(t, 2, written)
+
+	data, err := json.Marshal(doc)
+	require.NoError(t, err)
+
+	var bom cyclonedx.BOM
+	require.NoError(t, json.Unmarshal(data, &bom))
+
+	var got types.SBOM
+	require.NoError(t, sbomio.NewDecoder(bom.BOM).Decode(t.Context(), &got))
+
+	assert.Empty(t, got.Packages)
+	assert.Empty(t, got.Applications)
 }

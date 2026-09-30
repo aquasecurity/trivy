@@ -66,7 +66,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		if countLeadingSpace(line) == 6 {
 			line = strings.TrimSpace(line)
 			s := strings.Fields(line)
-			dependsOn = append(dependsOn, s[0]) // store name only for now
+			// A whitespace-only line carries no name. Guard the append rather
+			// than `continue`: lineNum below must still count this line, or
+			// every following package is reported one line early.
+			if len(s) > 0 {
+				dependsOn = append(dependsOn, s[0]) // store name only for now
+			}
 		}
 		lineNum++
 

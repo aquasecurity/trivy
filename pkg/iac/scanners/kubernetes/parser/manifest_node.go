@@ -31,7 +31,6 @@ const (
 
 type ManifestNode struct {
 	xjson.Location
-	Offset   int
 	Value    any
 	Type     TagType
 	FilePath string
@@ -73,7 +72,6 @@ func (n *ManifestNode) metadata() map[string]any {
 		"startline": n.StartLine,
 		"endline":   n.EndLine,
 		"filepath":  n.FilePath,
-		"offset":    n.Offset,
 	}
 }
 

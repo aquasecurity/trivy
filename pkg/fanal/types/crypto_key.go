@@ -24,17 +24,11 @@ const (
 	CryptoKeyFormatPKIX CryptoKeyFormat = "PKIX"
 )
 
-// CryptoKey contains key-specific metadata.
+// CryptoKey contains key-specific metadata. An encrypted container states only Encrypted,
+// because its size and curve stay inside the ciphertext.
 type CryptoKey struct {
 	Size  int    `json:",omitempty"`
 	Curve string `json:",omitempty"`
-
-	// Format identifies the source standalone key container. It is empty when
-	// the key is derived from an enclosing object, such as a certificate.
-	Format CryptoKeyFormat `json:",omitempty"`
-	// Encoding identifies the source standalone key encoding. It is empty when
-	// the key is derived from an enclosing object, such as a certificate.
-	Encoding CryptoEncoding `json:",omitempty"`
 
 	Encrypted bool `json:",omitempty"`
 }

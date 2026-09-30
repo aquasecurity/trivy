@@ -75,6 +75,12 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 	cleanup = func() { _ = os.RemoveAll(tmpDir) }
 
 	artifactOpt.Original = target
+	if u.User != nil {
+		// Keep credentials out of the artifact name and logs.
+		redacted := *u
+		redacted.User = nil
+		artifactOpt.Original = redacted.String()
+	}
 	art, err := local.NewArtifact(tmpDir, c, w, artifactOpt)
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)

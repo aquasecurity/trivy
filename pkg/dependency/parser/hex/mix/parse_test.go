@@ -72,6 +72,13 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty.mix.lock",
 			want:      nil,
 		},
+		{
+			// An entry with nothing after the colon carries no version,
+			// so it is skipped. cf. #10976
+			name:      "no fields",
+			inputFile: "testdata/no-fields.mix.lock",
+			want:      nil,
+		},
 	}
 
 	for _, tt := range tests {

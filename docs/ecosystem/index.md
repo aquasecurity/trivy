@@ -3,6 +3,9 @@ Trivy is integrated into many popular tools and applications, so that you can ea
 
 In this section you will find an aggregation of the different integrations. Integrations are listed as either "official" or "community". Official integrations are developed by the core Trivy team and supported by it. Community integrations are integrations developed by the community, and collected here for your convenience. For support or questions about community integrations, please contact the original developers.
 
+!!! warning "Community integrations"
+    Listing a community integration does not imply endorsement or a security audit by the Trivy team. The Trivy team does not guarantee the security of third-party integrations or their future updates.
+
 👈 Please use the side-navigation on the left in order to browse the different topics.
 
 ## Add missing integration

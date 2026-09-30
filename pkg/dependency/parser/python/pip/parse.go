@@ -86,10 +86,16 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		text := scanner.Text()
 		line := strings.ReplaceAll(text, " ", "")
 		line = strings.ReplaceAll(line, `\`, "")
-		line = removeExtras(line)
 		line = rStripByKey(line, commentMarker)
 		line = rStripByKey(line, endColon)
 		line = rStripByKey(line, hashMarker)
+		line, err := removeExtras(line)
+		if err != nil {
+			// Skip only this line: returning an error would drop all packages from the file.
+			p.logger.Debug("Invalid extras in requirements.txt.", log.Int("line_number", lineNumber),
+				log.String("line", text), log.Err(err))
+			continue
+		}
 
 		s := p.splitLine(line)
 		if len(s) != 2 {
@@ -100,7 +106,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 
 		if !isValidName(s[0]) || !isValidVersion(s[1]) {
-			p.logger.Debug("Invalid package name/version in requirements.txt.", log.String("line", text))
+			p.logger.Debug("Invalid package name/version in requirements.txt.", log.Int("line_number", lineNumber),
+				log.String("line", text))
 			continue
 		}
 
@@ -128,13 +135,18 @@ func rStripByKey(line, key string) string {
 	return line
 }
 
-func removeExtras(line string) string {
+// removeExtras strips the extras group, e.g. "pyjwt[crypto]==2.1.0" -> "pyjwt==2.1.0".
+// Malformed brackets are rejected with an error, the same way pip does.
+func removeExtras(line string) (string, error) {
 	startIndex := strings.Index(line, startExtras)
-	endIndex := strings.Index(line, endExtras) + 1
-	if startIndex != -1 && endIndex != -1 {
-		line = line[:startIndex] + line[endIndex:]
+	endIndex := strings.Index(line, endExtras)
+	if startIndex == -1 && endIndex == -1 {
+		return line, nil
 	}
-	return line
+	if endIndex < startIndex || strings.Count(line, startExtras) != 1 || strings.Count(line, endExtras) != 1 {
+		return "", xerrors.New("unbalanced extras brackets")
+	}
+	return line[:startIndex] + line[endIndex+1:], nil
 }
 
 // isNameChar reports whether r is a valid character in a PEP 508 package name.

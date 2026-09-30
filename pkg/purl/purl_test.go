@@ -300,6 +300,41 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			// Without CentOSStream in the RPM branch of purlType this falls to the
+			// default and comes out as Type "centos-stream", which Class then
+			// reports as unknown and the SBOM decoder drops.
+			name: "os package with centos stream",
+			typ:  ftypes.CentOSStream,
+			pkg: ftypes.Package{
+				Name:    "glibc",
+				Version: "2.34",
+				Release: "60.el9",
+				Arch:    "x86_64",
+			},
+			metadata: types.Metadata{
+				OS: &ftypes.OS{
+					Family: ftypes.CentOSStream,
+					Name:   "9",
+				},
+			},
+			want: &purl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "centos-stream",
+				Name:      "glibc",
+				Version:   "2.34-60.el9",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "arch",
+						Value: "x86_64",
+					},
+					{
+						Key:   "distro",
+						Value: "centos-stream-9",
+					},
+				},
+			},
+		},
+		{
 			name: "os package",
 			typ:  ftypes.RedHat,
 			pkg: ftypes.Package{
@@ -942,6 +977,21 @@ func TestPackageURL_LangType(t *testing.T) {
 			want: ftypes.Jar,
 		},
 		{
+			name: "julia",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Example",
+				Version: "0.5.3",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "7876af07-990d-54b4-ab0e-23690620f79a",
+					},
+				},
+			},
+			want: ftypes.Julia,
+		},
+		{
 			name: "k8s",
 			purl: packageurl.PackageURL{
 				Type:    purl.TypeK8s,
@@ -965,6 +1015,101 @@ func TestPackageURL_LangType(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := purl.PackageURL(tt.purl)
 			assert.Equalf(t, tt.want, p.LangType(), "LangType()")
+		})
+	}
+}
+
+// A purl type that Class reports as unknown is dropped by the SBOM decoder.
+func TestPackageURL_Class(t *testing.T) {
+	tests := []struct {
+		name string
+		purl packageurl.PackageURL
+		want types.ResultClass
+	}{
+		{
+			name: "apk",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeApk,
+				Namespace: "alpine",
+				Name:      "musl",
+				Version:   "1.2.3",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "deb",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "libc6",
+				Version:   "2.36-9",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "rpm",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeRPM,
+				Namespace: "redhat",
+				Name:      "glibc",
+				Version:   "2.34-60",
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "bottlerocket",
+			purl: packageurl.PackageURL{
+				Type:    "bottlerocket",
+				Name:    "glibc",
+				Version: "2.40",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "distro",
+						Value: "bottlerocket-1.34.0",
+					},
+				},
+			},
+			want: types.ClassOSPkg,
+		},
+		{
+			name: "maven",
+			purl: packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework",
+				Name:      "spring-core",
+				Version:   "5.0.4.RELEASE",
+			},
+			want: types.ClassLangPkg,
+		},
+		{
+			name: "julia",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeJulia,
+				Name:    "Example",
+				Version: "0.5.3",
+				Qualifiers: packageurl.Qualifiers{
+					{
+						Key:   "uuid",
+						Value: "7876af07-990d-54b4-ab0e-23690620f79a",
+					},
+				},
+			},
+			want: types.ClassLangPkg,
+		},
+		{
+			name: "unsupported type",
+			purl: packageurl.PackageURL{
+				Type:    "huggingface",
+				Name:    "distilbert-base-uncased",
+				Version: "043235d6088ecd3dd5fb5ca3592b6913fd516027",
+			},
+			want: types.ClassUnknown,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			p := purl.PackageURL(tt.purl)
+			assert.Equalf(t, tt.want, p.Class(), "Class()")
 		})
 	}
 }

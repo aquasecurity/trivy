@@ -18,20 +18,22 @@ func WithMutate(mutate func(*types.CryptoAsset)) Option {
 // CertificateAsset returns a valid certificate asset.
 func CertificateAsset(opts ...Option) types.CryptoAsset {
 	asset := types.CryptoAsset{
-		Kind: types.CryptoKindCertificate,
-		Identity: types.CryptoIdentity{
-			Method: types.CryptoMethodSHA256,
-			Value:  strings.Repeat("a", 64),
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind: types.CryptoKindCertificate,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodSHA256,
+				Value:  strings.Repeat("a", 64),
+			},
+			Name: "example.test",
+			Certificate: &types.CryptoCertificate{
+				Subject:      "CN=example.test",
+				Issuer:       "CN=Example Test CA",
+				SerialNumber: "1",
+				Format:       types.CryptoCertificateFormatX509,
+			},
 		},
-		Name:     "example.test",
 		FilePath: "/etc/example.pem",
-		Certificate: &types.CryptoCertificate{
-			Subject:      "CN=example.test",
-			Issuer:       "CN=Example Test CA",
-			SerialNumber: "1",
-			Format:       types.CryptoCertificateFormatX509,
-			Encoding:     types.CryptoEncodingPEM,
-		},
+		Encoding: types.CryptoEncodingPEM,
 	}
 	return applyOptions(asset, opts)
 }
@@ -39,18 +41,20 @@ func CertificateAsset(opts ...Option) types.CryptoAsset {
 // PublicKeyAsset returns a valid public key asset.
 func PublicKeyAsset(opts ...Option) types.CryptoAsset {
 	asset := types.CryptoAsset{
-		Kind:    types.CryptoKindKey,
-		KeyType: types.CryptoKeyTypePublic,
-		Identity: types.CryptoIdentity{
-			Method: types.CryptoMethodSPKISHA256,
-			Value:  strings.Repeat("b", 64),
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind:    types.CryptoKindKey,
+			KeyType: types.CryptoKeyTypePublic,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodSPKISHA256,
+				Value:  strings.Repeat("b", 64),
+			},
+			Key: &types.CryptoKey{
+				Size: 2048,
+			},
 		},
 		FilePath: "/etc/example-public.pem",
-		Key: &types.CryptoKey{
-			Size:     2048,
-			Format:   types.CryptoKeyFormatPKIX,
-			Encoding: types.CryptoEncodingPEM,
-		},
+		Format:   types.CryptoKeyFormatPKIX,
+		Encoding: types.CryptoEncodingPEM,
 	}
 	return applyOptions(asset, opts)
 }
@@ -60,7 +64,7 @@ func PrivateKeyAsset(opts ...Option) types.CryptoAsset {
 	asset := PublicKeyAsset()
 	asset.KeyType = types.CryptoKeyTypePrivate
 	asset.FilePath = "/etc/example-private.pem"
-	asset.Key.Format = types.CryptoKeyFormatPKCS8
+	asset.Format = types.CryptoKeyFormatPKCS8
 	return applyOptions(asset, opts)
 }
 
@@ -77,24 +81,27 @@ func EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
 func RFC1423EncryptedPrivateKeyAsset(opts ...Option) types.CryptoAsset {
 	asset := EncryptedPrivateKeyAsset()
 	asset.Identity.Method = types.CryptoMethodEncryptedRFC1423SHA256
-	asset.Key.Format = types.CryptoKeyFormatPKCS1
+	asset.Format = types.CryptoKeyFormatPKCS1
 	return applyOptions(asset, opts)
 }
 
 // AlgorithmAsset returns a valid algorithm asset.
 func AlgorithmAsset(opts ...Option) types.CryptoAsset {
 	asset := types.CryptoAsset{
-		Kind: types.CryptoKindAlgorithm,
-		Identity: types.CryptoIdentity{
-			Method: types.CryptoMethodOID,
-			Value:  "1.2.840.113549.1.1.1",
+		CryptoAssetInfo: types.CryptoAssetInfo{
+			Kind: types.CryptoKindAlgorithm,
+			Identity: types.CryptoIdentity{
+				Method: types.CryptoMethodOID,
+				Value:  "1.2.840.113549.1.1.1",
+			},
+			Name: "RSA",
+			// rsaEncryption identifies both signature and encryption keys, so the primitive
+			// stays unknown and the family stays empty, as the algorithm catalog describes it.
+			Algorithm: &types.CryptoAlgorithm{
+				Primitive: types.CryptoPrimitiveUnknown,
+			},
 		},
-		Name:     "RSA",
 		FilePath: "/etc/example-algorithm.pem",
-		Algorithm: &types.CryptoAlgorithm{
-			Family:    "RSA",
-			Primitive: types.CryptoPrimitivePKE,
-		},
 	}
 	return applyOptions(asset, opts)
 }

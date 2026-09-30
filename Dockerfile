@@ -1,4 +1,4 @@
-FROM alpine:3.24.1
+FROM alpine:3.24.2
 RUN apk --no-cache add ca-certificates git
 ARG TARGETPLATFORM
 COPY ${TARGETPLATFORM}/trivy /usr/local/bin/trivy

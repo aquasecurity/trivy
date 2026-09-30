@@ -18,7 +18,7 @@ var (
 		ConfigName: "config",
 		Shorthand:  "c",
 		Default:    "trivy.yaml",
-		Usage:      "config path",
+		Usage:      "config path (empty string disables loading)",
 		Persistent: true,
 	}
 	ShowVersionFlag = Flag[bool]{

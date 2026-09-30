@@ -40,7 +40,6 @@ func TestJsonManifestToRego(t *testing.T) {
 	expected := map[string]any{
 		"__defsec_metadata": map[string]any{
 			"filepath":  filePath,
-			"offset":    0,
 			"startline": 1,
 			"endline":   22,
 		},
@@ -49,7 +48,6 @@ func TestJsonManifestToRego(t *testing.T) {
 		"metadata": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 4,
 				"endline":   7,
 			},
@@ -58,7 +56,6 @@ func TestJsonManifestToRego(t *testing.T) {
 		"spec": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 8,
 				"endline":   21,
 			},
@@ -66,7 +63,6 @@ func TestJsonManifestToRego(t *testing.T) {
 				map[string]any{
 					"__defsec_metadata": map[string]any{
 						"filepath":  filePath,
-						"offset":    0,
 						"startline": 10,
 						"endline":   19,
 					},
@@ -108,7 +104,6 @@ spec:
 	expected := map[string]any{
 		"__defsec_metadata": map[string]any{
 			"filepath":  filePath,
-			"offset":    0,
 			"startline": 1,
 			"endline":   14,
 		},
@@ -117,7 +112,6 @@ spec:
 		"metadata": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 3,
 				"endline":   5,
 			},
@@ -127,7 +121,6 @@ spec:
 		"spec": map[string]any{
 			"__defsec_metadata": map[string]any{
 				"filepath":  filePath,
-				"offset":    0,
 				"startline": 6,
 				"endline":   14,
 			},
@@ -135,7 +128,6 @@ spec:
 				map[string]any{
 					"__defsec_metadata": map[string]any{
 						"filepath":  filePath,
-						"offset":    0,
 						"startline": 8,
 						"endline":   14,
 					},
@@ -167,7 +159,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  filePath,
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
@@ -180,7 +171,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  filePath,
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
@@ -193,7 +183,6 @@ func TestManifestToRego(t *testing.T) {
 			expected: map[string]any{
 				"__defsec_metadata": map[string]any{
 					"filepath":  filePath,
-					"offset":    0,
 					"startline": 1,
 					"endline":   1,
 				},
