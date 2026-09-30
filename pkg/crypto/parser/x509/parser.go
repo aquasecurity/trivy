@@ -75,34 +75,44 @@ type encryptedPrivateKeyInfo struct {
 	EncryptedData []byte
 }
 
-// maxRSAModulusBits is the longest RSA modulus of a private key that the parser reads.
-const maxRSAModulusBits = 16384
-
-// rsaPrivateKeyHead holds the leading fields of an RSA private key in PKCS#1.
-type rsaPrivateKeyHead struct {
-	Version int
-	N       *big.Int
+// pkcs1PrivateKey is an RSA private key in PKCS#1, as defined in RFC 8017.
+type pkcs1PrivateKey struct {
+	Version          int
+	N                *big.Int
+	E                int
+	D, P, Q          *big.Int
+	Dp               *big.Int               `asn1:"optional"`
+	Dq               *big.Int               `asn1:"optional"`
+	Qinv             *big.Int               `asn1:"optional"`
+	AdditionalPrimes []pkcs1AdditionalPrime `asn1:"optional,omitempty"`
 }
 
-// pkcs8Head holds the leading fields of a PKCS#8 private key.
-type pkcs8Head struct {
+// pkcs1AdditionalPrime is a prime of a multi-prime RSA private key, with its CRT values.
+type pkcs1AdditionalPrime struct {
+	Prime, Exp, Coeff *big.Int
+}
+
+// pkcs8PrivateKey is a private key in PKCS#8, as defined in RFC 5208, without its
+// optional attributes.
+type pkcs8PrivateKey struct {
 	Version    int
 	Algo       pkix.AlgorithmIdentifier
 	PrivateKey []byte
 }
 
+var oidRSAEncryption = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
+
 var (
 	errNotCryptographic  = errors.New("not cryptographic")
 	errUnsupportedCrypto = errors.New("unsupported cryptographic object")
 	errMalformedCrypto   = errors.New("malformed cryptographic object")
-	errOversizedKey      = errors.New("oversized private key")
 )
 
 // Parse describes the cryptographic material a file carries as assets, each stating
 // filePath and the container it was read from.
 //
 // Material that cannot be read is logged and skipped. An error means a parsed object
-// could not be described or ctx was canceled.
+// could not be described.
 //
 // An asset is reported once for each container it was found in, and an asset with no
 // container of its own, such as an algorithm, once per file.
@@ -136,9 +146,6 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 			assets = append(assets, asset)
 		}
 	}
-	if err := ctx.Err(); err != nil {
-		return nil, err
-	}
 	return assets, nil
 }
 
@@ -148,7 +155,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 	return func(yield func(object) bool) {
 		var decodedPEM, recognized bool
 		// pem.Decode scans past malformed leading data and returns the next valid block.
-		for rest := content; ctx.Err() == nil; {
+		for rest := content; ; {
 			block, next := pem.Decode(rest)
 			if block == nil {
 				break
@@ -168,10 +175,6 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 			if !yield(obj) {
 				return
 			}
-		}
-
-		if ctx.Err() != nil {
-			return
 		}
 
 		// A decoded PEM file is complete even when none of its blocks is supported.
@@ -249,9 +252,9 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "CERTIFICATE":
 		return certificateObject(der)
 	case "PRIVATE KEY":
-		return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
+		return pkcs8PrivateKeyObject(der)
 	case "RSA PRIVATE KEY":
-		return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS1, stdx509.ParsePKCS1PrivateKey)
+		return rsaPrivateKeyObject(der, ftypes.CryptoKeyFormatPKCS1)
 	case "EC PRIVATE KEY":
 		return privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
 	case "PUBLIC KEY":
@@ -292,11 +295,6 @@ func parsePEMObject(label string, der []byte) (object, error) {
 
 // privateKeyObject parses a private key and projects it to its public key.
 func privateKeyObject[K any](der []byte, format ftypes.CryptoKeyFormat, parseKey func([]byte) (K, error)) (object, error) {
-	// crypto/x509 validates an RSA key with arithmetic whose cost grows with the modulus.
-	if oversizedRSAKey(der) {
-		return object{}, errOversizedKey
-	}
-
 	privateKey, err := parseKey(der)
 	if err != nil {
 		return object{}, errMalformedCrypto
@@ -304,19 +302,49 @@ func privateKeyObject[K any](der []byte, format ftypes.CryptoKeyFormat, parseKey
 	return privateKeyToObject(privateKey, format)
 }
 
-// oversizedRSAKey reports whether der holds an RSA private key in PKCS#1, bare or wrapped
-// in PKCS#8, whose modulus is longer than maxRSAModulusBits.
-func oversizedRSAKey(der []byte) bool {
-	var p8 pkcs8Head
-	if _, err := asn1.Unmarshal(der, &p8); err == nil {
-		der = p8.PrivateKey
+// pkcs8PrivateKeyObject parses a private key in PKCS#8 and projects it to its public key.
+func pkcs8PrivateKeyObject(der []byte) (object, error) {
+	var key pkcs8PrivateKey
+	if _, err := asn1.Unmarshal(der, &key); err == nil && key.Algo.Algorithm.Equal(oidRSAEncryption) {
+		return rsaPrivateKeyObject(key.PrivateKey, ftypes.CryptoKeyFormatPKCS8)
+	}
+	return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
+}
+
+// rsaPrivateKeyObject reads an RSA private key in PKCS#1 and projects it to its public key.
+// It checks the structure of the key but not its math, because crypto/x509 validates a key
+// with arithmetic whose cost grows with the size of its values, and a crafted key picks
+// them freely.
+func rsaPrivateKeyObject(der []byte, format ftypes.CryptoKeyFormat) (object, error) {
+	var key pkcs1PrivateKey
+	rest, err := asn1.Unmarshal(der, &key)
+	if err != nil || len(rest) > 0 {
+		return object{}, errMalformedCrypto
+	}
+	if key.Version < 0 || key.Version > 1 || key.E <= 0 {
+		return object{}, errMalformedCrypto
+	}
+	for _, v := range []*big.Int{key.N, key.D, key.P, key.Q} {
+		if v.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
+	}
+	for _, v := range []*big.Int{key.Dp, key.Dq, key.Qinv} {
+		if v != nil && v.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
+	}
+	for _, p := range key.AdditionalPrimes {
+		if p.Prime.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
 	}
 
-	var key rsaPrivateKeyHead
-	if _, err := asn1.Unmarshal(der, &key); err != nil {
-		return false
-	}
-	return key.N.BitLen() > maxRSAModulusBits
+	return object{
+		kind:      objectPrivateKey,
+		publicKey: &rsa.PublicKey{N: key.N, E: key.E},
+		keyFormat: format,
+	}, nil
 }
 
 func parseDERObject(der []byte) (object, error) {
@@ -325,19 +353,16 @@ func parseDERObject(der []byte) (object, error) {
 		return obj, nil
 	}
 
-	// An oversized key is left to the parsers that do not validate what they read.
-	if !oversizedRSAKey(der) {
-		if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
-			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
-		}
+	if obj, err := rsaPrivateKeyObject(der, ftypes.CryptoKeyFormatPKCS1); err == nil {
+		return obj, nil
+	}
 
-		if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
-			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
-		}
+	if obj, err := pkcs8PrivateKeyObject(der); !errors.Is(err, errMalformedCrypto) {
+		return obj, err
+	}
 
-		if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
-			return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
-		}
+	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
+		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
 	}
 
 	if publicKey, err := stdx509.ParsePKIXPublicKey(der); err == nil {
@@ -454,8 +479,6 @@ func logParseError(ctx context.Context, pemType string, err error) {
 		log.DebugContext(ctx, "Unsupported cryptographic object", attrs...)
 	case errors.Is(err, errMalformedCrypto):
 		log.WarnContext(ctx, "Malformed cryptographic object", attrs...)
-	case errors.Is(err, errOversizedKey):
-		log.DebugContext(ctx, "Private key is too large to read", attrs...)
 	default:
 		log.DebugContext(ctx, "No cryptographic object found", attrs...)
 	}
