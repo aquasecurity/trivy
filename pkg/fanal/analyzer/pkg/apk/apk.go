@@ -27,7 +27,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 3
+const analyzerVersion = 4
 
 var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 
@@ -104,9 +104,9 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 		case "A:":
 			pkg.Arch = line[2:]
 		case "C:":
-			d := a.decodeChecksumLine(ctx, line)
-			if d != "" {
-				pkg.Digest = d
+			// An entry has a single checksum line, so ignore repetitions in a malformed database.
+			if !pkg.HasDigest() {
+				pkg.AddDigest(a.decodeChecksumLine(ctx, line), digest.SourceAPKInstalledDB)
 			}
 		case "m:":
 			pkg.Maintainer = line[2:]

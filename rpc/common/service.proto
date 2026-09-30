@@ -62,11 +62,17 @@ message Package {
   string modularitylabel = 25;
   BuildInfo build_info = 26;
   repeated string installed_files = 27;
+  repeated PackageDigest digests = 28;
 }
 
 // PackageRepository indicates where the package was distributed from.
 message PackageRepository {
   string class = 1;
+}
+
+message PackageDigest {
+  string digest = 1;
+  string source = 2;
 }
 
 message PkgIdentifier {

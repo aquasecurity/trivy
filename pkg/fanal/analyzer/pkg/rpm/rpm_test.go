@@ -11,6 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -256,6 +257,43 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 					Release:    "307.el7.1",
 					Arch:       "x86_64",
 					Repository: types.PackageRepository{Class: types.RepositoryClassThirdParty},
+				},
+			},
+		},
+		{
+			name: "package with SIGMD5",
+			mock: mock{
+				packages: []*rpmdb.PackageInfo{
+					{
+						Name:      "glibc",
+						Version:   "2.17",
+						Release:   "307.el7.1",
+						Arch:      "x86_64",
+						SourceRpm: "glibc-2.17-317.el7.src.rpm",
+						SigMD5:    "e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Vendor:    "Red Hat",
+					},
+				},
+			},
+			wantPkgs: types.Packages{
+				{
+					ID:         "glibc@2.17-307.el7.1.x86_64",
+					Name:       "glibc",
+					Version:    "2.17",
+					Release:    "307.el7.1",
+					Arch:       "x86_64",
+					SrcName:    "glibc",
+					SrcVersion: "2.17",
+					SrcRelease: "317.el7",
+					Maintainer: "Red Hat",
+					Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+					Digest:     "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: digest.SourceRPMSigMD5,
+						},
+					},
 				},
 			},
 		},

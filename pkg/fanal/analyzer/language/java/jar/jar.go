@@ -22,7 +22,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeJar, newJavaLibraryAnalyzer)
 }
 
-const version = 1
+const version = 2
 
 var requiredExtensions = []string{
 	".jar",
