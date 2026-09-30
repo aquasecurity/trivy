@@ -97,4 +97,41 @@ var (
 		{ID: "pytest@9.1.1", DependsOn: []string{"colorama@0.4.6", "exceptiongroup@1.3.1", "iniconfig@2.3.0", "packaging@26.3", "pluggy@1.6.0", "pygments@2.21.0", "tomli@2.4.1"}},
 		{ID: "python-dateutil@2.9.0.post0", DependsOn: []string{"six@1.17.0"}},
 	}
+
+	uvWorkspaceVirtual = []ftypes.Package{
+		{ID: "a@0.1.0", Name: "a", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "b@0.1.0", Name: "b", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "pillow@11.0.0", Name: "pillow", Version: "11.0.0", Relationship: ftypes.RelationshipDirect},
+		{ID: "requests@2.32.3", Name: "requests", Version: "2.32.3", Relationship: ftypes.RelationshipDirect},
+	}
+
+	uvWorkspaceVirtualDeps = []ftypes.Dependency{
+		{ID: "a@0.1.0", DependsOn: []string{"requests@2.32.3"}},
+		{ID: "b@0.1.0", DependsOn: []string{"pillow@11.0.0"}},
+	}
+
+	uvWorkspaceRooted = []ftypes.Package{
+		{ID: "root@0.1.0", Name: "root", Version: "0.1.0", Relationship: ftypes.RelationshipRoot},
+		{ID: "a@0.1.0", Name: "a", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "b@0.1.0", Name: "b", Version: "0.1.0", Relationship: ftypes.RelationshipWorkspace},
+		{ID: "click@8.1.7", Name: "click", Version: "8.1.7", Relationship: ftypes.RelationshipDirect},
+		{ID: "pillow@11.0.0", Name: "pillow", Version: "11.0.0", Relationship: ftypes.RelationshipDirect},
+		{ID: "pytest@8.3.4", Name: "pytest", Version: "8.3.4", Relationship: ftypes.RelationshipDirect, Dev: true},
+		{ID: "requests@2.32.3", Name: "requests", Version: "2.32.3", Relationship: ftypes.RelationshipDirect},
+		{ID: "ruff@0.9.0", Name: "ruff", Version: "0.9.0", Relationship: ftypes.RelationshipDirect, Dev: true},
+		{ID: "colorama@0.4.6", Name: "colorama", Version: "0.4.6", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "idna@3.10", Name: "idna", Version: "3.10", Relationship: ftypes.RelationshipIndirect},
+		{ID: "tomli@2.2.1", Name: "tomli", Version: "2.2.1", Relationship: ftypes.RelationshipIndirect, Dev: true},
+		{ID: "urllib3@2.2.3", Name: "urllib3", Version: "2.2.3", Relationship: ftypes.RelationshipIndirect},
+	}
+
+	uvWorkspaceRootedDeps = []ftypes.Dependency{
+		{ID: "a@0.1.0", DependsOn: []string{"pytest@8.3.4", "requests@2.32.3"}},
+		{ID: "b@0.1.0", DependsOn: []string{"pillow@11.0.0", "ruff@0.9.0"}},
+		{ID: "pillow@11.0.0", DependsOn: []string{"idna@3.10"}},
+		{ID: "pytest@8.3.4", DependsOn: []string{"colorama@0.4.6"}},
+		{ID: "requests@2.32.3", DependsOn: []string{"urllib3@2.2.3"}},
+		{ID: "root@0.1.0", DependsOn: []string{"a@0.1.0", "b@0.1.0", "click@8.1.7"}},
+		{ID: "ruff@0.9.0", DependsOn: []string{"tomli@2.2.1"}},
+	}
 )

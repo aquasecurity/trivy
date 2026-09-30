@@ -41,7 +41,7 @@ func NewTemplateWriter(output io.Writer, outputTemplate, appVersion string) (*Te
 	templateFuncMap["escapeXML"] = func(input string) string {
 		escaped := &bytes.Buffer{}
 		if err := xml.EscapeText(escaped, []byte(input)); err != nil {
-			log.Error("Error while escapeString to XML", log.Err(err))
+			log.Error("Error while escaping string to XML", log.Err(err))
 			return input
 		}
 		return escaped.String()

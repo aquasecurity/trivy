@@ -16,6 +16,7 @@ import (
 )
 
 type Lock struct {
+	Manifest Manifest  `toml:"manifest"`
 	Packages []Package `toml:"package"`
 }
 
@@ -35,9 +36,24 @@ func resolve(dep Dependency, packages map[string][]Package) []Package {
 	})
 }
 
-func prodDeps(root Package, packages map[string][]Package) set.Set[string] {
+type Manifest struct {
+	Members []string `toml:"members"`
+}
+
+// prodDeps returns the IDs of all production dependencies: every package reachable from
+// the root package or a workspace member by following non-dev dependencies.
+func prodDeps(root string, workspaces set.Set[string], packages map[string][]Package) set.Set[string] {
 	visited := set.New[string]()
-	walkPackageDeps(root, packages, visited)
+	if root != "" {
+		for _, pkg := range packages[root] {
+			walkPackageDeps(pkg, packages, visited)
+		}
+	}
+	for name := range workspaces.Iter() {
+		for _, pkg := range packages[name] {
+			walkPackageDeps(pkg, packages, visited)
+		}
+	}
 	return visited
 }
 
@@ -54,21 +70,30 @@ func walkPackageDeps(pkg Package, packages map[string][]Package, visited set.Set
 	}
 }
 
-func (l Lock) root() (Package, error) {
-	var pkgs []Package
+// rootAndWorkspaces walks the lockfile packages once and returns the name of the root
+// package (empty if there is none), the set of workspace member names, and the set of
+// direct dependency names collected from the root and every workspace member. The root
+// and workspaces are the entry points of the dependency graph: everything reachable from
+// them is a production dependency.
+func (l Lock) rootAndWorkspaces() (root string, workspaces, directDeps set.Set[string], err error) {
+	workspaces = set.New[string]()
+	directDeps = set.New[string]()
+
 	for _, pkg := range l.Packages {
-		if pkg.isRoot() {
-			pkgs = append(pkgs, pkg)
+		switch {
+		case pkg.isRoot():
+			if root != "" {
+				return "", nil, nil, xerrors.New("uv lockfile must contain 1 root package")
+			}
+			root = pkg.Name
+			directDeps.Append(pkg.directDeps().names().Items()...)
+		case slices.Contains(l.Manifest.Members, pkg.Name):
+			workspaces.Append(pkg.Name)
+			directDeps.Append(pkg.directDeps().names().Items()...)
 		}
 	}
 
-	// lock file must include root package
-	// cf. https://github.com/astral-sh/uv/blob/f80ddf10b63c3e7b421ca4658e63f97db1e0378c/crates/uv/src/commands/project/lock.rs#L933-L936
-	if len(pkgs) != 1 {
-		return Package{}, xerrors.New("uv lockfile must contain 1 root package")
-	}
-
-	return pkgs[0], nil
+	return root, workspaces, directDeps, nil
 }
 
 type Package struct {
@@ -131,18 +156,16 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("failed to decode uv lock file: %w", err)
 	}
 
-	rootPackage, err := lock.root()
+	root, workspaces, directDeps, err := lock.rootAndWorkspaces()
 	if err != nil {
 		return nil, nil, err
 	}
 
 	packages := lock.packages()
-	directDeps := rootPackage.directDeps().names()
 
-	// Since each lockfile contains a root package with a list of direct dependencies,
-	// we can identify all production dependencies by traversing the dependency graph
-	// and collecting all the dependencies that are reachable from the root.
-	prodDeps := prodDeps(rootPackage, packages)
+	// Production dependencies are the packages reachable from the root package
+	// or, for workspace lockfiles, any workspace member package.
+	prodDeps := prodDeps(root, workspaces, packages)
 
 	var (
 		pkgs ftypes.Packages
@@ -152,9 +175,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	for _, pkg := range lock.Packages {
 		pkgID := packageID(pkg.Name, pkg.Version)
 		relationship := ftypes.RelationshipIndirect
-		if pkg.isRoot() {
+		switch {
+		case pkg.Name == root:
 			relationship = ftypes.RelationshipRoot
-		} else if directDeps.Contains(pkg.Name) {
+		case workspaces.Contains(pkg.Name):
+			relationship = ftypes.RelationshipWorkspace
+		case directDeps.Contains(pkg.Name):
 			relationship = ftypes.RelationshipDirect
 		}
 
@@ -170,6 +196,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		for _, dep := range pkg.directDeps() {
 			for _, depPkg := range resolve(dep, packages) {
 				dependsOn.Append(packageID(depPkg.Name, depPkg.Version))
+			}
+		}
+		// The root package depends on every workspace member
+		if pkg.Name == root {
+			for name := range workspaces.Iter() {
+				for _, member := range packages[name] {
+					dependsOn.Append(packageID(member.Name, member.Version))
+				}
 			}
 		}
 

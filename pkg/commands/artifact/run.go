@@ -343,7 +343,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	}
 
 	if err := db.Init(db.Dir(opts.CacheDir)); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+		return xerrors.Errorf("error in vulnerability DB initialization: %w", err)
 	}
 	r.dbOpen = true
 

@@ -18,7 +18,7 @@ var (
 	K8sVersionFlag = Flag[string]{
 		Name:       "k8s-version",
 		ConfigName: "kubernetes.k8s-version",
-		Usage:      "specify k8s version to validate outdated api by it (example: 1.21.0)",
+		Usage:      "specify k8s version to validate outdated APIs against (example: 1.21.0)",
 	}
 	TolerationsFlag = Flag[[]string]{
 		Name:       "tolerations",
@@ -61,7 +61,7 @@ var (
 	ExcludeKinds = Flag[[]string]{
 		Name:       "exclude-kinds",
 		ConfigName: "kubernetes.excludeKinds",
-		Usage:      "indicate the kinds exclude from scanning (example: node)",
+		Usage:      "indicate the kinds excluded from scanning (example: node)",
 	}
 	IncludeKinds = Flag[[]string]{
 		Name:       "include-kinds",
@@ -242,7 +242,7 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 		if len(tolerationParts) == 3 {
 			tolerationSec, err = strconv.Atoi(tolerationParts[2])
 			if err != nil {
-				return nil, errors.New("TolerationSeconds must must be a number")
+				return nil, errors.New("TolerationSeconds must be a number")
 			}
 			toleration.TolerationSeconds = new(int64(tolerationSec))
 		}

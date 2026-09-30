@@ -95,18 +95,18 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			},
 		},
 		{
-			name: "server address without schema",
+			name: "server address without scheme",
 			fields: fields{
 				Server: "localhost:8080",
 			},
-			wantErr: "server address must use HTTP or HTTPS schema, got 'localhost'",
+			wantErr: "server address must use HTTP or HTTPS scheme, got 'localhost'",
 		},
 		{
-			name: "server address with invalid schema",
+			name: "server address with invalid scheme",
 			fields: fields{
 				Server: "ftp://localhost:8080",
 			},
-			wantErr: "server address must use HTTP or HTTPS schema, got 'ftp'",
+			wantErr: "server address must use HTTP or HTTPS scheme, got 'ftp'",
 		},
 		{
 			name: "server address with malformed URL",
@@ -116,7 +116,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 			wantErr: "invalid server address format",
 		},
 		{
-			name: "server address with https schema",
+			name: "server address with https scheme",
 			fields: fields{
 				Server:      "https://localhost:4954",
 				TokenHeader: "Trivy-Token",
