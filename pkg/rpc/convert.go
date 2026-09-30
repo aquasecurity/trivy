@@ -220,6 +220,101 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 	return rpcFindings
 }
 
+// ConvertToRPCCryptoAssets returns the RPC cryptographic assets.
+func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset {
+	return xslices.Map(assets, func(asset ftypes.CryptoAsset) *common.CryptoAsset {
+		return &common.CryptoAsset{
+			Kind:          string(asset.Kind),
+			KeyType:       string(asset.KeyType),
+			Identity:      convertToRPCCryptoIdentity(asset.Identity),
+			Name:          asset.Name,
+			Certificate:   convertToRPCCryptoCertificate(asset.Certificate),
+			Key:           convertToRPCCryptoKey(asset.Key),
+			Algorithm:     convertToRPCCryptoAlgorithm(asset.Algorithm),
+			Relationships: convertToRPCCryptoRelationships(asset.Relationships),
+			FilePath:      asset.FilePath,
+			Format:        string(asset.Format),
+			Encoding:      string(asset.Encoding),
+			Layer:         ConvertToRPCLayer(asset.Layer),
+		}
+	})
+}
+
+func convertToRPCCryptoCertificate(cert *ftypes.CryptoCertificate) *common.CryptoCertificate {
+	if cert == nil {
+		return nil
+	}
+	return &common.CryptoCertificate{
+		Subject:               cert.Subject,
+		Issuer:                cert.Issuer,
+		SerialNumber:          cert.SerialNumber,
+		NotBefore:             convertToRPCTime(cert.NotBefore),
+		NotAfter:              convertToRPCTime(cert.NotAfter),
+		Format:                string(cert.Format),
+		KeyUsage:              cert.KeyUsage,
+		ExtendedKeyUsage:      cert.ExtendedKeyUsage,
+		DnsNames:              cert.DNSNames,
+		EmailAddresses:        cert.EmailAddresses,
+		IpAddresses:           cert.IPAddresses,
+		Uris:                  cert.URIs,
+		BasicConstraintsValid: cert.BasicConstraintsValid,
+		IsCa:                  cert.IsCA,
+		MaxPathLen:            cert.MaxPathLen,
+		MaxPathLenZero:        cert.MaxPathLenZero,
+	}
+}
+
+func convertToRPCCryptoKey(key *ftypes.CryptoKey) *common.CryptoKey {
+	if key == nil {
+		return nil
+	}
+	return &common.CryptoKey{
+		Size:      int32(key.Size),
+		Curve:     key.Curve,
+		Encrypted: key.Encrypted,
+	}
+}
+
+func convertToRPCCryptoAlgorithm(algorithm *ftypes.CryptoAlgorithm) *common.CryptoAlgorithm {
+	if algorithm == nil {
+		return nil
+	}
+	return &common.CryptoAlgorithm{
+		Family:    algorithm.Family,
+		Primitive: string(algorithm.Primitive),
+	}
+}
+
+func convertToRPCCryptoIdentity(identity ftypes.CryptoIdentity) *common.CryptoIdentity {
+	return &common.CryptoIdentity{
+		Method:     string(identity.Method),
+		Value:      identity.Value,
+		Parameters: identity.Parameters,
+	}
+}
+
+func convertToRPCCryptoRelationships(relationships []ftypes.CryptoRelationship) []*common.CryptoRelationship {
+	return xslices.Map(relationships, func(relationship ftypes.CryptoRelationship) *common.CryptoRelationship {
+		return &common.CryptoRelationship{
+			Type: string(relationship.Type),
+			RelatedAsset: &common.CryptoDescriptor{
+				Kind:     string(relationship.RelatedAsset.Kind),
+				KeyType:  string(relationship.RelatedAsset.KeyType),
+				Identity: convertToRPCCryptoIdentity(relationship.RelatedAsset.Identity),
+			},
+		}
+	})
+}
+
+// convertToRPCTime returns nil for a time that was never set, so that it does not read
+// back as the Unix epoch.
+func convertToRPCTime(t time.Time) *timestamppb.Timestamp {
+	if t.IsZero() {
+		return nil
+	}
+	return timestamppb.New(t)
+}
+
 // ConvertFromRPCPkgs returns list of Fanal package objects
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 	var pkgs []ftypes.Package
@@ -470,6 +565,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			CustomResources:   ConvertFromRPCCustomResources(result.CustomResources),
 			Secrets:           ConvertFromRPCDetectedSecrets(result.Secrets),
 			Licenses:          ConvertFromRPCDetectedLicenses(result.Licenses),
+			CryptoAssets:      ConvertFromRPCCryptoAssets(result.CryptoAssets),
 		})
 	}
 	return results
@@ -610,6 +706,121 @@ func ConvertFromRPCLicenseFindings(rpcFindings []*common.LicenseFinding) ftypes.
 	}
 
 	return findings
+}
+
+// ConvertFromRPCCryptoAssets returns the cryptographic assets.
+func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.CryptoAsset {
+	return xslices.Map(rpcAssets, func(rpcAsset *common.CryptoAsset) ftypes.CryptoAsset {
+		return ftypes.CryptoAsset{
+			CryptoAssetInfo: ftypes.CryptoAssetInfo{
+				Kind:          ftypes.CryptoKind(rpcAsset.Kind),
+				KeyType:       ftypes.CryptoKeyType(rpcAsset.KeyType),
+				Identity:      convertFromRPCCryptoIdentity(rpcAsset.Identity),
+				Name:          rpcAsset.Name,
+				Certificate:   convertFromRPCCryptoCertificate(rpcAsset.Certificate),
+				Key:           convertFromRPCCryptoKey(rpcAsset.Key),
+				Algorithm:     convertFromRPCCryptoAlgorithm(rpcAsset.Algorithm),
+				Relationships: convertFromRPCCryptoRelationships(rpcAsset.Relationships),
+			},
+			FilePath: rpcAsset.FilePath,
+			Format:   ftypes.CryptoKeyFormat(rpcAsset.Format),
+			Encoding: ftypes.CryptoEncoding(rpcAsset.Encoding),
+			Layer:    ConvertFromRPCLayer(rpcAsset.Layer),
+		}
+	})
+}
+
+func convertFromRPCCryptoIdentity(rpcIdentity *common.CryptoIdentity) ftypes.CryptoIdentity {
+	if rpcIdentity == nil {
+		return ftypes.CryptoIdentity{}
+	}
+	return ftypes.CryptoIdentity{
+		Method:     ftypes.CryptoIdentityMethod(rpcIdentity.Method),
+		Value:      rpcIdentity.Value,
+		Parameters: rpcIdentity.Parameters,
+	}
+}
+
+func convertFromRPCCryptoCertificate(rpcCert *common.CryptoCertificate) *ftypes.CryptoCertificate {
+	if rpcCert == nil {
+		return nil
+	}
+	return &ftypes.CryptoCertificate{
+		Subject:               rpcCert.Subject,
+		Issuer:                rpcCert.Issuer,
+		SerialNumber:          rpcCert.SerialNumber,
+		NotBefore:             convertFromRPCTime(rpcCert.NotBefore),
+		NotAfter:              convertFromRPCTime(rpcCert.NotAfter),
+		Format:                ftypes.CryptoCertificateFormat(rpcCert.Format),
+		KeyUsage:              rpcCert.KeyUsage,
+		ExtendedKeyUsage:      rpcCert.ExtendedKeyUsage,
+		DNSNames:              rpcCert.DnsNames,
+		EmailAddresses:        rpcCert.EmailAddresses,
+		IPAddresses:           rpcCert.IpAddresses,
+		URIs:                  rpcCert.Uris,
+		BasicConstraintsValid: rpcCert.BasicConstraintsValid,
+		IsCA:                  rpcCert.IsCa,
+		MaxPathLen:            rpcCert.MaxPathLen,
+		MaxPathLenZero:        rpcCert.MaxPathLenZero,
+	}
+}
+
+func convertFromRPCCryptoKey(rpcKey *common.CryptoKey) *ftypes.CryptoKey {
+	if rpcKey == nil {
+		return nil
+	}
+	return &ftypes.CryptoKey{
+		Size:      int(rpcKey.Size),
+		Curve:     rpcKey.Curve,
+		Encrypted: rpcKey.Encrypted,
+	}
+}
+
+func convertFromRPCCryptoAlgorithm(rpcAlgorithm *common.CryptoAlgorithm) *ftypes.CryptoAlgorithm {
+	if rpcAlgorithm == nil {
+		return nil
+	}
+	return &ftypes.CryptoAlgorithm{
+		Family:    rpcAlgorithm.Family,
+		Primitive: ftypes.CryptoPrimitive(rpcAlgorithm.Primitive),
+	}
+}
+
+// convertFromRPCCryptoRelationships returns the relationships of an asset. A relationship
+// with an invalid descriptor is skipped because such a descriptor cannot be encoded to JSON.
+func convertFromRPCCryptoRelationships(rpcRelationships []*common.CryptoRelationship) []ftypes.CryptoRelationship {
+	var relationships []ftypes.CryptoRelationship
+	for _, rpcRelationship := range rpcRelationships {
+		descriptor := convertFromRPCCryptoDescriptor(rpcRelationship.RelatedAsset)
+		if err := descriptor.Validate(); err != nil {
+			log.Warn("Invalid cryptographic asset descriptor",
+				log.String("descriptor", descriptor.String()), log.Err(err))
+			continue
+		}
+		relationships = append(relationships, ftypes.CryptoRelationship{
+			Type:         ftypes.CryptoRelationshipType(rpcRelationship.Type),
+			RelatedAsset: descriptor,
+		})
+	}
+	return relationships
+}
+
+func convertFromRPCCryptoDescriptor(rpcDescriptor *common.CryptoDescriptor) ftypes.CryptoDescriptor {
+	if rpcDescriptor == nil {
+		return ftypes.CryptoDescriptor{}
+	}
+	return ftypes.CryptoDescriptor{
+		Kind:     ftypes.CryptoKind(rpcDescriptor.Kind),
+		KeyType:  ftypes.CryptoKeyType(rpcDescriptor.KeyType),
+		Identity: convertFromRPCCryptoIdentity(rpcDescriptor.Identity),
+	}
+}
+
+func convertFromRPCTime(ts *timestamppb.Timestamp) time.Time {
+	if ts == nil {
+		return time.Time{}
+	}
+	return ts.AsTime()
 }
 
 // ConvertFromRPCVulns converts []*common.Vulnerability to []types.DetectedVulnerability
@@ -885,6 +1096,7 @@ func ConvertFromRPCPutBlobRequest(req *cache.PutBlobRequest) ftypes.BlobInfo {
 		CustomResources:   ConvertFromRPCCustomResources(req.BlobInfo.CustomResources),
 		Secrets:           ConvertFromRPCSecrets(req.BlobInfo.Secrets),
 		Licenses:          ConvertFromRPCLicenseFiles(req.BlobInfo.Licenses),
+		CryptoAssets:      ConvertFromRPCCryptoAssets(req.BlobInfo.CryptoAssets),
 		CreatedBy:         req.BlobInfo.CreatedBy,
 		OpaqueDirs:        req.BlobInfo.OpaqueDirs,
 		WhiteoutFiles:     req.BlobInfo.WhiteoutFiles,
@@ -1012,6 +1224,7 @@ func ConvertToRPCPutBlobRequest(diffID string, blobInfo ftypes.BlobInfo) *cache.
 			CustomResources:   customResources,
 			Secrets:           ConvertToRPCSecrets(blobInfo.Secrets),
 			Licenses:          ConvertToRPCLicenseFiles(blobInfo.Licenses),
+			CryptoAssets:      ConvertToRPCCryptoAssets(blobInfo.CryptoAssets),
 			CreatedBy:         blobInfo.CreatedBy,
 			OpaqueDirs:        blobInfo.OpaqueDirs,
 			WhiteoutFiles:     blobInfo.WhiteoutFiles,
@@ -1072,6 +1285,7 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 			Secrets:           ConvertToRPCSecretFindings(secretFindings),
 			Licenses:          ConvertToRPCLicenses(result.Licenses),
 			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
+			CryptoAssets:      ConvertToRPCCryptoAssets(result.CryptoAssets),
 		})
 	}
 

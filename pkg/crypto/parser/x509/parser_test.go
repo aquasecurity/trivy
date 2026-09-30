@@ -896,7 +896,7 @@ func TestParseCertificatePathLength(t *testing.T) {
 	tests := []struct {
 		name           string
 		certificate    *stdx509.Certificate
-		wantPathLen    int
+		wantPathLen    int64
 		wantPathLenSet bool
 	}{
 		{
