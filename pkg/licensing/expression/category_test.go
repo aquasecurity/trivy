@@ -24,13 +24,6 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 			wantOK: true,
 		},
 		{
-			name:   "opensource.org mit",
-			url:    "opensource.org/license/mit",
-			want:   "MIT",
-			wantOK: true,
-		},
-		{
-			// SPDX lists both spellings for MIT, so both are indexed.
 			name:   "opensource.org MIT",
 			url:    "opensource.org/license/MIT",
 			want:   "MIT",
@@ -44,9 +37,15 @@ func TestSPDXLicenseIDByURL(t *testing.T) {
 			// The URL cannot tell -only from -or-later, so generation resolves the
 			// family to its -only variant.
 			name:   "license family resolved to its -only variant at generation time",
-			url:    "opensource.org/license/GPL-2.0",
-			want:   "GPL-2.0-only",
+			url:    "opensource.org/license/LGPL-3.0",
+			want:   "LGPL-3.0-only",
 			wantOK: true,
+		},
+		{
+			// Only the deprecated and or-later forms of the family reference this URL,
+			// so generation has no -only variant to give it to and drops it.
+			name: "family URL that no -only variant references is dropped at generation time",
+			url:  "opensource.org/license/GPL-2.0",
 		},
 		{
 			name:   "ambiguous URL of genuinely different licenses is dropped at generation time",
