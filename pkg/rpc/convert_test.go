@@ -640,6 +640,20 @@ func TestConvertFromRPCResults(t *testing.T) {
 								},
 							},
 						},
+						CryptoAssets: []*common.CryptoAsset{
+							{
+								Kind: string(ftypes.CryptoKindAlgorithm),
+								Identity: &common.CryptoIdentity{
+									Method: string(ftypes.CryptoMethodOID),
+									Value:  "1.2.840.113549.1.1.1",
+								},
+								Name: "RSA",
+								Algorithm: &common.CryptoAlgorithm{
+									Primitive: string(ftypes.CryptoPrimitiveUnknown),
+								},
+								FilePath: "/etc/example-algorithm.pem",
+							},
+						},
 					},
 				},
 			},
@@ -689,6 +703,9 @@ func TestConvertFromRPCResults(t *testing.T) {
 							},
 							Custom: customJSON,
 						},
+					},
+					CryptoAssets: []ftypes.CryptoAsset{
+						cryptotest.AlgorithmAsset(),
 					},
 				},
 			},
@@ -1562,56 +1579,71 @@ func TestConvertCryptoAssets(t *testing.T) {
 		DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 	}
 
-	algorithm := cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-		asset.Name = "RSA-2048"
-		asset.Identity.Parameters = "key-size=2048"
-		asset.Layer = layer
-	}))
-	key := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-		asset.Key.Curve = "P-256"
-		asset.Relationships = []ftypes.CryptoRelationship{
-			{
-				Type:         ftypes.CryptoRelationshipUsedWith,
-				RelatedAsset: algorithm.Descriptor(),
-			},
-		}
-		asset.Layer = layer
-	}))
-	certificate := cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-		asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
-		asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
-		asset.Certificate.KeyUsage = []string{"digitalSignature"}
-		asset.Certificate.ExtendedKeyUsage = []string{"serverAuth"}
-		asset.Certificate.DNSNames = []string{"example.test"}
-		asset.Certificate.EmailAddresses = []string{"admin@example.test"}
-		asset.Certificate.IPAddresses = []string{"192.0.2.1"}
-		asset.Certificate.URIs = []string{"https://example.test"}
-		asset.Certificate.BasicConstraintsValid = true
-		asset.Certificate.IsCA = true
-		asset.Certificate.MaxPathLenZero = true
-		asset.Relationships = []ftypes.CryptoRelationship{
-			{
-				Type:         ftypes.CryptoRelationshipSignedWith,
-				RelatedAsset: cryptotest.AlgorithmDescriptor(),
-			},
-			{
-				Type:         ftypes.CryptoRelationshipContains,
-				RelatedAsset: key.Descriptor(),
-			},
-		}
-		asset.Layer = layer
-	}))
-
-	assets := []ftypes.CryptoAsset{
-		certificate,
-		key,
-		algorithm,
+	tests := []struct {
+		name  string
+		asset ftypes.CryptoAsset
+	}{
+		{
+			name: "certificate",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+				asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+				asset.Certificate.KeyUsage = []string{"digitalSignature"}
+				asset.Certificate.ExtendedKeyUsage = []string{"serverAuth"}
+				asset.Certificate.DNSNames = []string{"example.test"}
+				asset.Certificate.EmailAddresses = []string{"admin@example.test"}
+				asset.Certificate.IPAddresses = []string{"192.0.2.1"}
+				asset.Certificate.URIs = []string{"https://example.test"}
+				asset.Certificate.BasicConstraintsValid = true
+				asset.Certificate.IsCA = true
+				asset.Certificate.MaxPathLenZero = true
+				asset.Relationships = []ftypes.CryptoRelationship{
+					{
+						Type:         ftypes.CryptoRelationshipSignedWith,
+						RelatedAsset: cryptotest.AlgorithmDescriptor(),
+					},
+					{
+						Type:         ftypes.CryptoRelationshipContains,
+						RelatedAsset: cryptotest.PublicKeyDescriptor(),
+					},
+				}
+				asset.Layer = layer
+			})),
+		},
+		{
+			name: "public key",
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Key.Curve = "P-256"
+				asset.Relationships = []ftypes.CryptoRelationship{
+					{
+						Type:         ftypes.CryptoRelationshipUsedWith,
+						RelatedAsset: cryptotest.AlgorithmDescriptor(),
+					},
+				}
+				asset.Layer = layer
+			})),
+		},
+		{
+			name:  "encrypted private key",
+			asset: cryptotest.EncryptedPrivateKeyAsset(),
+		},
+		{
+			name: "algorithm",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "RSA-2048"
+				asset.Identity.Parameters = "key-size=2048"
+				asset.Layer = layer
+			})),
+		},
 	}
-	for _, asset := range assets {
-		require.NoError(t, asset.Validate())
-	}
 
-	assert.Equal(t, assets, ConvertFromRPCCryptoAssets(ConvertToRPCCryptoAssets(assets)))
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.NoError(t, tt.asset.Validate())
+			assets := []ftypes.CryptoAsset{tt.asset}
+			assert.Equal(t, assets, ConvertFromRPCCryptoAssets(ConvertToRPCCryptoAssets(assets)))
+		})
+	}
 }
 
 func TestConvertFromRPCCryptoAssets(t *testing.T) {
