@@ -182,9 +182,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Dev:          !prodDeps.Contains(pkg.Name),
 		})
 
-		dependsOn := make([]string, 0, len(pkg.Dependencies))
+		depNames := pkg.directDeps()
+		// The root package depends on every workspace member
+		if pkg.Name == root {
+			depNames.Append(workspaces.Items()...)
+		}
 
-		for depName := range pkg.directDeps().Iter() {
+		dependsOn := make([]string, 0, depNames.Size())
+		for depName := range depNames.Iter() {
 			depPkg, exists := packages[depName]
 			if !exists {
 				continue

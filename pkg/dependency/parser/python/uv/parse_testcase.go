@@ -83,7 +83,7 @@ var (
 		{ID: "pillow@11.0.0", DependsOn: []string{"idna@3.10"}},
 		{ID: "pytest@8.3.4", DependsOn: []string{"colorama@0.4.6"}},
 		{ID: "requests@2.32.3", DependsOn: []string{"urllib3@2.2.3"}},
-		{ID: "root@0.1.0", DependsOn: []string{"click@8.1.7"}},
+		{ID: "root@0.1.0", DependsOn: []string{"a@0.1.0", "b@0.1.0", "click@8.1.7"}},
 		{ID: "ruff@0.9.0", DependsOn: []string{"tomli@2.2.1"}},
 	}
 )
