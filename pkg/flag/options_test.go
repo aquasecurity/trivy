@@ -378,6 +378,27 @@ func TestOptions_Align(t *testing.T) {
 			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx'",
 		},
 		{
+			name: "crypto scanner with SBOM sources",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatCycloneDX},
+				ScanOptions: flag.ScanOptions{
+					Scanners:    types.Scanners{types.CryptoScanner},
+					SBOMSources: []string{types.SBOMSourceOCI},
+				},
+			},
+			wantErr: "'--scanners crypto' cannot be used with '--sbom-sources'",
+		},
+		{
+			name: "no crypto scanner with SBOM sources",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatCycloneDX},
+				ScanOptions: flag.ScanOptions{
+					Scanners:    types.Scanners{types.VulnerabilityScanner},
+					SBOMSources: []string{types.SBOMSourceOCI},
+				},
+			},
+		},
+		{
 			name: "no crypto scanner with JSON",
 			opts: flag.Options{
 				ReportOptions: flag.ReportOptions{Format: types.FormatJSON},

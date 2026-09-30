@@ -84,6 +84,8 @@ The scanner works the same way in [client/server mode](../references/modes/clien
 
 The scanner is available for `trivy image` only.
 
+Trivy rejects `--scanners crypto` together with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image), because a remote SBOM found for the image replaces the analysis of its layers.
+
 A file without one of the extensions above is not read, so a key in a file named `tls-key` or inside a config file is missed. You can point the scanner at such a file with [`--file-patterns`](../configuration/skipping.md#customizing-file-handling), as long as it holds PEM or DER material:
 
 ```shell

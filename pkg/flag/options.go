@@ -493,6 +493,11 @@ func (o *Options) Align(f *Flags) error {
 		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx'")
 	}
 
+	// A remote SBOM replaces layer analysis, so cryptographic assets would not be collected
+	if o.Scanners.Enabled(types.CryptoScanner) && len(o.SBOMSources) > 0 {
+		return xerrors.Errorf("'--scanners crypto' cannot be used with '--sbom-sources'")
+	}
+
 	return nil
 }
 
