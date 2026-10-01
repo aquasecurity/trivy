@@ -26,6 +26,7 @@ func TestTar(t *testing.T) {
 		Severity          []string
 		IgnoreIDs         []string
 		Format            types.Format
+		Scanners          []string
 		Input             string
 		SkipDirs          []string
 		SkipFiles         []string
@@ -396,6 +397,15 @@ func TestTar(t *testing.T) {
 			},
 			golden: goldenFluentdGems,
 		},
+		{
+			name: "cryptographic assets with CycloneDX format",
+			args: args{
+				Format:   types.FormatCycloneDX,
+				Scanners: []string{"crypto"},
+				Input:    "testdata/fixtures/images/crypto.tar.gz",
+			},
+			golden: goldenCryptoCDX,
+		},
 	}
 
 	// Set up testing DB
@@ -422,6 +432,9 @@ func TestTar(t *testing.T) {
 			}
 			if len(tt.args.Severity) != 0 {
 				osArgs = append(osArgs, "--severity", strings.Join(tt.args.Severity, ","))
+			}
+			if len(tt.args.Scanners) != 0 {
+				osArgs = append(osArgs, "--scanners", strings.Join(tt.args.Scanners, ","))
 			}
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"
@@ -690,54 +703,6 @@ cache:
 
 			// Run Trivy
 			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
-				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
-			})
-		})
-	}
-}
-
-// TestTarWithCryptoAssets tests the crypto scanner, whose assets are reported as CycloneDX
-// components.
-//
-// NOTE: This test CAN update golden files with the -update flag. The golden file is not
-// shared with other tests.
-func TestTarWithCryptoAssets(t *testing.T) {
-	tests := []struct {
-		name   string
-		input  string
-		golden string
-	}{
-		{
-			name:   "cryptographic assets with CycloneDX format",
-			input:  "testdata/fixtures/images/crypto.tar.gz",
-			golden: goldenCryptoCDX,
-		},
-	}
-
-	// Set up testing DB
-	cacheDir := initDB(t)
-
-	// Set a temp dir so that modules will not be loaded
-	t.Setenv("XDG_DATA_HOME", cacheDir)
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			osArgs := []string{
-				"--cache-dir",
-				cacheDir,
-				"image",
-				"-q",
-				"--scanners",
-				"crypto",
-				"--format",
-				string(types.FormatCycloneDX),
-				"--skip-db-update",
-				"--input",
-				tt.input,
-			}
-
-			// Run Trivy
-			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})

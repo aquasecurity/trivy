@@ -3,6 +3,7 @@
 package integration
 
 import (
+	"cmp"
 	"context"
 	"fmt"
 	"os"
@@ -328,6 +329,15 @@ func TestClientServer(t *testing.T) {
 			},
 			golden: goldenTestRepo,
 		},
+		{
+			name: "cryptographic assets with CycloneDX format",
+			args: csArgs{
+				Format:   types.FormatCycloneDX,
+				Scanners: []string{"crypto"},
+				Input:    "testdata/fixtures/images/crypto.tar.gz",
+			},
+			golden: goldenCryptoCDX,
+		},
 	}
 
 	addr, cacheDir := setup(t, setupOptions{})
@@ -340,7 +350,7 @@ func TestClientServer(t *testing.T) {
 				osArgs = append(osArgs, "--secret-config", tt.args.secretConfig)
 			}
 
-			runTest(t, osArgs, tt.golden, types.FormatJSON, runOptions{
+			runTest(t, osArgs, tt.golden, cmp.Or(tt.args.Format, types.FormatJSON), runOptions{
 				override: overrideFuncs(overrideUID, overrideFingerprint, overrideServerInfo, tt.override),
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
@@ -509,41 +519,6 @@ func TestClientServerWithCycloneDX(t *testing.T) {
 			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 				override: nil, // Do not use overrides - golden files are generated from this test as the canonical source
-			})
-		})
-	}
-}
-
-// TestClientServerWithCryptoAssets tests the client-server mode with the crypto scanner.
-//
-// Golden files are shared with TestTarWithCryptoAssets.
-func TestClientServerWithCryptoAssets(t *testing.T) {
-	if *update {
-		t.Skipf("Skipping TestClientServerWithCryptoAssets when -update flag is set. Golden files should be updated via TestTarWithCryptoAssets.")
-	}
-
-	tests := []struct {
-		name   string
-		args   csArgs
-		golden string
-	}{
-		{
-			name: "cryptographic assets with CycloneDX format",
-			args: csArgs{
-				Format:   "cyclonedx",
-				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto.tar.gz",
-			},
-			golden: goldenCryptoCDX,
-		},
-	}
-
-	addr, cacheDir := setup(t, setupOptions{})
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			osArgs := setupClient(t, tt.args, addr, cacheDir)
-			runTest(t, osArgs, tt.golden, types.FormatCycloneDX, runOptions{
-				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
 			})
 		})
 	}
