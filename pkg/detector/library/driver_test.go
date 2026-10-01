@@ -495,6 +495,60 @@ func TestDriver_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
+			name: "echo pip package with a newer echo revision than the fixed one",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.10",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package with an upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.12.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-3000",
+					VendorIDs: []string{
+						"ECHO-9320-f34e-79db",
+					},
+					PkgName:          "torch",
+					InstalledVersion: "2.12.0+echo.1",
+					FixedVersion:     "2.13.0",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package with the upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.13.0+echo.1",
+			},
+			want: nil,
+		},
+		{
 			name: "echo pip package ignores upstream advisories",
 			fixtures: []string{
 				"testdata/fixtures/pip.yaml",
