@@ -3110,6 +3110,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#language-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Language Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8577,6 +8588,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#language-packages" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Language Packages
+      
+    </span>
+  </a>
+  
+</li>
+      
     </ul>
   
 </nav>
@@ -8657,6 +8679,30 @@ You're not viewing the latest version of the documentation.
 <p>See <a href="../../../scanner/vulnerability/#data-sources">here</a>.</p>
 <h2 id="license">License<a class="headerlink" href="#license" title="Permanent link">&para;</a></h2>
 <p>Same as <a href="../debian/#license">Debian</a>.</p>
+<h2 id="language-packages">Language Packages<a class="headerlink" href="#language-packages" title="Permanent link">&para;</a></h2>
+<p>Echo provides patched versions of language packages.
+Trivy identifies them by the version suffix and uses Echo's own security advisories from the <a href="https://advisory.echohq.com/osv/all.zip">Echo OSV feed</a> for them instead of the upstream ones.</p>
+<table>
+<thead>
+<tr>
+<th>Ecosystem</th>
+<th>Version Suffix</th>
+<th>Example</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="../../language/python/">Python</a></td>
+<td><code>+echo.N</code></td>
+<td><code>requests</code> <code>2.14.2+echo.1</code></td>
+</tr>
+</tbody>
+</table>
+<p>Other packages, including those from other ecosystems, are scanned against the upstream advisories as usual.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>These packages are detected regardless of the OS, including filesystem and repository scans.</p>
+</div>
 
 
 
