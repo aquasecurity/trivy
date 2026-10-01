@@ -18,7 +18,7 @@ func getLaunchTemplates(file parser.FileContext) (templates []ec2.LaunchTemplate
 func adaptLaunchTemplate(r *parser.Resource) ec2.LaunchTemplate {
 	launchTemplate := ec2.LaunchTemplate{
 		Metadata: r.Metadata(),
-		Name:     r.GetStringProperty("LaunchTemplateName", ""),
+		Name:     r.GetStringProperty("LaunchTemplateName"),
 		Instance: ec2.Instance{
 			Metadata: r.Metadata(),
 			MetadataOptions: ec2.MetadataOptions{
@@ -39,7 +39,7 @@ func adaptLaunchTemplate(r *parser.Resource) ec2.LaunchTemplate {
 			}
 		}
 
-		launchTemplate.Instance.UserData = data.GetStringProperty("UserData", "")
+		launchTemplate.Instance.UserData = data.GetStringProperty("UserData")
 
 		blockDevices := getBlockDevices(r)
 		for i, device := range blockDevices {

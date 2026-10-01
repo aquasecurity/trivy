@@ -6,7 +6,16 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/cftypes"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
+
+func firstOrZero[T any](values []T) T {
+	if len(values) > 0 {
+		return values[0]
+	}
+	var zero T
+	return zero
+}
 
 func (p *Property) IsNil() bool {
 	return p == nil || p.Value == nil
@@ -92,9 +101,15 @@ func (p *Property) AsString() string {
 	return p.Value.(string)
 }
 
-func (p *Property) AsStringValue() iacTypes.StringValue {
-	if p.unresolved {
+func (p *Property) AsStringValue(defaultValue ...string) iacTypes.StringValue {
+	if p.IsNil() {
+		return p.StringDefault(firstOrZero(defaultValue))
+	}
+	if p.IsUnresolved() {
 		return iacTypes.StringUnresolvable(p.Metadata())
+	}
+	if !p.IsString() {
+		return p.StringDefault(firstOrZero(defaultValue))
 	}
 	return iacTypes.StringExplicit(p.AsString(), p.Metadata())
 }
@@ -116,12 +131,20 @@ func (p *Property) AsInt() int {
 	return p.Value.(int)
 }
 
-func (p *Property) AsIntValue() iacTypes.IntValue {
-	if p.unresolved {
+func (p *Property) AsIntValue(defaultValue ...int) iacTypes.IntValue {
+	if p.IsNil() {
+		return p.IntDefault(firstOrZero(defaultValue))
+	}
+	if p.IsUnresolved() {
 		return iacTypes.IntUnresolvable(p.Metadata())
+	}
+	if !p.IsInt() {
+		return p.IntDefault(firstOrZero(defaultValue))
 	}
 	return iacTypes.IntExplicit(p.AsInt(), p.Metadata())
 }
+
+var boolTrueStrings = set.NewCaseInsensitive("true", "yes", "1")
 
 func (p *Property) AsBool() bool {
 	if p.isFunction() {
@@ -130,14 +153,22 @@ func (p *Property) AsBool() bool {
 		}
 		return false
 	}
-	if !p.IsBool() {
-		return false
+	switch p.Type {
+	case cftypes.Bool:
+		return p.Value.(bool)
+	case cftypes.String:
+		return boolTrueStrings.Contains(p.AsString())
+	case cftypes.Int:
+		return p.AsInt() != 0
 	}
-	return p.Value.(bool)
+	return false
 }
 
-func (p *Property) AsBoolValue() iacTypes.BoolValue {
-	if p.unresolved {
+func (p *Property) AsBoolValue(defaultValue ...bool) iacTypes.BoolValue {
+	if p.IsNil() {
+		return p.BoolDefault(firstOrZero(defaultValue))
+	}
+	if p.IsUnresolved() {
 		return iacTypes.BoolUnresolvable(p.Metadata())
 	}
 	return iacTypes.Bool(p.AsBool(), p.Metadata())

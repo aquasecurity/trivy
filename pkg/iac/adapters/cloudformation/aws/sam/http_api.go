@@ -12,7 +12,7 @@ func getHttpApis(cfFile parser.FileContext) (apis []sam.HttpAPI) {
 	for _, r := range apiResources {
 		api := sam.HttpAPI{
 			Metadata:             r.Metadata(),
-			Name:                 r.GetStringProperty("Name", ""),
+			Name:                 r.GetStringProperty("Name"),
 			DomainConfiguration:  getDomainConfiguration(r),
 			AccessLogging:        getAccessLoggingV2(r),
 			DefaultRouteSettings: getRouteSettings(r),
@@ -34,7 +34,7 @@ func getAccessLoggingV2(r *parser.Resource) sam.AccessLogging {
 	if access := r.GetProperty("AccessLogSettings"); access.IsNotNil() {
 		logging = sam.AccessLogging{
 			Metadata:              access.Metadata(),
-			CloudwatchLogGroupARN: access.GetStringProperty("DestinationArn", ""),
+			CloudwatchLogGroupARN: access.GetStringProperty("DestinationArn"),
 		}
 	}
 
