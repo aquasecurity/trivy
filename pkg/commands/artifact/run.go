@@ -506,6 +506,11 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
+	// Do not inventory cryptographic assets when it is not specified.
+	if !opts.Scanners.Enabled(types.CryptoScanner) {
+		analyzers = append(analyzers, analyzer.TypeCrypto)
+	}
+
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)

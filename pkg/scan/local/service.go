@@ -162,7 +162,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Scan licenses
 	results = append(results, s.scanLicenses(target, options)...)
 
-	if len(target.CryptoAssets) != 0 {
+	if options.Scanners.Enabled(types.CryptoScanner) && len(target.CryptoAssets) != 0 {
 		results = append(results, types.Result{
 			Target:       target.Name,
 			Class:        types.ClassCrypto,

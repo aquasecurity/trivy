@@ -1070,9 +1070,7 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				options: types.ScanOptions{
-					PkgTypes:         []string{types.PkgTypeOS},
-					PkgRelationships: ftypes.Relationships,
-					Scanners:         types.Scanners{types.VulnerabilityScanner},
+					Scanners: types.Scanners{types.CryptoScanner},
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
