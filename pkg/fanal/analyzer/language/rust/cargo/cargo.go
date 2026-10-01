@@ -132,6 +132,14 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 				continue
 			}
 
+			if constraint == "" {
+				// Mark as a direct dependency when declared without version constraint (e.g. git or path dependencies)
+				pkg.Indirect = false
+				pkg.Relationship = types.RelationshipDirect
+				pkgs[pkg.ID] = pkg
+				break
+			}
+
 			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
 				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
 				continue
@@ -261,14 +269,17 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 			deps[name] = ver
 		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
+			// or tantivy-fst = { git = "..." } / local = { path = "..." }
+			var version string
 			for k, v := range ver {
 				if k == "version" {
 					if vv, ok := v.(string); ok {
-						deps[name] = vv
+						version = vv
 					}
 					break
 				}
 			}
+			deps[name] = version
 		}
 	}
 
@@ -295,6 +306,10 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps 
 
 // cf. https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
+	if constraint == "" {
+		return true, nil
+	}
+
 	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
 	// Add `^` for correct version comparison
 	//   - 1.2.3 -> ^1.2.3
