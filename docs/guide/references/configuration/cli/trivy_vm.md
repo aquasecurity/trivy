@@ -159,6 +159,7 @@ trivy vm [flags] VM_IMAGE
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort

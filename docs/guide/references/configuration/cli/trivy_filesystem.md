@@ -174,6 +174,7 @@ trivy filesystem [flags] PATH
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort

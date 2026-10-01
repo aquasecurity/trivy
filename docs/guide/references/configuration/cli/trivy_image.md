@@ -195,6 +195,7 @@ trivy image [flags] IMAGE_NAME
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort

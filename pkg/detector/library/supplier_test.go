@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo supplier
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
@@ -76,13 +77,22 @@ func Test_lookupSupplier(t *testing.T) {
 			wantDefaultComparer: true,
 		},
 		{
-			name:      "non-seal pip package returns no match",
+			name:                "echo pip package returns supplier prefix and pep440 comparer",
+			eco:                 ecosystem.Pip,
+			pkgName:             "requests",
+			pkgVer:              "2.14.2+echo.1",
+			wantMatch:           library.Matched,
+			wantPrefix:          "echo pip::",
+			wantDefaultComparer: false,
+		},
+		{
+			name:      "non-supplier pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
 			wantMatch: library.NoMatch,
 		},
 		{
-			name:      "non-seal npm package returns no match",
+			name:      "non-supplier npm package returns no match",
 			eco:       ecosystem.Npm,
 			pkgName:   "ejs",
 			wantMatch: library.NoMatch,
@@ -102,7 +112,7 @@ func Test_lookupSupplier(t *testing.T) {
 				// When no custom comparer is needed, the default should be returned unchanged.
 				assert.Equal(t, defaultComparer, comparer)
 			} else {
-				// For seal pip, a custom pep440 comparer with AllowLocalSpecifier should be returned.
+				// For pip suppliers, a custom pep440 comparer with AllowLocalSpecifier should be returned.
 				assert.IsType(t, pep440.Comparer{}, comparer)
 			}
 		})

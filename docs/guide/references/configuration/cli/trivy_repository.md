@@ -173,6 +173,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - julia
                                             - bottlerocket
                                             - echo
+                                            - echo-osv
                                             - minimos
                                             - rootio
                                             - rapidfort
