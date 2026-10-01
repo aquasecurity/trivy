@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://trivy.dev/dev/guide/scanner/license/">
+        <link rel="canonical" href="https://trivy.dev/dev/guide/scanner/crypto/">
       
       
-        <link rel="prev" href="../secret/">
+        <link rel="prev" href="../license/">
       
       
-        <link rel="next" href="../crypto/">
+        <link rel="next" href="../../coverage/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>License - Trivy</title>
+        <title>Cryptographic Asset - Trivy</title>
       
     
     
@@ -75,9 +75,9 @@
 
 
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Trivy - License" />
+<meta property="og:title" content="Trivy - Cryptographic Asset" />
 <meta property="og:description" content="Trivy - All-in-one open source security scanner" />
-<meta property="og:url" content="https://trivy.dev/dev/guide/scanner/license/" />
+<meta property="og:url" content="https://trivy.dev/dev/guide/scanner/crypto/" />
 <meta property="og:image" content="https://trivy.dev/devassets/images/illustrations/banner.png" />
 <meta property="og:image:type" content="image/png" />
 <meta property="og:image:width" content="1080" />
@@ -104,7 +104,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#license-scanning" class="md-skip">
+        <a href="#cryptographic-asset-scanning" class="md-skip">
           Skip to content
         </a>
       
@@ -155,7 +155,7 @@ You're not viewing the latest version of the documentation.
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              License
+              Cryptographic Asset
             
           </span>
         </div>
@@ -2545,6 +2545,34 @@ You're not viewing the latest version of the documentation.
                 
   
   
+  
+  
+    <li class="md-nav__item">
+      <a href="../license/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
     
   
   
@@ -2564,7 +2592,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    License
+    Cryptographic Asset
   
 
     
@@ -2582,7 +2610,7 @@ You're not viewing the latest version of the documentation.
   <span class="md-ellipsis">
     
   
-    License
+    Cryptographic Asset
   
 
     
@@ -2608,33 +2636,33 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#what-is-scanned" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick start
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick start">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#standard-scanning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Standard scanning
+        What is scanned
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#full-scanning" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#what-is-reported" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Full scanning
+        What is reported
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What is reported">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cyclonedx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CycloneDX
       
     </span>
   </a>
@@ -2647,80 +2675,35 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
+  <a href="#filtering-the-inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ignored-licenses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignored Licenses
+        Filtering the inventory
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#configuring-classifier-confidence-level" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#clientserver-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuring Classifier Confidence Level
+        Client/server mode
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-classification" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Classification
+        Limitations
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Custom Classification">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#text-licenses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Text licenses
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enabling-a-subset-of-package-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enabling a Subset of Package Types
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -2728,34 +2711,6 @@ You're not viewing the latest version of the documentation.
   
 </nav>
       
-    </li>
-  
-
-              
-            
-              
-                
-  
-  
-  
-  
-    <li class="md-nav__item">
-      <a href="../crypto/" class="md-nav__link">
-        
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Cryptographic Asset
-  
-
-    
-  </span>
-  
-  
-
-      </a>
     </li>
   
 
@@ -8621,33 +8576,33 @@ You're not viewing the latest version of the documentation.
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#quick-start" class="md-nav__link">
+  <a href="#what-is-scanned" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Quick start
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Quick start">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#standard-scanning" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Standard scanning
+        What is scanned
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#full-scanning" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#what-is-reported" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Full scanning
+        What is reported
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="What is reported">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#cyclonedx" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        CycloneDX
       
     </span>
   </a>
@@ -8660,80 +8615,35 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#configuration" class="md-nav__link">
+  <a href="#filtering-the-inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuration
-      
-    </span>
-  </a>
-  
-    <nav class="md-nav" aria-label="Configuration">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#ignored-licenses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Ignored Licenses
+        Filtering the inventory
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#configuring-classifier-confidence-level" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#clientserver-mode" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Configuring Classifier Confidence Level
+        Client/server mode
       
     </span>
   </a>
   
 </li>
-        
-          <li class="md-nav__item">
-  <a href="#custom-classification" class="md-nav__link">
+      
+        <li class="md-nav__item">
+  <a href="#limitations" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Custom Classification
+        Limitations
       
     </span>
   </a>
-  
-    <nav class="md-nav" aria-label="Custom Classification">
-      <ul class="md-nav__list">
-        
-          <li class="md-nav__item">
-  <a href="#text-licenses" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Text licenses
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
-  
-</li>
-        
-          <li class="md-nav__item">
-  <a href="#enabling-a-subset-of-package-types" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Enabling a Subset of Package Types
-      
-    </span>
-  </a>
-  
-</li>
-        
-      </ul>
-    </nav>
   
 </li>
       
@@ -8754,7 +8664,7 @@ You're not viewing the latest version of the documentation.
 
 
   
-    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/scanner/license.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
+    <a href="https://github.com/aquasecurity/trivy/blob/main/docs/guide/scanner/crypto.md" title="Edit this page" class="md-content__button md-icon" rel="edit">
       
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20H6V4h7v5h5v3.1l2-2V8l-6-6H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h4zm10.2-7c.1 0 .3.1.4.2l1.3 1.3c.2.2.2.6 0 .8l-1 1-2.1-2.1 1-1c.1-.1.2-.2.4-.2m0 3.9L14.1 23H12v-2.1l6.1-6.1z"/></svg>
     </a>
@@ -8762,422 +8672,94 @@ You're not viewing the latest version of the documentation.
   
 
 
-<h1 id="license-scanning">License Scanning<a class="headerlink" href="#license-scanning" title="Permanent link">&para;</a></h1>
-<p>Trivy scans any container image for license files and offers an opinionated view on the risk associated with the license.</p>
-<p>Licenses are classified using the <a href="https://opensource.google/documentation/reference/thirdparty/licenses">Google License Classification</a> -</p>
-<ul>
-<li>Forbidden</li>
-<li>Restricted </li>
-<li>Reciprocal</li>
-<li>Notice</li>
-<li>Permissive</li>
-<li>Unencumbered</li>
-<li>Unknown</li>
-</ul>
-<div class="admonition tip">
-<p class="admonition-title">Tip</p>
-<p>Licenses that Trivy fails to recognize are classified as UNKNOWN.
-As those licenses may be in violation, it is recommended to check those unknown licenses as well.    </p>
+<h1 id="cryptographic-asset-scanning">Cryptographic Asset Scanning<a class="headerlink" href="#cryptographic-asset-scanning" title="Permanent link">&para;</a></h1>
+<div class="admonition warning">
+<p class="admonition-title">EXPERIMENTAL</p>
+<p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>By default, Trivy scans licenses for packages installed by <code>apk</code>, <code>apt-get</code>, <code>dnf</code>, <code>npm</code>, <code>pip</code>, <code>gem</code>, etc.
-Check out <a href="../../coverage/">the coverage document</a> for details.</p>
-<p>To enable extended license scanning, you can use <code>--license-full</code>.
-In addition to package licenses, Trivy scans source code files, Markdown documents, text files and <code>LICENSE</code> documents to identify license usage within the image or filesystem.</p>
-<p>By default, Trivy only classifies licenses that are matched with a confidence level of 0.9 or more by the classifier.
-To configure the confidence level, you can use <code>--license-confidence-level</code>. This enables us to classify licenses that might be matched with a lower confidence level by the classifier. </p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p>The full license scanning is expensive. It takes a while.</p>
-</div>
+<p>Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components.</p>
+<p>The scanner is off by default. Enable it with <code>--scanners crypto</code> together with <code>--format cyclonedx</code>.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--output<span class="w"> </span>result.cdx.json<span class="w"> </span>myimage:1.0.0
+</code></pre></div>
+<p>Cryptographic assets have no representation in the other report formats, so Trivy rejects <code>--scanners crypto</code> with any of them.</p>
+<h2 id="what-is-scanned">What is scanned<a class="headerlink" href="#what-is-scanned" title="Permanent link">&para;</a></h2>
+<p>Files are selected by extension: <code>.pem</code>, <code>.der</code>, <code>.crt</code>, <code>.cer</code>, <code>.key</code>. The encoding comes from the content, since these extensions carry both PEM and DER.</p>
 <table>
 <thead>
 <tr>
-<th style="text-align: center;">License scanning</th>
-<th style="text-align: center;">Image</th>
-<th style="text-align: center;">Rootfs</th>
-<th style="text-align: center;">Filesystem</th>
-<th style="text-align: center;">Repository</th>
-<th style="text-align: center;">SBOM</th>
+<th>Material</th>
+<th>Formats</th>
 </tr>
 </thead>
 <tbody>
 <tr>
-<td style="text-align: center;">Standard</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td style="text-align: center;">✅<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup><sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
-<td style="text-align: center;">✅</td>
+<td>X.509 certificates</td>
+<td>PEM, DER</td>
 </tr>
 <tr>
-<td style="text-align: center;">Full (--license-full)</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">✅</td>
-<td style="text-align: center;">-</td>
+<td>Private keys</td>
+<td>PKCS#1, PKCS#8, SEC1, in PEM or DER</td>
+</tr>
+<tr>
+<td>Public keys</td>
+<td>PKIX, in PEM or DER</td>
+</tr>
+<tr>
+<td>Encrypted private keys</td>
+<td>PKCS#8 in PEM or DER, legacy encrypted PEM</td>
 </tr>
 </tbody>
 </table>
-<p>License checking classifies the identified licenses and maps the classification to severity.</p>
-<table>
-<thead>
-<tr>
-<th>Classification</th>
-<th>Severity</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Forbidden</td>
-<td>CRITICAL</td>
-</tr>
-<tr>
-<td>Restricted</td>
-<td>HIGH</td>
-</tr>
-<tr>
-<td>Reciprocal</td>
-<td>MEDIUM</td>
-</tr>
-<tr>
-<td>Notice</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>Permissive</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>Unencumbered</td>
-<td>LOW</td>
-</tr>
-<tr>
-<td>Unknown</td>
-<td>UNKNOWN</td>
-</tr>
-</tbody>
-</table>
-<h2 id="quick-start">Quick start<a class="headerlink" href="#quick-start" title="Permanent link">&para;</a></h2>
-<p>This section shows how to scan license in container image and filesystem.</p>
-<h3 id="standard-scanning">Standard scanning<a class="headerlink" href="#standard-scanning" title="Permanent link">&para;</a></h3>
-<p>Specify an image name with <code>--scanners license</code>.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--severity<span class="w"> </span>UNKNOWN,HIGH,CRITICAL<span class="w"> </span>alpine:3.15
-<span class="m">2022</span>-07-13T17:28:39.526+0300<span class="w">    </span>INFO<span class="w">    </span>License<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
-
-OS<span class="w"> </span>Packages<span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">=====================</span>
-Total:<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">6</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
-
-┌───────────────────┬─────────┬────────────────┬──────────┐
-│<span class="w">      </span>Package<span class="w">      </span>│<span class="w"> </span>License<span class="w"> </span>│<span class="w"> </span>Classification<span class="w"> </span>│<span class="w"> </span>Severity<span class="w"> </span>│
-├───────────────────┼─────────┼────────────────┼──────────┤
-│<span class="w"> </span>alpine-baselayout<span class="w"> </span>│<span class="w"> </span>GPL-2.0<span class="w"> </span>│<span class="w"> </span>Restricted<span class="w">     </span>│<span class="w"> </span>HIGH<span class="w">     </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>apk-tools<span class="w">         </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>busybox<span class="w">           </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>musl-utils<span class="w">        </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>scanelf<span class="w">           </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>ssl_client<span class="w">        </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-└───────────────────┴─────────┴────────────────┴──────────┘
+<p>A single file may hold many objects. A certificate chain, a CA bundle of several hundred certificates, or a certificate stored next to its key are all read block by block, and an entry Trivy cannot read is skipped without discarding the rest of the file.</p>
+<h2 id="what-is-reported">What is reported<a class="headerlink" href="#what-is-reported" title="Permanent link">&para;</a></h2>
+<p>The report lists three kinds of assets, which are certificates, keys and algorithms. A certificate adds four assets linked to each other. These are the certificate, the key it carries, the algorithm of that key and the algorithm it was signed with. A key is linked to its algorithm, and a private key also to its public key.</p>
+<p>A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.</p>
+<p>An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the <code>SubjectPublicKeyInfo</code>, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.</p>
+<h3 id="cyclonedx">CycloneDX<a class="headerlink" href="#cyclonedx" title="Permanent link">&para;</a></h3>
+<p>Every asset becomes a <code>cryptographic-asset</code> component with <code>cryptoProperties</code>, and the links between assets are stored in <code>relatedCryptographicAssets</code>. Each place an asset was found is an entry in <code>evidence.occurrences</code>. The path is stored in <code>location</code>, and the layer in <code>additionalContext</code> as <code>aquasecurity:trivy:LayerDiffID=&lt;diff ID&gt;</code>.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;bom-ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;crypto:certificate:sha256:ab12…&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;cryptographic-asset&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;example.com&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;occurrences&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">      </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;location&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;etc/ssl/certs/server.crt&quot;</span><span class="p">,</span>
+<span class="w">        </span><span class="nt">&quot;additionalContext&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;aquasecurity:trivy:LayerDiffID=sha256:9f3e…&quot;</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">]</span>
+<span class="w">  </span><span class="p">},</span>
+<span class="w">  </span><span class="nt">&quot;cryptoProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="nt">&quot;assetType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;certificate&quot;</span><span class="p">,</span>
+<span class="w">    </span><span class="nt">&quot;certificateProperties&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;serialNumber&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;1a2b&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;subjectName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CN=example.com&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;issuerName&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CN=Example CA&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notValidBefore&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2024-01-01T00:00:00+00:00&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;notValidAfter&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;2025-01-01T00:00:00+00:00&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;certificateFormat&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;X.509&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;fingerprint&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;alg&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;SHA-256&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;content&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;ab12…&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">      </span><span class="nt">&quot;relatedCryptographicAssets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;algorithm&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;crypto:algorithm:oid:1.2.840.113549.1.1.11&quot;</span><span class="w"> </span><span class="p">},</span>
+<span class="w">        </span><span class="p">{</span><span class="w"> </span><span class="nt">&quot;type&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;publicKey&quot;</span><span class="p">,</span><span class="w"> </span><span class="nt">&quot;ref&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;crypto:key:public:spki-sha256:cd34…&quot;</span><span class="w"> </span><span class="p">}</span>
+<span class="w">      </span><span class="p">]</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">}</span>
+<span class="p">}</span>
 </code></pre></div>
-<h3 id="full-scanning">Full scanning<a class="headerlink" href="#full-scanning" title="Permanent link">&para;</a></h3>
-<p>Specify <code>--license-full</code></p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--severity<span class="w"> </span>UNKNOWN,HIGH,CRITICAL<span class="w"> </span>--license-full<span class="w"> </span>grafana/grafana
-<span class="m">2022</span>-07-13T17:48:40.905+0300<span class="w">    </span>INFO<span class="w">    </span>Full<span class="w"> </span>license<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
-
-OS<span class="w"> </span>Packages<span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">=====================</span>
-Total:<span class="w"> </span><span class="m">20</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">9</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">11</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
-
-┌───────────────────┬───────────────────┬────────────────┬──────────┐
-│<span class="w">      </span>Package<span class="w">      </span>│<span class="w">      </span>License<span class="w">      </span>│<span class="w"> </span>Classification<span class="w"> </span>│<span class="w"> </span>Severity<span class="w"> </span>│
-├───────────────────┼───────────────────┼────────────────┼──────────┤
-│<span class="w"> </span>alpine-baselayout<span class="w"> </span>│<span class="w"> </span>GPL-2.0<span class="w">           </span>│<span class="w"> </span>Restricted<span class="w">     </span>│<span class="w"> </span>HIGH<span class="w">     </span>│
-├───────────────────┤<span class="w">                   </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>apk-tools<span class="w">         </span>│<span class="w">                   </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┼───────────────────┤<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>bash<span class="w">              </span>│<span class="w"> </span>GPL-3.0<span class="w">           </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┼───────────────────┼────────────────┼──────────┤
-│<span class="w"> </span>keyutils-libs<span class="w">     </span>│<span class="w"> </span>GPL-2.0<span class="w">           </span>│<span class="w"> </span>Restricted<span class="w">     </span>│<span class="w"> </span>HIGH<span class="w">     </span>│
-│<span class="w">                   </span>├───────────────────┼────────────────┼──────────┤
-│<span class="w">                   </span>│<span class="w"> </span>LGPL-2.0-or-later<span class="w"> </span>│<span class="w"> </span>Non<span class="w"> </span>Standard<span class="w">   </span>│<span class="w"> </span>UNKNOWN<span class="w">  </span>│
-├───────────────────┼───────────────────┤<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>libaio<span class="w">            </span>│<span class="w"> </span>LGPL-2.1-or-later<span class="w"> </span>│<span class="w">                </span>│<span class="w">          </span>│
-├───────────────────┼───────────────────┼────────────────┼──────────┤
-│<span class="w"> </span>libcom_err<span class="w">        </span>│<span class="w"> </span>GPL-2.0<span class="w">           </span>│<span class="w"> </span>Restricted<span class="w">     </span>│<span class="w"> </span>HIGH<span class="w">     </span>│
-│<span class="w">                   </span>├───────────────────┼────────────────┼──────────┤
-│<span class="w">                   </span>│<span class="w"> </span>LGPL-2.0-or-later<span class="w"> </span>│<span class="w"> </span>Non<span class="w"> </span>Standard<span class="w">   </span>│<span class="w"> </span>UNKNOWN<span class="w">  </span>│
-├───────────────────┼───────────────────┼────────────────┼──────────┤
-│<span class="w"> </span>tzdata<span class="w">            </span>│<span class="w"> </span>Public-Domain<span class="w">     </span>│<span class="w"> </span>Non<span class="w"> </span>Standard<span class="w">   </span>│<span class="w"> </span>UNKNOWN<span class="w">  </span>│
-└───────────────────┴───────────────────┴────────────────┴──────────┘
-
-Loose<span class="w"> </span>File<span class="w"> </span>License<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">===============================</span>
-Total:<span class="w"> </span><span class="m">6</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">4</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">0</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">2</span><span class="o">)</span>
-
-┌────────────────┬──────────┬──────────────┬──────────────────────────────────────────────────────────────┐
-│<span class="w"> </span>Classification<span class="w"> </span>│<span class="w"> </span>Severity<span class="w"> </span>│<span class="w">   </span>License<span class="w">    </span>│<span class="w">                        </span>File<span class="w"> </span>Location<span class="w">                         </span>│
-├────────────────┼──────────┼──────────────┼──────────────────────────────────────────────────────────────┤
-│<span class="w"> </span>Forbidden<span class="w">      </span>│<span class="w"> </span>CRITICAL<span class="w"> </span>│<span class="w"> </span>AGPL-3.0<span class="w">     </span>│<span class="w"> </span>/usr/share/grafana/LICENSE<span class="w">                                   </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w">                                                              </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w">                                                              </span>│
-├────────────────┼──────────┼──────────────┼──────────────────────────────────────────────────────────────┤
-│<span class="w"> </span>Non<span class="w"> </span>Standard<span class="w">   </span>│<span class="w"> </span>UNKNOWN<span class="w">  </span>│<span class="w"> </span>BSD-0-Clause<span class="w"> </span>│<span class="w"> </span>/usr/share/grafana/public/build/5069.d6aae9dd11d49c741a80.j-<span class="w"> </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>s.LICENSE.txt<span class="w">                                                </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>├──────────────────────────────────────────────────────────────┤
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>/usr/share/grafana/public/build/6444.d6aae9dd11d49c741a80.j-<span class="w"> </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>s.LICENSE.txt<span class="w">                                                </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>├──────────────────────────────────────────────────────────────┤
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>/usr/share/grafana/public/build/7889.d6aae9dd11d49c741a80.j-<span class="w"> </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>s.LICENSE.txt<span class="w">                                                </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>├──────────────────────────────────────────────────────────────┤
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>/usr/share/grafana/public/build/canvasPanel.d6aae9dd11d49c7-<span class="w"> </span>│
-│<span class="w">                </span>│<span class="w">          </span>│<span class="w">              </span>│<span class="w"> </span>41a80.js.LICENSE.txt<span class="w">                                         </span>│
-└────────────────┴──────────┴──────────────┴──────────────────────────────────────────────────────────────┘
+<h2 id="filtering-the-inventory">Filtering the inventory<a class="headerlink" href="#filtering-the-inventory" title="Permanent link">&para;</a></h2>
+<p>Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.</p>
+<p>Two attributes in the report separate them. The path says whether a certificate lies in a system trust store such as <code>/etc/ssl/certs</code> or <code>/usr/share/ca-certificates</code>, and the layer says whether it came from the base image or from your build. A root CA is a CA certificate whose subject and issuer match.</p>
+<h2 id="clientserver-mode">Client/server mode<a class="headerlink" href="#clientserver-mode" title="Permanent link">&para;</a></h2>
+<p>The scanner works the same way in <a href="../../references/modes/client-server/">client/server mode</a>.</p>
+<h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
+<p>The scanner is available for <code>trivy image</code> only.</p>
+<p>Trivy rejects <code>--scanners crypto</code> together with <a href="../../target/container_image/#discover-sbom-referencing-the-container-image"><code>--sbom-sources</code></a>, because a remote SBOM found for the image replaces the analysis of its layers.</p>
+<p>A file without one of the extensions above is not read, so a key in a file named <code>tls-key</code> or inside a config file is missed. You can point the scanner at such a file with <a href="../../configuration/skipping/#customizing-file-handling"><code>--file-patterns</code></a>, as long as it holds PEM or DER material:</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;crypto:etc/app/tls-key&quot;</span><span class="w"> </span>myimage:1.0.0
 </code></pre></div>
-<h2 id="configuration">Configuration<a class="headerlink" href="#configuration" title="Permanent link">&para;</a></h2>
-<p>Trivy has a number of configuration flags for use with license scanning:</p>
-<h3 id="ignored-licenses">Ignored Licenses<a class="headerlink" href="#ignored-licenses" title="Permanent link">&para;</a></h3>
-<p>Trivy license scanning can ignore licenses that are identified to explicitly remove them from the results using the <code>--ignored-licenses</code> flag;</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--ignored-licenses<span class="w"> </span>MPL-2.0,MIT<span class="w"> </span>--severity<span class="w"> </span>HIGH<span class="w"> </span>grafana/grafana:latest
-<span class="m">2022</span>-07-13T18:15:28.605Z<span class="w">        </span>INFO<span class="w">    </span>License<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
-
-OS<span class="w"> </span>Packages<span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">=====================</span>
-Total:<span class="w"> </span><span class="m">2</span><span class="w"> </span><span class="o">(</span>HIGH:<span class="w"> </span><span class="m">2</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">0</span><span class="o">)</span>
-
-┌───────────────────┬─────────┬────────────────┬──────────┐
-│<span class="w">      </span>Package<span class="w">      </span>│<span class="w"> </span>License<span class="w"> </span>│<span class="w"> </span>Classification<span class="w"> </span>│<span class="w"> </span>Severity<span class="w"> </span>│
-├───────────────────┼─────────┼────────────────┼──────────┤
-│<span class="w"> </span>alpine-baselayout<span class="w"> </span>│<span class="w"> </span>GPL-2.0<span class="w"> </span>│<span class="w"> </span>Restricted<span class="w">     </span>│<span class="w"> </span>HIGH<span class="w">     </span>│
-├───────────────────┤<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-│<span class="w"> </span>ssl_client<span class="w">        </span>│<span class="w">         </span>│<span class="w">                </span>│<span class="w">          </span>│
-└───────────────────┴─────────┴────────────────┴──────────┘
-</code></pre></div>
-<h3 id="configuring-classifier-confidence-level">Configuring Classifier Confidence Level<a class="headerlink" href="#configuring-classifier-confidence-level" title="Permanent link">&para;</a></h3>
-<p>You can use the <code>--license-confidence-level</code> flag to adjust the confidence level between 0.0 to 1.0 (default 0.9).
-For example, when you run the scanner with the default confidence level on <a href="https://github.com/spdx/license-list-data/tree/main/text">SPDX license list data</a>, it is able to detect only 258 licenses.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--license-full<span class="w"> </span>&lt;path/to/spdx/list/data&gt;
-<span class="m">2023</span>-04-18T10:05:13.601-0700<span class="w">    </span>INFO<span class="w">    </span>Full<span class="w"> </span>license<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
-
-Loose<span class="w"> </span>File<span class="w"> </span>License<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">===============================</span>
-Total:<span class="w"> </span><span class="m">258</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">70</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">90</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">18</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">58</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">22</span><span class="o">)</span>
-</code></pre></div>
-<p>However, by configuring the confidence level to 0.8, the scanner is now able to detect 282 licenses.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span>--license-full<span class="w"> </span>--license-confidence-level<span class="w"> </span><span class="m">0</span>.8<span class="w"> </span>&lt;path/to/spdx/list/data&gt;
-<span class="m">2023</span>-04-18T10:21:39.637-0700<span class="w">    </span>INFO<span class="w">    </span>Full<span class="w"> </span>license<span class="w"> </span>scanning<span class="w"> </span>is<span class="w"> </span>enabled
-
-Loose<span class="w"> </span>File<span class="w"> </span>License<span class="o">(</span>s<span class="o">)</span><span class="w"> </span><span class="o">(</span>license<span class="o">)</span>
-<span class="o">===============================</span>
-Total:<span class="w"> </span><span class="m">282</span><span class="w"> </span><span class="o">(</span>UNKNOWN:<span class="w"> </span><span class="m">81</span>,<span class="w"> </span>LOW:<span class="w"> </span><span class="m">97</span>,<span class="w"> </span>MEDIUM:<span class="w"> </span><span class="m">24</span>,<span class="w"> </span>HIGH:<span class="w"> </span><span class="m">58</span>,<span class="w"> </span>CRITICAL:<span class="w"> </span><span class="m">22</span><span class="o">)</span>
-</code></pre></div>
-<h3 id="custom-classification">Custom Classification<a class="headerlink" href="#custom-classification" title="Permanent link">&para;</a></h3>
-<p>You can generate the default config by the <code>--generate-default-config</code> flag and customize the license classification.
-For example, if you want to forbid only AGPL-3.0, you can leave it under <code>forbidden</code> and move other licenses to another classification.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--generate-default-config
-$<span class="w"> </span>vim<span class="w"> </span>trivy.yaml
-license:
-<span class="w">  </span>forbidden:
-<span class="w">  </span>-<span class="w"> </span>AGPL-3.0
-
-<span class="w">  </span>restricted:
-<span class="w">  </span>-<span class="w"> </span>AGPL-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-4.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-ND-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-ND-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-ND-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-ND-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-ND-4.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-SA-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-SA-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-SA-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-SA-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-NC-SA-4.0
-<span class="w">  </span>-<span class="w"> </span>Commons-Clause
-<span class="w">  </span>-<span class="w"> </span>Facebook-2-Clause
-<span class="w">  </span>-<span class="w"> </span>Facebook-3-Clause
-<span class="w">  </span>-<span class="w"> </span>Facebook-Examples
-<span class="w">  </span>-<span class="w"> </span>WTFPL
-<span class="w">  </span>-<span class="w"> </span>BCL
-<span class="w">  </span>-<span class="w"> </span>CC-BY-ND-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-ND-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-ND-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-ND-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-ND-4.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-SA-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-SA-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-SA-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-SA-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-SA-4.0
-<span class="w">  </span>-<span class="w"> </span>GPL-1.0
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0-with-autoconf-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0-with-bison-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0-with-classpath-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0-with-font-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-2.0-with-GCC-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-3.0
-<span class="w">  </span>-<span class="w"> </span>GPL-3.0-with-autoconf-exception
-<span class="w">  </span>-<span class="w"> </span>GPL-3.0-with-GCC-exception
-<span class="w">  </span>-<span class="w"> </span>LGPL-2.0
-<span class="w">  </span>-<span class="w"> </span>LGPL-2.1
-<span class="w">  </span>-<span class="w"> </span>LGPL-3.0
-<span class="w">  </span>-<span class="w"> </span>NPL-1.0
-<span class="w">  </span>-<span class="w"> </span>NPL-1.1
-<span class="w">  </span>-<span class="w"> </span>OSL-1.0
-<span class="w">  </span>-<span class="w"> </span>OSL-1.1
-<span class="w">  </span>-<span class="w"> </span>OSL-2.0
-<span class="w">  </span>-<span class="w"> </span>OSL-2.1
-<span class="w">  </span>-<span class="w"> </span>OSL-3.0
-<span class="w">  </span>-<span class="w"> </span>QPL-1.0
-<span class="w">  </span>-<span class="w"> </span>Sleepycat
-
-<span class="w">  </span>reciprocal:
-<span class="w">  </span>-<span class="w"> </span>APSL-1.0
-<span class="w">  </span>-<span class="w"> </span>APSL-1.1
-<span class="w">  </span>-<span class="w"> </span>APSL-1.2
-<span class="w">  </span>-<span class="w"> </span>APSL-2.0
-<span class="w">  </span>-<span class="w"> </span>CDDL-1.0
-<span class="w">  </span>-<span class="w"> </span>CDDL-1.1
-<span class="w">  </span>-<span class="w"> </span>CPL-1.0
-<span class="w">  </span>-<span class="w"> </span>EPL-1.0
-<span class="w">  </span>-<span class="w"> </span>EPL-2.0
-<span class="w">  </span>-<span class="w"> </span>FreeImage
-<span class="w">  </span>-<span class="w"> </span>IPL-1.0
-<span class="w">  </span>-<span class="w"> </span>MPL-1.0
-<span class="w">  </span>-<span class="w"> </span>MPL-1.1
-<span class="w">  </span>-<span class="w"> </span>MPL-2.0
-<span class="w">  </span>-<span class="w"> </span>Ruby
-
-<span class="w">  </span>notice:
-<span class="w">  </span>-<span class="w"> </span>AFL-1.1
-<span class="w">  </span>-<span class="w"> </span>AFL-1.2
-<span class="w">  </span>-<span class="w"> </span>AFL-2.0
-<span class="w">  </span>-<span class="w"> </span>AFL-2.1
-<span class="w">  </span>-<span class="w"> </span>AFL-3.0
-<span class="w">  </span>-<span class="w"> </span>Apache-1.0
-<span class="w">  </span>-<span class="w"> </span>Apache-1.1
-<span class="w">  </span>-<span class="w"> </span>Apache-2.0
-<span class="w">  </span>-<span class="w"> </span>Artistic-1.0-cl8
-<span class="w">  </span>-<span class="w"> </span>Artistic-1.0-Perl
-<span class="w">  </span>-<span class="w"> </span>Artistic-1.0
-<span class="w">  </span>-<span class="w"> </span>Artistic-2.0
-<span class="w">  </span>-<span class="w"> </span>BSL-1.0
-<span class="w">  </span>-<span class="w"> </span>BSD-2-Clause-FreeBSD
-<span class="w">  </span>-<span class="w"> </span>BSD-2-Clause-NetBSD
-<span class="w">  </span>-<span class="w"> </span>BSD-2-Clause
-<span class="w">  </span>-<span class="w"> </span>BSD-3-Clause-Attribution
-<span class="w">  </span>-<span class="w"> </span>BSD-3-Clause-Clear
-<span class="w">  </span>-<span class="w"> </span>BSD-3-Clause-LBNL
-<span class="w">  </span>-<span class="w"> </span>BSD-3-Clause
-<span class="w">  </span>-<span class="w"> </span>BSD-4-Clause
-<span class="w">  </span>-<span class="w"> </span>BSD-4-Clause-UC
-<span class="w">  </span>-<span class="w"> </span>BSD-Protection
-<span class="w">  </span>-<span class="w"> </span>CC-BY-1.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-2.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-2.5
-<span class="w">  </span>-<span class="w"> </span>CC-BY-3.0
-<span class="w">  </span>-<span class="w"> </span>CC-BY-4.0
-<span class="w">  </span>-<span class="w"> </span>FTL
-<span class="w">  </span>-<span class="w"> </span>ISC
-<span class="w">  </span>-<span class="w"> </span>ImageMagick
-<span class="w">  </span>-<span class="w"> </span>Libpng
-<span class="w">  </span>-<span class="w"> </span>Lil-1.0
-<span class="w">  </span>-<span class="w"> </span>Linux-OpenIB
-<span class="w">  </span>-<span class="w"> </span>LPL-1.02
-<span class="w">  </span>-<span class="w"> </span>LPL-1.0
-<span class="w">  </span>-<span class="w"> </span>MS-PL
-<span class="w">  </span>-<span class="w"> </span>MIT
-<span class="w">  </span>-<span class="w"> </span>NCSA
-<span class="w">  </span>-<span class="w"> </span>OpenSSL
-<span class="w">  </span>-<span class="w"> </span>PHP-3.01
-<span class="w">  </span>-<span class="w"> </span>PHP-3.0
-<span class="w">  </span>-<span class="w"> </span>PIL
-<span class="w">  </span>-<span class="w"> </span>Python-2.0
-<span class="w">  </span>-<span class="w"> </span>Python-2.0-complete
-<span class="w">  </span>-<span class="w"> </span>PostgreSQL
-<span class="w">  </span>-<span class="w"> </span>SGI-B-1.0
-<span class="w">  </span>-<span class="w"> </span>SGI-B-1.1
-<span class="w">  </span>-<span class="w"> </span>SGI-B-2.0
-<span class="w">  </span>-<span class="w"> </span>Unicode-DFS-2015
-<span class="w">  </span>-<span class="w"> </span>Unicode-DFS-2016
-<span class="w">  </span>-<span class="w"> </span>Unicode-TOU
-<span class="w">  </span>-<span class="w"> </span>UPL-1.0
-<span class="w">  </span>-<span class="w"> </span>W3C-19980720
-<span class="w">  </span>-<span class="w"> </span>W3C-20150513
-<span class="w">  </span>-<span class="w"> </span>W3C
-<span class="w">  </span>-<span class="w"> </span>X11
-<span class="w">  </span>-<span class="w"> </span>Xnet
-<span class="w">  </span>-<span class="w"> </span>Zend-2.0
-<span class="w">  </span>-<span class="w"> </span>zlib-acknowledgement
-<span class="w">  </span>-<span class="w"> </span>Zlib
-<span class="w">  </span>-<span class="w"> </span>ZPL-1.1
-<span class="w">  </span>-<span class="w"> </span>ZPL-2.0
-<span class="w">  </span>-<span class="w"> </span>ZPL-2.1
-
-<span class="w">  </span>unencumbered:
-<span class="w">  </span>-<span class="w"> </span>CC0-1.0
-<span class="w">  </span>-<span class="w"> </span>Unlicense
-<span class="w">  </span>-<span class="w"> </span>0BSD
-
-<span class="w">  </span>permissive:<span class="w"> </span><span class="o">[]</span>
-</code></pre></div>
-<h4 id="text-licenses">Text licenses<a class="headerlink" href="#text-licenses" title="Permanent link">&para;</a></h4>
-<p>By default, Trivy categorizes a license as UNKNOWN if it cannot determine the license name from the license text.</p>
-<p>To define a category for a text license, you need to add license with the <code>text://</code> prefix to license classification.
-For example:
-<div class="highlight"><pre><span></span><code><span class="nt">license</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">forbidden</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;text://Text</span><span class="nv"> </span><span class="s">of</span><span class="nv"> </span><span class="s">Apache</span><span class="nv"> </span><span class="s">Software</span><span class="nv"> </span><span class="s">Foundation</span><span class="nv"> </span><span class="s">License&quot;</span>
-</code></pre></div></p>
-<p>But a text license can be large. So for these cases, Trivy supports using <code>regex</code> in license classification.
-For example:
-<div class="highlight"><pre><span></span><code><span class="nt">license</span><span class="p">:</span>
-<span class="w">  </span><span class="nt">forbidden</span><span class="p">:</span>
-<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;text://.*</span><span class="nv"> </span><span class="s">Apache</span><span class="nv"> </span><span class="s">Software</span><span class="nv"> </span><span class="s">.*&quot;</span>
-</code></pre></div></p>
-<div class="admonition note">
-<p class="admonition-title">Note</p>
-<p><code>regex</code> is only used for text licenses and can't be used to configure license IDs.</p>
-</div>
-<h3 id="enabling-a-subset-of-package-types">Enabling a Subset of Package Types<a class="headerlink" href="#enabling-a-subset-of-package-types" title="Permanent link">&para;</a></h3>
-<p>It's possible to only enable certain package types if you prefer.
-You can do so by passing the <code>--pkg-types</code> option.
-This flag takes a comma-separated list of package types.</p>
-<p>Available values:</p>
-<ul>
-<li>os<ul>
-<li>Scan OS packages managed by the OS package manager (e.g. <code>dpkg</code>, <code>yum</code>, <code>apk</code>).</li>
-</ul>
-</li>
-<li>library<ul>
-<li>Scan language-specific packages (e.g. packages installed by <code>pip</code>, <code>npm</code>, or <code>gem</code>).</li>
-</ul>
-</li>
-</ul>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--pkg-types<span class="w"> </span>os<span class="w"> </span>ruby:2.4.0
-</code></pre></div>
-<div class="footnote">
-<hr />
-<ol>
-<li id="fn:1">
-<p>See the list of supported language files <a href="../../coverage/language/">here</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
-</li>
-<li id="fn:2">
-<p>Some lock files require additional files (e.g. files from the cache directory) to detect licenses. Check <a href="../../coverage/">coverage</a> for more information.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
-</li>
-</ol>
-</div>
+<p>Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.</p>
+<p>Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.</p>
 
 
 
@@ -9211,7 +8793,7 @@ This flag takes a comma-separated list of package types.</p>
       <nav class="md-footer__inner md-grid" aria-label="Footer" >
         
           
-          <a href="../secret/" class="md-footer__link md-footer__link--prev" aria-label="Previous: Secret">
+          <a href="../license/" class="md-footer__link md-footer__link--prev" aria-label="Previous: License">
             <div class="md-footer__button md-icon">
               
               <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
@@ -9221,20 +8803,20 @@ This flag takes a comma-separated list of package types.</p>
                 Previous
               </span>
               <div class="md-ellipsis">
-                Secret
+                License
               </div>
             </div>
           </a>
         
         
           
-          <a href="../crypto/" class="md-footer__link md-footer__link--next" aria-label="Next: Cryptographic Asset">
+          <a href="../../coverage/" class="md-footer__link md-footer__link--next" aria-label="Next: Overview">
             <div class="md-footer__title">
               <span class="md-footer__direction">
                 Next
               </span>
               <div class="md-ellipsis">
-                Cryptographic Asset
+                Overview
               </div>
             </div>
             <div class="md-footer__button md-icon">

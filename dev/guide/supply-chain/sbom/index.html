@@ -2567,6 +2567,34 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/crypto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Asset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -9173,6 +9201,10 @@ Note that XML format is not supported at the moment.</p>
 
 <p>If you want to include vulnerabilities, you can enable vulnerability scanning via <code>--scanners vuln</code>.</p>
 <div class="highlight"><pre><span></span><code>$ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
+</code></pre></div>
+<p>For container images, the CycloneDX output can also carry a <a href="https://cyclonedx.org/capabilities/cbom/">Cryptography Bill of Materials (CBOM)</a> with the certificates and keys found in the image.
+See <a href="../../scanner/crypto/">here</a> for the detail.</p>
+<div class="highlight"><pre><span></span><code>$ trivy image --scanners crypto --format cyclonedx --output result.json alpine:3.15
 </code></pre></div>
 <h4 id="spdx">SPDX<a class="headerlink" href="#spdx" title="Permanent link">&para;</a></h4>
 <p>Trivy can generate SBOM in the <a href="https://spdx.github.io/spdx-spec/v2.2.2/">SPDX</a> format.</p>

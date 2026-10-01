@@ -573,6 +573,10 @@
          <lastmod>2026-10-01</lastmod>
     </url>
     <url>
+         <loc>https://trivy.dev/dev/guide/scanner/crypto/</loc>
+         <lastmod>2026-10-01</lastmod>
+    </url>
+    <url>
          <loc>https://trivy.dev/dev/guide/scanner/license/</loc>
          <lastmod>2026-10-01</lastmod>
     </url>

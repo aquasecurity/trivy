@@ -1860,6 +1860,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cryptographic-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cryptographic assets
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -2992,6 +3003,34 @@ You're not viewing the latest version of the documentation.
     
   
     License
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/crypto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Asset
   
 
     
@@ -8920,6 +8959,17 @@ You're not viewing the latest version of the documentation.
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#cryptographic-assets" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Cryptographic assets
+      
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -9293,6 +9343,7 @@ For instance, new files will be installed if you install a package.</p>
 <li>Misconfigurations</li>
 <li>Secrets</li>
 <li>Licenses</li>
+<li>Cryptographic assets</li>
 </ul>
 <p>By default, vulnerability and secret scanning are enabled, and you can configure that with <code>--scanners</code>.</p>
 <h3 id="vulnerabilities">Vulnerabilities<a class="headerlink" href="#vulnerabilities" title="Permanent link">&para;</a></h3>
@@ -9343,6 +9394,12 @@ See <a href="../../scanner/secret/">here</a> for the detail.</p>
 <p>It is disabled by default.
 See <a href="../../scanner/license/">here</a> for the detail.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>license<span class="w"> </span><span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
+</code></pre></div>
+<h3 id="cryptographic-assets">Cryptographic assets<a class="headerlink" href="#cryptographic-assets" title="Permanent link">&para;</a></h3>
+<p>It is experimental and disabled by default.
+It requires the CycloneDX format, since the assets are reported as CycloneDX components.
+See <a href="../../scanner/crypto/">here</a> for the detail.</p>
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span><span class="o">[</span>YOUR_IMAGE_NAME<span class="o">]</span>
 </code></pre></div>
 <h2 id="container-image-metadata">Container image metadata<a class="headerlink" href="#container-image-metadata" title="Permanent link">&para;</a></h2>
 <p>Container images have <a href="https://github.com/opencontainers/image-spec/blob/2fb996805b3734779bf9a3a84dc9a9691ad7efdd/config.md">configuration</a>.

@@ -2567,6 +2567,34 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../scanner/crypto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Asset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -8664,9 +8692,13 @@ A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&l
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;">✓</td>
+</tr>
 </tbody>
 </table>
-<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/98787b870c109531416cea6019a9b55af224a101/pkg/fanal/analyzer/const.go">here</a>.
+<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/dc9a38453595894876b4c2290d3c61279da44c5d/pkg/fanal/analyzer/const.go">here</a>.
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.</p>
 <p>The file path can use a <a href="https://pkg.go.dev/regexp/syntax">regular expression</a>. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># interpret any file with .txt extension as a python pip requirements file</span>

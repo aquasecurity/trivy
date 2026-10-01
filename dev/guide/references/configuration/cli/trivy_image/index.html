@@ -2567,6 +2567,34 @@ You're not viewing the latest version of the documentation.
 
               
             
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../../../scanner/crypto/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Cryptographic Asset
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -8751,7 +8779,14 @@ You're not viewing the latest version of the documentation.
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
       --report string                     specify a format for the compliance report. (allowed values: all,summary) (default &quot;summary&quot;)
       --sbom-sources strings              [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
-      --scanners strings                  comma-separated list of what security issues to detect (allowed values: vuln,misconfig,secret,license) (default [vuln,secret])
+      --scanners strings                  comma-separated list of what security issues to detect
+                                          Allowed values:
+                                            - vuln
+                                            - misconfig
+                                            - secret
+                                            - license
+                                            - crypto
+                                           (default [vuln,secret])
       --secret-config string              specify a path to config file for secret scanning (empty string disables loading) (default &quot;trivy-secret.yaml&quot;)
       --server string                     server address in client mode
   -s, --severity strings                  severities of security issues to be displayed
