@@ -244,6 +244,47 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			// Neither SrcName nor SrcVersion is set: this is what the apk analyzer
+			// actually produces for a package with no `o:` line in
+			// /lib/apk/db/installed (e.g. images not built with abuild, such as
+			// Docker Hardened Images). Unlike "No src name" above, which still has a
+			// non-empty SrcVersion, this exercises the version fallback, not just
+			// the name fallback.
+			//
+			// Same pkgs/want as "contain rc" (which has SrcName/SrcVersion set), to
+			// prove a package with no `o:` line is matched identically to one with
+			// the same name/version and an `o:` line, instead of reporting
+			// CVE-2016-4074/CVE-2019-9999 as false positives because an empty
+			// source version parses as lower than every fixed version.
+			name: "no src name and no src version (missing o: line)",
+			fixtures: []string{
+				"testdata/fixtures/alpine.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "3.10",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "jq",
+						Version: "1.6-r0",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "jq",
+					VulnerabilityID:  "CVE-2020-1234",
+					InstalledVersion: "1.6-r0",
+					FixedVersion:     "1.6-r1",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Alpine,
+						Name: "Alpine Secdb",
+						URL:  "https://secdb.alpinelinux.org/",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
