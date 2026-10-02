@@ -83,7 +83,7 @@ jobs:
           persist-credentials: false
 
       - name: Setup Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Generate SBOM
         uses: CycloneDX/gh-gomod-generate-sbom@efc74245d6802c8cefd925620515442756c70d8f # v2.0.0

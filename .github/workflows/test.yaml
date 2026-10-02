@@ -24,7 +24,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: go mod tidy
         run: |
@@ -86,7 +86,7 @@ jobs:
           set-host: true
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -118,7 +118,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -136,7 +136,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Install tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -170,7 +170,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -203,7 +203,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: $/.github/actions/setup-go
+        uses: ./.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -237,7 +237,7 @@ jobs:
         persist-credentials: false
 
     - name: Set up Go
-      uses: $/.github/actions/setup-go
+      uses: ./.github/actions/setup-go
 
     - name: Determine GoReleaser ID
       id: goreleaser_id
