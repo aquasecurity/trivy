@@ -10,6 +10,9 @@ const defaultSizeThreshold = int64(100) << 20 // 100MB
 
 var defaultSkipDirs = []string{
 	"**/.git",
+}
+
+var systemSkipDirs = []string{
 	"proc",
 	"sys",
 	"dev",
