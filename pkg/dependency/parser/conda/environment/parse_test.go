@@ -211,6 +211,46 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// pip dependencies use PEP 440 operators. `~=` and `!=` must be
+			// stripped from the name just like `>` and `<`, otherwise the
+			// operator character stays glued to the package name.
+			name:  "pip dependencies with PEP 440 operators",
+			input: "testdata/pip-version-operators.yaml",
+			want: environment.Packages{
+				Packages: []ftypes.Package{
+					{
+						Name: "django",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 6,
+								EndLine:   6,
+							},
+						},
+					},
+					{
+						Name: "flask",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 7,
+								EndLine:   7,
+							},
+						},
+					},
+					{
+						Name:    "requests",
+						Version: "2.31.0",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 8,
+								EndLine:   8,
+							},
+						},
+					},
+				},
+				Prefix: "/opt/conda/envs/test-env",
+			},
+		},
+		{
 			name:    "invalid yaml file",
 			input:   "testdata/invalid.yaml",
 			wantErr: "cannot unmarshal !!str `invalid` into environment.environment",

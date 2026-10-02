@@ -97,9 +97,12 @@ func (p *Parser) toPackage(dep Dependency) ftypes.Package {
 //   - numpy 1.8.1 py27_0
 //   - numpy=1.8.1=py27_0
 //
+// The `pip` subsection uses PEP 440 operators, so `~=` and `!=` are separated
+// as well to keep the name clean (e.g. `django~=5.0.6` -> "django").
+//
 // cf. https://docs.conda.io/projects/conda-build/en/latest/resources/package-spec.html#examples-of-package-specs
 func (*Parser) parseDependency(line string) (string, string) {
-	line = strings.NewReplacer(">", " >", "<", " <", "=", " ").Replace(line)
+	line = strings.NewReplacer(">", " >", "<", " <", "~", " ~", "!", " !", "=", " ").Replace(line)
 	parts := strings.Fields(line)
 	if len(parts) == 0 {
 		return "", ""
