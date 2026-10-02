@@ -26,7 +26,8 @@ import (
 type IgnoreFinding struct {
 	// ID is the identifier of the vulnerability, misconfiguration, secret, or license.
 	// e.g. CVE-2019-8331, AVD-AWS-0175, etc.
-	// required: true
+	// If ID is not set, the entry matches any finding that satisfies the remaining filters.
+	// required: false
 	ID string `yaml:"id"`
 
 	// Paths is the list of file paths to ignore.
@@ -65,6 +66,10 @@ func (i *IgnoreFinding) UnmarshalYAML(value *yaml.Node) error {
 
 	*i = IgnoreFinding(tmp.plain)
 
+	if i.ID == "" && len(i.Paths) == 0 && len(tmp.PURLs) == 0 {
+		return xerrors.New("at least one of id, purls, or paths must be specified in the ignore file")
+	}
+
 	for _, pattern := range i.Paths {
 		if !doublestar.ValidatePattern(pattern) {
 			return xerrors.Errorf("invalid path pattern in the ignore file, id: %s, path: %s", i.ID, pattern)
@@ -87,7 +92,7 @@ type IgnoreFindings []IgnoreFinding
 
 func (f *IgnoreFindings) Match(id, path string, pkg *packageurl.PackageURL) *IgnoreFinding {
 	for _, finding := range *f {
-		if id != finding.ID {
+		if finding.ID != "" && id != finding.ID {
 			continue
 		}
 		if !matchPath(path, finding.Paths) || !matchPURL(pkg, finding.PURLs) {
