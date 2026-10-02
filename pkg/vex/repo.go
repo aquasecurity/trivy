@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 	"sync"
 
 	"github.com/package-url/packageurl-go"
@@ -31,6 +32,18 @@ type RepositorySet struct {
 	indexes []RepositoryIndex
 	logOnce *xsync.Map[string, *sync.Once]
 	logger  *log.Logger
+
+	// docs caches decoded VEX documents by their path and format so that each document is decoded only once
+	// even though it is looked up for every vulnerability in both rescoring and filtering.
+	docs *xsync.Map[string, *cachedDocument]
+}
+
+// cachedDocument holds the result of opening a VEX document, including failures,
+// so that a broken document is reported only once.
+type cachedDocument struct {
+	once sync.Once
+	doc  VEX
+	err  error
 }
 
 func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, error) {
@@ -64,12 +77,30 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 		indexes: indexes, // In precedence order
 		logOnce: new(xsync.Map[string, *sync.Once]),
 		logger:  logger,
+		docs:    new(xsync.Map[string, *cachedDocument]),
 	}, nil
 }
 
 func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool) {
-	if product == nil || product.PkgIdentifier.PURL == nil {
+	doc, ok := rs.findDocument(product)
+	if !ok {
 		return types.ModifiedFinding{}, false
+	}
+	return doc.NotAffected(vuln, product, subComponent)
+}
+
+func (rs *RepositorySet) Rescore(vuln types.DetectedVulnerability, product, subComponent *core.Component) (SeverityOverride, bool) {
+	doc, ok := rs.findDocument(product)
+	if !ok {
+		return SeverityOverride{}, false
+	}
+	return rescore([]VEX{doc}, vuln, product, subComponent)
+}
+
+// findDocument returns the VEX document for the product from the repository with the highest precedence.
+func (rs *RepositorySet) findDocument(product *core.Component) (VEX, bool) {
+	if product == nil || product.PkgIdentifier.PURL == nil {
+		return nil, false
 	}
 	p := *product.PkgIdentifier.PURL
 
@@ -97,20 +128,29 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		}
 		rs.logVEXFound(pkgID, index.Name, index.URL, entry.Location)
 
-		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
-		doc, err := rs.OpenDocument(source, filepath.Dir(index.Path), entry)
+		doc, err := rs.openCachedDocument(index, entry)
 		if err != nil {
-			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
-			return types.ModifiedFinding{}, false
+			return nil, false
 		}
 
-		if m, notAffected := doc.NotAffected(vuln, product, subComponent); notAffected {
-			return m, notAffected
-		}
-
-		break // Stop searching for the next VEX document as this repository has higher precedence.
+		return doc, true // Stop searching for the next VEX document as this repository has higher precedence.
 	}
-	return types.ModifiedFinding{}, false
+	return nil, false
+}
+
+// openCachedDocument opens the VEX document for the entry once and returns the cached result afterwards.
+func (rs *RepositorySet) openCachedDocument(index RepositoryIndex, entry repo.PackageEntry) (VEX, error) {
+	dir := filepath.Dir(index.Path)
+	key := strings.Join([]string{dir, entry.Location, entry.Format}, "\x00")
+	cached, _ := rs.docs.LoadOrStore(key, &cachedDocument{})
+	cached.once.Do(func() {
+		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
+		cached.doc, cached.err = rs.OpenDocument(source, dir, entry)
+		if cached.err != nil {
+			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(cached.err))
+		}
+	})
+	return cached.doc, cached.err
 }
 
 func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntry) (VEX, error) {

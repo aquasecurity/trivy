@@ -178,6 +178,7 @@ trivy filesystem [flags] PATH
                                             - minimos
                                             - rootio
                                             - rapidfort
+                                            - csaf
                                             - auto
                                            (default [auto])
 ```

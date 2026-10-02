@@ -177,6 +177,7 @@ trivy repository [flags] (REPO_PATH | REPO_URL)
                                             - minimos
                                             - rootio
                                             - rapidfort
+                                            - csaf
                                             - auto
                                            (default [auto])
 ```

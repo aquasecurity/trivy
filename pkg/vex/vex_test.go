@@ -4,6 +4,8 @@ import (
 	"encoding/base64"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
@@ -16,10 +18,12 @@ import (
 	"github.com/in-toto/in-toto-golang/in_toto"
 	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
+	"github.com/samber/lo"
 	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/internal/registrytest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -705,6 +709,520 @@ repositories:
 			assert.Equal(t, tt.want, tt.args.report)
 		})
 	}
+}
+
+func TestClient_RescoreReport(t *testing.T) {
+	baseVuln := vuln5
+	baseVuln.Severity = "LOW"
+	csafFirst := []dbTypes.SourceID{vex.CSAFSeveritySource, "auto"}
+
+	t.Run("missing product tree", func(t *testing.T) {
+		path := filepath.Join(t.TempDir(), "csaf.json")
+		require.NoError(t, os.WriteFile(path, []byte(`{
+  "vulnerabilities": [{
+    "cve": "CVE-2024-0001",
+    "product_status": {
+      "known_not_affected": ["go-transitive-v4.0.0"]
+    },
+    "scores": [{
+      "products": ["go-transitive-v4.0.0"],
+      "cvss_v3": {
+        "version": "3.1",
+        "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+        "baseScore": 9.8,
+        "baseSeverity": "CRITICAL"
+      }
+    }]
+  }]
+}`), 0o600))
+
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		client, err := vex.New(t.Context(), report, vex.Options{
+			Sources: []vex.Source{{Type: vex.TypeFile, FilePath: path}},
+		})
+		require.NoError(t, err)
+		bom, err := client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+		require.NoError(t, client.FilterReport(report, bom))
+		assert.Equal(t, baseVuln, report.Results[0].Vulnerabilities[0])
+	})
+
+	t.Run("null vulnerability and threat entries", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf.json", `"vulnerabilities": [`, `"vulnerabilities": [null,`)
+		path = rewriteFixture(t, path, `"threats": [`, `"threats": [null,`)
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{vuln5},
+			}),
+		})
+
+		require.NoError(t, vex.Filter(t.Context(), report, vex.Options{
+			Sources: []vex.Source{{Type: vex.TypeFile, FilePath: path}},
+		}))
+		assert.Empty(t, report.Results[0].Vulnerabilities)
+		require.Len(t, report.Results[0].ModifiedFindings, 1)
+		assert.Equal(t, vulnerableCodeNotInExecutePath, report.Results[0].ModifiedFindings[0].Statement)
+	})
+
+	t.Run("matching CVE and product", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, "testdata/csaf-rescore.json")
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "CRITICAL", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+		assert.Equal(t, dbTypes.SeverityCritical, got.VendorSeverity[vex.CSAFSeveritySource])
+		assert.Equal(t, dbTypes.CVSS{
+			V3Vector: "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:H/A:H",
+			V3Score:  9.8,
+		}, got.CVSS[vex.CSAFSeveritySource])
+	})
+
+	t.Run("CVSS v2", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, "testdata/csaf-rescore-cvss2.json")
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "HIGH", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+		assert.Equal(t, dbTypes.CVSS{
+			V2Vector: "AV:N/AC:L/Au:N/C:P/I:P/A:P",
+			V2Score:  7.5,
+		}, got.CVSS[vex.CSAFSeveritySource])
+	})
+
+	t.Run("maps NONE severity to UNKNOWN", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf-rescore.json", `"baseSeverity": "CRITICAL"`, `"baseSeverity": "NONE"`)
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, path)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, dbTypes.SeverityUnknown.String(), got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+	})
+
+	t.Run("unusable score does not stop later VEX files", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf-rescore.json", `"baseScore": 9.8,
+            "baseSeverity": "CRITICAL"`, `"baseScore": 9.8`)
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, path, "testdata/csaf-rescore.json")
+
+		assert.Equal(t, "CRITICAL", report.Results[0].Vulnerabilities[0].Severity)
+	})
+
+	t.Run("unusable score does not stop later scores", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, "testdata/csaf-rescore-unusable.json")
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "HIGH", got.Severity)
+		assert.InDelta(t, 8.1, got.CVSS[vex.CSAFSeveritySource].V3Score, 0.0)
+	})
+
+	t.Run("relationship-scoped score", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf-relationships.json", `"cve": "CVE-2024-0001",`, `"cve": "CVE-2024-0001",
+      "scores": [{
+        "products": ["go-direct1-v2.0.0-go-transitive-v4.0.0"],
+        "cvss_v3": {
+          "version": "3.1",
+          "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+          "baseScore": 8.1,
+          "baseSeverity": "HIGH"
+        }
+      }],`)
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, path)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "HIGH", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+		assert.InDelta(t, 8.1, got.CVSS[vex.CSAFSeveritySource].V3Score, 0.0)
+	})
+
+	t.Run("non-matching product", func(t *testing.T) {
+		springVuln := vuln2
+		springVuln.Severity = "LOW"
+		report := imageReport([]types.Result{
+			springResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{springVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, "testdata/csaf-rescore-non-match.json")
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "LOW", got.Severity)
+		assert.Empty(t, got.SeveritySource)
+	})
+
+	t.Run("multiple paths", func(t *testing.T) {
+		directVuln := baseVuln
+		directVuln.VulnerabilityID = "CVE-2024-0002"
+
+		for _, reverse := range []bool{false, true} {
+			result := goMultiPathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{
+					baseVuln,   // scored via go-direct1 and go-direct2
+					directVuln, // scored via go-direct1 and directly
+				},
+			})
+			if reverse {
+				result.Packages[1], result.Packages[2] = result.Packages[2], result.Packages[1]
+			}
+			report := imageReport([]types.Result{result})
+			rescore(t, report, csafFirst, "testdata/csaf-rescore-multi-path.json")
+
+			// The highest severity among the nearest ancestors is independent of package order.
+			assert.Equal(t, "HIGH", report.Results[0].Vulnerabilities[0].Severity)
+			// The score for the vulnerable package itself takes precedence over relationships.
+			assert.Equal(t, "LOW", report.Results[0].Vulnerabilities[1].Severity)
+		}
+	})
+
+	t.Run("ancestor scores require a relationship", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf-rescore-multi-path.json",
+			`"products": [
+            "go-direct2-v3.0.0-go-transitive-v4.0.0"`,
+			`"products": [
+            "go-direct2-v3.0.0"`)
+		path = rewriteFixture(t, path,
+			`"products": [
+            "go-direct1-v2.0.0-go-transitive-v4.0.0"`,
+			`"products": [
+            "go-direct1-v2.0.0"`)
+		report := imageReport([]types.Result{
+			goMultiPathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, path)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "LOW", got.Severity)
+		assert.Empty(t, got.SeveritySource)
+	})
+
+	t.Run("multiple paths with the same severity", func(t *testing.T) {
+		path := rewriteFixture(t, "testdata/csaf-rescore-multi-path.json",
+			`"baseScore": 4.8,
+            "baseSeverity": "MEDIUM"`, `"baseScore": 8.0,
+            "baseSeverity": "HIGH"`)
+		report := imageReport([]types.Result{
+			goMultiPathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		rescore(t, report, csafFirst, path)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "HIGH", got.Severity)
+		assert.InDelta(t, 8.0, got.CVSS[vex.CSAFSeveritySource].V3Score, 0.0)
+	})
+
+	t.Run("severity source order", func(t *testing.T) {
+		tests := []struct {
+			name            string
+			severitySources []dbTypes.SourceID
+			vendorSeverity  dbTypes.VendorSeverity
+			want            string
+		}{
+			{
+				name:            "csaf before a present source",
+				severitySources: []dbTypes.SourceID{vex.CSAFSeveritySource, "nvd"},
+				vendorSeverity:  dbTypes.VendorSeverity{"nvd": dbTypes.SeverityLow},
+				want:            "CRITICAL",
+			},
+			{
+				name:            "csaf after a present source",
+				severitySources: []dbTypes.SourceID{"nvd", vex.CSAFSeveritySource},
+				vendorSeverity:  dbTypes.VendorSeverity{"nvd": dbTypes.SeverityLow},
+				want:            "LOW",
+			},
+			{
+				name:            "csaf after a missing source",
+				severitySources: []dbTypes.SourceID{"nvd", vex.CSAFSeveritySource},
+				want:            "CRITICAL",
+			},
+			{
+				name:            "csaf after auto",
+				severitySources: []dbTypes.SourceID{"auto", vex.CSAFSeveritySource},
+				want:            "LOW",
+			},
+		}
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				v := baseVuln
+				v.VendorSeverity = tt.vendorSeverity
+				report := imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{v},
+					}),
+				})
+				rescore(t, report, tt.severitySources, "testdata/csaf-rescore.json")
+				assert.Equal(t, tt.want, report.Results[0].Vulnerabilities[0].Severity)
+			})
+		}
+	})
+
+	t.Run("VEX repository source", func(t *testing.T) {
+		tmpDir := t.TempDir()
+		t.Setenv("XDG_DATA_HOME", tmpDir)
+		vexDir := filepath.Join(tmpDir, ".trivy", "vex")
+		require.NoError(t, os.MkdirAll(vexDir, 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
+repositories:
+  - name: default
+    url: https://example.com/vex/default
+    enabled: true
+`), 0o644))
+
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		client, err := vex.New(t.Context(), report, vex.Options{
+			CacheDir: "testdata/single-repo",
+			Sources:  []vex.Source{{Type: vex.TypeRepository}},
+		})
+		require.NoError(t, err)
+		_, err = client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "CRITICAL", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+	})
+
+	t.Run("VEX repository precedence", func(t *testing.T) {
+		tests := []struct {
+			name        string
+			old         string
+			replacement string
+			want        string
+		}{
+			{
+				name:        "higher-priority repository score wins",
+				old:         `"baseSeverity": "CRITICAL"`,
+				replacement: `"baseSeverity": "MEDIUM"`,
+				want:        "MEDIUM",
+			},
+			{
+				// The higher-priority repository has a document for the package, so lower-priority repositories are not used.
+				name:        "higher-priority repository without a score stops the search",
+				old:         `"cve": "CVE-2024-0001"`,
+				replacement: `"cve": "CVE-2024-9999"`,
+				want:        "LOW",
+			},
+		}
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				tmpDir := t.TempDir()
+				t.Setenv("XDG_DATA_HOME", tmpDir)
+				vexDir := filepath.Join(tmpDir, ".trivy", "vex")
+				require.NoError(t, os.MkdirAll(vexDir, 0o755))
+				require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
+repositories:
+  - name: high-priority
+    url: https://example.com/vex/high-priority
+    enabled: true
+  - name: default
+    url: https://example.com/vex/default
+    enabled: true
+`), 0o644))
+
+				// Copy the default repository as the higher-priority repository with a modified CSAF document.
+				cacheDir := t.TempDir()
+				require.NoError(t, os.CopyFS(cacheDir, os.DirFS("testdata/single-repo")))
+				reposDir := filepath.Join(cacheDir, "vex", "repositories")
+				require.NoError(t, os.CopyFS(filepath.Join(reposDir, "high-priority"), os.DirFS(filepath.Join(reposDir, "default"))))
+				csafPath := filepath.Join(reposDir, "high-priority", "0.1", "csaf-vex.json")
+				modified := rewriteFixture(t, csafPath, tt.old, tt.replacement)
+				data, err := os.ReadFile(modified)
+				require.NoError(t, err)
+				require.NoError(t, os.WriteFile(csafPath, data, 0o600))
+
+				report := imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+					}),
+				})
+				client, err := vex.New(t.Context(), report, vex.Options{
+					CacheDir: cacheDir,
+					Sources:  []vex.Source{{Type: vex.TypeRepository}},
+				})
+				require.NoError(t, err)
+				_, err = client.RescoreReport(report, csafFirst)
+				require.NoError(t, err)
+
+				assert.Equal(t, tt.want, report.Results[0].Vulnerabilities[0].Severity)
+			})
+		}
+	})
+
+	t.Run("no VEX sources", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		client, err := vex.New(t.Context(), report, vex.Options{})
+		require.NoError(t, err)
+		require.Nil(t, client)
+
+		bom, err := client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+		assert.Nil(t, bom)
+		assert.Equal(t, baseVuln, report.Results[0].Vulnerabilities[0])
+	})
+
+	t.Run("SBOM reference source", func(t *testing.T) {
+		server := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			http.ServeFile(w, r, "testdata/csaf-rescore.json")
+		}))
+		t.Cleanup(server.Close)
+
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		report.ArtifactType = ftypes.TypeCycloneDX
+		report.BOM = core.NewBOM(core.Options{})
+		report.BOM.AddExternalReferences([]core.ExternalReference{
+			{URL: server.URL, Type: core.ExternalReferenceVEX},
+		})
+
+		client, err := vex.New(t.Context(), report, vex.Options{
+			Sources: []vex.Source{{Type: vex.TypeSBOMReference}},
+		})
+		require.NoError(t, err)
+		require.NotNil(t, client)
+		_, err = client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, "CRITICAL", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+	})
+
+	t.Run("OpenVEX documents do not rescore", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			}),
+		})
+		client, err := vex.New(t.Context(), report, vex.Options{
+			Sources: []vex.Source{{Type: vex.TypeFile, FilePath: "testdata/openvex-oci.json"}},
+		})
+		require.NoError(t, err)
+		bom, err := client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+		assert.Nil(t, bom) // No VEX sources supporting scores, so the BOM is not generated
+		assert.Equal(t, baseVuln, report.Results[0].Vulnerabilities[0])
+	})
+
+	t.Run("fills in package IDs the same as VEX filtering", func(t *testing.T) {
+		newReport := func() *types.Report {
+			result := goSinglePathResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{baseVuln},
+			})
+			result.Packages[0].ID = ""
+			return imageReport([]types.Result{result})
+		}
+
+		rescored := newReport()
+		rescore(t, rescored, csafFirst, "testdata/csaf-rescore.json")
+
+		filtered := newReport()
+		require.NoError(t, vex.Filter(t.Context(), filtered, vex.Options{
+			Sources: []vex.Source{{Type: vex.TypeFile, FilePath: "testdata/csaf-rescore.json"}},
+		}))
+
+		assert.Equal(t, "github.com/aquasecurity/go-module@v1.0.0", rescored.Results[0].Packages[0].ID)
+		assert.Equal(t, filtered.Results[0].Packages, rescored.Results[0].Packages)
+	})
+
+	t.Run("coexists with VEX filtering", func(t *testing.T) {
+		report := imageReport([]types.Result{
+			springResult(types.Result{
+				Vulnerabilities: []types.DetectedVulnerability{
+					vuln1, // filtered by VEX status
+					vuln2, // rescored by CSAF score
+				},
+			}),
+		})
+		client, err := vex.New(t.Context(), report, vex.Options{
+			Sources: []vex.Source{
+				{Type: vex.TypeFile, FilePath: "testdata/csaf-rescore-with-filter.json"},
+			},
+		})
+		require.NoError(t, err)
+		bom, err := client.RescoreReport(report, csafFirst)
+		require.NoError(t, err)
+		require.NoError(t, client.FilterReport(report, bom))
+
+		require.Len(t, report.Results[0].Vulnerabilities, 1)
+		got := report.Results[0].Vulnerabilities[0]
+		assert.Equal(t, vuln2.VulnerabilityID, got.VulnerabilityID)
+		assert.Equal(t, "HIGH", got.Severity)
+		assert.Equal(t, vex.CSAFSeveritySource, got.SeveritySource)
+		require.Len(t, report.Results[0].ModifiedFindings, 1)
+		filtered, ok := report.Results[0].ModifiedFindings[0].Finding.(types.DetectedVulnerability)
+		require.True(t, ok)
+		assert.Equal(t, vuln1.VulnerabilityID, filtered.VulnerabilityID)
+	})
+}
+
+// rescore rescores the report with the given VEX files.
+func rescore(t *testing.T, report *types.Report, severitySources []dbTypes.SourceID, filePaths ...string) {
+	t.Helper()
+	client, err := vex.New(t.Context(), report, vex.Options{
+		Sources: lo.Map(filePaths, func(path string, _ int) vex.Source {
+			return vex.Source{Type: vex.TypeFile, FilePath: path}
+		}),
+	})
+	require.NoError(t, err)
+	_, err = client.RescoreReport(report, severitySources)
+	require.NoError(t, err)
+}
+
+// rewriteFixture writes a copy of the fixture with the given replacement to a temporary file.
+func rewriteFixture(t *testing.T, path, old, replacement string) string {
+	t.Helper()
+	data, err := os.ReadFile(path)
+	require.NoError(t, err)
+	require.Contains(t, string(data), old)
+	newPath := filepath.Join(t.TempDir(), filepath.Base(path))
+	require.NoError(t, os.WriteFile(newPath, []byte(strings.Replace(string(data), old, replacement, 1)), 0o600))
+	return newPath
 }
 
 func imageReport(results types.Results) *types.Report {

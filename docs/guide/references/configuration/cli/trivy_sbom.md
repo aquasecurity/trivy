@@ -144,6 +144,7 @@ trivy sbom [flags] SBOM_PATH
                                          - minimos
                                          - rootio
                                          - rapidfort
+                                         - csaf
                                          - auto
                                         (default [auto])
 ```
