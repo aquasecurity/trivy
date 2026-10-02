@@ -258,6 +258,14 @@ var (
 			},
 		},
 	}
+
+	wantStaleGroupID = []ftypes.Package{
+		{
+			Name:     "com.example.sub:stale-group-id",
+			Version:  "1.2.0",
+			FilePath: "testdata/stale-group-id-1.2.0.jar",
+		},
+	}
 )
 
 type apiResponse struct {
@@ -317,6 +325,11 @@ func TestParse(t *testing.T) {
 			want: wantHeuristic,
 		},
 		{
+			name: "groupId in the manifest only valid for older versions",
+			file: "testdata/stale-group-id-1.2.0.jar",
+			want: wantStaleGroupID,
+		},
+		{
 			name: "fat jar",
 			file: "testdata/hadoop-shaded-guava-1.1.0-SNAPSHOT.jar",
 			want: wantFatjar,
@@ -367,6 +380,18 @@ func TestParse(t *testing.T) {
 					GroupID:    "io.quarkus.gizmo",
 					ArtifactID: "gizmo",
 					Version:    "1.1.0",
+				},
+			}
+		// the artifact moved to com.example.sub, so com.example has no 1.2.0
+		case strings.Contains(r.URL.Query().Get("q"), `v:"1.2.0"`):
+			res.Response.NumFound = 0
+		case strings.Contains(r.URL.Query().Get("q"), "e50daa5d3eb58b06d6f76ce9348a0b92b4ffbab0"):
+			res.Response.Docs = []doc{
+				{
+					ID:         "com.example.sub.stale-group-id",
+					GroupID:    "com.example.sub",
+					ArtifactID: "stale-group-id",
+					Version:    "1.2.0",
 				},
 			}
 		case strings.Contains(r.URL.Query().Get("q"), "heuristic"):
