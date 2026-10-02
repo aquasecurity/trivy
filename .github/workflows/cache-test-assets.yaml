@@ -20,7 +20,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: ./.github/actions/setup-go
+        uses: $/.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -52,7 +52,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: ./.github/actions/setup-go
+        uses: $/.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
@@ -84,7 +84,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up Go
-        uses: ./.github/actions/setup-go
+        uses: $/.github/actions/setup-go
 
       - name: Run golangci-lint for caching
         uses: golangci/golangci-lint-action@ba0d7d2ec06a0ea1cb5fa41b2e4a3ab91d21278a # v9.3.0

@@ -7,7 +7,7 @@ on:
 jobs:
   release:
     name: Release
-    uses: ./.github/workflows/reusable-release.yaml
+    uses: $/.github/workflows/reusable-release.yaml
     with:
       goreleaser_config: goreleaser.yml
       goreleaser_options: '--clean --timeout 90m'
@@ -73,7 +73,7 @@ jobs:
           git config --global user.name "GitHub Actions"
 
       - name: Set up Go
-        uses: ./.github/actions/setup-go
+        uses: $/.github/actions/setup-go
 
       - name: Install Go tools
         run: go install tool # GOBIN is added to the PATH by the setup-go action
