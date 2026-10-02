@@ -35,7 +35,7 @@ func TestFS_WalkUnreadable(t *testing.T) {
 
 		// Nothing could be read, so the walk must report that rather than look
 		// like a scan that found nothing.
-		assert.ErrorContains(t, err, "unable to read")
+		require.ErrorContains(t, err, "unable to read")
 		assert.Empty(t, visited)
 	})
 
