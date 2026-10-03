@@ -56,6 +56,30 @@ tolerations: []
 ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}
 
+## Liveness probe for the main container
+## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+livenessProbe:
+  httpGet:
+    scheme: HTTP
+    path: /healthz
+    port: trivy-http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 10
+
+## Readiness probe for the main container
+## Ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/
+readinessProbe:
+  httpGet:
+    scheme: HTTP
+    path: /healthz
+    port: trivy-http
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  successThreshold: 1
+  failureThreshold: 3
+
 trivy:
   # debugMode the flag to enable Trivy debug mode
   debugMode: false
