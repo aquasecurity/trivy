@@ -77,7 +77,7 @@ func (s *Scanner) Detect(ctx context.Context, _ string, _ *ftypes.Repository, pk
 	return detectedVulns, nil
 }
 
-// Echo is a rolling distro, meaning there are no versions, and therefor no need to check the version
+// Echo is a rolling distro, meaning there are no versions, and therefore no need to check the version
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
 }

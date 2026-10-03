@@ -111,11 +111,11 @@ func (w *FS) BuildSkipPaths(base string, paths []string) []string {
 		//       e.g. $ trivy fs --skip-dirs bar ./foo
 		//     The skip dir from the root directory will be `bar/`.
 		// 2. Relative skip dirs/files from the working directory
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//     The specified dirs and files will be converted to the relative path from the root directory.
 		//       e.g. $ trivy fs --skip-dirs ./foo/bar ./foo
 		//     The skip dir will be converted to `bar/`.
 		// 3. Absolute skip dirs/files
-		//     The specified dirs and files wll be converted to the relative path from the root directory.
+		//     The specified dirs and files will be converted to the relative path from the root directory.
 		//       e.g. $ trivy fs --skip-dirs /bar/foo/baz ./foo
 		//     When the working directory is
 		//       3.1 /bar: the skip dir will be converted to `baz/`.
