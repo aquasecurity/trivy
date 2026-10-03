@@ -20,3 +20,8 @@ func RpmDistTag(ver string) (tag, num string) {
 func DpkgHasRfMarker(ver string) bool {
 	return dpkgHasRfMarker(ver)
 }
+
+// VersionTrimmer exposes the per-family versionTrimmer for testing.
+func (s *Scanner) VersionTrimmer(v string) string {
+	return s.versionTrimmer(v)
+}

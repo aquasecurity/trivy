@@ -216,6 +216,19 @@
             PatchedVersions:
               - "8.5.0-1.amzn2023"
             Severity: 2
+# Distinct bucket for AL2 so a scan whose trimmer leaves "2 (Karoo)" unparsed
+# can't accidentally hit "rapidfort amazon linux 2023" and pass by luck.
+- bucket: rapidfort amazon linux 2
+  pairs:
+    - bucket: openssl
+      pairs:
+        - key: CVE-2024-AL2
+          value:
+            VulnerableVersions:
+              - "<1.1.1k-8.amzn2"
+            PatchedVersions:
+              - "1.1.1k-8.amzn2"
+            Severity: 2
 # RapidFort's own rebuilds inside Rocky, Alma and Amazon images. Like the Oracle
 # bucket above, each carries a distinct fix version so a misrouted rf package
 # shows up as a wrong FixedVersion rather than a silent pass.
@@ -272,10 +285,11 @@
             PatchedVersions:
               - "1:3.2.2-20.rf"
             Severity: 2
-# RapidFort's own dpkg rebuilds inside a Debian image. The Debian feed annotates
-# no identifiers, so the DB build attributes these by the rebuild marker in the
-# version string; the fix here is deliberately distinct from the versioned
-# "rapidfort debian 12" bucket's so a misroute is visible.
+# RapidFort's own dpkg rebuilds inside a Debian image. The feed tags these
+# events with identifier: "rf", which trivy-db routes to this family bucket;
+# the scanner reaches the same bucket by matching the "+rf" / "rfubu" marker
+# in the installed version. The fix here is deliberately distinct from the
+# versioned "rapidfort debian 12" bucket's so a misroute is visible.
 - bucket: rapidfort debian
   pairs:
     - bucket: rf-git
