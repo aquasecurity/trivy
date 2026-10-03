@@ -52,7 +52,7 @@ A terminal native UI for Trivy
 
 ## Trivy Vulnerability explorer (Community)
 
-Web application that allows to load a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table
+Web application that allows loading a Trivy report in json format and displays the vulnerabilities of a single target in an interactive data table
 
 👉 Get it at: <https://github.com/dbsystel/trivy-vulnerability-explorer>
 
