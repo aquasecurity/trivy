@@ -93,11 +93,9 @@ func (s Service) Scan(ctx context.Context, targetName, artifactKey string, blobK
 
 		// Override OS packages PURL to update the distro,
 		// preserving the correlation between the OS and package PURLs.
+		// purl.New returns (nil, nil) when the package has no name (e.g. local
+		// package.json), so no extra guard is needed here.
 		for i := range detail.Packages {
-			// Skip packages without a name (e.g. local package.json) — PURL would be incorrect.
-			if detail.Packages[i].Name == "" {
-				continue
-			}
 			p, err := purl.New(detail.OS.Family, types.Metadata{OS: &detail.OS}, detail.Packages[i])
 			if err != nil {
 				log.Error("Failed to create PackageURL", log.Err(err))
