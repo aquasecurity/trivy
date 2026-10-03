@@ -6,15 +6,19 @@ import (
 	"crypto/dsa"
 	"crypto/ecdsa"
 	"crypto/ed25519"
+	"crypto/mldsa"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
+	"iter"
+	"math/big"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 // objectKind identifies the kind of parsed cryptographic object.
@@ -71,6 +75,33 @@ type encryptedPrivateKeyInfo struct {
 	EncryptedData []byte
 }
 
+// pkcs1PrivateKey is an RSA private key in PKCS#1, as defined in RFC 8017.
+type pkcs1PrivateKey struct {
+	Version          int
+	N                *big.Int
+	E                int
+	D, P, Q          *big.Int
+	Dp               *big.Int               `asn1:"optional"`
+	Dq               *big.Int               `asn1:"optional"`
+	Qinv             *big.Int               `asn1:"optional"`
+	AdditionalPrimes []pkcs1AdditionalPrime `asn1:"optional,omitempty"`
+}
+
+// pkcs1AdditionalPrime is a prime of a multi-prime RSA private key, with its CRT values.
+type pkcs1AdditionalPrime struct {
+	Prime, Exp, Coeff *big.Int
+}
+
+// pkcs8PrivateKey is a private key in PKCS#8, as defined in RFC 5208, without its
+// optional attributes.
+type pkcs8PrivateKey struct {
+	Version    int
+	Algo       pkix.AlgorithmIdentifier
+	PrivateKey []byte
+}
+
+var oidRSAEncryption = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
+
 var (
 	errNotCryptographic  = errors.New("not cryptographic")
 	errUnsupportedCrypto = errors.New("unsupported cryptographic object")
@@ -82,17 +113,35 @@ var (
 //
 // Material that cannot be read is logged and skipped. An error means a parsed object
 // could not be described.
+//
+// An asset is reported once for each container it was found in, and an asset with no
+// container of its own, such as an algorithm, once per file.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
 
+	type assetKey struct {
+		descriptor ftypes.CryptoDescriptor
+		format     ftypes.CryptoKeyFormat
+	}
+
 	var assets []ftypes.CryptoAsset
-	for _, obj := range parse(ctx, content) {
+	seen := set.New[assetKey]()
+	for obj := range parse(ctx, content) {
 		described, err := objectToAssets(ctx, obj)
 		if err != nil {
 			return nil, err
 		}
 		for _, asset := range described {
+			key := assetKey{
+				descriptor: asset.Descriptor(),
+				format:     asset.Format,
+			}
+
+			if seen.Contains(key) {
+				continue
+			}
+			seen.Append(key)
 			asset.FilePath = filePath
 			assets = append(assets, asset)
 		}
@@ -102,46 +151,49 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 // parse sniffs content because eligible extensions such as .crt, .cer, and .key do not reliably identify PEM or DER.
 // It decodes PEM blocks first, then falls back to DER when no valid PEM block is found.
-func parse(ctx context.Context, content []byte) []object {
-	var objects []object
-	var decodedPEM, recognized bool
-	// pem.Decode scans past malformed leading data and returns the next valid block.
-	for rest := content; ; {
-		block, next := pem.Decode(rest)
-		if block == nil {
-			break
-		}
-		decodedPEM = true
-		rest = next
+func parse(ctx context.Context, content []byte) iter.Seq[object] {
+	return func(yield func(object) bool) {
+		var decodedPEM, recognized bool
+		// pem.Decode scans past malformed leading data and returns the next valid block.
+		for rest := content; ; {
+			block, next := pem.Decode(rest)
+			if block == nil {
+				break
+			}
+			decodedPEM = true
+			rest = next
 
-		obj, err := parsePEMBlock(block)
-		if errors.Is(err, errNotCryptographic) {
-			continue
+			obj, err := parsePEMBlock(block)
+			if errors.Is(err, errNotCryptographic) {
+				continue
+			}
+			recognized = true
+			if err != nil {
+				logParseError(ctx, block.Type, err)
+				continue
+			}
+			if !yield(obj) {
+				return
+			}
 		}
-		recognized = true
+
+		// A decoded PEM file is complete even when none of its blocks is supported.
+		if decodedPEM {
+			if !recognized {
+				log.DebugContext(ctx, "No cryptographic object found")
+			}
+			return
+		}
+
+		// No PEM block was decoded, so try the whole file as DER.
+		obj, err := parseDERObject(content)
 		if err != nil {
-			logParseError(ctx, block.Type, err)
-			continue
+			logParseError(ctx, "", err)
+			return
 		}
-		objects = append(objects, obj)
+		obj.encoding = ftypes.CryptoEncodingDER
+		yield(obj)
 	}
-
-	// A decoded PEM file is complete even when none of its blocks is supported.
-	if decodedPEM {
-		if !recognized {
-			log.DebugContext(ctx, "No cryptographic object found")
-		}
-		return objects
-	}
-
-	// No PEM block was decoded, so try the whole file as DER.
-	obj, err := parseDERObject(content)
-	if err != nil {
-		logParseError(ctx, "", err)
-		return nil
-	}
-	obj.encoding = ftypes.CryptoEncodingDER
-	return []object{obj}
 }
 
 // parsePEMBlock parses a supported PEM block and records its source encoding.
@@ -200,23 +252,11 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "CERTIFICATE":
 		return certificateObject(der)
 	case "PRIVATE KEY":
-		privateKey, err := stdx509.ParsePKCS8PrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+		return pkcs8PrivateKeyObject(der)
 	case "RSA PRIVATE KEY":
-		privateKey, err := stdx509.ParsePKCS1PrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+		return rsaPrivateKeyObject(der, ftypes.CryptoKeyFormatPKCS1)
 	case "EC PRIVATE KEY":
-		privateKey, err := stdx509.ParseECPrivateKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+		return privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
 	case "PUBLIC KEY":
 		publicKey, err := stdx509.ParsePKIXPublicKey(der)
 		if err != nil {
@@ -253,18 +293,72 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	}
 }
 
+// privateKeyObject parses a private key and projects it to its public key.
+func privateKeyObject[K any](der []byte, format ftypes.CryptoKeyFormat, parseKey func([]byte) (K, error)) (object, error) {
+	privateKey, err := parseKey(der)
+	if err != nil {
+		return object{}, errMalformedCrypto
+	}
+	return privateKeyToObject(privateKey, format)
+}
+
+// pkcs8PrivateKeyObject parses a private key in PKCS#8 and projects it to its public key.
+func pkcs8PrivateKeyObject(der []byte) (object, error) {
+	var key pkcs8PrivateKey
+	if _, err := asn1.Unmarshal(der, &key); err == nil && key.Algo.Algorithm.Equal(oidRSAEncryption) {
+		return rsaPrivateKeyObject(key.PrivateKey, ftypes.CryptoKeyFormatPKCS8)
+	}
+	return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
+}
+
+// rsaPrivateKeyObject reads an RSA private key in PKCS#1 and projects it to its public key.
+// It checks the structure of the key but not its math, because crypto/x509 validates a key
+// with arithmetic whose cost grows with the size of its values, and a crafted key picks
+// them freely.
+func rsaPrivateKeyObject(der []byte, format ftypes.CryptoKeyFormat) (object, error) {
+	var key pkcs1PrivateKey
+	rest, err := asn1.Unmarshal(der, &key)
+	if err != nil || len(rest) > 0 {
+		return object{}, errMalformedCrypto
+	}
+	if key.Version < 0 || key.Version > 1 || key.E <= 0 {
+		return object{}, errMalformedCrypto
+	}
+	for _, v := range []*big.Int{key.N, key.D, key.P, key.Q} {
+		if v.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
+	}
+	for _, v := range []*big.Int{key.Dp, key.Dq, key.Qinv} {
+		if v != nil && v.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
+	}
+	for _, p := range key.AdditionalPrimes {
+		if p.Prime.Sign() <= 0 {
+			return object{}, errMalformedCrypto
+		}
+	}
+
+	return object{
+		kind:      objectPrivateKey,
+		publicKey: &rsa.PublicKey{N: key.N, E: key.E},
+		keyFormat: format,
+	}, nil
+}
+
 func parseDERObject(der []byte) (object, error) {
 	// The target ASN.1 DER structures have no common outer discriminator, so try their schema-specific parsers in order.
 	if obj, err := certificateObject(der); err == nil {
 		return obj, nil
 	}
 
-	if privateKey, err := stdx509.ParsePKCS1PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS1)
+	if obj, err := rsaPrivateKeyObject(der, ftypes.CryptoKeyFormatPKCS1); err == nil {
+		return obj, nil
 	}
 
-	if privateKey, err := stdx509.ParsePKCS8PrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatPKCS8)
+	if obj, err := pkcs8PrivateKeyObject(der); !errors.Is(err, errMalformedCrypto) {
+		return obj, err
 	}
 
 	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
@@ -367,7 +461,7 @@ func parseEncryptedPKCS8(der []byte) (object, bool) {
 
 func isSupportedPublicKey(key any) bool {
 	switch key.(type) {
-	case *rsa.PublicKey, *dsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey:
+	case *rsa.PublicKey, *dsa.PublicKey, *ecdsa.PublicKey, ed25519.PublicKey, *mldsa.PublicKey:
 		return true
 	default:
 		return false

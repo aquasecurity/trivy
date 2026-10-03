@@ -437,6 +437,13 @@ If you want to include vulnerabilities, you can enable vulnerability scanning vi
 $ trivy image --scanners vuln --format cyclonedx --output result.json alpine:3.15
 ```
 
+For container images, the CycloneDX output can also carry a [Cryptography Bill of Materials (CBOM)][cbom] with the certificates and keys found in the image.
+See [here](../scanner/crypto.md) for the detail.
+
+```
+$ trivy image --scanners crypto --format cyclonedx --output result.json alpine:3.15
+```
+
 #### SPDX
 Trivy can generate SBOM in the [SPDX][spdx] format.
 
@@ -1771,6 +1778,7 @@ When scanning container images, Trivy can discover SBOM for those images. [See h
 [cyclonedx]: https://cyclonedx.org/
 [sbom]: https://cyclonedx.org/capabilities/sbom/
 [bov]: https://cyclonedx.org/capabilities/bov/
+[cbom]: https://cyclonedx.org/capabilities/cbom/
 
 [os_packages]: ../scanner/vulnerability.md#os-packages
 [language_packages]: ../scanner/vulnerability.md#language-specific-packages

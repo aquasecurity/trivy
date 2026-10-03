@@ -1,0 +1,11 @@
+click==8.0.0
+pkg[extra==1.0
+flask==2.0.0 # see [notes
+# ]
+# [section
+foo]bar==1.0
+pyjwt[crypto]==2.1.0
+foo]bar[x]==1.0
+celery[redis]]==4.4.7
+Jinja2==3.0.0 # pinned, see [notes]
+requests[security]==2.28.0 --hash=sha256:[abc

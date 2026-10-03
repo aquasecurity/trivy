@@ -85,6 +85,7 @@ This feature is relevant for the following scanners:
 | Misconfiguration |     ✓     |
 |      Secret      |           |
 |     License      |   ✓[^1]   |
+|      Crypto      |     ✓     |
 
 The list of analyzers can be found [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go).
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.

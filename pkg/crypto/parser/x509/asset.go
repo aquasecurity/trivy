@@ -72,7 +72,7 @@ func describeCertificate(
 			IsCA:                  cert.IsCA,
 			// crypto/x509 reports -1 when basic constraints carry no path length,
 			// which this model represents as an unset zero.
-			MaxPathLen:     max(cert.MaxPathLen, 0),
+			MaxPathLen:     int64(max(cert.MaxPathLen, 0)),
 			MaxPathLenZero: cert.MaxPathLenZero,
 		},
 	}

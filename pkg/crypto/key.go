@@ -5,6 +5,7 @@ import (
 	"crypto/dsa"
 	"crypto/ecdsa"
 	"crypto/ed25519"
+	"crypto/mldsa"
 	"crypto/rsa"
 	"crypto/x509"
 	"crypto/x509/pkix"
@@ -78,6 +79,40 @@ func DescribeEncryptedKey(
 	}
 }
 
+// LinkKeyPairs points every private key at the public key derived from it, when both were
+// found. A public key states nothing about the existence of a private one, so the
+// reference runs in one direction only.
+//
+// The two halves are told apart by the key type and share an identity, since a key is
+// identified by the digest of its SubjectPublicKeyInfo. An encrypted container is left
+// alone, because its identity is the digest of the container, which never equals the
+// digest of a SubjectPublicKeyInfo.
+func LinkKeyPairs(assets []ftypes.CryptoAsset) {
+	public := make(map[ftypes.CryptoIdentity]ftypes.CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == ftypes.CryptoKindKey && asset.KeyType == ftypes.CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != ftypes.CryptoKindKey || asset.KeyType != ftypes.CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, ftypes.CryptoRelationship{
+			Type:         ftypes.CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
+}
+
 // keyDetails reports the size in bits and the curve of a public key.
 func keyDetails(pub stdcrypto.PublicKey) (int, string) {
 	switch pub := pub.(type) {
@@ -90,6 +125,10 @@ func keyDetails(pub stdcrypto.PublicKey) (int, string) {
 	case ed25519.PublicKey:
 		// An Ed25519 key is the raw point, so its length is the key size in bytes.
 		return len(pub) * 8, ""
+	case *mldsa.PublicKey:
+		// An ML-DSA public key is a fixed-length encoding decided by the parameter set, so its
+		// size is the length of that encoding.
+		return pub.Parameters().PublicKeySize() * 8, ""
 	}
 	return 0, ""
 }

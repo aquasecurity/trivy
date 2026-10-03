@@ -8,6 +8,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/ed25519"
 	"crypto/elliptic"
+	"crypto/mldsa"
 	"crypto/rand"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
@@ -21,12 +22,14 @@ import (
 	"testing"
 	"time"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	cryptox509 "github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
@@ -34,11 +37,25 @@ var oidPBES2 = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 // parsedFilePath is the path every fixture is parsed from.
 const parsedFilePath = "candidate.pem"
 
-// encryptedPrivateKeyInfo is the RFC 5958 envelope, which the parser validates without
-// opening.
-type encryptedPrivateKeyInfo struct {
-	Algorithm     pkix.AlgorithmIdentifier
-	EncryptedData []byte
+// rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
+// mutate to it. Its values are not consistent with each other.
+func rsaPrivateKeyDER(t *testing.T, mutate func(*cryptox509.PKCS1PrivateKey)) []byte {
+	t.Helper()
+	one := big.NewInt(1)
+	key := cryptox509.PKCS1PrivateKey{
+		N:    new(big.Int).Lsh(one, 2047),
+		E:    65537,
+		D:    one,
+		P:    one,
+		Q:    one,
+		Dp:   one,
+		Dq:   one,
+		Qinv: one,
+	}
+	mutate(&key)
+	der, err := asn1.Marshal(key)
+	require.NoError(t, err)
+	return der
 }
 
 // found states what an input was recognized as.
@@ -58,6 +75,26 @@ func TestParse(t *testing.T) {
 		"DEK-Info":  "AES-256-CBC,00112233445566778899AABBCCDDEEFF",
 	}
 	rfc1423Ciphertext := []byte{0x01, 0x02, 0x03, 0x04}
+	// P is longer than the modulus.
+	invalidRSAKey := rsaPrivateKeyDER(t, func(k *cryptox509.PKCS1PrivateKey) {
+		k.P = new(big.Int).Lsh(big.NewInt(1), 24575)
+	})
+	// crypto/x509 reads a key that omits its CRT values.
+	rsaKeyWithoutCRT := rsaPrivateKeyDER(t, func(k *cryptox509.PKCS1PrivateKey) {
+		k.Dp, k.Dq, k.Qinv = nil, nil, nil
+	})
+	rsaKeyWithZeroPrime := rsaPrivateKeyDER(t, func(k *cryptox509.PKCS1PrivateKey) {
+		k.Version = 1
+		k.AdditionalPrimes = []cryptox509.PKCS1AdditionalPrime{{Prime: big.NewInt(0), Exp: big.NewInt(1), Coeff: big.NewInt(1)}}
+	})
+	invalidRSAKeyPKCS8, err := asn1.Marshal(cryptox509.PKCS8PrivateKey{
+		Algo: pkix.AlgorithmIdentifier{
+			Algorithm:  cryptox509.OIDRSAEncryption,
+			Parameters: asn1.NullRawValue,
+		},
+		PrivateKey: invalidRSAKey,
+	})
+	require.NoError(t, err)
 
 	pemCertificate := found{
 		kind:     ftypes.CryptoKindCertificate,
@@ -69,6 +106,27 @@ func TestParse(t *testing.T) {
 		kind:    ftypes.CryptoKindKey,
 		keyType: ftypes.CryptoKeyTypePublic,
 		method:  ftypes.CryptoMethodSPKISHA256,
+	}
+	pemPublicKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePublic,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKIX,
+		encoding: ftypes.CryptoEncodingPEM,
+	}
+	pemPKCS1PrivateKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePrivate,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKCS1,
+		encoding: ftypes.CryptoEncodingPEM,
+	}
+	pemPKCS8PrivateKey := found{
+		kind:     ftypes.CryptoKindKey,
+		keyType:  ftypes.CryptoKeyTypePrivate,
+		method:   ftypes.CryptoMethodSPKISHA256,
+		format:   ftypes.CryptoKeyFormatPKCS8,
+		encoding: ftypes.CryptoEncodingPEM,
 	}
 
 	tests := []struct {
@@ -121,13 +179,7 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKCS8 PEM",
 			input: fixtures.pkcs8PEM,
-			want: []found{{
-				kind:     ftypes.CryptoKindKey,
-				keyType:  ftypes.CryptoKeyTypePrivate,
-				method:   ftypes.CryptoMethodSPKISHA256,
-				format:   ftypes.CryptoKeyFormatPKCS8,
-				encoding: ftypes.CryptoEncodingPEM,
-			}},
+			want:  []found{pemPKCS8PrivateKey},
 		},
 		{
 			name:  "SEC1 DER",
@@ -154,13 +206,7 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKIX public PEM",
 			input: fixtures.publicPEM,
-			want: []found{{
-				kind:     ftypes.CryptoKindKey,
-				keyType:  ftypes.CryptoKeyTypePublic,
-				method:   ftypes.CryptoMethodSPKISHA256,
-				format:   ftypes.CryptoKeyFormatPKIX,
-				encoding: ftypes.CryptoEncodingPEM,
-			}},
+			want:  []found{pemPublicKey},
 		},
 		{
 			name:  "encrypted PKCS8 DER",
@@ -239,6 +285,17 @@ func TestParse(t *testing.T) {
 			}},
 		},
 		{
+			name:  "ML-DSA PKCS8 DER",
+			input: fixtures.mldsaDER,
+			want: []found{{
+				kind:     ftypes.CryptoKindKey,
+				keyType:  ftypes.CryptoKeyTypePrivate,
+				method:   ftypes.CryptoMethodSPKISHA256,
+				format:   ftypes.CryptoKeyFormatPKCS8,
+				encoding: ftypes.CryptoEncodingDER,
+			}},
+		},
+		{
 			name:  "DSA PKIX DER",
 			input: fixtures.dsaDER,
 			want: []found{{
@@ -250,13 +307,31 @@ func TestParse(t *testing.T) {
 			}},
 		},
 		{
-			name:  "certificate bundle",
+			name:  "repeated certificate",
 			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.certificatePEM}, nil),
 			want: []found{
 				pemCertificate,
 				certificateKey,
+			},
+		},
+		{
+			// Both certificates carry the same key.
+			name:  "certificate bundle",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil),
+			want: []found{
 				pemCertificate,
 				certificateKey,
+				pemCertificate,
+			},
+		},
+		{
+			// The key is found twice, because the certificate gives it no container.
+			name:  "certificate and its public key",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, fixtures.publicPEM}, nil),
+			want: []found{
+				pemCertificate,
+				certificateKey,
+				pemPublicKey,
 			},
 		},
 		{
@@ -265,13 +340,18 @@ func TestParse(t *testing.T) {
 			want: []found{
 				pemCertificate,
 				certificateKey,
-				{
-					kind:     ftypes.CryptoKindKey,
-					keyType:  ftypes.CryptoKeyTypePrivate,
-					method:   ftypes.CryptoMethodSPKISHA256,
-					format:   ftypes.CryptoKeyFormatPKCS8,
-					encoding: ftypes.CryptoEncodingPEM,
-				},
+				pemPKCS8PrivateKey,
+			},
+		},
+		{
+			name: "same key in two containers",
+			input: bytes.Join([][]byte{
+				pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: fixtures.pkcs1DER}),
+				fixtures.pkcs8PEM,
+			}, nil),
+			want: []found{
+				pemPKCS1PrivateKey,
+				pemPKCS8PrivateKey,
 			},
 		},
 		{
@@ -324,6 +404,36 @@ func TestParse(t *testing.T) {
 		{
 			name:  "PKCS8 under RSA PRIVATE KEY",
 			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: fixtures.pkcs8DER}),
+		},
+		{
+			name:  "invalid RSA key PKCS1 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: invalidRSAKey}),
+			want:  []found{pemPKCS1PrivateKey},
+		},
+		{
+			name:  "invalid RSA key PKCS8 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: invalidRSAKeyPKCS8}),
+			want:  []found{pemPKCS8PrivateKey},
+		},
+		{
+			name:  "RSA key without CRT values PKCS1 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: rsaKeyWithoutCRT}),
+			want:  []found{pemPKCS1PrivateKey},
+		},
+		{
+			name:  "RSA key with zero additional prime PKCS1 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: rsaKeyWithZeroPrime}),
+		},
+		{
+			name:  "invalid RSA key PKCS1 DER",
+			input: invalidRSAKey,
+			want: []found{{
+				kind:     ftypes.CryptoKindKey,
+				keyType:  ftypes.CryptoKeyTypePrivate,
+				method:   ftypes.CryptoMethodSPKISHA256,
+				format:   ftypes.CryptoKeyFormatPKCS1,
+				encoding: ftypes.CryptoEncodingDER,
+			}},
 		},
 		{
 			name:  "certificate request under CERTIFICATE",
@@ -510,6 +620,32 @@ func TestParseAssets(t *testing.T) {
 		}},
 	}
 
+	mldsaAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.3.18",
+		},
+		Name: "ML-DSA-65",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "ML-DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	mldsaCertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: spkiIdentity(t, fixtures.mldsaCertificate.PublicKey),
+		Name:     "ML-DSA-65 public key",
+		Key: &ftypes.CryptoKey{
+			Size: 1952 * 8,
+		},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: mldsaAlgorithm.Descriptor(),
+		}},
+	}
+
 	// at states where a description was found.
 	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
@@ -620,8 +756,7 @@ func TestParseAssets(t *testing.T) {
 			},
 		},
 		{
-			// One OID describes the signature and the key, so the same algorithm is
-			// described twice.
+			// One OID describes the signature and the key, so the algorithm is reported once.
 			name:  "Ed25519 certificate",
 			input: certificatePEM(fixtures.ed25519Certificate),
 			want: []ftypes.CryptoAsset{
@@ -654,7 +789,41 @@ func TestParseAssets(t *testing.T) {
 				},
 				at(ed25519Algorithm),
 				at(ed25519CertificateKey),
-				at(ed25519Algorithm),
+			},
+		},
+		{
+			name:  "ML-DSA certificate",
+			input: certificatePEM(fixtures.mldsaCertificate),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.mldsaCertificate.Raw),
+						Name:     "mldsa.example.test",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:      "CN=mldsa.example.test",
+							Issuer:       "CN=mldsa.example.test",
+							SerialNumber: "8",
+							NotBefore:    time.Unix(1, 0).UTC(),
+							NotAfter:     time.Unix(2, 0).UTC(),
+							Format:       ftypes.CryptoCertificateFormatX509,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: mldsaAlgorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: mldsaCertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(mldsaAlgorithm),
+				at(mldsaCertificateKey),
 			},
 		},
 		{
@@ -705,6 +874,31 @@ func TestParseAssets(t *testing.T) {
 					},
 					FilePath: parsedFilePath,
 					Format:   ftypes.CryptoKeyFormatPKCS8,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(rsaAlgorithm),
+			},
+		},
+		{
+			name:  "multi-prime private key",
+			input: fixtures.multiPrimePEM,
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindKey,
+						KeyType:  ftypes.CryptoKeyTypePrivate,
+						Identity: spkiIdentity(t, fixtures.multiPrimePublic),
+						Name:     "RSA-2048 private key",
+						Key: &ftypes.CryptoKey{
+							Size: 2048,
+						},
+						Relationships: []ftypes.CryptoRelationship{{
+							Type:         ftypes.CryptoRelationshipUsedWith,
+							RelatedAsset: rsaAlgorithm.Descriptor(),
+						}},
+					},
+					FilePath: parsedFilePath,
+					Format:   ftypes.CryptoKeyFormatPKCS1,
 					Encoding: ftypes.CryptoEncodingPEM,
 				},
 				at(rsaAlgorithm),
@@ -791,7 +985,7 @@ func TestParseCertificatePathLength(t *testing.T) {
 	tests := []struct {
 		name           string
 		certificate    *stdx509.Certificate
-		wantPathLen    int
+		wantPathLen    int64
 		wantPathLenSet bool
 	}{
 		{
@@ -877,19 +1071,38 @@ func TestParseIdentity(t *testing.T) {
 		assert.NotEqual(t, certificate[0].Identity, otherCertificate[0].Identity)
 	})
 
+	t.Run("certificates in one bundle keep their identities", func(t *testing.T) {
+		bundle := parse(t, bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.otherCertificate)}, nil))
+		certificates := lo.Filter(bundle, func(asset ftypes.CryptoAsset, _ int) bool {
+			return asset.Kind == ftypes.CryptoKindCertificate
+		})
+		require.Len(t, certificates, 2)
+		assert.Equal(t, certificate[0].Identity, certificates[0].Identity)
+		assert.Equal(t, otherCertificate[0].Identity, certificates[1].Identity)
+	})
+
 	t.Run("a certificate and a key file agree on the key they share", func(t *testing.T) {
 		assert.Equal(t, publicKey[0].Identity, certificate[2].Identity)
 	})
 }
 
-// parse describes a file and checks that every asset it reports is valid.
+// parse describes a file and checks that every asset it reports is valid and relates only
+// to assets reported with it.
 func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 	t.Helper()
 
 	assets, err := cryptox509.Parse(t.Context(), parsedFilePath, content)
 	require.NoError(t, err)
+
+	reported := set.New[ftypes.CryptoDescriptor]()
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
+		reported.Append(asset.Descriptor())
+	}
+	for i, asset := range assets {
+		for _, relationship := range asset.Relationships {
+			require.Truef(t, reported.Contains(relationship.RelatedAsset), "asset %d", i)
+		}
 	}
 	return assets
 }
@@ -918,11 +1131,14 @@ type testFixtures struct {
 	certificate        *stdx509.Certificate
 	ecdsaCertificate   *stdx509.Certificate
 	ed25519Certificate *stdx509.Certificate
+	mldsaCertificate   *stdx509.Certificate
 	pathLenZero        *stdx509.Certificate
 	noCommonName       *stdx509.Certificate
 	otherCertificate   *stdx509.Certificate
 	pssCertificate     *stdx509.Certificate
 	rsaPublic          *rsa.PublicKey
+	multiPrimePublic   *rsa.PublicKey
+	multiPrimePEM      []byte
 	certificateDER     []byte
 	certificatePEM     []byte
 	pkcs1DER           []byte
@@ -935,6 +1151,7 @@ type testFixtures struct {
 	encryptedPEM       []byte
 	rfc1423PEM         []byte
 	ed25519DER         []byte
+	mldsaDER           []byte
 	dsaDER             []byte
 	x25519PKCS8DER     []byte
 	x25519PKIXDER      []byte
@@ -955,13 +1172,26 @@ var sharedRSAKey = sync.OnceValue(func() *rsa.PrivateKey {
 	return key
 })
 
+// sharedMultiPrimeRSAKey is a 2048-bit key with three primes, generated once for the
+// package like sharedRSAKey.
+var sharedMultiPrimeRSAKey = sync.OnceValue(func() *rsa.PrivateKey {
+	key, err := rsa.GenerateMultiPrimeKey(rand.Reader, 3, 2048)
+	if err != nil {
+		panic(err)
+	}
+	return key
+})
+
 func newFixtures(t *testing.T) testFixtures {
 	t.Helper()
 
 	rsaKey := sharedRSAKey()
+	multiPrimeKey := sharedMultiPrimeRSAKey()
 	ecdsaKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	require.NoError(t, err)
 	_, ed25519Key, err := ed25519.GenerateKey(rand.Reader)
+	require.NoError(t, err)
+	mldsaKey, err := mldsa.GenerateKey(mldsa.MLDSA65())
 	require.NoError(t, err)
 
 	workload, err := url.Parse("spiffe://example.test/workload")
@@ -1034,6 +1264,13 @@ func newFixtures(t *testing.T) testFixtures {
 		NotAfter:     time.Unix(2, 0),
 	}, ed25519Key)
 
+	mldsaCertificate := newCertificate(t, &stdx509.Certificate{
+		SerialNumber: big.NewInt(8),
+		Subject:      pkix.Name{CommonName: "mldsa.example.test"},
+		NotBefore:    time.Unix(1, 0),
+		NotAfter:     time.Unix(2, 0),
+	}, mldsaKey)
+
 	// A certificate signed with RSASSA-PSS, whose OID the catalog leaves out.
 	pssCertificate := newCertificate(t, &stdx509.Certificate{
 		SerialNumber:       big.NewInt(5),
@@ -1059,6 +1296,8 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 	ed25519DER, err := stdx509.MarshalPKCS8PrivateKey(ed25519Key)
 	require.NoError(t, err)
+	mldsaDER, err := stdx509.MarshalPKCS8PrivateKey(mldsaKey)
+	require.NoError(t, err)
 	// crypto/x509 parses a DSA key but cannot encode one, so the input comes from pkg/crypto.
 	dsaDER, err := crypto.MarshalPublicKey(&dsa.PublicKey{
 		Parameters: dsa.Parameters{
@@ -1071,7 +1310,7 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 
 	// Encrypted containers, kept opaque because the parser only validates the envelope.
-	encryptedDER, err := asn1.Marshal(encryptedPrivateKeyInfo{
+	encryptedDER, err := asn1.Marshal(cryptox509.EncryptedPrivateKeyInfo{
 		Algorithm:     pkix.AlgorithmIdentifier{Algorithm: oidPBES2},
 		EncryptedData: []byte{0x01, 0x02, 0x03},
 	})
@@ -1105,11 +1344,14 @@ func newFixtures(t *testing.T) testFixtures {
 		certificate:        certificate,
 		ecdsaCertificate:   ecdsaCertificate,
 		ed25519Certificate: ed25519Certificate,
+		mldsaCertificate:   mldsaCertificate,
 		pathLenZero:        pathLenZero,
 		noCommonName:       noCommonName,
 		otherCertificate:   otherCertificate,
 		pssCertificate:     pssCertificate,
 		rsaPublic:          &rsaKey.PublicKey,
+		multiPrimePublic:   &multiPrimeKey.PublicKey,
+		multiPrimePEM:      pem.EncodeToMemory(&pem.Block{Type: "RSA PRIVATE KEY", Bytes: stdx509.MarshalPKCS1PrivateKey(multiPrimeKey)}),
 		certificateDER:     certificate.Raw,
 		certificatePEM:     certificatePEM(certificate),
 		pkcs1DER:           stdx509.MarshalPKCS1PrivateKey(rsaKey),
@@ -1122,6 +1364,7 @@ func newFixtures(t *testing.T) testFixtures {
 		encryptedPEM:       pem.EncodeToMemory(&pem.Block{Type: "ENCRYPTED PRIVATE KEY", Bytes: encryptedDER}),
 		rfc1423PEM:         rfc1423PEM,
 		ed25519DER:         ed25519DER,
+		mldsaDER:           mldsaDER,
 		dsaDER:             dsaDER,
 		x25519PKCS8DER:     x25519PKCS8DER,
 		x25519PKIXDER:      x25519PKIXDER,

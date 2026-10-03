@@ -68,6 +68,7 @@ nav:
                   - Contribute Checks: guide/scanner/misconfiguration/custom/contribute-checks.md
           - Secret: guide/scanner/secret.md
           - License: guide/scanner/license.md
+          - Cryptographic Asset: guide/scanner/crypto.md
       - Coverage:
           - Overview: guide/coverage/index.md
           - OS:
