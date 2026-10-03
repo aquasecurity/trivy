@@ -60,9 +60,9 @@ func rpmDistTag(ver string) (tag, num string) {
 // dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
 // RapidFort rebuild marker — the same signal the feed annotator writes as the
 // "rf" range identifier, so the routing decision here matches the DB build.
-// Four substring checks cover every rebuild spelling in the live feed; the
-// shapes a stricter regex would have guarded against ("1surf1", "rfdebian")
-// never occur in real OS/ubuntu or OS/debian data.
+// Four substring forms cover every rebuild spelling in the live feed; shapes
+// these forms do not match ("1surf1", "rfdebian") don't occur in real
+// OS/ubuntu or OS/debian data.
 //
 //	"+rf"           Debian/Ubuntu revision suffix (e.g. "0:2.5.2-1build1+rf.1")
 //	"rfubu"         Ubuntu rebuilds — matches "rfubu", "rfubuntu", "rfubujl"
