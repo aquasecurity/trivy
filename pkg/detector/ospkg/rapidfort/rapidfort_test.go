@@ -1549,8 +1549,8 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// Amazon-flavoured RapidFort rebuilds carry an ".rfal" dist tag in
-			// the live feed. The rf matcher has to recognise the letter suffix
+			// Amazon-flavored RapidFort rebuilds carry an ".rfal" dist tag in
+			// the live feed. The rf matcher has to recognize the letter suffix
 			// (not just digits) or the package falls through to the image's
 			// release bucket, where the advisory doesn't live. Uses the same
 			// family rf bucket as the ".rfN" case above — a routing miss would
