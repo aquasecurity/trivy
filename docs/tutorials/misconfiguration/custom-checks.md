@@ -93,7 +93,7 @@ Note that Rego
 Ensure that you have Trivy installed and run the following command:
 
 ```bash
-trivy fs --scanners misconf --config-check ./docker-check.rego --namespaces custom ./Dockerfile
+trivy fs --scanners misconf --config-check ./docker-check.rego --check-namespaces custom ./Dockerfile
 ```
 
 Please replace:
@@ -102,7 +102,7 @@ Please replace:
 * `custom` should be replaced with your package name if different
 * `./Dockerfile` is the path to the Dockerfile that should be scanned
 
-**Note**:  If you define custom packages, you have to specify the package prefix via `--namespaces` option. In our case, we called the custom package `custom`.
+**Note**:  If you define custom packages, you have to specify the package prefix via `--check-namespaces` option. In our case, we called the custom package `custom`.
 
 ## Resources
 
