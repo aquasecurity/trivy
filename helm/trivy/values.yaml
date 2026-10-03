@@ -57,6 +57,8 @@ tolerations: []
 podAnnotations: {}
 
 trivy:
+  # Define custom container args in case of using an image with a different entrypoint.
+  customContainerArgs: []
   # debugMode the flag to enable Trivy debug mode
   debugMode: false
   # gitHubToken the GitHub access token to download Trivy DB
@@ -133,7 +135,7 @@ trivy:
 
 service:
   # If specified, the name used for the Trivy service.
-  name:
+  name: ""
   # type Kubernetes service type
   type: ClusterIP
   # port Kubernetes service port
@@ -144,7 +146,7 @@ service:
 ingress:
   enabled: false
   # From Kubernetes 1.18+ this field is supported in case your ingress controller supports it. When set, you do not need to add the ingress class as annotation.
-  ingressClassName:
+  ingressClassName: ""
   annotations: {}
     # kubernetes.io/ingress.class: nginx
   hosts:
@@ -158,8 +160,8 @@ ingress:
   #      - trivy.example.com
 
 # httpProxy the URL of the HTTP proxy server
-httpProxy:
+httpProxy: ""
 # httpsProxy the URL of the HTTPS proxy server
-httpsProxy:
+httpsProxy: ""
 # noProxy the URLs that the proxy settings do not apply to
-noProxy:
+noProxy: ""
