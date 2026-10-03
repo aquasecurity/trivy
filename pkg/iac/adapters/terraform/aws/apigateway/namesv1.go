@@ -1,6 +1,7 @@
 package apigateway
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
@@ -14,7 +15,7 @@ func adaptDomainNamesV1(modules terraform.Modules) []v1.DomainName {
 			domainName := v1.DomainName{
 				Metadata:       nameBlock.GetMetadata(),
 				Name:           nameBlock.GetAttribute("domain_name").AsStringValueOrDefault("", nameBlock),
-				SecurityPolicy: nameBlock.GetAttribute("security_policy").AsStringValueOrDefault("TLS_1_0", nameBlock),
+				SecurityPolicy: nameBlock.GetAttribute("security_policy").AsStringValueOrDefault(apigateway.DefaultSecurityPolicy, nameBlock),
 			}
 			domainNames = append(domainNames, domainName)
 		}
