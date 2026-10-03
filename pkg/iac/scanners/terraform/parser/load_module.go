@@ -146,27 +146,27 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		SkipCache:       e.skipCachedModules,
 	}
 
-	filesystem, prefix, downloadPath, err := resolveModule(ctx, e.filesystem, opt)
+	res, err := resolvers.Resolve(ctx, e.filesystem, opt)
 	if err != nil {
 		return nil, err
 	}
-	prefix = path.Join(e.parentParser.moduleSource, prefix)
+	prefix := path.Join(e.parentParser.moduleSource, res.SourcePrefix)
 	e.logger.Debug("Module resolved",
 		log.String("block", b.FullName()),
 		log.String("source", source),
 		log.String("prefix", prefix),
-		log.FilePath(downloadPath),
+		log.FilePath(res.Dir),
 	)
-	moduleParser := e.parentParser.newModuleParser(filesystem, prefix, downloadPath, b.Label(), b)
-	if err := moduleParser.ParseFS(ctx, downloadPath); err != nil {
+	moduleParser := e.parentParser.newModuleParser(res.FS, prefix, res.Dir, b.Label(), b)
+	if err := moduleParser.ParseFS(ctx, res.Dir); err != nil {
 		return nil, err
 	}
 	return &ModuleDefinition{
 		Name:       b.Label(),
-		Path:       downloadPath,
+		Path:       res.Dir,
 		Definition: b,
 		Parser:     moduleParser,
-		FileSystem: filesystem,
+		FileSystem: res.FS,
 		External:   true,
 	}, nil
 }

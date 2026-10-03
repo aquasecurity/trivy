@@ -43,7 +43,7 @@ type moduleVersion struct {
 const registryHostname = "registry.terraform.io"
 
 // nolint
-func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix string, downloadPath string, applies bool, err error) {
+func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Options) (Result, error) {
 
 	client := r.client
 	if opt.Client != nil {
@@ -51,14 +51,14 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 	}
 
 	if !opt.AllowDownloads {
-		return
+		return Result{}, ErrNotApplicable
 	}
 
 	inputVersion := opt.Version
 	source, _ := splitPackageSubdirRaw(opt.OriginalSource)
 	parts := strings.Split(source, "/")
 	if len(parts) < 3 || len(parts) > 4 {
-		return
+		return Result{}, ErrNotApplicable
 	}
 
 	hostname := registryHostname
@@ -67,6 +67,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		hostname = parts[0]
 		parts = parts[1:]
 
+		var err error
 		token, err = getPrivateRegistryTokenFromEnvVars(hostname)
 		if err == nil {
 			opt.Logger.Debug("Found a token for the registry", log.String("hostname", hostname))
@@ -85,27 +86,27 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 			log.String("url", versionUrl))
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, versionUrl, nil)
 		if err != nil {
-			return nil, "", "", true, err
+			return Result{}, err
 		}
 		if token != "" {
 			req.Header.Set("Authorization", "Bearer "+token)
 		}
 		resp, err := client.Do(req)
 		if err != nil {
-			return nil, "", "", true, err
+			return Result{}, err
 		}
 		defer func() { _ = resp.Body.Close() }()
 		if resp.StatusCode != http.StatusOK {
-			return nil, "", "", true, fmt.Errorf("unexpected status code for versions endpoint: %d", resp.StatusCode)
+			return Result{}, fmt.Errorf("unexpected status code for versions endpoint: %d", resp.StatusCode)
 		}
 		var availableVersions moduleVersions
 		if err := json.NewDecoder(resp.Body).Decode(&availableVersions); err != nil {
-			return nil, "", "", true, err
+			return Result{}, err
 		}
 
 		opt.Version, err = resolveVersion(inputVersion, availableVersions)
 		if err != nil {
-			return nil, "", "", true, err
+			return Result{}, err
 		}
 		opt.Logger.Debug("Found module version",
 			log.String("version", opt.Version), log.String("constraint", inputVersion))
@@ -122,7 +123,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
-		return nil, "", "", true, err
+		return Result{}, err
 	}
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
@@ -133,7 +134,7 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 
 	resp, err := client.Do(req)
 	if err != nil {
-		return nil, "", "", true, err
+		return Result{}, err
 	}
 	defer func() { _ = resp.Body.Close() }()
 
@@ -145,40 +146,39 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 			Location string `json:"location"`
 		}
 		if err := json.NewDecoder(resp.Body).Decode(&downloadResponse); err != nil {
-			return nil, "", "", true, fmt.Errorf("failed to decode download response: %w", err)
+			return Result{}, fmt.Errorf("failed to decode download response: %w", err)
 		}
 
 		opt.Source = downloadResponse.Location
 	case http.StatusNoContent:
 		opt.Source = resp.Header.Get("X-Terraform-Get")
 	default:
-		return nil, "", "", true, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
+		return Result{}, fmt.Errorf("unexpected status code: %d", resp.StatusCode)
 	}
 
 	if opt.Source == "" {
-		return nil, "", "", true, fmt.Errorf("no source was found for the registry at %s", hostname)
+		return Result{}, fmt.Errorf("no source was found for the registry at %s", hostname)
 	}
 
 	opt.Logger.Debug("Module resolved via registry to new source",
 		log.String("source", opt.Source), log.String("name", moduleName))
 
-	filesystem, prefix, downloadPath, _, err = Remote.Resolve(ctx, target, opt)
+	res, err := Remote.Resolve(ctx, target, opt)
 	if err != nil {
-		return nil, "", "", true, err
+		return Result{}, err
 	}
 
-	return filesystem, prefix, downloadPath, true, nil
+	return res, nil
 }
 
 func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {
-	token := ""
 	asciiHostname, err := idna.ToASCII(hostname)
 	if err != nil {
 		return "", fmt.Errorf("could not convert hostname %s to a punycode encoded ASCII string so cannot find token for this registry", hostname)
 	}
 
 	envVar := fmt.Sprintf("TF_TOKEN_%s", strings.ReplaceAll(asciiHostname, ".", "_"))
-	token = os.Getenv(envVar)
+	token := os.Getenv(envVar)
 
 	// Dashes in the hostname can optionally be converted to double underscores
 	if token == "" {

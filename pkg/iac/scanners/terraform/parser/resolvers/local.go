@@ -13,21 +13,21 @@ type localResolver struct{}
 
 var Local = &localResolver{}
 
-func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
+func (r *localResolver) Resolve(_ context.Context, target fs.FS, opt Options) (Result, error) {
 	if !opt.hasPrefix(".", "..") {
-		return nil, "", "", false, nil
+		return Result{}, ErrNotApplicable
 	}
 	joined := path.Clean(path.Join(opt.ModulePath, opt.Source))
 	if _, err := fs.Stat(target, filepath.ToSlash(joined)); err == nil {
 		opt.Logger.Debug("Module resolved locally",
 			log.String("name", opt.Name), log.FilePath(joined),
 		)
-		return target, "", joined, true, nil
+		return Result{FS: target, Dir: joined}, nil
 	}
 
 	clean := path.Clean(opt.Source)
 	opt.Logger.Debug("Module resolved locally",
 		log.String("name", opt.Name), log.FilePath(clean),
 	)
-	return target, "", clean, true, nil
+	return Result{FS: target, Dir: clean}, nil
 }
