@@ -522,6 +522,49 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// A RapidFort rebuild whose release carries both ".rf" and a trailing
+			// Fedora dist tag (".rf.fcNN" / ".rfN.elN") is still an rf rebuild —
+			// trivy-db places its advisory in the family rf bucket, not in
+			// "rapidfort fedora NN" or "rapidfort Red Hat NN". Routing by the
+			// trailing dist tag would silently miss these; preferring "rf" when
+			// present finds them.
+			name:   "RedHat: rf package with trailing fc tag routes to the rapidfort Red Hat bucket",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rf1.fc43",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rf1.fc43",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rf1.fc43",
+					FixedVersion:     "7.76.1-26.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			// The package's own dist tag decides the bucket, not the image's OS version.
 			name:   "RedHat: cross-major .el8 package on RHEL 9 image routes to Red Hat 8 bucket",
 			baseOS: ftypes.RedHat,
@@ -853,6 +896,993 @@ func TestScanner_Detect(t *testing.T) {
 				},
 			},
 		},
+		{
+			// An el9 package in an Oracle image resolves to the Oracle bucket keyed
+			// by the image's trimmed OS major version.
+			name:   "Oracle: el9 curl routes to the Oracle bucket",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9.2", // trimmed to "9"
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el9",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "oracle-oval",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// A bare ".el" tag (no digit) names no release of its own, so the
+			// router has to fall back to osVer to pick the Oracle bucket.
+			// Mirrors the bare-.amzn case for the "amzn" half of the same arm.
+			name:   "Oracle: bare .el tag falls back to osVer",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "oracle-oval",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An fc39 package in an Oracle image routes to the shared Fedora bucket,
+			// exactly as it does in a Red Hat image.
+			name:   "Oracle: fc39 curl routes to the Fedora bucket",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.fc39",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.fc39",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-FC39-ONLY",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An rf package in an Oracle image resolves to the feed-scoped
+			// "rapidfort oracle" bucket, not the shared distribution-less
+			// "rapidfort" one. The fixture gives the two buckets different fix
+			// versions, so the expected 7.76.1-27.rf1 proves which was queried.
+			name:   "Oracle: rf package routes to the rapidfort oracle bucket",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rf1",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rf1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rf1",
+					FixedVersion:     "7.76.1-27.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "oracle-oval",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An el-tagged build names its own release, so an Oracle image whose
+			// OS version could not be detected still resolves to Oracle Linux 9
+			// rather than falling through to the versionless rebuild bucket,
+			// where it would be compared against rf fix versions.
+			name:   "Oracle: el9 package resolves by its dist tag when the OS version is unknown",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el9",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "oracle-oval",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// Rocky releases carry a plain el tag ("15.el8.rocky.6.3"), so the
+			// ".rocky" suffix must not divert the package away from the Rocky bucket.
+			name:   "Rocky: el8 curl routes to the Rocky bucket",
+			baseOS: ftypes.Rocky,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "8.9", // trimmed to "8"
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.61.1-15.el8.rocky.6.3",
+						SrcName:    "curl",
+						SrcVersion: "7.61.1-15.el8.rocky.6.3",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.61.1-15.el8.rocky.6.3",
+					FixedVersion:     "7.61.1-30.el8",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "rocky",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// Cross-major: an .el9 package inside a Rocky 8 image routes to
+			// "rapidfort rocky 9" by the dist tag, not "rapidfort rocky 8" by
+			// the image. Mirrors the RedHat cross-major case for the new RPM
+			// families added in this PR and exercises the "rapidfort rocky 9"
+			// fixture that would otherwise be unused.
+			name:   "Rocky: cross-major .el9 package on Rocky 8 image routes to rapidfort rocky 9",
+			baseOS: ftypes.Rocky,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "8",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el9",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "rocky",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			name:   "Rocky: fc39 curl routes to the Fedora bucket",
+			baseOS: ftypes.Rocky,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.fc39",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.fc39",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-FC39-ONLY",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An rf rebuild in a Rocky image resolves to the Rocky feed's own rf
+			// bucket, not the RedHat feed's — the fixtures give the two different
+			// fix versions, so a misroute fails on FixedVersion.
+			name:   "Rocky: rf package routes to the rapidfort rocky bucket",
+			baseOS: ftypes.Rocky,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rf1",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rf1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rf1",
+					FixedVersion:     "7.76.1-28.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "rocky",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An el9 package in an AlmaLinux image resolves to the Alma bucket keyed
+			// by the image's trimmed OS major version.
+			name:   "Alma: el9 curl routes to the Alma bucket",
+			baseOS: ftypes.Alma,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9.3", // trimmed to "9"
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el9",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "alma",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			name:   "Alma: fc39 curl routes to the Fedora bucket",
+			baseOS: ftypes.Alma,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.fc39",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.fc39",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-FC39-ONLY",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An rf rebuild in an Alma image resolves to the Alma feed's own rf
+			// bucket, not the RedHat feed's.
+			name:   "Alma: rf package routes to the rapidfort alma bucket",
+			baseOS: ftypes.Alma,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rf1",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rf1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rf1",
+					FixedVersion:     "7.76.1-29.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "alma",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// osVer is the raw OS.Name an AL2023 image reports; the scanner's
+			// Amazon trimmer strips the parenthesized trailer before routing.
+			name:   "Amazon: amzn2023 curl routes to the Amazon bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "8.4.0-1.amzn2023",
+						SrcName:    "curl",
+						SrcVersion: "8.4.0-1.amzn2023",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "8.4.0-1.amzn2023",
+					FixedVersion:     "8.5.0-1.amzn2023",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			name:   "Amazon: fc39 curl routes to the Fedora bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.fc39",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.fc39",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2024-FC39-ONLY",
+					InstalledVersion: "7.76.1-20.fc39",
+					FixedVersion:     "7.76.1-26.fc39",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "fedora",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An rf rebuild in an Amazon image resolves to the Amazon feed's own
+			// rf bucket, not the RedHat feed's.
+			name:   "Amazon: rf package routes to the rapidfort amazon bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rf1",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rf1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rf1",
+					FixedVersion:     "7.76.1-30.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// Amazon-flavored RapidFort rebuilds carry an ".rfal" dist tag in
+			// the live feed. The rf matcher has to recognize the letter suffix
+			// (not just digits) or the package falls through to the image's
+			// release bucket, where the advisory doesn't live. Uses the same
+			// family rf bucket as the ".rfN" case above — a routing miss would
+			// show up as no CVE found instead of a wrong fix version.
+			name:   "Amazon: .rfal rebuild routes to the rapidfort amazon bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-curl",
+						Version:    "7.76.1-20.rfal",
+						SrcName:    "rf-curl",
+						SrcVersion: "7.76.1-20.rfal",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.rfal",
+					FixedVersion:     "7.76.1-30.rf1",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// A bare ".amzn" tag (no digit) names no release of its own, so
+			// the router has to fall back to osVer to pick a bucket. Without
+			// the fallback, release stays empty and the AL2023 CVE is missed.
+			name:   "Amazon: bare .amzn tag falls back to osVer",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "8.4.0-1.amzn",
+						SrcName:    "curl",
+						SrcVersion: "8.4.0-1.amzn",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "8.4.0-1.amzn",
+					FixedVersion:     "8.5.0-1.amzn2023",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// An ".amzn2" tagged package in an AL2023 image routes by the tag's
+			// major ("2"), not the image's ("2023"). If amzn ever drops out of
+			// the shared case with el, it falls to the default branch and lands
+			// in the AL2023 bucket instead, where this openssl entry is absent.
+			name:   "Amazon: .amzn2 tag in an AL2023 image routes by the tag's major",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2023.12.20260831 (Amazon Linux)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "openssl",
+						Version:    "1.1.1k-7.amzn2",
+						SrcName:    "openssl",
+						SrcVersion: "1.1.1k-7.amzn2",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2024-AL2",
+					InstalledVersion: "1.1.1k-7.amzn2",
+					FixedVersion:     "1.1.1k-8.amzn2",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// AL2's OS.Name is "2 (Karoo)" — no dot, so version.Major alone
+			// can't trim it; the Amazon-specific trimmer must strip the trailer
+			// to "2" or an untagged package lands in a bucket trivy-db never
+			// writes. The AL2 bucket here carries a distinct CVE so a miss shows
+			// up as a wrong result, not a silent pass.
+			name:   "Amazon: AL2 untagged package routes to the AL2 bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2 (Karoo)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "openssl",
+						Version:    "1.1.1k-7",
+						SrcName:    "openssl",
+						SrcVersion: "1.1.1k-7",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2024-AL2",
+					InstalledVersion: "1.1.1k-7",
+					FixedVersion:     "1.1.1k-8.amzn2",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// Debian advisories are bucketed by OS major version, so "12.4" trims
+			// to the "rapidfort debian 12" bucket.
+			name:   "Debian: openssl routes to the Debian bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12.4", // trimmed to "12"
+				pkgs: []ftypes.Package{
+					{
+						Name:       "openssl",
+						Version:    "3.0.13-1~deb12u1",
+						SrcName:    "openssl",
+						SrcVersion: "3.0.13-1~deb12u1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2024-5535",
+					InstalledVersion: "3.0.13-1~deb12u1",
+					FixedVersion:     "3.0.14-1~deb12u2",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "debian",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityCritical.String(),
+					},
+				},
+			},
+		},
+		{
+			// An rfubu-marked package in a Debian image routes to the versionless
+			// "rapidfort debian" bucket, mirroring Ubuntu. The Debian feed carries
+			// no range identifiers, so the DB build attributes these by the same
+			// marker this routing decision reads.
+			name:   "Debian: rfubu package routes to the rapidfort debian bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12.4",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-git",
+						Version:    "0:2.43.0-11rfubu7.2+rf.1",
+						SrcName:    "rf-git",
+						SrcVersion: "0:2.43.0-11rfubu7.2+rf.1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-git",
+					VulnerabilityID:  "CVE-2025-27614",
+					InstalledVersion: "0:2.43.0-11rfubu7.2+rf.1",
+					FixedVersion:     "0:2.48.2-0rfubu",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "debian",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// A bare "+rf.N" revision carries no "rfubu" at all, yet is still a
+			// RapidFort rebuild and must reach the same bucket — the case an
+			// "rfubu" substring check would have sent to the distro bucket.
+			// Versions are the real rf-perl range, which fixes a "+rf" install
+			// with a ".rf" build.
+			name:   "Debian: +rf revision routes to the rapidfort debian bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-perl",
+						Version:    "0:5.40.1-12+rf.0",
+						SrcName:    "rf-perl",
+						SrcVersion: "0:5.40.1-12+rf.0",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-perl",
+					VulnerabilityID:  "CVE-2024-56406",
+					InstalledVersion: "0:5.40.1-12+rf.0",
+					FixedVersion:     "0:5.42.3-11.rf",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "debian",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// A plain Debian revision for an rf-named package must NOT cross-match
+			// the rf bucket: it has no marker, so it routes to the versioned
+			// bucket, where this package has no advisory. The version has to
+			// share the rf bucket range's epoch (0), otherwise dpkg comparison
+			// would filter it out before any routing bug could show up.
+			name:   "Debian: plain-debian revision for an rf package does not cross-match the rf bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-git",
+						Version:    "0:2.39.5-3",
+						SrcName:    "rf-git",
+						SrcVersion: "0:2.39.5-3",
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			// A family with no case in NewScanner registers no getters, so route
+			// returns an empty ecosystem and every package is skipped.
+			name:   "Photon: unsupported base OS yields no advisories and no error",
+			baseOS: ftypes.Photon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "5.0",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.86.0-1.ph5",
+						SrcName:    "curl",
+						SrcVersion: "7.86.0-1.ph5",
+					},
+				},
+			},
+			want: nil,
+		},
 	}
 
 	for _, tt := range tests {
@@ -884,6 +1914,11 @@ func TestSupplier(t *testing.T) {
 			wantNil: false,
 		},
 		{
+			name:    "RapidFort Debian image detected",
+			os:      ftypes.OS{Family: ftypes.Debian, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
+		},
+		{
 			name:    "RapidFort Alpine image detected",
 			os:      ftypes.OS{Family: ftypes.Alpine, Supplier: ftypes.SupplierRapidFort},
 			wantNil: false,
@@ -892,6 +1927,31 @@ func TestSupplier(t *testing.T) {
 			name:    "RapidFort RedHat image detected",
 			os:      ftypes.OS{Family: ftypes.RedHat, Supplier: ftypes.SupplierRapidFort},
 			wantNil: false,
+		},
+		{
+			name:    "RapidFort Oracle image detected",
+			os:      ftypes.OS{Family: ftypes.Oracle, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
+		},
+		{
+			name:    "RapidFort Rocky image detected",
+			os:      ftypes.OS{Family: ftypes.Rocky, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
+		},
+		{
+			name:    "RapidFort Alma image detected",
+			os:      ftypes.OS{Family: ftypes.Alma, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
+		},
+		{
+			name:    "RapidFort Amazon image detected",
+			os:      ftypes.OS{Family: ftypes.Amazon, Supplier: ftypes.SupplierRapidFort},
+			wantNil: false,
+		},
+		{
+			name:    "Oracle image without the RapidFort supplier returns nil",
+			os:      ftypes.OS{Family: ftypes.Oracle},
+			wantNil: true,
 		},
 		{
 			name:    "No RapidFort supplier returns nil",
@@ -905,7 +1965,7 @@ func TestSupplier(t *testing.T) {
 		},
 		{
 			name:    "RapidFort supplier on unsupported OS family returns nil",
-			os:      ftypes.OS{Family: ftypes.Debian, Supplier: ftypes.SupplierRapidFort},
+			os:      ftypes.OS{Family: ftypes.Photon, Supplier: ftypes.SupplierRapidFort},
 			wantNil: true,
 		},
 	}
@@ -1005,6 +2065,91 @@ func TestScanner_IsVulnerable(t *testing.T) {
 			want:             true,
 		},
 		{
+			name:             "Oracle: RPM comparison — installed below el9 fix",
+			baseOS:           ftypes.Oracle,
+			installedVersion: "7.76.1-20.el9",
+			vulnerableRanges: []string{">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"},
+			want:             true,
+		},
+		{
+			name:             "Oracle: RPM comparison — installed at el9 fix",
+			baseOS:           ftypes.Oracle,
+			installedVersion: "7.76.1-26.el9_3.3",
+			vulnerableRanges: []string{">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"},
+			patchedVersions:  []string{"7.76.1-26.el9_3.3"},
+			want:             false,
+		},
+		{
+			// The ".rocky.N" suffix is part of the RPM release, so RPM ordering
+			// must place 15.el8.rocky.6.3 below the 15.el8.rocky.7 fix.
+			name:             "Rocky: RPM comparison across the .rocky release suffix",
+			baseOS:           ftypes.Rocky,
+			installedVersion: "7.61.1-15.el8.rocky.6.3",
+			vulnerableRanges: []string{">= 0, < 7.61.1-15.el8.rocky.7"},
+			want:             true,
+		},
+		{
+			name:             "Rocky: not vulnerable — installed above the fix",
+			baseOS:           ftypes.Rocky,
+			installedVersion: "7.61.1-15.el8.rocky.8",
+			vulnerableRanges: []string{">= 0, < 7.61.1-15.el8.rocky.7"},
+			want:             false,
+		},
+		{
+			name:             "Alma: RPM comparison — installed below el9 fix",
+			baseOS:           ftypes.Alma,
+			installedVersion: "7.76.1-20.el9",
+			vulnerableRanges: []string{">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"},
+			want:             true,
+		},
+		{
+			name:             "Alma: not vulnerable — installed at el9 fix",
+			baseOS:           ftypes.Alma,
+			installedVersion: "7.76.1-26.el9_3.3",
+			vulnerableRanges: []string{">= 7.76.1-14.el9, < 7.76.1-26.el9_3.3"},
+			patchedVersions:  []string{"7.76.1-26.el9_3.3"},
+			want:             false,
+		},
+		{
+			name:             "Amazon: RPM comparison on amzn2023 releases",
+			baseOS:           ftypes.Amazon,
+			installedVersion: "8.4.0-1.amzn2023",
+			vulnerableRanges: []string{">= 0, < 8.5.0-1.amzn2023"},
+			want:             true,
+		},
+		{
+			name:             "Amazon: not vulnerable — installed at the fix",
+			baseOS:           ftypes.Amazon,
+			installedVersion: "8.5.0-1.amzn2023",
+			vulnerableRanges: []string{">= 0, < 8.5.0-1.amzn2023"},
+			patchedVersions:  []string{"8.5.0-1.amzn2023"},
+			want:             false,
+		},
+		{
+			name:             "Debian: DEB comparison — installed below the fix",
+			baseOS:           ftypes.Debian,
+			installedVersion: "7.88.1-10+deb12u5",
+			vulnerableRanges: []string{">= 0, < 7.88.1-10+deb12u6"},
+			want:             true,
+		},
+		{
+			name:             "Debian: not vulnerable — installed at the fix",
+			baseOS:           ftypes.Debian,
+			installedVersion: "7.88.1-10+deb12u6",
+			vulnerableRanges: []string{">= 0, < 7.88.1-10+deb12u6"},
+			patchedVersions:  []string{"7.88.1-10+deb12u6"},
+			want:             false,
+		},
+		{
+			// A family with no case in NewScanner still gets the placeholder DEB
+			// comparer, so version comparison works even with no getter registered.
+			name:             "Photon: unsupported base OS falls back to the DEB comparer",
+			baseOS:           ftypes.Photon,
+			installedVersion: "1.0",
+			vulnerableRanges: []string{">= 0, < 2.0"},
+			want:             true,
+		},
+		{
 			// A malformed range must be skipped, not abort the loop: a later
 			// valid range still decides the result.
 			name:             "Malformed range is skipped; a later valid range still matches",
@@ -1045,10 +2190,33 @@ func TestRpmDistTag(t *testing.T) {
 		{ver: "7.76.1-26.fc43", wantTag: "fc", wantNum: "43"},
 		{ver: "7.76.1-20.rf1", wantTag: "rf", wantNum: "1"},
 		{ver: "7.76.1-26.rf", wantTag: "rf", wantNum: ""},
-		// The last match wins, so a trailing tag beats an earlier one and beats
-		// an el/fc/rf substring caught inside another word.
+		// RapidFort Amazon Linux rebuilds carry an ".rfal" dist tag (seen on
+		// rf-expat, rf-bsdtar, rf-bsdcat and friends in the live feed). The
+		// trailing letters are a distro code, not a false "rf" prefix of
+		// something longer like ".rfc3339".
+		{ver: "3.8.9-10.rfal", wantTag: "rf", wantNum: ""},
+		{ver: "2.8.2-10.rfal", wantTag: "rf", wantNum: ""},
+		{ver: "8.5.0-1.amzn2023", wantTag: "amzn", wantNum: "2023"},
+		// \d* is greedy but stops at the next ".", so the digits group captures
+		// only the major before the dot-separated suffix.
+		{ver: "7.79.1-2.amzn2.0.1", wantTag: "amzn", wantNum: "2"},
+		// A dist tag with no major: route falls back to the image's own version.
+		{ver: "7.76.1-26.el", wantTag: "el", wantNum: ""},
+		// "rf" wins when present: trivy-db routes rf ranges by identifier, not by
+		// any trailing dist tag, so a ".rf.fcNN" package is an rf rebuild — not a
+		// Fedora one.
+		{ver: "10.47-11.rf.fc43", wantTag: "rf", wantNum: ""},
+		{ver: "7.76.1-26.rf1.el9", wantTag: "rf", wantNum: "1"},
+		// For non-rf tags, the last match wins — the dist tag is the trailing
+		// element of the release — and tag substrings caught inside another word
+		// (".rfc3339", ".fcgi", ".elastic", ".amznX") are rejected rather than
+		// treated as the dist tag; the fc case otherwise lands in a release-less
+		// "rapidfort fedora" bucket that never exists.
 		{ver: "1.0-1.rfc3339.el9", wantTag: "el", wantNum: "9"},
-		{ver: "7.76.1-26.rf1.el9", wantTag: "el", wantNum: "9"},
+		{ver: "7.76.1-26.rfc3339", wantTag: "", wantNum: ""},
+		{ver: "2.8.2-10.fcgi", wantTag: "", wantNum: ""},
+		{ver: "3.5.0-7.elastic", wantTag: "", wantNum: ""},
+		{ver: "8.1.2-5.amznX", wantTag: "", wantNum: ""},
 		// Untagged / non-RPM versions have no dist tag.
 		{ver: "1.0.0-1", wantTag: "", wantNum: ""},
 		{ver: "3.1.4-r1", wantTag: "", wantNum: ""},
@@ -1082,4 +2250,77 @@ func TestScanner_FilterPackages(t *testing.T) {
 
 	s := rapidfort.NewScanner(ftypes.RedHat)
 	assert.Equal(t, pkgs, s.FilterPackages(t.Context(), pkgs))
+}
+
+func TestDpkgHasRfMarker(t *testing.T) {
+	tests := []struct {
+		name string
+		ver  string
+		want bool
+	}{
+		// The three spellings the RapidFort dpkg feeds publish: "rfubu",
+		// "rfubuntu" and a bare "rf". Versions taken from the live feed.
+		{name: "rfubu suffix", ver: "0:2.46-10rfubu", want: true},
+		{name: "rfubu with point release", ver: "0:3.12.10-1rfubu.1", want: true},
+		{name: "rfubu with trailing rf build", ver: "0:2.43.0-11rfubu7.2+rf.1", want: true},
+		{name: "rfubu followed by a word boundary", ver: "0:3.6.1-10rfubu-go.1.23.6+rf.1", want: true},
+		{name: "rfubuntu spelling", ver: "0:1.2.3-12rfubuntu1", want: true},
+		{name: "rfubuntu with a dotted release", ver: "0:3.3.3-1rfubuntu0.24.04.1", want: true},
+		// The Debian feed spells its rebuilds "rfubu" too, and also ships bare
+		// "rf" revisions, so the marker cannot be a single fixed substring.
+		{name: "rfubu on the debian feed", ver: "0:1.19+dfsg-12rfubu", want: true},
+		{name: "bare rf after plus", ver: "0:3.2.2-1+rf.2", want: true},
+		{name: "bare rf after tilde", ver: "0:3.0.13-1rfubuntu3.1~rf.1", want: true},
+		{name: "bare rf as dotted suffix", ver: "0:2.43-14.rf", want: true},
+		{name: "bare rf on perl", ver: "0:5.40.1-10.rf", want: true},
+
+		// Plain distro revisions must stay on the distro track: a false positive
+		// here routes the package to the rf bucket and hides its advisories.
+		{name: "plain ubuntu revision", ver: "7.81.0-1ubuntu1.15", want: false},
+		{name: "plain debian revision", ver: "1:2.39.5-3", want: false},
+		{name: "debian backport", ver: "2.4.0-1~bpo11+1", want: false},
+		{name: "ubuntu security revision", ver: "0:2.46-3ubuntu2", want: false},
+		{name: "empty version", ver: "", want: false},
+		{name: "debian security revision", ver: "0:1.26.2-3+deb13u1", want: false},
+		// "rf" inside a longer word is not a marker: it must both start and end
+		// an element of the revision.
+		{name: "rfc in an upstream version", ver: "1.0-2.rfc3339", want: false},
+		{name: "rf preceded by a letter", ver: "1.0-1surf1", want: false},
+		// "ubu" takes a variant suffix: curl and libxml2 ship "rfubujl".
+		{name: "rfubu with a variant suffix", ver: "0:1.2.3-3rfubujl", want: true},
+		// A spelling with no "ubu" must not match on its "rf" prefix.
+		{name: "rfdebian is not a published spelling", ver: "0:3.2.1-4rfdebian", want: false},
+		{name: "rfdeb is not a published spelling", ver: "0:3.2.1-4rfdebjl", want: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, rapidfort.DpkgHasRfMarker(tt.ver))
+		})
+	}
+}
+
+// TestVersionTrimmer_Amazon pins the Amazon trimmer against both OS.Name shapes
+// the scanner can see: AL2023's dotted release ("2023.12.20260831 (Amazon Linux)")
+// and AL2's bare major with a trailing parenthesized nickname ("2 (Karoo)").
+// version.Major alone splits on the first "." and leaves AL2 as "2 (Karoo)",
+// which routes to a bucket trivy-db never writes and silently misses CVEs.
+func TestVersionTrimmer_Amazon(t *testing.T) {
+	s := rapidfort.NewScanner(ftypes.Amazon)
+	tests := []struct {
+		name string
+		in   string
+		want string
+	}{
+		{name: "AL2023 full OS.Name", in: "2023.12.20260831 (Amazon Linux)", want: "2023"},
+		{name: "AL2 Karoo", in: "2 (Karoo)", want: "2"},
+		{name: "already trimmed major", in: "2023", want: "2023"},
+		{name: "empty", in: "", want: ""},
+		{name: "whitespace only", in: "   ", want: ""},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, s.VersionTrimmer(tt.in))
+		})
+	}
 }
