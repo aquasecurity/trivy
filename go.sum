@@ -87,8 +87,6 @@ github.com/DATA-DOG/go-sqlmock v1.5.2 h1:OcvFkGmslmlZibjAjaHm3L//6LiuBgolP7Oputl
 github.com/DATA-DOG/go-sqlmock v1.5.2/go.mod h1:88MAG/4G7SMwSE3CeA0ZKzrT5CiOU3OJ+JlNzwDqpNU=
 github.com/DataDog/zstd v1.5.5 h1:oWf5W7GtOLgp6bciQYDmhHHjdhYkALu6S/5Ni9ZgSvQ=
 github.com/DataDog/zstd v1.5.5/go.mod h1:g4AWEaM3yOg3HYfnJ3YIawPnVdXJh9QME85blwSAmyw=
-github.com/DmitriyLewen/go-npm-version v0.0.0-20260921133346-2f96961ba5a7 h1:5KtLOjGqFp5G116/qo27vKGNfQhsM/OfV0L1UU6GffE=
-github.com/DmitriyLewen/go-npm-version v0.0.0-20260921133346-2f96961ba5a7/go.mod h1:DXyKqRe2yb83peANMjQr8dGDkHanEgoFv8BOQdWlSUQ=
 github.com/GoogleCloudPlatform/docker-credential-gcr/v2 v2.2.1 h1:hlWYvaYrCCH1nTnUf39MdE+FOEmf2GYUYNF4ED9S3S0=
 github.com/GoogleCloudPlatform/docker-credential-gcr/v2 v2.2.1/go.mod h1:tkzPxS3e4iTgbA4PWtc84B3iwgLH+Shjtjgn134AHd4=
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/detectors/gcp v1.33.0 h1:l7+6kwRMJNwdCvYdDl7Eax+wzEYHSnNY7zrrfbhDdTA=
@@ -151,6 +149,8 @@ github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986 h1:2a30
 github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986/go.mod h1:NT+jyeCzXk6vXR5MTkdn4z64TgGfE5HMLC8qfj5unl8=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce h1:QgBRgJvtEOBtUXilDb1MLi1p1MWoyFDXAu5DEUl5nwM=
 github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce/go.mod h1:HXgVzOPvXhVGLJs4ZKO817idqr/xhwsTcj17CLYY74s=
+github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11 h1:9Uynd6NSMYrNDj4ImDJsS/bdC8rSUsQSNEkUhlu09gI=
+github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11/go.mod h1:DXyKqRe2yb83peANMjQr8dGDkHanEgoFv8BOQdWlSUQ=
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4 h1:QC8nsF3LvAGHUxkr5bvcekaUQPE9Zk4jyMugyg5Fxy0=
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=

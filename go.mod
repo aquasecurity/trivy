@@ -16,7 +16,7 @@ require (
 	github.com/apparentlymart/go-cidr v1.1.1
 	github.com/aquasecurity/bolt-fixtures v0.0.0-20200903104109-d34e7f983986
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
-	github.com/aquasecurity/go-npm-version v0.0.2
+	github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11
 	github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4
 	github.com/aquasecurity/go-version v0.0.1
 	github.com/aquasecurity/iamgo v0.0.10
@@ -488,5 +488,3 @@ tool (
 	golang.org/x/tools/cmd/goyacc
 	sigs.k8s.io/kind
 )
-
-replace github.com/aquasecurity/go-npm-version => github.com/DmitriyLewen/go-npm-version v0.0.0-20260921133346-2f96961ba5a7
