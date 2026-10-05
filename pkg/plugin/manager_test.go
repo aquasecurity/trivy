@@ -51,6 +51,28 @@ installed:
 	require.NoError(t, err)
 }
 
+func TestNewManager(t *testing.T) {
+	t.Run("creates the plugin root", func(t *testing.T) {
+		home := t.TempDir()
+		t.Setenv("XDG_DATA_HOME", home)
+
+		m, err := plugin.NewManager()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
+
+		assert.DirExists(t, filepath.Join(home, ".trivy", "plugins"))
+	})
+
+	t.Run("data home is a file", func(t *testing.T) {
+		f := filepath.Join(t.TempDir(), "not-a-dir")
+		require.NoError(t, os.WriteFile(f, []byte("x"), 0o600))
+		t.Setenv("XDG_DATA_HOME", f)
+
+		_, err := plugin.NewManager()
+		require.ErrorContains(t, err, "failed to")
+	})
+}
+
 func TestManager_Run(t *testing.T) {
 	if runtime.GOOS == "windows" {
 		// the test.sh script can't be run on windows so skipping
@@ -229,7 +251,10 @@ func TestManager_Uninstall(t *testing.T) {
 		require.NoError(t, err)
 
 		// Uninstall the plugin
-		err = plugin.NewManager().Uninstall(ctx, pluginName)
+		m, err := plugin.NewManager()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
+		err = m.Uninstall(ctx, pluginName)
 		require.NoError(t, err)
 		assert.NoDirExists(t, pluginDir)
 	})
@@ -239,9 +264,29 @@ func TestManager_Uninstall(t *testing.T) {
 		buf := bytes.NewBuffer(nil)
 		slog.SetDefault(slog.New(log.NewHandler(buf, &log.Options{Level: log.LevelInfo})))
 
-		err := plugin.NewManager().Uninstall(ctx, pluginName)
+		m, err := plugin.NewManager()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
+		err = m.Uninstall(ctx, pluginName)
 		require.NoError(t, err)
 		assert.Equal(t, "2021-08-25T12:20:30Z\tERROR\t[plugin] No such plugin\n", buf.String())
+	})
+
+	t.Run("escaping name is rejected", func(t *testing.T) {
+		// A sentinel file outside the plugin root must not be removed.
+		sentinelDir := filepath.Join(tempDir, ".trivy", "secret")
+		require.NoError(t, os.MkdirAll(sentinelDir, 0o755))
+		sentinel := filepath.Join(sentinelDir, "keep.txt")
+		require.NoError(t, os.WriteFile(sentinel, []byte("keep"), 0o600))
+
+		// "../secret" escapes the plugin root, so os.Root rejects it: Uninstall
+		// surfaces the error (not "No such plugin") and removes nothing.
+		m, err := plugin.NewManager()
+		require.NoError(t, err)
+		t.Cleanup(func() { _ = m.Close() })
+		err = m.Uninstall(ctx, "../secret")
+		require.Error(t, err)
+		assert.FileExists(t, sentinel)
 	})
 }
 
@@ -268,7 +313,9 @@ description: A simple test plugin`
 	require.NoError(t, err)
 
 	var got bytes.Buffer
-	manager := plugin.NewManager(plugin.WithWriter(&got))
+	manager, err := plugin.NewManager(plugin.WithWriter(&got))
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = manager.Close() })
 
 	// Get Information for the plugin
 	err = manager.Information(pluginName)
@@ -289,10 +336,9 @@ Plugin: test_plugin
 
 func TestManager_LoadAll(t *testing.T) {
 	tests := []struct {
-		name    string
-		dir     string
-		want    []plugin.Plugin
-		wantErr string
+		name string
+		dir  string
+		want []plugin.Plugin
 	}{
 		{
 			name: "happy path",
@@ -317,21 +363,14 @@ func TestManager_LoadAll(t *testing.T) {
 				},
 			},
 		},
-		{
-			name:    "sad path",
-			dir:     "sad",
-			wantErr: "failed to read",
-		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			t.Setenv("XDG_DATA_HOME", tt.dir)
-
-			got, err := plugin.NewManager().LoadAll(t.Context())
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-				return
-			}
+			m, err := plugin.NewManager()
+			require.NoError(t, err)
+			t.Cleanup(func() { _ = m.Close() })
+			got, err := m.LoadAll(t.Context())
 			require.NoError(t, err)
 			require.Len(t, got, len(tt.want))
 			for i := range tt.want {
@@ -358,13 +397,15 @@ func TestManager_Upgrade(t *testing.T) {
 	})
 
 	ctx := t.Context()
-	m := plugin.NewManager()
+	m, err := plugin.NewManager()
+	require.NoError(t, err)
+	t.Cleanup(func() { _ = m.Close() })
 
 	// verify initial version
 	verifyVersion(t, ctx, m, pluginName, pluginVersion)
 
 	// Upgrade the existing plugin
-	err := m.Upgrade(ctx, nil)
+	err = m.Upgrade(ctx, nil)
 	require.NoError(t, err)
 
 	// verify plugin updated

@@ -2,13 +2,10 @@ package ospkg
 
 import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
-	"github.com/aquasecurity/trivy/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-// NewTestDetector creates a Detector with custom target and driver for testing.
-func NewTestDetector(target types.ScanTarget, drv driver.Driver) *Detector {
-	return &Detector{
-		target: target,
-		driver: drv,
-	}
-}
+// Bridge to expose ospkg internals to tests in the ospkg_test package.
+
+// Drivers exports drivers for testing.
+var Drivers = func() map[ftypes.OSType]driver.Driver { return drivers }

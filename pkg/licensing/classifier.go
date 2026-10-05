@@ -15,6 +15,10 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 )
 
+// LicenseFileNames are the base names (case-insensitive, without extension) of files
+// commonly used to hold a license, e.g. LICENSE, LICENCE, COPYRIGHT.
+var LicenseFileNames = set.NewCaseInsensitive("license", "licence", "copyright")
+
 var (
 	cf             *classifier.Classifier
 	classifierOnce sync.Once

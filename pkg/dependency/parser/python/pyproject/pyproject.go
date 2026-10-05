@@ -70,15 +70,22 @@ func (d *Dependencies) UnmarshalTOML(data any) error {
 		for i := range deps {
 			dep, ok := deps[i].(string)
 			if !ok {
-				return xerrors.Errorf("dependencies must be string, but got: %T", deps[i])
+				return xerrors.Errorf("dependencies must be a string, but got: %T", deps[i])
 			}
 			// There are some formats:
 			// e.g. `Flask == 1.1.4`, `Flask==1.1.4`, `Flask(>= 1.0.0)`, `pluggy[pre-commit,tox] (==0.13.1)`, etc.
 			dep = strings.NewReplacer(">", " ", "<", " ", "=", " ", "(", " ", "[", " ").Replace(dep)
-			d.Set.Append(strings.Fields(dep)[0]) // Save only name
+			fields := strings.Fields(dep)
+			if len(fields) == 0 {
+				// An entry that carries no name, e.g. `dependencies = [""]`.
+				// cf. #10976
+				continue
+			}
+			// Save only the name, normalized (PEP 503) to match the names from poetry.lock/pylock.toml.
+			d.Set.Append(python.NormalizePkgName(fields[0], true))
 		}
 	default:
-		return xerrors.Errorf("dependencies must be map, but got: %T", data)
+		return xerrors.Errorf("dependencies must be a map, but got: %T", data)
 	}
 
 	return nil

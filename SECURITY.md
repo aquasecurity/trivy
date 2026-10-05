@@ -7,6 +7,17 @@ As such, there is no supportability commitment. The maintainers will do the best
 
 ## Reporting a Vulnerability
 
+Before submitting a report, please review the [project scope and principles](https://trivy.dev/docs/latest/community/principles/#intentional-attacks) and the relevant security considerations:
+
+- [Configuration files](https://trivy.dev/docs/latest/guide/configuration/#security-considerations)
+- [Report templates](https://trivy.dev/docs/latest/guide/configuration/reporting/#custom-template)
+- [Client/server deployments](https://trivy.dev/docs/latest/guide/references/modes/client-server/#security-considerations)
+- [Plugins](https://trivy.dev/docs/latest/guide/plugin/#security-considerations) and [modules](https://trivy.dev/docs/latest/guide/advanced/modules/#overview)
+- [Terraform remote modules](https://trivy.dev/docs/latest/guide/coverage/iac/terraform/#remote-modules) and [filesystem functions](https://trivy.dev/docs/latest/guide/coverage/iac/terraform/#filesystem-functions)
+- [Registry credentials](https://trivy.dev/docs/latest/guide/advanced/private-registries/#passing-credentials) and [Maven mirror credentials](https://trivy.dev/docs/latest/guide/coverage/language/java/#config-file-mirrors)
+- [VEX attestations](https://trivy.dev/docs/latest/guide/supply-chain/vex/oci/#step-3-use-vex-attestation-with-trivy)
+- [HTTP request/response tracing](https://trivy.dev/docs/latest/guide/references/troubleshooting/#http-requestresponse-tracing)
+
 Please use the "Private vulnerability reporting" feature in the GitHub repository (under the "Security" tab).  
 
 ⚠️ **Important:**  

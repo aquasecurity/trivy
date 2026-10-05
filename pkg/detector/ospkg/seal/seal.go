@@ -66,7 +66,7 @@ func NewScanner(baseOS ftypes.OSType) *Scanner {
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
 	default:
-		// Should never happen as it's validated in the provider
+		// Should never happen as it's validated in the supplier
 		scanner = debian.NewScanner()
 		comparer = version.NewDEBComparer()
 		vsg = seal.NewVulnSrcGetter(ecosystem.Debian)
@@ -183,6 +183,17 @@ func (s *Scanner) checkConstraints(ctx context.Context, installedVersion string,
 // Seal creates fixes for EOL distributions, so we assume all versions are supported.
 func (s *Scanner) IsSupportedVersion(_ context.Context, _ ftypes.OSType, _ string) bool {
 	return true
+}
+
+var _ driver.PackageFilter = (*Scanner)(nil)
+
+// FilterPackages drops third-party packages from the base OS packages only.
+// Seal packages are left as they are, because the Seal feed may have advisories for them.
+func (s *Scanner) FilterPackages(ctx context.Context, pkgs []ftypes.Package) []ftypes.Package {
+	sealPkgs, baseOSPkgs := lo.FilterReject(pkgs, func(pkg ftypes.Package, _ int) bool {
+		return sealPkg(pkg)
+	})
+	return append(sealPkgs, driver.DropThirdPartyPackages(ctx, baseOSPkgs)...)
 }
 
 func sealPkg(pkg ftypes.Package) bool {

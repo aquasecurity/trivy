@@ -1,0 +1,22 @@
+- bucket: "echo pip::Echo OSV"
+  pairs:
+    - bucket: wheel
+      pairs:
+        - key: CVE-2026-24049
+          value:
+            VendorIDs:
+              - ECHO-3d34-cec5-cf72
+            PatchedVersions:
+              - "0.45.1+echo.2"
+            VulnerableVersions:
+              - "<0.45.1+echo.2"
+    - bucket: torch
+      pairs:
+        - key: CVE-2025-3000
+          value:
+            VendorIDs:
+              - ECHO-9320-f34e-79db
+            PatchedVersions:
+              - "2.13.0"
+            VulnerableVersions:
+              - "<2.13.0"

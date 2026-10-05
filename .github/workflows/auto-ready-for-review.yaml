@@ -5,7 +5,7 @@ on:
   # does not check out any PR code — it only reads PR metadata via the GitHub API and marks
   # the PR as ready for review. No code execution from forks occurs.
   workflow_run: # zizmor: ignore[dangerous-triggers]
-    workflows: ["Test", "Validate PR Title"]
+    workflows: ["Test", "Validate PR Title", "Test docs"]
     types: [completed]
 
 jobs:

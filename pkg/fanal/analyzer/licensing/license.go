@@ -69,12 +69,6 @@ var (
 		".vue",
 		".zsh",
 	)
-
-	acceptedFileNames = set.NewCaseInsensitive(
-		"license",
-		"licence",
-		"copyright",
-	)
 )
 
 func init() {
@@ -126,7 +120,7 @@ func (a *licenseFileAnalyzer) Required(filePath string, _ os.FileInfo) bool {
 		return true
 	}
 
-	return acceptedFileNames.Contains(filepath.Base(filePath))
+	return licensing.LicenseFileNames.Contains(filepath.Base(filePath))
 }
 
 func isHumanReadable(content xio.ReadSeekerAt, fileSize int64) (bool, error) {

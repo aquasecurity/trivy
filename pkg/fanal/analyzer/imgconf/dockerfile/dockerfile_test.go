@@ -102,7 +102,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Message:   "Consider using 'COPY foo.txt /' command instead of 'ADD foo.txt /'",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:                 "DS-0005",
-								Aliases:            []string{"AVD-DS-0005", "DS005", "use-copy-over-add"},
+								Aliases:            []string{"AVD-DS-0005", "DS005", "use-copy-over-add", "docker-use-copy-over-add"},
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -189,7 +189,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Message:   "Consider using 'COPY ./foo.txt /foo.txt' command instead of 'ADD ./foo.txt /foo.txt'",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:                 "DS-0005",
-								Aliases:            []string{"AVD-DS-0005", "DS005", "use-copy-over-add"},
+								Aliases:            []string{"AVD-DS-0005", "DS005", "use-copy-over-add", "docker-use-copy-over-add"},
 								Type:               "Dockerfile Security Check",
 								Title:              "ADD instead of COPY",
 								Description:        "You should use COPY instead of ADD unless you want to extract a tar file. Note that an ADD command will extract a tar file, which adds the risk of Zip-based vulnerabilities. Accordingly, it is advised to use a COPY command, which does not extract tar files.",
@@ -263,7 +263,7 @@ func Test_historyAnalyzer_Analyze(t *testing.T) {
 							Message:   "Specify at least 1 USER command in Dockerfile with non-root user as argument",
 							PolicyMetadata: types.PolicyMetadata{
 								ID:                 "DS-0002",
-								Aliases:            []string{"AVD-DS-0002", "DS002", "least-privilege-user"},
+								Aliases:            []string{"AVD-DS-0002", "DS002", "least-privilege-user", "docker-least-privilege-user"},
 								Type:               "Dockerfile Security Check",
 								Title:              "Image user should not be 'root'",
 								Description:        "Running containers with 'root' user can lead to a container escape situation. It is a best practice to run containers as non-root users, which can be done by adding a 'USER' statement to the Dockerfile.",
@@ -457,6 +457,17 @@ ADD file:24d346633efc860b5011cefa5c0af73006e74e5dfb3c5c0e9cb0e90a927931e1 readme
 HEALTHCHECK NONE
 ENTRYPOINT ["/bin/sh"]
 `,
+		},
+		{
+			name: "healthcheck history without resolved config",
+			input: &v1.ConfigFile{
+				History: []v1.History{
+					{
+						CreatedBy: "HEALTHCHECK NONE",
+					},
+				},
+			},
+			expected: "HEALTHCHECK NONE\n",
 		},
 		{
 			name: "legacy env format",

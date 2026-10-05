@@ -3,6 +3,7 @@ package secret_test
 import (
 	"cmp"
 	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -218,6 +219,31 @@ func TestSecretAnalyzer(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+// TestSecretAnalyzerInitReParseGuard checks that a repeated Init() with a
+// non-canonical config path (e.g. one containing "/./") hits the re-init
+// guard and does not re-parse the config.
+func TestSecretAnalyzerInitReParseGuard(t *testing.T) {
+	dir := t.TempDir()
+	configPath := filepath.Join(dir, "trivy-secret.yaml")
+	require.NoError(t, os.WriteFile(configPath, []byte("{}\n"), 0o600))
+
+	// Non-canonical form of the same path (contains "/./"), which Init normalizes via cleanPath.
+	nonCanonical := filepath.Dir(configPath) + string(filepath.Separator) + "." + string(filepath.Separator) + filepath.Base(configPath)
+
+	opt := analyzer.AnalyzerOptions{
+		SecretScannerOption: analyzer.SecretScannerOption{ConfigPath: nonCanonical},
+	}
+
+	a := secret.SecretAnalyzer{}
+	require.NoError(t, a.Init(opt))
+
+	// Break the config so any re-parse would fail with a decode error.
+	require.NoError(t, os.WriteFile(configPath, []byte("- not\n- a\n- mapping\n"), 0o600))
+
+	// The second Init() must hit the re-init guard and skip parsing the (now broken) file.
+	require.NoError(t, a.Init(opt), "second Init() re-parsed the config: the re-init guard did not fire for a non-canonical path")
 }
 
 func TestSecretRequire(t *testing.T) {

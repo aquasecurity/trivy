@@ -10,16 +10,23 @@ func getInstances(ctx parser.FileContext) (instances []ec2.Instance) {
 	instanceResources := ctx.GetResourcesByType("AWS::EC2::Instance")
 
 	for _, r := range instanceResources {
+		metadataOptions := ec2.MetadataOptions{
+			Metadata:     r.Metadata(),
+			HttpTokens:   iacTypes.StringDefault("optional", r.Metadata()),
+			HttpEndpoint: iacTypes.StringDefault("enabled", r.Metadata()),
+		}
+		if opts := r.GetProperty("MetadataOptions"); opts.IsNotNil() {
+			metadataOptions = ec2.MetadataOptions{
+				Metadata:     opts.Metadata(),
+				HttpTokens:   opts.GetStringProperty("HttpTokens", "optional"),
+				HttpEndpoint: opts.GetStringProperty("HttpEndpoint", "enabled"),
+			}
+		}
+
 		instance := ec2.Instance{
-			Metadata: r.Metadata(),
-			// metadata not supported by CloudFormation at the moment -
-			// https://github.com/aws-cloudformation/cloudformation-coverage-roadmap/issues/655
-			MetadataOptions: ec2.MetadataOptions{
-				Metadata:     r.Metadata(),
-				HttpTokens:   iacTypes.StringDefault("optional", r.Metadata()),
-				HttpEndpoint: iacTypes.StringDefault("enabled", r.Metadata()),
-			},
-			UserData: r.GetStringProperty("UserData"),
+			Metadata:        r.Metadata(),
+			MetadataOptions: metadataOptions,
+			UserData:        r.GetStringProperty("UserData"),
 		}
 
 		if launchTemplate, ok := findRelatedLaunchTemplate(ctx, r); ok {

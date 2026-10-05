@@ -3,6 +3,7 @@ package applier
 import (
 	"cmp"
 	"fmt"
+	"slices"
 	"strings"
 	"time"
 
@@ -10,7 +11,9 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
@@ -93,6 +96,18 @@ func lookupOriginLayerForLib(filePath string, lib ftypes.Package, layers []ftype
 	return "", ""
 }
 
+func lookupOriginLayerForCustomResource(customResource ftypes.CustomResource, layers []ftypes.BlobInfo) (string, string) {
+	for _, layer := range layers {
+		for _, layerCR := range layer.CustomResources {
+			if customResource.FilePath != layerCR.FilePath || customResource.Type != layerCR.Type {
+				continue
+			}
+			return layer.Digest, layer.DiffID
+		}
+	}
+	return "", ""
+}
+
 // ApplyLayers returns the merged layer
 // nolint: gocyclo
 func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
@@ -158,13 +173,24 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			nestedMap.SetByString(key, sep, license)
 		}
 
+		// A file holds several assets, so they are stored as a group under the file path.
+		// Assets found in an upper version of a file replace all the assets of the lower one.
+		for filePath, assets := range lo.GroupBy(layer.CryptoAssets, func(asset ftypes.CryptoAsset) string {
+			return asset.FilePath
+		}) {
+			for i := range assets {
+				assets[i].Layer = ftypes.Layer{
+					Digest: layer.Digest,
+					DiffID: layer.DiffID,
+				}
+			}
+			key := fmt.Sprintf("%s/type:crypto", filePath)
+			nestedMap.SetByString(key, sep, assets)
+		}
+
 		// Apply custom resources
 		for _, customResource := range layer.CustomResources {
 			key := fmt.Sprintf("%s/custom:%s", customResource.FilePath, customResource.Type)
-			customResource.Layer = ftypes.Layer{
-				Digest: layer.Digest,
-				DiffID: layer.DiffID,
-			}
 			nestedMap.SetByString(key, sep, customResource)
 		}
 	}
@@ -180,11 +206,17 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
 		case ftypes.LicenseFile:
 			mergedLayer.Licenses = append(mergedLayer.Licenses, v)
+		case []ftypes.CryptoAsset:
+			mergedLayer.CryptoAssets = append(mergedLayer.CryptoAssets, v...)
 		case ftypes.CustomResource:
 			mergedLayer.CustomResources = append(mergedLayer.CustomResources, v)
 		}
 		return nil
 	})
+
+	// A key file states nothing about where the other half of the pair was found, so the
+	// two are linked here, once every layer has been applied.
+	crypto.LinkKeyPairs(mergedLayer.CryptoAssets)
 
 	for _, s := range secretsMap {
 		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
@@ -241,6 +273,29 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	// Filter OS packages with mismatched PURL namespace
 	mergedLayer.Packages = filterMismatchedOSPkgs(mergedLayer.OS.Family, mergedLayer.Packages)
 
+	// If an image contains embedded per-package SBOMs (e.g. Chainguard/Wolfi
+	// /var/lib/db/sbom/*.spdx.json), both the OS package-DB analyzer (apk/dpkg/rpm) and
+	// the SBOM analyzer report the same OS package, colliding on the same dedup key.
+	// To get a deterministic result, we sort packages before the deduplication below,
+	// giving packages from the OS package managers priority, because:
+	//   1. SBOM-derived packages may carry less complete metadata (e.g. missing source
+	//      info, so SrcName falls back to Name).
+	//   2. package-manager DB files are standardized and hold authoritative package
+	//      info (e.g. source/origin from apk o: / dpkg Source: / rpm source RPM).
+	// cf. https://github.com/aquasecurity/trivy/issues/10778
+	slices.SortStableFunc(mergedLayer.Packages, func(a, b ftypes.Package) int {
+		switch {
+		case a.AnalyzedBy == b.AnalyzedBy:
+			return 0
+		case a.AnalyzedBy == analyzer.TypeSBOM:
+			return 1
+		case b.AnalyzedBy == analyzer.TypeSBOM:
+			return -1
+		default:
+			return 0
+		}
+	})
+
 	// De-duplicate same debian packages from different dirs
 	// cf. https://github.com/aquasecurity/trivy/issues/8297
 	mergedLayer.Packages = xslices.ZeroToNil(lo.UniqBy(mergedLayer.Packages, func(pkg ftypes.Package) string {
@@ -263,6 +318,17 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 				app.Packages[i].Identifier.PURL = newPURL(app.Type, types.Metadata{}, pkg)
 			}
 			app.Packages[i].Identifier.UID = dependency.UID(app.FilePath, pkg)
+		}
+	}
+
+	for i, customResource := range mergedLayer.CustomResources {
+		// Skip lookup if the layer is already set.
+		if lo.IsEmpty(customResource.Layer) {
+			originLayerDigest, originLayerDiffID := lookupOriginLayerForCustomResource(customResource, layers)
+			mergedLayer.CustomResources[i].Layer = ftypes.Layer{
+				Digest: originLayerDigest,
+				DiffID: originLayerDiffID,
+			}
 		}
 	}
 

@@ -9,6 +9,19 @@ import (
 )
 
 func TestParseIgnoreFile(t *testing.T) {
+	t.Run("empty path disables the default ignore file", func(t *testing.T) {
+		t.Chdir(t.TempDir())
+		require.NoError(t, os.WriteFile(".trivyignore", []byte("CVE-2024-1234\n"), 0o600))
+
+		got, err := ParseIgnoreFile(t.Context(), ".trivyignore")
+		require.NoError(t, err)
+		assert.Len(t, got.Vulnerabilities, 1)
+
+		got, err = ParseIgnoreFile(t.Context(), "")
+		require.NoError(t, err)
+		assert.Empty(t, got)
+	})
+
 	t.Run("happy path valid config file", func(t *testing.T) {
 		got, err := ParseIgnoreFile(t.Context(), "testdata/.trivyignore")
 		require.NoError(t, err)

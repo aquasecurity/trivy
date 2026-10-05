@@ -21,10 +21,12 @@ jobs:
       # would not run CI — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Release Please
         id: release
@@ -41,13 +43,17 @@ jobs:
       # would not run CI — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
-      - name: Install Release Please CLI
-        run: npm install release-please -g
+      # TODO: use googleapis/release-please-action once #1220 is fixed.
+      # cf. https://github.com/googleapis/release-please-action/issues/1220
+      - name: Install Release Please CLI # zizmor: ignore[adhoc-packages]
+        run: npm install release-please@17.11.1 -g
 
       - name: Release Please
         env:
@@ -61,7 +67,8 @@ jobs:
 
   release-tag:
     runs-on: ubuntu-2404-2core
-    if: ${{ startsWith(github.event.head_commit.message, 'release:') }}
+    # Skip the branch-creation push (created == true) to avoid re-running on the duplicate tag.
+    if: ${{ startsWith(github.event.head_commit.message, 'release:') && !github.event.created }}
     steps:
       # Since skip-github-release is specified, the outputs of googleapis/release-please-action cannot be used.
       # Therefore, we need to parse the version ourselves.
@@ -71,19 +78,22 @@ jobs:
         env:
           COMMIT_MESSAGE: ${{ github.event.head_commit.message }}
         run: |
-          echo "version=$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "pr_number=$( echo "$COMMIT_MESSAGE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
-          echo "release_branch=release/v$( echo "$COMMIT_MESSAGE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          # Take only the first line to avoid git trailers (e.g. Co-authored-by) breaking $GITHUB_OUTPUT
+          FIRST_LINE=${COMMIT_MESSAGE%%$'\n'*}
+          echo "version=$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "pr_number=$( echo "$FIRST_LINE" | sed 's/.*(\#\([0-9]\+\)).*$/\1/' )" >> $GITHUB_OUTPUT
+          echo "release_branch=release/v$( echo "$FIRST_LINE" | sed 's/^release: v\([0-9]\+\.[0-9]\+\).*$/\1/' )" >> $GITHUB_OUTPUT
 
       # GITHUB_TOKEN cannot trigger the release workflow on the created tag —
       # generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
         if: ${{ steps.extract_info.outputs.version }}
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
 
       - name: Tag release
         if: ${{ steps.extract_info.outputs.version }}
@@ -107,7 +117,8 @@ jobs:
         env:
           RELEASE_BRANCH: ${{ steps.extract_info.outputs.release_branch }}
         with:
-          github-token: ${{ secrets.GITHUB_TOKEN }} # Should not trigger the workflow again
+          # GITHUB_TOKEN cannot be a ruleset bypass actor; use the App token to bypass the merge queue rule.
+          github-token: ${{ steps.app-token.outputs.token }}
           script: |
             const releaseBranch = process.env.RELEASE_BRANCH;
             await github.rest.git.createRef({

@@ -63,7 +63,6 @@ func modifyManifest(t *testing.T, worktree, version string) {
 
 func TestManager_Install(t *testing.T) {
 	gs := setupGitRepository(t, "test_plugin", "testdata/test_plugin/test_plugin")
-	t.Cleanup(gs.Close)
 
 	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		zr := zip.NewWriter(w)
@@ -190,6 +189,16 @@ func TestManager_Install(t *testing.T) {
 			pluginName: "testdata/no_yaml",
 			wantErr:    "file open error",
 		},
+		{
+			name:       "name escapes the root",
+			pluginName: "testdata/escaping_name",
+			wantErr:    "failed to create the plugin directory",
+		},
+		{
+			name:       "absolute name escapes the root",
+			pluginName: "testdata/absolute_name",
+			wantErr:    "failed to create the plugin directory",
+		},
 	}
 
 	for _, tt := range tests {
@@ -214,7 +223,11 @@ func TestManager_Install(t *testing.T) {
 
 			ctx := clock.With(t.Context(), time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC))
 
-			got, err := plugin.NewManager(plugin.WithLogger(logger)).Install(ctx, tt.pluginName, plugin.Options{
+			manager, err := plugin.NewManager(plugin.WithLogger(logger))
+			require.NoError(t, err)
+			t.Cleanup(func() { _ = manager.Close() })
+
+			got, err := manager.Install(ctx, tt.pluginName, plugin.Options{
 				Platform: ftypes.Platform{
 					Platform: &v1.Platform{
 						Architecture: "amd64",

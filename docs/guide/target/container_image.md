@@ -15,6 +15,7 @@ Trivy scans the files inside container images for
 - Misconfigurations
 - Secrets
 - Licenses
+- Cryptographic assets
 
 By default, vulnerability and secret scanning are enabled, and you can configure that with `--scanners`.
 
@@ -84,6 +85,15 @@ See [here](../scanner/license.md) for the detail.
 
 ```shell
 $ trivy image --scanners license [YOUR_IMAGE_NAME]
+```
+
+### Cryptographic assets
+It is experimental and disabled by default.
+It requires the CycloneDX format, since the assets are reported as CycloneDX components.
+See [here](../scanner/crypto.md) for the detail.
+
+```shell
+$ trivy image --scanners crypto --format cyclonedx [YOUR_IMAGE_NAME]
 ```
 
 ## Container image metadata
@@ -433,7 +443,7 @@ To enable this functionality, you need to specify the `--sbom-sources` flag.
 The following two sources are supported:
 
 - OCI Registry (`oci`)
-- Rekor (`rekor`)
+- Rekor (`rekor`, legacy attestations only)
 
 Example:
 

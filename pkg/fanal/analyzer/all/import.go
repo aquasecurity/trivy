@@ -3,6 +3,7 @@ package all
 import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/buildinfo"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/crypto"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/executable"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/imgconf/dockerfile"
@@ -51,6 +52,7 @@ import (
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/bottlerocket_inventory"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/dpkg"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/pkg/rpm"
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/rapidfort"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/repo/apk"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/sbom"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"

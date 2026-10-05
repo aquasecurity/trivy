@@ -291,3 +291,40 @@ num: 42
 		})
 	}
 }
+
+func TestNode_AsBool(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected bool
+		ok       bool
+	}{
+		// native YAML
+		{name: "yaml true", src: `true`, expected: true, ok: true},
+		{name: "yaml false", src: `false`, expected: false, ok: true},
+		{name: "int 1", src: `1`, expected: true, ok: true},
+		{name: "int 0", src: `0`, expected: false, ok: true},
+		{name: "int other", src: `2`, expected: false, ok: false},
+
+		// Ansible-style strings
+		{name: "string yes", src: `"yes"`, expected: true, ok: true},
+		{name: "string no", src: `"no"`, expected: false, ok: true},
+		{name: "string uppercase and whitespace", src: `"  TRUE  "`, expected: true, ok: true},
+		{name: "string invalid", src: `"bar"`, expected: false, ok: false},
+
+		// jinja
+		{name: "jinja and returns second operand", src: `"{{ 'foo' and 'bar' }}"`, expected: false, ok: false},
+		{name: "jinja explicit bool", src: `"{{ true }}"`, expected: true, ok: true},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			node := mustNodeFromYAML(t, tt.src)
+			rendered, err := node.Render(make(vars.Vars))
+			require.NoError(t, err)
+			got, ok := rendered.AsBool()
+			require.Equal(t, tt.ok, ok)
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}

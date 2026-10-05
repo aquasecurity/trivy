@@ -10,10 +10,10 @@ trivy config [flags] DIR
 
 ```
       --ansible-extra-vars strings        set additional variables as key=value or @file (YAML/JSON)
-      --ansible-inventory strings         specify inventory host path or comma separated host list
+      --ansible-inventory strings         specify inventory host path or a comma-separated host list
       --ansible-playbook strings          specify playbook file path(s) to scan
       --cache-backend string              [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default "memory")
-      --cache-ttl duration                cache TTL when using redis as cache backend
+      --cache-ttl duration                cache TTL when using Redis as cache backend
       --cf-params strings                 specify paths to override the CloudFormation parameters files
       --check-namespaces strings          Rego namespaces
       --checks-bundle-repository string   OCI registry URL to retrieve checks bundle from (default "mirror.gcr.io/aquasec/trivy-checks:2")
@@ -45,21 +45,21 @@ trivy config [flags] DIR
       --helm-values strings               specify paths to override the Helm values.yaml files
   -h, --help                              help for config
       --ignore-policy string              specify the Rego file path to evaluate each vulnerability
-      --ignorefile string                 specify .trivyignore file (default ".trivyignore")
+      --ignorefile string                 specify .trivyignore file (empty string disables loading) (default ".trivyignore")
       --include-deprecated-checks         include deprecated checks
       --include-non-failures              include successes, available with '--scanners misconfig'
-      --k8s-version string                specify k8s version to validate outdated api by it (example: 1.21.0)
+      --k8s-version string                specify k8s version to validate outdated APIs against (example: 1.21.0)
       --misconfig-scanners strings        comma-separated list of misconfig scanners to use for misconfiguration scanning (default [azure-arm,cloudformation,dockerfile,helm,kubernetes,terraform,terraformplan-json,terraformplan-snapshot,ansible])
-      --module-dir string                 specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
+      --module-dir string                 specify the directory of the WASM modules to load (default "$HOME/.trivy/modules")
   -o, --output string                     output file name
       --output-plugin-arg string          [EXPERIMENTAL] output plugin arguments
       --password strings                  password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
       --password-stdin                    password from stdin. Comma-separated passwords are not supported.
       --raw-config-scanners strings       specify the types of scanners that will also scan raw configurations. For example, scanners will scan a non-adapted configuration into a shared state (allowed values: terraform)
-      --redis-ca string                   redis ca file location, if using redis as cache backend
-      --redis-cert string                 redis certificate file location, if using redis as cache backend
-      --redis-key string                  redis key file location, if using redis as cache backend
-      --redis-tls                         enable redis TLS with public certificates, if using redis as cache backend
+      --redis-ca string                   Redis CA file location, if using Redis as cache backend
+      --redis-cert string                 Redis certificate file location, if using Redis as cache backend
+      --redis-key string                  Redis key file location, if using Redis as cache backend
+      --redis-tls                         enable Redis TLS with public certificates, if using Redis as cache backend
       --registry-token string             registry token
       --rego-error-limit int              maximum number of compile errors allowed during Rego policy evaluation (default 10)
       --render-cause strings              specify configuration types for which the rendered causes will be shown in the table report (allowed values: terraform,ansible)
@@ -89,7 +89,7 @@ trivy config [flags] DIR
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections

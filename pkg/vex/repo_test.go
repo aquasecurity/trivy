@@ -78,6 +78,24 @@ repositories:
 			product:         bashComponent,
 			wantNotAffected: false,
 		},
+		{
+			// The index entry's location ("../bash-vex.json") points to a file in
+			// the parent of the repository directory. VEX documents are only loaded
+			// from within the repository directory, so the document is not loaded
+			// and the finding is returned unmodified (not affected = false), even
+			// though that file marks it as not_affected.
+			name:     "entry location in a parent directory is not loaded",
+			cacheDir: "testdata/parent-location-repo",
+			configContent: `
+repositories:
+  - name: default
+    url: https://example.com/vex/default
+    enabled: true
+`,
+			vuln:            vuln3,
+			product:         bashComponent,
+			wantNotAffected: false,
+		},
 	}
 
 	for _, tt := range tests {

@@ -153,6 +153,11 @@ func (b *BOM) unmarshalReferenceType(t cdx.ExternalReferenceType) (core.External
 func (b *BOM) parseComponents(cdxComponents *[]cdx.Component) map[string]*core.Component {
 	components := make(map[string]*core.Component)
 	for _, component := range lo.FromPtr(cdxComponents) {
+		// Trivy writes cryptographic assets but does not read them back yet.
+		if component.Type == cdx.ComponentTypeCryptographicAsset {
+			continue
+		}
+
 		c, err := b.parseComponent(component)
 		if errors.Is(err, ErrUnsupportedType) {
 			log.Info("Skipping the component with the unsupported type",

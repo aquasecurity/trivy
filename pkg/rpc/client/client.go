@@ -84,10 +84,8 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 		}
 	}
 
-	var res *rpc.ScanResponse
-	err := r.Retry(func() error {
-		var err error
-		res, err = s.client.Scan(ctx, &rpc.ScanRequest{
+	res, err := r.Retry(ctx, func() (*rpc.ScanResponse, error) {
+		return s.client.Scan(ctx, &rpc.ScanRequest{
 			Target:     target,
 			ArtifactId: artifactKey,
 			BlobIds:    blobKeys,
@@ -102,7 +100,6 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 				VulnSeveritySources: xstrings.ToStringSlice(opts.VulnSeveritySources),
 			},
 		})
-		return err
 	})
 	if err != nil {
 		return types.ScanResponse{}, xerrors.Errorf("failed to detect vulnerabilities via RPC: %w", err)

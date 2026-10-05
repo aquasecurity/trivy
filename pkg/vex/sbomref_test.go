@@ -82,37 +82,35 @@ func TestRetrieveExternalVEXDocuments(t *testing.T) {
 		name      string
 		input     *types.Report
 		wantVEXes int
-		wantErr   bool
+		wantErr   string
 	}{
 		{
 			name:      "external vex retrieval",
 			input:     setupTestReport(s, vexExternalRef),
 			wantVEXes: 1,
-			wantErr:   false,
 		},
 		{
 			name:    "incompatible external vex",
 			input:   setupTestReport(s, vexUnknown),
-			wantErr: true,
+			wantErr: "unable to load VEX from external reference",
 		},
 		{
 			name:    "vex not found",
 			input:   setupTestReport(s, vexNotFound),
-			wantErr: true,
+			wantErr: "unexpected status code 404",
 		},
 		{
 			name:      "no external reference",
 			input:     setupEmptyTestReport(),
 			wantVEXes: 0,
-			wantErr:   false,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := vex.NewSBOMReferenceSet(tt.input)
-			if tt.wantErr {
-				require.Error(t, err)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
 				return
 			}
 			require.NoError(t, err)

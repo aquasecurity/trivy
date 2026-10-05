@@ -88,8 +88,9 @@ Example: https://github.com/aquasecurity/trivy/releases/tag/v0.52.0
 
 ### Adding the Release Branch to Rulesets
 For major and minor releases (e.g., v0.52.0), a `release/vX.Y` branch is automatically created.
-The release maintainer must add this branch to the repository ruleset to enable merge queue protection, unless it has already been added in advance.
-Go to the repository settings → Rules → Rulesets → "release" and add `release/vX.Y` to the branch targeting pattern.
+The `release-protection` ruleset automatically applies the standard release branch protections to branches matching `release/v*`.
+The release maintainer must add the new branch to the `release-merge-queue` ruleset to enable the merge queue, unless it has already been added in advance.
+Go to the repository settings → Rules → Rulesets → "release-merge-queue" and add `release/vX.Y` to the branch targeting pattern.
 
 ### Merging the auto-generated Helm chart update PR
 Once the release PR is merged, there will be an auto-generated PR that bumps the Trivy version for the Trivy Helm Chart. An example can be seen [here](https://github.com/aquasecurity/trivy/pull/8638).

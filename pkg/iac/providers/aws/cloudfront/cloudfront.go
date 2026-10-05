@@ -17,9 +17,15 @@ type Distribution struct {
 	ViewerCertificate      ViewerCertificate
 }
 
+type LoggingV2 struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
+}
+
 type Logging struct {
 	Metadata iacTypes.Metadata
 	Bucket   iacTypes.StringValue
+	V2       LoggingV2
 }
 
 type CacheBehaviour struct {

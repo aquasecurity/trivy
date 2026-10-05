@@ -126,6 +126,10 @@ type RoleMeta struct {
 	inner    roleMetaInner
 }
 
+type roleMetaInner struct {
+	Dependencies []*RoleDefinition `yaml:"dependencies"`
+}
+
 func (m *RoleMeta) updateMetadata(fsys fs.FS, parent *iacTypes.Metadata, path string) {
 	m.metadata = iacTypes.NewMetadata(
 		iacTypes.NewRange(path, m.rng.Start, m.rng.End, "", fsys),
@@ -138,11 +142,20 @@ func (m RoleMeta) dependencies() []*RoleDefinition {
 	return m.inner.Dependencies
 }
 
-type roleMetaInner struct {
-	Dependencies []*RoleDefinition `yaml:"dependencies"`
-}
-
 func (m *RoleMeta) UnmarshalYAML(node *yaml.Node) error {
 	m.rng = rangeFromNode(node)
 	return node.Decode(&m.inner)
+}
+
+func parseRoleMeta(metaSrc fsutils.FileSource, parent *iacTypes.Metadata) (*RoleMeta, error) {
+	var roleMeta RoleMeta
+
+	if err := decodeYAMLFileWithExtension(metaSrc, &roleMeta, yamlExtensions); err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			return nil, nil
+		}
+		return nil, xerrors.Errorf("decode meta: %w", err)
+	}
+	roleMeta.updateMetadata(metaSrc.FS, parent, metaSrc.Path)
+	return &roleMeta, nil
 }

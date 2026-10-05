@@ -73,6 +73,11 @@ func TestParse(t *testing.T) {
 			useMinVersion: true,
 			want:          requirementsCompatibleVersions,
 		},
+		{
+			name:     "malformed extras are skipped, brackets in comments are ignored",
+			filePath: "testdata/requirements_invalid_extras.txt",
+			want:     requirementsInvalidExtras,
+		},
 	}
 
 	for _, tt := range tests {
@@ -83,6 +88,83 @@ func TestParse(t *testing.T) {
 			got, _, err := NewParser(tt.useMinVersion).Parse(t.Context(), f)
 			require.NoError(t, err)
 
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestRemoveExtras(t *testing.T) {
+	tests := []struct {
+		name    string
+		line    string
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "single extra",
+			line: "pyjwt[crypto]==2.1.0",
+			want: "pyjwt==2.1.0",
+		},
+		{
+			name: "multiple extras",
+			line: "celery[redis,pytest]==4.4.7",
+			want: "celery==4.4.7",
+		},
+		{
+			name: "empty extras",
+			line: "pkg[]==1.0",
+			want: "pkg==1.0",
+		},
+		{
+			name: "no extras",
+			line: "flask==2.0.0",
+			want: "flask==2.0.0",
+		},
+		{
+			name:    "missing closing bracket",
+			line:    "pkg[extra==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "stray closing bracket without opening",
+			line:    "foo]bar==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "closing bracket before opening",
+			line:    "foo]bar[x]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "extra closing bracket",
+			line:    "celery[redis]]==4.4.7",
+			wantErr: true,
+		},
+		{
+			name:    "nested brackets",
+			line:    "pkg[a[b]]==1.0",
+			wantErr: true,
+		},
+		{
+			name:    "second extras group",
+			line:    "pkg[a][b]==1.0",
+			wantErr: true,
+		},
+		{
+			name: "empty string",
+			line: "",
+			want: "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := removeExtras(tt.line)
+			if tt.wantErr {
+				require.ErrorContains(t, err, "unbalanced extras brackets")
+				return
+			}
+			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})
 	}

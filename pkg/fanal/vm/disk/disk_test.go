@@ -25,7 +25,7 @@ func TestNew(t *testing.T) {
 		{
 			name:     "invalid vm file",
 			fileName: "testdata/invalid.vmdk",
-			wantErr:  "virtual machine can not be detected",
+			wantErr:  "virtual machine disk format cannot be detected",
 		},
 	}
 	for _, tt := range tests {

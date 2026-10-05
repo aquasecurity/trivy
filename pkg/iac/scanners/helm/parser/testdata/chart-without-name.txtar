@@ -1,0 +1,15 @@
+Chart with no name field in Chart.yaml. The parser falls back to the directory name as the release name.
+
+-- Chart.yaml --
+apiVersion: v2
+description: A chart with no name
+version: 0.1.0
+-- templates/pod.yaml --
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test-pod
+spec:
+  containers:
+    - name: app
+      image: nginx

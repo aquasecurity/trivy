@@ -114,7 +114,11 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 }
 
 func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntry) (VEX, error) {
-	f, err := os.Open(filepath.Join(dir, entry.Location))
+	// dir is the repository cache directory computed by Trivy, while
+	// entry.Location comes from the repository metadata (external input).
+	// os.OpenInRoot keeps the resolved path within dir, so a location pointing
+	// outside it is not opened.
+	f, err := os.OpenInRoot(dir, entry.Location)
 	if err != nil {
 		return nil, xerrors.Errorf("failed to open the VEX document: %w", err)
 	}

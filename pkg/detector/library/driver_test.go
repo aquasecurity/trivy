@@ -14,7 +14,8 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
-	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security vendor
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo supplier
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
 func TestDriver_Detect(t *testing.T) {
@@ -365,6 +366,201 @@ func TestDriver_Detect(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			// No-prefix name (no seal- prefix) detected by the "+spN" version
+			// suffix. Also exercises the pip AllowLocalSpecifier comparer on the
+			// Matched-by-suffix path.
+			name: "seal security pip no-prefix package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "django",
+				pkgVer:  "4.2.8+sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "django",
+					InstalledVersion: "4.2.8+sp1",
+					FixedVersion:     "4.2.8+sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			// No-prefix candidate ("-spN") confirmed against the seal bucket.
+			name: "seal security npm no-prefix package",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Npm,
+			args: args{
+				pkgName: "ejs",
+				pkgVer:  "3.1.8-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-33883",
+					PkgName:          "ejs",
+					InstalledVersion: "3.1.8-sp1",
+					FixedVersion:     "3.1.8-sp999",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Seal,
+						Name: "Seal Security Database",
+						URL:  "http://vulnfeed.sealsecurity.io/v1/osv/renamed/vulnerabilities.zip",
+					},
+				},
+			},
+		},
+		{
+			// A "-spN" Go package that is NOT in the seal bucket falls back to the
+			// default ecosystem bucket (e.g. a real package that happens to use the
+			// same suffix). Confirms the candidate fallback behavior.
+			name: "go package with sp suffix falls back to default bucket",
+			fixtures: []string{
+				"testdata/fixtures/seal.yaml",
+				"testdata/fixtures/go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "github.com/Masterminds/vcs",
+				pkgVer:  "v1.13.1-sp1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2022-21235",
+					VendorIDs: []string{
+						"GHSA-6635-c626-vj4r",
+					},
+					PkgName:          "github.com/Masterminds/vcs",
+					InstalledVersion: "v1.13.1-sp1",
+					FixedVersion:     "v1.13.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
+						Name: "GitLab Advisory Database Community",
+						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-24049",
+					VendorIDs: []string{
+						"ECHO-3d34-cec5-cf72",
+					},
+					PkgName:          "wheel",
+					InstalledVersion: "0.45.1+echo.1",
+					FixedVersion:     "0.45.1+echo.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package with the fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.2",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package with a newer echo revision than the fixed one",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.10",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package with an upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.12.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-3000",
+					VendorIDs: []string{
+						"ECHO-9320-f34e-79db",
+					},
+					PkgName:          "torch",
+					InstalledVersion: "2.12.0+echo.1",
+					FixedVersion:     "2.13.0",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package with the upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.13.0+echo.1",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package ignores upstream advisories",
+			fixtures: []string{
+				"testdata/fixtures/pip.yaml",
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "Django",
+				pkgVer:  "4.2.1+echo.1",
+			},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {

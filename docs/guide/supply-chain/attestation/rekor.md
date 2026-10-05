@@ -3,19 +3,28 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
+!!! warning "Cosign v2.0.0 and later"
+    `--sbom-sources rekor` cannot read the CycloneDX attestation JSON format used by Cosign v2.0.0 or later. Instead, [export the attestation with `cosign verify-attestation`](sbom.md#scanning) and scan the saved file with `trivy sbom`.
+
+For SBOMs published as [supported OCI referrers](../../target/container_image.md#discover-sbom-referencing-the-container-image), run `trivy image --sbom-sources oci <IMAGE>`.
+
+The `--sbom-sources rekor` flag only supports the legacy CycloneDX attestation format produced by Cosign v1. Cosign v2.0.0 [changed the SBOM's JSON structure](https://github.com/sigstore/cosign/pull/2718), which this flag does not support even when the payload is retained in Rekor. In addition, Cosign v2.2.0 [changed the default Rekor entry type](https://github.com/sigstore/cosign/pull/3113) to `dsse`, so Rekor no longer retains the payload by default.
+
 ## Container images
 Trivy can retrieve SBOM attestation of the specified container image in the [Rekor][rekor] instance and scan it for vulnerabilities.
 
 ### Prerequisites
-1. SBOM attestation stored in Rekor
-    - See [the "Keyless signing" section][sbom-attest] if you want to upload your SBOM attestation to Rekor.
- 
+A CycloneDX SBOM attestation created with Cosign v1.10.0 or later in the v1 series (tested with v1.13.6) must be retained in a Rekor v1 instance for the image.
+
+To create one with Cosign v1.13.6:
+
+```bash
+$ trivy image --format cyclonedx -o sbom.cdx.json <IMAGE>
+$ COSIGN_EXPERIMENTAL=1 cosign attest --type cyclonedx --predicate sbom.cdx.json <IMAGE>
+```
 
 ### Scanning
 You need to pass `--sbom-sources rekor` so that Trivy will look for SBOM attestation in Rekor.
-
-!!! note
-    `--sbom-sources` can be used only with `trivy image` at the moment.
 
 ```bash
 $ trivy image --sbom-sources rekor otms61/alpine:3.7.3                                                                            [~/src/github.com/aquasecurity/trivy]
@@ -59,10 +68,8 @@ $ trivy image --sbom-sources rekor --rekor-url https://my-rekor.dev otms61/alpin
 Trivy can retrieve SBOM attestation of non-packaged binaries in the [Rekor][rekor] instance and scan it for vulnerabilities.
 
 ### Prerequisites
-1. SBOM attestation stored in Rekor
-    - See [the "Keyless signing" section][sbom-attest] if you want to upload your SBOM attestation to Rekor.
+A CycloneDX SBOM attestation for the binary must be available in Rekor.
 
-Cosign currently does not support keyless signing for blob attestation, so use our plugin at the moment.
 This example uses a cat clone [bat][bat] written in Rust.
 You need to generate SBOM from lock files like `Cargo.lock` at first.
 
@@ -140,8 +147,6 @@ Total: 4 (UNKNOWN: 3, LOW: 0, MEDIUM: 0, HIGH: 1, CRITICAL: 0)
     The `--sbom-sources rekor` flag slows down the scanning as it queries Rekor on the Internet for all non-packaged binaries.
 
 [rekor]: https://github.com/sigstore/rekor
-[sbom-attest]: sbom.md#keyless-signing
-
 [plugin-attest]: https://github.com/aquasecurity/trivy-plugin-attest
 
 [bat]: https://github.com/sharkdp/bat

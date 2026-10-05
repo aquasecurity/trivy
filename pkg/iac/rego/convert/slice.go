@@ -7,7 +7,7 @@ import (
 func SliceToRego(inputValue reflect.Value) []any {
 
 	// make sure we have a struct literal
-	for inputValue.Type().Kind() == reflect.Ptr {
+	for inputValue.Type().Kind() == reflect.Pointer {
 		if inputValue.IsNil() {
 			return nil
 		}
@@ -21,7 +21,7 @@ func SliceToRego(inputValue reflect.Value) []any {
 
 	for i := 0; i < inputValue.Len(); i++ {
 		val := inputValue.Index(i)
-		if val.Type().Kind() == reflect.Ptr && val.IsZero() {
+		if val.Type().Kind() == reflect.Pointer && val.IsZero() {
 			output[i] = nil
 			continue
 		}

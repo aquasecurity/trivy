@@ -39,6 +39,18 @@ func TestParseStdlibVersion(t *testing.T) {
 			goVersion: "go1.26.0-X:nodwarf5,someother",
 			want:      "v1.26.0",
 		},
+		{
+			// Red Hat-derived toolchains (RHEL, AlmaLinux, Rocky, Fedora) append a
+			// vendor build identifier, verified on almalinux:10 golang-1.26.5-1.el10_2.alma.1.
+			name:      "vendor build identifier from a Red Hat-derived toolchain",
+			goVersion: "go1.26.5 (Red Hat 1.26.5-1.el10_2.alma.1)",
+			want:      "v1.26.5",
+		},
+		{
+			name:      "vendor build identifier followed by a GOEXPERIMENT suffix",
+			goVersion: "go1.26.5 (Red Hat 1.26.5-1.el10_2.alma.1) X:jsonv2",
+			want:      "v1.26.5",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

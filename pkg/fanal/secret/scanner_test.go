@@ -326,6 +326,28 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 13,
 	}
+	wantFindingGitHubAppToken := types.SecretFinding{
+		RuleID:    "github-app-token",
+		Category:  secret.CategoryGitHub,
+		Title:     "GitHub App Token",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "GITHUB_TOKEN=**********************************************************************************************",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "GITHUB_TOKEN=**********************************************************************************************",
+					Highlighted: "GITHUB_TOKEN=**********************************************************************************************",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 13,
+	}
 	wantFindingMyAwsAccessKey := types.SecretFinding{
 		RuleID:    "aws-secret-access-key",
 		Category:  secret.CategoryAWS,
@@ -1280,6 +1302,139 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 0,
 	}
+	openAIFinding := func(ruleID, title, severity string, length int) types.SecretFinding {
+		masked := strings.Repeat("*", length)
+		return types.SecretFinding{
+			RuleID:    ruleID,
+			Category:  secret.CategoryOpenAI,
+			Title:     title,
+			Severity:  severity,
+			StartLine: 1,
+			EndLine:   1,
+			Match:     masked,
+			Code: types.Code{
+				Lines: []types.Line{
+					{
+						Number:      1,
+						Content:     masked,
+						Highlighted: masked,
+						IsCause:     true,
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+			Offset: 0,
+		}
+	}
+	wantFindingOpenAIProjectAPIKey := openAIFinding("openai-project-api-key", "OpenAI Project API Key", "CRITICAL", 56)
+	wantFindingOpenAIServiceAccountKey := openAIFinding("openai-service-account-key", "OpenAI Service Account Key", "CRITICAL", 59)
+	wantFindingOpenAIAdminAPIKey := openAIFinding("openai-admin-api-key", "OpenAI Admin API Key", "CRITICAL", 57)
+	wantFindingOpenAILegacyAPIKey := openAIFinding("openai-legacy-api-key", "OpenAI Legacy User API Key", "HIGH", 51)
+	wantFindingOpenAIServiceAPIKey := openAIFinding("openai-service-api-key", "OpenAI Service API Key", "HIGH", 68)
+	wantFindingOpenAIRealtimeClientSecret := openAIFinding("openai-realtime-client-secret", "OpenAI Realtime Client Secret", "MEDIUM", 35)
+
+	wantFindingMavenSettingsPassword := types.SecretFinding{
+		RuleID:    "maven-settings-password",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "<password>  ***********  </password>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
+				},
+			},
+		},
+		Offset: 23,
+	}
+	wantFindingMavenSettingsPassphrase := types.SecretFinding{
+		RuleID:    "maven-settings-passphrase",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings.xml passphrase",
+		Severity:  "HIGH",
+		StartLine: 3,
+		EndLine:   3,
+		Match:     "<passphrase>  *************  </passphrase>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settings>",
+					Highlighted: "<settings>",
+				},
+				{
+					Number:      2,
+					Content:     "<password>  ***********  </password>",
+					Highlighted: "<password>  ***********  </password>",
+				},
+				{
+					Number:      3,
+					Content:     "<passphrase>  *************  </passphrase>",
+					Highlighted: "<passphrase>  *************  </passphrase>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      4,
+					Content:     "</settings>",
+					Highlighted: "</settings>",
+				},
+			},
+		},
+		Offset: 62,
+	}
+	wantFindingMavenSettingsSecurityMaster := types.SecretFinding{
+		RuleID:    "maven-settings-security-master",
+		Category:  secret.CategoryMaven,
+		Title:     "Maven settings-security.xml master password",
+		Severity:  "HIGH",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "<master>***********</master>",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "<settingsSecurity>",
+					Highlighted: "<settingsSecurity>",
+				},
+				{
+					Number:      2,
+					Content:     "<master>***********</master>",
+					Highlighted: "<master>***********</master>",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "</settingsSecurity>",
+					Highlighted: "</settingsSecurity>",
+				},
+			},
+		},
+		Offset: 27,
+	}
 
 	tests := []struct {
 		name          string
@@ -1516,6 +1671,32 @@ func TestSecretScanner(t *testing.T) {
 			want:          types.Secret{},
 		},
 		{
+			name:          "include when keyword found in another case",
+			configPath:    filepath.Join("testdata", "config-keyword-other-case.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
+			},
+		},
+		{
+			// A rule whose keyword has a non-ASCII letter runs on all content,
+			// even though the keyword is absent.
+			name:          "include when keyword has a non-ASCII letter",
+			configPath:    filepath.Join("testdata", "config-non-ascii-keyword.yaml"),
+			inputFilePath: filepath.Join("testdata", "secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "secret.txt"),
+				Findings: []types.SecretFinding{
+					wantFinding1,
+					wantFinding2,
+				},
+			},
+		},
+		{
 			name:          "should ignore .md files by default",
 			configPath:    filepath.Join("testdata", "config.yaml"),
 			inputFilePath: filepath.Join("testdata", "secret.md"),
@@ -1554,6 +1735,15 @@ func TestSecretScanner(t *testing.T) {
 			want: types.Secret{
 				FilePath: "testdata/github-token.txt",
 				Findings: []types.SecretFinding{wantFindingGitHubPAT},
+			},
+		},
+		{
+			name:          "should find GitHub App installation token (stateless format)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: "testdata/github-app-token.txt",
+			want: types.Secret{
+				FilePath: "testdata/github-app-token.txt",
+				Findings: []types.SecretFinding{wantFindingGitHubAppToken},
 			},
 		},
 		{
@@ -1833,6 +2023,101 @@ func TestSecretScanner(t *testing.T) {
 				FilePath: filepath.Join("testdata", "azure-ai-services-key.txt"),
 				Findings: []types.SecretFinding{wantFindingAzureAIServicesKey},
 			},
+		},
+		{
+			name:          "find OpenAI Project API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-project-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-project-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIProjectAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Service Account Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-service-account-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-service-account-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIServiceAccountKey},
+			},
+		},
+		{
+			name:          "find OpenAI Admin API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-admin-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-admin-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIAdminAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Legacy User API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-legacy-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-legacy-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAILegacyAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Service API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-service-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-service-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIServiceAPIKey},
+			},
+		},
+		{
+			name:          "find OpenAI Realtime Client Secret",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-realtime-client-secret.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "openai-realtime-client-secret.txt"),
+				Findings: []types.SecretFinding{wantFindingOpenAIRealtimeClientSecret},
+			},
+		},
+		{
+			// Cross-vendor `sk-` prefixes (Anthropic, OpenRouter), too-short segments,
+			// and a missing watermark must all be ignored — even when the `T3BlbkFJ`
+			// keyword is present, the prefix isolation and length anchors reject them.
+			name:          "invalid OpenAI tokens",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "openai-invalid.txt"),
+			want:          types.Secret{},
+		},
+		{
+			name:          "find Maven settings.xml password and passphrase",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings.xml"),
+				Findings: []types.SecretFinding{
+					wantFindingMavenSettingsPassphrase,
+					wantFindingMavenSettingsPassword,
+				},
+			},
+		},
+		{
+			name:          "find Maven settings-security.xml master password",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-security.xml"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "settings-security.xml"),
+				Findings: []types.SecretFinding{wantFindingMavenSettingsSecurityMaster},
+			},
+		},
+		{
+			// Three classes of non-secret values must be skipped:
+			//   1. Maven-encrypted (`{...}`) — safe without the master, which a separate
+			//      rule catches.
+			//   2. Maven property substitution (`${env.X}`) — a reference, not a literal.
+			//   3. Empty or whitespace-only values — fail the minimum-length check.
+			name:          "skip non-secret values (encrypted, placeholders, empty)",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "settings-encrypted.xml"),
+			want:          types.Secret{},
 		},
 		{
 			name:          "invalid UTF-8 sequences in secrets",

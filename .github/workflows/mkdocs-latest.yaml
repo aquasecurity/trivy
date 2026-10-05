@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-2404-2core
     steps:
       - name: Checkout main
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: true
-      - uses: actions/setup-python@a309ff8b426b58ec0e2a45f0f869d46889d02405 # v6.2.0
+      - uses: actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97 # v7.0.0
         with:
           python-version: 3.x
       - name: Install dependencies
@@ -49,12 +49,13 @@ jobs:
       # workflows in other repos — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.ACTIONS_MULTI_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: trivy-www
+          permission-actions: write
       - name: Trigger build-docs workflow in trivy-www
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

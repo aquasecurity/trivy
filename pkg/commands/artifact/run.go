@@ -343,7 +343,7 @@ func (r *runner) initDB(ctx context.Context, opts flag.Options) error {
 	}
 
 	if err := db.Init(db.Dir(opts.CacheDir)); err != nil {
-		return xerrors.Errorf("error in vulnerability DB initialize: %w", err)
+		return xerrors.Errorf("error in vulnerability DB initialization: %w", err)
 	}
 	r.dbOpen = true
 
@@ -506,6 +506,11 @@ func disabledAnalyzers(opts flag.Options) []analyzer.Type {
 		analyzers = append(analyzers, analyzer.TypeSecret)
 	}
 
+	// Do not inventory cryptographic assets when it is not specified.
+	if !opts.Scanners.Enabled(types.CryptoScanner) {
+		analyzers = append(analyzers, analyzer.TypeCrypto)
+	}
+
 	// Do not perform misconfiguration scanning when it is not specified.
 	if !opts.Scanners.AnyEnabled(types.MisconfigScanner, types.RBACScanner) {
 		analyzers = append(analyzers, analyzer.TypeConfigFiles...)
@@ -653,6 +658,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			AWSEndpoint:       opts.Endpoint,
 			FileChecksum:      fileChecksum,
 			DetectionPriority: opts.DetectionPriority,
+			MavenMirrors:      opts.MavenMirrors,
 
 			// For image scanning
 			ImageOption: ftypes.ImageOptions{

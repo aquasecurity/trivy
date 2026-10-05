@@ -7,7 +7,7 @@ Manage modules
 ```
       --enable-modules strings   [EXPERIMENTAL] module names to enable
   -h, --help                     help for module
-      --module-dir string        specify directory to the wasm modules that will be loaded (default "$HOME/.trivy/modules")
+      --module-dir string        specify the directory of the WASM modules to load (default "$HOME/.trivy/modules")
 ```
 
 ### Options inherited from parent commands
@@ -15,7 +15,7 @@ Manage modules
 ```
       --cacert string             Path to PEM-encoded CA certificate file
       --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (default "trivy.yaml")
+  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
   -d, --debug                     debug mode
       --generate-default-config   write the default config to trivy-default.yaml
       --insecure                  allow insecure server connections

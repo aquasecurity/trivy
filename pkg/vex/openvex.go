@@ -1,15 +1,49 @@
 package vex
 
 import (
-	openvex "github.com/openvex/go-vex/pkg/vex"
+	"context"
+	"fmt"
 
+	openvex "github.com/openvex/go-vex/pkg/vex"
+	"golang.org/x/xerrors"
+
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/vex/oci"
 )
 
 type OpenVEX struct {
 	vex    openvex.VEX
 	source string
+}
+
+// NewOCI discovers and loads the OpenVEX document attached to the scanned OCI
+// image. It returns nil when the report is not an OCI image or no VEX
+// attestation is found.
+func NewOCI(ctx context.Context, report *types.Report) (*OpenVEX, error) {
+	if report.ArtifactType != ftypes.TypeContainerImage || len(report.Metadata.RepoDigests) == 0 {
+		return nil, xerrors.New("'--vex oci' can be used only when scanning OCI artifacts stored in registries")
+	}
+
+	// TODO(knqyf263): Add the PURL field to Report.Metadata
+	p, err := purl.New(purl.TypeOCI, report.Metadata, ftypes.Package{})
+	if err != nil {
+		return nil, xerrors.Errorf("failed to create a package URL: %w", err)
+	}
+
+	// TODO(#8916): thread the caller's RegistryOptions through so registry
+	// credentials, --insecure and TLS settings reach the attestation fetch
+	// instead of using an empty config.
+	doc, err := oci.Discover(ctx, p, ftypes.RegistryOptions{})
+	if err != nil {
+		return nil, xerrors.Errorf("failed to retrieve VEX attestation: %w", err)
+	}
+	if doc == nil {
+		return nil, nil
+	}
+	return newOpenVEX(*doc, fmt.Sprintf("VEX attestation in OCI registry (%s)", p.String())), nil
 }
 
 func newOpenVEX(vex openvex.VEX, source string) *OpenVEX {

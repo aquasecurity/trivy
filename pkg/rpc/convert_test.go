@@ -12,6 +12,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
+	"github.com/aquasecurity/trivy/internal/cryptotest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -59,9 +60,19 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 						Indirect:     true,
 						Relationship: ftypes.RelationshipIndirect,
+						Repository: ftypes.PackageRepository{
+							Class: ftypes.RepositoryClassThirdParty,
+						},
 						Identifier: ftypes.PkgIdentifier{
 							UID: "01",
 						},
+						Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+							Nvr:         "ubi8-container-8.3-227",
+							Arch:        "x86_64",
+						},
+						InstalledFiles: []string{"/usr/bin/binary"},
 					},
 				},
 			},
@@ -94,9 +105,37 @@ func TestConvertToRpcPkgs(t *testing.T) {
 					Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Indirect:     true,
 					Relationship: 4,
+					Repository: &common.PackageRepository{
+						Class: "third-party",
+					},
 					Identifier: &common.PkgIdentifier{
 						Uid: "01",
 					},
+					Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+					BuildInfo: &common.BuildInfo{
+						ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+						Nvr:         "ubi8-container-8.3-227",
+						Arch:        "x86_64",
+					},
+					InstalledFiles: []string{"/usr/bin/binary"},
+				},
+			},
+		},
+		{
+			name: "package without build info and repository",
+			args: args{
+				pkgs: []ftypes.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+					},
+				},
+			},
+			want: []*common.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Layer:   &common.Layer{},
 				},
 			},
 		},
@@ -119,6 +158,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 		want []ftypes.Package
 	}{
 		{
+			name: "rpm package with modularity label and build info",
 			args: args{
 				rpcPkgs: []*common.Package{
 					{
@@ -152,6 +192,13 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Identifier: &common.PkgIdentifier{
 							Uid: "01",
 						},
+						Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+						BuildInfo: &common.BuildInfo{
+							ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+							Nvr:         "ubi8-container-8.3-227",
+							Arch:        "x86_64",
+						},
+						InstalledFiles: []string{"/usr/bin/binary"},
 					},
 				},
 			},
@@ -187,10 +234,18 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					Identifier: ftypes.PkgIdentifier{
 						UID: "01",
 					},
+					Modularitylabel: "nodejs:12:8020020200707141642:2c8dfa1c",
+					BuildInfo: &ftypes.BuildInfo{
+						ContentSets: []string{"rhel-8-for-x86_64-baseos-rpms"},
+						Nvr:         "ubi8-container-8.3-227",
+						Arch:        "x86_64",
+					},
+					InstalledFiles: []string{"/usr/bin/binary"},
 				},
 			},
 		},
 		{
+			name: "deb package with maintainer and repository",
 			args: args{
 				rpcPkgs: []*common.Package{
 					{
@@ -225,6 +280,9 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 							Uid: "63f8bef824b960e3",
 						},
 						Maintainer: "alice@example.com",
+						Repository: &common.PackageRepository{
+							Class: "third-party",
+						},
 					},
 				},
 			},
@@ -261,6 +319,9 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						UID: "63f8bef824b960e3",
 					},
 					Maintainer: "alice@example.com",
+					Repository: ftypes.PackageRepository{
+						Class: ftypes.RepositoryClassThirdParty,
+					},
 				},
 			},
 		},
@@ -271,6 +332,78 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}
+}
+
+func TestConvertPackageRepository(t *testing.T) {
+	tests := []struct {
+		name    string
+		repo    ftypes.PackageRepository
+		rpcRepo *common.PackageRepository
+	}{
+		{
+			name:    "third-party",
+			repo:    ftypes.PackageRepository{Class: ftypes.RepositoryClassThirdParty},
+			rpcRepo: &common.PackageRepository{Class: "third-party"},
+		},
+		{
+			name:    "empty class maps to nil",
+			repo:    ftypes.PackageRepository{},
+			rpcRepo: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.rpcRepo, ConvertToRPCPackageRepository(tt.repo))
+			assert.Equal(t, tt.repo, ConvertFromRPCPackageRepository(tt.rpcRepo))
+		})
+	}
+}
+
+func TestConvertOS(t *testing.T) {
+	tests := []struct {
+		name  string
+		os    ftypes.OS
+		rpcOS *common.OS
+	}{
+		{
+			name: "happy path",
+			os: ftypes.OS{
+				Family: ftypes.Alpine,
+				Name:   "3.20.3",
+			},
+			rpcOS: &common.OS{
+				Family: "alpine",
+				Name:   "3.20.3",
+			},
+		},
+		{
+			name: "all fields",
+			os: ftypes.OS{
+				Family:   ftypes.CentOS,
+				Name:     "7.9.2009",
+				Eosl:     true,
+				Extended: true,
+				Supplier: ftypes.SupplierSeal,
+			},
+			rpcOS: &common.OS{
+				Family:   "centos",
+				Name:     "7.9.2009",
+				Eosl:     true,
+				Extended: true,
+				Supplier: "seal",
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.rpcOS, ConvertToRPCOS(tt.os))
+			assert.Equal(t, tt.os, ConvertFromRPCOS(tt.rpcOS))
+		})
+	}
+
+	t.Run("nil", func(t *testing.T) {
+		assert.Equal(t, ftypes.OS{}, ConvertFromRPCOS(nil))
+	})
 }
 
 func TestConvertToRpcVulns(t *testing.T) {
@@ -507,6 +640,20 @@ func TestConvertFromRPCResults(t *testing.T) {
 								},
 							},
 						},
+						CryptoAssets: []*common.CryptoAsset{
+							{
+								Kind: string(ftypes.CryptoKindAlgorithm),
+								Identity: &common.CryptoIdentity{
+									Method: string(ftypes.CryptoMethodOID),
+									Value:  "1.2.840.113549.1.1.1",
+								},
+								Name: "RSA",
+								Algorithm: &common.CryptoAlgorithm{
+									Primitive: string(ftypes.CryptoPrimitiveUnknown),
+								},
+								FilePath: "/etc/example-algorithm.pem",
+							},
+						},
 					},
 				},
 			},
@@ -556,6 +703,9 @@ func TestConvertFromRPCResults(t *testing.T) {
 							},
 							Custom: customJSON,
 						},
+					},
+					CryptoAssets: []ftypes.CryptoAsset{
+						cryptotest.AlgorithmAsset(),
 					},
 				},
 			},
@@ -862,6 +1012,251 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := ConvertToRPCMisconfs(tt.args.misconfs)
 			assert.Equal(t, tt.want, got, tt.name)
+		})
+	}
+}
+
+func TestConvertToMisconfResults(t *testing.T) {
+	tests := []struct {
+		name    string
+		results []ftypes.MisconfResult
+		want    []*common.MisconfResult
+	}{
+		{
+			name: "happy path",
+			results: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: ftypes.PolicyMetadata{
+						ID:    "DS-0005",
+						AVDID: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+					},
+				},
+			},
+			want: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: &common.PolicyMetadata{
+						Id:    "DS-0005",
+						AdvId: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:      "Dockerfile",
+						Service:       "general",
+						StartLine:     3,
+						EndLine:       3,
+						Code:          &common.Code{},
+						RenderedCause: &common.RenderedCause{},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToMisconfResults(tt.results)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCMisconfResults(t *testing.T) {
+	tests := []struct {
+		name    string
+		results []*common.MisconfResult
+		want    []ftypes.MisconfResult
+	}{
+		{
+			name: "happy path",
+			results: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: &common.PolicyMetadata{
+						Id:    "DS-0005",
+						AdvId: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: &common.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: &common.Code{
+							Lines: []*common.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Query:     "data.builtin.dockerfile.DS0005.deny",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+					PolicyMetadata: ftypes.PolicyMetadata{
+						ID:    "DS-0005",
+						AVDID: "AVD-DS-0005",
+						Aliases: []string{
+							"AVD-DS-0005",
+							"DS005",
+							"use-copy-over-add",
+							"docker-use-copy-over-add",
+						},
+						Type:               "Dockerfile Security Check",
+						Title:              "ADD instead of COPY",
+						Description:        "You should use COPY instead of ADD unless you want to extract a tar file.",
+						Severity:           "LOW",
+						RecommendedActions: "Use COPY instead of ADD",
+						References:         []string{"https://docs.docker.com/engine/reference/builder/#add"},
+					},
+					CauseMetadata: ftypes.CauseMetadata{
+						Provider:  "Dockerfile",
+						Service:   "general",
+						StartLine: 3,
+						EndLine:   3,
+						Code: ftypes.Code{
+							Lines: []ftypes.Line{
+								{
+									Number:     3,
+									Content:    "ADD . /app",
+									IsCause:    true,
+									FirstCause: true,
+									LastCause:  true,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "no cause metadata",
+			results: []*common.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+				},
+			},
+			want: []ftypes.MisconfResult{
+				{
+					Namespace: "builtin.dockerfile.DS0005",
+					Message:   "Consider using 'COPY . /app' command instead of 'ADD . /app'",
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCMisconfResults(tt.results)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestConvertFromRPCCode(t *testing.T) {
+	tests := []struct {
+		name string
+		code *common.Code
+		want ftypes.Code
+	}{
+		{
+			name: "happy path",
+			code: &common.Code{
+				Lines: []*common.Line{
+					{
+						Number:      3,
+						Content:     "ADD . /app",
+						IsCause:     true,
+						Annotation:  "annotation",
+						Truncated:   true,
+						Highlighted: "ADD . /app",
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+			want: ftypes.Code{
+				Lines: []ftypes.Line{
+					{
+						Number:      3,
+						Content:     "ADD . /app",
+						IsCause:     true,
+						Annotation:  "annotation",
+						Truncated:   true,
+						Highlighted: "ADD . /app",
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+		},
+		{
+			name: "nil code",
+			code: nil,
+			want: ftypes.Code{},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertFromRPCCode(tt.code)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }
@@ -1174,6 +1569,145 @@ func TestConvertFromRPCLicenseFiles(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, ConvertFromRPCLicenseFiles(tt.licenseFiles))
+		})
+	}
+}
+
+func TestConvertCryptoAssets(t *testing.T) {
+	layer := ftypes.Layer{
+		Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+		DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+	}
+
+	tests := []struct {
+		name  string
+		asset ftypes.CryptoAsset
+	}{
+		{
+			name: "certificate",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
+				asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
+				asset.Certificate.KeyUsage = []string{"digitalSignature"}
+				asset.Certificate.ExtendedKeyUsage = []string{"serverAuth"}
+				asset.Certificate.DNSNames = []string{"example.test"}
+				asset.Certificate.EmailAddresses = []string{"admin@example.test"}
+				asset.Certificate.IPAddresses = []string{"192.0.2.1"}
+				asset.Certificate.URIs = []string{"https://example.test"}
+				asset.Certificate.BasicConstraintsValid = true
+				asset.Certificate.IsCA = true
+				asset.Certificate.MaxPathLenZero = true
+				asset.Relationships = []ftypes.CryptoRelationship{
+					{
+						Type:         ftypes.CryptoRelationshipSignedWith,
+						RelatedAsset: cryptotest.AlgorithmDescriptor(),
+					},
+					{
+						Type:         ftypes.CryptoRelationshipContains,
+						RelatedAsset: cryptotest.PublicKeyDescriptor(),
+					},
+				}
+				asset.Layer = layer
+			})),
+		},
+		{
+			name: "public key",
+			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Key.Curve = "P-256"
+				asset.Relationships = []ftypes.CryptoRelationship{
+					{
+						Type:         ftypes.CryptoRelationshipUsedWith,
+						RelatedAsset: cryptotest.AlgorithmDescriptor(),
+					},
+				}
+				asset.Layer = layer
+			})),
+		},
+		{
+			name:  "encrypted private key",
+			asset: cryptotest.EncryptedPrivateKeyAsset(),
+		},
+		{
+			name: "algorithm",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "RSA-2048"
+				asset.Identity.Parameters = "key-size=2048"
+				asset.Layer = layer
+			})),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.NoError(t, tt.asset.Validate())
+			assets := []ftypes.CryptoAsset{tt.asset}
+			assert.Equal(t, assets, ConvertFromRPCCryptoAssets(ConvertToRPCCryptoAssets(assets)))
+		})
+	}
+}
+
+func TestConvertFromRPCCryptoAssets(t *testing.T) {
+	tests := []struct {
+		name   string
+		assets []*common.CryptoAsset
+		want   []ftypes.CryptoAsset
+	}{
+		{
+			name: "empty asset",
+			assets: []*common.CryptoAsset{
+				{},
+			},
+			want: []ftypes.CryptoAsset{
+				{},
+			},
+		},
+		{
+			name: "invalid relationship target",
+			assets: []*common.CryptoAsset{
+				{
+					Kind: string(ftypes.CryptoKindAlgorithm),
+					Identity: &common.CryptoIdentity{
+						Method: string(ftypes.CryptoMethodOID),
+						Value:  "1.2.840.113549.1.1.1",
+					},
+					Algorithm: &common.CryptoAlgorithm{
+						Primitive: string(ftypes.CryptoPrimitiveUnknown),
+					},
+					Relationships: []*common.CryptoRelationship{
+						{
+							Type: string(ftypes.CryptoRelationshipUsedWith),
+							RelatedAsset: &common.CryptoDescriptor{
+								Kind:    string(ftypes.CryptoKindKey),
+								KeyType: string(ftypes.CryptoKeyTypePublic),
+								Identity: &common.CryptoIdentity{
+									Method: string(ftypes.CryptoMethodSPKISHA256),
+									Value:  "not-a-digest",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method: ftypes.CryptoMethodOID,
+							Value:  "1.2.840.113549.1.1.1",
+						},
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Primitive: ftypes.CryptoPrimitiveUnknown,
+						},
+					},
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, ConvertFromRPCCryptoAssets(tt.assets))
 		})
 	}
 }

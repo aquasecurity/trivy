@@ -318,3 +318,46 @@ func TestConstraints_CheckWithAPKComparer(t *testing.T) {
 		})
 	}
 }
+
+func TestConstraints_CheckWithRPMComparer(t *testing.T) {
+	tests := []struct {
+		name        string
+		constraints string
+		version     string
+		want        bool
+	}{
+		{
+			// "^" is RPM's snapshot marker (e.g. "1.0^git1", ordered between
+			// 1.0 and 1.1). The constraint parser must let it through so it
+			// reaches the RPM comparer.
+			name:        "rpm caret snapshot: installed at base is below caret build",
+			constraints: "<1.0^git1",
+			version:     "1.0",
+			want:        true,
+		},
+		{
+			name:        "rpm caret snapshot: installed above caret is not below it",
+			constraints: "<1.0^git1",
+			version:     "1.0^git2",
+			want:        false,
+		},
+		{
+			name:        "rpm caret snapshot in a range",
+			constraints: ">=1.0^git1, <1.0^git5",
+			version:     "1.0^git3",
+			want:        true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			comparer := version.NewRPMComparer()
+			constraints, err := version.NewConstraints(tt.constraints, comparer)
+			require.NoError(t, err)
+
+			got, err := constraints.Check(tt.version)
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

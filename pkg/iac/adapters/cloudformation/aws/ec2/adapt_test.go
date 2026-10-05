@@ -212,6 +212,34 @@ Resources:
 			},
 		},
 		{
+			name: "ec2 instance with metadata options",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  MyEC2Instance:
+    Type: AWS::EC2::Instance
+    Properties:
+      ImageId: ami-12345
+      InstanceType: t3.micro
+      MetadataOptions:
+        HttpEndpoint: enabled
+        HttpTokens: required
+`,
+			expected: ec2.EC2{
+				Instances: []ec2.Instance{
+					{
+						MetadataOptions: ec2.MetadataOptions{
+							HttpEndpoint: types.StringTest("enabled"),
+							HttpTokens:   types.StringTest("required"),
+						},
+						RootBlockDevice: &ec2.BlockDevice{
+							Encrypted: types.BoolTest(false),
+						},
+					},
+				},
+				VPCs: nil,
+			},
+		},
+		{
 			name: "ec2 instance with launch template, ref to name",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:

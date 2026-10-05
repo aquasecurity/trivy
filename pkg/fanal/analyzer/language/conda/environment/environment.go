@@ -93,7 +93,7 @@ func findLicenseFromEnvDir(ctx context.Context, pkg types.Package, prefix string
 			return licenseFromPackageJson(ctx, condaMetaDir, entry.Name())
 		}
 	}
-	return nil, xerrors.Errorf("meta file didn't find")
+	return nil, xerrors.Errorf("meta file was not found")
 }
 
 func (a environmentAnalyzer) Required(filePath string, _ os.FileInfo) bool {

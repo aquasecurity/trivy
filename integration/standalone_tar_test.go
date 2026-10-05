@@ -26,6 +26,7 @@ func TestTar(t *testing.T) {
 		Severity          []string
 		IgnoreIDs         []string
 		Format            types.Format
+		Scanners          []string
 		Input             string
 		SkipDirs          []string
 		SkipFiles         []string
@@ -372,6 +373,14 @@ func TestTar(t *testing.T) {
 			golden: goldenMariner10,
 		},
 		{
+			name: "rapidfort ubuntu 22.04",
+			args: args{
+				Format: types.FormatJSON,
+				Input:  "testdata/fixtures/images/rapidfort-ubuntu-2204.tar.gz",
+			},
+			golden: goldenRapidFortUbuntu2204,
+		},
+		{
 			name: "busybox with Cargo.lock integration",
 			args: args{
 				Format: types.FormatJSON,
@@ -387,6 +396,15 @@ func TestTar(t *testing.T) {
 				Input:         "testdata/fixtures/images/fluentd-multiple-lockfiles.tar.gz",
 			},
 			golden: goldenFluentdGems,
+		},
+		{
+			name: "cryptographic assets with CycloneDX format",
+			args: args{
+				Format:   types.FormatCycloneDX,
+				Scanners: []string{"crypto"},
+				Input:    "testdata/fixtures/images/crypto.tar.gz",
+			},
+			golden: goldenCryptoCDX,
 		},
 	}
 
@@ -414,6 +432,9 @@ func TestTar(t *testing.T) {
 			}
 			if len(tt.args.Severity) != 0 {
 				osArgs = append(osArgs, "--severity", strings.Join(tt.args.Severity, ","))
+			}
+			if len(tt.args.Scanners) != 0 {
+				osArgs = append(osArgs, "--scanners", strings.Join(tt.args.Scanners, ","))
 			}
 			if len(tt.args.IgnoreIDs) != 0 {
 				trivyIgnore := ".trivyignore"

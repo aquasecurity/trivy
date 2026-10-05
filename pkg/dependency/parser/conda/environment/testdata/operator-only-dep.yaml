@@ -1,0 +1,9 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - "="
+  - "=="
+  - numpy=1.26.4
+
+prefix: /opt/conda/envs/test-env

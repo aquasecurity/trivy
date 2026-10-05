@@ -176,6 +176,8 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Conan
 	case packageurl.TypePub:
 		return ftypes.Pub
+	case packageurl.TypeJulia:
+		return ftypes.Julia
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
 	case TypeK8s:
@@ -199,7 +201,7 @@ func (p *PackageURL) LangType() ftypes.LangType {
 
 func (p *PackageURL) Class() types.ResultClass {
 	switch p.Type {
-	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM:
+	case packageurl.TypeApk, packageurl.TypeDebian, packageurl.TypeRPM, packageurlTypeBottlerocket:
 		// OS packages
 		return types.ClassOSPkg
 	default:
@@ -308,9 +310,8 @@ func parseOCI(metadata types.Metadata) (*packageurl.PackageURL, error) {
 	}
 
 	name := strings.ToLower(digest.RepositoryStr())
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		name = name[index+1:]
+	if _, base, found := strings.CutLast(name, "/"); found {
+		name = base
 	}
 
 	var qualifiers packageurl.Qualifiers
@@ -484,7 +485,7 @@ func purlType(t ftypes.TargetType) string {
 		return packageurl.TypeApk
 	case ftypes.Debian, ftypes.Ubuntu, ftypes.Echo:
 		return packageurl.TypeDebian
-	case ftypes.RedHat, ftypes.CentOS, ftypes.Rocky, ftypes.Alma,
+	case ftypes.RedHat, ftypes.CentOS, ftypes.CentOSStream, ftypes.Rocky, ftypes.Alma,
 		ftypes.Amazon, ftypes.Fedora, ftypes.Oracle, ftypes.OpenSUSE,
 		ftypes.OpenSUSELeap, ftypes.OpenSUSETumbleweed, ftypes.SLES, ftypes.SLEMicro, ftypes.Photon,
 		ftypes.Azure, ftypes.CBLMariner, ftypes.CoreOS:
@@ -518,12 +519,8 @@ func parseQualifier(pkg ftypes.Package) packageurl.Qualifiers {
 }
 
 func parsePkgName(name string) (string, string) {
-	var namespace string
-	index := strings.LastIndex(name, "/")
-	if index != -1 {
-		namespace = name[:index]
-		name = name[index+1:]
+	if namespace, base, found := strings.CutLast(name, "/"); found {
+		return namespace, base
 	}
-	return namespace, name
-
+	return "", name
 }

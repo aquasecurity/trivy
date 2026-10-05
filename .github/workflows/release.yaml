@@ -28,12 +28,13 @@ jobs:
       # workflows in other repos — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.ACTIONS_MULTI_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
           owner: ${{ github.repository_owner }}
           repositories: trivy-repo
+          permission-actions: write
       - name: Trigger deploy-packages workflow in trivy-repo
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
@@ -52,13 +53,15 @@ jobs:
       # version PR would not run CI — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
+          permission-contents: write
+          permission-pull-requests: write
 
       - name: Checkout
-        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           fetch-depth: 0
           persist-credentials: true # mage helm:updateVersion runs git push
@@ -89,7 +92,7 @@ jobs:
       # workflows in other repos — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
         with:
           client-id: ${{ secrets.ACTIONS_MULTI_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.TRIVY_WORKFLOW_TRIGGER_APP_PRIVATE_KEY }}
@@ -99,6 +102,7 @@ jobs:
             trivy-downloads
             trivy-chocolatey
             trivy-action
+          permission-actions: write
       - name: Trigger update_version workflow in trivy-telemetry
         if: always()
         env:

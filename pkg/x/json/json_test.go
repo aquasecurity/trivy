@@ -77,7 +77,6 @@ func TestUnmarshal(t *testing.T) {
 							EndLine:   10,
 						},
 						Dependencies: map[string]Dependency{
-							// UnmarshalerWithObjectLocation doesn't support Location for nested objects
 							"debug": {
 								Version: "2.6.9",
 								Location: xjson.Location{
@@ -87,6 +86,145 @@ func TestUnmarshal(t *testing.T) {
 							},
 						},
 					},
+				},
+			},
+		},
+		{
+			name: "objects on the same line",
+			in:   []byte(`{"dependencies": {"body-parser": {"version": "1.18.3", "dependencies": {"debug": {"version": "2.6.9"}, "ms": {"version": "2.0.0"}}}, "qs": {"version": "6.5.2"}}}`),
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"body-parser": {
+						Version: "1.18.3",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
+						},
+						Dependencies: map[string]Dependency{
+							"debug": {
+								Version: "2.6.9",
+								Location: xjson.Location{
+									StartLine: 1,
+									EndLine:   1,
+								},
+							},
+							"ms": {
+								Version: "2.0.0",
+								Location: xjson.Location{
+									StartLine: 1,
+									EndLine:   1,
+								},
+							},
+						},
+					},
+					"qs": {
+						Version: "6.5.2",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "null instead of object",
+			in:   []byte(`{"dependencies": {"body-parser": {"version": "1.18.3"}, "ms": null}}`),
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"body-parser": {
+						Version: "1.18.3",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
+						},
+					},
+					"ms": {},
+				},
+			},
+		},
+		{
+			name: "null followed by sibling objects",
+			in: []byte(`{"dependencies": {
+"a": null,
+"b": {"version": "1.0.0"},
+"c": null,
+"d": {"version": "2.0.0"}}}`),
+			out: nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"a": {},
+					"b": {
+						Version: "1.0.0",
+						Location: xjson.Location{
+							StartLine: 3,
+							EndLine:   3,
+						},
+					},
+					"c": {},
+					"d": {
+						Version: "2.0.0",
+						Location: xjson.Location{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "object on the line after its key",
+			in: []byte(`{
+    "dependencies":
+    {
+        "debug":
+        {
+            "version": "2.6.9"
+        }
+    }
+}`),
+			out: nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"debug": {
+						Version: "2.6.9",
+						Location: xjson.Location{
+							StartLine: 5,
+							EndLine:   7,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "windows line endings",
+			in:   []byte("{\r\n    \"dependencies\": {\r\n        \"debug\": {\r\n            \"version\": \"2.6.9\"\r\n        }\r\n    }\r\n}"),
+			out:  nestedStruct{},
+			want: nestedStruct{
+				Dependencies: map[string]Dependency{
+					"debug": {
+						Version: "2.6.9",
+						Location: xjson.Location{
+							StartLine: 3,
+							EndLine:   5,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "object ending at the end of file",
+			in: []byte(`{
+    "version": "2.6.9"
+}`),
+			out: Dependency{},
+			want: Dependency{
+				Version: "2.6.9",
+				Location: xjson.Location{
+					StartLine: 1,
+					EndLine:   3,
 				},
 			},
 		},
@@ -114,6 +252,29 @@ func TestUnmarshal(t *testing.T) {
 						Location: xjson.Location{
 							StartLine: 5,
 							EndLine:   5,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "strings on the same line",
+			in:   []byte(`{"version": "0.5", "requires": ["sound32/1.0#83d4b7bf607b3b60a6546f8b58b5cdd7%1675278904.0791488", "matrix/1.3#905c3f0babc520684c84127378fefdd0%1675278900.0103245"]}`),
+			out:  stringWithLocation{},
+			want: stringWithLocation{
+				Requires: []Require{
+					{
+						Dependency: "sound32/1.0#83d4b7bf607b3b60a6546f8b58b5cdd7%1675278904.0791488",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
+						},
+					},
+					{
+						Dependency: "matrix/1.3#905c3f0babc520684c84127378fefdd0%1675278900.0103245",
+						Location: xjson.Location{
+							StartLine: 1,
+							EndLine:   1,
 						},
 					},
 				},

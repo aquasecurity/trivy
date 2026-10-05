@@ -38,6 +38,27 @@ func annotation(t *testing.T, comment string) spdx.Annotation {
 	}
 }
 
+// bomWithoutRoot returns a BOM that has components but no root component,
+// e.g. an SPDX SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT.
+func bomWithoutRoot() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.AddComponent(&core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "jackson-databind",
+		Group:   "com.fasterxml.jackson.core",
+		Version: "2.13.4.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "com.fasterxml.jackson.core",
+				Name:      "jackson-databind",
+				Version:   "2.13.4.1",
+			},
+		},
+	})
+	return bom
+}
+
 func TestMarshaler_Marshal(t *testing.T) {
 	testCases := []struct {
 		name        string
@@ -1478,6 +1499,60 @@ func TestMarshaler_Marshal(t *testing.T) {
 						RefA:         spdx.DocElementID{ElementRefID: "Filesystem-e340f27468b382be"},
 						RefB:         spdx.DocElementID{ElementRefID: "Application-aab0f4e8cf174c67"},
 						Relationship: "CONTAINS",
+					},
+				},
+			},
+		},
+		{
+			// Regression for https://github.com/aquasecurity/trivy/issues/10764:
+			// Marshal must not panic when the BOM has no root component (e.g. an SPDX
+			// SBOM without a DESCRIBES relationship from SPDXRef-DOCUMENT). Components
+			// must still be marshaled and no DESCRIBES relationship must be emitted.
+			name: "no root component",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "empty/path",
+				ArtifactType:  ftypes.TypeFilesystem,
+				BOM:           bomWithoutRoot(),
+			},
+			wantSBOM: &spdx.Document{
+				SPDXVersion:    spdx.Version,
+				DataLicense:    spdx.DataLicense,
+				SPDXIdentifier: tspdx.DocumentSPDXIdentifier,
+				// DocumentName and DocumentNamespace fall back to "unknown" when there is no root.
+				DocumentName:      "unknown",
+				DocumentNamespace: "http://trivy.dev/unknown/3ff14136-e09f-4df9-80ea-000000000001",
+				CreationInfo: &spdx.CreationInfo{
+					Creators: []common.Creator{
+						{
+							Creator:     "aquasecurity",
+							CreatorType: "Organization",
+						},
+						{
+							Creator:     "trivy-0.56.2",
+							CreatorType: "Tool",
+						},
+					},
+					Created: "2021-08-25T12:20:30Z",
+				},
+				// The component is still marshaled, but no root package and no DESCRIBES relationship are emitted.
+				Packages: []*spdx.Package{
+					{
+						PackageSPDXIdentifier:   spdx.ElementID("Package-a6073b1f888c9899"),
+						PackageDownloadLocation: "NONE",
+						PackageName:             "com.fasterxml.jackson.core:jackson-databind",
+						PackageVersion:          "2.13.4.1",
+						PackageLicenseConcluded: "NOASSERTION",
+						PackageLicenseDeclared:  "NOASSERTION",
+						PackageExternalReferences: []*spdx.PackageExternalReference{
+							{
+								Category: tspdx.CategoryPackageManager,
+								RefType:  tspdx.RefTypePurl,
+								Locator:  "pkg:maven/com.fasterxml.jackson.core/jackson-databind@2.13.4.1",
+							},
+						},
+						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
+						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
 					},
 				},
 			},

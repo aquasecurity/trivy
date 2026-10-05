@@ -406,3 +406,188 @@ func TestNormalize(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizeLicenseURL(t *testing.T) {
+	tests := []struct {
+		name string
+		url  string
+		want string
+	}{
+		{
+			name: "empty",
+			url:  "",
+			want: "",
+		},
+		{
+			name: "whitespace only",
+			url:  "   ",
+			want: "",
+		},
+		{
+			name: "https scheme is stripped",
+			url:  "https://www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "http scheme is stripped",
+			url:  "http://www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "an uppercase scheme is dropped and the host is lowercased",
+			url:  "HTTPS://WWW.Apache.ORG/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a URL without a scheme is normalized as well",
+			url:  "www.apache.org/licenses/LICENSE-2.0",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a host without a path is lowercased as a whole",
+			url:  "https://Opensource.ORG",
+			want: "opensource.org",
+		},
+		{
+			// The only ftp:// URL in the SPDX index. It is the seeAlso of the Zeeff
+			// License, whose text is only published inside the newsx source tarball.
+			name: "a non-http scheme is kept, so it matches only itself",
+			url:  "ftp://ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
+			want: "ftp://ftp.tin.org/pub/news/utils/newsx/newsx-1.6.tar.gz",
+		},
+		{
+			name: "path keeps its case",
+			url:  "https://opensource.org/license/MIT",
+			want: "opensource.org/license/MIT",
+		},
+		{
+			name: "trailing slash is dropped",
+			url:  "https://opensource.org/license/mit/",
+			want: "opensource.org/license/mit",
+		},
+		{
+			name: ".txt suffix is dropped",
+			url:  "https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want: "apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: ".html suffix is dropped",
+			url:  "https://www.gnu.org/licenses/gpl-3.0-standalone.html",
+			want: "gnu.org/licenses/gpl-3.0-standalone",
+		},
+		{
+			name: "opensource.org licenses vs license",
+			url:  "https://opensource.org/licenses/Apache-2.0",
+			want: "opensource.org/license/Apache-2.0",
+		},
+		{
+			name: "opensource.org license with trailing slash",
+			url:  "http://opensource.org/license/apache-2-0/",
+			want: "opensource.org/license/apache-2-0",
+		},
+		{
+			name: "archive.org snapshot is unwrapped to the embedded license URL",
+			url:  "http://wayback.archive.org/web/20060924134533/http://www.opensource.org/licenses/afl-2.0.txt",
+			want: "opensource.org/license/afl-2.0",
+		},
+		{
+			name: "the archive host is matched case-insensitively",
+			url:  "HTTPS://WEB.ARCHIVE.ORG/web/20120101081418/http://rosenlaw.com:80/OSL3.0.htm",
+			want: "rosenlaw.com:80/OSL3.0",
+		},
+		{
+			name: "a timestamp modifier is accepted",
+			url:  "https://web.archive.org/web/20170708004848id_/http://www.gnu.org/licenses/lgpl.html",
+			want: "gnu.org/licenses/lgpl",
+		},
+		{
+			name: "only the outermost of nested snapshots is unwrapped",
+			url:  "https://web.archive.org/web/20120101081418/https://web.archive.org/web/20160823201924/https://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/web/20160823201924/https://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a URL carrying another one in its query is not unwrapped",
+			url:  "https://example.com/reference?target=https://www.apache.org/licenses/LICENSE-2.0.txt",
+			want: "example.com/reference?target=https://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			// Without a scheme of its own, the first "://" is the carried URL's.
+			name: "a URL carrying another one is not cut down to it",
+			url:  "example.com/redirect?url=https://opensource.org/licenses/MIT",
+			want: "example.com/redirect?url=https://opensource.org/license/MIT",
+		},
+		{
+			name: "an archive path other than /web/ is not unwrapped",
+			url:  "https://web.archive.org/about/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/about/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			// The path is case-sensitive, so /WEB/ is not the snapshot path.
+			name: "an archive path in upper case is not unwrapped",
+			url:  "https://web.archive.org/WEB/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/WEB/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a snapshot without a timestamp is not unwrapped",
+			url:  "https://web.archive.org/web/about/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "web.archive.org/web/about/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "a snapshot with nothing after the timestamp is not unwrapped",
+			url:  "https://web.archive.org/web/20060924134533",
+			want: "web.archive.org/web/20060924134533",
+		},
+		{
+			name: "a snapshot path on another host is not unwrapped",
+			url:  "https://example.com/web/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+			want: "example.com/web/20060924134533/http://www.apache.org/licenses/LICENSE-2.0",
+		},
+		{
+			name: "https archive snapshot embedding http URL is unwrapped",
+			url:  "https://web.archive.org/web/20120101081418/http://rosenlaw.com:80/OSL3.0.htm",
+			want: "rosenlaw.com:80/OSL3.0",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, licensing.NormalizeLicenseURL(tt.url))
+		})
+	}
+}
+
+func TestSPDXLicenseIDByURL(t *testing.T) {
+	tests := []struct {
+		name   string
+		url    string
+		want   string
+		wantOK bool
+	}{
+		{
+			name:   "URL taken from metadata as-is",
+			url:    "http://www.apache.org/licenses/LICENSE-2.0.txt",
+			want:   "Apache-2.0",
+			wantOK: true,
+		},
+		{
+			name:   "URL that needs no normalization",
+			url:    "opensource.org/license/MIT",
+			want:   "MIT",
+			wantOK: true,
+		},
+		{
+			name: "URL of no SPDX license",
+			url:  "https://example.com/LICENSE",
+		},
+		{
+			name: "empty",
+			url:  "",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok := licensing.SPDXLicenseIDByURL(tt.url)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

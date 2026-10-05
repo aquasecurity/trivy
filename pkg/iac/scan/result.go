@@ -228,7 +228,7 @@ func getMetadataFromSource(source any) iacTypes.Metadata {
 	}
 
 	metaValue := reflect.ValueOf(source)
-	if metaValue.Kind() == reflect.Ptr {
+	if metaValue.Kind() == reflect.Pointer {
 		metaValue = metaValue.Elem()
 	}
 	metaVal := metaValue.FieldByName("Metadata")

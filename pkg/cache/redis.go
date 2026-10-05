@@ -10,8 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/go-redis/redis/v8"
 	"github.com/hashicorp/go-multierror"
+	"github.com/redis/go-redis/v9"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
@@ -71,7 +71,7 @@ func NewRedisTLSOptions(caCert, cert, key string) (RedisTLSOptions, error) {
 	// If one of redis option not nil, make sure CA, cert, and key provided
 	if !lo.IsEmpty(opts) {
 		if opts.CACert == "" || opts.Cert == "" || opts.Key == "" {
-			return RedisTLSOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file path when using TLS")
+			return RedisTLSOptions{}, xerrors.Errorf("you must provide Redis CA, cert and key file paths when using TLS")
 		}
 	}
 	return opts, nil
@@ -139,6 +139,7 @@ func (c RedisCache) PutBlob(ctx context.Context, blobID string, blobInfo types.B
 	}
 	return nil
 }
+
 func (c RedisCache) DeleteBlobs(ctx context.Context, blobIDs []string) error {
 	var errs error
 	for _, blobID := range blobIDs {

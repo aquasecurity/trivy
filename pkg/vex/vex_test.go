@@ -1,20 +1,30 @@
 package vex_test
 
 import (
+	"encoding/base64"
+	"encoding/json"
 	"fmt"
-	"net/http/httptest"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
-	"github.com/google/go-containerregistry/pkg/v1"
+	v1 "github.com/google/go-containerregistry/pkg/v1"
+	"github.com/google/go-containerregistry/pkg/v1/empty"
+	"github.com/google/go-containerregistry/pkg/v1/mutate"
+	"github.com/google/go-containerregistry/pkg/v1/static"
+	"github.com/in-toto/in-toto-golang/in_toto"
+	openvex "github.com/openvex/go-vex/pkg/vex"
 	"github.com/package-url/packageurl-go"
+	"github.com/secure-systems-lab/go-securesystemslib/dsse"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/internal/registrytest"
+	"github.com/aquasecurity/trivy/internal/testutil"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/oci"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
@@ -174,6 +184,13 @@ var (
 		InstalledVersion: goTransitivePackage.Version,
 		PkgIdentifier:    goTransitivePackage.Identifier,
 	}
+	// CVE-2024-0001 detected on go-direct1
+	vuln6 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2024-0001",
+		PkgName:          goDirectPackage1.Name,
+		InstalledVersion: goDirectPackage1.Version,
+		PkgIdentifier:    goDirectPackage1.Identifier,
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -182,11 +199,11 @@ func TestMain(m *testing.M) {
 }
 
 func TestFilter(t *testing.T) {
-	// Set up the OCI registry
-	tr, d := setUpRegistry(t)
-
 	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
+
+	// Set up an OCI registry serving a VEX attestation for the `--vex oci` case.
+	registryHost, subjectDigest := setUpRegistry(t)
 
 	type args struct {
 		report *types.Report
@@ -304,6 +321,34 @@ func TestFilter(t *testing.T) {
 					Vulnerabilities: []types.DetectedVulnerability{vuln3},
 				}),
 			}),
+		},
+		{
+			name: "VEX attestation from OCI registry",
+			args: args{
+				// - oci:debian@<digest>
+				//     - pkg:deb/debian/bash@5.3
+				report: imageReportWithAttestation([]types.Result{
+					bashResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{
+							vuln3, // filtered by VEX
+						},
+					}),
+				}, fmt.Sprintf("%s/debian@%s", registryHost, subjectDigest.String())),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{Type: vex.TypeOCI},
+					},
+				},
+			},
+			want: imageReportWithAttestation([]types.Result{
+				bashResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{
+						modifiedFinding(vuln3, vulnerableCodeNotInExecutePath,
+							fmt.Sprintf("VEX attestation in OCI registry (%s)", ociPURLString(registryHost, subjectDigest))),
+					},
+				}),
+			}, fmt.Sprintf("%s/debian@%s", registryHost, subjectDigest.String())),
 		},
 		{
 			name: "OpenVEX, single path between product and subcomponent",
@@ -503,6 +548,31 @@ func TestFilter(t *testing.T) {
 			}),
 		},
 		{
+			name: "CSAF with relationships, vulnerability on the parent product, not the sub-component",
+			args: args{
+				// The statement covers go-transitive as a component of go-direct1,
+				// while the vulnerability is detected on go-direct1 itself.
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vuln6},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-relationships.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{vuln6}, // The statement doesn't apply to the product itself
+				}),
+			}),
+		},
+		{
 			name: "VEX Repository",
 			setup: func(t *testing.T, tmpDir string) {
 				// Create repository.yaml
@@ -538,34 +608,6 @@ repositories:
 					},
 				}),
 			}),
-		},
-		{
-			name: "VEX attestation from OCI registry",
-			args: args{
-				// - oci:debian?tag=12
-				//     - pkg:deb/debian/bash@5.3
-				report: imageReportWithAttestation([]types.Result{
-					bashResult(types.Result{
-						Vulnerabilities: []types.DetectedVulnerability{
-							vuln3, // filtered by VEX
-						},
-					}),
-				}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
-				opts: vex.Options{
-					Sources: []vex.Source{
-						{Type: vex.TypeOCI},
-					},
-				},
-			},
-			want: imageReportWithAttestation([]types.Result{
-				bashResult(types.Result{
-					Vulnerabilities: []types.DetectedVulnerability{},
-					ModifiedFindings: []types.ModifiedFinding{
-						modifiedFinding(vuln3, vulnerableCodeNotInExecutePath,
-							fmt.Sprintf("VEX attestation in OCI registry (%s)", ociPURLString(tr, d))),
-					},
-				}),
-			}, fmt.Sprintf("%s/debian@%s", strings.TrimPrefix(tr.URL, "http://"), d.String())),
 		},
 		{
 			name: "infinity loop for OS packages",
@@ -687,23 +729,97 @@ func imageReportWithAttestation(results types.Results, repoDigest string) *types
 	return report
 }
 
-func ociPURLString(ts *httptest.Server, d v1.Hash) string {
+// setUpRegistry starts a test registry serving a `debian:12` image with a legacy
+// cosign `.att` VEX attestation, and returns the registry host and the image digest.
+func setUpRegistry(t *testing.T) (string, v1.Hash) {
+	t.Helper()
+
+	ts := registrytest.NewServer(t)
+	host := strings.TrimPrefix(ts.URL, "http://")
+
+	_, subject := registrytest.PushRandomImage(t, host, "debian", "12")
+	registrytest.PushLegacyAttestation(t, host, "debian", subject.Digest, setUpVEXAttestation(t))
+	return host, subject.Digest
+}
+
+// setUpVEXAttestation wraps the openvex-oci.json document in a DSSE envelope and
+// returns it as a single-layer attestation image.
+func setUpVEXAttestation(t *testing.T) v1.Image {
+	t.Helper()
+
+	b, err := json.Marshal(createVEXAttestation(t))
+	require.NoError(t, err)
+
+	img, err := mutate.AppendLayers(empty.Image, static.NewLayer(b, oci.DSSEEnvelopeArtifactType))
+	require.NoError(t, err)
+	return img
+}
+
+func createVEXAttestation(t *testing.T) dsse.Envelope {
+	t.Helper()
+
+	var v openvex.VEX
+	testutil.MustReadJSON(t, "testdata/openvex-oci.json", &v)
+
+	statement := in_toto.Statement{
+		StatementHeader: in_toto.StatementHeader{
+			Type:          "https://in-toto.io/Statement/v0.1",
+			PredicateType: "https://openvex.dev/ns",
+			Subject: []in_toto.Subject{
+				{
+					Name:   "example",
+					Digest: map[string]string{"sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"},
+				},
+			},
+		},
+		Predicate: v,
+	}
+	b, err := json.Marshal(statement)
+	require.NoError(t, err)
+
+	return dsse.Envelope{
+		PayloadType: "application/vnd.in-toto+json",
+		Payload:     base64.StdEncoding.EncodeToString(b),
+	}
+}
+
+func ociPURLString(host string, d v1.Hash) string {
 	p := &packageurl.PackageURL{
 		Type:    packageurl.TypeOCI,
 		Name:    "debian",
 		Version: d.String(),
 		Qualifiers: packageurl.Qualifiers{
-			{
-				Key:   "arch",
-				Value: "amd64",
-			},
-			{
-				Key:   "repository_url",
-				Value: strings.TrimPrefix(ts.URL, "http://") + "/debian",
-			},
+			{Key: "arch", Value: "amd64"},
+			{Key: "repository_url", Value: host + "/debian"},
 		},
 	}
 	return p.String()
+}
+
+func TestNewOCI(t *testing.T) {
+	tests := []struct {
+		name    string
+		report  types.Report
+		wantErr string
+	}{
+		{
+			name:    "not a container image",
+			report:  types.Report{ArtifactType: ftypes.TypeFilesystem},
+			wantErr: "'--vex oci' can be used only when scanning OCI artifacts",
+		},
+		{
+			name:    "container image without repo digests",
+			report:  types.Report{ArtifactType: ftypes.TypeContainerImage},
+			wantErr: "'--vex oci' can be used only when scanning OCI artifacts",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, err := vex.NewOCI(t.Context(), &tt.report)
+			require.ErrorContains(t, err, tt.wantErr)
+		})
+	}
 }
 
 func createCycloneDXBOMWithSpringComponent() *core.BOM {

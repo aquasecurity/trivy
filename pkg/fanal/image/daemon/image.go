@@ -4,6 +4,7 @@ import (
 	"context"
 	"io"
 	"os"
+	"slices"
 	"strings"
 	"sync"
 	"time"
@@ -229,8 +230,7 @@ func configHistory(dhistory []dimage.HistoryResponseItem) []v1.History {
 	// Fill only required metadata
 	var history []v1.History
 
-	for i := len(dhistory) - 1; i >= 0; i-- {
-		h := dhistory[i]
+	for _, h := range slices.Backward(dhistory) {
 		history = append(history, v1.History{
 			Created: v1.Time{
 				Time: time.Unix(h.Created, 0).UTC(),

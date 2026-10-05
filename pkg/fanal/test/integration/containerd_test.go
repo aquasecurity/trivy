@@ -52,7 +52,10 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *clien
 
 	startContainerd(t, ctx, tmpDir)
 
-	// Retry up to 3 times until containerd is ready
+	// Retry until containerd is ready.
+	// client.New uses lazy gRPC dialing, so we verify actual connectivity with
+	// a real RPC call (Version) to catch "permission denied" on the socket before
+	// returning the client to callers.
 	var c *client.Client
 	iteration, _, err := lo.AttemptWhileWithDelay(3, 1*time.Second, func(int, time.Duration) (error, bool) {
 		c, err = client.New(socketPath)
@@ -61,6 +64,11 @@ func setupContainerd(t *testing.T, ctx context.Context, namespace string) *clien
 				return err, false // unexpected error
 			}
 			return err, true
+		}
+		// Force actual dial to detect socket permission issues early.
+		if _, vErr := c.Version(ctx); vErr != nil {
+			_ = c.Close()
+			return vErr, true
 		}
 		t.Cleanup(func() {
 			require.NoError(t, c.Close())
@@ -103,12 +111,13 @@ func startContainerd(t *testing.T, ctx context.Context, hostPath string) {
 	require.NoError(t, err)
 	testcontainers.CleanupContainer(t, containerdC)
 
-	_, _, err = containerdC.Exec(ctx, []string{
+	exitCode, _, err := containerdC.Exec(ctx, []string{
 		"chmod",
 		"666",
 		"/run/containerd/containerd.sock",
 	})
 	require.NoError(t, err)
+	require.Zero(t, exitCode, "chmod containerd.sock failed")
 }
 
 // Each of these tests imports an image and tags it with the name found in the

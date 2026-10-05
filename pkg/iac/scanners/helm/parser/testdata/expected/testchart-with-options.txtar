@@ -1,0 +1,82 @@
+-- templates/deployment.yaml --
+# Source: testchart/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testchart
+  labels:
+    helm.sh/chart: testchart-0.1.0
+    app.kubernetes.io/name: testchart
+    app.kubernetes.io/instance: testchart
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: testchart
+      app.kubernetes.io/instance: testchart
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: testchart
+        app.kubernetes.io/instance: testchart
+    spec:
+      serviceAccountName: testchart
+      securityContext:
+        {}
+      containers:
+          # trivy:ignore:KSV018
+        - name: testchart
+          securityContext:
+            runAsUser: 0
+          image: "nginx:1.16.0"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+-- templates/service.yaml --
+# Source: testchart/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: testchart
+  labels:
+    helm.sh/chart: testchart-0.1.0
+    app.kubernetes.io/name: testchart
+    app.kubernetes.io/instance: testchart
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  ports:
+    - port: 80
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: testchart
+    app.kubernetes.io/instance: testchart
+-- templates/serviceaccount.yaml --
+# Source: testchart/templates/serviceaccount.yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: testchart
+  labels:
+    helm.sh/chart: testchart-0.1.0
+    app.kubernetes.io/name: testchart
+    app.kubernetes.io/instance: testchart
+    app.kubernetes.io/version: "1.16.0"
+    app.kubernetes.io/managed-by: Helm

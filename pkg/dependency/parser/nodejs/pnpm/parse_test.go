@@ -71,6 +71,18 @@ func TestParse(t *testing.T) {
 			want:     pnpmV9SameVersDiffPeers,
 			wantDeps: pnpmV9SameVersDiffPeersDeps,
 		},
+		{
+			name:     "v9 with multiple documents",
+			file:     "testdata/pnpm-lock_v9_multiple_documents.yaml",
+			want:     pnpmV9MultipleDocuments,
+			wantDeps: pnpmV9MultipleDocumentsDeps,
+		},
+		{
+			name:     "v9 with same package at different versions across importers",
+			file:     "testdata/pnpm-lock_v9_multi_version.yaml",
+			want:     pnpmV9MultiVersion,
+			wantDeps: pnpmV9MultiVersionDeps,
+		},
 	}
 
 	for _, tt := range tests {

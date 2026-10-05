@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io/fs"
+	"maps"
 	"os"
 	"path/filepath"
 	"sync/atomic"
@@ -70,8 +71,11 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		return err
 	}
 
-	// Overwrite the file getter so that a file will be copied
-	getter.Getters["file"] = &getter.FileGetter{Copy: true}
+	// Use a copy of the default getters with the file getter overridden to
+	// copy files, so that concurrent download calls don't write to the
+	// package-global getter.Getters map. See #10832.
+	getters := maps.Clone(getter.Getters)
+	getters["file"] = &getter.FileGetter{Copy: true}
 
 	opt.Logger.Debug("Downloading module", log.String("source", opt.Source))
 
@@ -81,7 +85,7 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 		Src:     opt.Source,
 		Dst:     dst,
 		Pwd:     opt.WorkingDir,
-		Getters: getter.Getters,
+		Getters: getters,
 		Mode:    getter.ClientModeAny,
 	}
 

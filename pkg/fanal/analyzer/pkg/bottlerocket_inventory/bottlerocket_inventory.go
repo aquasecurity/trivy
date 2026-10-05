@@ -12,13 +12,16 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/scan/utils"
 )
 
 func init() {
 	analyzer.RegisterAnalyzer(newBottlerocketInventoryAnalyzer())
 }
 
-const analyzerVersion = 1
+// analyzerVersion is bumped to 2 because the parsed package (and its ID) now
+// includes the release, which changes cached results from version 1.
+const analyzerVersion = 2
 
 var requiredFiles = []string{
 	"aarch64-bottlerocket-linux-gnu/sys-root/usr/share/bottlerocket/application-inventory.json",
@@ -63,27 +66,33 @@ func (a bottlerocketInventoryAnalyzer) Analyze(ctx context.Context, input analyz
 }
 
 func (a bottlerocketInventoryAnalyzer) parseApplicationInventory(_ context.Context, r io.Reader) ([]types.Package, error) {
-	var pkgs []types.Package
-
 	var applicationInventory ApplicationInventory
 	if err := json.NewDecoder(r).Decode(&applicationInventory); err != nil {
 		return nil, err
 	}
 
+	pkgs := make([]types.Package, 0, len(applicationInventory.Content))
 	for _, app := range applicationInventory.Content {
-		epoch, err := strconv.Atoi(app.Epoch)
-		if err != nil {
-			return nil, err
+		// Epoch may be absent from the inventory (e.g. older Bottlerocket
+		// releases such as 1.19.x); treat a missing epoch as 0 per RPM semantics.
+		epoch := 0
+		if app.Epoch != "" {
+			var err error
+			epoch, err = strconv.Atoi(app.Epoch)
+			if err != nil {
+				return nil, err
+			}
 		}
 		pkg := types.Package{
 			Arch:    app.Architecture,
 			Epoch:   epoch,
 			Name:    app.Name,
 			Version: app.Version,
+			Release: app.Release,
 		}
 
 		if pkg.Name != "" && pkg.Version != "" {
-			pkg.ID = fmt.Sprintf("%s@%s", pkg.Name, pkg.Version)
+			pkg.ID = fmt.Sprintf("%s@%s", pkg.Name, utils.FormatVersion(pkg))
 		}
 
 		pkgs = append(pkgs, pkg)

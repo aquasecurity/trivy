@@ -5,7 +5,7 @@ Each artifact supports the following scanners:
 
 | Artifact         | SBOM | Vulnerability | License |
 |------------------|:----:|:-------------:|:-------:|
-| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    -    |
+| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    ✓[^9]    |
 | pom.xml          |  ✓   |       ✓       |    ✓    |
 | *gradle.lockfile |  ✓   |       ✓       |    ✓    |
 | *.sbt.lock       |  ✓   |       ✓       |    -    |
@@ -24,6 +24,7 @@ See [here](./index.md) for the detail.
 
 ## JAR/WAR/PAR/EAR
 To find information about your JAR[^2] file, Trivy parses `pom.properties` and `MANIFEST.MF` files in your JAR[^2] file and takes required properties[^3].
+Only the main section of `MANIFEST.MF` is used for artifact properties, because the individual sections that may follow it describe packages or files inside the archive rather than the archive itself.
 
 If those files don't exist or don't contain enough information - Trivy will try to find this JAR[^2] file in [trivy-java-db](https://github.com/aquasecurity/trivy-java-db).
 The Java DB will be automatically downloaded/updated when any JAR[^2] file is found.
@@ -36,6 +37,20 @@ Base JAR[^2] may contain inner JARs[^2] within itself.
 To find information about these JARs[^2], the same logic is used as for the base JAR[^2].
 
 `table` format only contains the name of root JAR[^2] . To get the full path to inner JARs[^2] use the `json` format.
+
+### Licenses
+Trivy detects licenses for a JAR[^2] from four sources, in this order:
+
+1. **Embedded POM** — the `<licenses>` block of the embedded `META-INF/maven/<groupId>/<artifactId>/pom.xml`, matched to the package by `groupId:artifactId`. A `<license>` is taken from its `<name>`; when the `<name>` is empty, the `<url>` is used instead if it maps to a known SPDX license.
+2. **Jenkins plugin manifest** — `Plugin-License-Name` attributes in `META-INF/MANIFEST.MF`, including suffixed variants such as `Plugin-License-Name-2`.
+3. **OSGi `Bundle-License` manifest header** — the `Bundle-License` header of `META-INF/MANIFEST.MF`. Each entry is used when it is an SPDX license ID, or a URL (including the entry's `link` attribute) that maps to a known SPDX license.
+4. **License files** — `LICENSE`, `LICENCE` or `COPYRIGHT` files (including variants like `LICENSE.txt`) located at the JAR[^2] root or directly under `META-INF/`. Their content is classified with the [license classifier](../../scanner/license.md). A license file carries no `groupId:artifactId`, so it is attached only when the JAR[^2] contains a single artifact; in uber/shaded JARs[^2] (multiple artifacts) the owner is ambiguous and such files are skipped.
+
+Notes and limitations:
+
+- License URLs are mapped to SPDX IDs using the `seeAlso` references of the [SPDX license list](https://spdx.org/licenses/licenses.json); a URL that does not map to a known SPDX license is skipped, so the next source is tried.
+- Coverage is limited: many JARs[^2] declare a license only in a parent POM (which is not expanded in the embedded `pom.xml`) or ship no Maven descriptor at all.
+- A single license file may bundle the texts of third-party components (e.g. Spring or Tomcat artifacts), so a package can be reported with several licenses found in that file, not only its own.
 
 ## pom.xml
 Trivy parses your `pom.xml` file and tries to find files with dependencies from these local locations.
@@ -68,6 +83,40 @@ The vulnerability database will be downloaded anyway.
 
 !!! Warning
     Trivy may skip some dependencies (that were not found on your local machine) when the `--offline-scan` flag is passed.
+
+### mirrors
+Trivy supports several ways to set up mirrors for Maven repositories:
+
+- `<mirrors>` in your Maven [`settings.xml`][maven-mirror-settings] — both the global and the user file.
+- The Trivy [config file][config-file] — see [config-file mirrors](#config-file-mirrors) below.
+
+#### resolving priority
+For each package that needs to be fetched from a remote repository, Trivy applies the following order:
+
+1. mirror from `settings.xml`;
+2. mirrors[^10] from the config file.
+
+!!! note
+    Trivy supports chained resolution across the two sources: if `settings.xml` maps `repo1 -> repo2` and the config file maps `repo2 -> repo3`, then `repo1` resolves to `repo3`.
+
+#### config-file mirrors
+`scan.maven.mirrors` is a list of entries, each mapping a `source` repository URL to the ordered `targets` that mirror it, tried in turn. Use it to avoid modifying `settings.xml` (for example in CI) and to configure several fallback mirrors[^10] for a single repository:
+
+```yaml
+scan:
+  maven:
+    mirrors:
+      - source: https://repo.maven.apache.org/maven2/
+        targets:
+          - https://my-internal-mirror/maven2/
+          - https://backup-mirror/maven2/
+```
+
+To mirror Maven Central, use `https://repo.maven.apache.org/maven2/` as the `source`.
+As in Maven, a mirrored repository is never queried directly, so a dependency is reported as not found when every mirror of it fails.
+
+!!! warning "Credentials"
+    Config-file mirrors do not read credentials from `settings.xml` `<server>` entries. To authenticate, embed them in the mirror URL (`https://user:password@host/...`), which stores the password in plaintext in the config file. For a secure setup, configure the mirror in `settings.xml` instead.
 
 ### supported scopes
 Trivy only scans `import`, `compile`, `runtime` and empty [maven scopes][maven-scopes]. Other scopes and `Optional` dependencies are not currently being analyzed.
@@ -129,11 +178,15 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 [^6]: `/Users/<username>/.m2/repository` (for Linux and Mac) and `C:/Users/<username>/.m2/repository` (for Windows) by default
 [^7]: To avoid confusion, Trivy only finds locations for direct dependencies from the base pom.xml file.
 [^8]: The supported directories are `$GRADLE_USER_HOME/caches` and `$HOME/.gradle/caches` (`%HOMEPATH%\.gradle\caches` for Windows).
+[^9]: License detection is limited. See [Licenses](#licenses) for details.
+[^10]: The mirrors are tried in order, falling back to the next one when the requested POM is not found.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [maven-invoker-plugin]: https://maven.apache.org/plugins/maven-invoker-plugin/usage.html
 [maven-central]: https://repo.maven.apache.org/maven2/
 [maven-pom-repos]: https://maven.apache.org/settings.html#repositories
+[maven-mirror-settings]: https://maven.apache.org/guides/mini/guide-mirror-settings.html
+[config-file]: ../../references/configuration/config-file.md
 [maven-scopes]: https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#Dependency_Scope
 [sbt-dependency-lock]: https://stringbean.github.io/sbt-dependency-lock
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority

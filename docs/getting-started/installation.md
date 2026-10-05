@@ -161,7 +161,7 @@ Nix package manager for Linux and macOS.
 
 References: 
 
--  https://github.com/NixOS/nixpkgs/blob/master/pkgs/tools/admin/trivy/default.nix
+-  https://github.com/NixOS/nixpkgs/blob/master/pkgs/by-name/tr/trivy/package.nix
 
 ## FreeBSD (Official)
 

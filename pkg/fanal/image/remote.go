@@ -7,6 +7,7 @@ import (
 
 	"github.com/google/go-containerregistry/pkg/name"
 	v1 "github.com/google/go-containerregistry/pkg/v1"
+	v1types "github.com/google/go-containerregistry/pkg/v1/types"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -21,11 +22,14 @@ func tryRemote(ctx context.Context, imageName string, ref name.Reference, option
 	if err != nil {
 		return nil, cleanup, err
 	}
-	// ArtifactType being non-empty indicates this is not a regular container image
-	// (e.g., Helm charts, WASM modules, or other OCI artifacts)
-	if desc.ArtifactType != "" {
+
+	// An empty ArtifactType or an ArtifactType with a config media type indicates a
+	// regular container image. Any other ArtifactType is treated as a non-image
+	// artifact (e.g., Helm charts, WASM modules, or other OCI artifacts).
+	if desc.ArtifactType != "" && !v1types.MediaType(desc.ArtifactType).IsConfig() {
 		return nil, cleanup, xerrors.Errorf("unsupported artifact type %q for image %q", desc.ArtifactType, imageName)
 	}
+
 	img, err := desc.Image()
 	if err != nil {
 		return nil, cleanup, err

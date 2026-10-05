@@ -1,0 +1,5 @@
+name: "../escaped_plugin"
+repository: testdata/escaping_name
+version: "0.1.0"
+summary: test
+description: test

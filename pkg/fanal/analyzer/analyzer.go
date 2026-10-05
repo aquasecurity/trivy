@@ -172,6 +172,9 @@ func (f FilePatterns) Match(filePath string) bool {
 type AnalysisOptions struct {
 	Offline      bool
 	FileChecksum bool
+
+	// MavenMirrors maps a Maven repository URL to an ordered list of fallback mirror URLs.
+	MavenMirrors map[string][]string
 }
 
 type AnalysisResult struct {
@@ -183,6 +186,7 @@ type AnalysisResult struct {
 	Misconfigurations    []ftypes.Misconfiguration
 	Secrets              []ftypes.Secret
 	Licenses             []ftypes.LicenseFile
+	CryptoAssets         []ftypes.CryptoAsset
 	SystemInstalledFiles []string // A list of files installed by OS package manager
 
 	// Digests contains SHA-256 digests of unpackaged files
@@ -204,7 +208,7 @@ func NewAnalysisResult() *AnalysisResult {
 
 func (r *AnalysisResult) isEmpty() bool {
 	return lo.IsEmpty(r.OS) && r.Repository == nil && len(r.PackageInfos) == 0 && len(r.Applications) == 0 &&
-		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.SystemInstalledFiles) == 0 &&
+		len(r.Misconfigurations) == 0 && len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CryptoAssets) == 0 && len(r.SystemInstalledFiles) == 0 &&
 		r.BuildInfo == nil && len(r.Digests) == 0 && len(r.CustomResources) == 0
 }
 
@@ -267,6 +271,9 @@ func (r *AnalysisResult) Sort() {
 
 		return r.Licenses[i].Type < r.Licenses[j].Type
 	})
+
+	// Cryptographic assets
+	slices.SortStableFunc(r.CryptoAssets, ftypes.CompareCryptoAssets)
 }
 
 func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
@@ -301,6 +308,7 @@ func (r *AnalysisResult) Merge(newResult *AnalysisResult) {
 	r.Misconfigurations = append(r.Misconfigurations, newResult.Misconfigurations...)
 	r.Secrets = append(r.Secrets, newResult.Secrets...)
 	r.Licenses = append(r.Licenses, newResult.Licenses...)
+	r.CryptoAssets = append(r.CryptoAssets, newResult.CryptoAssets...)
 	r.SystemInstalledFiles = append(r.SystemInstalledFiles, newResult.SystemInstalledFiles...)
 
 	if newResult.BuildInfo != nil {
@@ -490,6 +498,9 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 		}
 
 		if err = limit.Acquire(ctx, 1); err != nil {
+			// The goroutine below (which closes rc) is not started on this path,
+			// so close the opened file here to avoid leaking the handle.
+			_ = rc.Close()
 			return xerrors.Errorf("semaphore acquire: %w", err)
 		}
 

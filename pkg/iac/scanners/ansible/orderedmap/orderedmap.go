@@ -28,7 +28,7 @@ func NewWithData[K comparable, V any](keys []K, data map[K]V) *OrderedMap[K, V] 
 	}
 }
 
-// Len returns the number of entires in the map
+// Len returns the number of entries in the map
 func (m *OrderedMap[K, V]) Len() int {
 	return len(m.keys)
 }

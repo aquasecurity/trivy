@@ -16,7 +16,14 @@ func adaptDistributions(modules terraform.Modules) []cloudfront.Distribution {
 	var distributions []cloudfront.Distribution
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("aws_cloudfront_distribution") {
-			distributions = append(distributions, adaptDistribution(resource))
+			distribution := adaptDistribution(resource)
+
+			distribution.Logging.V2 = cloudfront.LoggingV2{
+				Metadata: resource.GetMetadata(),
+				Enabled:  hasV2Logging(modules, resource),
+			}
+
+			distributions = append(distributions, distribution)
 		}
 	}
 	return distributions
@@ -76,4 +83,23 @@ func adaptDistribution(resource *terraform.Block) cloudfront.Distribution {
 	}
 
 	return distribution
+}
+
+func hasV2Logging(modules terraform.Modules, distributionBlock *terraform.Block) types.BoolValue {
+	metadata := distributionBlock.GetMetadata()
+
+	sources := modules.GetReferencingResources(distributionBlock, "aws_cloudwatch_log_delivery_source", "resource_arn")
+	for _, source := range sources {
+		if !source.GetAttribute("log_type").Equals("ACCESS_LOGS") {
+			continue
+		}
+
+		deliveries := modules.GetReferencingResources(source, "aws_cloudwatch_log_delivery", "delivery_source_name")
+		if len(deliveries) > 0 {
+			return types.Bool(true, deliveries[0].GetMetadata())
+		}
+	}
+
+	return types.Bool(false, metadata)
+
 }

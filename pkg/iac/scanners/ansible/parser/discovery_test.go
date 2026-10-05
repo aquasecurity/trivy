@@ -59,6 +59,14 @@ func TestFindProjects(t *testing.T) {
 			dir:      ".",
 			expected: []string{"proj1", "proj2"},
 		},
+		{
+			name: "playbook with invalid play",
+			fsys: fstest.MapFS{
+				"play.yml": &fstest.MapFile{Data: []byte(`-`)},
+			},
+			dir:      ".",
+			expected: []string{},
+		},
 	}
 
 	for _, tt := range tests {

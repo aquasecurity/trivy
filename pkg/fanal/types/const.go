@@ -14,6 +14,15 @@ type (
 	ConfigType = TargetType
 )
 
+// Supplier identifies a third party that rebuilds and ships packages e.g. Seal Security.
+type Supplier string
+
+// Suppliers
+const (
+	SupplierSeal      Supplier = "seal"
+	SupplierRapidFort Supplier = "rapidfort"
+)
+
 const (
 	ArtifactJSONSchemaVersion = 1
 	BlobJSONSchemaVersion     = 2
@@ -143,6 +152,7 @@ var (
 		Alpine,
 		Amazon,
 		Azure,
+		Bottlerocket,
 		CBLMariner,
 		CentOS,
 		CentOSStream,

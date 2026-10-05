@@ -72,6 +72,8 @@ var (
 	CategoryHuggingFace          = types.SecretRuleCategory("HuggingFace")
 	CategorySymfony              = types.SecretRuleCategory("Symfony")
 	CategoryAzure                = types.SecretRuleCategory("Azure")
+	CategoryMaven                = types.SecretRuleCategory("Maven")
+	CategoryOpenAI               = types.SecretRuleCategory("OpenAI")
 )
 
 // Reusable regex patterns
@@ -138,11 +140,17 @@ var builtinRules = []Rule{
 		Keywords:        []string{"gho_"},
 	},
 	{
+		// `ghu_` user-to-server tokens keep the legacy fixed format: exactly
+		// 36 alphanumeric chars. Since 2026-04-27 `ghs_` installation
+		// tokens use a new stateless format `ghs_<APPID>_<JWT>` (~520 chars,
+		// base64url + dot-separated), so they contain `.`, `-` and `_`.
+		// GitHub recommends `ghs_[A-Za-z0-9.\-_]{36,}`. See
+		// https://github.com/aquasecurity/trivy/issues/10591.
 		ID:              "github-app-token",
 		Category:        CategoryGitHub,
 		Title:           "GitHub App Token",
 		Severity:        "CRITICAL",
-		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(ghu|ghs)_[0-9a-zA-Z]{36}`),
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>(?:ghu_[0-9a-zA-Z]{36}|ghs_[0-9a-zA-Z._-]{36,})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ghu_", "ghs_"},
 	},
@@ -606,7 +614,20 @@ var builtinRules = []Rule{
 		Category: CategoryJWT,
 		Title:    "JWT token",
 		Severity: "MEDIUM",
-		Regex:    MustCompile(`ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?`),
+		// The optional `ghs_<APPID>_` prefix is part of the full match (which the
+		// allow-rule below inspects) but not of the `secret` group (which is
+		// reported). This drops the JWT embedded in a stateless GitHub App token
+		// so it is reported only once, by the `github-app-token` rule, while
+		// standalone JWTs keep matching and are reported exactly as before.
+		Regex:           MustCompile(`(?:ghs_[0-9]+_)?(?P<secret>ey[a-zA-Z0-9]{17,}\.ey[a-zA-Z0-9\/\\_-]{17,}\.(?:[a-zA-Z0-9\/\\_-]{10,}={0,2})?)`),
+		SecretGroupName: "secret",
+		AllowRules: AllowRules{
+			{
+				ID:          "stateless-ghs-jwt",
+				Description: "Avoid double-reporting the JWT embedded in a stateless ghs_ GitHub App token",
+				Regex:       MustCompile(`^ghs_`),
+			},
+		},
 		Keywords: []string{".eyJ"},
 	},
 	{
@@ -881,7 +902,9 @@ var builtinRules = []Rule{
 		Severity:        "HIGH",
 		Regex:           MustCompile(`(?i)(?:azure[_\-]?devops|ado)[_\-]?(?:pat|token|personal.?access.?token)\s*[:=]\s*["']?(?P<secret>[a-z2-7]{52})["']?`),
 		SecretGroupName: "secret",
-		Keywords:        []string{"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token"},
+		Keywords: []string{
+			"azure_devops", "azuredevops", "azure-devops", "ado_pat", "ado_token", "ado-pat", "ado-token",
+		},
 	},
 	{
 		ID:              "azure-entra-client-secret",
@@ -927,5 +950,116 @@ var builtinRules = []Rule{
 		Regex:           MustCompile(`(?P<secret>[A-Za-z0-9+/]{52}JQQJ99C[A-Z][A-Za-z0-9+/]{7}XJ3w3[A-Za-z0-9+/]{4}ACOG[A-Za-z0-9+/]{4})`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"XJ3w3"},
+	},
+	// Maven secrets for settings.xml and settings-security.xml — common storage for
+	// repository/server credentials baked into images.
+	//
+	// Path matches any settings.xml on the filesystem (not anchored to ~/.m2 or
+	// /etc/maven) because Maven settings ship in many locations and a narrower
+	// filter would miss legitimate cases. The XML tag combined with file name is
+	// already specific enough to keep false positives low.
+	//
+	// `password` and `passphrase` exclude `{` from the secret value, which skips
+	// both Maven-encrypted values (`{...}`, see
+	// plexus-cipher.DefaultPlexusCipher#ENCRYPTED_STRING_PATTERN) and Maven
+	// property substitution (`${env.X}`, `${prop.Y}`). Encrypted values are
+	// useless without the master from settings-security.xml (detected by a
+	// separate rule), and property placeholders are references rather than
+	// literal secrets.
+	{
+		ID:              "maven-settings-password",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*password\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*password\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"password"},
+	},
+	{
+		ID:              "maven-settings-passphrase",
+		Category:        CategoryMaven,
+		Title:           "Maven settings.xml passphrase",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*passphrase\s*>\s*(?P<secret>[^<\s{][^<{]+[^<\s])\s*<\s*/\s*passphrase\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"passphrase"},
+	},
+	{
+		ID:              "maven-settings-security-master",
+		Category:        CategoryMaven,
+		Title:           "Maven settings-security.xml master password",
+		Severity:        "HIGH",
+		Regex:           MustCompile(`(?i)<\s*master\s*>\s*(?P<secret>[^<\s][^<]+[^<\s])\s*<\s*/\s*master\s*>`),
+		Path:            MustCompile(`(?i)(^|[/\\])settings-security\.xml$`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"master"},
+	},
+	// OpenAI API credentials. Every sk-* key embeds the watermark "T3BlbkFJ"
+	// (base64 of "OpenAI") between two random segments of equal length, used as the
+	// pre-filter keyword. The watermark is the real discriminator, so the wide
+	// {20,100} length range does not raise false-positive risk and the rules do not
+	// clash with other vendors that reuse the `sk-` prefix (Anthropic `sk-ant-`,
+	// OpenRouter `sk-or-v1-`), which carry no watermark.
+	//
+	// The active-key rules (proj/svcacct/admin) and the service-key rule carry
+	// distinct literal prefixes, so they never overlap with each other. The legacy
+	// rule is restricted to `[A-Za-z0-9]` (no `-`/`_`) so its {20,42} run cannot
+	// bridge the hyphen in `sk-proj-`, `sk-svcacct-`, `sk-admin-` or `sk-service-`;
+	// this keeps a typed key from also matching the bare legacy pattern.
+	{
+		ID:              "openai-project-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Project API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-proj-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-service-account-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Service Account Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-svcacct-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-admin-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Admin API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-admin-[A-Za-z0-9_-]{20,100}T3BlbkFJ[A-Za-z0-9_-]{20,100}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-legacy-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Legacy User API Key",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-(?:None-)?[A-Za-z0-9]{20,42}T3BlbkFJ[A-Za-z0-9]{20,42}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-service-api-key",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Service API Key",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>sk-service-[A-Za-z0-9-]+-[A-Za-z0-9]{20}T3BlbkFJ[A-Za-z0-9]{20}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"T3BlbkFJ"},
+	},
+	{
+		ID:              "openai-realtime-client-secret",
+		Category:        CategoryOpenAI,
+		Title:           "OpenAI Realtime Client Secret",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithBoundaries(`?P<secret>ek_[a-f0-9]{32}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ek_"},
 	},
 }

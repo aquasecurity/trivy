@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/google/jsonschema-go/jsonschema"
+	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/flag"
 )
@@ -30,6 +31,7 @@ const configSchemaPath = "schema/trivy-config.json"
 func generateConfigSchema(outputPath string, allFlagGroups []flag.FlagGroup) error {
 	root := &jsonschema.Schema{
 		Schema:      "https://json-schema.org/draft/2020-12/schema",
+		ID:          "https://raw.githubusercontent.com/aquasecurity/trivy/main/schema/trivy-config.json",
 		Type:        schemaTypeObject,
 		Title:       "Trivy Configuration",
 		Description: "Configuration file for Trivy security scanner (trivy.yaml)",
@@ -148,6 +150,33 @@ func schemaFromFlagValue(val any) (*jsonschema.Schema, error) {
 			AdditionalProperties: &jsonschema.Schema{
 				Type:  schemaTypeArray,
 				Items: &jsonschema.Schema{Type: schemaTypeString},
+			},
+		}, nil
+	case []flag.MavenMirror:
+		return &jsonschema.Schema{
+			Type: schemaTypeArray,
+			Items: &jsonschema.Schema{
+				Type: schemaTypeObject,
+				Properties: map[string]*jsonschema.Schema{
+					"source": {
+						Type:        schemaTypeString,
+						Description: "URL of the mirrored Maven repository",
+					},
+					"targets": {
+						Type:        schemaTypeArray,
+						Description: "URLs of the mirrors serving the repository, tried in order",
+						Items:       &jsonschema.Schema{Type: schemaTypeString},
+						MinItems:    lo.ToPtr(1),
+					},
+				},
+				PropertyOrder: []string{
+					"source",
+					"targets",
+				},
+				Required: []string{
+					"source",
+					"targets",
+				},
 			},
 		}, nil
 	default:
