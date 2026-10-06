@@ -42,7 +42,8 @@ import (
 
 var update = flag.Bool("update", false, "update golden files")
 
-const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/support/v%s/schemas/spdx-schema.json"
+// Pin schemas to release tags so upstream branch changes do not affect validation.
+const SPDXSchema = "https://raw.githubusercontent.com/spdx/spdx-spec/v%s/schemas/spdx-schema.json"
 
 // Golden file paths
 const (
