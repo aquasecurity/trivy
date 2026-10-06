@@ -28,7 +28,7 @@ func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
 	opt.SkipDirs = append(opt.SkipDirs, defaultSkipDirs...)
 
 	walkDirFunc := w.WalkDirFunc(root, fn, opt)
-	walkDirFunc = w.onError(walkDirFunc)
+	walkDirFunc = w.onError(root, walkDirFunc)
 
 	// Walk the filesystem
 	if err := filepath.WalkDir(root, walkDirFunc); err != nil {
@@ -77,16 +77,22 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 	}
 }
 
-func (w *FS) onError(wrapped fs.WalkDirFunc) fs.WalkDirFunc {
+func (w *FS) onError(root string, wrapped fs.WalkDirFunc) fs.WalkDirFunc {
 	return func(filePath string, d fs.DirEntry, err error) error {
 		err = wrapped(filePath, d, err)
 		switch {
 		// Unwrap fs.SkipDir error
 		case errors.Is(err, fs.SkipDir):
 			return fs.SkipDir
-		// Ignore permission errors
+		// Ignore permission errors below the root, so that a tree containing
+		// unreadable directories is still scanned as far as it can be.
 		case os.IsPermission(err):
-			return nil
+			if filePath != root {
+				return nil
+			}
+			// The root is different: nothing at all can be read, so the walk is
+			// empty. Ignoring it here would report that as a successful scan.
+			return xerrors.Errorf("unable to read %s: %w", filePath, err)
 		case err != nil:
 			// halt traversal on any other error
 			return xerrors.Errorf("unknown error with %s: %w", filePath, err)
