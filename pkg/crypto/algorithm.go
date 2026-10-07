@@ -28,13 +28,11 @@ func DescribeAlgorithm(oid string, size, subgroupSize int, curve string) ftypes.
 		parameters.SubgroupSize = 0
 	}
 
-	// The name carries the values in the order of the canonical encoding of the parameters.
+	// The name carries the key size and the curve. A subgroup size stays out of it, because
+	// the vocabulary pattern DSA[-{length}][-{hashAlgorithm}] would read it as a digest.
 	name := found.name
 	if parameters.KeySize > 0 {
 		name += "-" + strconv.Itoa(parameters.KeySize)
-	}
-	if parameters.SubgroupSize > 0 {
-		name += "-" + strconv.Itoa(parameters.SubgroupSize)
 	}
 	if parameters.Curve != "" {
 		name += "-" + parameters.Curve

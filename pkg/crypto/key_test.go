@@ -78,7 +78,7 @@ func TestDescribeKey(t *testing.T) {
 			Value:      "1.2.840.10040.4.1",
 			Parameters: "key-size=2048,subgroup-size=256",
 		},
-		Name: "DSA-2048-256",
+		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Family:    "DSA",
 			Primitive: ftypes.CryptoPrimitiveSignature,
@@ -184,7 +184,7 @@ func TestDescribeKey(t *testing.T) {
 				Kind:     ftypes.CryptoKindKey,
 				KeyType:  ftypes.CryptoKeyTypePublic,
 				Identity: spkiIdentity(t, fixtures.dsaPublic),
-				Name:     "DSA-2048-256 public key",
+				Name:     "DSA-2048 public key",
 				Key: &ftypes.CryptoKey{
 					Size: 2048,
 				},

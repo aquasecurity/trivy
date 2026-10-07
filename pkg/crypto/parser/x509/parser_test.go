@@ -646,7 +646,7 @@ func TestParseAssets(t *testing.T) {
 		}},
 	}
 
-	// DSA keys of one L can differ in N, so both name the algorithm.
+	// DSA keys of one L can differ in N, so both identify the algorithm.
 	dsaAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
@@ -654,7 +654,7 @@ func TestParseAssets(t *testing.T) {
 			Value:      "1.2.840.10040.4.1",
 			Parameters: "key-size=2048,subgroup-size=224",
 		},
-		Name: "DSA-2048-224",
+		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Family:    "DSA",
 			Primitive: ftypes.CryptoPrimitiveSignature,
@@ -877,7 +877,7 @@ func TestParseAssets(t *testing.T) {
 						Kind:     ftypes.CryptoKindKey,
 						KeyType:  ftypes.CryptoKeyTypePublic,
 						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.dsaDER),
-						Name:     "DSA-2048-224 public key",
+						Name:     "DSA-2048 public key",
 						Key: &ftypes.CryptoKey{
 							Size: 2048,
 						},

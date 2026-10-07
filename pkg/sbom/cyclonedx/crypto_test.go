@@ -339,7 +339,7 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 							Value:      "1.2.840.10040.4.1",
 							Parameters: "key-size=2048,subgroup-size=256",
 						},
-						Name: "DSA-2048-256",
+						Name: "DSA-2048",
 						Algorithm: &ftypes.CryptoAlgorithm{
 							Family:    "DSA",
 							Primitive: ftypes.CryptoPrimitiveSignature,
@@ -352,7 +352,7 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 				{
 					BOMRef: "crypto:algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D256",
 					Type:   cdx.ComponentTypeCryptographicAsset,
-					Name:   "DSA-2048-256",
+					Name:   "DSA-2048",
 					CryptoProperties: &cdx.CryptoProperties{
 						AssetType: cdx.CryptoAssetTypeAlgorithm,
 						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{

@@ -12,7 +12,7 @@ import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 // Naming a family for either would assert a purpose the certificate does not state.
 //
 // A name is a base name: an algorithm with parameters is named together with their values,
-// such as RSA-2048 or DSA-2048-256.
+// such as RSA-2048.
 type algorithm struct {
 	name           string
 	family         string
