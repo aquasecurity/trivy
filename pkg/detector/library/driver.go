@@ -13,6 +13,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/node"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
@@ -45,6 +46,9 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
 		eco = ecosystem.Npm
 		comparer = npm.Comparer{}
+	case ftypes.Node:
+		eco = ecosystem.Type("node")
+		comparer = node.Comparer{}
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:
 		eco = ecosystem.NuGet
 		comparer = compare.GenericComparer{}
