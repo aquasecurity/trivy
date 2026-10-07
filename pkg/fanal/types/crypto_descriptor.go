@@ -238,8 +238,8 @@ func (p CryptoAlgorithmParameters) String() string {
 }
 
 // AlgorithmParameters decodes the parameters of an algorithm identity. It accepts only the
-// canonical form String produces, in which a subgroup size comes with a key size and a
-// curve stands alone.
+// canonical form [CryptoAlgorithmParameters.String] produces, and only for parameters in
+// which a subgroup size comes with a key size and a curve stands alone.
 func (i CryptoIdentity) AlgorithmParameters() (CryptoAlgorithmParameters, error) {
 	var params CryptoAlgorithmParameters
 	if i.Parameters == "" {
