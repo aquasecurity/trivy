@@ -40,6 +40,8 @@ The parameters of an algorithm are the key size for RSA and the curve for EC. Fo
 
 Every asset becomes a `cryptographic-asset` component with `cryptoProperties`, and the links between assets are stored in `relatedCryptographicAssets`. Each place an asset was found is an entry in `evidence.occurrences`. The path is stored in `location`, and the layer in `additionalContext` as `aquasecurity:trivy:LayerDiffID=<diff ID>`.
 
+The parameters of an algorithm are stored in `algorithmProperties`. The key size goes to `parameterSetIdentifier`, and for DSA it is the pair `<L>-<N>`, such as `2048-256`, which tells apart two components named `DSA-2048`. The curve goes to `ellipticCurve`.
+
 ```json
 {
   "bom-ref": "crypto:certificate:sha256:ab12…",
