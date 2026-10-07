@@ -983,8 +983,8 @@ github.com/ulikunitz/xz v0.5.8/go.mod h1:nbz6k7qbPmH4IRqmfOplQw/tblSgqTqBwxkY0oW
 github.com/ulikunitz/xz v0.5.16 h1:ld6NyySjx5lowVKwJvMRLnW5nxKX/xnpSiFYZ/Lxur0=
 github.com/ulikunitz/xz v0.5.16/go.mod h1:H9Rt/W6/Qj27PGauhQc6nfCDy7vHpzsOThBSaYDoEhw=
 github.com/urfave/cli/v2 v2.3.0/go.mod h1:LJmUH05zAU44vOAcrfzZQKsZbVcdbOG8rtL3/XcUArI=
-github.com/vaibhav-rf/trivy-db v0.0.0-20260930110233-ca32745ec0c7 h1:ls9FZJkbx6CLMMRAW8jtA49Bw9CPT/9quz6kkyoa/gE=
-github.com/vaibhav-rf/trivy-db v0.0.0-20260930110233-ca32745ec0c7/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
+github.com/vaibhav-rf/trivy-db v0.0.0-20261007122521-752b6604716f h1:TOpHGzP/CyJIJmlNOyLwbyDkkgTuPQpLeBRh61yF2+g=
+github.com/vaibhav-rf/trivy-db v0.0.0-20261007122521-752b6604716f/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
 github.com/valyala/fastjson v1.6.10 h1:/yjJg8jaVQdYR3arGxPE2X5z89xrlhS0eGXdv+ADTh4=
 github.com/valyala/fastjson v1.6.10/go.mod h1:e6FubmQouUNP73jtMLmcbxS6ydWIpOfhz34TSfO3JaE=
 github.com/vektah/gqlparser/v2 v2.5.36 h1:CN9mKVHgMkc+XftdOWIhb4HEL8wKSYkFAqhf8booa7s=
