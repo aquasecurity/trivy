@@ -249,6 +249,27 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: `unknown algorithm primitive "hash"`,
 		},
 		{
+			name: "zero classical security level",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.ClassicalSecurityLevel = new(0)
+			})),
+			wantErr: "classical security level must be positive",
+		},
+		{
+			name: "NIST quantum security level above 6",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.NISTQuantumSecurityLevel = new(7)
+			})),
+			wantErr: "NIST quantum security level must be between 0 and 6",
+		},
+		{
+			name: "negative NIST quantum security level",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.NISTQuantumSecurityLevel = new(-1)
+			})),
+			wantErr: "NIST quantum security level must be between 0 and 6",
+		},
+		{
 			name: "negative key size",
 			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Key.Size = -1
@@ -431,11 +452,17 @@ func TestCryptoAssetClone(t *testing.T) {
 		t.Parallel()
 
 		source := cryptotest.AlgorithmAsset()
+		source.Algorithm.ClassicalSecurityLevel = new(112)
+		source.Algorithm.NISTQuantumSecurityLevel = new(0)
 		clone := source.Clone()
 		require.NotSame(t, source.Algorithm, clone.Algorithm)
 		assert.Equal(t, source, clone)
 
 		clone.Algorithm.Family = "changed"
+		*clone.Algorithm.ClassicalSecurityLevel = 128
+		*clone.Algorithm.NISTQuantumSecurityLevel = 1
 		assert.Empty(t, source.Algorithm.Family)
+		assert.Equal(t, 112, *source.Algorithm.ClassicalSecurityLevel)
+		assert.Equal(t, 0, *source.Algorithm.NISTQuantumSecurityLevel)
 	})
 }

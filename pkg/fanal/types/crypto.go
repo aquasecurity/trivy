@@ -167,6 +167,12 @@ func (a CryptoAssetInfo) Clone() CryptoAssetInfo {
 	}
 	if a.Algorithm != nil {
 		clone.Algorithm = new(*a.Algorithm)
+		if a.Algorithm.ClassicalSecurityLevel != nil {
+			clone.Algorithm.ClassicalSecurityLevel = new(*a.Algorithm.ClassicalSecurityLevel)
+		}
+		if a.Algorithm.NISTQuantumSecurityLevel != nil {
+			clone.Algorithm.NISTQuantumSecurityLevel = new(*a.Algorithm.NISTQuantumSecurityLevel)
+		}
 	}
 	return clone
 }
@@ -201,6 +207,12 @@ func (a CryptoAssetInfo) validateAlgorithm() error {
 	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
 	default:
 		return xerrors.Errorf("unknown algorithm primitive %q", a.Algorithm.Primitive)
+	}
+	if level := a.Algorithm.ClassicalSecurityLevel; level != nil && *level <= 0 {
+		return xerrors.Errorf("classical security level must be positive")
+	}
+	if level := a.Algorithm.NISTQuantumSecurityLevel; level != nil && (*level < 0 || *level > 6) {
+		return xerrors.Errorf("NIST quantum security level must be between 0 and 6")
 	}
 	return nil
 }
