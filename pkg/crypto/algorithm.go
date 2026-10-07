@@ -8,19 +8,26 @@ import (
 
 // DescribeAlgorithm describes the algorithm an OID identifies. The size and the curve
 // belong to the key the algorithm is used with and are zero for a signature algorithm.
+// Only the ones the catalog names for the OID become part of the identity.
 func DescribeAlgorithm(oid string, size int, curve string) ftypes.CryptoAssetInfo {
 	found := lookupAlgorithm(oid)
 
+	var parameters ftypes.CryptoAlgorithmParameters
+	for _, parameter := range found.parameterNames {
+		switch parameter {
+		case ftypes.CryptoParameterKeySize:
+			parameters.KeySize = size
+		case ftypes.CryptoParameterCurve:
+			parameters.Curve = curve
+		}
+	}
+	// The name carries the values in the order of the canonical encoding of the parameters.
 	name := found.name
-	var parameters string
-	switch {
-	case found.parameter == ftypes.CryptoParameterKeySize && size > 0:
-		value := strconv.Itoa(size)
-		name += "-" + value
-		parameters = string(ftypes.CryptoParameterKeySize) + "=" + value
-	case found.parameter == ftypes.CryptoParameterCurve && curve != "":
-		name += "-" + curve
-		parameters = string(ftypes.CryptoParameterCurve) + "=" + curve
+	if parameters.KeySize > 0 {
+		name += "-" + strconv.Itoa(parameters.KeySize)
+	}
+	if parameters.Curve != "" {
+		name += "-" + parameters.Curve
 	}
 
 	return ftypes.CryptoAssetInfo{
@@ -28,7 +35,7 @@ func DescribeAlgorithm(oid string, size int, curve string) ftypes.CryptoAssetInf
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
 			Value:      oid,
-			Parameters: parameters,
+			Parameters: parameters.String(),
 		},
 		Name: name,
 

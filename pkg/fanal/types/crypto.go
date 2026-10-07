@@ -34,7 +34,7 @@ const (
 	CryptoMethodEncryptedPKCS8SHA256 CryptoIdentityMethod = "encrypted-pkcs8-sha256"
 	// CryptoMethodEncryptedRFC1423SHA256 identifies opaque CryptoKindKey assets with CryptoKeyTypePrivate. The value is the lowercase SHA-256 digest of canonical RFC 1423 encrypted PEM, including its label, headers, and ciphertext, and parameters are empty.
 	CryptoMethodEncryptedRFC1423SHA256 CryptoIdentityMethod = "encrypted-rfc1423-sha256"
-	// CryptoMethodOID identifies CryptoKindAlgorithm assets. The value is a canonical dotted-decimal OID, and parameters are empty or key-size=<bits> / curve=<name> when needed to distinguish the algorithm asset.
+	// CryptoMethodOID identifies CryptoKindAlgorithm assets. The value is a canonical dotted-decimal OID, and parameters are empty or the canonical CryptoAlgorithmParameters encoding, such as key-size=2048 or curve=P-256, when needed to distinguish the algorithm asset.
 	CryptoMethodOID CryptoIdentityMethod = "oid"
 )
 

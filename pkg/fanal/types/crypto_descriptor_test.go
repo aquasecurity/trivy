@@ -251,7 +251,22 @@ func TestCryptoDescriptorValidate(t *testing.T) {
 		{
 			name:    "unknown parameter form",
 			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "mode=GCM"}},
-			wantErr: `unknown algorithm parameters "mode=GCM"`,
+			wantErr: `unknown algorithm parameter "mode=GCM"`,
+		},
+		{
+			name:    "curve combined with key size",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=256,curve=P-256"}},
+			wantErr: "curve parameter must not be combined with sizes",
+		},
+		{
+			name:    "repeated parameter",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=2048,key-size=2048"}},
+			wantErr: `algorithm parameters "key-size=2048,key-size=2048" are not canonical`,
+		},
+		{
+			name:    "empty parameter in list",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=2048,"}},
+			wantErr: `unknown algorithm parameter ""`,
 		},
 	}
 
