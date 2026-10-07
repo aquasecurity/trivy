@@ -36,7 +36,8 @@
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM"
+                  "MEDIUM",
+                  "CWE-330"
                 ]
               }
             },
@@ -67,7 +68,8 @@
                 "tags": [
                   "vulnerability",
                   "security",
-                  "MEDIUM"
+                  "MEDIUM",
+                  "CWE-200"
                 ]
               }
             }
