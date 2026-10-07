@@ -3,8 +3,8 @@ package rapidfort
 import (
 	"cmp"
 	"context"
-	"regexp"
 	"strings"
+	"unicode"
 
 	"golang.org/x/xerrors"
 
@@ -21,40 +21,52 @@ import (
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
-// rpmRfTagRe matches a RapidFort %{dist} tag. Published spellings are the bare
-// marker (".rf"), a digit suffix (".rf1"), or a short distro code (".rfal" for
-// RapidFort Amazon Linux rebuilds). The trailing [.-]|$ guard requires a tag
-// separator after the suffix, so accidental substrings like ".rfc3339" — where
-// "rf" is followed by letters-then-digits (a date fragment, not a dist tag) —
-// are rejected because no valid letters-only or digits-only suffix leaves the
-// scanner at a separator.
-var rpmRfTagRe = regexp.MustCompile(`\.rf(\d*)(?:[a-z]*)(?:[.-]|$)`)
-
-// rpmDistTagRe matches the non-rf RPM %{dist} tags and their trailing digits.
-// The trailing [^a-zA-Z]|$ guard rejects accidental substrings like ".fcgi"
-// (which would otherwise capture as "fc" with no number and send the package
-// to a release-less "rapidfort fedora" bucket that never exists), ".elastic"
-// and ".amznX" (same shape, rescued by the cmp.Or fallback but still noise).
-//
-//	"7.76.1-26.el9_3.3" → el/9    "7.76.1-26.fc43" → fc/43    "8.5.0-1.amzn2023" → amzn/2023
-var rpmDistTagRe = regexp.MustCompile(`\.(el|fc|amzn)(\d*)(?:[^a-zA-Z]|$)`)
-
-// rpmDistTag returns the RPM dist tag and its trailing digits from a version
-// string, or ("", "") for an untagged RPM. The "rf" marker wins when present
-// anywhere in the release: trivy-db routes rf-identified ranges to the family
-// rebuild bucket regardless of any secondary dist tag, so a ".rf.fc43" package
-// is an rf rebuild — not a Fedora 43 one. For el / fc / amzn, the trailing
-// (last) match wins.
+// rpmDistTag returns the RPM dist tag and its trailing digits from the
+// release part of a version string, or ("", "") for an untagged RPM. Only
+// the release (after the first "-") is scanned, so an "rf" fragment that
+// shows up in the upstream version is not misread as a dist tag. An "rf"
+// element wins immediately when present: trivy-db routes rf-identified
+// ranges to the family rebuild bucket regardless of any secondary dist tag,
+// so a ".rf.fc43" package is an rf rebuild, not a Fedora one. For el / fc
+// / amzn, the last matching element wins — multi-tagged releases like
+// ".el8.fc43" put the real target distribution at the trailing element.
 func rpmDistTag(ver string) (tag, num string) {
-	if m := rpmRfTagRe.FindStringSubmatch(ver); m != nil {
-		return "rf", m[1]
+	_, release, _ := strings.Cut(ver, "-")
+	for elem := range strings.SplitSeq(release, ".") {
+		t, n, ok := parseDistTag(elem)
+		if !ok {
+			continue
+		}
+		if t == "rf" {
+			return t, n
+		}
+		tag, num = t, n
 	}
-	m := rpmDistTagRe.FindAllStringSubmatch(ver, -1)
-	if len(m) == 0 {
-		return "", ""
+	return tag, num
+}
+
+// parseDistTag parses one release element against the four known tags.
+// For el / fc / amzn, a bare tag ("el") or a tag pinned by a non-empty
+// release number ("el10uek" → el/10) counts; a letters-only suffix with
+// no number ("elastic", "fcgi") does not, since the tag has to be the
+// element's leading identifier and not a substring that happens to open
+// with the tag letters. For rf, any trailing letters must themselves be
+// a distro code — empty after stripping letters — so "rf", "rf1" and
+// "rfal" count but a date fragment like "rfc3339" does not.
+func parseDistTag(elem string) (tag, num string, ok bool) {
+	for _, t := range []string{"rf", "amzn", "el", "fc"} {
+		rest, found := strings.CutPrefix(elem, t)
+		if !found {
+			continue
+		}
+		suffix := strings.TrimLeftFunc(rest, unicode.IsDigit)
+		num = strings.TrimSuffix(rest, suffix)
+		if t == "rf" {
+			return t, num, strings.TrimFunc(suffix, unicode.IsLetter) == ""
+		}
+		return t, num, suffix == "" || num != ""
 	}
-	last := m[len(m)-1]
-	return last[1], last[2]
+	return "", "", false
 }
 
 // dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
@@ -190,8 +202,15 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 			// .amznN package routes to the N-release bucket for its base
 			// family even when the image itself is on a different major
 			// (e.g. .el8 on a RHEL 9, Oracle 9, Rocky 9 or Alma 9 host).
+			// Amazon is the exception: ".elN" there names the EL sources
+			// the package was rebuilt from, not an Amazon release, so it
+			// stays on the image's own release (e.g. ".el7" on AL2 is an
+			// AL2 package, not an "amazon linux 7" one that never exists).
 			// cmp.Or supplies osVer when the tag carries no major at all
 			// ("7.76.1-26.el"), since that names no release of its own.
+			if tag == "el" && s.baseOS == ftypes.Amazon {
+				return eco, osVer
+			}
 			return eco, cmp.Or(num, osVer)
 		default:
 			// An untagged RPM names no distribution, so it is treated as a
@@ -199,10 +218,8 @@ func (s *Scanner) route(installedVer, osVer string) (ecosystem.Type, string) {
 			return eco, osVer
 		}
 	default:
-		// A new dpkg or apk family added to familyEcosystems but not listed
-		// above would otherwise fall through to the RPM branch and quietly
-		// receive the wrong routing. Return the empty ecosystem so the getter
-		// lookup fails cleanly instead.
+		// Families without a routing rule get the empty ecosystem, which has
+		// no getter, so Detect skips their packages.
 		return "", osVer
 	}
 }

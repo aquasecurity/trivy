@@ -1031,11 +1031,11 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// An rf package in an Oracle image resolves to the feed-scoped
-			// "rapidfort oracle" bucket, not the shared distribution-less
-			// "rapidfort" one. The fixture gives the two buckets different fix
-			// versions, so the expected 7.76.1-27.rf1 proves which was queried.
-			name:   "Oracle: rf package routes to the rapidfort oracle bucket",
+			// An rf package in an Oracle image resolves to the "rapidfort Oracle
+			// Linux" bucket. The fixture gives "rapidfort Red Hat" a different
+			// fix version, so the expected 7.76.1-27.rf1 proves which bucket was
+			// queried.
+			name:   "Oracle: rf package routes to the rapidfort Oracle Linux bucket",
 			baseOS: ftypes.Oracle,
 			fixtures: []string{
 				"testdata/fixtures/rapidfort.yaml",
@@ -1113,6 +1113,48 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// UEK kernels and other vendor variants append a letter suffix
+			// after the major (".el9uek"). The dist-tag parser has to keep
+			// the "9" instead of truncating or dropping it, otherwise an
+			// UEK package in an Oracle 9 image silently misses the OL9
+			// bucket's advisories.
+			name:   "Oracle: UEK .el9uek package routes to the Oracle Linux 9 bucket",
+			baseOS: ftypes.Oracle,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "curl",
+						Version:    "7.76.1-20.el9uek",
+						SrcName:    "curl",
+						SrcVersion: "7.76.1-20.el9uek",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "curl",
+					VulnerabilityID:  "CVE-2023-27536",
+					InstalledVersion: "7.76.1-20.el9uek",
+					FixedVersion:     "7.76.1-26.el9_3.3",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "oracle-oval",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			// Rocky releases carry a plain el tag ("15.el8.rocky.6.3"), so the
 			// ".rocky" suffix must not divert the package away from the Rocky bucket.
 			name:   "Rocky: el8 curl routes to the Rocky bucket",
@@ -1154,9 +1196,8 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			// Cross-major: an .el9 package inside a Rocky 8 image routes to
 			// "rapidfort rocky 9" by the dist tag, not "rapidfort rocky 8" by
-			// the image. Mirrors the RedHat cross-major case for the new RPM
-			// families added in this PR and exercises the "rapidfort rocky 9"
-			// fixture that would otherwise be unused.
+			// the image. The two buckets carry distinct fix versions, so a
+			// misroute shows up as the wrong FixedVersion.
 			name:   "Rocky: cross-major .el9 package on Rocky 8 image routes to rapidfort rocky 9",
 			baseOS: ftypes.Rocky,
 			fixtures: []string{
@@ -1512,7 +1553,7 @@ func TestScanner_Detect(t *testing.T) {
 		{
 			// An rf rebuild in an Amazon image resolves to the Amazon feed's own
 			// rf bucket, not the RedHat feed's.
-			name:   "Amazon: rf package routes to the rapidfort amazon bucket",
+			name:   "Amazon: rf package routes to the rapidfort amazon linux bucket",
 			baseOS: ftypes.Amazon,
 			fixtures: []string{
 				"testdata/fixtures/rapidfort.yaml",
@@ -1555,7 +1596,7 @@ func TestScanner_Detect(t *testing.T) {
 			// release bucket, where the advisory doesn't live. Uses the same
 			// family rf bucket as the ".rfN" case above — a routing miss would
 			// show up as no CVE found instead of a wrong fix version.
-			name:   "Amazon: .rfal rebuild routes to the rapidfort amazon bucket",
+			name:   "Amazon: .rfal rebuild routes to the rapidfort amazon linux bucket",
 			baseOS: ftypes.Amazon,
 			fixtures: []string{
 				"testdata/fixtures/rapidfort.yaml",
@@ -1633,9 +1674,9 @@ func TestScanner_Detect(t *testing.T) {
 		},
 		{
 			// An ".amzn2" tagged package in an AL2023 image routes by the tag's
-			// major ("2"), not the image's ("2023"). If amzn ever drops out of
-			// the shared case with el, it falls to the default branch and lands
-			// in the AL2023 bucket instead, where this openssl entry is absent.
+			// major ("2"), not the image's ("2023"). The AL2 bucket carries
+			// this openssl entry; the AL2023 bucket does not, so a misroute
+			// surfaces as the CVE being missed outright.
 			name:   "Amazon: .amzn2 tag in an AL2023 image routes by the tag's major",
 			baseOS: ftypes.Amazon,
 			fixtures: []string{
@@ -1715,6 +1756,47 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// An ".el7" package on AL2 was rebuilt from EL7 sources; EL is not
+			// a release name on Amazon. Routing by the tag's major would send
+			// it to "rapidfort amazon linux 7" — a bucket trivy-db never writes
+			// — so the Amazon exception keeps it on the image's AL2 release.
+			name:   "Amazon: AL2 .el-tagged package stays on the AL2 bucket",
+			baseOS: ftypes.Amazon,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2 (Karoo)",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "openssl",
+						Version:    "1.1.1k-7.el7_4",
+						SrcName:    "openssl",
+						SrcVersion: "1.1.1k-7.el7_4",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "openssl",
+					VulnerabilityID:  "CVE-2024-AL2",
+					InstalledVersion: "1.1.1k-7.el7_4",
+					FixedVersion:     "1.1.1k-8.amzn2",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "amazon",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			// Debian advisories are bucketed by OS major version, so "12.4" trims
 			// to the "rapidfort debian 12" bucket.
 			name:   "Debian: openssl routes to the Debian bucket",
@@ -1754,10 +1836,9 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// An rfubu-marked package in a Debian image routes to the versionless
-			// "rapidfort debian" bucket, mirroring Ubuntu. The Debian feed carries
-			// no range identifiers, so the DB build attributes these by the same
-			// marker this routing decision reads.
+			// A plain "rfubu" version with no "+rf" trailer isolates the rfubu
+			// branch of the dpkg matcher: dropping it would send this package
+			// to the distro bucket instead of "rapidfort debian".
 			name:   "Debian: rfubu package routes to the rapidfort debian bucket",
 			baseOS: ftypes.Debian,
 			fixtures: []string{
@@ -1769,9 +1850,9 @@ func TestScanner_Detect(t *testing.T) {
 				pkgs: []ftypes.Package{
 					{
 						Name:       "rf-git",
-						Version:    "0:2.43.0-11rfubu7.2+rf.1",
+						Version:    "0:2.43.0-11rfubu7.2",
 						SrcName:    "rf-git",
-						SrcVersion: "0:2.43.0-11rfubu7.2+rf.1",
+						SrcVersion: "0:2.43.0-11rfubu7.2",
 					},
 				},
 			},
@@ -1779,7 +1860,7 @@ func TestScanner_Detect(t *testing.T) {
 				{
 					PkgName:          "rf-git",
 					VulnerabilityID:  "CVE-2025-27614",
-					InstalledVersion: "0:2.43.0-11rfubu7.2+rf.1",
+					InstalledVersion: "0:2.43.0-11rfubu7.2",
 					FixedVersion:     "0:2.48.2-0rfubu",
 					SeveritySource:   "rapidfort",
 					DataSource: &dbTypes.DataSource{
@@ -1795,11 +1876,8 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
-			// A bare "+rf.N" revision carries no "rfubu" at all, yet is still a
-			// RapidFort rebuild and must reach the same bucket — the case an
-			// "rfubu" substring check would have sent to the distro bucket.
-			// Versions are the real rf-perl range, which fixes a "+rf" install
-			// with a ".rf" build.
+			// A "+rf" revision without "rfubu" reaches the rapidfort debian
+			// bucket, isolating the +rf branch of the dpkg matcher.
 			name:   "Debian: +rf revision routes to the rapidfort debian bucket",
 			baseOS: ftypes.Debian,
 			fixtures: []string{
@@ -1903,81 +1981,82 @@ func TestScanner_Detect(t *testing.T) {
 }
 
 func TestSupplier(t *testing.T) {
+	// want names the family the returned Scanner must be built for; the
+	// empty string stands for "Supplier must return nil". A plain NotNil
+	// check wouldn't catch Supplier handing back the wrong family's Scanner.
 	tests := []struct {
-		name    string
-		os      ftypes.OS
-		wantNil bool
+		name string
+		os   ftypes.OS
+		want ftypes.OSType
 	}{
 		{
-			name:    "RapidFort Ubuntu image detected",
-			os:      ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Ubuntu image detected",
+			os:   ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Ubuntu,
 		},
 		{
-			name:    "RapidFort Debian image detected",
-			os:      ftypes.OS{Family: ftypes.Debian, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Debian image detected",
+			os:   ftypes.OS{Family: ftypes.Debian, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Debian,
 		},
 		{
-			name:    "RapidFort Alpine image detected",
-			os:      ftypes.OS{Family: ftypes.Alpine, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Alpine image detected",
+			os:   ftypes.OS{Family: ftypes.Alpine, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Alpine,
 		},
 		{
-			name:    "RapidFort RedHat image detected",
-			os:      ftypes.OS{Family: ftypes.RedHat, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort RedHat image detected",
+			os:   ftypes.OS{Family: ftypes.RedHat, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.RedHat,
 		},
 		{
-			name:    "RapidFort Oracle image detected",
-			os:      ftypes.OS{Family: ftypes.Oracle, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Oracle image detected",
+			os:   ftypes.OS{Family: ftypes.Oracle, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Oracle,
 		},
 		{
-			name:    "RapidFort Rocky image detected",
-			os:      ftypes.OS{Family: ftypes.Rocky, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Rocky image detected",
+			os:   ftypes.OS{Family: ftypes.Rocky, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Rocky,
 		},
 		{
-			name:    "RapidFort Alma image detected",
-			os:      ftypes.OS{Family: ftypes.Alma, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Alma image detected",
+			os:   ftypes.OS{Family: ftypes.Alma, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Alma,
 		},
 		{
-			name:    "RapidFort Amazon image detected",
-			os:      ftypes.OS{Family: ftypes.Amazon, Supplier: ftypes.SupplierRapidFort},
-			wantNil: false,
+			name: "RapidFort Amazon image detected",
+			os:   ftypes.OS{Family: ftypes.Amazon, Supplier: ftypes.SupplierRapidFort},
+			want: ftypes.Amazon,
 		},
 		{
-			name:    "Oracle image without the RapidFort supplier returns nil",
-			os:      ftypes.OS{Family: ftypes.Oracle},
-			wantNil: true,
+			name: "Oracle image without the RapidFort supplier returns nil",
+			os:   ftypes.OS{Family: ftypes.Oracle},
 		},
 		{
-			name:    "No RapidFort supplier returns nil",
-			os:      ftypes.OS{Family: ftypes.Ubuntu},
-			wantNil: true,
+			name: "No RapidFort supplier returns nil",
+			os:   ftypes.OS{Family: ftypes.Ubuntu},
 		},
 		{
-			name:    "Different supplier returns nil",
-			os:      ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierSeal},
-			wantNil: true,
+			name: "Different supplier returns nil",
+			os:   ftypes.OS{Family: ftypes.Ubuntu, Supplier: ftypes.SupplierSeal},
 		},
 		{
-			name:    "RapidFort supplier on unsupported OS family returns nil",
-			os:      ftypes.OS{Family: ftypes.Photon, Supplier: ftypes.SupplierRapidFort},
-			wantNil: true,
+			name: "RapidFort supplier on unsupported OS family returns nil",
+			os:   ftypes.OS{Family: ftypes.Photon, Supplier: ftypes.SupplierRapidFort},
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			d := rapidfort.Supplier(tt.os, nil)
-			if tt.wantNil {
+			if tt.want == "" {
 				assert.Nil(t, d)
-			} else {
-				assert.NotNil(t, d)
+				return
 			}
+			s, ok := d.(*rapidfort.Scanner)
+			require.True(t, ok)
+			assert.Equal(t, tt.want, s.BaseOS())
 		})
 	}
 }
@@ -2197,11 +2276,23 @@ func TestRpmDistTag(t *testing.T) {
 		{ver: "3.8.9-10.rfal", wantTag: "rf", wantNum: ""},
 		{ver: "2.8.2-10.rfal", wantTag: "rf", wantNum: ""},
 		{ver: "8.5.0-1.amzn2023", wantTag: "amzn", wantNum: "2023"},
-		// \d* is greedy but stops at the next ".", so the digits group captures
-		// only the major before the dot-separated suffix.
 		{ver: "7.79.1-2.amzn2.0.1", wantTag: "amzn", wantNum: "2"},
 		// A dist tag with no major: route falls back to the image's own version.
 		{ver: "7.76.1-26.el", wantTag: "el", wantNum: ""},
+		// A non-empty release number pins the tag against vendor variants like
+		// Oracle UEK that append a letter suffix. Without this pinning, an
+		// ".elN<letters>" release would truncate to a smaller major or drop to
+		// osVer and silently miss cross-major routing.
+		{ver: "6.12.0-100.el10uek", wantTag: "el", wantNum: "10"},
+		{ver: "5.15.0-209.161.7.2.el9uek", wantTag: "el", wantNum: "9"},
+		{ver: "3.3.0-1.el10fdp", wantTag: "el", wantNum: "10"},
+		// A release carrying multiple dist tags names its real target at the
+		// trailing element, so fc wins over el on ".el8.fc43".
+		{ver: "1.0-1.el8.fc43", wantTag: "fc", wantNum: "43"},
+		// Only the release is scanned for a dist tag; an "rf" fragment that
+		// appears in the upstream version is not a dist tag and must not
+		// override a real one in the release.
+		{ver: "1.2.rf-3.el8", wantTag: "el", wantNum: "8"},
 		// "rf" wins when present: trivy-db routes rf ranges by identifier, not by
 		// any trailing dist tag, so a ".rf.fcNN" package is an rf rebuild — not a
 		// Fedora one.
@@ -2270,7 +2361,8 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		// "rf" revisions, so the marker cannot be a single fixed substring.
 		{name: "rfubu on the debian feed", ver: "0:1.19+dfsg-12rfubu", want: true},
 		{name: "bare rf after plus", ver: "0:3.2.2-1+rf.2", want: true},
-		{name: "bare rf after tilde", ver: "0:3.0.13-1rfubuntu3.1~rf.1", want: true},
+		{name: "rfubu with tilde-rf trailer", ver: "0:3.0.13-1rfubuntu3.1~rf.1", want: true},
+		{name: "bare rf mid-release", ver: "0:2.43-14.rf.1", want: true},
 		{name: "bare rf as dotted suffix", ver: "0:2.43-14.rf", want: true},
 		{name: "bare rf on perl", ver: "0:5.40.1-10.rf", want: true},
 
@@ -2282,10 +2374,14 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "ubuntu security revision", ver: "0:2.46-3ubuntu2", want: false},
 		{name: "empty version", ver: "", want: false},
 		{name: "debian security revision", ver: "0:1.26.2-3+deb13u1", want: false},
-		// "rf" inside a longer word is not a marker: it must both start and end
-		// an element of the revision.
+		// None of the four published forms (+rf, rfubu, trailing .rf, .rf.
+		// mid-release) appear in these substrings, so an unpublished "rf"
+		// fragment stays unmatched and the package keeps its distro routing.
+		// A bare "~rf" is one such unpublished form — the dpkg feeds don't
+		// emit it, so a plain tilde-rf version must not route to the rf bucket.
 		{name: "rfc in an upstream version", ver: "1.0-2.rfc3339", want: false},
 		{name: "rf preceded by a letter", ver: "1.0-1surf1", want: false},
+		{name: "bare tilde-rf is not a published spelling", ver: "0:1.0-1~rf.1", want: false},
 		// "ubu" takes a variant suffix: curl and libxml2 ship "rfubujl".
 		{name: "rfubu with a variant suffix", ver: "0:1.2.3-3rfubujl", want: true},
 		// A spelling with no "ubu" must not match on its "rf" prefix.
@@ -2296,31 +2392,6 @@ func TestDpkgHasRfMarker(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, rapidfort.DpkgHasRfMarker(tt.ver))
-		})
-	}
-}
-
-// TestVersionTrimmer_Amazon pins the Amazon trimmer against both OS.Name shapes
-// the scanner can see: AL2023's dotted release ("2023.12.20260831 (Amazon Linux)")
-// and AL2's bare major with a trailing parenthesized nickname ("2 (Karoo)").
-// version.Major alone splits on the first "." and leaves AL2 as "2 (Karoo)",
-// which routes to a bucket trivy-db never writes and silently misses CVEs.
-func TestVersionTrimmer_Amazon(t *testing.T) {
-	s := rapidfort.NewScanner(ftypes.Amazon)
-	tests := []struct {
-		name string
-		in   string
-		want string
-	}{
-		{name: "AL2023 full OS.Name", in: "2023.12.20260831 (Amazon Linux)", want: "2023"},
-		{name: "AL2 Karoo", in: "2 (Karoo)", want: "2"},
-		{name: "already trimmed major", in: "2023", want: "2023"},
-		{name: "empty", in: "", want: ""},
-		{name: "whitespace only", in: "   ", want: ""},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, s.VersionTrimmer(tt.in))
 		})
 	}
 }
