@@ -1080,6 +1080,12 @@ func TestScanner_Scan(t *testing.T) {
 					SchemaVersion: ftypes.BlobJSONSchemaVersion,
 					DiffID:        "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
 					CryptoAssets: []ftypes.CryptoAsset{
+						// The cache holds no security levels, which the scan assesses.
+						cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+							asset.Name = "RSA-2048"
+							asset.Identity.Parameters = "key-size=2048"
+							asset.FilePath = "etc/ssl/certs/ca.pem"
+						})),
 						cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
 							asset.FilePath = "etc/ssl/certs/ca.pem"
 						})),
@@ -1093,6 +1099,16 @@ func TestScanner_Scan(t *testing.T) {
 						Target: "alpine:latest",
 						Class:  types.ClassCrypto,
 						CryptoAssets: []ftypes.CryptoAsset{
+							cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+								asset.Name = "RSA-2048"
+								asset.Identity.Parameters = "key-size=2048"
+								asset.FilePath = "etc/ssl/certs/ca.pem"
+								asset.Layer = ftypes.Layer{
+									DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+								}
+								asset.Algorithm.ClassicalSecurityLevel = new(112)
+								asset.Algorithm.NISTQuantumSecurityLevel = new(0)
+							})),
 							cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
 								asset.FilePath = "etc/ssl/certs/ca.pem"
 								asset.Layer = ftypes.Layer{
