@@ -113,6 +113,25 @@ func TestDescribeAlgorithm(t *testing.T) {
 			},
 		},
 		{
+			// The catalog names no subgroup size for RSA, so a stated one is left out.
+			name:         "parameter the catalog does not name",
+			oid:          "1.2.840.113549.1.1.1",
+			size:         2048,
+			subgroupSize: 256,
+			want: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindAlgorithm,
+				Identity: ftypes.CryptoIdentity{
+					Method:     ftypes.CryptoMethodOID,
+					Value:      "1.2.840.113549.1.1.1",
+					Parameters: "key-size=2048",
+				},
+				Name: "RSA-2048",
+				Algorithm: &ftypes.CryptoAlgorithm{
+					Primitive: ftypes.CryptoPrimitiveUnknown,
+				},
+			},
+		},
+		{
 			// RSASSA-PSS is left out of the catalog because its variants share one OID.
 			name: "algorithm outside the catalog",
 			oid:  "1.2.840.113549.1.1.10",

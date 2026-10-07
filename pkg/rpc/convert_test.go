@@ -1635,6 +1635,15 @@ func TestConvertCryptoAssets(t *testing.T) {
 				asset.Layer = layer
 			})),
 		},
+		{
+			name: "algorithm with several parameters",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "DSA-2048-256"
+				asset.Identity.Value = "1.2.840.10040.4.1"
+				asset.Identity.Parameters = "key-size=2048,subgroup-size=256"
+				asset.Layer = layer
+			})),
+		},
 	}
 
 	for _, tt := range tests {

@@ -371,6 +371,46 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 			},
 		},
 		{
+			// Invalid parameters are left out rather than reported as they are.
+			name: "algorithm with invalid parameters",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method:     ftypes.CryptoMethodOID,
+							Value:      "1.2.840.113549.1.1.1",
+							Parameters: "key-size=abc",
+						},
+						Name: "RSA",
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Primitive: ftypes.CryptoPrimitiveUnknown,
+						},
+					},
+					FilePath: "opt/app/rsa.pem",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3Dabc",
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "RSA",
+					CryptoProperties: &cdx.CryptoProperties{
+						AssetType: cdx.CryptoAssetTypeAlgorithm,
+						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{
+							Primitive: cdx.CryptoPrimitiveUnknown,
+						},
+						OID: "1.2.840.113549.1.1.1",
+					},
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "opt/app/rsa.pem"},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "kind without matching details",
 			assets: []ftypes.CryptoAsset{
 				{

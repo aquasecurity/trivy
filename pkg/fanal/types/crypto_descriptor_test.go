@@ -295,6 +295,41 @@ func TestCryptoDescriptorValidate(t *testing.T) {
 			wantErr: `algorithm parameters "key-size=2048,key-size=2048" are not canonical`,
 		},
 		{
+			name:    "key size larger than an int",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=99999999999999999999"}},
+			wantErr: "key size parameter must be a canonical positive decimal",
+		},
+		{
+			name:    "subgroup size combined with curve",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "subgroup-size=256,curve=P-256"}},
+			wantErr: "subgroup size parameter requires a key size",
+		},
+		{
+			name:    "all parameters",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=2048,subgroup-size=256,curve=P-256"}},
+			wantErr: "curve parameter must not be combined with sizes",
+		},
+		{
+			name:    "repeated curve",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "curve=P-256,curve=P-256"}},
+			wantErr: `algorithm parameters "curve=P-256,curve=P-256" are not canonical`,
+		},
+		{
+			name:    "parameter without name",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "=2048"}},
+			wantErr: `unknown algorithm parameter "=2048"`,
+		},
+		{
+			name:    "leading comma",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: ",key-size=2048"}},
+			wantErr: `unknown algorithm parameter ""`,
+		},
+		{
+			name:    "double comma",
+			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=2048,,subgroup-size=256"}},
+			wantErr: `unknown algorithm parameter ""`,
+		},
+		{
 			name:    "empty parameter in list",
 			desc:    types.CryptoDescriptor{Kind: types.CryptoKindAlgorithm, Identity: types.CryptoIdentity{Method: types.CryptoMethodOID, Value: "1.2.3", Parameters: "key-size=2048,"}},
 			wantErr: `unknown algorithm parameter ""`,
