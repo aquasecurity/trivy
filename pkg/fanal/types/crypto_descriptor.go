@@ -27,7 +27,7 @@ func (d CryptoDescriptor) String() string {
 	// descriptor's colon delimiter, and represents spaces as '+'.
 	segments = append(segments, string(d.Identity.Method), url.QueryEscape(d.Identity.Value))
 	// Parameters distinguish algorithm assets that share an OID but use different
-	// key sizes or curves.
+	// key sizes, subgroup sizes or curves.
 	if d.Identity.Parameters != "" {
 		segments = append(segments, url.QueryEscape(d.Identity.Parameters))
 	}
@@ -203,8 +203,12 @@ func parseDescriptor(s string) (CryptoDescriptor, error) {
 type CryptoAlgorithmParameterName string
 
 const (
-	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits.
+	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits. For DSA it
+	// is L, the bit length of the prime p.
 	CryptoParameterKeySize CryptoAlgorithmParameterName = "key-size"
+	// CryptoParameterSubgroupSize distinguishes DSA algorithm assets by N, the bit length of
+	// the prime q, which FIPS 186 pairs with L to name a parameter set.
+	CryptoParameterSubgroupSize CryptoAlgorithmParameterName = "subgroup-size"
 	// CryptoParameterCurve distinguishes algorithm assets by curve name.
 	CryptoParameterCurve CryptoAlgorithmParameterName = "curve"
 )
@@ -212,16 +216,20 @@ const (
 // CryptoAlgorithmParameters are the key properties that distinguish algorithm assets
 // sharing one OID. A zero field is not stated.
 type CryptoAlgorithmParameters struct {
-	KeySize int
-	Curve   string
+	KeySize      int
+	SubgroupSize int
+	Curve        string
 }
 
 // String encodes the parameters in their canonical form: comma-separated name=value pairs
-// in the order key-size, curve, with unstated parameters left out.
+// in the order key-size, subgroup-size, curve, with unstated parameters left out.
 func (p CryptoAlgorithmParameters) String() string {
 	var pairs []string
 	if p.KeySize > 0 {
 		pairs = append(pairs, string(CryptoParameterKeySize)+"="+strconv.Itoa(p.KeySize))
+	}
+	if p.SubgroupSize > 0 {
+		pairs = append(pairs, string(CryptoParameterSubgroupSize)+"="+strconv.Itoa(p.SubgroupSize))
 	}
 	if p.Curve != "" {
 		pairs = append(pairs, string(CryptoParameterCurve)+"="+p.Curve)
@@ -230,7 +238,8 @@ func (p CryptoAlgorithmParameters) String() string {
 }
 
 // AlgorithmParameters decodes the parameters of an algorithm identity. It accepts only the
-// canonical form String produces, in which a curve stands alone.
+// canonical form String produces, in which a subgroup size comes with a key size and a
+// curve stands alone.
 func (i CryptoIdentity) AlgorithmParameters() (CryptoAlgorithmParameters, error) {
 	var params CryptoAlgorithmParameters
 	if i.Parameters == "" {
@@ -250,6 +259,12 @@ func (i CryptoIdentity) AlgorithmParameters() (CryptoAlgorithmParameters, error)
 				return CryptoAlgorithmParameters{}, xerrors.Errorf("key size parameter must be a canonical positive decimal")
 			}
 			params.KeySize = size
+		case CryptoParameterSubgroupSize:
+			size, ok := parseBitLength(value)
+			if !ok {
+				return CryptoAlgorithmParameters{}, xerrors.Errorf("subgroup size parameter must be a canonical positive decimal")
+			}
+			params.SubgroupSize = size
 		case CryptoParameterCurve:
 			if value == "" {
 				return CryptoAlgorithmParameters{}, xerrors.Errorf("curve parameter must not be empty")
@@ -260,6 +275,9 @@ func (i CryptoIdentity) AlgorithmParameters() (CryptoAlgorithmParameters, error)
 		}
 	}
 
+	if params.SubgroupSize > 0 && params.KeySize == 0 {
+		return CryptoAlgorithmParameters{}, xerrors.Errorf("subgroup size parameter requires a key size")
+	}
 	if params.Curve != "" && params.KeySize > 0 {
 		return CryptoAlgorithmParameters{}, xerrors.Errorf("curve parameter must not be combined with sizes")
 	}

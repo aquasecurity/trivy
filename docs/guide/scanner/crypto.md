@@ -32,7 +32,7 @@ The report lists three kinds of assets, which are certificates, keys and algorit
 
 A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.
 
-An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.
+An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. The parameters are the key size for RSA and the curve for EC. For DSA they are both bit lengths that FIPS 186 names a parameter set by, L of the prime `p` and N of the prime `q`, so `DSA-2048-224` and `DSA-2048-256` are different algorithms. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.
 
 ### CycloneDX
 

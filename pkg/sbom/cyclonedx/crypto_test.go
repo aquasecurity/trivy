@@ -328,6 +328,49 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 			},
 		},
 		{
+			// FIPS 186 names a DSA parameter set by both L and N.
+			name: "DSA algorithm",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method:     ftypes.CryptoMethodOID,
+							Value:      "1.2.840.10040.4.1",
+							Parameters: "key-size=2048,subgroup-size=256",
+						},
+						Name: "DSA-2048-256",
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Family:    "DSA",
+							Primitive: ftypes.CryptoPrimitiveSignature,
+						},
+					},
+					FilePath: "opt/app/dsa.pem",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D256",
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "DSA-2048-256",
+					CryptoProperties: &cdx.CryptoProperties{
+						AssetType: cdx.CryptoAssetTypeAlgorithm,
+						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{
+							Primitive:              cdx.CryptoPrimitiveSignature,
+							AlgorithmFamily:        "DSA",
+							ParameterSetIdentifier: "2048-256",
+						},
+						OID: "1.2.840.10040.4.1",
+					},
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "opt/app/dsa.pem"},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "kind without matching details",
 			assets: []ftypes.CryptoAsset{
 				{

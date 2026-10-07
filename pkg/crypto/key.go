@@ -37,8 +37,8 @@ func DescribeKey(
 		return ftypes.CryptoAssetInfo{}, ftypes.CryptoAssetInfo{}, err
 	}
 
-	size, curve := keyDetails(pub)
-	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, curve)
+	size, subgroupSize, curve := keyDetails(pub)
+	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, subgroupSize, curve)
 
 	key = ftypes.CryptoAssetInfo{
 		Kind:     ftypes.CryptoKindKey,
@@ -113,24 +113,26 @@ func LinkKeyPairs(assets []ftypes.CryptoAsset) {
 	}
 }
 
-// keyDetails reports the size in bits and the curve of a public key.
-func keyDetails(pub stdcrypto.PublicKey) (int, string) {
+// keyDetails reports the size in bits and the curve of a public key, and for DSA the
+// subgroup size in bits.
+func keyDetails(pub stdcrypto.PublicKey) (size, subgroupSize int, curve string) {
 	switch pub := pub.(type) {
 	case *rsa.PublicKey:
-		return pub.N.BitLen(), ""
+		return pub.N.BitLen(), 0, ""
 	case *dsa.PublicKey:
-		return pub.P.BitLen(), ""
+		// L and N of FIPS 186, the bit lengths of the primes p and q.
+		return pub.P.BitLen(), pub.Q.BitLen(), ""
 	case *ecdsa.PublicKey:
-		return pub.Curve.Params().BitSize, pub.Curve.Params().Name
+		return pub.Curve.Params().BitSize, 0, pub.Curve.Params().Name
 	case ed25519.PublicKey:
 		// An Ed25519 key is the raw point, so its length is the key size in bytes.
-		return len(pub) * 8, ""
+		return len(pub) * 8, 0, ""
 	case *mldsa.PublicKey:
 		// An ML-DSA public key is a fixed-length encoding decided by the parameter set, so its
 		// size is the length of that encoding.
-		return pub.Parameters().PublicKeySize() * 8, ""
+		return pub.Parameters().PublicKeySize() * 8, 0, ""
 	}
-	return 0, ""
+	return 0, 0, ""
 }
 
 // publicKeyInfo canonicalizes a key as PKIX SubjectPublicKeyInfo and reports the identity

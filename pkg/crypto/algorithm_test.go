@@ -12,11 +12,12 @@ import (
 
 func TestDescribeAlgorithm(t *testing.T) {
 	tests := []struct {
-		name  string
-		oid   string
-		size  int
-		curve string
-		want  ftypes.CryptoAssetInfo
+		name         string
+		oid          string
+		size         int
+		subgroupSize int
+		curve        string
+		want         ftypes.CryptoAssetInfo
 	}{
 		{
 			// A signature algorithm is described without key parameters, because the key
@@ -74,6 +75,44 @@ func TestDescribeAlgorithm(t *testing.T) {
 			},
 		},
 		{
+			// DSA keys of one L can differ in N, so both become part of the identity.
+			name:         "key size and subgroup size parameters",
+			oid:          "1.2.840.10040.4.1",
+			size:         2048,
+			subgroupSize: 256,
+			want: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindAlgorithm,
+				Identity: ftypes.CryptoIdentity{
+					Method:     ftypes.CryptoMethodOID,
+					Value:      "1.2.840.10040.4.1",
+					Parameters: "key-size=2048,subgroup-size=256",
+				},
+				Name: "DSA-2048-256",
+				Algorithm: &ftypes.CryptoAlgorithm{
+					Family:    "DSA",
+					Primitive: ftypes.CryptoPrimitiveSignature,
+				},
+			},
+		},
+		{
+			// A subgroup size refines a key size, so it is dropped without one.
+			name:         "subgroup size without key size",
+			oid:          "1.2.840.10040.4.1",
+			subgroupSize: 256,
+			want: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindAlgorithm,
+				Identity: ftypes.CryptoIdentity{
+					Method: ftypes.CryptoMethodOID,
+					Value:  "1.2.840.10040.4.1",
+				},
+				Name: "DSA",
+				Algorithm: &ftypes.CryptoAlgorithm{
+					Family:    "DSA",
+					Primitive: ftypes.CryptoPrimitiveSignature,
+				},
+			},
+		},
+		{
 			// RSASSA-PSS is left out of the catalog because its variants share one OID.
 			name: "algorithm outside the catalog",
 			oid:  "1.2.840.113549.1.1.10",
@@ -110,7 +149,7 @@ func TestDescribeAlgorithm(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := crypto.DescribeAlgorithm(tt.oid, tt.size, tt.curve)
+			got := crypto.DescribeAlgorithm(tt.oid, tt.size, tt.subgroupSize, tt.curve)
 			assert.Equal(t, tt.want, got)
 			require.NoError(t, got.Validate())
 		})

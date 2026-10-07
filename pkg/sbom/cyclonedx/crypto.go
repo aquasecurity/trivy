@@ -167,6 +167,10 @@ func (m *Marshaler) algorithmProperties(asset ftypes.CryptoAssetInfo) *cdx.Crypt
 	}
 	if parameters.KeySize > 0 {
 		properties.ParameterSetIdentifier = strconv.Itoa(parameters.KeySize)
+		// A DSA parameter set is named by both L and N, as FIPS 186 names it.
+		if parameters.SubgroupSize > 0 {
+			properties.ParameterSetIdentifier += "-" + strconv.Itoa(parameters.SubgroupSize)
+		}
 	}
 	if parameters.Curve != "" {
 		properties.EllipticCurve = ellipticCurves[parameters.Curve]
