@@ -11,8 +11,8 @@ import (
 )
 
 // echoLocalSegmentRe matches the Echo-specific PEP 440 local version segment,
-// e.g. "+echo.1" in "2.14.2+echo.1".
-var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+$`)
+// e.g. "+echo.1" in "2.14.2+echo.1" or "2.14.2+echo.1.post1".
+var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
 
 func init() {
 	library.RegisterSupplier(echoSupplier{
@@ -33,10 +33,10 @@ func (echoSupplier) Name() string {
 }
 
 // Match determines whether a package is provided by Echo.
-// Echo packages are identified by a trailing "+echo.N" segment in the version string,
-// where N is a numeric revision (e.g. "2.14.2+echo.1").
+// Echo packages are identified by a "+echo.N" segment anywhere in the version string,
+// where N is a numeric revision (e.g. "2.14.2+echo.1" or "2.14.2+echo.1.post1").
 // The "+echo.N" local segment cannot collide with real PyPI versions, so a
-// suffix match is authoritative (Matched) rather than a Candidate.
+// match is authoritative (Matched) rather than a Candidate.
 func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchResult {
 	if eco != ecosystem.Pip {
 		return library.NoMatch
