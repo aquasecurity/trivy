@@ -157,17 +157,23 @@ func (m *Marshaler) algorithmProperties(asset ftypes.CryptoAssetInfo) *cdx.Crypt
 		AlgorithmFamily: asset.Algorithm.Family,
 	}
 
-	// The property that distinguishes algorithms sharing one OID is kept as a parameter of
-	// the identity, and only its value is reported here.
-	name, value, found := asset.Identity.AlgorithmParameter()
-	if !found {
+	// The properties that distinguish algorithms sharing one OID are kept as parameters of
+	// the identity, and only their values are reported here.
+	parameters, err := asset.Identity.AlgorithmParameters()
+	if err != nil {
+		m.logger.Debug("Omitting invalid algorithm parameters",
+			log.String("bom-ref", core.CryptoBOMRef(asset.Descriptor())), log.Err(err))
 		return properties
 	}
-	switch name {
-	case ftypes.CryptoParameterKeySize:
-		properties.ParameterSetIdentifier = value
-	case ftypes.CryptoParameterCurve:
-		properties.EllipticCurve = ellipticCurves[value]
+	if parameters.KeySize > 0 {
+		properties.ParameterSetIdentifier = strconv.Itoa(parameters.KeySize)
+		// FIPS 186 names a DSA parameter set by both L and N.
+		if parameters.SubgroupSize > 0 {
+			properties.ParameterSetIdentifier += "-" + strconv.Itoa(parameters.SubgroupSize)
+		}
+	}
+	if parameters.Curve != "" {
+		properties.EllipticCurve = ellipticCurves[parameters.Curve]
 	}
 	return properties
 }
