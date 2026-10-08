@@ -107,7 +107,7 @@ func (*Marshaler) certificateExtensions(cert *ftypes.CryptoCertificate) *[]cdx.C
 		// A path length is stated only by a CA that constrains the chain below it. Zero is
 		// such a constraint, and an unset zero is not, so the two are told apart by the flag.
 		if cert.IsCA && (cert.MaxPathLen > 0 || cert.MaxPathLenZero) {
-			value += ", pathlen:" + strconv.Itoa(cert.MaxPathLen)
+			value += ", pathlen:" + strconv.FormatInt(cert.MaxPathLen, 10)
 		}
 		add(cdx.CertExtBasicConstraints, value)
 	}

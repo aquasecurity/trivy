@@ -14,6 +14,7 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 
+	_ "github.com/aquasecurity/trivy/pkg/detector/library/echo" // register Echo supplier
 	_ "github.com/aquasecurity/trivy/pkg/detector/library/seal" // register Seal Security supplier
 )
 
@@ -451,6 +452,115 @@ func TestDriver_Detect(t *testing.T) {
 					},
 				},
 			},
+		},
+		{
+			name: "echo pip package",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-24049",
+					VendorIDs: []string{
+						"ECHO-3d34-cec5-cf72",
+					},
+					PkgName:          "wheel",
+					InstalledVersion: "0.45.1+echo.1",
+					FixedVersion:     "0.45.1+echo.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package with the fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.2",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package with a newer echo revision than the fixed one",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "wheel",
+				pkgVer:  "0.45.1+echo.10",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package with an upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.12.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-3000",
+					VendorIDs: []string{
+						"ECHO-9320-f34e-79db",
+					},
+					PkgName:          "torch",
+					InstalledVersion: "2.12.0+echo.1",
+					FixedVersion:     "2.13.0",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo pip package with the upstream fixed version",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "torch",
+				pkgVer:  "2.13.0+echo.1",
+			},
+			want: nil,
+		},
+		{
+			name: "echo pip package ignores upstream advisories",
+			fixtures: []string{
+				"testdata/fixtures/pip.yaml",
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.PythonPkg,
+			args: args{
+				pkgName: "Django",
+				pkgVer:  "4.2.1+echo.1",
+			},
+			want: nil,
 		},
 	}
 	for _, tt := range tests {

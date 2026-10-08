@@ -30,7 +30,7 @@ type CryptoCertificate struct {
 	// MaxPathLen is the maximum number of non-self-issued intermediate
 	// certificates. Zero with MaxPathLenZero unset means no constraint was
 	// specified; negative sentinel values are not retained in this model.
-	MaxPathLen int `json:",omitempty"`
+	MaxPathLen int64 `json:",omitempty"`
 	// MaxPathLenZero reports whether zero is an explicit maximum path length.
 	MaxPathLenZero bool `json:",omitempty"`
 }
