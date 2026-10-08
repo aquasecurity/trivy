@@ -83,6 +83,13 @@ func TestAssessStrength(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// The algorithm carries levels of its own, which the assessment replaces without
+			// writing to the algorithm, as an in-memory cache may hold it.
+			original := &ftypes.CryptoAlgorithm{
+				Primitive:                ftypes.CryptoPrimitiveUnknown,
+				ClassicalSecurityLevel:   new(1),
+				NISTQuantumSecurityLevel: new(6),
+			}
 			assets := []ftypes.CryptoAsset{{
 				CryptoAssetInfo: ftypes.CryptoAssetInfo{
 					Kind: ftypes.CryptoKindAlgorithm,
@@ -91,9 +98,7 @@ func TestAssessStrength(t *testing.T) {
 						Value:      tt.oid,
 						Parameters: tt.parameters,
 					},
-					Algorithm: &ftypes.CryptoAlgorithm{
-						Primitive: ftypes.CryptoPrimitiveUnknown,
-					},
+					Algorithm: original,
 				},
 			}}
 
@@ -101,6 +106,9 @@ func TestAssessStrength(t *testing.T) {
 			assert.Equal(t, tt.wantClassical, assets[0].Algorithm.ClassicalSecurityLevel)
 			assert.Equal(t, tt.wantCategory, assets[0].Algorithm.NISTQuantumSecurityLevel)
 			require.NoError(t, assets[0].Validate())
+
+			assert.Equal(t, new(1), original.ClassicalSecurityLevel)
+			assert.Equal(t, new(6), original.NISTQuantumSecurityLevel)
 		})
 	}
 }
