@@ -211,6 +211,7 @@ func (a CryptoAssetInfo) validateAlgorithm() error {
 	if level := a.Algorithm.ClassicalSecurityLevel; level != nil && *level <= 0 {
 		return xerrors.Errorf("classical security level must be positive")
 	}
+	// NIST defines five categories, and the CycloneDX schema allows up to 6.
 	if level := a.Algorithm.NISTQuantumSecurityLevel; level != nil && (*level < 0 || *level > 6) {
 		return xerrors.Errorf("NIST quantum security level must be between 0 and 6")
 	}
