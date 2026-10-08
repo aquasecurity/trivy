@@ -22,7 +22,7 @@ type CryptoAlgorithm struct {
 
 	// ClassicalSecurityLevel is the classical security strength in bits.
 	ClassicalSecurityLevel *int `json:",omitempty"`
-	// NISTQuantumSecurityLevel is the NIST post-quantum security category from 1 to 6, or 0
+	// NISTQuantumSecurityLevel is the NIST post-quantum security category from 1 to 5, or 0
 	// for an algorithm that meets none of them.
 	NISTQuantumSecurityLevel *int `json:",omitempty"`
 }

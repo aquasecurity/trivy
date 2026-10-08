@@ -1,14 +1,12 @@
 package crypto
 
-import (
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-)
+import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 
 // strengthBasis is the published basis the security levels of an algorithm are assessed
 // from. The levels themselves are assessed after caching by AssessStrength, so that a
 // change to a basis applies without analyzing again.
 //
-// The levels are nominal estimates taken from NIST and RFC publications. They estimate the
+// The levels are nominal estimates taken from NIST and IETF publications. They estimate the
 // strength of an algorithm and its parameters, and are neither a guarantee for an
 // implementation nor a statement of policy approval.
 type strengthBasis struct {
