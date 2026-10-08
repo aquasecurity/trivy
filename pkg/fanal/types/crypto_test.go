@@ -249,6 +249,28 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: `unknown algorithm primitive "hash"`,
 		},
 		{
+			name: "algorithm with security levels",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.ClassicalSecurityLevel = new(112)
+				a.Algorithm.NISTQuantumSecurityLevel = new(0)
+			})),
+			wantErr: "",
+		},
+		{
+			name: "highest NIST quantum security level",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.NISTQuantumSecurityLevel = new(6)
+			})),
+			wantErr: "",
+		},
+		{
+			name: "negative classical security level",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Algorithm.ClassicalSecurityLevel = new(-1)
+			})),
+			wantErr: "classical security level must be positive",
+		},
+		{
 			name: "zero classical security level",
 			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Algorithm.ClassicalSecurityLevel = new(0)
