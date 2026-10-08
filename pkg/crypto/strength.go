@@ -91,7 +91,8 @@ func mldsaStrengthBasis(category int) strengthBasis {
 
 // AssessStrength fills in the nominal security levels of algorithm assets from the basis
 // the catalog holds for their OID. An OID with no basis gets neither level, and parameters
-// the basis does not cover get no classical level.
+// the basis does not cover get no classical level. Levels the assets already carry are
+// replaced, so that they come from the basis alone.
 func AssessStrength(assets []ftypes.CryptoAsset) {
 	for i := range assets {
 		asset := &assets[i]
@@ -100,14 +101,23 @@ func AssessStrength(assets []ftypes.CryptoAsset) {
 			continue
 		}
 
-		basis := algorithms[asset.Identity.Value].strengthBasis
-		if basis.nistCategory == nil {
-			continue
-		}
-		asset.Algorithm.NISTQuantumSecurityLevel = new(*basis.nistCategory)
-
-		if bits, found := basis.classicalStrengths[asset.Identity.Parameters]; found {
-			asset.Algorithm.ClassicalSecurityLevel = new(bits)
-		}
+		// The levels go to a copy of the algorithm, because an in-memory cache hands out
+		// the algorithm it holds, and the cache keeps no levels.
+		assessed := *asset.Algorithm
+		assessed.ClassicalSecurityLevel, assessed.NISTQuantumSecurityLevel = securityLevels(asset.Identity)
+		asset.Algorithm = &assessed
 	}
+}
+
+// securityLevels assesses the levels of an algorithm identity from the basis the catalog
+// holds for its OID.
+func securityLevels(identity ftypes.CryptoIdentity) (classical, nistCategory *int) {
+	basis := algorithms[identity.Value].strengthBasis
+	if basis.nistCategory == nil {
+		return nil, nil
+	}
+	if bits, found := basis.classicalStrengths[identity.Parameters]; found {
+		classical = new(bits)
+	}
+	return classical, new(*basis.nistCategory)
 }
