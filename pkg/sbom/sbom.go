@@ -290,7 +290,7 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		// dsse envelope
 		//   => in-toto attestation
 		//     => SPDX JSON
-		bom = core.NewBOM(core.Options{})
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &attestation.Statement{
 			Predicate: &spdx.SPDX{BOM: bom},
 		}
@@ -312,7 +312,7 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		//   => dsse envelope
 		//     => in-toto attestation
 		//       => SPDX JSON
-		bom = core.NewBOM(core.Options{})
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &attestation.SigstoreBundle{
 			DSSEEnvelope: attestation.Statement{
 				Predicate: &spdx.SPDX{BOM: bom},
@@ -320,11 +320,11 @@ func Decode(ctx context.Context, f io.Reader, format Format) (types.SBOM, error)
 		}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXJSON:
-		bom = core.NewBOM(core.Options{})
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &spdx.SPDX{BOM: bom}
 		decoder = json.NewDecoder(f)
 	case FormatSPDXTV:
-		bom = core.NewBOM(core.Options{})
+		bom = core.NewBOM(core.Options{GenerateBOMRef: true})
 		v = &spdx.SPDX{BOM: bom}
 		decoder = spdx.NewTVDecoder(f)
 	default:

@@ -297,7 +297,7 @@ type Vulnerability struct {
 }
 
 type Options struct {
-	GenerateBOMRef bool // Generate BOMRef for CycloneDX
+	GenerateBOMRef bool // Generate BOMRef for components (used for both CycloneDX and SPDX)
 	Parents        bool // Hold parent maps
 }
 

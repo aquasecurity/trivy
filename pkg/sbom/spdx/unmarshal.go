@@ -53,7 +53,7 @@ func (tv *TVDecoder) Decode(v any) error {
 
 func (s *SPDX) UnmarshalJSON(b []byte) error {
 	if s.BOM == nil {
-		s.BOM = core.NewBOM(core.Options{})
+		s.BOM = core.NewBOM(core.Options{GenerateBOMRef: true})
 	}
 
 	spdxDocument, err := json.Read(bytes.NewReader(b))

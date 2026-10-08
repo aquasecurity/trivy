@@ -53,6 +53,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								SrcVersion: "1.2.3-r0",
 								Licenses:   []string{"MIT"},
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:apk/alpine/musl@1.2.3-r0?distro=3.16.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeApk,
 										Namespace: "alpine",
@@ -83,6 +84,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:composer/pear/log@1.13.1",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeComposer,
 										Namespace: "pear",
@@ -99,6 +101,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeComposer,
 										Namespace: "pear",
@@ -121,6 +124,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "github.com/package-url/packageurl-go",
 								Version: "v0.1.1-0.20220203205134-d70459300c8a",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:golang/github.com/package-url/packageurl-go@v0.1.1-0.20220203205134-d70459300c8a",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeGolang,
 										Namespace: "github.com/package-url",
@@ -141,6 +145,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								ID:   "org.codehaus.mojo:child-project:1.0",
 								Name: "org.codehaus.mojo:child-project",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/org.codehaus.mojo/child-project@1.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "org.codehaus.mojo",
@@ -163,6 +168,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "bootstrap",
 								Version: "5.0.2",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:npm/bootstrap@5.0.2",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
 										Name:    "bootstrap",
@@ -193,6 +199,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "21.1.1",
 								Licenses: []string{"ISC"},
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
 										Name:    "yargs-parser",
@@ -221,6 +228,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "21.1.1",
 								Licenses: []string{"ISC"},
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:npm/yargs-parser@21.1.1",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
 										Name:    "yargs-parser",
@@ -249,6 +257,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/log",
 								Version: "1.13.1",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:composer/pear/log@1.13.1",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeComposer,
 										Namespace: "pear",
@@ -262,6 +271,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Name:    "pear/pear_exception",
 								Version: "v1.0.0",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:composer/pear/pear_exception@v1.0.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeComposer,
 										Namespace: "pear",
@@ -290,6 +300,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Digest:   "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent@1.36.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -305,6 +316,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								FilePath: "modules/apm/elastic-apm-agent-1.36.0.jar",
 								Digest:   "sha1:d2a9ad9b159eb650d25add9395c4f4198f200066",
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:maven/co.elastic.apm/apm-agent-cached-lookup-key@1.36.0",
 									PURL: &packageurl.PackageURL{
 										Type:      packageurl.TypeMaven,
 										Namespace: "co.elastic.apm",
@@ -365,6 +377,7 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								Version:  "4.17.21",
 								Licenses: []string{"MIT"},
 								Identifier: ftypes.PkgIdentifier{
+									BOMRef: "pkg:npm/lodash@4.17.21",
 									PURL: &packageurl.PackageURL{
 										Type:    packageurl.TypeNPM,
 										Name:    "lodash",

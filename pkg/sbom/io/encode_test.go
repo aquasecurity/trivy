@@ -1871,3 +1871,192 @@ func newTestBOM2(t *testing.T) *core.BOM {
 	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
 	return bom
 }
+
+func TestEncoder_ReuseExistingBOM(t *testing.T) {
+	mustPURL := func(t *testing.T, s string) *packageurl.PackageURL {
+		t.Helper()
+		p, err := packageurl.FromString(s)
+		require.NoError(t, err)
+		return &p
+	}
+
+	bashPURL := mustPURL(t, "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810")
+	opensslPURL := mustPURL(t, "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810&epoch=1")
+
+	rootComponent := func() *core.Component {
+		return &core.Component{
+			Root: true,
+			Type: core.TypeFilesystem,
+			Name: "centos-7-spdx.json",
+		}
+	}
+	libComponent := func(name, version string, p *packageurl.PackageURL) *core.Component {
+		return &core.Component{
+			Type:    core.TypeLibrary,
+			Name:    name,
+			Version: version,
+			PkgIdentifier: ftypes.PkgIdentifier{
+				PURL: p,
+			},
+		}
+	}
+	vuln := func(id, pkgName string, ident ftypes.PkgIdentifier) types.DetectedVulnerability {
+		return types.DetectedVulnerability{
+			VulnerabilityID:  id,
+			PkgName:          pkgName,
+			InstalledVersion: "4.2.46-31.el7",
+			PkgIdentifier:    ident,
+		}
+	}
+	// vulnsByComponent resolves the encoded vulnerability map to component names for readability.
+	vulnsByComponent := func(t *testing.T, bom *core.BOM) map[string][]string {
+		t.Helper()
+		components := bom.Components()
+		out := make(map[string][]string)
+		for id, vulns := range bom.Vulnerabilities() {
+			c, ok := components[id]
+			require.True(t, ok, "vulnerabilities attached to unknown component %s", id)
+			for _, v := range vulns {
+				out[c.Name] = append(out[c.Name], v.ID)
+			}
+		}
+		return out
+	}
+
+	t.Run("vulnerabilities follow generated BOM-Refs on SPDX rescan", func(t *testing.T) {
+		uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+		bom := core.NewBOM(core.Options{GenerateBOMRef: true})
+		root := rootComponent()
+		bash := libComponent("bash", "4.2.46-31.el7", bashPURL)
+		openssl := libComponent("openssl-libs", "1:1.0.2k-19.el7", opensslPURL)
+		bom.AddComponent(root)
+		bom.AddComponent(bash)
+		bom.AddComponent(openssl)
+		bom.AddRelationship(root, bash, core.RelationshipContains)
+		bom.AddRelationship(root, openssl, core.RelationshipContains)
+		bom.AddRelationship(bash, nil, core.RelationshipDependsOn)
+		bom.AddRelationship(openssl, nil, core.RelationshipDependsOn)
+
+		report := types.Report{
+			SchemaVersion: 2,
+			ArtifactName:  "centos-7-spdx.json",
+			ArtifactType:  ftypes.TypeSPDX,
+			BOM:           bom,
+			Results: []types.Result{
+				{
+					Target: "centos-7-spdx.json (centos 7.6.1810)",
+					Type:   ftypes.CentOS,
+					Class:  types.ClassOSPkg,
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln("CVE-2024-0001", "bash", ftypes.PkgIdentifier{BOMRef: bashPURL.String(), PURL: bashPURL}),
+						vuln("CVE-2024-0002", "openssl-libs", ftypes.PkgIdentifier{BOMRef: opensslPURL.String(), PURL: opensslPURL}),
+						vuln("CVE-2024-0003", "bash", ftypes.PkgIdentifier{BOMRef: bashPURL.String(), PURL: bashPURL}),
+					},
+				},
+			},
+		}
+
+		got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
+		require.NoError(t, err)
+
+		// Every vulnerability must land on its own component, not on one
+		// arbitrary component sharing the empty BOM-Ref key.
+		assert.Equal(t, map[string][]string{
+			"bash":         {"CVE-2024-0001", "CVE-2024-0003"},
+			"openssl-libs": {"CVE-2024-0002"},
+		}, vulnsByComponent(t, got))
+
+		// The root component has no PURL, so it gets a generated UUID reference;
+		// it must not collect any vulnerability.
+		for _, c := range got.Components() {
+			require.NotEmpty(t, c.PkgIdentifier.BOMRef)
+		}
+	})
+
+	t.Run("vulnerabilities without BOM-Ref fall back to a unique PURL match", func(t *testing.T) {
+		uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+		// A hand-built BOM (library usage) without BOM-Refs.
+		bom := core.NewBOM(core.Options{})
+		root := rootComponent()
+		bash := libComponent("bash", "4.2.46-31.el7", bashPURL)
+		openssl := libComponent("openssl-libs", "1:1.0.2k-19.el7", opensslPURL)
+		bom.AddComponent(root)
+		bom.AddComponent(bash)
+		bom.AddComponent(openssl)
+		bom.AddRelationship(root, bash, core.RelationshipContains)
+		bom.AddRelationship(root, openssl, core.RelationshipContains)
+
+		report := types.Report{
+			SchemaVersion: 2,
+			ArtifactName:  "centos-7-spdx.json",
+			ArtifactType:  ftypes.TypeSPDX,
+			BOM:           bom,
+			Results: []types.Result{
+				{
+					Target: "centos-7-spdx.json (centos 7.6.1810)",
+					Type:   ftypes.CentOS,
+					Class:  types.ClassOSPkg,
+					Vulnerabilities: []types.DetectedVulnerability{
+						vuln("CVE-2024-0001", "bash", ftypes.PkgIdentifier{PURL: bashPURL}),
+						vuln("CVE-2024-0003", "bash", ftypes.PkgIdentifier{PURL: bashPURL}),
+					},
+				},
+			},
+		}
+
+		got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
+		require.NoError(t, err)
+
+		// Both vulnerabilities must reach bash and only bash; previously they
+		// were dumped on one random component.
+		assert.Equal(t, map[string][]string{
+			"bash": {"CVE-2024-0001", "CVE-2024-0003"},
+		}, vulnsByComponent(t, got))
+	})
+
+	t.Run("unattributable vulnerabilities are skipped, never mis-attributed", func(t *testing.T) {
+		uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
+
+		bom := core.NewBOM(core.Options{})
+		root := rootComponent()
+		// Two components sharing one PURL make the fallback ambiguous.
+		dup1 := libComponent("bash", "4.2.46-31.el7", bashPURL)
+		dup2 := libComponent("bash", "4.2.46-31.el7", bashPURL)
+		bom.AddComponent(root)
+		bom.AddComponent(dup1)
+		bom.AddComponent(dup2)
+		bom.AddRelationship(root, dup1, core.RelationshipContains)
+		bom.AddRelationship(root, dup2, core.RelationshipContains)
+
+		report := types.Report{
+			SchemaVersion: 2,
+			ArtifactName:  "centos-7-spdx.json",
+			ArtifactType:  ftypes.TypeSPDX,
+			BOM:           bom,
+			Results: []types.Result{
+				{
+					Target: "centos-7-spdx.json (centos 7.6.1810)",
+					Type:   ftypes.CentOS,
+					Class:  types.ClassOSPkg,
+					Vulnerabilities: []types.DetectedVulnerability{
+						// Ambiguous PURL fallback: two components share the PURL.
+						vuln("CVE-2024-0001", "bash", ftypes.PkgIdentifier{PURL: bashPURL}),
+						// No BOM-Ref and no PURL at all.
+						vuln("CVE-2024-0002", "openssl-libs", ftypes.PkgIdentifier{}),
+						// BOM-Ref that does not exist in the SBOM.
+						vuln("CVE-2024-0003", "bash", ftypes.PkgIdentifier{BOMRef: "pkg:rpm/centos/bash@9.9.9?arch=x86_64"}),
+					},
+				},
+			},
+		}
+
+		got, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
+		require.NoError(t, err)
+
+		// None of these may be attached to an arbitrary component.
+		assert.Empty(t, got.Vulnerabilities())
+		assert.Len(t, got.Components(), 3)
+	})
+}
