@@ -153,8 +153,10 @@ func (m *Marshaler) relatedCryptoMaterialProperties(asset ftypes.CryptoAssetInfo
 
 func (m *Marshaler) algorithmProperties(asset ftypes.CryptoAssetInfo) *cdx.CryptoAlgorithmProperties {
 	properties := &cdx.CryptoAlgorithmProperties{
-		Primitive:       cryptoPrimitive(asset.Algorithm.Primitive),
-		AlgorithmFamily: asset.Algorithm.Family,
+		Primitive:                cryptoPrimitive(asset.Algorithm.Primitive),
+		AlgorithmFamily:          asset.Algorithm.Family,
+		ClassicalSecurityLevel:   asset.Algorithm.ClassicalSecurityLevel,
+		NistQuantumSecurityLevel: asset.Algorithm.NISTQuantumSecurityLevel,
 	}
 
 	// The properties that distinguish algorithms sharing one OID are kept as parameters of
