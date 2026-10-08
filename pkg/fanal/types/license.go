@@ -22,6 +22,20 @@ const (
 	CategoryUnknown      LicenseCategory = "unknown"
 )
 
+// LicenseCategoriesBySeverity lists the categories in the order a license is
+// resolved, most severe first. A license may appear in more than one category
+// -- overriding one category in the configuration file leaves the others at
+// their built-in lists -- and iterating a map to pick one made the result
+// differ between runs.
+var LicenseCategoriesBySeverity = []LicenseCategory{
+	CategoryForbidden,
+	CategoryRestricted,
+	CategoryReciprocal,
+	CategoryNotice,
+	CategoryPermissive,
+	CategoryUnencumbered,
+}
+
 type LicenseFile struct {
 	Type     LicenseType
 	FilePath string
