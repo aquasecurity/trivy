@@ -82,16 +82,27 @@ The scanner works the same way in [client/server mode](../references/modes/clien
 
 ## Limitations
 
-The scanner is available for `trivy image` only.
+### Supported targets and options
 
-Trivy rejects `--scanners crypto` together with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image), because a remote SBOM found for the image replaces the analysis of its layers.
+- The scanner is available for `trivy image` only.
+- `--scanners crypto` cannot be combined with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image).
 
-A file without one of the extensions above is not read, so a key in a file named `tls-key` or inside a config file is missed. You can point the scanner at such a file with [`--file-patterns`](../configuration/skipping.md#customizing-file-handling), as long as it holds PEM or DER material:
+### File selection
+
+- By default, only `.pem`, `.der`, `.crt`, `.cer`, and `.key` files are read.
+- Files larger than 10 MB are skipped, including files selected with `--file-patterns`.
+
+Use [`--file-patterns`](../configuration/skipping.md#customizing-file-handling) to scan PEM or DER material in files with other names, such as `tls-key` or a configuration file:
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/app/tls-key" myimage:1.0.0
 ```
 
-Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
+### Unsupported material
 
-Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.
+The following are not covered:
+
+- Certificates embedded in application binaries, such as Node.js's built-in root certificates.
+- Certificate signing requests, CRLs, and PKCS#7 bundles.
+- OpenSSH keys, PKCS#12 and JKS keystores, and OpenPGP keyrings.
+- Certificates and keys that use explicit EC curve parameters instead of a named curve.
