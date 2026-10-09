@@ -105,6 +105,66 @@
                     Severity: 3
                 Arches:
                   - aarch64
+    - bucket: glib2
+      pairs:
+        - key: RHSA-2026:15971
+          value:
+            Entries:
+              - FixedVersion: 0:2.68.4-18.el9_7.2
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-14087
+                    Severity: 3
+        - key: RHSA-2026:19361
+          value:
+            Entries:
+              - FixedVersion: 0:2.68.4-19.el9_8.1
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-14087
+                    Severity: 3
+        - key: RHSA-2026:00001
+          value:
+            Entries:
+              - FixedVersion: 0:2.68.4-17.el9_7
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-00001
+                    Severity: 3
+        - key: RHSA-2026:00002
+          value:
+            Entries:
+              - FixedVersion: 0:2.68.4-18.el9_7.2
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-00001
+                    Severity: 3
+    - bucket: libtasn1
+      pairs:
+        # No ".el9_<minor>" marker anywhere here: packages built without a
+        # minor stream fall back to highest-wins across every fixed version.
+        - key: RHSA-2026:40001
+          value:
+            Entries:
+              - FixedVersion: 0:4.16.0-2.el9_8
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-99991
+                    Severity: 3
+        - key: RHSA-2026:40002
+          value:
+            Entries:
+              - FixedVersion: 0:4.16.0-3.el9_9
+                Affected:
+                  - 5
+                Cves:
+                  - ID: CVE-2025-99991
+                    Severity: 3
     - bucket: expat
       pairs:
         - key: RHSA-2024:6989-2 # created for test only
