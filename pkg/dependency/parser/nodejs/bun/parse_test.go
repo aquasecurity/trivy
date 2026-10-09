@@ -35,6 +35,11 @@ func TestParse(t *testing.T) {
 			want:     multipleWsPkgs,
 			wantDeps: multipleWsDeps,
 		},
+		{
+			name: "nested deduped package",
+			file: "testdata/bun_nested.lock",
+			want: nestedPkgs,
+		},
 	}
 
 	for _, tt := range tests {

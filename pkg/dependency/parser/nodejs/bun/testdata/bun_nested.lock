@@ -1,0 +1,19 @@
+{
+  "lockfileVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "app",
+      "dependencies": {
+        "adm-zip": "git+ssh://git@github.com/cthackers/adm-zip.git",
+        "glob": "^10.0.0",
+      },
+    },
+  },
+  "packages": {
+    "adm-zip": ["adm-zip@git+ssh://git@github.com/cthackers/adm-zip.git#ff17ae85000b62b9d159e2520564902724d26c17", {}, "ff17ae85000b62b9d159e2520564902724d26c17"],
+
+    "glob": ["glob@10.4.5", "", {}, "sha512-6AL3ijMuTydpNW6a5kwwyR/pcHrJU9EQ5g5rAlJqjE1sJVGjNZ4nZ8Ryn/4tXBhLGr7NzZQBBAP07Xj4c1cXQ=="],
+
+    "glob/minimatch": ["minimatch@9.0.5", "", {}, "sha512-G6T0ZX48xgozx7587koeX9Ys2NYy6Gmv//P89sEte9V9whIapMNF4idKxnW2QtCcLiTWlb/wfCabAtAFWhhBow=="],
+  }
+}
