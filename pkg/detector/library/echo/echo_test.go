@@ -39,11 +39,25 @@ func TestEchoSupplier_Match(t *testing.T) {
 			want:    library.NoMatch,
 		},
 		{
-			name:    "non-pip ecosystem is not supported",
+			name:    "npm package with +echo.1 suffix",
 			eco:     ecosystem.Npm,
-			pkgName: "ejs",
-			pkgVer:  "3.1.8+echo.1",
+			pkgName: "nanoid",
+			pkgVer:  "3.3.6+echo.1",
+			want:    library.Matched,
+		},
+		{
+			name:    "go package is not supported",
+			eco:     ecosystem.Go,
+			pkgName: "golang.org/x/crypto",
+			pkgVer:  "0.26.0+echo.1",
 			want:    library.NoMatch,
+		},
+		{
+			name:    "maven package with +echo.1 suffix",
+			eco:     ecosystem.Maven,
+			pkgName: "org.springframework:spring-core",
+			pkgVer:  "6.1.21+echo.1",
+			want:    library.Matched,
 		},
 		{
 			name:    "empty version",
