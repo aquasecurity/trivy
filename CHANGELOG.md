@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-09)
+
+
+### Features
+
+* **echo:** support Echo Maven and npm package scanning ([#10883](https://github.com/aquasecurity/trivy/issues/10883)) ([7c1b1fa](https://github.com/aquasecurity/trivy/commit/7c1b1fa19f1628132a9e8377fed127682500d87d))
+
 ## [0.75.0](https://github.com/aquasecurity/trivy/compare/v0.74.0...v0.75.0) (2026-10-01)
 
 
