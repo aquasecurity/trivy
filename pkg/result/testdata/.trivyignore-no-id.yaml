@@ -1,0 +1,22 @@
+vulnerabilities:
+  - purls:
+      - "pkg:deb/ubuntu/linux-libc-dev"
+    statement: Kernel headers, not exercised at runtime
+  - paths:
+      - "**/*-lock.json"
+    statement: Lock files are not deployed
+
+misconfigurations:
+  - paths:
+      - "test/fixtures/**"
+    statement: Test fixtures, safe to ignore
+
+secrets:
+  - paths:
+      - "**/*.test.txt"
+    statement: Synthetic secrets used by tests
+
+licenses:
+  - paths:
+      - "usr/share/gcc/**"
+    statement: GCC runtime bits
