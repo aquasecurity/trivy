@@ -107,3 +107,7 @@ func (set *SBOMReferenceSet) NotAffected(vuln types.DetectedVulnerability, produ
 	}
 	return types.ModifiedFinding{}, false
 }
+
+func (set *SBOMReferenceSet) Rescore(vuln types.DetectedVulnerability, product, subComponent *core.Component) (SeverityOverride, bool) {
+	return rescore(set.VEXes, vuln, product, subComponent)
+}

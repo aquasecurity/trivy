@@ -14,6 +14,7 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/sbom/core"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/vex"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
@@ -25,18 +26,35 @@ const (
 )
 
 type FilterOptions struct {
-	Severities         []dbTypes.Severity
-	IgnoreStatuses     []dbTypes.Status
-	IncludeNonFailures bool
-	IgnoreFile         string
-	PolicyFile         string
-	IgnoreLicenses     []string
-	CacheDir           string
-	VEXSources         []vex.Source
+	Severities          []dbTypes.Severity
+	IgnoreStatuses      []dbTypes.Status
+	IncludeNonFailures  bool
+	IgnoreFile          string
+	PolicyFile          string
+	IgnoreLicenses      []string
+	CacheDir            string
+	VEXSources          []vex.Source
+	VulnSeveritySources []dbTypes.SourceID
 }
 
 // Filter filters out the report
 func Filter(ctx context.Context, report types.Report, opts FilterOptions) error {
+	vexClient, err := vex.New(ctx, &report, vex.Options{
+		CacheDir: opts.CacheDir,
+		Sources:  opts.VEXSources,
+	})
+	if err != nil {
+		return xerrors.Errorf("VEX error: %w", err)
+	}
+
+	// Rescore vulnerabilities before filtering them by severity
+	var vexBOM *core.BOM
+	if slices.Contains(opts.VulnSeveritySources, vex.CSAFSeveritySource) {
+		if vexBOM, err = vexClient.RescoreReport(&report, opts.VulnSeveritySources); err != nil {
+			return xerrors.Errorf("CSAF-VEX rescore error: %w", err)
+		}
+	}
+
 	ignoreConf, err := ParseIgnoreFile(ctx, opts.IgnoreFile)
 	if err != nil {
 		return xerrors.Errorf("%s error: %w", opts.IgnoreFile, err)
@@ -49,10 +67,7 @@ func Filter(ctx context.Context, report types.Report, opts FilterOptions) error 
 	}
 
 	// Filter out vulnerabilities based on the given VEX document.
-	if err = vex.Filter(ctx, &report, vex.Options{
-		CacheDir: opts.CacheDir,
-		Sources:  opts.VEXSources,
-	}); err != nil {
+	if err = vexClient.FilterReport(&report, vexBOM); err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
 	}
 

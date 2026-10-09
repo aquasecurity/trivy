@@ -67,7 +67,6 @@ type NotAffected func(vuln types.DetectedVulnerability, product, subComponent *c
 // If the VEX document is passed and the vulnerability is either not affected or fixed according to the VEX statement,
 // the vulnerability is filtered out.
 func Filter(ctx context.Context, report *types.Report, opts Options) error {
-	ctx = log.WithContextPrefix(ctx, "vex")
 	client, err := New(ctx, report, opts)
 	if err != nil {
 		return xerrors.Errorf("VEX error: %w", err)
@@ -75,22 +74,36 @@ func Filter(ctx context.Context, report *types.Report, opts Options) error {
 		return nil
 	}
 
-	// NOTE: This method call has a side effect on the report
-	bom, err := sbomio.NewEncoder(sbomio.WithParents(), sbomio.ForceRegenerate()).Encode(*report)
-	if err != nil {
-		return xerrors.Errorf("unable to encode the SBOM: %w", err)
+	return client.FilterReport(report, nil)
+}
+
+// FilterReport filters vulnerabilities using the VEX documents loaded by the client.
+// If bom is nil, it is generated from the report.
+func (c *Client) FilterReport(report *types.Report, bom *core.BOM) error {
+	if c == nil {
+		return nil
+	}
+
+	if bom == nil {
+		var err error
+		// NOTE: This method call has a side effect on the report
+		bom, err = sbomio.NewEncoder(sbomio.WithParents(), sbomio.ForceRegenerate()).Encode(*report)
+		if err != nil {
+			return xerrors.Errorf("unable to encode the SBOM: %w", err)
+		}
 	}
 
 	for i, result := range report.Results {
 		if len(result.Vulnerabilities) == 0 {
 			continue
 		}
-		filterVulnerabilities(&report.Results[i], bom, client.NotAffected)
+		filterVulnerabilities(&report.Results[i], bom, c.NotAffected)
 	}
 	return nil
 }
 
 func New(ctx context.Context, report *types.Report, opts Options) (*Client, error) {
+	ctx = log.WithContextPrefix(ctx, "vex")
 	var vexes []VEX
 	for _, src := range opts.Sources {
 		var v VEX

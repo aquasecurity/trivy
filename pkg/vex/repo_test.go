@@ -128,3 +128,32 @@ repositories:
 		})
 	}
 }
+
+func TestRepositorySet_CachesDocuments(t *testing.T) {
+	tmpDir := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", tmpDir)
+
+	vexDir := filepath.Join(tmpDir, ".trivy", "vex")
+	require.NoError(t, os.MkdirAll(vexDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
+repositories:
+  - name: default
+    url: https://example.com/vex/default
+    enabled: true
+`), 0o644))
+
+	// Copy the repository so that the document can be removed after the first lookup.
+	cacheDir := t.TempDir()
+	require.NoError(t, os.CopyFS(cacheDir, os.DirFS("testdata/single-repo")))
+
+	rs, err := vex.NewRepositorySet(t.Context(), cacheDir)
+	require.NoError(t, err)
+
+	_, notAffected := rs.NotAffected(vuln3, &bashComponent, nil)
+	require.True(t, notAffected)
+
+	// The decoded document is reused, so removing the file doesn't affect subsequent lookups.
+	require.NoError(t, os.Remove(filepath.Join(cacheDir, "vex", "repositories", "default", "0.1", "bash-vex.json")))
+	_, notAffected = rs.NotAffected(vuln3, &bashComponent, nil)
+	assert.True(t, notAffected)
+}

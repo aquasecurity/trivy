@@ -1,0 +1,78 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "publisher": {
+      "category": "vendor",
+      "name": "Example ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "CSAF rescoring and filtering example",
+    "tracking": {
+      "id": "2026-EVD-004",
+      "status": "final",
+      "version": "1",
+      "initial_release_date": "2026-09-09T00:00:00Z",
+      "current_release_date": "2026-09-09T00:00:00Z"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "category": "vendor",
+        "name": "foo",
+        "branches": [
+          {
+            "category": "product_name",
+            "name": "spring-boot",
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "2.6.0",
+                "product": {
+                  "name": "spring-boot 2.6.0",
+                  "product_id": "spring-boot-v2.6.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:maven/org.springframework.boot/spring-boot@2.6.0"
+                  }
+                }
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "vulnerabilities": [
+    {
+      "cve": "CVE-2021-44228",
+      "product_status": {
+        "known_not_affected": [
+          "spring-boot-v2.6.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    },
+    {
+      "cve": "CVE-2021-0001",
+      "scores": [
+        {
+          "products": [
+            "spring-boot-v2.6.0"
+          ],
+          "cvss_v3": {
+            "version": "3.1",
+            "vectorString": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:H/I:N/A:N",
+            "baseScore": 8.1,
+            "baseSeverity": "HIGH"
+          }
+        }
+      ]
+    }
+  ]
+}

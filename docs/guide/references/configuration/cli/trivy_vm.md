@@ -163,6 +163,7 @@ trivy vm [flags] VM_IMAGE
                                             - minimos
                                             - rootio
                                             - rapidfort
+                                            - csaf
                                             - auto
                                            (default [auto])
 ```
