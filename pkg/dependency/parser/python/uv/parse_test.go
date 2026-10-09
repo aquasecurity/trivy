@@ -25,6 +25,12 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: uvNormalDeps,
 		},
 		{
+			name:     "multiple versions of the same package",
+			file:     "testdata/uv_multiple_versions.lock",
+			wantPkgs: uvMultipleVersions,
+			wantDeps: uvMultipleVersionsDeps,
+		},
+		{
 			name:     "workspace without root package",
 			file:     "testdata/uv_workspace_virtual.lock",
 			wantPkgs: uvWorkspaceVirtual,
