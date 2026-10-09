@@ -76,7 +76,9 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "unknown",
-          "ellipticCurve": "nist/P-256"
+          "ellipticCurve": "nist/P-256",
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.10045.2.1"
       }
@@ -97,7 +99,8 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "signature",
-          "algorithmFamily": "ECDSA"
+          "algorithmFamily": "ECDSA",
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.10045.4.3.2"
       }
@@ -126,7 +129,8 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "signature",
-          "algorithmFamily": "RSASSA-PKCS1"
+          "algorithmFamily": "RSASSA-PKCS1",
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.113549.1.1.11"
       }
@@ -167,7 +171,9 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "unknown",
-          "parameterSetIdentifier": "2048"
+          "parameterSetIdentifier": "2048",
+          "classicalSecurityLevel": 112,
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.113549.1.1.1"
       }
@@ -188,7 +194,9 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "signature",
-          "algorithmFamily": "EdDSA"
+          "algorithmFamily": "EdDSA",
+          "classicalSecurityLevel": 128,
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.3.101.112"
       }
@@ -209,7 +217,8 @@
         "assetType": "algorithm",
         "algorithmProperties": {
           "primitive": "signature",
-          "algorithmFamily": "ML-DSA"
+          "algorithmFamily": "ML-DSA",
+          "nistQuantumSecurityLevel": 3
         },
         "oid": "2.16.840.1.101.3.4.3.18"
       }

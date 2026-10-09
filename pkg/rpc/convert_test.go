@@ -7,6 +7,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/structpb"
 	"google.golang.org/protobuf/types/known/timestamppb"
 
@@ -1635,13 +1636,55 @@ func TestConvertCryptoAssets(t *testing.T) {
 				asset.Layer = layer
 			})),
 		},
+		{
+			// A NIST category of zero is a value of its own, unlike an unset level.
+			name: "algorithm with security levels",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "RSA-2048"
+				asset.Identity.Parameters = "key-size=2048"
+				asset.Algorithm.ClassicalSecurityLevel = new(112)
+				asset.Algorithm.NISTQuantumSecurityLevel = new(0)
+				asset.Layer = layer
+			})),
+		},
+		{
+			name: "algorithm with only a NIST category",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "ML-DSA-65"
+				asset.Identity.Value = "2.16.840.1.101.3.4.3.18"
+				asset.Algorithm.Family = "ML-DSA"
+				asset.Algorithm.Primitive = ftypes.CryptoPrimitiveSignature
+				asset.Algorithm.NISTQuantumSecurityLevel = new(3)
+				asset.Layer = layer
+			})),
+		},
+		{
+			name: "algorithm with several parameters",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Name = "DSA-2048"
+				asset.Identity.Value = "1.2.840.10040.4.1"
+				asset.Identity.Parameters = "key-size=2048,subgroup-size=256"
+				asset.Layer = layer
+			})),
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require.NoError(t, tt.asset.Validate())
 			assets := []ftypes.CryptoAsset{tt.asset}
-			assert.Equal(t, assets, ConvertFromRPCCryptoAssets(ConvertToRPCCryptoAssets(assets)))
+
+			// The assets travel through the wire encoding, which drops a zero that an unset
+			// field cannot be told apart from.
+			var received []*common.CryptoAsset
+			for _, sent := range ConvertToRPCCryptoAssets(assets) {
+				wire, err := proto.Marshal(sent)
+				require.NoError(t, err)
+				var asset common.CryptoAsset
+				require.NoError(t, proto.Unmarshal(wire, &asset))
+				received = append(received, &asset)
+			}
+			assert.Equal(t, assets, ConvertFromRPCCryptoAssets(received))
 		})
 	}
 }

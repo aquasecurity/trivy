@@ -3,6 +3,7 @@ package types
 import (
 	"encoding/json"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -26,7 +27,7 @@ func (d CryptoDescriptor) String() string {
 	// descriptor's colon delimiter, and represents spaces as '+'.
 	segments = append(segments, string(d.Identity.Method), url.QueryEscape(d.Identity.Value))
 	// Parameters distinguish algorithm assets that share an OID but use different
-	// key sizes or curves.
+	// key sizes, subgroup sizes or curves.
 	if d.Identity.Parameters != "" {
 		segments = append(segments, url.QueryEscape(d.Identity.Parameters))
 	}
@@ -132,7 +133,8 @@ func (d CryptoDescriptor) validateParameters() error {
 	if d.Kind != CryptoKindAlgorithm || d.Identity.Method != CryptoMethodOID {
 		return xerrors.Errorf("parameters are only valid for OID algorithm descriptors")
 	}
-	if err := d.Identity.validateAlgorithmParameter(); err != nil {
+	// Validate the algorithm parameters.
+	if _, err := d.Identity.AlgorithmParameters(); err != nil {
 		return xerrors.Errorf("validate algorithm parameters: %w", err)
 	}
 	return nil
@@ -196,51 +198,104 @@ func parseDescriptor(s string) (CryptoDescriptor, error) {
 	return descriptor, nil
 }
 
-// CryptoAlgorithmParameter names the property that distinguishes algorithm assets
-// sharing one OID. It is empty for an algorithm whose OID identifies it completely.
-type CryptoAlgorithmParameter string
+// CryptoAlgorithmParameterName names a property that distinguishes algorithm assets sharing
+// one OID.
+type CryptoAlgorithmParameterName string
 
 const (
-	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits.
-	CryptoParameterKeySize CryptoAlgorithmParameter = "key-size"
+	// CryptoParameterKeySize distinguishes algorithm assets by key size in bits. For DSA it
+	// is L, the bit length of the prime p.
+	CryptoParameterKeySize CryptoAlgorithmParameterName = "key-size"
+	// CryptoParameterSubgroupSize distinguishes DSA algorithm assets by N, the bit length of
+	// the prime q, which FIPS 186 pairs with L to name a parameter set.
+	CryptoParameterSubgroupSize CryptoAlgorithmParameterName = "subgroup-size"
 	// CryptoParameterCurve distinguishes algorithm assets by curve name.
-	CryptoParameterCurve CryptoAlgorithmParameter = "curve"
+	CryptoParameterCurve CryptoAlgorithmParameterName = "curve"
 )
 
-// AlgorithmParameter returns the parameter that distinguishes algorithm assets sharing an
-// OID. It reports false when the identity carries none.
-func (i CryptoIdentity) AlgorithmParameter() (CryptoAlgorithmParameter, string, bool) {
-	name, value, found := strings.Cut(i.Parameters, "=")
-	if !found {
-		return "", "", false
-	}
-	return CryptoAlgorithmParameter(name), value, true
+// CryptoAlgorithmParameters are the key properties that distinguish algorithm assets
+// sharing one OID. A zero field is not stated.
+type CryptoAlgorithmParameters struct {
+	KeySize      int
+	SubgroupSize int
+	Curve        string
 }
 
-// validateAlgorithmParameter accepts only empty parameters, key-size=<canonical positive
-// decimal>, and curve=<non-empty name>.
-func (i CryptoIdentity) validateAlgorithmParameter() error {
-	if i.Parameters == "" {
-		return nil
+// String encodes the parameters in their canonical form: comma-separated name=value pairs
+// in the order key-size, subgroup-size, curve, with unstated parameters left out.
+func (p CryptoAlgorithmParameters) String() string {
+	var pairs []string
+	if p.KeySize > 0 {
+		pairs = append(pairs, string(CryptoParameterKeySize)+"="+strconv.Itoa(p.KeySize))
 	}
-	name, value, found := i.AlgorithmParameter()
-	if !found {
-		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
+	if p.SubgroupSize > 0 {
+		pairs = append(pairs, string(CryptoParameterSubgroupSize)+"="+strconv.Itoa(p.SubgroupSize))
+	}
+	if p.Curve != "" {
+		pairs = append(pairs, string(CryptoParameterCurve)+"="+p.Curve)
+	}
+	return strings.Join(pairs, ",")
+}
+
+// AlgorithmParameters decodes the parameters of an algorithm identity. It accepts only the
+// canonical form [CryptoAlgorithmParameters.String] produces, and only for parameters in
+// which a subgroup size comes with a key size and a curve stands alone.
+func (i CryptoIdentity) AlgorithmParameters() (CryptoAlgorithmParameters, error) {
+	var params CryptoAlgorithmParameters
+	if i.Parameters == "" {
+		return params, nil
 	}
 
-	switch name {
-	case CryptoParameterKeySize:
-		if !isCanonicalPositiveDecimal(value) {
-			return xerrors.Errorf("key size parameter must be a canonical positive decimal")
+	for pair := range strings.SplitSeq(i.Parameters, ",") {
+		name, value, found := strings.Cut(pair, "=")
+		if !found {
+			return CryptoAlgorithmParameters{}, xerrors.Errorf("unknown algorithm parameter %q", pair)
 		}
-	case CryptoParameterCurve:
-		if value == "" {
-			return xerrors.Errorf("curve parameter must not be empty")
+
+		switch CryptoAlgorithmParameterName(name) {
+		case CryptoParameterKeySize:
+			size, ok := parseBitLength(value)
+			if !ok {
+				return CryptoAlgorithmParameters{}, xerrors.Errorf("key size parameter must be a canonical positive decimal")
+			}
+			params.KeySize = size
+		case CryptoParameterSubgroupSize:
+			size, ok := parseBitLength(value)
+			if !ok {
+				return CryptoAlgorithmParameters{}, xerrors.Errorf("subgroup size parameter must be a canonical positive decimal")
+			}
+			params.SubgroupSize = size
+		case CryptoParameterCurve:
+			if value == "" {
+				return CryptoAlgorithmParameters{}, xerrors.Errorf("curve parameter must not be empty")
+			}
+			params.Curve = value
+		default:
+			return CryptoAlgorithmParameters{}, xerrors.Errorf("unknown algorithm parameter %q", pair)
 		}
-	default:
-		return xerrors.Errorf("unknown algorithm parameters %q", i.Parameters)
 	}
-	return nil
+
+	if params.SubgroupSize > 0 && params.KeySize == 0 {
+		return CryptoAlgorithmParameters{}, xerrors.Errorf("subgroup size parameter requires a key size")
+	}
+	if params.Curve != "" && params.KeySize > 0 {
+		return CryptoAlgorithmParameters{}, xerrors.Errorf("curve parameter must not be combined with sizes")
+	}
+	// Re-encoding rejects repeated parameters and any order other than the canonical one.
+	if params.String() != i.Parameters {
+		return CryptoAlgorithmParameters{}, xerrors.Errorf("algorithm parameters %q are not canonical", i.Parameters)
+	}
+	return params, nil
+}
+
+// parseBitLength decodes a bit length written as a canonical positive decimal that fits
+// an int.
+func parseBitLength(value string) (int, bool) {
+	if !isCanonicalPositiveDecimal(value) {
+		return 0, false
+	}
+	size, err := strconv.Atoi(value)
+	return size, err == nil
 }
 
 func isLowerSHA256(value string) bool {

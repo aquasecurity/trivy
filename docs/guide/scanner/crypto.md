@@ -34,9 +34,46 @@ A private key is reported with its size and algorithm, but the report never carr
 
 An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.
 
+The parameters of an algorithm are the key size for RSA and the curve for EC. For DSA they are the two bit lengths that name a parameter set in FIPS 186: L, the length of the prime `p`, and N, the length of the prime `q`. So DSA keys of (2048, 224) and (2048, 256) belong to different algorithms, although both are named `DSA-2048` after the CycloneDX naming pattern. Other algorithms are identified by the OID alone.
+
+### Security levels
+
+Trivy estimates two nominal security levels for the algorithms it recognizes. The classical security level is the strength in bits against classical attacks. The NIST quantum security level is the NIST post-quantum security category from 1 to 5, or 0 for an algorithm that meets none of the categories.
+
+The levels are estimates for an algorithm and its parameters, taken from NIST and IETF publications. They are not a guarantee about an implementation, nor a statement that any policy approves the algorithm.
+
+| Algorithm | Classical security level (bits) | NIST quantum security level |
+| --- | --- | --- |
+| RSA, key size 1024 / 2048 / 3072 / 4096 / 6144 / 8192 bits | 80 / 112 / 128 / 152 / 176 / 200 | 0 |
+| EC, curve P-224 / P-256 / P-384 / P-521 | 112 / 128 / 192 / 256 | 0 |
+| DSA, (L, N) of (1024, 160) / (2048, 224) / (2048, 256) / (3072, 256) | 80 / 112 / 112 / 128 | 0 |
+| Ed25519 | 128 | 0 |
+| ML-DSA-44 / ML-DSA-65 / ML-DSA-87 | - | 2 / 3 / 5 |
+| RSA, ECDSA and DSA signature algorithms | - | 0 |
+
+A dash means that the level is left out of the report.
+
+The levels come from these publications:
+
+- RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of [NIST SP 800-56B Rev. 2](https://csrc.nist.gov/pubs/sp/800/56/b/r2/final). RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of [NIST SP 800-57 Part 1 Rev. 5](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final), whose row for a 1024-bit modulus states at most 80 bits.
+- EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5.
+- DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of [NIST SP 800-131A Rev. 2](https://csrc.nist.gov/pubs/sp/800/131/a/r2/final). The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
+- Ed25519 takes its strength from [RFC 8032, Section 8.5](https://datatracker.ietf.org/doc/html/rfc8032#section-8.5).
+- ML-DSA takes its categories from [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final).
+- RSA, EC, DSA and EdDSA rest on integer factorization and discrete logarithms, which a sufficiently capable quantum computer breaks. Section 1.2 of FIPS 204 discusses this. They therefore meet none of the NIST categories.
+
+A level is left out when it cannot be estimated:
+
+- An RSA, ECDSA or DSA signature algorithm gets no classical level. The strength of such a signature is limited by the key that signed it, and that key belongs to the issuer, which the certificate does not carry. Ed25519 is different, because its OID fixes the curve.
+- ML-DSA gets no classical level, because FIPS 204 assigns its parameter sets a NIST category but no classical strength in bits.
+- An algorithm whose parameters are not in the table, such as RSA with a key size of 2047 bits or a DSA pair that FIPS 186 does not define, gets no classical level, but still gets a NIST quantum security level of 0.
+- An algorithm that Trivy does not recognize, such as RSA-PSS or Ed448, gets neither level. An encrypted private key has no algorithm in the report at all, because its algorithm stays inside the ciphertext.
+
 ### CycloneDX
 
 Every asset becomes a `cryptographic-asset` component with `cryptoProperties`, and the links between assets are stored in `relatedCryptographicAssets`. Each place an asset was found is an entry in `evidence.occurrences`. The path is stored in `location`, and the layer in `additionalContext` as `aquasecurity:trivy:LayerDiffID=<diff ID>`.
+
+The parameters of an algorithm are stored in `algorithmProperties`. The key size goes to `parameterSetIdentifier`, and for DSA it is the pair `<L>-<N>`, such as `2048-256`, which tells apart two components named `DSA-2048`. The curve goes to `ellipticCurve`. The security levels go to `classicalSecurityLevel` and `nistQuantumSecurityLevel`, and a level that is not estimated is left out.
 
 ```json
 {

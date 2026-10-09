@@ -79,7 +79,7 @@ func describeCertificate(
 
 	// A signature algorithm gets no key parameters, because the key that produced the
 	// signature belongs to the issuer, and this certificate stores the key of its subject.
-	signature := crypto.DescribeAlgorithm(cert.signatureOID, 0, "")
+	signature := crypto.DescribeAlgorithm(cert.signatureOID, 0, 0, "")
 	info.Relationships = append(info.Relationships, ftypes.CryptoRelationship{
 		Type:         ftypes.CryptoRelationshipSignedWith,
 		RelatedAsset: signature.Descriptor(),
