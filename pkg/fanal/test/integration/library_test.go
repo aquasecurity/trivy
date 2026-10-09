@@ -229,7 +229,7 @@ func commonChecks(t *testing.T, detail types.ArtifactDetail, tc testCase) {
 }
 
 // clearPackageDetailFields clears package detail fields to keep golden files manageable.
-// Fields cleared: Identifier (UID, PURL, BOMRef), Layer, InstalledFiles, DependsOn, Digest
+// Fields cleared: Identifier (UID, PURL, BOMRef), Layer, InstalledFiles, DependsOn, Digest, Digests
 // Fields kept for comparison: ID, Name, Version, Epoch, Release, Arch, SrcName, SrcEpoch, SrcVersion, SrcRelease, Licenses, Maintainer, Modularitylabel, Indirect
 func clearPackageDetailFields(packages []types.Package) {
 	for i := range packages {
@@ -238,6 +238,7 @@ func clearPackageDetailFields(packages []types.Package) {
 		packages[i].InstalledFiles = nil
 		packages[i].DependsOn = nil
 		packages[i].Digest = ""
+		packages[i].Digests = nil
 	}
 }
 

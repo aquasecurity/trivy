@@ -16,7 +16,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&metaAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
 var fileRegex = regexp.MustCompile(`.*/envs/.+/conda-meta/.+-.+-.+\.json`)
 

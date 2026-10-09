@@ -103,7 +103,9 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		pkg.DependsOn = deps[pkg.ID]
 		// Save the digest only if it has not been calculated for the package yet.
 		// For example, the digest for JAR files is calculated inside the parser.
-		pkg.Digest = cmp.Or(pkg.Digest, d)
+		if !pkg.HasDigest() {
+			pkg.AddDigest(d, digest.SourceFileContent)
+		}
 		pkg.Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 	}
 
