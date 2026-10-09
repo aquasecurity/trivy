@@ -1,6 +1,7 @@
 package sbom_test
 
 import (
+	"os"
 	"strings"
 	"testing"
 
@@ -277,6 +278,55 @@ func TestIsCycloneDXJSON(t *testing.T) {
 
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestDecodeSPDXBOMRefs(t *testing.T) {
+	tests := []struct {
+		name      string
+		inputFile string
+		format    sbom.Format
+	}{
+		{
+			name:      "SPDX JSON",
+			inputFile: "../../integration/testdata/fixtures/sbom/centos-7-spdx.json",
+			format:    sbom.FormatSPDXJSON,
+		},
+		{
+			name:      "SPDX tag-value",
+			inputFile: "../../integration/testdata/fixtures/sbom/centos-7-spdx.txt",
+			format:    sbom.FormatSPDXTV,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			f, err := os.Open(tt.inputFile)
+			require.NoError(t, err)
+			defer f.Close()
+
+			s, err := sbom.Decode(t.Context(), f, tt.format)
+			require.NoError(t, err)
+			require.NotNil(t, s.BOM)
+
+			// Every component must carry a unique, non-empty BOM-Ref so that
+			// vulnerabilities detected on an SPDX SBOM can be attributed back
+			// to the right component when the report is written as an SBOM.
+			refs := make(map[string]int)
+			byName := make(map[string]string)
+			for _, c := range s.BOM.Components() {
+				require.NotEmpty(t, c.PkgIdentifier.BOMRef, "component %q has no BOM-Ref", c.Name)
+				refs[c.PkgIdentifier.BOMRef]++
+				byName[c.Name] = c.PkgIdentifier.BOMRef
+			}
+			for ref, n := range refs {
+				assert.Equal(t, 1, n, "BOM-Ref %q is not unique", ref)
+			}
+
+			// Components with a unique PURL use it as their BOM-Ref.
+			assert.Equal(t, "pkg:rpm/centos/bash@4.2.46-31.el7?arch=x86_64&distro=centos-7.6.1810", byName["bash"])
+			assert.Equal(t, "pkg:rpm/centos/openssl-libs@1.0.2k-16.el7?arch=x86_64&distro=centos-7.6.1810&epoch=1", byName["openssl-libs"])
 		})
 	}
 }

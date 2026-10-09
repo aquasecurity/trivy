@@ -5,7 +5,6 @@ import (
 	"slices"
 	"strconv"
 
-	"github.com/google/uuid"
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -337,29 +336,47 @@ func (e *Encoder) encodeCryptoAssets(results types.Results) {
 
 // reuseExistingBOM preserves the original SBOM structure and only updates the vulnerabilities section
 // with newly detected vulnerabilities. This method handles two use cases:
-//  1. SBOM scanning (CycloneDX): When scanning an existing SBOM file to refresh vulnerability data while
+//  1. SBOM scanning: When scanning an existing SBOM file to refresh vulnerability data while
 //     preserving the original structure, components, and relationships
 //     e.g. $ trivy sbom sbom.cdx.json --scanners vuln --format cyclonedx
 //  2. Library usage: When using Trivy as a library with a pre-existing custom BOM that needs
 //     to be enriched with vulnerability information
 //
-// For SBOM scanning (case 1), this approach is CycloneDX-specific
-// because: SPDX 2.3 does not include vulnerabilities in the SBOM specification.
-// Therefore, the method uses BOM-Ref for component-vulnerability lookup rather than SPDX-ID.
+// For SBOM scanning (case 1), this approach was originally CycloneDX-specific
+// because SPDX 2.3 does not include vulnerabilities in the SBOM specification.
+// However, SPDX output carries vulnerabilities implicitly as advisory references on
+// packages, and CycloneDX output always needs BOM-Refs, so components decoded from
+// SPDX documents get generated BOM-Refs as well (see sbom.Decode).
 func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
 	bom := report.BOM.Clone()
 
-	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment
-	// BOM-Ref is used as the key because it's the standard identifier in CycloneDX format
-	// and is guaranteed to be present in components from CycloneDX SBOMs
-	components := lo.MapKeys(report.BOM.Components(), func(v *core.Component, _ uuid.UUID) string {
-		return v.PkgIdentifier.BOMRef
-	})
+	// Create a lookup map from BOM-Ref to component for efficient vulnerability assignment.
+	// Components without a BOM-Ref (e.g. a hand-built BOM from library usage) are not
+	// keyed here: collapsing them onto the empty key would attach every unmatched
+	// vulnerability to one arbitrary component. They stay reachable through the
+	// PURL fallback below instead.
+	components := make(map[string]*core.Component)
+	purlComponents := make(map[string][]*core.Component)
+	for _, c := range report.BOM.Components() {
+		if ref := c.PkgIdentifier.BOMRef; ref != "" {
+			components[ref] = c
+		}
+		if c.PkgIdentifier.PURL != nil {
+			p := c.PkgIdentifier.PURL.String()
+			purlComponents[p] = append(purlComponents[p], c)
+		}
+	}
 
 	for _, result := range report.Results {
-		// Group newly detected vulnerabilities by their component's BOM-Ref
+		// Group newly detected vulnerabilities by their component's BOM-Ref.
+		// Vulnerabilities without a BOM-Ref are handled separately below.
 		vulns := make(map[string][]core.Vulnerability)
+		var refless []types.DetectedVulnerability
 		for _, vuln := range result.Vulnerabilities {
+			if vuln.PkgIdentifier.BOMRef == "" {
+				refless = append(refless, vuln)
+				continue
+			}
 			vulns[vuln.PkgIdentifier.BOMRef] = append(vulns[vuln.PkgIdentifier.BOMRef], e.vulnerability(vuln))
 		}
 
@@ -375,6 +392,32 @@ func (e *Encoder) reuseExistingBOM(report types.Report) (*core.BOM, error) {
 				continue
 			}
 			bom.AddVulnerabilities(c, componentVulns)
+		}
+
+		// Fallback for vulnerabilities without a BOM-Ref: attach them through a unique
+		// PURL match. Without this they would all land on whichever component happened
+		// to survive the empty-key collision in the lookup map.
+		purlVulns := make(map[string][]core.Vulnerability)
+		for _, vuln := range refless {
+			if vuln.PkgIdentifier.PURL == nil {
+				log.Warn("Skipping vulnerability without BOM-Ref and PURL",
+					log.String("vulnerability", vuln.VulnerabilityID),
+					log.String("pkg", vuln.PkgName))
+				continue
+			}
+			p := vuln.PkgIdentifier.PURL.String()
+			purlVulns[p] = append(purlVulns[p], e.vulnerability(vuln))
+		}
+		for p, componentVulns := range purlVulns {
+			matches := purlComponents[p]
+			if len(matches) != 1 {
+				log.Warn("Skipping vulnerabilities because their PURL matches no or multiple components in SBOM",
+					log.String("purl", p),
+					log.Int("components", len(matches)),
+					log.Int("vulnerabilities", len(componentVulns)))
+				continue
+			}
+			bom.AddVulnerabilities(matches[0], componentVulns)
 		}
 	}
 
