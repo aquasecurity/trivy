@@ -228,7 +228,9 @@ type Package struct {
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
 
-	// Digest is the first collected digest, kept for consumers that predate Digests.
+	// Digest is the first collected digest, kept populated for backward compatibility.
+	//
+	// Deprecated: Use Digests instead.
 	Digest digest.Digest `json:",omitempty"`
 
 	// Digests holds every collected digest with the source it was acquired from.
