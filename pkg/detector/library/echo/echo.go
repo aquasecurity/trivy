@@ -12,7 +12,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// echoLocalSegmentRe matches the trailing "+echo.N" version segment, e.g. "+echo.1" in "2.14.2+echo.1".
+// echoLocalSegmentRe matches the trailing "+echo.N" version segment,
+// e.g. "+echo.1" in "2.14.2+echo.1".
 var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+$`)
 
 func init() {

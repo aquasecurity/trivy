@@ -1,6 +1,8 @@
 package library_test
 
 import (
+	"cmp"
+	"slices"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -765,6 +767,10 @@ func TestDriver_Detect(t *testing.T) {
 
 			// Compare
 			require.NoError(t, err)
+			// The order of advisories from the DB is not guaranteed
+			slices.SortFunc(got, func(a, b types.DetectedVulnerability) int {
+				return cmp.Compare(a.VulnerabilityID, b.VulnerabilityID)
+			})
 			assert.Equal(t, tt.want, got)
 		})
 	}
