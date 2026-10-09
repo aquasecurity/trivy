@@ -134,9 +134,9 @@ func Test_lookupSupplier(t *testing.T) {
 				assert.NotEqual(t, defaultComparer, comparer)
 				switch tt.eco {
 				case ecosystem.Pip:
-					assert.IsType(t, pep440.Comparer{}, comparer)
+					assert.Equal(t, pep440.NewComparer(pep440.AllowLocalSpecifier()), comparer)
 				case ecosystem.Npm:
-					assert.IsType(t, npm.Comparer{}, comparer)
+					assert.Equal(t, npm.NewComparer(npm.WithBuildMetadata()), comparer)
 				}
 			}
 		})

@@ -563,25 +563,41 @@ func TestDriver_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name: "echo maven package",
+			name: "echo maven package below both fixes",
 			fixtures: []string{
 				"testdata/fixtures/echo.yaml",
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.Jar,
 			args: args{
-				pkgName: "org.apache.commons:commons-lang3",
-				pkgVer:  "3.14.0+echo.1",
+				pkgName: "org.springframework:spring-core",
+				pkgVer:  "6.1.20+echo.1",
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID: "CVE-2024-88888",
+					VulnerabilityID: "CVE-2025-41242",
 					VendorIDs: []string{
-						"ECHO-mvn1-0000-0001",
+						"GHSA-r936-gwx5-v52f",
+						"ECHO-ad95-71e3-575b",
 					},
-					PkgName:          "org.apache.commons:commons-lang3",
-					InstalledVersion: "3.14.0+echo.1",
-					FixedVersion:     "3.14.0+echo.999",
+					PkgName:          "org.springframework:spring-core",
+					InstalledVersion: "6.1.20+echo.1",
+					FixedVersion:     "6.2.10",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2025-41249",
+					VendorIDs: []string{
+						"GHSA-jmp9-x22r-554x",
+						"ECHO-57ea-7cc7-5775",
+					},
+					PkgName:          "org.springframework:spring-core",
+					InstalledVersion: "6.1.20+echo.1",
+					FixedVersion:     "6.1.21+echo.1",
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo-osv",
 						Name: "Echo OSV",
@@ -591,25 +607,26 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "echo npm package",
+			name: "echo maven package above the Echo fix",
 			fixtures: []string{
 				"testdata/fixtures/echo.yaml",
 				"testdata/fixtures/data-source.yaml",
 			},
-			libType: ftypes.NodePkg,
+			libType: ftypes.Jar,
 			args: args{
-				pkgName: "@babel/traverse",
-				pkgVer:  "7.23.2+echo.1",
+				pkgName: "org.springframework:spring-core",
+				pkgVer:  "6.1.21+echo.10",
 			},
 			want: []types.DetectedVulnerability{
 				{
-					VulnerabilityID: "CVE-2024-66666",
+					VulnerabilityID: "CVE-2025-41242",
 					VendorIDs: []string{
-						"ECHO-npm1-0000-0001",
+						"GHSA-r936-gwx5-v52f",
+						"ECHO-ad95-71e3-575b",
 					},
-					PkgName:          "@babel/traverse",
-					InstalledVersion: "7.23.2+echo.1",
-					FixedVersion:     "7.23.2+echo.999",
+					PkgName:          "org.springframework:spring-core",
+					InstalledVersion: "6.1.21+echo.10",
+					FixedVersion:     "6.2.10",
 					DataSource: &dbTypes.DataSource{
 						ID:   "echo-osv",
 						Name: "Echo OSV",
@@ -619,15 +636,114 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
-			name: "echo npm package at the fixed echo build",
+			name: "echo maven package at the upstream fix",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Jar,
+			args: args{
+				pkgName: "org.springframework:spring-core",
+				pkgVer:  "6.2.10+echo.1",
+			},
+			want: nil,
+		},
+		{
+			name: "plain maven package does not use Echo advisories",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Jar,
+			args: args{
+				pkgName: "org.springframework:spring-core",
+				pkgVer:  "6.1.20",
+			},
+			want: nil,
+		},
+		{
+			name: "echo npm package below both fixes",
 			fixtures: []string{
 				"testdata/fixtures/echo.yaml",
 				"testdata/fixtures/data-source.yaml",
 			},
 			libType: ftypes.NodePkg,
 			args: args{
-				pkgName: "@babel/traverse",
-				pkgVer:  "7.23.2+echo.999",
+				pkgName: "nanoid",
+				pkgVer:  "3.3.6+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-67213",
+					VendorIDs: []string{
+						"GHSA-2v37-7h3g-55p8",
+						"ECHO-4872-5a8d-5e5f",
+					},
+					PkgName:          "nanoid",
+					InstalledVersion: "3.3.6+echo.1",
+					FixedVersion:     "3.3.18",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2026-73086",
+					VendorIDs: []string{
+						"GHSA-xwg4-73v4-xw9w",
+						"ECHO-bc75-657e-24f9",
+					},
+					PkgName:          "nanoid",
+					InstalledVersion: "3.3.6+echo.1",
+					FixedVersion:     "3.3.6+echo.2",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo npm package above the Echo fix",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "nanoid",
+				pkgVer:  "3.3.6+echo.10",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-67213",
+					VendorIDs: []string{
+						"GHSA-2v37-7h3g-55p8",
+						"ECHO-4872-5a8d-5e5f",
+					},
+					PkgName:          "nanoid",
+					InstalledVersion: "3.3.6+echo.10",
+					FixedVersion:     "3.3.18",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo npm package at the upstream fix",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.NodePkg,
+			args: args{
+				pkgName: "nanoid",
+				pkgVer:  "3.3.18+echo.1",
 			},
 			want: nil,
 		},

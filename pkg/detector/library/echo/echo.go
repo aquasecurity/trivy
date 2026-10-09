@@ -12,10 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// echoLocalSegmentRe matches the trailing Echo-specific version segment
-// "+echo.N", e.g. "+echo.1" in "2.14.2+echo.1". This appears as a PEP 440
-// local version (pip), a Maven build suffix (maven), and SemVer build metadata
-// (npm).
+// echoLocalSegmentRe matches the trailing "+echo.N" version segment, e.g. "+echo.1" in "2.14.2+echo.1".
 var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+$`)
 
 func init() {
@@ -58,12 +55,9 @@ func (e echoSupplier) BucketPrefix(eco ecosystem.Type) string {
 }
 
 // Comparer returns a version comparer for the given ecosystem.
-// For pip (Python), it enables local version specifiers so PEP 440 ordering
-// keeps the Echo suffix (e.g. "2.14.2+echo.1") instead of discarding it.
-// For npm, it takes build metadata into account, which SemVer excludes from
-// precedence, so "2.14.2+echo.1" < "2.14.2+echo.2".
-// Maven (and other ecosystems) use the default comparer, which already orders the
-// "+echo.N" suffix correctly, so it is returned unchanged.
+// pip and npm get comparers that keep the "+echo.N" suffix significant, since
+// PEP 440 local versions and SemVer build metadata are otherwise ignored;
+// Maven's default comparer already orders it correctly.
 func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	switch eco {
 	case ecosystem.Pip:

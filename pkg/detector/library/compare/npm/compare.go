@@ -12,13 +12,9 @@ import (
 type Option func(*Comparer)
 
 // WithBuildMetadata makes build metadata significant when checking constraints.
-//
-// Note: Semantic Versioning ignores build metadata when determining precedence
-// (https://semver.org/#spec-item-10), so by default "1.2.3+build.1" and "1.2.3+build.2"
-// satisfy the same constraints and a range like ">=1.2.3+build.1, <1.2.3+build.2"
-// matches no version. With this option, versions that are otherwise equal are ordered
-// by their build metadata following node-semver's compareBuild, and a version without
-// metadata is the lowest one: "1.2.3" < "1.2.3+build.1" < "1.2.3+build.2" < "1.2.4".
+// SemVer ignores it for precedence (https://semver.org/#spec-item-10); with this
+// option versions are ordered following node-semver's compareBuild:
+// "1.2.3" < "1.2.3+build.1" < "1.2.3+build.2" < "1.2.4".
 func WithBuildMetadata() Option {
 	return func(c *Comparer) {
 		c.withBuildMetadata = true
