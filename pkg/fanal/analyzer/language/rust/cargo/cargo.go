@@ -28,6 +28,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -124,11 +125,24 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		return pkg.ID, pkg
 	})
 
+	// IDs of packages that root and workspace packages depend on in Cargo.lock
+	lockDeps := set.New[string]()
+	for _, id := range append([]string{root}, workspaces...) {
+		if pkg, ok := pkgIDs[id]; ok {
+			lockDeps.Append(pkg.DependsOn...)
+		}
+	}
+
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
 	for name, constraint := range directDeps {
 		for _, pkg := range app.Packages {
 			if pkg.Name != name {
+				continue
+			}
+
+			// Without a version constraint (git/path), pick the candidate from Cargo.lock
+			if constraint == "" && !lockDeps.Contains(pkg.ID) {
 				continue
 			}
 
@@ -261,14 +275,9 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 			deps[name] = ver
 		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
-			for k, v := range ver {
-				if k == "version" {
-					if vv, ok := v.(string); ok {
-						deps[name] = vv
-					}
-					break
-				}
-			}
+			// or tantivy-fst = { git = "..." } / local = { path = "..." } without a version
+			constraint, _ := ver["version"].(string)
+			deps[name] = constraint
 		}
 	}
 
@@ -295,6 +304,10 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps 
 
 // cf. https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
+	if constraint == "" {
+		return true, nil
+	}
+
 	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
 	// Add `^` for correct version comparison
 	//   - 1.2.3 -> ^1.2.3
