@@ -755,7 +755,11 @@ func (p *Parser) tryRelativePath(ctx context.Context, parentArtifact artifact, c
 		return nil, xerrors.Errorf("analyze error: %w", err)
 	}
 
-	if !parentArtifact.Equal(parsedPOM.artifact()) {
+	// `resolveParent` has now filled in an inherited GroupID, so a GroupID that
+	// still differs means the local POM only shares the ArtifactID with the
+	// declared parent and is a different artifact. The declared Version can be an
+	// unevaluated property here (e.g. `${revision}`), so it is not compared.
+	if parsedPOM.artifact().GroupID != parentArtifact.GroupID {
 		return nil, xerrors.New("'parent.relativePath' points at wrong local POM")
 	}
 
