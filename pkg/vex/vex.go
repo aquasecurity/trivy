@@ -29,6 +29,26 @@ type VEX interface {
 	NotAffected(vuln types.DetectedVulnerability, product, subComponent *core.Component) (types.ModifiedFinding, bool)
 }
 
+// statementFinder is implemented by VEX documents that can tell whether they contain
+// a statement about a given vulnerability and product, whatever its status.
+// NotAffected alone cannot express this: it returns false both for a document stating
+// "affected" and for a document that says nothing at all, while these are different
+// things. Absence of a statement is not a statement.
+type statementFinder interface {
+	HasStatement(vuln types.DetectedVulnerability, product, subComponent *core.Component) bool
+}
+
+// hasStatement reports whether the VEX document has a statement about the vulnerability
+// and product. Documents in a format that cannot answer honestly are assumed to have one,
+// so that the existing behavior is preserved rather than guessed.
+func hasStatement(v VEX, vuln types.DetectedVulnerability, product, subComponent *core.Component) bool {
+	f, ok := v.(statementFinder)
+	if !ok {
+		return true
+	}
+	return f.HasStatement(vuln, product, subComponent)
+}
+
 type Client struct {
 	VEXes []VEX
 }
