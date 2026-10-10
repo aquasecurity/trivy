@@ -1,0 +1,10 @@
+name: test-env
+channels:
+  - defaults
+dependencies:
+  - pip:
+      - django~=5.0.6
+      - flask!=2.0
+      - requests==2.31.0
+
+prefix: /opt/conda/envs/test-env
