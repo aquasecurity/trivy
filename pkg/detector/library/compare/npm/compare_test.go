@@ -15,9 +15,10 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 		advisory       dbTypes.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name              string
+		withBuildMetadata bool
+		args              args
+		want              bool
 	}{
 		{
 			name: "happy path",
@@ -142,10 +143,61 @@ func TestNpmComparer_IsVulnerable(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name:              "without WithBuildMetadata: build metadata ignored",
+			withBuildMetadata: false,
+			args: args{
+				currentVersion: "1.2.3+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: Echo patched version does not suppress release",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.4"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: exact Echo patched version is suppressed",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+echo.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{"<1.2.4"},
+					PatchedVersions:    []string{"1.2.3+echo.1"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: build below the patched build",
+			withBuildMetadata: true,
+			args: args{
+				currentVersion: "1.2.3+build.1",
+				advisory: dbTypes.Advisory{
+					VulnerableVersions: []string{">=1.2.3+build.1, <1.2.3+build.2"},
+					PatchedVersions:    []string{"1.2.3+build.2"},
+				},
+			},
+			want: true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			c := npm.Comparer{}
+			var c npm.Comparer
+			if tt.withBuildMetadata {
+				c = npm.NewComparer(npm.WithBuildMetadata())
+			}
 			got := c.IsVulnerable(tt.args.currentVersion, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

@@ -31,11 +31,13 @@ Same as [Debian](debian.md#license).
 Echo provides patched versions of language packages.
 Trivy identifies them by the version suffix and uses Echo's own security advisories from the [Echo OSV feed][osv-feed] for them instead of the upstream ones.
 
-| Ecosystem                       | Version Suffix | Example                    |
-|---------------------------------|----------------|----------------------------|
-| [Python](../language/python.md) | `+echo.N`      | `requests` `2.14.2+echo.1` |
+| Ecosystem                        | Version Suffix | Example                                                   |
+|----------------------------------|----------------|-----------------------------------------------------------|
+| [Python](../language/python.md)  | `+echo.N`      | `requests` `2.14.2+echo.1`                                |
+| [Java](../language/java.md)      | `+echo.N`      | `org.springframework:spring-core` `6.1.21+echo.1`          |
+| [Node.js](../language/nodejs.md) | `+echo.N`      | `nanoid` `3.3.6+echo.2`                                   |
 
-Other packages, including those from other ecosystems, are scanned against the upstream advisories as usual.
+Packages without the Echo version suffix, and packages from unsupported ecosystems, are scanned against the upstream advisories as usual.
 
 !!! note
     These packages are detected regardless of the OS, including filesystem and repository scans.
