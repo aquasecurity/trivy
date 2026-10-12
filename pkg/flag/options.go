@@ -488,9 +488,9 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
-	// Cryptographic assets are reported only as CycloneDX components
-	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX {
-		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx'")
+	// Only JSON and CycloneDX output show cryptographic assets
+	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX && o.Format != types.FormatJSON {
+		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx' or '--format json'")
 	}
 
 	// A remote SBOM replaces layer analysis, so cryptographic assets would not be collected
@@ -536,6 +536,8 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
 		VulnSeveritySources: o.VulnSeveritySources,
+		// CycloneDX output does not show findings, so they must not change its exit code.
+		CryptoChecks: o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX,
 	}
 }
 

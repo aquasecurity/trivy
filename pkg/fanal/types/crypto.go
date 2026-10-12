@@ -138,11 +138,7 @@ func (a CryptoAssetInfo) Validate() error {
 // CompareCryptoAssets orders assets by identity, then by where they were found.
 func CompareCryptoAssets(a, b CryptoAsset) int {
 	return cmp.Or(
-		cmp.Compare(a.Kind, b.Kind),
-		cmp.Compare(a.KeyType, b.KeyType),
-		cmp.Compare(a.Identity.Method, b.Identity.Method),
-		cmp.Compare(a.Identity.Value, b.Identity.Value),
-		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		a.Descriptor().Compare(b.Descriptor()),
 		cmp.Compare(a.FilePath, b.FilePath),
 		cmp.Compare(a.Layer.DiffID, b.Layer.DiffID),
 		cmp.Compare(a.Format, b.Format),
