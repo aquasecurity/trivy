@@ -8491,7 +8491,7 @@ You're not viewing the latest version of the documentation.
 <p>Scanning results may be inaccurate.</p>
 </div>
 <p>This page describes the details of the <a href="https://www.rapidfort.com/">RapidFort</a> curated vulnerability feed.
-RapidFort publishes curated builds of <a href="../../os/ubuntu/">Ubuntu</a>, <a href="../../os/alpine/">Alpine</a>, and <a href="../../os/rhel/">Red Hat Enterprise Linux</a>-based container images together with the corresponding security advisories.</p>
+RapidFort publishes curated builds of container images based on <a href="../../os/ubuntu/">Ubuntu</a>, <a href="../../os/debian/">Debian</a>, <a href="../../os/alpine/">Alpine</a>, <a href="../../os/rhel/">Red Hat Enterprise Linux</a>, <a href="../../os/oracle/">Oracle Linux</a>, <a href="../../os/rocky/">Rocky Linux</a>, <a href="../../os/alma/">AlmaLinux</a> and <a href="../../os/amazon/">Amazon Linux</a>, together with the corresponding security advisories.</p>
 <p>RapidFort images are identified by the presence of <code>/usr/share/rapidfort/curated.json</code> in the image filesystem. When Trivy finds this sentinel file, it uses the <a href="https://github.com/rapidfort/security-advisories">RapidFort security-advisories feed</a> for that image instead of the base OS vendor's advisories.</p>
 <p>Because RapidFort curates its own advisories for the packages it ships — including RapidFort-built rebuilds and any third-party packages present in the image — Trivy scans all of them against the RapidFort feed instead of skipping them as it would under a standard base OS scan.</p>
 <p>RapidFort also curates advisories for end-of-life releases, so Trivy scans RapidFort images regardless of the base OS end-of-life status and does not emit an unsupported-version warning.</p>
@@ -8502,8 +8502,13 @@ RapidFort publishes curated builds of <a href="../../os/ubuntu/">Ubuntu</a>, <a 
 <p>For details on supported scanners, features, and behaviour for each base OS, refer to the corresponding page:</p>
 <ul>
 <li><a href="../../os/ubuntu/">Ubuntu</a></li>
+<li><a href="../../os/debian/">Debian</a></li>
 <li><a href="../../os/alpine/">Alpine</a></li>
 <li><a href="../../os/rhel/">Red Hat Enterprise Linux</a></li>
+<li><a href="../../os/oracle/">Oracle Linux</a></li>
+<li><a href="../../os/rocky/">Rocky Linux</a></li>
+<li><a href="../../os/alma/">AlmaLinux</a></li>
+<li><a href="../../os/amazon/">Amazon Linux</a></li>
 </ul>
 
 
