@@ -76,7 +76,7 @@ func TestDescribeKey(t *testing.T) {
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
 			Value:      "1.2.840.10040.4.1",
-			Parameters: "key-size=2048",
+			Parameters: "key-size=2048,subgroup-size=256",
 		},
 		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
@@ -502,10 +502,10 @@ func newKeyFixtures(t *testing.T) keyFixtures {
 		mldsa87Public: mldsa87Key.PublicKey(),
 		dsaPublic: &dsa.PublicKey{
 			Parameters: dsa.Parameters{
-				// A 2048-bit modulus, so that the reported key size is a realistic one.
+				// A 2048-bit p and a 256-bit q, so that (L, N) is a realistic pair.
 				// The group is not a valid one, which nothing on this path checks.
 				P: new(big.Int).Lsh(big.NewInt(1), 2047),
-				Q: big.NewInt(11),
+				Q: new(big.Int).Lsh(big.NewInt(1), 255),
 				G: big.NewInt(2),
 			},
 			Y: big.NewInt(4),

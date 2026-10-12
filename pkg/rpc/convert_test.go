@@ -1578,6 +1578,15 @@ func TestConvertCryptoAssets(t *testing.T) {
 		Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 		DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 	}
+	// DSA is identified by several parameters.
+	algorithm := cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Name = "DSA-2048"
+		asset.Identity.Value = "1.2.840.10040.4.1"
+		asset.Identity.Parameters = "key-size=2048,subgroup-size=256"
+		asset.Algorithm.Family = "DSA"
+		asset.Algorithm.Primitive = ftypes.CryptoPrimitiveSignature
+		asset.Layer = layer
+	}))
 
 	tests := []struct {
 		name  string
@@ -1617,7 +1626,7 @@ func TestConvertCryptoAssets(t *testing.T) {
 				asset.Relationships = []ftypes.CryptoRelationship{
 					{
 						Type:         ftypes.CryptoRelationshipUsedWith,
-						RelatedAsset: cryptotest.AlgorithmDescriptor(),
+						RelatedAsset: algorithm.Descriptor(),
 					},
 				}
 				asset.Layer = layer
@@ -1628,12 +1637,8 @@ func TestConvertCryptoAssets(t *testing.T) {
 			asset: cryptotest.EncryptedPrivateKeyAsset(),
 		},
 		{
-			name: "algorithm",
-			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-				asset.Name = "RSA-2048"
-				asset.Identity.Parameters = "key-size=2048"
-				asset.Layer = layer
-			})),
+			name:  "algorithm",
+			asset: algorithm,
 		},
 	}
 

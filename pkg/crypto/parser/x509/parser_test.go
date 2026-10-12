@@ -646,6 +646,21 @@ func TestParseAssets(t *testing.T) {
 		}},
 	}
 
+	// DSA keys of one L can differ in N, so both identify the algorithm.
+	dsaAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method:     ftypes.CryptoMethodOID,
+			Value:      "1.2.840.10040.4.1",
+			Parameters: "key-size=2048,subgroup-size=224",
+		},
+		Name: "DSA-2048",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+
 	// at states where a description was found.
 	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
@@ -851,6 +866,31 @@ func TestParseAssets(t *testing.T) {
 					Encoding: ftypes.CryptoEncodingPEM,
 				},
 				at(rsaAlgorithm),
+			},
+		},
+		{
+			name:  "DSA public key",
+			input: fixtures.dsaDER,
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindKey,
+						KeyType:  ftypes.CryptoKeyTypePublic,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.dsaDER),
+						Name:     "DSA-2048 public key",
+						Key: &ftypes.CryptoKey{
+							Size: 2048,
+						},
+						Relationships: []ftypes.CryptoRelationship{{
+							Type:         ftypes.CryptoRelationshipUsedWith,
+							RelatedAsset: dsaAlgorithm.Descriptor(),
+						}},
+					},
+					FilePath: parsedFilePath,
+					Format:   ftypes.CryptoKeyFormatPKIX,
+					Encoding: ftypes.CryptoEncodingDER,
+				},
+				at(dsaAlgorithm),
 			},
 		},
 		{
@@ -1301,8 +1341,10 @@ func newFixtures(t *testing.T) testFixtures {
 	// crypto/x509 parses a DSA key but cannot encode one, so the input comes from pkg/crypto.
 	dsaDER, err := crypto.MarshalPublicKey(&dsa.PublicKey{
 		Parameters: dsa.Parameters{
-			P: big.NewInt(23),
-			Q: big.NewInt(11),
+			// A 2048-bit p and a 224-bit q, so that (L, N) is a realistic pair. The group is
+			// not a valid one, which nothing on this path checks.
+			P: new(big.Int).Lsh(big.NewInt(1), 2047),
+			Q: new(big.Int).Lsh(big.NewInt(1), 223),
 			G: big.NewInt(2),
 		},
 		Y: big.NewInt(4),
