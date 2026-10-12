@@ -76,7 +76,7 @@ func (Tool) PipTools() error {
 
 // GolangciLint installs golangci-lint
 func (t Tool) GolangciLint() error {
-	const version = "v2.13.1"
+	const version = "v2.14.0"
 	if exists(golangciLint) && t.matchGolangciLintVersion(golangciLint, version) {
 		return nil
 	}
