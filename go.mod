@@ -40,7 +40,7 @@ require (
 	github.com/containerd/containerd/v2 v2.4.1
 	github.com/containerd/platforms v1.0.0-rc.5
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v29.8.1+incompatible
+	github.com/docker/cli v29.8.2+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.19.0
 	github.com/go-git/go-git/v5 v5.19.2
@@ -77,7 +77,7 @@ require (
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20260422061116-d21e5e4481bb
 	github.com/mattn/go-shellwords v1.0.15
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/moby/buildkit v0.33.0
+	github.com/moby/buildkit v0.33.1
 	github.com/moby/docker-image-spec v1.3.1
 	github.com/moby/moby/api v1.56.0
 	github.com/moby/moby/client v0.6.0
