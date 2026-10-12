@@ -351,6 +351,10 @@ message CryptoKey {
 message CryptoAlgorithm {
   string family = 1;
   string primitive = 2;
+  // The security levels are unset when they are not estimated, and an explicit zero NIST
+  // category means that the algorithm meets none of the categories.
+  optional int32 classical_security_level = 3;
+  optional int32 nist_quantum_security_level = 4;
 }
 
 message CryptoDescriptor {

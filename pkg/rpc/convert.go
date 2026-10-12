@@ -280,9 +280,20 @@ func convertToRPCCryptoAlgorithm(algorithm *ftypes.CryptoAlgorithm) *common.Cryp
 		return nil
 	}
 	return &common.CryptoAlgorithm{
-		Family:    algorithm.Family,
-		Primitive: string(algorithm.Primitive),
+		Family:                   algorithm.Family,
+		Primitive:                string(algorithm.Primitive),
+		ClassicalSecurityLevel:   convertOptionalInt[int32](algorithm.ClassicalSecurityLevel),
+		NistQuantumSecurityLevel: convertOptionalInt[int32](algorithm.NISTQuantumSecurityLevel),
 	}
+}
+
+// convertOptionalInt converts an optional integer between the model and RPC, keeping an
+// unset value apart from zero.
+func convertOptionalInt[To, From int | int32](value *From) *To {
+	if value == nil {
+		return nil
+	}
+	return new(To(*value))
 }
 
 func convertToRPCCryptoIdentity(identity ftypes.CryptoIdentity) *common.CryptoIdentity {
@@ -781,8 +792,10 @@ func convertFromRPCCryptoAlgorithm(rpcAlgorithm *common.CryptoAlgorithm) *ftypes
 		return nil
 	}
 	return &ftypes.CryptoAlgorithm{
-		Family:    rpcAlgorithm.Family,
-		Primitive: ftypes.CryptoPrimitive(rpcAlgorithm.Primitive),
+		Family:                   rpcAlgorithm.Family,
+		Primitive:                ftypes.CryptoPrimitive(rpcAlgorithm.Primitive),
+		ClassicalSecurityLevel:   convertOptionalInt[int](rpcAlgorithm.ClassicalSecurityLevel),
+		NISTQuantumSecurityLevel: convertOptionalInt[int](rpcAlgorithm.NistQuantumSecurityLevel),
 	}
 }
 

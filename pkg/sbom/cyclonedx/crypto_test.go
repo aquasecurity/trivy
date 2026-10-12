@@ -300,7 +300,9 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 						},
 						Name: "EC-P-256",
 						Algorithm: &ftypes.CryptoAlgorithm{
-							Primitive: ftypes.CryptoPrimitiveUnknown,
+							Primitive:                ftypes.CryptoPrimitiveUnknown,
+							ClassicalSecurityLevel:   new(128),
+							NISTQuantumSecurityLevel: new(0),
 						},
 					},
 					FilePath: "opt/app/ec.pem",
@@ -316,12 +318,59 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{
 							Primitive:     cdx.CryptoPrimitiveUnknown,
 							EllipticCurve: "nist/P-256",
+							// A NIST category of zero is reported, unlike a level that is not
+							// estimated.
+							ClassicalSecurityLevel:   new(128),
+							NistQuantumSecurityLevel: new(0),
 						},
 						OID: "1.2.840.10045.2.1",
 					},
 					Evidence: &cdx.Evidence{
 						Occurrences: &[]cdx.EvidenceOccurrence{
 							{Location: "opt/app/ec.pem"},
+						},
+					},
+				},
+			},
+		},
+		{
+			// FIPS 204 gives ML-DSA a NIST category and no classical strength.
+			name: "ML-DSA algorithm",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method: ftypes.CryptoMethodOID,
+							Value:  "2.16.840.1.101.3.4.3.18",
+						},
+						Name: "ML-DSA-65",
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Family:                   "ML-DSA",
+							Primitive:                ftypes.CryptoPrimitiveSignature,
+							NISTQuantumSecurityLevel: new(3),
+						},
+					},
+					FilePath: "opt/app/mldsa.pem",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:algorithm:oid:2.16.840.1.101.3.4.3.18",
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "ML-DSA-65",
+					CryptoProperties: &cdx.CryptoProperties{
+						AssetType: cdx.CryptoAssetTypeAlgorithm,
+						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{
+							Primitive:                cdx.CryptoPrimitiveSignature,
+							AlgorithmFamily:          "ML-DSA",
+							NistQuantumSecurityLevel: new(3),
+						},
+						OID: "2.16.840.1.101.3.4.3.18",
+					},
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "opt/app/mldsa.pem"},
 						},
 					},
 				},
