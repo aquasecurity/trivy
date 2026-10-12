@@ -76,6 +76,16 @@
           "name": "aquasecurity:trivy:LayerDiffID",
           "value": "sha256:831c5620387fb9efec59fc82a42b948546c6be601e3ab34a87108ecf852aa15f"
         }
+      ],
+      "hashes": [
+        {
+          "alg": "SHA-256",
+          "content": "cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3"
+        },
+        {
+          "alg": "SHA-1",
+          "content": "76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb"
+        }
       ]
     },
     {
