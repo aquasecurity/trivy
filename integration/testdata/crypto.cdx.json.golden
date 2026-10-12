@@ -22,27 +22,27 @@
     "component": {
       "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
       "type": "container",
-      "name": "testdata/fixtures/images/crypto.tar.gz",
+      "name": "testdata/fixtures/images/crypto-v2.tar.gz",
       "properties": [
         {
           "name": "aquasecurity:trivy:DiffID",
-          "value": "sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+          "value": "sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
         },
         {
           "name": "aquasecurity:trivy:DiffID",
-          "value": "sha256:ea0805fd421428a49749d1bb5fcb3cc89c4d6a15847c77b9aa146cc276bee04e"
+          "value": "sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
         },
         {
           "name": "aquasecurity:trivy:ImageID",
-          "value": "sha256:6d91186657ea62cfb85261123053df5b2c5fd5bf3157875fa10845188635d895"
+          "value": "sha256:7bf2e9fd2610606111591a5cfd05593a270c9ede7e48c588e996e6e1f5ffde65"
         },
         {
           "name": "aquasecurity:trivy:Reference",
-          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto"
+          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto-v2"
         },
         {
           "name": "aquasecurity:trivy:RepoTag",
-          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto"
+          "value": "ghcr.io/aquasecurity/trivy-test-images:crypto-v2"
         },
         {
           "name": "aquasecurity:trivy:SchemaVersion",
@@ -50,12 +50,58 @@
         },
         {
           "name": "aquasecurity:trivy:Size",
-          "value": "38400"
+          "value": "83456"
         }
       ]
     }
   },
   "components": [
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D224",
+      "type": "cryptographic-asset",
+      "name": "DSA-2048",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/dsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "parameterSetIdentifier": "2048-224",
+          "algorithmFamily": "DSA",
+          "classicalSecurityLevel": 112,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.10040.4.1"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10040.4.3",
+      "type": "cryptographic-asset",
+      "name": "DSA-SHA-1",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/dsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "DSA",
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.10040.4.3"
+      }
+    },
     {
       "bom-ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256",
       "type": "cryptographic-asset",
@@ -64,11 +110,15 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/ec.der",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/certs/ecdsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/private/ec.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -84,6 +134,28 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10045.4.1",
+      "type": "cryptographic-asset",
+      "name": "ECDSA-SHA-1",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ecdsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "ECDSA",
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.10045.4.1"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:1.2.840.10045.4.3.2",
       "type": "cryptographic-asset",
       "name": "ECDSA-SHA-256",
@@ -91,7 +163,7 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/ec.der",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -106,6 +178,30 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.10",
+      "type": "cryptographic-asset",
+      "name": "1.2.840.113549.1.1.10",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha256.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown"
+        },
+        "oid": "1.2.840.113549.1.1.10"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11",
       "type": "cryptographic-asset",
       "name": "RSA-PKCS1-1.5-SHA-256",
@@ -113,15 +209,15 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/certs/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "opt/app/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:ea0805fd421428a49749d1bb5fcb3cc89c4d6a15847c77b9aa146cc276bee04e"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -136,6 +232,37 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024",
+      "type": "cryptographic-asset",
+      "name": "RSA-1024",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/private/weak.key",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/app/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "parameterSetIdentifier": "1024",
+          "classicalSecurityLevel": 80,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.113549.1.1.1"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048",
       "type": "cryptographic-asset",
       "name": "RSA-2048",
@@ -143,27 +270,35 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha256.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/certs/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/private/pkcs1.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/private/rsa.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "etc/ssl/public/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "opt/app/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:ea0805fd421428a49749d1bb5fcb3cc89c4d6a15847c77b9aa146cc276bee04e"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -179,6 +314,76 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.5",
+      "type": "cryptographic-asset",
+      "name": "RSA-PKCS1-1.5-SHA-1",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/app/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "RSASSA-PKCS1",
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.113549.1.1.5"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.3.101.110",
+      "type": "cryptographic-asset",
+      "name": "1.3.101.110",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/public/x25519.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown"
+        },
+        "oid": "1.3.101.110"
+      }
+    },
+    {
+      "bom-ref": "crypto:algorithm:oid:1.3.101.111",
+      "type": "cryptographic-asset",
+      "name": "1.3.101.111",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown"
+        },
+        "oid": "1.3.101.111"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:1.3.101.112",
       "type": "cryptographic-asset",
       "name": "Ed25519",
@@ -186,7 +391,7 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/ed25519.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -202,6 +407,37 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.3.101.113",
+      "type": "cryptographic-asset",
+      "name": "Ed448",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/certs/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/ed448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "signature",
+          "algorithmFamily": "EdDSA",
+          "classicalSecurityLevel": 224,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.3.101.113"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:2.16.840.1.101.3.4.3.18",
       "type": "cryptographic-asset",
       "name": "ML-DSA-65",
@@ -209,7 +445,7 @@
         "occurrences": [
           {
             "location": "etc/ssl/certs/ml-dsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -224,29 +460,29 @@
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:14d6a79bf4bd5565a3876ccaf4f7e4af2919df0ad6bc7e6da927dd8611cc15b7",
+      "bom-ref": "crypto:certificate:sha256:1e2719773372f963a1b30b0a250c670c86f03c29dc4722b33df9892ef57b8ff1",
       "type": "cryptographic-asset",
-      "name": "ed25519.trivy.test",
+      "name": "rsa-pss-sha256.trivy.test",
       "evidence": {
         "occurrences": [
           {
-            "location": "etc/ssl/certs/ed25519.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "location": "etc/ssl/certs/rsa-pss-sha256.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
-          "serialNumber": "3",
-          "subjectName": "CN=ed25519.trivy.test",
-          "issuerName": "CN=ed25519.trivy.test",
+          "serialNumber": "e",
+          "subjectName": "CN=rsa-pss-sha256.trivy.test",
+          "issuerName": "CN=rsa-pss-sha256.trivy.test",
           "notValidBefore": "2024-01-01T00:00:00+00:00",
           "notValidAfter": "2034-01-01T00:00:00+00:00",
           "certificateFormat": "X.509",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "14d6a79bf4bd5565a3876ccaf4f7e4af2919df0ad6bc7e6da927dd8611cc15b7"
+            "content": "1e2719773372f963a1b30b0a250c670c86f03c29dc4722b33df9892ef57b8ff1"
           },
           "certificateExtensions": [
             {
@@ -257,29 +493,117 @@
           "relatedCryptographicAssets": [
             {
               "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.3.101.112"
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.10"
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c"
+              "ref": "crypto:key:public:spki-sha256:ce3efe6b46ad7663ff40f3d5c6a951db1138a5443e3e459ce5c2c22e8c15aa29"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:28b2e1169f00bea7689174b7cba81621fc144864a502cbde84186704077dbfd6",
+      "bom-ref": "crypto:certificate:sha256:3e6838cf96d6014bc45f8821a5512525e0879bd4ccbe0ff1550e6cbbed7bae9b",
+      "type": "cryptographic-asset",
+      "name": "rsa-pss-sha1.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "a",
+          "subjectName": "CN=rsa-pss-sha1.trivy.test",
+          "issuerName": "CN=rsa-pss-sha1.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "3e6838cf96d6014bc45f8821a5512525e0879bd4ccbe0ff1550e6cbbed7bae9b"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.10"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:b20c8d77c273e8bcaafa4cc40e1513da34f51ca208a6ae538f88d2e8193f3b5e"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:4812fc9885b8ce3676c6f32b9014f84ac42ef6e9de611795af0599cc9ea24f3d",
+      "type": "cryptographic-asset",
+      "name": "ml-dsa.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ml-dsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "6",
+          "subjectName": "CN=ml-dsa.trivy.test",
+          "issuerName": "CN=ml-dsa.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "4812fc9885b8ce3676c6f32b9014f84ac42ef6e9de611795af0599cc9ea24f3d"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:2.16.840.1.101.3.4.3.18"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:44e2b02ca11770c906a15ff5813090bfde79897458a90f2401e59c6a0e791426"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:49511b8deae44f5795de1c53402c519ed125a31a558ae318ffa81ea847840bfc",
       "type": "cryptographic-asset",
       "name": "rsa.trivy.test",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
             "location": "opt/app/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:ea0805fd421428a49749d1bb5fcb3cc89c4d6a15847c77b9aa146cc276bee04e"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -294,7 +618,7 @@
           "certificateFormat": "X.509",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "28b2e1169f00bea7689174b7cba81621fc144864a502cbde84186704077dbfd6"
+            "content": "49511b8deae44f5795de1c53402c519ed125a31a558ae318ffa81ea847840bfc"
           },
           "certificateExtensions": [
             {
@@ -321,59 +645,103 @@
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88"
+              "ref": "crypto:key:public:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:42239a401d0f91f919c997a68abbc263970e6c1ce4ff9cd12bfe0884f8908df3",
+      "bom-ref": "crypto:certificate:sha256:4cf60c0a336ac4a10dca941448cc6ca257d953f589ca3a491f7593afe23d0eee",
       "type": "cryptographic-asset",
-      "name": "leaf.trivy.test",
+      "name": "x448.trivy.test",
       "evidence": {
         "occurrences": [
           {
-            "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "location": "etc/ssl/certs/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
       "cryptoProperties": {
         "assetType": "certificate",
         "certificateProperties": {
-          "serialNumber": "5",
-          "subjectName": "CN=leaf.trivy.test",
-          "issuerName": "CN=Trivy Crypto Test CA",
+          "serialNumber": "d",
+          "subjectName": "CN=x448.trivy.test",
+          "issuerName": "CN=ed448.trivy.test",
           "notValidBefore": "2024-01-01T00:00:00+00:00",
           "notValidAfter": "2034-01-01T00:00:00+00:00",
           "certificateFormat": "X.509",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "42239a401d0f91f919c997a68abbc263970e6c1ce4ff9cd12bfe0884f8908df3"
+            "content": "4cf60c0a336ac4a10dca941448cc6ca257d953f589ca3a491f7593afe23d0eee"
           },
           "relatedCryptographicAssets": [
             {
               "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11"
+              "ref": "crypto:algorithm:oid:1.3.101.113"
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:2796801eac4cb31f53e5b2da761f35adb2b3fa0ab007597eea0d29dfba96e7ff"
+              "ref": "crypto:key:public:spki-sha256:7bdf71a24b2aca83dc03af5aa62adfee0a092562e8af13684a56068f94d32cb2"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:646eabbecad0da7aaa5b4e8ed0534e3fbaebec00c910a274619e5f27332923e9",
+      "bom-ref": "crypto:certificate:sha256:6001e9e8f7072c1dfdd4132dda7266d31b05ef5a60830afba12e7f008e04d87d",
+      "type": "cryptographic-asset",
+      "name": "dsa-sha1.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/dsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "8",
+          "subjectName": "CN=dsa-sha1.trivy.test",
+          "issuerName": "CN=dsa-sha1.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "6001e9e8f7072c1dfdd4132dda7266d31b05ef5a60830afba12e7f008e04d87d"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10040.4.3"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:e23120e4e11fac5f929b93e0b72e66651b504311459dfe7147e571bb21188766"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:7690267fff6e6c1b682638407af8efee498a26ed7135735a94b13343bfa7a77e",
       "type": "cryptographic-asset",
       "name": "ec.trivy.test",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/ec.der",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -388,7 +756,7 @@
           "certificateFormat": "X.509",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "646eabbecad0da7aaa5b4e8ed0534e3fbaebec00c910a274619e5f27332923e9"
+            "content": "7690267fff6e6c1b682638407af8efee498a26ed7135735a94b13343bfa7a77e"
           },
           "certificateExtensions": [
             {
@@ -403,21 +771,239 @@
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e"
+              "ref": "crypto:key:public:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:a4c31421d614193ab4ac4fa59909c54118aa6ef74da81d21a908772ba836d289",
+      "bom-ref": "crypto:certificate:sha256:89fc1b4c11f706021aa335f47b0cfe0e4674d415b42df6961599a6626ef29eb5",
+      "type": "cryptographic-asset",
+      "name": "ed25519.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed25519.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "3",
+          "subjectName": "CN=ed25519.trivy.test",
+          "issuerName": "CN=ed25519.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "89fc1b4c11f706021aa335f47b0cfe0e4674d415b42df6961599a6626ef29eb5"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.112"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:8c892e4145c3672deba4bc6845436c794709e13dcc886245bfeaaf99b131af4c",
+      "type": "cryptographic-asset",
+      "name": "ecdsa-sha1.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ecdsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "9",
+          "subjectName": "CN=ecdsa-sha1.trivy.test",
+          "issuerName": "CN=ecdsa-sha1.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "8c892e4145c3672deba4bc6845436c794709e13dcc886245bfeaaf99b131af4c"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10045.4.1"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:4d8fc17639e87c23ca5197dd407b35172e6565910374bccc9a3a22276cfc99a0"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:bf01a7b2c575c0a2f70aa4b25ca9fc2e3d145303359f6906716ef134b54b02c2",
+      "type": "cryptographic-asset",
+      "name": "ed448.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "c",
+          "subjectName": "CN=ed448.trivy.test",
+          "issuerName": "CN=ed448.trivy.test",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "bf01a7b2c575c0a2f70aa4b25ca9fc2e3d145303359f6906716ef134b54b02c2"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.113"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:1ae3801bf958674e44ebcb2cbdbc22b1a214db91a7abaff9f0a9c32f90ad25ac"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:d25fb857a4a4595657bb1a0bdca2644660af06bad47cab0fc9bb709741782079",
+      "type": "cryptographic-asset",
+      "name": "leaf.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "5",
+          "subjectName": "CN=leaf.trivy.test",
+          "issuerName": "CN=Trivy Crypto Test CA",
+          "notValidBefore": "2024-01-01T00:00:00+00:00",
+          "notValidAfter": "2034-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "d25fb857a4a4595657bb1a0bdca2644660af06bad47cab0fc9bb709741782079"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:b968d266243d1df9618e91d37dff96f72c6ba8136b8c0db8ded2bf03945254c4"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:d91cc786b84401dee073855eebb99f9b7e8fb8dfe9415bed45697af654d3b48c",
+      "type": "cryptographic-asset",
+      "name": "weak.trivy.test",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/app/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "certificate",
+        "certificateProperties": {
+          "serialNumber": "7",
+          "subjectName": "CN=weak.trivy.test",
+          "issuerName": "CN=weak.trivy.test",
+          "notValidBefore": "2019-01-01T00:00:00+00:00",
+          "notValidAfter": "2020-01-01T00:00:00+00:00",
+          "certificateFormat": "X.509",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "d91cc786b84401dee073855eebb99f9b7e8fb8dfe9415bed45697af654d3b48c"
+          },
+          "certificateExtensions": [
+            {
+              "commonExtensionName": "basicConstraints",
+              "commonExtensionValue": "CA:TRUE"
+            }
+          ],
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.5"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:certificate:sha256:f00203192881c5e8b5e7f3f9549ba64fc3f88bf6dca812134ac171528edf15dd",
       "type": "cryptographic-asset",
       "name": "Trivy Crypto Test CA",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -432,7 +1018,7 @@
           "certificateFormat": "X.509",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "a4c31421d614193ab4ac4fa59909c54118aa6ef74da81d21a908772ba836d289"
+            "content": "f00203192881c5e8b5e7f3f9549ba64fc3f88bf6dca812134ac171528edf15dd"
           },
           "certificateExtensions": [
             {
@@ -451,65 +1037,21 @@
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:ca6742030c4cb62a5a7af60e1d6a698627eb3fab8b93ccf25446fb09119f23aa"
+              "ref": "crypto:key:public:spki-sha256:45c4250d117f66ce10d1fe864a05b9b217d8c9213e4e0fb06403e11beedeb5a0"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:certificate:sha256:e16ac8c10227bfc078b81039b70cd51c01413ec56f072a13ca2f77b9a85b8b09",
-      "type": "cryptographic-asset",
-      "name": "ml-dsa.trivy.test",
-      "evidence": {
-        "occurrences": [
-          {
-            "location": "etc/ssl/certs/ml-dsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
-          }
-        ]
-      },
-      "cryptoProperties": {
-        "assetType": "certificate",
-        "certificateProperties": {
-          "serialNumber": "6",
-          "subjectName": "CN=ml-dsa.trivy.test",
-          "issuerName": "CN=ml-dsa.trivy.test",
-          "notValidBefore": "2024-01-01T00:00:00+00:00",
-          "notValidAfter": "2034-01-01T00:00:00+00:00",
-          "certificateFormat": "X.509",
-          "fingerprint": {
-            "alg": "SHA-256",
-            "content": "e16ac8c10227bfc078b81039b70cd51c01413ec56f072a13ca2f77b9a85b8b09"
-          },
-          "certificateExtensions": [
-            {
-              "commonExtensionName": "basicConstraints",
-              "commonExtensionValue": "CA:TRUE"
-            }
-          ],
-          "relatedCryptographicAssets": [
-            {
-              "type": "algorithm",
-              "ref": "crypto:algorithm:oid:2.16.840.1.101.3.4.3.18"
-            },
-            {
-              "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:66cb3978f7ffd2d7862e0a06440e88c777bcff5940331b387f284a3e21f29e6d"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:a027dfa47e68c69eeb9df7c575cd67d481805bc997203204486d3d3677b51b4d",
+      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:0328841dc0bb9f51b44755275a8c59b651405bf41d0ffb901c75054734ffd463",
       "type": "cryptographic-asset",
       "name": "Encrypted PKCS#8 private key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/private/encrypted.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -519,20 +1061,20 @@
           "type": "private-key",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "a027dfa47e68c69eeb9df7c575cd67d481805bc997203204486d3d3677b51b4d"
+            "content": "0328841dc0bb9f51b44755275a8c59b651405bf41d0ffb901c75054734ffd463"
           }
         }
       }
     },
     {
-      "bom-ref": "crypto:key:private:encrypted-rfc1423-sha256:8f86619d3039c7f8487ce078a25e910a1d2a212aa569236171ea4ae205e190e9",
+      "bom-ref": "crypto:key:private:encrypted-rfc1423-sha256:2b5621233cc496e24f1e29e72505bf6273955ead95dab28df598022f261aed64",
       "type": "cryptographic-asset",
       "name": "Encrypted PKCS#1 private key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/private/legacy-encrypted.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -542,20 +1084,20 @@
           "type": "private-key",
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "8f86619d3039c7f8487ce078a25e910a1d2a212aa569236171ea4ae205e190e9"
+            "content": "2b5621233cc496e24f1e29e72505bf6273955ead95dab28df598022f261aed64"
           }
         }
       }
     },
     {
-      "bom-ref": "crypto:key:private:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88",
+      "bom-ref": "crypto:key:private:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1",
       "type": "cryptographic-asset",
-      "name": "RSA-2048 private key",
+      "name": "RSA-1024 private key",
       "evidence": {
         "occurrences": [
           {
-            "location": "etc/ssl/private/rsa.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "location": "etc/ssl/private/weak.key",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -563,67 +1105,33 @@
         "assetType": "related-crypto-material",
         "relatedCryptoMaterialProperties": {
           "type": "private-key",
-          "size": 2048,
+          "size": 1024,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88"
+            "content": "05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1"
           },
           "relatedCryptographicAssets": [
             {
               "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88"
+              "ref": "crypto:key:public:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:key:private:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e",
-      "type": "cryptographic-asset",
-      "name": "EC-P-256 private key",
-      "evidence": {
-        "occurrences": [
-          {
-            "location": "etc/ssl/private/ec.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
-          }
-        ]
-      },
-      "cryptoProperties": {
-        "assetType": "related-crypto-material",
-        "relatedCryptoMaterialProperties": {
-          "type": "private-key",
-          "size": 256,
-          "fingerprint": {
-            "alg": "SHA-256",
-            "content": "1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e"
-          },
-          "relatedCryptographicAssets": [
-            {
-              "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
-            },
-            {
-              "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "bom-ref": "crypto:key:private:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c",
+      "bom-ref": "crypto:key:private:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef",
       "type": "cryptographic-asset",
       "name": "Ed25519 private key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/ed25519.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -634,7 +1142,7 @@
           "size": 256,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c"
+            "content": "28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef"
           },
           "relatedCryptographicAssets": [
             {
@@ -643,21 +1151,55 @@
             },
             {
               "type": "publicKey",
-              "ref": "crypto:key:public:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c"
+              "ref": "crypto:key:public:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:key:private:spki-sha256:e88fd514f9327b0654a07185b6090b965f5c9027c0aa55a4f48b9f382030cd86",
+      "bom-ref": "crypto:key:private:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354",
+      "type": "cryptographic-asset",
+      "name": "EC-P-256 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/private/ec.key",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:private:spki-sha256:90b0ef851fbc8a5e41d4550a0c66bf9fe16f18d971bcb795975c80629c531bbd",
       "type": "cryptographic-asset",
       "name": "RSA-2048 private key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/private/pkcs1.key",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -668,7 +1210,7 @@
           "size": 2048,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "e88fd514f9327b0654a07185b6090b965f5c9027c0aa55a4f48b9f382030cd86"
+            "content": "90b0ef851fbc8a5e41d4550a0c66bf9fe16f18d971bcb795975c80629c531bbd"
           },
           "relatedCryptographicAssets": [
             {
@@ -680,22 +1222,52 @@
       }
     },
     {
-      "bom-ref": "crypto:key:public:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88",
+      "bom-ref": "crypto:key:private:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37",
       "type": "cryptographic-asset",
-      "name": "RSA-2048 public key",
+      "name": "RSA-2048 private key",
       "evidence": {
         "occurrences": [
           {
-            "location": "etc/ssl/certs/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "location": "etc/ssl/private/rsa.key",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            },
+            {
+              "type": "publicKey",
+              "ref": "crypto:key:public:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1",
+      "type": "cryptographic-asset",
+      "name": "RSA-1024 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
-            "location": "etc/ssl/public/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
-          },
-          {
-            "location": "opt/app/rsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:ea0805fd421428a49749d1bb5fcb3cc89c4d6a15847c77b9aa146cc276bee04e"
+            "location": "opt/app/weak.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -703,29 +1275,63 @@
         "assetType": "related-crypto-material",
         "relatedCryptoMaterialProperties": {
           "type": "public-key",
-          "size": 2048,
+          "size": 1024,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88"
+            "content": "05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1"
           },
           "relatedCryptographicAssets": [
             {
               "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
             }
           ]
         }
       }
     },
     {
-      "bom-ref": "crypto:key:public:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e",
+      "bom-ref": "crypto:key:public:spki-sha256:1ae3801bf958674e44ebcb2cbdbc22b1a214db91a7abaff9f0a9c32f90ad25ac",
       "type": "cryptographic-asset",
-      "name": "EC-P-256 public key",
+      "name": "Ed448 public key",
       "evidence": {
         "occurrences": [
           {
-            "location": "etc/ssl/certs/ec.der",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "location": "etc/ssl/certs/ed448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/ed448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 456,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "1ae3801bf958674e44ebcb2cbdbc22b1a214db91a7abaff9f0a9c32f90ad25ac"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.113"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef",
+      "type": "cryptographic-asset",
+      "name": "Ed25519 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ed25519.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -736,7 +1342,67 @@
           "size": 256,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e"
+            "content": "28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.112"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:2ad24dac16761bb8b79ddac8bf12397452ef6761211a86935174241e51220857",
+      "type": "cryptographic-asset",
+      "name": "1.3.101.110 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/public/x25519.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "2ad24dac16761bb8b79ddac8bf12397452ef6761211a86935174241e51220857"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.110"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354",
+      "type": "cryptographic-asset",
+      "name": "EC-P-256 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ec.der",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354"
           },
           "relatedCryptographicAssets": [
             {
@@ -748,74 +1414,14 @@
       }
     },
     {
-      "bom-ref": "crypto:key:public:spki-sha256:2796801eac4cb31f53e5b2da761f35adb2b3fa0ab007597eea0d29dfba96e7ff",
-      "type": "cryptographic-asset",
-      "name": "RSA-2048 public key",
-      "evidence": {
-        "occurrences": [
-          {
-            "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
-          }
-        ]
-      },
-      "cryptoProperties": {
-        "assetType": "related-crypto-material",
-        "relatedCryptoMaterialProperties": {
-          "type": "public-key",
-          "size": 2048,
-          "fingerprint": {
-            "alg": "SHA-256",
-            "content": "2796801eac4cb31f53e5b2da761f35adb2b3fa0ab007597eea0d29dfba96e7ff"
-          },
-          "relatedCryptographicAssets": [
-            {
-              "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "bom-ref": "crypto:key:public:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c",
-      "type": "cryptographic-asset",
-      "name": "Ed25519 public key",
-      "evidence": {
-        "occurrences": [
-          {
-            "location": "etc/ssl/certs/ed25519.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
-          }
-        ]
-      },
-      "cryptoProperties": {
-        "assetType": "related-crypto-material",
-        "relatedCryptoMaterialProperties": {
-          "type": "public-key",
-          "size": 256,
-          "fingerprint": {
-            "alg": "SHA-256",
-            "content": "585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c"
-          },
-          "relatedCryptographicAssets": [
-            {
-              "type": "algorithm",
-              "ref": "crypto:algorithm:oid:1.3.101.112"
-            }
-          ]
-        }
-      }
-    },
-    {
-      "bom-ref": "crypto:key:public:spki-sha256:66cb3978f7ffd2d7862e0a06440e88c777bcff5940331b387f284a3e21f29e6d",
+      "bom-ref": "crypto:key:public:spki-sha256:44e2b02ca11770c906a15ff5813090bfde79897458a90f2401e59c6a0e791426",
       "type": "cryptographic-asset",
       "name": "ML-DSA-65 public key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/ml-dsa.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -826,7 +1432,7 @@
           "size": 15616,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "66cb3978f7ffd2d7862e0a06440e88c777bcff5940331b387f284a3e21f29e6d"
+            "content": "44e2b02ca11770c906a15ff5813090bfde79897458a90f2401e59c6a0e791426"
           },
           "relatedCryptographicAssets": [
             {
@@ -838,14 +1444,14 @@
       }
     },
     {
-      "bom-ref": "crypto:key:public:spki-sha256:ca6742030c4cb62a5a7af60e1d6a698627eb3fab8b93ccf25446fb09119f23aa",
+      "bom-ref": "crypto:key:public:spki-sha256:45c4250d117f66ce10d1fe864a05b9b217d8c9213e4e0fb06403e11beedeb5a0",
       "type": "cryptographic-asset",
       "name": "RSA-2048 public key",
       "evidence": {
         "occurrences": [
           {
             "location": "etc/ssl/certs/bundle.pem",
-            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:cc608afe956f978fb78ad2d5b2e9d978340d85f7ddf46dfb77eabd41f8028256"
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           }
         ]
       },
@@ -856,7 +1462,229 @@
           "size": 2048,
           "fingerprint": {
             "alg": "SHA-256",
-            "content": "ca6742030c4cb62a5a7af60e1d6a698627eb3fab8b93ccf25446fb09119f23aa"
+            "content": "45c4250d117f66ce10d1fe864a05b9b217d8c9213e4e0fb06403e11beedeb5a0"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:4d8fc17639e87c23ca5197dd407b35172e6565910374bccc9a3a22276cfc99a0",
+      "type": "cryptographic-asset",
+      "name": "EC-P-256 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/ecdsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 256,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "4d8fc17639e87c23ca5197dd407b35172e6565910374bccc9a3a22276cfc99a0"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:7bdf71a24b2aca83dc03af5aa62adfee0a092562e8af13684a56068f94d32cb2",
+      "type": "cryptographic-asset",
+      "name": "1.3.101.111 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/x448.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 448,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "7bdf71a24b2aca83dc03af5aa62adfee0a092562e8af13684a56068f94d32cb2"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.3.101.111"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:b20c8d77c273e8bcaafa4cc40e1513da34f51ca208a6ae538f88d2e8193f3b5e",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "b20c8d77c273e8bcaafa4cc40e1513da34f51ca208a6ae538f88d2e8193f3b5e"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:b968d266243d1df9618e91d37dff96f72c6ba8136b8c0db8ded2bf03945254c4",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/bundle.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "b968d266243d1df9618e91d37dff96f72c6ba8136b8c0db8ded2bf03945254c4"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:ce3efe6b46ad7663ff40f3d5c6a951db1138a5443e3e459ce5c2c22e8c15aa29",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa-pss-sha256.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "ce3efe6b46ad7663ff40f3d5c6a951db1138a5443e3e459ce5c2c22e8c15aa29"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:e23120e4e11fac5f929b93e0b72e66651b504311459dfe7147e571bb21188766",
+      "type": "cryptographic-asset",
+      "name": "DSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/dsa-sha1.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "e23120e4e11fac5f929b93e0b72e66651b504311459dfe7147e571bb21188766"
+          },
+          "relatedCryptographicAssets": [
+            {
+              "type": "algorithm",
+              "ref": "crypto:algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D224"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:public:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37",
+      "type": "cryptographic-asset",
+      "name": "RSA-2048 public key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/app/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "public-key",
+          "size": 2048,
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37"
           },
           "relatedCryptographicAssets": [
             {
@@ -874,7 +1702,19 @@
       "dependsOn": []
     },
     {
+      "ref": "crypto:algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D224",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.10040.4.3",
+      "dependsOn": []
+    },
+    {
       "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.10045.4.1",
       "dependsOn": []
     },
     {
@@ -882,7 +1722,15 @@
       "dependsOn": []
     },
     {
+      "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.10",
+      "dependsOn": []
+    },
+    {
       "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.11",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024",
       "dependsOn": []
     },
     {
@@ -890,7 +1738,23 @@
       "dependsOn": []
     },
     {
+      "ref": "crypto:algorithm:oid:1.2.840.113549.1.1.5",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.3.101.110",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.3.101.111",
+      "dependsOn": []
+    },
+    {
       "ref": "crypto:algorithm:oid:1.3.101.112",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.3.101.113",
       "dependsOn": []
     },
     {
@@ -898,75 +1762,139 @@
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:14d6a79bf4bd5565a3876ccaf4f7e4af2919df0ad6bc7e6da927dd8611cc15b7",
+      "ref": "crypto:certificate:sha256:1e2719773372f963a1b30b0a250c670c86f03c29dc4722b33df9892ef57b8ff1",
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:28b2e1169f00bea7689174b7cba81621fc144864a502cbde84186704077dbfd6",
+      "ref": "crypto:certificate:sha256:3e6838cf96d6014bc45f8821a5512525e0879bd4ccbe0ff1550e6cbbed7bae9b",
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:42239a401d0f91f919c997a68abbc263970e6c1ce4ff9cd12bfe0884f8908df3",
+      "ref": "crypto:certificate:sha256:4812fc9885b8ce3676c6f32b9014f84ac42ef6e9de611795af0599cc9ea24f3d",
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:646eabbecad0da7aaa5b4e8ed0534e3fbaebec00c910a274619e5f27332923e9",
+      "ref": "crypto:certificate:sha256:49511b8deae44f5795de1c53402c519ed125a31a558ae318ffa81ea847840bfc",
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:a4c31421d614193ab4ac4fa59909c54118aa6ef74da81d21a908772ba836d289",
+      "ref": "crypto:certificate:sha256:4cf60c0a336ac4a10dca941448cc6ca257d953f589ca3a491f7593afe23d0eee",
       "dependsOn": []
     },
     {
-      "ref": "crypto:certificate:sha256:e16ac8c10227bfc078b81039b70cd51c01413ec56f072a13ca2f77b9a85b8b09",
+      "ref": "crypto:certificate:sha256:6001e9e8f7072c1dfdd4132dda7266d31b05ef5a60830afba12e7f008e04d87d",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:encrypted-pkcs8-sha256:a027dfa47e68c69eeb9df7c575cd67d481805bc997203204486d3d3677b51b4d",
+      "ref": "crypto:certificate:sha256:7690267fff6e6c1b682638407af8efee498a26ed7135735a94b13343bfa7a77e",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:encrypted-rfc1423-sha256:8f86619d3039c7f8487ce078a25e910a1d2a212aa569236171ea4ae205e190e9",
+      "ref": "crypto:certificate:sha256:89fc1b4c11f706021aa335f47b0cfe0e4674d415b42df6961599a6626ef29eb5",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88",
+      "ref": "crypto:certificate:sha256:8c892e4145c3672deba4bc6845436c794709e13dcc886245bfeaaf99b131af4c",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e",
+      "ref": "crypto:certificate:sha256:bf01a7b2c575c0a2f70aa4b25ca9fc2e3d145303359f6906716ef134b54b02c2",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c",
+      "ref": "crypto:certificate:sha256:d25fb857a4a4595657bb1a0bdca2644660af06bad47cab0fc9bb709741782079",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:private:spki-sha256:e88fd514f9327b0654a07185b6090b965f5c9027c0aa55a4f48b9f382030cd86",
+      "ref": "crypto:certificate:sha256:d91cc786b84401dee073855eebb99f9b7e8fb8dfe9415bed45697af654d3b48c",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:10914f71fe28c366cc1e27fb93136fa6c1edf9f608ce9aa031a3a7479b600c88",
+      "ref": "crypto:certificate:sha256:f00203192881c5e8b5e7f3f9549ba64fc3f88bf6dca812134ac171528edf15dd",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:1b7b2fcc2ce980e77ee8647161726fee71fa2e7f7ea0f340974ec546b98a848e",
+      "ref": "crypto:key:private:encrypted-pkcs8-sha256:0328841dc0bb9f51b44755275a8c59b651405bf41d0ffb901c75054734ffd463",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:2796801eac4cb31f53e5b2da761f35adb2b3fa0ab007597eea0d29dfba96e7ff",
+      "ref": "crypto:key:private:encrypted-rfc1423-sha256:2b5621233cc496e24f1e29e72505bf6273955ead95dab28df598022f261aed64",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:585f3a135f76b6a2eeeae3b11eb8735407b41d8eb0eccbb340c4542b2c1c643c",
+      "ref": "crypto:key:private:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:66cb3978f7ffd2d7862e0a06440e88c777bcff5940331b387f284a3e21f29e6d",
+      "ref": "crypto:key:private:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef",
       "dependsOn": []
     },
     {
-      "ref": "crypto:key:public:spki-sha256:ca6742030c4cb62a5a7af60e1d6a698627eb3fab8b93ccf25446fb09119f23aa",
+      "ref": "crypto:key:private:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:spki-sha256:90b0ef851fbc8a5e41d4550a0c66bf9fe16f18d971bcb795975c80629c531bbd",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:05434a8efb4b527ca02ea8a60db380180668f5741477d880c302618885091ee1",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:1ae3801bf958674e44ebcb2cbdbc22b1a214db91a7abaff9f0a9c32f90ad25ac",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:28fc99ade0c793cc633840786c6de42adc4ed1385d8fffe67d10d8d8437981ef",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:2ad24dac16761bb8b79ddac8bf12397452ef6761211a86935174241e51220857",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:2ff85872be647e7dfd68fdc8e04e678405b28e572b73c99f949650c4aed07354",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:44e2b02ca11770c906a15ff5813090bfde79897458a90f2401e59c6a0e791426",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:45c4250d117f66ce10d1fe864a05b9b217d8c9213e4e0fb06403e11beedeb5a0",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:4d8fc17639e87c23ca5197dd407b35172e6565910374bccc9a3a22276cfc99a0",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:7bdf71a24b2aca83dc03af5aa62adfee0a092562e8af13684a56068f94d32cb2",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:b20c8d77c273e8bcaafa4cc40e1513da34f51ca208a6ae538f88d2e8193f3b5e",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:b968d266243d1df9618e91d37dff96f72c6ba8136b8c0db8ded2bf03945254c4",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:ce3efe6b46ad7663ff40f3d5c6a951db1138a5443e3e459ce5c2c22e8c15aa29",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:e23120e4e11fac5f929b93e0b72e66651b504311459dfe7147e571bb21188766",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:public:spki-sha256:f7899050cfc485328d86af4668f4626a21f5ebe243a7db920d40a51a2e6dfe37",
       "dependsOn": []
     }
   ],

@@ -5,6 +5,7 @@ package integration
 import (
 	"os"
 	"path/filepath"
+	"strconv"
 	"strings"
 	"testing"
 
@@ -31,6 +32,7 @@ func TestTar(t *testing.T) {
 		SkipDirs          []string
 		SkipFiles         []string
 		DetectionPriority ftypes.DetectionPriority
+		ExitCode          int
 	}
 	tests := []struct {
 		name   string
@@ -402,9 +404,20 @@ func TestTar(t *testing.T) {
 			args: args{
 				Format:   types.FormatCycloneDX,
 				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto.tar.gz",
+				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+				// Findings do not affect the exit code of CycloneDX output.
+				ExitCode: 1,
 			},
 			golden: goldenCryptoCDX,
+		},
+		{
+			name: "cryptographic assets with JSON format",
+			args: args{
+				Format:   types.FormatJSON,
+				Scanners: []string{"crypto"},
+				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+			},
+			golden: goldenCryptoJSON,
 		},
 	}
 
@@ -460,6 +473,10 @@ func TestTar(t *testing.T) {
 
 			if tt.args.DetectionPriority != "" {
 				osArgs = append(osArgs, "--detection-priority", string(tt.args.DetectionPriority))
+			}
+
+			if tt.args.ExitCode != 0 {
+				osArgs = append(osArgs, "--exit-code", strconv.Itoa(tt.args.ExitCode))
 			}
 
 			// Run Trivy

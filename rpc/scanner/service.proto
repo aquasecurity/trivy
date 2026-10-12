@@ -54,4 +54,5 @@ message Result {
   repeated common.SecretFinding secrets = 8;
   repeated common.DetectedLicense licenses = 9;
   repeated common.CryptoAsset crypto_assets = 10;
+  repeated common.CryptoFinding crypto_findings = 11;
 }
