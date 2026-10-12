@@ -12,9 +12,9 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// echoLocalSegmentRe matches the trailing "+echo.N" version segment,
-// e.g. "+echo.1" in "2.14.2+echo.1".
-var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+$`)
+// echoLocalSegmentRe matches the "+echo.N" version segment,
+// e.g. "+echo.1" in "2.14.2+echo.1" or "2.14.2+echo.1.post1".
+var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
 
 func init() {
 	library.RegisterSupplier(echoSupplier{
@@ -25,7 +25,7 @@ func init() {
 
 // echoSupplier matches language packages patched by Echo.
 // Echo provides patched versions of Python (pip), Java (maven), and JavaScript
-// (npm) packages identified by a trailing "+echo.N" version segment.
+// (npm) packages identified by a "+echo.N" version segment.
 type echoSupplier struct {
 	pipComparer compare.Comparer
 	npmComparer compare.Comparer
@@ -36,8 +36,8 @@ func (echoSupplier) Name() string {
 }
 
 // Match determines whether a package is provided by Echo.
-// Echo packages are identified by a trailing "+echo.N" segment in the version
-// string, where N is a numeric revision (e.g. "2.14.2+echo.1").
+// Echo packages are identified by a "+echo.N" segment anywhere in the version
+// string, where N is a numeric revision (e.g. "2.14.2+echo.1" or "2.14.2+echo.1.post1").
 func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchResult {
 	switch eco {
 	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm:
