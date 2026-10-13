@@ -18,9 +18,11 @@ Trivy rejects `--scanners crypto` with other report formats.
 
 Files are selected by extension: `.pem`, `.der`, `.crt`, `.cer`, `.key`. The encoding comes from the content, since these extensions carry both PEM and DER.
 
+Keystores are selected by the `.p12`, `.pfx`, `.jks` and `.keystore` extensions and by the name `cacerts` of the Java trust store. A `.jks` file is read when it holds PKCS#12, which keytool writes by default since JDK 9.
+
 | Material | Formats |
 | --- | --- |
-| X.509 certificates | PEM, DER |
+| X.509 certificates | PEM, DER, PKCS#12 keystores |
 | Private keys | PKCS#1, PKCS#8, SEC1, in PEM or DER |
 | Public keys | PKIX, in PEM or DER |
 | Encrypted private keys | PKCS#8 in PEM or DER, legacy encrypted PEM |
@@ -183,7 +185,7 @@ The scanner is available for `trivy image` only.
 
 Trivy rejects `--scanners crypto` together with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image), because a remote SBOM found for the image replaces the analysis of its layers.
 
-A file without one of the extensions above is not read, so a key in a file named `tls-key` or inside a config file is missed. You can point the scanner at such a file with [`--file-patterns`](../configuration/skipping.md#customizing-file-handling), as long as it holds PEM or DER material:
+A file without one of the extensions above is not read, so a key in a file named `tls-key` or inside a config file is missed. You can point the scanner at such a file with [`--file-patterns`](../configuration/skipping.md#customizing-file-handling), as long as it holds PEM or DER material or a PKCS#12 keystore:
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/app/tls-key" myimage:1.0.0
@@ -191,4 +193,6 @@ $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/a
 
 Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
 
-Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.
+Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JKS and JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.
+
+Trivy does not decrypt PKCS#12 keystores, so it reads only the certificates stored without encryption and never reports the private keys. keytool, OpenSSL and .NET encrypt the certificates of a keystore they write with a password, and such a keystore adds nothing to the report. The `cacerts` trust store that ships with JDK 18 and later has no password and is read in full. A PKCS#12 keystore encoded in BER rather than DER is not read.
