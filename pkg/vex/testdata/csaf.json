@@ -66,6 +66,25 @@
   },
   "vulnerabilities": [
     {
+      "ids": [
+        {
+          "system_name": "GitHub Security Advisory",
+          "text": "GHSA-2r2c-cx56-8933"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    },
+    {
       "cve": "CVE-2024-0001",
       "notes": [
         {
