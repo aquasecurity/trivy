@@ -35,7 +35,7 @@ func (v *CSAF) Filter(result *types.Result, bom *core.BOM) {
 
 func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct *core.Component) (types.ModifiedFinding, bool) {
 	found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
-		return string(*item.CVE) == vuln.VulnerabilityID
+		return item.CVE != nil && string(*item.CVE) == vuln.VulnerabilityID
 	})
 	if !ok {
 		return types.ModifiedFinding{}, false
