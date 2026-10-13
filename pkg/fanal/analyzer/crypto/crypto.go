@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/crypto/parser/jks"
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/pkcs12"
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -23,7 +24,7 @@ func init() {
 }
 
 const (
-	version = 4
+	version = 5
 
 	// maxFileSize bounds what is read into memory. The eligible extensions are shared with
 	// unrelated formats, such as Keynote presentations, which grow far beyond any file of
@@ -36,11 +37,8 @@ var (
 
 	keystoreExtensions = set.NewCaseInsensitive(".p12", ".pfx", ".jks", ".keystore")
 
-	// jksMagics are the leading bytes of the JKS and JCEKS formats.
-	jksMagics = [][]byte{
-		{0xFE, 0xED, 0xFE, 0xED},
-		{0xCE, 0xCE, 0xCE, 0xCE},
-	}
+	// jceksMagic are the leading bytes of the JCEKS format.
+	jceksMagic = []byte{0xCE, 0xCE, 0xCE, 0xCE}
 
 	// berSequence is the start of a SEQUENCE of indefinite length, which BER allows and
 	// DER does not.
@@ -93,17 +91,19 @@ func isKeystore(filePath string) bool {
 // parse picks the parser by content, because --file-patterns selects files of any name, and
 // files with the same name or extension may hold different formats.
 func parse(ctx context.Context, filePath string, content []byte) ([]types.CryptoAsset, error) {
-	for _, magic := range jksMagics {
-		if bytes.HasPrefix(content, magic) {
-			log.WithPrefix("crypto").Debug("Java keystore format is not supported", log.FilePath(filePath))
-			return nil, nil
-		}
+	assets, err := jks.Parse(ctx, filePath, content)
+	if !errors.Is(err, jks.ErrNotJKS) {
+		return assets, err
+	}
+	if bytes.HasPrefix(content, jceksMagic) {
+		log.WithPrefix("crypto").Debug("JCEKS format is not supported", log.FilePath(filePath))
+		return nil, nil
 	}
 	if bytes.HasPrefix(content, berSequence) {
 		log.WithPrefix("crypto").Debug("BER encoding is not supported", log.FilePath(filePath))
 		return nil, nil
 	}
-	assets, err := pkcs12.Parse(ctx, filePath, content)
+	assets, err = pkcs12.Parse(ctx, filePath, content)
 	if !errors.Is(err, pkcs12.ErrNotPKCS12) {
 		return assets, err
 	}
