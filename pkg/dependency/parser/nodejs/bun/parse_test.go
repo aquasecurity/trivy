@@ -36,9 +36,16 @@ func TestParse(t *testing.T) {
 			wantDeps: multipleWsDeps,
 		},
 		{
-			name: "nested deduped package",
-			file: "testdata/bun_nested.lock",
-			want: nestedPkgs,
+			name:     "nested, aliased and git packages",
+			file:     "testdata/bun_nested.lock",
+			want:     nestedPkgs,
+			wantDeps: nestedDeps,
+		},
+		{
+			name:     "nested scoped packages",
+			file:     "testdata/bun_nested_scoped.lock",
+			want:     nestedScopedPkgs,
+			wantDeps: nestedScopedDeps,
 		},
 	}
 
