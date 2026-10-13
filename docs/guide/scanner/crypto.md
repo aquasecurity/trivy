@@ -3,13 +3,12 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports [weak assets](#findings) found by built-in checks.
+Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON and table output Trivy also reports [weak assets](#findings) found by built-in checks.
 
-The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx` or `--format json`.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`, `--format json` or `--format table`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
-$ trivy image --scanners crypto --format json --output result.json myimage:1.0.0
 ```
 
 Trivy rejects `--scanners crypto` with other report formats.
@@ -110,7 +109,7 @@ The parameters of an algorithm are stored in `algorithmProperties`. The key size
 
 ## Findings
 
-In JSON output Trivy runs built-in checks to find weak cryptographic assets. Trivy does not determine whether any software uses them.
+In JSON and table output Trivy runs built-in checks to find weak cryptographic assets. Trivy does not determine whether any software uses them.
 
 | Rule ID | Asset | Condition | Severity |
 | --- | --- | --- | --- |
@@ -158,6 +157,24 @@ A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not
 | `crypto-rsa-key-below-2048` | `KeySize` |
 | `crypto-ec-strength-below-112` | `Curve`, `ClassicalSecurityLevel` |
 | `crypto-certificate-expired` | `NotAfter` |
+
+Table output shows the findings without the inventory.
+
+```
+example:latest (crypto)
+=======================
+Total: 3 (MEDIUM: 1, HIGH: 2)
+
+┌──────────┬────────────────────────────┬───────────────────────────────┬──────────────────────┬───────────────────────┐
+│ Severity │          Rule ID           │             Asset             │         File         │        Details        │
+├──────────┼────────────────────────────┼───────────────────────────────┼──────────────────────┼───────────────────────┤
+│ HIGH     │ crypto-rsa-key-below-2048  │ RSA-1024 private key (PKCS#8) │ app/certs/legacy.key │ 1024 bits             │
+│          │                            ├───────────────────────────────┼──────────────────────┤                       │
+│          │                            │ RSA-1024 public key (PKIX)    │ app/certs/legacy.pem │                       │
+├──────────┼────────────────────────────┼───────────────────────────────┤                      ├───────────────────────┤
+│ MEDIUM   │ crypto-certificate-expired │ CN=legacy.example.com         │                      │ expired on 2024-03-01 │
+└──────────┴────────────────────────────┴───────────────────────────────┴──────────────────────┴───────────────────────┘
+```
 
 Findings do not affect the exit code of CycloneDX output.
 

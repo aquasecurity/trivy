@@ -159,6 +159,18 @@ var (
 			},
 		},
 	}
+	crypto = types.Result{
+		Target: "example:latest",
+		Class:  types.ClassCrypto,
+		CryptoFindings: []types.CryptoFinding{
+			{
+				RuleID: "crypto-rsa-key-below-2048",
+			},
+			{
+				RuleID: "crypto-certificate-expired",
+			},
+		},
+	}
 	secret = types.Result{
 		Target: "requirements.txt",
 		Class:  types.ClassSecret,
@@ -324,6 +336,34 @@ Report Summary
 ├──────────────────┼──────┼─────────────────┼─────────┤
 │ requirements.txt │ text │        -        │    1    │
 └──────────────────┴──────┴─────────────────┴─────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "happy path no vulns + crypto",
+			scanners: []types.Scanner{
+				types.VulnerabilityScanner,
+				types.CryptoScanner,
+			},
+			report: types.Report{
+				Results: []types.Result{
+					noVuln,
+					crypto,
+				},
+			},
+			want: `
+Report Summary
+
+┌──────────────────┬────────┬─────────────────┬────────┐
+│      Target      │  Type  │ Vulnerabilities │ Crypto │
+├──────────────────┼────────┼─────────────────┼────────┤
+│ requirements.txt │  pip   │        0        │   -    │
+├──────────────────┼────────┼─────────────────┼────────┤
+│ example:latest   │ crypto │        -        │   2    │
+└──────────────────┴────────┴─────────────────┴────────┘
 Legend:
 - '-': Not scanned
 - '0': Clean (no security findings detected)

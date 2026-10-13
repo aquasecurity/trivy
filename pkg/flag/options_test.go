@@ -382,7 +382,14 @@ func TestOptions_Align(t *testing.T) {
 				ReportOptions: flag.ReportOptions{Format: types.FormatTable},
 				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
 			},
-			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx' or '--format json'",
+		},
+		{
+			name: "crypto scanner with SARIF",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatSarif},
+				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
+			},
+			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx', '--format json' or '--format table'",
 		},
 		{
 			name: "crypto scanner with SBOM sources",
@@ -436,6 +443,12 @@ func TestOptions_ScanOpts_cryptoChecks(t *testing.T) {
 		{
 			name:     "crypto scanner with JSON",
 			format:   types.FormatJSON,
+			scanners: types.Scanners{types.CryptoScanner},
+			want:     true,
+		},
+		{
+			name:     "crypto scanner with table",
+			format:   types.FormatTable,
 			scanners: types.Scanners{types.CryptoScanner},
 			want:     true,
 		},
