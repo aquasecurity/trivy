@@ -1,0 +1,10 @@
+{
+  "updated_at": "2024-07-01T00:00:00Z",
+  "packages": [
+    {
+      "id": "pkg:deb/debian/bash",
+      "location": "bash-vex.json",
+      "format": "openvex"
+    }
+  ]
+}

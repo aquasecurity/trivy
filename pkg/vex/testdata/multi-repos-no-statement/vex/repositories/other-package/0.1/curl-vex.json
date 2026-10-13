@@ -1,0 +1,21 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://openvex.dev/docs/public/vex-4c3b2a1d",
+  "author": "Example Author",
+  "role": "Document Creator",
+  "timestamp": "2023-07-01T00:00:00Z",
+  "version": 1,
+  "statements": [
+    {
+      "vulnerability": {
+        "@id": "CVE-2022-3715"
+      },
+      "products": [
+        {
+          "@id": "pkg:deb/debian/curl@8.0"
+        }
+      ],
+      "status": "affected"
+    }
+  ]
+}
