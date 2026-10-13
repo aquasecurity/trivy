@@ -17,11 +17,11 @@ Cryptographic assets have no representation in the other report formats, so Triv
 
 Files are selected by extension: `.pem`, `.der`, `.crt`, `.cer`, `.key`. The encoding comes from the content, since these extensions carry both PEM and DER.
 
-Keystores are selected by the `.p12`, `.pfx`, `.jks` and `.keystore` extensions and by the name `cacerts` of the Java trust store. A `.jks` file is read when it holds PKCS#12, which keytool writes by default since JDK 9.
+Keystores are selected by the `.p12`, `.pfx`, `.jks` and `.keystore` extensions and by the name `cacerts` of the Java trust store. The keystore format comes from the content, because keytool writes PKCS#12 by default since JDK 9, also to `.jks` files.
 
 | Material | Formats |
 | --- | --- |
-| X.509 certificates | PEM, DER, PKCS#12 keystores |
+| X.509 certificates | PEM, DER, PKCS#12 and JKS keystores |
 | Private keys | PKCS#1, PKCS#8, SEC1, in PEM or DER |
 | Public keys | PKIX, in PEM or DER |
 | Encrypted private keys | PKCS#8 in PEM or DER, legacy encrypted PEM |
@@ -133,6 +133,8 @@ $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/a
 
 Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
 
-Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JKS and JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.
+Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.
 
 Trivy does not decrypt PKCS#12 keystores, so it reads only the certificates stored without encryption and never reports the private keys. keytool encrypts the certificates of a keystore it writes with a password, and such a keystore adds nothing to the report. The `cacerts` trust store that ships with JDK 18 and later has no password and is read in full.
+
+A JKS keystore stores its certificates without encryption, so Trivy reads all of them, including the `cacerts` of JDK 17 and earlier. The private keys of a JKS keystore are not reported.

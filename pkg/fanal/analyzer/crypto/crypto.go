@@ -9,6 +9,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/crypto/parser/jks"
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/pkcs12"
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -23,7 +24,7 @@ func init() {
 }
 
 const (
-	version = 3
+	version = 4
 
 	// maxFileSize bounds what is read into memory. The eligible extensions are shared with
 	// unrelated formats, such as Keynote presentations, which grow far beyond any file of
@@ -36,11 +37,8 @@ var (
 
 	keystoreExtensions = set.NewCaseInsensitive(".p12", ".pfx", ".jks", ".keystore")
 
-	// jksMagics are the leading bytes of the JKS and JCEKS formats.
-	jksMagics = [][]byte{
-		{0xFE, 0xED, 0xFE, 0xED},
-		{0xCE, 0xCE, 0xCE, 0xCE},
-	}
+	jksMagic   = []byte{0xFE, 0xED, 0xFE, 0xED}
+	jceksMagic = []byte{0xCE, 0xCE, 0xCE, 0xCE}
 )
 
 // javaTrustStore is the file name of the Java trust store, which is JKS before JDK 18
@@ -93,13 +91,15 @@ func isKeystore(filePath string) bool {
 
 func parseKeystore(ctx context.Context, filePath string, content []byte) ([]types.CryptoAsset, error) {
 	// keytool writes PKCS#12 by default since JDK 9, even to .jks and .keystore files.
-	for _, magic := range jksMagics {
-		if bytes.HasPrefix(content, magic) {
-			log.WithPrefix("crypto").Debug("Java keystore format is not supported", log.FilePath(filePath))
-			return nil, nil
-		}
+	switch {
+	case bytes.HasPrefix(content, jksMagic):
+		return jks.Parse(ctx, filePath, content)
+	case bytes.HasPrefix(content, jceksMagic):
+		log.WithPrefix("crypto").Debug("JCEKS format is not supported", log.FilePath(filePath))
+		return nil, nil
+	default:
+		return pkcs12.Parse(ctx, filePath, content)
 	}
-	return pkcs12.Parse(ctx, filePath, content)
 }
 
 // logSkippedFile reports a file left out of the inventory for its size.
