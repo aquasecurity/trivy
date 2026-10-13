@@ -26,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
@@ -449,6 +450,9 @@ type Options struct {
 	usedFlags []Flagger
 }
 
+// cryptoFormats are the formats that show cryptographic assets or their findings.
+var cryptoFormats = set.New(types.FormatCycloneDX, types.FormatJSON, types.FormatTable)
+
 // Align takes consistency of options
 func (o *Options) Align(f *Flags) error {
 	if scanFlagGroup, ok := findFlagGroup[*ScanFlagGroup](f); ok && scanFlagGroup.Scanners != nil {
@@ -488,9 +492,8 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
-	// Only JSON and CycloneDX output show cryptographic assets
-	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX && o.Format != types.FormatJSON {
-		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx' or '--format json'")
+	if o.Scanners.Enabled(types.CryptoScanner) && !cryptoFormats.Contains(o.Format) {
+		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx', '--format json' or '--format table'")
 	}
 
 	// A remote SBOM replaces layer analysis, so cryptographic assets would not be collected
@@ -532,8 +535,7 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
 		LicenseFull:         o.LicenseFull,
-		// Only JSON output shows crypto findings
-		CryptoChecks:        o.Format == types.FormatJSON,
+		CryptoChecks:        types.CryptoFindingsShown(o.Format),
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,

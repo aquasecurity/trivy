@@ -382,7 +382,14 @@ func TestOptions_Align(t *testing.T) {
 				ReportOptions: flag.ReportOptions{Format: types.FormatTable},
 				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
 			},
-			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx' or '--format json'",
+		},
+		{
+			name: "crypto scanner with SARIF",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatSarif},
+				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
+			},
+			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx', '--format json' or '--format table'",
 		},
 		{
 			name: "crypto scanner with SBOM sources",
@@ -422,6 +429,39 @@ func TestOptions_Align(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+		})
+	}
+}
+
+func TestOptions_ScanOpts_cryptoChecks(t *testing.T) {
+	tests := []struct {
+		name   string
+		format types.Format
+		want   bool
+	}{
+		{
+			name:   "JSON",
+			format: types.FormatJSON,
+			want:   true,
+		},
+		{
+			name:   "table",
+			format: types.FormatTable,
+			want:   true,
+		},
+		{
+			name:   "CycloneDX",
+			format: types.FormatCycloneDX,
+			want:   false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			opts := flag.Options{
+				ReportOptions: flag.ReportOptions{Format: tt.format},
+			}
+			assert.Equal(t, tt.want, opts.ScanOpts().CryptoChecks)
 		})
 	}
 }

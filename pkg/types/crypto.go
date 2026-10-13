@@ -4,6 +4,11 @@ import (
 	"time"
 )
 
+// CryptoFindingsShown reports whether the output in the given format contains cryptographic findings.
+func CryptoFindingsShown(format Format) bool {
+	return format == FormatJSON || format == FormatTable
+}
+
 // CryptoFinding reports a cryptographic asset that fails a built-in check.
 type CryptoFinding struct {
 	RuleID   string
