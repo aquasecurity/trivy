@@ -106,9 +106,11 @@ labels:
 - name: scan/license
   color: d9ead3
   description: Issues relating to license scanning
-- name: scan/vex
-  color: d9ead3
-  description: Issues relating to VEX
+
+# component
+- name: component/vex
+  color: d4c5f9
+  description: Issues and PRs relating to VEX support
 
 # target
 - name: target/container-image
