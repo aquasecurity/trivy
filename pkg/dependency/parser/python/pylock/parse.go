@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/python"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
@@ -44,10 +45,14 @@ type Dependency struct {
 
 // Parser parses pylock.toml defined in PEP 751.
 // https://peps.python.org/pep-0751
-type Parser struct{}
+type Parser struct {
+	logger *log.Logger
+}
 
 func NewParser() *Parser {
-	return &Parser{}
+	return &Parser{
+		logger: log.WithPrefix("pylock"),
+	}
 }
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
@@ -58,6 +63,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 	pkgs := make(map[string]ftypes.Package)
 	deps := make(map[string][]string)
+
+	// A dependency may name a package without its version when the name alone
+	// picks one entry: https://peps.python.org/pep-0751/#packages-dependencies
+	idsByName := make(map[string][]string)
+	for _, pkg := range lock.Packages {
+		name := python.NormalizePkgName(pkg.Name, true)
+		idsByName[name] = append(idsByName[name], packageID(name, pkg.Version))
+	}
 
 	for _, pkg := range lock.Packages {
 		normalizedPkgName := python.NormalizePkgName(pkg.Name, true)
@@ -73,8 +86,21 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		var dependsOn []string
 		for _, dep := range pkg.Dependencies {
 			depName := python.NormalizePkgName(dep.Name, true)
-			depID := packageID(depName, dep.Version)
-			dependsOn = append(dependsOn, depID)
+			if dep.Version != "" {
+				dependsOn = append(dependsOn, packageID(depName, dep.Version))
+				continue
+			}
+			// Without a version, the name has to pick exactly one package.
+			// Trivy doesn't read the other keys that could narrow it down (e.g. `marker`, `vcs`).
+			switch ids := idsByName[depName]; len(ids) {
+			case 1:
+				dependsOn = append(dependsOn, ids[0])
+			case 0:
+				p.logger.Debug("Dependency not found in the package list", log.String("name", depName))
+			default:
+				p.logger.Debug("Skipping ambiguous dependency without a version",
+					log.String("name", depName), log.Int("candidates", len(ids)))
+			}
 		}
 		if len(dependsOn) > 0 {
 			sort.Strings(dependsOn)
