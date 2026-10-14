@@ -8,11 +8,13 @@ import (
 	"path/filepath"
 	"regexp"
 	"strings"
+	"time"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/clock"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -43,8 +45,13 @@ var (
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
-	Output        io.Writer
-	Version       string
+	Output  io.Writer
+	Version string
+	// StartedAt overrides the invocation startTimeUtc. When zero, the process
+	// start time is used, which is correct for the CLI (one scan per process).
+	// Long-running library consumers that reuse the process across scans should
+	// set this per scan.
+	StartedAt     time.Time
 	run           *sarif.Run
 	locationCache map[string][]location
 	Target        string
@@ -125,7 +132,7 @@ func pathToFileURI(path string) string {
 	return fmt.Sprintf("file://%s/", slashPath)
 }
 
-func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
+func (sw *SarifWriter) Write(ctx context.Context, report types.Report) error {
 	sarifReport, err := sarif.New(sarif.Version210)
 	if err != nil {
 		return xerrors.Errorf("error creating a new sarif template: %w", err)
@@ -268,6 +275,17 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 			},
 		}
 	}
+	startedAt := sw.StartedAt
+	if startedAt.IsZero() {
+		startedAt = clock.ProcessStart()
+	}
+	sw.run.Invocations = []*sarif.Invocation{
+		sarif.NewInvocation().
+			WithStartTimeUTC(startedAt).
+			WithEndTimeUTC(clock.Now(ctx)).
+			WithExecutionSuccess(true),
+	}
+
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
 }
