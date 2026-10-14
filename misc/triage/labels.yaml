@@ -106,6 +106,9 @@ labels:
 - name: scan/license
   color: d9ead3
   description: Issues relating to license scanning
+- name: scan/crypto
+  color: d9ead3
+  description: Issues relating to cryptographic asset scanning
 
 # component
 - name: component/vex
