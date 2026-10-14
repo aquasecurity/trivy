@@ -96,18 +96,42 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 	// pkgs and deps are keyed by the install path (the key in `packages`),
 	// e.g. "debug" or "send/debug" for a nested copy.
+	pkgs, depNames, wsPaths := p.parsePackages(lockFile)
+	deps := p.resolveDependencies(depNames, pkgs)
+	prodDirectDeps, devDirectDeps := resolveDirectDependencies(lockFile.Workspaces, wsPaths, pkgs)
+
+	for pkgPath, pkg := range pkgs {
+		switch {
+		case pkg.Relationship == ftypes.RelationshipWorkspace:
+			// Workspaces are always prod deps.
+			pkg.Dev = false
+		case prodDirectDeps.Contains(pkgPath) || devDirectDeps.Contains(pkgPath):
+			pkg.Relationship = ftypes.RelationshipDirect
+		}
+		pkgs[pkgPath] = pkg
+	}
+
+	for pkgPath := range prodDirectDeps.Iter() {
+		if pkgs[pkgPath].Relationship != ftypes.RelationshipDirect {
+			continue
+		}
+		walkProdPackages(pkgPath, pkgs, deps, set.New[string]())
+	}
+
+	pkgSlice, depSlice := mergePackages(pkgs, deps)
+	sort.Sort(ftypes.Packages(pkgSlice))
+	sort.Sort(ftypes.Dependencies(depSlice))
+	return pkgSlice, depSlice, nil
+}
+
+// parsePackages returns the packages and the names of their dependencies keyed by the install path,
+// and the install paths of the workspaces keyed by the workspace directory (the key in `workspaces`).
+func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, map[string][]string, map[string]string) {
 	pkgs := make(map[string]ftypes.Package, len(lockFile.Packages))
 	depNames := make(map[string][]string)
+	// The root workspace has no entry in `packages`; its dependencies are installed at the top level.
+	wsPaths := map[string]string{"": ""}
 
-	prodDirectDeps := set.New[string]()
-	devDirectDeps := set.New[string]()
-
-	for _, ws := range lockFile.Workspaces {
-		prodDirectDeps.Append(lo.Keys(ws.Dependencies)...)
-		prodDirectDeps.Append(lo.Keys(ws.PeerDependencies)...)
-		prodDirectDeps.Append(lo.Keys(ws.OptionalDependencies)...)
-		devDirectDeps.Append(lo.Keys(ws.DevDependencies)...)
-	}
 	for pkgPath, parsed := range lockFile.Packages {
 		// The map key is an install path, which for deduped/nested dependencies
 		// is "parent/child" (e.g. "glob/minimatch") rather than the package name.
@@ -117,8 +141,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			p.logger.Debug("Skip package with empty name", log.String("pkg_path", pkgPath))
 			continue
 		}
-		if strings.HasPrefix(pkgVersion, "workspace") {
-			pkgVersion = lockFile.Workspaces[pkgPath].Version
+
+		relationship := ftypes.RelationshipIndirect
+		// A workspace member is written as "<name>@workspace:<dir>",
+		// e.g. "a": ["a@workspace:packages/a"] for the workspace "packages/a".
+		if wsDir, ok := strings.CutPrefix(pkgVersion, "workspace:"); ok {
+			wsPaths[wsDir] = pkgPath
+			pkgVersion = lockFile.Workspaces[wsDir].Version
+			relationship = ftypes.RelationshipWorkspace
 		}
 		if pkgVersion != "" {
 			if _, err := semver.Parse(pkgVersion); err != nil {
@@ -126,14 +156,6 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 					log.String("version", pkgVersion), log.Err(err))
 				pkgVersion = ""
 			}
-		}
-		isDirect := prodDirectDeps.Contains(pkgPath) || devDirectDeps.Contains(pkgPath)
-
-		relationship := ftypes.RelationshipIndirect
-		if _, ok := lockFile.Workspaces[pkgPath]; ok {
-			relationship = ftypes.RelationshipWorkspace
-		} else if isDirect {
-			relationship = ftypes.RelationshipDirect
 		}
 
 		pkgs[pkgPath] = ftypes.Package{
@@ -149,9 +171,12 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			depNames[pkgPath] = lo.Keys(depMap)
 		}
 	}
+	return pkgs, depNames, wsPaths
+}
 
-	// Resolve dependency names to install paths once all packages are collected,
-	// so that a nested copy is used instead of the hoisted one when it exists.
+// resolveDependencies resolves dependency names to install paths once all packages are collected,
+// so that a nested copy is used instead of the hoisted one when it exists.
+func (p *Parser) resolveDependencies(depNames map[string][]string, pkgs map[string]ftypes.Package) map[string][]string {
 	deps := make(map[string][]string, len(depNames))
 	for pkgPath, names := range depNames {
 		var dependsOn []string
@@ -169,24 +194,32 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			deps[pkgPath] = dependsOn
 		}
 	}
+	return deps
+}
 
-	for pkgPath, pkg := range pkgs {
-		// Workspaces are always prod deps.
-		if pkg.Relationship == ftypes.RelationshipWorkspace {
-			pkg.Dev = false
-			pkgs[pkgPath] = pkg
-			continue
+// resolveDirectDependencies returns the install paths of the direct prod and dev dependencies of all workspaces.
+// They are resolved from the install path of each workspace,
+// e.g. "lodash" of the workspace "packages/a" installed at "a" resolves to "a/lodash" if it exists.
+func resolveDirectDependencies(workspaces map[string]Workspace, wsPaths map[string]string,
+	pkgs map[string]ftypes.Package) (set.Set[string], set.Set[string]) {
+	prodDirectDeps := set.New[string]()
+	devDirectDeps := set.New[string]()
+	for wsDir, ws := range workspaces {
+		resolve := func(depNames map[string]string) []string {
+			var depPaths []string
+			for depName := range depNames {
+				if depPath, ok := resolveDependency(wsPaths[wsDir], depName, pkgs); ok {
+					depPaths = append(depPaths, depPath)
+				}
+			}
+			return depPaths
 		}
-		if pkg.Relationship != ftypes.RelationshipDirect || !prodDirectDeps.Contains(pkgPath) {
-			continue
-		}
-		walkProdPackages(pkgPath, pkgs, deps, set.New[string]())
+		prodDirectDeps.Append(resolve(ws.Dependencies)...)
+		prodDirectDeps.Append(resolve(ws.PeerDependencies)...)
+		prodDirectDeps.Append(resolve(ws.OptionalDependencies)...)
+		devDirectDeps.Append(resolve(ws.DevDependencies)...)
 	}
-
-	pkgSlice, depSlice := mergePackages(pkgs, deps)
-	sort.Sort(ftypes.Packages(pkgSlice))
-	sort.Sort(ftypes.Dependencies(depSlice))
-	return pkgSlice, depSlice, nil
+	return prodDirectDeps, devDirectDeps
 }
 
 // walkProdPackages marks all packages in the dependency tree of the given package as prod packages (Dev == false).
@@ -215,7 +248,13 @@ func walkProdPackages(pkgPath string, pkgs map[string]ftypes.Package, deps map[s
 func resolveDependency(pkgPath, depName string, pkgs map[string]ftypes.Package) (string, bool) {
 	segments := splitPath(pkgPath)
 	for i := len(segments); i > 0; i-- {
-		depPath := strings.Join(segments[:i], "/") + "/" + depName
+		parentPath := strings.Join(segments[:i], "/")
+		// bun writes an entry for every ancestor of a nested package,
+		// so there is nothing to look up above a missing one.
+		if _, ok := pkgs[parentPath]; !ok {
+			break
+		}
+		depPath := parentPath + "/" + depName
 		if _, ok := pkgs[depPath]; ok {
 			return depPath, true
 		}

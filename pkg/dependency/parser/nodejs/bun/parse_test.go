@@ -47,6 +47,12 @@ func TestParse(t *testing.T) {
 			want:     nestedScopedPkgs,
 			wantDeps: nestedScopedDeps,
 		},
+		{
+			name:     "workspace with nested direct dependencies",
+			file:     "testdata/bun_workspace_nested.lock",
+			want:     workspaceNestedPkgs,
+			wantDeps: workspaceNestedDeps,
+		},
 	}
 
 	for _, tt := range tests {
