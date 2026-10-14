@@ -187,6 +187,33 @@ func TestParse(t *testing.T) {
 			wantPkgs: composerPkgs,
 			wantDeps: composerDeps,
 		},
+		{
+			// "extension/foo" starts with "ext" but is a regular package, not a PHP extension
+			name: "package name starts with ext",
+			file: "testdata/composer_ext_prefix.lock",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:        "acme/app@1.0.0",
+					Name:      "acme/app",
+					Version:   "1.0.0",
+					Licenses:  []string{"MIT"},
+					Locations: []ftypes.Location{{StartLine: 3, EndLine: 12}},
+				},
+				{
+					ID:        "extension/foo@1.2.0",
+					Name:      "extension/foo",
+					Version:   "1.2.0",
+					Licenses:  []string{"MIT"},
+					Locations: []ftypes.Location{{StartLine: 13, EndLine: 17}},
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "acme/app@1.0.0",
+					DependsOn: []string{"extension/foo@1.2.0"},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -202,24 +229,4 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantDeps, gotDeps)
 		})
 	}
-}
-
-func TestParse_ExtPrefixDependency(t *testing.T) {
-	// A require key such as "extension/foo" starts with "ext" but is a regular
-	// package, not a PHP extension. Only platform extensions use the "ext-"
-	// prefix, so the dependency edge to "extension/foo" must be kept while
-	// "php" and "ext-json" are skipped.
-	f, err := os.Open("testdata/composer_ext_prefix.lock")
-	require.NoError(t, err)
-	defer f.Close()
-
-	_, gotDeps, err := NewParser().Parse(t.Context(), f)
-	require.NoError(t, err)
-
-	assert.Equal(t, []ftypes.Dependency{
-		{
-			ID:        "acme/app@1.0.0",
-			DependsOn: []string{"extension/foo@1.2.0"},
-		},
-	}, gotDeps)
 }
