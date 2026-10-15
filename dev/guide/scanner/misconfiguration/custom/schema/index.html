@@ -8761,7 +8761,7 @@ deny {
 </code></pre></div>
 </div>
 <p>To use such a check with Trivy, use the <code>--config-check</code> flag that points to the check file or to the directory where the schemas and checks are contained.</p>
-<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>--config-check<span class="o">=</span>/Users/user/my-custom-checks<span class="w"> </span>&lt;path/to/iac&gt;
+<div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="o">=</span>/Users/user/my-custom-checks<span class="w"> </span>&lt;path/to/iac&gt;
 </code></pre></div>
 <p>For more details on how to define schemas within Rego checks, please see the <a href="https://www.openpolicyagent.org/docs/latest/policy-language/#schema-annotations">OPA guide</a> that describes it in more detail.</p>
 <h3 id="scan-arbitrary-json-and-yaml-configurations">Scan arbitrary JSON and YAML configurations<a class="headerlink" href="#scan-arbitrary-json-and-yaml-configurations" title="Permanent link">&para;</a></h3>
@@ -8825,7 +8825,7 @@ Ensure<span class="w"> </span>that<span class="w"> </span>Serverless<span class=
 </div>
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
-<p>It is also possible to specify multiple input schemas with <code>--config-file-schema</code> flag as it can accept a comma-separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
+<p>It is also possible to specify multiple input schemas with <code>--config-file-schemas</code> flag as it can accept a comma-separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
 </div>
 
 

@@ -8839,7 +8839,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/bc5869e397cfdf9d365bd794646bc59c48090b8epkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/032ac48ccfa5c06d96e6ed1add07456231b5ed9apkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
@@ -8916,7 +8916,7 @@ Ensure<span class="w"> </span>that<span class="w"> </span>Serverless<span class=
 <div class="admonition tip">
 <p class="admonition-title">Tip</p>
 </div>
-<p>It is also possible to specify multiple input schemas with <code>--config-file-schema</code> flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
+<p>It is also possible to specify multiple input schemas with <code>--config-file-schemas</code> flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.</p>
 <h3 id="filtering-resources-by-inline-comments">Filtering resources by inline comments<a class="headerlink" href="#filtering-resources-by-inline-comments" title="Permanent link">&para;</a></h3>
 <p>Trivy supports ignoring misconfigured resources by inline comments for Terraform, CloudFormation, Helm and Dockerfile configuration files only.</p>
 <p>In cases where Trivy can detect comments of a specific format immediately adjacent to resource definitions, it is possible to ignore findings from a single source of resource definition (in contrast to <code>.trivyignore</code>, which has a directory-wide scope on all of the files scanned). The format for these comments is <code>trivy:ignore:&lt;rule&gt;</code> immediately following the format-specific line-comment <a href="https://developer.hashicorp.com/terraform/language/syntax/configuration#comments">token</a>.</p>
