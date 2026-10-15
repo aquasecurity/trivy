@@ -1,0 +1,31 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "version": 1,
+  "vulnerabilities": [
+    {
+      "id": "CVE-2021-44228",
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable"
+      },
+      "affects": [
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/org.springframework.boot/spring-boot@2.6.0"
+        }
+      ]
+    },
+    {
+      "id": "CVE-2021-44228",
+      "analysis": {
+        "state": "not_affected",
+        "justification": "vulnerable_code_not_in_execute_path"
+      },
+      "affects": [
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#pkg:maven/org.springframework.boot/spring-boot@2.6.1"
+        }
+      ]
+    }
+  ]
+}
