@@ -65,6 +65,41 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			name: "param with Metadata key",
+			input: `{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "storagePrefix": {
+      "type": "string",
+      "defaultValue": "x",
+      "Metadata": {"ref": 5, "parent": "x"}
+    }
+  },
+  "resources": []
+}`,
+			want: func(fsys fs.FS) azure.Deployment {
+				root := createMetadata(fsys, filename, 0, 0, "", nil)
+				metadata := createMetadata(fsys, filename, 1, 12, "", &root)
+				storageMetadata := createMetadata(fsys, filename, 5, 9, "parameters.storagePrefix", &metadata)
+
+				return azure.Deployment{
+					Metadata:    metadata,
+					TargetScope: azure.ScopeResourceGroup,
+					Parameters: []azure.Parameter{
+						{
+							Variable: azure.Variable{
+								Name:  "storagePrefix",
+								Value: azure.NewValue("x", createMetadata(fsys, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
+							},
+							Default:    azure.NewValue("x", createMetadata(fsys, filename, 7, 7, "parameters.storagePrefix.defaultValue", &storageMetadata)),
+							Decorators: nil,
+						},
+					},
+				}
+			},
+		},
+		{
 			name: "storageAccount",
 			input: `{
   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#", // another one
