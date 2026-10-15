@@ -63,6 +63,86 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:     "PKCS#12 trust store",
+			filePath: "usr/lib/jvm/java-21/lib/security/cacerts",
+			content:  fixtures.truststore,
+			want: []assetSummary{
+				{
+					kind:     ftypes.CryptoKindCertificate,
+					name:     "cacerts.example.test",
+					encoding: ftypes.CryptoEncodingPKCS12,
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "ECDSA-SHA-384",
+				},
+				{
+					kind:    ftypes.CryptoKindKey,
+					keyType: ftypes.CryptoKeyTypePublic,
+					name:    "EC-P-256 public key",
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "EC-P-256",
+				},
+			},
+		},
+		{
+			name:     "PKCS#12 keystore with the JKS extension",
+			filePath: "certificates/server.jks",
+			content:  fixtures.truststore,
+			want: []assetSummary{
+				{
+					kind:     ftypes.CryptoKindCertificate,
+					name:     "cacerts.example.test",
+					encoding: ftypes.CryptoEncodingPKCS12,
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "ECDSA-SHA-384",
+				},
+				{
+					kind:    ftypes.CryptoKindKey,
+					keyType: ftypes.CryptoKeyTypePublic,
+					name:    "EC-P-256 public key",
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "EC-P-256",
+				},
+			},
+		},
+		{
+			name:     "JKS trust store",
+			filePath: "usr/lib/jvm/java-11/lib/security/cacerts",
+			content:  fixtures.jksTruststore,
+			want: []assetSummary{
+				{
+					kind:     ftypes.CryptoKindCertificate,
+					name:     "jks-cacerts.example.test",
+					encoding: ftypes.CryptoEncodingJKS,
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "ECDSA-SHA-384",
+				},
+				{
+					kind:    ftypes.CryptoKindKey,
+					keyType: ftypes.CryptoKeyTypePublic,
+					name:    "EC-P-256 public key",
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "EC-P-256",
+				},
+			},
+		},
+		{
+			name:     "JCEKS keystore",
+			filePath: "certificates/server.keystore",
+			content:  []byte{0xCE, 0xCE, 0xCE, 0xCE, 0x00, 0x00, 0x00, 0x02},
+		},
+		{
 			name:     "no cryptographic object",
 			filePath: "etc/ssl/certs/request.pem",
 			content:  fixtures.certificateRequestPEM,
@@ -134,7 +214,13 @@ func Test_cryptoAnalyzer_Required(t *testing.T) {
 		{name: "KEY extension", filePath: "certificates/server.key", want: true},
 		{name: "mixed-case extension", filePath: "certificates/server.CrT", want: true},
 		{name: "public key extension", filePath: "certificates/server.pub"},
-		{name: "PKCS12 extension", filePath: "certificates/server.p12"},
+		{name: "P12 extension", filePath: "certificates/server.p12", want: true},
+		{name: "PFX extension", filePath: "certificates/server.pfx", want: true},
+		{name: "JKS extension", filePath: "certificates/server.jks", want: true},
+		{name: "keystore extension", filePath: "certificates/server.keystore", want: true},
+		{name: "mixed-case keystore extension", filePath: "certificates/server.P12", want: true},
+		{name: "Java trust store", filePath: "usr/lib/jvm/java-21/lib/security/cacerts", want: true},
+		{name: "Java trust store name as a suffix", filePath: "certificates/old-cacerts"},
 		{name: "extensionless", filePath: "certificates/server"},
 		{
 			name:     "eligible extension within the size limit",
@@ -160,6 +246,8 @@ func Test_cryptoAnalyzer_Required(t *testing.T) {
 type analyzerFixtures struct {
 	certificatePEM        []byte
 	certificateRequestPEM []byte
+	truststore            []byte
+	jksTruststore         []byte
 }
 
 func newAnalyzerFixtures(t *testing.T) analyzerFixtures {
@@ -173,9 +261,31 @@ func newAnalyzerFixtures(t *testing.T) analyzerFixtures {
 	}, rsaKey)
 	require.NoError(t, err)
 
+	// The trust stores are generated from this directory.
+	//
+	//	docker run --rm -v "$PWD/testdata:/out" -w /tmp eclipse-temurin:21.0.12.1_1-jdk-alpine-3.24 sh -euc '
+	//	keytool -genkeypair -alias cacerts -keyalg EC -groupname secp256r1 -dname CN=cacerts.example.test -validity 36500 -keystore key.p12 -storepass changeit
+	//	keytool -exportcert -rfc -alias cacerts -keystore key.p12 -storepass changeit -file cacerts.pem
+	//	keytool -importcert -noprompt -alias cacerts -file cacerts.pem -keystore /out/cacerts -storepass changeit -J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE -J-Dkeystore.pkcs12.macAlgorithm=NONE
+	//	chmod 644 /out/cacerts
+	//	'
+	//
+	//	docker run --rm -v "$PWD/testdata:/out" -w /tmp eclipse-temurin:21.0.12.1_1-jdk-alpine-3.24 sh -euc '
+	//	keytool -genkeypair -alias cacerts -keyalg EC -groupname secp256r1 -dname CN=jks-cacerts.example.test -validity 36500 -keystore key.p12 -storepass changeit
+	//	keytool -exportcert -rfc -alias cacerts -keystore key.p12 -storepass changeit -file cacerts.pem
+	//	keytool -importcert -noprompt -alias cacerts -file cacerts.pem -storetype JKS -keystore /out/cacerts.jks -storepass changeit
+	//	chmod 644 /out/cacerts.jks
+	//	'
+	truststore, err := os.ReadFile("testdata/cacerts")
+	require.NoError(t, err)
+	jksTruststore, err := os.ReadFile("testdata/cacerts.jks")
+	require.NoError(t, err)
+
 	return analyzerFixtures{
 		certificatePEM:        encodePEM("CERTIFICATE", createCertificate(t, rsaKey)),
 		certificateRequestPEM: encodePEM("CERTIFICATE REQUEST", certificateRequestDER),
+		truststore:            truststore,
+		jksTruststore:         jksTruststore,
 	}
 }
 

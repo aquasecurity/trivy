@@ -63,6 +63,10 @@ const (
 	CryptoEncodingPEM CryptoEncoding = "PEM"
 	// CryptoEncodingDER identifies DER encoding.
 	CryptoEncodingDER CryptoEncoding = "DER"
+	// CryptoEncodingPKCS12 identifies a PKCS#12 keystore.
+	CryptoEncodingPKCS12 CryptoEncoding = "PKCS#12"
+	// CryptoEncodingJKS identifies a JKS keystore.
+	CryptoEncodingJKS CryptoEncoding = "JKS"
 )
 
 // CryptoAssetInfo describes a format-neutral cryptographic asset. Its identity is derived
@@ -247,7 +251,7 @@ func (a CryptoAsset) Validate() error {
 	}
 
 	switch a.Encoding {
-	case "", CryptoEncodingPEM, CryptoEncodingDER:
+	case "", CryptoEncodingPEM, CryptoEncodingDER, CryptoEncodingPKCS12, CryptoEncodingJKS:
 	default:
 		return xerrors.Errorf("unknown encoding %q", a.Encoding)
 	}
