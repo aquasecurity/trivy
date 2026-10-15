@@ -237,7 +237,7 @@ You can filter the results by
 - [Rego](#by-rego)
 - [Vulnerability Exploitability Exchange (VEX)](#by-vulnerability-exploitability-exchange-vex)
 
-To show the suppressed results, use the `--show-suppressed` flag.
+To show the suppressed results, use the `--show-suppressed` flag. It does not apply to crypto findings.
 
 !!! note
     It's exported as `ExperimentalModifiedFindings` in the JSON output.
@@ -283,7 +283,7 @@ Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyig
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
-|      Crypto      |           |
+|      Crypto      |     ✓     |
 
 ```bash
 $ cat .trivyignore
@@ -306,6 +306,9 @@ aws-account-id
 # Ignore licenses
 GPL-3.0
 Apache-2.0 WITH LLVM-exception
+
+# Ignore crypto findings
+crypto-certificate-expired
 ```
 
 ```bash
@@ -335,19 +338,19 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
-|      Crypto      |           |
+|      Crypto      |     ✓     |
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
 When the extension of the specified ignore file is either `.yml` or `.yaml`, Trivy will load the file as YAML.
-For the `.trivyignore.yaml` file, you can set ignored IDs separately for `vulnerabilities`, `misconfigurations`, `secrets`, or `licenses`[^1].
+For the `.trivyignore.yaml` file, you can set ignored IDs separately for `vulnerabilities`, `misconfigurations`, `secrets`, `licenses`[^1], or `crypto`.
 
 Available fields:
 
 | Field      | Required | Type                | Description                                                                                                                                                             |
 |------------|:--------:|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, or license[^1].                                                                                          |
+| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, license[^1], or crypto check.                                                                            |
 | paths[^2]  |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
@@ -388,6 +391,12 @@ licenses:
   - id: MIT AND GPL-2.0-or-later # Compound license expressions are supported
   - id: Apache-2.0 WITH LLVM-exception # License expressions with exceptions are supported
   - id: LLVM-exception # Individual license components or exceptions can be ignored
+
+crypto:
+  - id: crypto-certificate-sha1-signature
+    paths:
+      - "etc/ssl/certs/**"
+    statement: OS root certificates, their signatures are not verified
 ```
 
 !!! info "Enhanced License Expression Support"

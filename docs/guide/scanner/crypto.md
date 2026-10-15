@@ -161,6 +161,16 @@ A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not
 
 Findings do not affect the exit code of CycloneDX output.
 
+A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
+
+```yaml
+crypto:
+  - id: crypto-certificate-sha1-signature
+    paths:
+      - "etc/ssl/certs/**"
+    statement: OS root certificates, their signatures are not verified
+```
+
 ## Filtering the inventory
 
 Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.
