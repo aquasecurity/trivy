@@ -8924,9 +8924,9 @@ You're not viewing the latest version of the documentation.
 <h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
 <p>You can write custom checks in <a href="https://www.openpolicyagent.org/docs/latest/policy-language/">Rego</a>.
 Once you finish writing custom checks, you can pass the check files or the directory where those checks are stored with --config-check` option.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>/path/to/policy.rego<span class="w"> </span>--config-check<span class="w"> </span>/path/to/custom_checks<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>/path/to/config_dir
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>/path/to/policy.rego<span class="w"> </span>--config-check<span class="w"> </span>/path/to/custom_checks<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>/path/to/config_dir
 </code></pre></div>
-<p>As for <code>--namespaces</code> option, the detail is described as below.</p>
+<p>As for <code>--check-namespaces</code> option, the detail is described as below.</p>
 <h3 id="file-formats">File formats<a class="headerlink" href="#file-formats" title="Permanent link">&para;</a></h3>
 <p>If a file name matches the following file patterns, Trivy will parse the file and pass it as input to your Rego policy.</p>
 <table>
@@ -9045,8 +9045,8 @@ If you add a new custom policy, it must be defined under a new package like <cod
 </code></pre></div>
 </div>
 <p>By default, only <code>builtin.*</code> packages will be evaluated.
-If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be <code>user</code> as in this example. It could be anything user-defined.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>/path/to/custom_checks<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>/path/to/config_dir
+If you define custom packages, you have to specify the package prefix via <code>--check-namespaces</code> option. By default, Trivy only runs in its own namespace, unless specified by the user. Note that the custom namespace does not have to be <code>user</code> as in this example. It could be anything user-defined.</p>
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>/path/to/custom_checks<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>/path/to/config_dir
 </code></pre></div>
 <p>In this case, <code>user.*</code> will be evaluated.
 Any package prefixes such as <code>main</code> and <code>user</code> are allowed.</p>

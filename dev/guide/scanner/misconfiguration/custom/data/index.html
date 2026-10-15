@@ -8574,7 +8574,7 @@ Instead of hardcoding this information inside your check, you can maintain the l
 <span class="n">ports</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">services</span><span class="p">.</span><span class="n">ports</span>
 </code></pre></div>
 <p>Example loading the data file:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./checks<span class="w"> </span>--config-data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./checks<span class="w"> </span>--config-data<span class="w"> </span>./data<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>./configs
 </code></pre></div>
 <h2 id="customizing-default-checks-data">Customizing default checks data<a class="headerlink" href="#customizing-default-checks-data" title="Permanent link">&para;</a></h2>
 <p>Some checks allow you to customize the default data values. To do this, simply pass a data file via <code>--config-data</code> (see the section above).</p>

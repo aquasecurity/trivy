@@ -8716,7 +8716,7 @@ The first keyword of the package, in this case <code>custom</code>, will be reus
 </ul>
 <h2 id="run-the-check-in-a-trivy-misconfiguration-scan">Run the check in a Trivy misconfiguration scan<a class="headerlink" href="#run-the-check-in-a-trivy-misconfiguration-scan" title="Permanent link">&para;</a></h2>
 <p>Ensure that you have Trivy installed and run the following command:</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>misconf<span class="w"> </span>--config-check<span class="w"> </span>./docker-check.rego<span class="w"> </span>--namespaces<span class="w"> </span>custom<span class="w"> </span>./Dockerfile
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>fs<span class="w"> </span>--scanners<span class="w"> </span>misconf<span class="w"> </span>--config-check<span class="w"> </span>./docker-check.rego<span class="w"> </span>--check-namespaces<span class="w"> </span>custom<span class="w"> </span>./Dockerfile
 </code></pre></div>
 <p>Please replace:</p>
 <ul>
@@ -8724,7 +8724,7 @@ The first keyword of the package, in this case <code>custom</code>, will be reus
 <li><code>custom</code> should be replaced with your package name if different</li>
 <li><code>./Dockerfile</code> is the path to the Dockerfile that should be scanned</li>
 </ul>
-<p><strong>Note</strong>:  If you define custom packages, you have to specify the package prefix via <code>--namespaces</code> option. In our case, we called the custom package <code>custom</code>.</p>
+<p><strong>Note</strong>:  If you define custom packages, you have to specify the package prefix via <code>--check-namespaces</code> option. In our case, we called the custom package <code>custom</code>.</p>
 <h2 id="resources">Resources<a class="headerlink" href="#resources" title="Permanent link">&para;</a></h2>
 <ul>
 <li><a href="https://academy.styra.com/collections">Rego provides a long list of courses</a> that can be useful in writing more complex checks</li>

@@ -8813,23 +8813,23 @@ This flag takes a comma-separated list of configuration scanner types.</p>
 <h3 id="loading-custom-checks">Loading custom checks<a class="headerlink" href="#loading-custom-checks" title="Permanent link">&para;</a></h3>
 <p>You can load check files or directories including your custom checks using the <code>--config-check</code> flag.
 This can be repeated for specifying multiple files or directories.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>custom-policy/policy<span class="w"> </span>--config-check<span class="w"> </span>combine/policy<span class="w"> </span>--config-check<span class="w"> </span>policy.rego<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>myapp
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>custom-policy/policy<span class="w"> </span>--config-check<span class="w"> </span>combine/policy<span class="w"> </span>--config-check<span class="w"> </span>policy.rego<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>myapp
 </code></pre></div>
 <p>You can load checks bundle as OCI Image from a Container Registry using the <code>--checks-bundle-repository</code> flag.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--checks-bundle-repository<span class="w"> </span>myregistry.local/mychecks<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>myapp
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--checks-bundle-repository<span class="w"> </span>myregistry.local/mychecks<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>myapp
 </code></pre></div>
 <h3 id="passing-custom-data">Passing custom data<a class="headerlink" href="#passing-custom-data" title="Permanent link">&para;</a></h3>
-<p>You can pass directories including your custom data through <code>--data</code> option.
+<p>You can pass directories including your custom data through <code>--config-data</code> option.
 This can be repeated for specifying multiple directories.</p>
 <div class="highlight"><pre><span></span><code><span class="nb">cd</span><span class="w"> </span>examples/misconf/custom-data
-trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./my-check<span class="w"> </span>--data<span class="w"> </span>./data<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
+trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./my-check<span class="w"> </span>--config-data<span class="w"> </span>./data<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>./configs
 </code></pre></div>
 <p>For more details, see <a href="../../custom/data/">Custom Data</a>.</p>
 <h3 id="passing-namespaces">Passing namespaces<a class="headerlink" href="#passing-namespaces" title="Permanent link">&para;</a></h3>
 <p>By default, Trivy evaluates checks defined in <code>builtin.*</code>.
-If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--namespaces</code> option.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through <code>--check-namespaces</code> option.
 This can be repeated for specifying multiple packages.</p>
-<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./my-check<span class="w"> </span>--namespaces<span class="w"> </span>main<span class="w"> </span>--namespaces<span class="w"> </span>user<span class="w"> </span>./configs
+<div class="highlight"><pre><span></span><code>trivy<span class="w"> </span>config<span class="w"> </span>--config-check<span class="w"> </span>./my-check<span class="w"> </span>--check-namespaces<span class="w"> </span>main<span class="w"> </span>--check-namespaces<span class="w"> </span>user<span class="w"> </span>./configs
 </code></pre></div>
 <h3 id="limiting-rego-compile-errors">Limiting Rego compile errors<a class="headerlink" href="#limiting-rego-compile-errors" title="Permanent link">&para;</a></h3>
 <p>By default, Trivy limits the number of compile errors allowed during Rego policy compilation.
@@ -8839,7 +8839,7 @@ You can configure this limit using the <code>--rego-error-limit</code> flag.</p>
 <p>This flag controls the maximum number of compile errors Trivy will tolerate before stopping the compilation.</p>
 <p>If the number of compile errors exceeds this limit, Trivy will terminate the scan.
 You can set <code>--rego-error-limit 0</code> to enforce strict checking and disallow any compile errors.</p>
-<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/aaebec6cf772111b2bd1dca221e0c36e0a952817pkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
+<p>The default value is defined internally via <a href="https://github.com/aquasecurity/trivy/tree/bc5869e397cfdf9d365bd794646bc59c48090b8epkg/iac/rego/scanner.go">CompileErrorLimit</a>.</p>
 <h3 id="private-terraform-registries">Private Terraform registries<a class="headerlink" href="#private-terraform-registries" title="Permanent link">&para;</a></h3>
 <p>Trivy can download Terraform code from private registries.
 To pass credentials you must use the <code>TF_TOKEN_</code> environment variables.
