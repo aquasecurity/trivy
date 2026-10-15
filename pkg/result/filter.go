@@ -68,7 +68,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
 	filterSecrets(result, severities, ignoreConf)
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
-	filterCryptoFindings(result, severities)
+	filterCryptoFindings(result, severities, ignoreConf)
 
 	if opt.PolicyFile != "" {
 		policyFile := filepath.ToSlash(filepath.Clean(opt.PolicyFile))
@@ -174,12 +174,23 @@ func filterSecrets(result *types.Result, severities []string, ignoreConfig Ignor
 	result.Secrets = filtered
 }
 
-func filterCryptoFindings(result *types.Result, severities []string) {
+// filterCryptoFindings does not add ignored findings to the modified findings.
+func filterCryptoFindings(result *types.Result, severities []string, ignoreConfig IgnoreConfig) {
+	filePaths := make(map[string]string, len(result.CryptoAssets))
+	for _, asset := range result.CryptoAssets {
+		filePaths[asset.AssetID] = asset.FilePath
+	}
+
 	var filtered []types.CryptoFinding
 	for _, finding := range result.CryptoFindings {
-		if slices.Contains(severities, finding.Severity) {
-			filtered = append(filtered, finding)
+		if !slices.Contains(severities, finding.Severity) {
+			// Filter by severity
+			continue
+		} else if ignoreConfig.MatchCrypto(finding.RuleID, filePaths[finding.AssetID]) != nil {
+			// Filter by ignore file
+			continue
 		}
+		filtered = append(filtered, finding)
 	}
 	result.CryptoFindings = filtered
 }

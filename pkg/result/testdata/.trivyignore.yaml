@@ -43,3 +43,10 @@ licenses:
   - id: GPL-2.0-or-later
   - id: Apache-2.0 WITH LLVM-exception
   - id: LLVM-exception
+crypto:
+  - id: CRYPTO-0002
+    paths:
+      - "app/**"
+  - id: CRYPTO-0004
+    paths:
+      - "etc/ssl/certs/**"

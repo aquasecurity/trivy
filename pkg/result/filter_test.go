@@ -203,6 +203,25 @@ func TestFilter(t *testing.T) {
 			Severity: dbTypes.SeverityMedium.String(),
 			AssetID:  cryptoCertificate.AssetID,
 		}
+		cryptoRootCertificate = ftypes.CryptoAsset{
+			AssetID: "7a3d51c8e02b94f6",
+			CryptoAssetInfo: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindCertificate,
+				Identity: ftypes.CryptoIdentity{
+					Method: ftypes.CryptoMethodSHA256,
+					Value:  "7a3d",
+				},
+				Name:        "CN=Old Root CA",
+				Certificate: &ftypes.CryptoCertificate{Subject: "CN=Old Root CA"},
+			},
+			FilePath: "etc/ssl/certs/old-root.pem",
+		}
+		expiredRootCertificate = types.CryptoFinding{
+			RuleID:   "CRYPTO-0004",
+			Title:    "Expired certificate",
+			Severity: dbTypes.SeverityMedium.String(),
+			AssetID:  cryptoRootCertificate.AssetID,
+		}
 		secret2 = types.DetectedSecret{
 			RuleID:    "generic-unwanted-rule",
 			Severity:  dbTypes.SeverityLow.String(),
@@ -370,6 +389,73 @@ func TestFilter(t *testing.T) {
 					{
 						Class:        types.ClassCrypto,
 						CryptoAssets: []ftypes.CryptoAsset{cryptoCertificate},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings by ignore file",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								smallRSAKey,
+								expiredCertificate, // ignored
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+				},
+				ignoreFile: "testdata/.trivyignore",
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+						CryptoFindings: []types.CryptoFinding{
+							smallRSAKey,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings by ignore yaml",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate, cryptoRootCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								smallRSAKey,            // ignored
+								expiredCertificate,     // path does not match
+								expiredRootCertificate, // ignored
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+				},
+				ignoreFile: "testdata/.trivyignore.yaml",
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate, cryptoRootCertificate},
+						CryptoFindings: []types.CryptoFinding{
+							expiredCertificate,
+						},
 					},
 				},
 			},

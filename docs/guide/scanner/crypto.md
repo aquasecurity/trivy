@@ -167,6 +167,16 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 
 Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
 
+A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
+
+```yaml
+crypto:
+  - id: CRYPTO-0001
+    paths:
+      - "etc/ssl/certs/**"
+    statement: OS root certificates, their signatures are not verified
+```
+
 ## Filtering the inventory
 
 Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.
