@@ -86,7 +86,7 @@ func TestParseIgnoreFile(t *testing.T) {
 		require.NoError(t, err)
 		defer f.Close()
 
-		_, err = f.WriteString(strings.Repeat("A", bufio.MaxScanTokenSize) + "\n")
+		_, err = f.WriteString("CVE-2024-0001\n" + strings.Repeat("A", bufio.MaxScanTokenSize) + "\nCVE-2024-0002\n")
 		require.NoError(t, err)
 
 		got, err := ParseIgnoreFile(t.Context(), f.Name())
