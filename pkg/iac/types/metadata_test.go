@@ -39,34 +39,68 @@ func Test_MetadataToRego(t *testing.T) {
 	assert.Equal(t, expected, m1.ToRego())
 }
 
-const encodedParentMetadata = `{"range":{"filename":"parent.tf","startLine":1,"endLine":10,"sourcePrefix":"parent-prefix","fsKey":"parent-key","isLogicalSource":false},"ref":"module.parent","managed":true,"default":false,"explicit":false,"unresolvable":false,"parent":null}`
+const encodedParentMetadata = `{"range":{"filename":"parent.tf","startLine":1,"endLine":10,"sourcePrefix":"parent-prefix","fsKey":"parent-key","isLogicalSource":false},"ref":"module.parent","managed":false,"default":false,"explicit":true,"unresolvable":true,"parent":null}`
 
-const encodedMetadata = `{"range":` + encodedRange + `,"ref":"aws_s3_bucket.example","managed":true,"default":true,"explicit":true,"unresolvable":true,"parent":` + encodedParentMetadata + `}`
+const encodedMetadata = `{"range":` + encodedRange + `,"ref":"aws_s3_bucket.example","managed":true,"default":false,"explicit":false,"unresolvable":true,"parent":` + encodedParentMetadata + `}`
 
-// populatedMetadata returns metadata with every serialized field set to a non-zero value.
+// populatedMetadata returns metadata with a parent, where no two flags have the same pair of values.
 func populatedMetadata() Metadata {
 	parent := NewMetadata(newRange("parent.tf", 1, 10, "parent-prefix", "parent-key", nil, false), "module.parent")
+	parent.isManaged = false
+	parent.isExplicit = true
+	parent.isUnresolvable = true
 
 	m := NewMetadata(newRange("main.tf", 2, 4, "prefix", "fs-key", nil, true), "aws_s3_bucket.example")
-	m.isDefault = true
-	m.isExplicit = true
 	m.isUnresolvable = true
 	m.parent = &parent
 	return m
 }
 
-func Test_MetadataJSON(t *testing.T) {
-	m := populatedMetadata()
+func Test_MetadataMarshalJSON(t *testing.T) {
+	data, err := json.Marshal(populatedMetadata())
+	require.NoError(t, err)
+	assert.JSONEq(t, encodedMetadata, string(data))
+}
 
-	t.Run("marshal", func(t *testing.T) {
-		data, err := json.Marshal(m)
-		require.NoError(t, err)
-		assert.JSONEq(t, encodedMetadata, string(data))
-	})
+func Test_MetadataUnmarshalJSON(t *testing.T) {
+	tests := []struct {
+		name    string
+		input   string
+		want    Metadata
+		wantErr string
+	}{
+		{
+			name:  "all fields",
+			input: encodedMetadata,
+			want:  populatedMetadata(),
+		},
+		{
+			name:  "null parent",
+			input: `{"parent":null}`,
+			want:  Metadata{},
+		},
+		{
+			name:    "parent is not an object",
+			input:   `{"parent":"x"}`,
+			wantErr: `within "/parent"`,
+		},
+		{
+			name:    "wrong-typed ref",
+			input:   `{"ref":1}`,
+			wantErr: `within "/ref"`,
+		},
+	}
 
-	t.Run("unmarshal", func(t *testing.T) {
-		var restored Metadata
-		require.NoError(t, json.Unmarshal([]byte(encodedMetadata), &restored))
-		assert.Equal(t, m, restored)
-	})
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var got Metadata
+			err := json.Unmarshal([]byte(tt.input), &got)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }

@@ -27,6 +27,8 @@ func Test_RFC3339TimeJSON(t *testing.T) {
 		name    string
 		time    time.Time
 		encoded string
+		input   string // decoded as is, without the marshal step
+		wantErr string
 	}{
 		{
 			name:    "zero time",
@@ -43,23 +45,36 @@ func Test_RFC3339TimeJSON(t *testing.T) {
 			time:    time.Date(2020, 1, 2, 3, 4, 5, 0, time.FixedZone("", 2*60*60)),
 			encoded: `"2020-01-02T03:04:05+02:00"`,
 		},
+		{
+			name:  "null resets time",
+			time:  time.Time{},
+			input: `null`,
+		},
+		{
+			name:    "invalid time",
+			input:   `"nope"`,
+			wantErr: "parsing time",
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			data, err := json.Marshal(RFC3339Time{tt.time})
-			require.NoError(t, err)
-			assert.Equal(t, tt.encoded, string(data))
+			data := []byte(tt.input)
+			if tt.input == "" {
+				var err error
+				data, err = json.Marshal(RFC3339Time{tt.time})
+				require.NoError(t, err)
+				assert.Equal(t, tt.encoded, string(data))
+			}
 
-			var restored RFC3339Time
-			require.NoError(t, json.Unmarshal(data, &restored))
+			restored := RFC3339Time{time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC)}
+			err := json.Unmarshal(data, &restored)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
 			assert.True(t, tt.time.Equal(restored.Time), "want %s, got %s", tt.time, restored.Time)
 		})
 	}
-}
-
-func Test_RFC3339TimeUnmarshalNull(t *testing.T) {
-	ts := RFC3339Time{time.Date(2020, 1, 2, 3, 4, 5, 0, time.UTC)}
-	require.NoError(t, json.Unmarshal([]byte("null"), &ts))
-	assert.True(t, ts.IsZero())
 }
