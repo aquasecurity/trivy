@@ -226,14 +226,14 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 			corev1.TaintEffect(tolerationParts[1]) != corev1.TaintEffectNoExecute {
 			return []corev1.Toleration{}, errors.New("toleration effect must be a valid value")
 		}
-		keyValue := strings.Split(tolerationParts[0], "=")
+		key, value, _ := strings.Cut(tolerationParts[0], "=")
 		operator := corev1.TolerationOpEqual
-		if keyValue[1] == "" {
+		if value == "" {
 			operator = corev1.TolerationOpExists
 		}
 		toleration := corev1.Toleration{
-			Key:      keyValue[0],
-			Value:    keyValue[1],
+			Key:      key,
+			Value:    value,
 			Operator: operator,
 			Effect:   corev1.TaintEffect(tolerationParts[1]),
 		}

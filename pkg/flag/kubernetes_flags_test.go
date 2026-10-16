@@ -40,6 +40,28 @@ func TestOptionToToleration(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:               "empty value",
+			tolerationsOptions: []string{"node-role.kubernetes.io/control-plane=:NoSchedule"},
+			want: []corev1.Toleration{
+				{
+					Key:      "node-role.kubernetes.io/control-plane",
+					Operator: "Exists",
+					Effect:   "NoSchedule",
+				},
+			},
+		},
+		{
+			name:               "key without value",
+			tolerationsOptions: []string{"node-role.kubernetes.io/control-plane:NoSchedule"},
+			want: []corev1.Toleration{
+				{
+					Key:      "node-role.kubernetes.io/control-plane",
+					Operator: "Exists",
+					Effect:   "NoSchedule",
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
