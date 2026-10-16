@@ -40,6 +40,11 @@ func TestParser_Parse(t *testing.T) {
 					Version: "3.4.3",
 				},
 				{
+					ID:      "egg@1.0.0",
+					Name:    "egg",
+					Version: "1.0.0",
+				},
+				{
 					ID:      "ham@3.0.0",
 					Name:    "ham",
 					Version: "3.0.0",
@@ -71,6 +76,10 @@ func TestParser_Parse(t *testing.T) {
 				},
 			},
 			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "egg@1.0.0",
+					DependsOn: []string{"spam@1.0.0", "spam@1.1.0"},
+				},
 				{
 					ID:        "ham@3.0.0",
 					DependsOn: []string{"spam@1.1.0"},
