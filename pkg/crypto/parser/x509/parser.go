@@ -15,7 +15,9 @@ import (
 	"errors"
 	"iter"
 	"math/big"
+	"slices"
 
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -60,6 +62,9 @@ type object struct {
 	certificate certificate
 	// publicKey contains a public key or the public projection of a private key.
 	publicKey any
+	// rawPublicKey contains the SubjectPublicKeyInfo DER of a public key whose algorithm
+	// crypto/x509 does not decode into a supported key.
+	rawPublicKey []byte
 	// encrypted contains the canonical form an encrypted private-key container is identified by.
 	encrypted []byte
 	// encryption identifies the encrypted private-key container format.
@@ -128,7 +133,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	var assets []ftypes.CryptoAsset
 	seen := set.New[assetKey]()
 	for obj := range parse(ctx, content) {
-		described, err := objectToAssets(ctx, obj)
+		described, err := objectToAssets(obj)
 		if err != nil {
 			return nil, err
 		}
@@ -258,11 +263,7 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "EC PRIVATE KEY":
 		return privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
 	case "PUBLIC KEY":
-		publicKey, err := stdx509.ParsePKIXPublicKey(der)
-		if err != nil {
-			return object{}, errMalformedCrypto
-		}
-		return publicKeyToObject(publicKey)
+		return publicKeyObject(der)
 	case "ENCRYPTED PRIVATE KEY":
 		obj, ok := parseEncryptedPKCS8(der)
 		if !ok {
@@ -365,8 +366,8 @@ func parseDERObject(der []byte) (object, error) {
 		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
 	}
 
-	if publicKey, err := stdx509.ParsePKIXPublicKey(der); err == nil {
-		return publicKeyToObject(publicKey)
+	if obj, err := publicKeyObject(der); err == nil {
+		return obj, nil
 	}
 
 	if obj, ok := parseEncryptedPKCS8(der); ok {
@@ -407,6 +408,14 @@ func certificateObject(der []byte) (object, error) {
 		return object{}, errMalformedCrypto
 	}
 
+	// crypto/x509 checks the encoding only of a key it decodes, and any other key is
+	// described from its encoding later.
+	if !isSupportedPublicKey(parsed.PublicKey) {
+		if _, err := crypto.ParseSubjectPublicKeyInfo(parsed.RawSubjectPublicKeyInfo); err != nil {
+			return object{}, errMalformedCrypto
+		}
+	}
+
 	return object{
 		kind: objectCertificate,
 		certificate: certificate{
@@ -433,14 +442,45 @@ func privateKeyToObject(privateKey any, format ftypes.CryptoKeyFormat) (object, 
 	}, nil
 }
 
-func publicKeyToObject(publicKey any) (object, error) {
-	if !isSupportedPublicKey(publicKey) {
-		return object{}, errUnsupportedCrypto
+// decodedKeyAlgorithms lists the key algorithms crypto/x509 decodes. It mirrors
+// parsePublicKey in crypto/x509 and needs updating when that function learns a new OID.
+var decodedKeyAlgorithms = []asn1.ObjectIdentifier{
+	oidRSAEncryption,
+	{1, 2, 840, 10040, 4, 1},          // DSA
+	{1, 2, 840, 10045, 2, 1},          // EC
+	{1, 3, 101, 110},                  // X25519
+	{1, 3, 101, 112},                  // Ed25519
+	{2, 16, 840, 1, 101, 3, 4, 3, 17}, // ML-DSA-44
+	{2, 16, 840, 1, 101, 3, 4, 3, 18}, // ML-DSA-65
+	{2, 16, 840, 1, 101, 3, 4, 3, 19}, // ML-DSA-87
+}
+
+// publicKeyObject parses a public key in PKIX SubjectPublicKeyInfo. A key crypto/x509 does
+// not decode into a supported key is kept in its encoded form, the same way as in a
+// certificate. A key of an algorithm it decodes is malformed when decoding fails.
+func publicKeyObject(der []byte) (object, error) {
+	publicKey, parseErr := stdx509.ParsePKIXPublicKey(der)
+	if parseErr == nil && isSupportedPublicKey(publicKey) {
+		return object{
+			kind:      objectPublicKey,
+			publicKey: publicKey,
+			keyFormat: ftypes.CryptoKeyFormatPKIX,
+		}, nil
+	}
+
+	oid, err := crypto.ParseSubjectPublicKeyInfo(der)
+	if err != nil {
+		return object{}, errMalformedCrypto
+	}
+	// A key of an algorithm crypto/x509 decodes is malformed only when decoding failed. An
+	// X25519 key decodes into a key that is not supported and is kept in its encoded form.
+	if parseErr != nil && slices.ContainsFunc(decodedKeyAlgorithms, oid.Equal) {
+		return object{}, errMalformedCrypto
 	}
 	return object{
-		kind:      objectPublicKey,
-		publicKey: publicKey,
-		keyFormat: ftypes.CryptoKeyFormatPKIX,
+		kind:         objectPublicKey,
+		rawPublicKey: der,
+		keyFormat:    ftypes.CryptoKeyFormatPKIX,
 	}, nil
 }
 

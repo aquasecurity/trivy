@@ -68,13 +68,19 @@ var (
 		},
 	}
 
-	// Ed25519 has no parameters, and RFC 8032 section 8.5 puts its strength at about 128
-	// bits.
+	// Ed25519 and Ed448 have no parameters, and RFC 8032 section 8.5 gives them a nominal
+	// strength of 128 and 224 bits.
 	// See https://datatracker.ietf.org/doc/html/rfc8032#section-8.5
 	ed25519StrengthBasis = strengthBasis{
 		nistCategory: new(0),
 		classicalStrengths: map[string]int{
 			"": 128,
+		},
+	}
+	ed448StrengthBasis = strengthBasis{
+		nistCategory: new(0),
+		classicalStrengths: map[string]int{
+			"": 224,
 		},
 	}
 )

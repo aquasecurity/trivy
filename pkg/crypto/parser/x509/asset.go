@@ -2,10 +2,8 @@ package x509
 
 import (
 	"cmp"
-	"context"
 	stdx509 "crypto/x509"
 	"encoding/asn1"
-	"errors"
 	"net"
 	"net/url"
 
@@ -13,20 +11,19 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
-// objectToAssets describes a parsed object as assets. Material it cannot describe is
-// logged and left out, and an error means the description itself is broken.
-func objectToAssets(ctx context.Context, obj object) ([]ftypes.CryptoAsset, error) {
+// objectToAssets describes a parsed object as assets. An error means the description itself
+// is broken.
+func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 	switch obj.kind {
 	case objectCertificate:
-		return describeCertificate(ctx, obj.certificate, obj.encoding)
+		return describeCertificate(obj.certificate, obj.encoding)
 	case objectPublicKey:
-		return describeStandaloneKey(ctx, obj, ftypes.CryptoKeyTypePublic)
+		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePublic)
 	case objectPrivateKey:
-		return describeStandaloneKey(ctx, obj, ftypes.CryptoKeyTypePrivate)
+		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePrivate)
 	case objectEncryptedPrivateKey:
 		return describeEncryptedPrivateKey(obj)
 	default:
@@ -35,10 +32,8 @@ func objectToAssets(ctx context.Context, obj object) ([]ftypes.CryptoAsset, erro
 }
 
 // describeCertificate describes a certificate, the algorithm it is signed with, the key
-// it carries and the algorithm of that key. A key that cannot be described is left out,
-// and the certificate keeps the relationships it can state.
+// it carries and the algorithm of that key.
 func describeCertificate(
-	ctx context.Context,
 	cert certificate,
 	encoding ftypes.CryptoEncoding,
 ) ([]ftypes.CryptoAsset, error) {
@@ -87,24 +82,18 @@ func describeCertificate(
 	// Nothing a certificate carries has a container of its own.
 	related := []ftypes.CryptoAsset{{CryptoAssetInfo: signature}}
 
-	key, keyAlgorithm, err := crypto.DescribeKey(cert.PublicKey, ftypes.CryptoKeyTypePublic)
-	switch {
-	// TODO: cover a certificate whose key algorithm OID crypto/x509 does not recognize,
-	// such as Ed448.
-	case errors.Is(err, crypto.ErrNoCanonicalForm):
-		log.DebugContext(ctx, "Certificate key not described", log.Err(err))
-	case err != nil:
+	key, keyAlgorithm, err := describeKey(cert.PublicKey, cert.RawSubjectPublicKeyInfo, ftypes.CryptoKeyTypePublic)
+	if err != nil {
 		return nil, xerrors.Errorf("describe certificate key: %w", err)
-	default:
-		info.Relationships = append(info.Relationships, ftypes.CryptoRelationship{
-			Type:         ftypes.CryptoRelationshipContains,
-			RelatedAsset: key.Descriptor(),
-		})
-		related = append(related,
-			ftypes.CryptoAsset{CryptoAssetInfo: key},
-			ftypes.CryptoAsset{CryptoAssetInfo: keyAlgorithm},
-		)
 	}
+	info.Relationships = append(info.Relationships, ftypes.CryptoRelationship{
+		Type:         ftypes.CryptoRelationshipContains,
+		RelatedAsset: key.Descriptor(),
+	})
+	related = append(related,
+		ftypes.CryptoAsset{CryptoAssetInfo: key},
+		ftypes.CryptoAsset{CryptoAssetInfo: keyAlgorithm},
+	)
 
 	asset := ftypes.CryptoAsset{
 		CryptoAssetInfo: info,
@@ -113,19 +102,20 @@ func describeCertificate(
 	return append([]ftypes.CryptoAsset{asset}, related...), nil
 }
 
+// describeKey describes a key. A key that crypto/x509 does not decode into a supported key
+// is described from its SubjectPublicKeyInfo.
+func describeKey(pub any, spki []byte, keyType ftypes.CryptoKeyType) (key, keyAlgorithm ftypes.CryptoAssetInfo, err error) {
+	if !isSupportedPublicKey(pub) {
+		return crypto.DescribeRawPublicKey(spki, keyType)
+	}
+	return crypto.DescribeKey(pub, keyType)
+}
+
 // describeStandaloneKey describes a key object as the key itself and the algorithm it
 // belongs to.
-func describeStandaloneKey(
-	ctx context.Context,
-	obj object,
-	keyType ftypes.CryptoKeyType,
-) ([]ftypes.CryptoAsset, error) {
-	key, keyAlgorithm, err := crypto.DescribeKey(obj.publicKey, keyType)
-	switch {
-	case errors.Is(err, crypto.ErrNoCanonicalForm):
-		log.DebugContext(ctx, "Key not described", log.Err(err))
-		return nil, nil
-	case err != nil:
+func describeStandaloneKey(obj object, keyType ftypes.CryptoKeyType) ([]ftypes.CryptoAsset, error) {
+	key, keyAlgorithm, err := describeKey(obj.publicKey, obj.rawPublicKey, keyType)
+	if err != nil {
 		return nil, xerrors.Errorf("describe %s key: %w", keyType, err)
 	}
 	return []ftypes.CryptoAsset{

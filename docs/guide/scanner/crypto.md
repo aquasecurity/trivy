@@ -32,6 +32,8 @@ The report lists three kinds of assets, which are certificates, keys and algorit
 
 A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.
 
+A key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. Its size is reported only when the OID fixes it, as for Ed448, X25519 and X448, so an RSA-PSS key has no size. An algorithm that Trivy does not recognize is named by its OID, such as `1.3.101.110` for X25519.
+
 An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.
 
 The parameters of an algorithm are the key size for RSA and the curve for EC. For DSA they are the two bit lengths that name a parameter set in FIPS 186: L, the length of the prime `p`, and N, the length of the prime `q`. So DSA keys of (2048, 224) and (2048, 256) belong to different algorithms, although both are named `DSA-2048` after the CycloneDX naming pattern. Other algorithms are identified by the OID alone.
@@ -47,7 +49,7 @@ The levels are estimates for an algorithm and its parameters, taken from NIST an
 | RSA, key size 1024 / 2048 / 3072 / 4096 / 6144 / 8192 bits | 80 / 112 / 128 / 152 / 176 / 200 | 0 |
 | EC, curve P-224 / P-256 / P-384 / P-521 | 112 / 128 / 192 / 256 | 0 |
 | DSA, (L, N) of (1024, 160) / (2048, 224) / (2048, 256) / (3072, 256) | 80 / 112 / 112 / 128 | 0 |
-| Ed25519 | 128 | 0 |
+| Ed25519 / Ed448 | 128 / 224 | 0 |
 | ML-DSA-44 / ML-DSA-65 / ML-DSA-87 | - | 2 / 3 / 5 |
 | RSA, ECDSA and DSA signature algorithms | - | 0 |
 
@@ -58,16 +60,16 @@ The levels come from these publications:
 - RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of [NIST SP 800-56B Rev. 2](https://csrc.nist.gov/pubs/sp/800/56/b/r2/final). RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of [NIST SP 800-57 Part 1 Rev. 5](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final), whose row for a 1024-bit modulus states at most 80 bits.
 - EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5.
 - DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of [NIST SP 800-131A Rev. 2](https://csrc.nist.gov/pubs/sp/800/131/a/r2/final). The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
-- Ed25519 takes its strength from [RFC 8032, Section 8.5](https://datatracker.ietf.org/doc/html/rfc8032#section-8.5).
+- Ed25519 and Ed448 take their strengths from [RFC 8032, Section 8.5](https://datatracker.ietf.org/doc/html/rfc8032#section-8.5).
 - ML-DSA takes its categories from [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final).
 - RSA, EC, DSA and EdDSA rest on integer factorization and discrete logarithms, which a sufficiently capable quantum computer breaks. Section 1.2 of FIPS 204 discusses this. They therefore meet none of the NIST categories.
 
 A level is left out when it cannot be estimated:
 
-- An RSA, ECDSA or DSA signature algorithm gets no classical level. The strength of such a signature is limited by the key that signed it, and that key belongs to the issuer, which the certificate does not carry. Ed25519 is different, because its OID fixes the curve.
+- An RSA, ECDSA or DSA signature algorithm gets no classical level. The strength of such a signature is limited by the key that signed it, and that key belongs to the issuer, which the certificate does not carry. Ed25519 and Ed448 are different, because each of their OIDs fixes the curve.
 - ML-DSA gets no classical level, because FIPS 204 assigns its parameter sets a NIST category but no classical strength in bits.
 - An algorithm whose parameters are not in the table, such as RSA with a key size of 2047 bits or a DSA pair that FIPS 186 does not define, gets no classical level, but still gets a NIST quantum security level of 0.
-- An algorithm that Trivy does not recognize, such as RSA-PSS or Ed448, gets neither level. An encrypted private key has no algorithm in the report at all, because its algorithm stays inside the ciphertext.
+- An algorithm that Trivy does not recognize, such as RSA-PSS or X25519, gets neither level. An encrypted private key has no algorithm in the report at all, because its algorithm stays inside the ciphertext.
 
 ### CycloneDX
 
@@ -131,4 +133,4 @@ $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/a
 
 Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
 
-Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.
+Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.
