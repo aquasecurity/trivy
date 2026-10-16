@@ -64,9 +64,13 @@ func DescribeRawPublicKey(
 }
 
 // fixedKeySizes holds the key size in bits for the algorithms whose OID fixes it. The size
-// is the length of the encoded key, defined by RFC 8032 as the parameter b for EdDSA.
+// is the length of the encoded key, defined by RFC 8032 as the parameter b for EdDSA and by
+// RFC 7748 for X25519 and X448.
 // See https://www.rfc-editor.org/rfc/rfc8032#section-5.2
+// See https://www.rfc-editor.org/rfc/rfc7748#section-5
 var fixedKeySizes = map[string]int{
+	"1.3.101.110": 256, // X25519
+	"1.3.101.111": 448, // X448
 	"1.3.101.113": 456, // Ed448
 }
 
@@ -240,7 +244,8 @@ func marshalDSAPublicKey(pub *dsa.PublicKey) ([]byte, error) {
 	return der, nil
 }
 
-// ParseSubjectPublicKeyInfo reads the algorithm OID out of SubjectPublicKeyInfo DER.
+// ParseSubjectPublicKeyInfo reads the algorithm OID out of SubjectPublicKeyInfo DER. A key
+// of an algorithm whose OID fixes the key size is rejected when its length differs.
 func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
 	var info struct {
 		Algorithm        pkix.AlgorithmIdentifier
@@ -263,5 +268,10 @@ func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
 	if !bytes.Equal(encoded, der) {
 		return nil, xerrors.New("subject public key info does not round-trip")
 	}
-	return info.Algorithm.Algorithm, nil
+
+	oid := info.Algorithm.Algorithm
+	if size, ok := fixedKeySizes[oid.String()]; ok && info.SubjectPublicKey.BitLength != size {
+		return nil, xerrors.Errorf("%s key is %d bits instead of %d", oid, info.SubjectPublicKey.BitLength, size)
+	}
+	return oid, nil
 }

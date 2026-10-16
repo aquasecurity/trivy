@@ -69,6 +69,22 @@ HdMHSQcwBQYDK2VwA0EAevJaAE+dQj+/CvhmsSNqV89aQK0Mj71LvZb8s6dqbf6h
 -----END CERTIFICATE-----
 `
 
+// x25519CertificatePEM is a certificate for an X25519 key, signed with an Ed25519 key.
+// crypto/x509 cannot produce a certificate for an X25519 key, so the certificate comes
+// from OpenSSL:
+//
+//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl genpkey -algorithm ed25519 -out ca.key && openssl genpkey -algorithm x25519 | openssl pkey -pubout -out x25519.pub && openssl x509 -new -subj /CN=x25519 -key ca.key -force_pubkey x25519.pub -days 36500'
+const x25519CertificatePEM = `-----BEGIN CERTIFICATE-----
+MIIBJzCB2qADAgECAhRp4xwAGFhPCNyRBzBnMeNKJ5pNizAFBgMrZXAwETEPMA0G
+A1UEAwwGeDI1NTE5MCAXDTI2MTAxNjA3MDAyMVoYDzIxMjYwOTIyMDcwMDIxWjAR
+MQ8wDQYDVQQDDAZ4MjU1MTkwKjAFBgMrZW4DIQChIW9VV7z3EShsVfSFuyOV4niP
+qOzHvxYcFP5vLpA0BaNCMEAwHQYDVR0OBBYEFID6WaVHKSI0rkZHUOWSCos8bkhZ
+MB8GA1UdIwQYMBaAFPfrO0E6WViyVa41wZYGMDQSuVGsMAUGAytlcANBAA6Ng4IP
+wPyCQoe49bPiUWB8/x06gL27PLIqu2ZglEe/VC6SRV+0yHcrlalqxtq7s67IbH2k
+73n1umdEMGmbiw8=
+-----END CERTIFICATE-----
+`
+
 // rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
 // mutate to it. Its values are not consistent with each other.
 func rsaPrivateKeyDER(t *testing.T, mutate func(*cryptox509.PKCS1PrivateKey)) []byte {
@@ -354,6 +370,23 @@ func TestParse(t *testing.T) {
 				pemCertificate,
 				certificateKey,
 				pemCertificate,
+			},
+		},
+		{
+			name:  "certificate bundle with a malformed key",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.malformedKeyCertificate)}, nil),
+			want: []found{
+				pemCertificate,
+				certificateKey,
+			},
+		},
+		{
+			// crypto/x509 decodes an X25519 key into a key type that is not supported.
+			name:  "X25519 certificate PEM",
+			input: certificatePEM(fixtures.x25519Certificate),
+			want: []found{
+				pemCertificate,
+				certificateKey,
 			},
 		},
 		{
@@ -758,7 +791,9 @@ func TestParseAssets(t *testing.T) {
 		KeyType:  ftypes.CryptoKeyTypePublic,
 		Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.x448Certificate.RawSubjectPublicKeyInfo),
 		Name:     "1.3.101.111 public key",
-		Key:      &ftypes.CryptoKey{},
+		Key: &ftypes.CryptoKey{
+			Size: 448,
+		},
 		Relationships: []ftypes.CryptoRelationship{{
 			Type:         ftypes.CryptoRelationshipUsedWith,
 			RelatedAsset: x448Algorithm.Descriptor(),
@@ -1366,29 +1401,33 @@ type testFixtures struct {
 	mldsaCertificate   *stdx509.Certificate
 	ed448Certificate   *stdx509.Certificate
 	x448Certificate    *stdx509.Certificate
-	pathLenZero        *stdx509.Certificate
-	noCommonName       *stdx509.Certificate
-	otherCertificate   *stdx509.Certificate
-	pssCertificate     *stdx509.Certificate
-	rsaPublic          *rsa.PublicKey
-	multiPrimePublic   *rsa.PublicKey
-	multiPrimePEM      []byte
-	certificateDER     []byte
-	certificatePEM     []byte
-	pkcs1DER           []byte
-	pkcs8DER           []byte
-	pkcs8PEM           []byte
-	sec1DER            []byte
-	publicDER          []byte
-	publicPEM          []byte
-	encryptedDER       []byte
-	encryptedPEM       []byte
-	rfc1423PEM         []byte
-	ed25519DER         []byte
-	mldsaDER           []byte
-	dsaDER             []byte
-	x25519PKCS8DER     []byte
-	x25519PKIXDER      []byte
+	x25519Certificate  *stdx509.Certificate
+	// malformedKeyCertificate carries an X448 key whose SubjectPublicKeyInfo has an extra
+	// element, which crypto/x509 accepts for a key it does not decode.
+	malformedKeyCertificate *stdx509.Certificate
+	pathLenZero             *stdx509.Certificate
+	noCommonName            *stdx509.Certificate
+	otherCertificate        *stdx509.Certificate
+	pssCertificate          *stdx509.Certificate
+	rsaPublic               *rsa.PublicKey
+	multiPrimePublic        *rsa.PublicKey
+	multiPrimePEM           []byte
+	certificateDER          []byte
+	certificatePEM          []byte
+	pkcs1DER                []byte
+	pkcs8DER                []byte
+	pkcs8PEM                []byte
+	sec1DER                 []byte
+	publicDER               []byte
+	publicPEM               []byte
+	encryptedDER            []byte
+	encryptedPEM            []byte
+	rfc1423PEM              []byte
+	ed25519DER              []byte
+	mldsaDER                []byte
+	dsaDER                  []byte
+	x25519PKCS8DER          []byte
+	x25519PKIXDER           []byte
 	// malformedEd25519PKIXDER is an Ed25519 key with a public value of the wrong length.
 	malformedEd25519PKIXDER []byte
 	// malformedX25519PKIXDER is an X25519 key with a public value of the wrong length.
@@ -1575,6 +1614,17 @@ func newFixtures(t *testing.T) testFixtures {
 	require.NoError(t, err)
 	x25519PKIXDER, err := stdx509.MarshalPKIXPublicKey(x25519Private.PublicKey())
 	require.NoError(t, err)
+	x448Certificate := parseCertificatePEM(t, x448CertificatePEM)
+	var spki asn1.RawValue
+	_, err = asn1.Unmarshal(x448Certificate.RawSubjectPublicKeyInfo, &spki)
+	require.NoError(t, err)
+	spki.Bytes = bytes.Join([][]byte{spki.Bytes, asn1.NullBytes}, nil)
+	spki.FullBytes = nil
+	malformedSPKI, err := asn1.Marshal(spki)
+	require.NoError(t, err)
+	// The signature no longer matches, which crypto/x509 does not check when parsing.
+	malformedKeyCertificate := withSubjectPublicKeyInfo(t, x448Certificate, malformedSPKI)
+
 	malformedEd25519PKIXDER, err := asn1.Marshal(struct {
 		Algorithm        pkix.AlgorithmIdentifier
 		SubjectPublicKey asn1.BitString
@@ -1602,7 +1652,9 @@ func newFixtures(t *testing.T) testFixtures {
 		ed25519Certificate:      ed25519Certificate,
 		mldsaCertificate:        mldsaCertificate,
 		ed448Certificate:        parseCertificatePEM(t, ed448CertificatePEM),
-		x448Certificate:         parseCertificatePEM(t, x448CertificatePEM),
+		x448Certificate:         x448Certificate,
+		x25519Certificate:       parseCertificatePEM(t, x25519CertificatePEM),
+		malformedKeyCertificate: malformedKeyCertificate,
 		pathLenZero:             pathLenZero,
 		noCommonName:            noCommonName,
 		otherCertificate:        otherCertificate,
@@ -1656,6 +1708,33 @@ func parseCertificatePEM(t *testing.T, content string) *stdx509.Certificate {
 	certificate, err := stdx509.ParseCertificate(block.Bytes)
 	require.NoError(t, err)
 	return certificate
+}
+
+// withSubjectPublicKeyInfo re-encodes a certificate with spki in place of its own and
+// parses it back.
+func withSubjectPublicKeyInfo(t *testing.T, certificate *stdx509.Certificate, spki []byte) *stdx509.Certificate {
+	t.Helper()
+
+	tbs := replaceInSequence(t, certificate.RawTBSCertificate, certificate.RawSubjectPublicKeyInfo, spki)
+	parsed, err := stdx509.ParseCertificate(replaceInSequence(t, certificate.Raw, certificate.RawTBSCertificate, tbs))
+	require.NoError(t, err)
+	return parsed
+}
+
+// replaceInSequence re-encodes a DER sequence with old replaced by replacement in its
+// content.
+func replaceInSequence(t *testing.T, sequence, old, replacement []byte) []byte {
+	t.Helper()
+
+	var raw asn1.RawValue
+	_, err := asn1.Unmarshal(sequence, &raw)
+	require.NoError(t, err)
+	require.True(t, bytes.Contains(raw.Bytes, old), "sequence does not contain the replaced element")
+	raw.Bytes = bytes.Replace(raw.Bytes, old, replacement, 1)
+	raw.FullBytes = nil
+	der, err := asn1.Marshal(raw)
+	require.NoError(t, err)
+	return der
 }
 
 func certificatePEM(certificate *stdx509.Certificate) []byte {

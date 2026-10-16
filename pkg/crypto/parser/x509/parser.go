@@ -408,6 +408,14 @@ func certificateObject(der []byte) (object, error) {
 		return object{}, errMalformedCrypto
 	}
 
+	// crypto/x509 checks the encoding only of a key it decodes, and any other key is
+	// described from its encoding later.
+	if !isSupportedPublicKey(parsed.PublicKey) {
+		if _, err := crypto.ParseSubjectPublicKeyInfo(parsed.RawSubjectPublicKeyInfo); err != nil {
+			return object{}, errMalformedCrypto
+		}
+	}
+
 	return object{
 		kind: objectCertificate,
 		certificate: certificate{
