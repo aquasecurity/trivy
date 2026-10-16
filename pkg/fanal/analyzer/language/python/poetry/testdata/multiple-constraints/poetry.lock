@@ -1,0 +1,54 @@
+# Reduced from Poetry 2.2.1 output for the adjacent pyproject.toml.
+# File hashes, descriptions, and extras are omitted.
+
+[[package]]
+name = "numpy"
+version = "2.5.3"
+optional = false
+python-versions = ">=3.12"
+groups = ["main"]
+
+[[package]]
+name = "pandas"
+version = "3.0.6"
+optional = false
+python-versions = ">=3.11"
+groups = ["main"]
+
+[package.dependencies]
+numpy = [
+    {version = ">=1.26.0", markers = "python_version < \"3.14\""},
+    {version = ">=2.3.3", markers = "python_version >= \"3.14\""},
+]
+python-dateutil = ">=2.8.2"
+tzdata = {version = "*", markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\""}
+
+[[package]]
+name = "python-dateutil"
+version = "2.9.0.post0"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+
+[package.dependencies]
+six = ">=1.5"
+
+[[package]]
+name = "six"
+version = "1.17.0"
+optional = false
+python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,>=2.7"
+groups = ["main"]
+
+[[package]]
+name = "tzdata"
+version = "2026.4"
+optional = false
+python-versions = ">=2"
+groups = ["main"]
+markers = "sys_platform == \"win32\" or sys_platform == \"emscripten\""
+
+[metadata]
+lock-version = "2.1"
+python-versions = ">=3.12"
+content-hash = "b604ba6817467d70180690297baea0da8f84247deae3c39ff0a4a42046604038"
