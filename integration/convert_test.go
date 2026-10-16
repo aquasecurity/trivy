@@ -52,6 +52,14 @@ func TestConvert(t *testing.T) {
 			},
 			golden: goldenConvertNPMWithSuppressed,
 		},
+		{
+			name: "crypto findings removed",
+			args: args{
+				input:  goldenCryptoJSON,
+				format: "cyclonedx",
+			},
+			golden: goldenCryptoCDX,
+		},
 	}
 
 	for _, tt := range tests {

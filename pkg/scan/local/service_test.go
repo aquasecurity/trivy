@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/internal/hooktest"
 	"github.com/aquasecurity/trivy/pkg/cache"
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
@@ -155,6 +156,27 @@ func TestScanner_Scan(t *testing.T) {
 		layerIDs []string
 		options  types.ScanOptions
 	}
+
+	cryptoLayer := ftypes.Layer{
+		DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+	}
+	cachedCertificate := cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.FilePath = "etc/ssl/certs/ca.pem"
+		asset.Certificate.NotAfter = time.Date(2020, 1, 1, 0, 0, 0, 0, time.UTC)
+	}))
+	scannedAlgorithm := cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+		asset.Name = "RSA-2048"
+		asset.Identity.Parameters = "key-size=2048"
+		asset.FilePath = "etc/ssl/certs/ca.pem"
+		asset.Layer = cryptoLayer
+		asset.Algorithm.ClassicalSecurityLevel = new(112)
+		asset.Algorithm.NISTQuantumSecurityLevel = new(0)
+	}))
+	scannedCertificate := cachedCertificate
+	scannedCertificate.Layer = cryptoLayer
+	scannedAssets := []ftypes.CryptoAsset{scannedAlgorithm, scannedCertificate}
+	crypto.AssignIDs(scannedAssets)
+
 	tests := []struct {
 		name       string
 		args       args
@@ -1086,9 +1108,7 @@ func TestScanner_Scan(t *testing.T) {
 							asset.Identity.Parameters = "key-size=2048"
 							asset.FilePath = "etc/ssl/certs/ca.pem"
 						})),
-						cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-							asset.FilePath = "etc/ssl/certs/ca.pem"
-						})),
+						cachedCertificate,
 					},
 				}))
 				return c
@@ -1096,25 +1116,19 @@ func TestScanner_Scan(t *testing.T) {
 			want: types.ScanResponse{
 				Results: types.Results{
 					{
-						Target: "alpine:latest",
-						Class:  types.ClassCrypto,
-						CryptoAssets: []ftypes.CryptoAsset{
-							cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-								asset.Name = "RSA-2048"
-								asset.Identity.Parameters = "key-size=2048"
-								asset.FilePath = "etc/ssl/certs/ca.pem"
-								asset.Layer = ftypes.Layer{
-									DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
-								}
-								asset.Algorithm.ClassicalSecurityLevel = new(112)
-								asset.Algorithm.NISTQuantumSecurityLevel = new(0)
-							})),
-							cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
-								asset.FilePath = "etc/ssl/certs/ca.pem"
-								asset.Layer = ftypes.Layer{
-									DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
-								}
-							})),
+						Target:       "alpine:latest",
+						Class:        types.ClassCrypto,
+						CryptoAssets: scannedAssets,
+						CryptoFindings: []types.CryptoFinding{
+							{
+								RuleID:   "CRYPTO-0004",
+								Title:    "Expired certificate",
+								Severity: "MEDIUM",
+								AssetID:  scannedAssets[1].AssetID,
+								Evidence: types.CryptoEvidence{
+									NotAfter: scannedCertificate.Certificate.NotAfter,
+								},
+							},
 						},
 					},
 				},

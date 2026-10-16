@@ -1,6 +1,7 @@
 package types
 
 import (
+	"cmp"
 	"encoding/json"
 	"net/url"
 	"strconv"
@@ -32,6 +33,17 @@ func (d CryptoDescriptor) String() string {
 		segments = append(segments, url.QueryEscape(d.Identity.Parameters))
 	}
 	return strings.Join(segments, ":")
+}
+
+// Compare orders descriptors by kind, key type and identity.
+func (d CryptoDescriptor) Compare(other CryptoDescriptor) int {
+	return cmp.Or(
+		cmp.Compare(d.Kind, other.Kind),
+		cmp.Compare(d.KeyType, other.KeyType),
+		cmp.Compare(d.Identity.Method, other.Identity.Method),
+		cmp.Compare(d.Identity.Value, other.Identity.Value),
+		cmp.Compare(d.Identity.Parameters, other.Identity.Parameters),
+	)
 }
 
 // MarshalJSON validates and encodes the descriptor as its canonical string.

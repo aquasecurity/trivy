@@ -138,11 +138,7 @@ func (a CryptoAssetInfo) Validate() error {
 // CompareCryptoAssets orders assets by identity, then by where they were found.
 func CompareCryptoAssets(a, b CryptoAsset) int {
 	return cmp.Or(
-		cmp.Compare(a.Kind, b.Kind),
-		cmp.Compare(a.KeyType, b.KeyType),
-		cmp.Compare(a.Identity.Method, b.Identity.Method),
-		cmp.Compare(a.Identity.Value, b.Identity.Value),
-		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		a.Descriptor().Compare(b.Descriptor()),
 		cmp.Compare(a.FilePath, b.FilePath),
 		cmp.Compare(a.Layer.DiffID, b.Layer.DiffID),
 		cmp.Compare(a.Format, b.Format),
@@ -221,6 +217,8 @@ func (a CryptoAssetInfo) validateAlgorithm() error {
 // CryptoAsset is a described asset together with the file it was found in and the
 // container it was stored in there.
 type CryptoAsset struct {
+	// AssetID identifies the asset within a report.
+	AssetID string `json:",omitempty"`
 	CryptoAssetInfo
 	FilePath string `json:",omitempty"`
 	// Format is empty for a key with no container of its own, such as the key of a certificate.

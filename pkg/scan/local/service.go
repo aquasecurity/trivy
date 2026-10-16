@@ -13,7 +13,9 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/crypto"
+	"github.com/aquasecurity/trivy/pkg/crypto/check"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -165,12 +167,15 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	if options.Scanners.Enabled(types.CryptoScanner) && len(target.CryptoAssets) != 0 {
 		// The security levels are assessed here rather than during analysis, so that a change
-		// to their basis applies to cached assets without analyzing them again.
+		// to their basis applies to cached assets without analyzing them again. The IDs depend
+		// on the layer, which is known only after the layers are applied.
 		crypto.AssessStrength(target.CryptoAssets)
+		crypto.AssignIDs(target.CryptoAssets)
 		results = append(results, types.Result{
-			Target:       target.Name,
-			Class:        types.ClassCrypto,
-			CryptoAssets: target.CryptoAssets,
+			Target:         target.Name,
+			Class:          types.ClassCrypto,
+			CryptoAssets:   target.CryptoAssets,
+			CryptoFindings: check.Evaluate(target.CryptoAssets, clock.Now(ctx)),
 		})
 	}
 
