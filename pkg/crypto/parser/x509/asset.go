@@ -2,10 +2,8 @@ package x509
 
 import (
 	"cmp"
-	"context"
 	stdx509 "crypto/x509"
 	"encoding/asn1"
-	"errors"
 	"net"
 	"net/url"
 
@@ -13,20 +11,19 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
-// objectToAssets describes a parsed object as assets. Material it cannot describe is
-// logged and left out, and an error means the description itself is broken.
-func objectToAssets(ctx context.Context, obj object) ([]ftypes.CryptoAsset, error) {
+// objectToAssets describes a parsed object as assets. An error means the description itself
+// is broken.
+func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 	switch obj.kind {
 	case objectCertificate:
 		return describeCertificate(obj.certificate, obj.encoding)
 	case objectPublicKey:
-		return describeStandaloneKey(ctx, obj, ftypes.CryptoKeyTypePublic)
+		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePublic)
 	case objectPrivateKey:
-		return describeStandaloneKey(ctx, obj, ftypes.CryptoKeyTypePrivate)
+		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePrivate)
 	case objectEncryptedPrivateKey:
 		return describeEncryptedPrivateKey(obj)
 	default:
@@ -116,17 +113,9 @@ func describeKey(pub any, spki []byte, keyType ftypes.CryptoKeyType) (key, keyAl
 
 // describeStandaloneKey describes a key object as the key itself and the algorithm it
 // belongs to.
-func describeStandaloneKey(
-	ctx context.Context,
-	obj object,
-	keyType ftypes.CryptoKeyType,
-) ([]ftypes.CryptoAsset, error) {
+func describeStandaloneKey(obj object, keyType ftypes.CryptoKeyType) ([]ftypes.CryptoAsset, error) {
 	key, keyAlgorithm, err := describeKey(obj.publicKey, obj.rawPublicKey, keyType)
-	switch {
-	case errors.Is(err, crypto.ErrNoCanonicalForm):
-		log.DebugContext(ctx, "Key not described", log.Err(err))
-		return nil, nil
-	case err != nil:
+	if err != nil {
 		return nil, xerrors.Errorf("describe %s key: %w", keyType, err)
 	}
 	return []ftypes.CryptoAsset{

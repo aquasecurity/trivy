@@ -272,11 +272,6 @@ func TestDescribeKey(t *testing.T) {
 	}
 }
 
-func TestDescribeKeyNoCanonicalForm(t *testing.T) {
-	_, _, err := crypto.DescribeKey(nil, ftypes.CryptoKeyTypePublic)
-	require.ErrorIs(t, err, crypto.ErrNoCanonicalForm)
-}
-
 func TestDescribeRawPublicKey(t *testing.T) {
 	ed448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 113}, make([]byte, 57))
 	x448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 111}, make([]byte, 56))

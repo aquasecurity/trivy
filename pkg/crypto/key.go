@@ -11,8 +11,6 @@ import (
 	"crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
-	"errors"
-	"fmt"
 	"math/big"
 
 	"golang.org/x/xerrors"
@@ -20,15 +18,9 @@ import (
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
-// ErrNoCanonicalForm reports a key that cannot be reduced to SubjectPublicKeyInfo, such as
-// a key of a type crypto/x509 cannot encode.
-var ErrNoCanonicalForm = errors.New("key has no canonical form")
-
 // DescribeKey describes a key and the algorithm it belongs to. A private key is described
 // through its public projection, so it differs from a public key only in its key type.
-//
-// A key that cannot be encoded is reported with ErrNoCanonicalForm. Any other error means
-// the SubjectPublicKeyInfo produced here does not parse back, and the encoder is wrong.
+// An error means the key cannot be encoded as SubjectPublicKeyInfo.
 func DescribeKey(
 	pub stdcrypto.PublicKey,
 	keyType ftypes.CryptoKeyType,
@@ -181,7 +173,7 @@ func keyDetails(pub stdcrypto.PublicKey) (size, subgroupSize int, curve string) 
 func publicKeyInfo(pub stdcrypto.PublicKey) (ftypes.CryptoIdentity, string, error) {
 	der, err := MarshalPublicKey(pub)
 	if err != nil {
-		return ftypes.CryptoIdentity{}, "", fmt.Errorf("%w: %w", ErrNoCanonicalForm, err)
+		return ftypes.CryptoIdentity{}, "", xerrors.Errorf("marshal public key: %w", err)
 	}
 
 	// The OID is read from the encoding, because PublicKeyAlgorithm is an enumeration that

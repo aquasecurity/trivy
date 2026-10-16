@@ -133,7 +133,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	var assets []ftypes.CryptoAsset
 	seen := set.New[assetKey]()
 	for obj := range parse(ctx, content) {
-		described, err := objectToAssets(ctx, obj)
+		described, err := objectToAssets(obj)
 		if err != nil {
 			return nil, err
 		}

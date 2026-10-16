@@ -46,7 +46,7 @@ func TestObjectToAssetsInvariants(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			_, err := objectToAssets(t.Context(), tt.object)
+			_, err := objectToAssets(tt.object)
 			require.ErrorContains(t, err, tt.wantErr)
 		})
 	}
