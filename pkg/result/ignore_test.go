@@ -1,7 +1,9 @@
 package result
 
 import (
+	"bufio"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -77,6 +79,19 @@ func TestParseIgnoreFile(t *testing.T) {
 
 		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err) // TODO(simar7): We don't verify correctness, should we?
+	})
+
+	t.Run("line too long", func(t *testing.T) {
+		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*")
+		require.NoError(t, err)
+		defer f.Close()
+
+		_, err = f.WriteString("CVE-2024-0001\n" + strings.Repeat("A", bufio.MaxScanTokenSize) + "\nCVE-2024-0002\n")
+		require.NoError(t, err)
+
+		got, err := ParseIgnoreFile(t.Context(), f.Name())
+		require.ErrorIs(t, err, bufio.ErrTooLong)
+		assert.Empty(t, got)
 	})
 
 	t.Run("non existing file passed", func(t *testing.T) {
