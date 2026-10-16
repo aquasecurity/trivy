@@ -101,6 +101,13 @@ dependencies = [
 ]
 
 [[packages]]
+name = "egg"
+version = "1.0.0"
+dependencies = [
+  { name = "spam" }
+]
+
+[[packages]]
 name = "ham"
 version = "3.0.0"
 marker = "sys_platform == 'win32'"

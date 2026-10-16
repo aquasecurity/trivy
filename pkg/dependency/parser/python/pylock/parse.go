@@ -57,6 +57,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	}
 
 	pkgs := make(map[string]ftypes.Package)
+	packageIDsByName := make(map[string][]string)
 	deps := make(map[string][]string)
 
 	for _, pkg := range lock.Packages {
@@ -69,6 +70,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Version:      pkg.Version,
 			Relationship: lo.Ternary(pkg.root(), ftypes.RelationshipRoot, ftypes.RelationshipUnknown),
 		}
+		packageIDsByName[normalizedPkgName] = append(packageIDsByName[normalizedPkgName], pkgID)
 
 		var dependsOn []string
 		for _, dep := range pkg.Dependencies {
@@ -82,18 +84,28 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 	}
 
+	for _, packageIDs := range packageIDsByName {
+		sort.Strings(packageIDs)
+	}
+
 	depSlice := lo.MapToSlice(deps, func(pkgID string, dependsOn []string) ftypes.Dependency {
 		if _, ok := pkgs[pkgID]; !ok {
 			return ftypes.Dependency{}
 		}
 
-		// Filter out dependencies that are not in the package list
+		// Filter out dependencies that are not in the package list. An omitted
+		// dependency version refers to every package with the same name.
 		var dependsOnIDs []string
 		for _, depID := range dependsOn {
+			if packageIDs, ok := packageIDsByName[depID]; ok {
+				dependsOnIDs = append(dependsOnIDs, packageIDs...)
+				continue
+			}
 			if _, ok := pkgs[depID]; ok {
 				dependsOnIDs = append(dependsOnIDs, depID)
 			}
 		}
+		sort.Strings(dependsOnIDs)
 
 		return ftypes.Dependency{
 			ID:        pkgID,
