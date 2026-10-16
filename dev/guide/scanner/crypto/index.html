@@ -8736,6 +8736,7 @@ You're not viewing the latest version of the documentation.
 <h2 id="what-is-reported">What is reported<a class="headerlink" href="#what-is-reported" title="Permanent link">&para;</a></h2>
 <p>The report lists three kinds of assets, which are certificates, keys and algorithms. A certificate adds four assets linked to each other. These are the certificate, the key it carries, the algorithm of that key and the algorithm it was signed with. A key is linked to its algorithm, and a private key also to its public key.</p>
 <p>A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.</p>
+<p>A key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. Its size is reported only when the OID fixes it, as for Ed448, X25519 and X448, so an RSA-PSS key has no size. An algorithm that Trivy does not recognize is named by its OID, such as <code>1.3.101.110</code> for X25519.</p>
 <p>An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the <code>SubjectPublicKeyInfo</code>, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.</p>
 <p>The parameters of an algorithm are the key size for RSA and the curve for EC. For DSA they are the two bit lengths that name a parameter set in FIPS 186: L, the length of the prime <code>p</code>, and N, the length of the prime <code>q</code>. So DSA keys of (2048, 224) and (2048, 256) belong to different algorithms, although both are named <code>DSA-2048</code> after the CycloneDX naming pattern. Other algorithms are identified by the OID alone.</p>
 <h3 id="security-levels">Security levels<a class="headerlink" href="#security-levels" title="Permanent link">&para;</a></h3>
@@ -8766,8 +8767,8 @@ You're not viewing the latest version of the documentation.
 <td>0</td>
 </tr>
 <tr>
-<td>Ed25519</td>
-<td>128</td>
+<td>Ed25519 / Ed448</td>
+<td>128 / 224</td>
 <td>0</td>
 </tr>
 <tr>
@@ -8788,16 +8789,16 @@ You're not viewing the latest version of the documentation.
 <li>RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of <a href="https://csrc.nist.gov/pubs/sp/800/56/b/r2/final">NIST SP 800-56B Rev. 2</a>. RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of <a href="https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final">NIST SP 800-57 Part 1 Rev. 5</a>, whose row for a 1024-bit modulus states at most 80 bits.</li>
 <li>EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5.</li>
 <li>DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of <a href="https://csrc.nist.gov/pubs/sp/800/131/a/r2/final">NIST SP 800-131A Rev. 2</a>. The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.</li>
-<li>Ed25519 takes its strength from <a href="https://datatracker.ietf.org/doc/html/rfc8032#section-8.5">RFC 8032, Section 8.5</a>.</li>
+<li>Ed25519 and Ed448 take their strengths from <a href="https://datatracker.ietf.org/doc/html/rfc8032#section-8.5">RFC 8032, Section 8.5</a>.</li>
 <li>ML-DSA takes its categories from <a href="https://csrc.nist.gov/pubs/fips/204/final">FIPS 204</a>.</li>
 <li>RSA, EC, DSA and EdDSA rest on integer factorization and discrete logarithms, which a sufficiently capable quantum computer breaks. Section 1.2 of FIPS 204 discusses this. They therefore meet none of the NIST categories.</li>
 </ul>
 <p>A level is left out when it cannot be estimated:</p>
 <ul>
-<li>An RSA, ECDSA or DSA signature algorithm gets no classical level. The strength of such a signature is limited by the key that signed it, and that key belongs to the issuer, which the certificate does not carry. Ed25519 is different, because its OID fixes the curve.</li>
+<li>An RSA, ECDSA or DSA signature algorithm gets no classical level. The strength of such a signature is limited by the key that signed it, and that key belongs to the issuer, which the certificate does not carry. Ed25519 and Ed448 are different, because each of their OIDs fixes the curve.</li>
 <li>ML-DSA gets no classical level, because FIPS 204 assigns its parameter sets a NIST category but no classical strength in bits.</li>
 <li>An algorithm whose parameters are not in the table, such as RSA with a key size of 2047 bits or a DSA pair that FIPS 186 does not define, gets no classical level, but still gets a NIST quantum security level of 0.</li>
-<li>An algorithm that Trivy does not recognize, such as RSA-PSS or Ed448, gets neither level. An encrypted private key has no algorithm in the report at all, because its algorithm stays inside the ciphertext.</li>
+<li>An algorithm that Trivy does not recognize, such as RSA-PSS or X25519, gets neither level. An encrypted private key has no algorithm in the report at all, because its algorithm stays inside the ciphertext.</li>
 </ul>
 <h3 id="cyclonedx">CycloneDX<a class="headerlink" href="#cyclonedx" title="Permanent link">&para;</a></h3>
 <p>Every asset becomes a <code>cryptographic-asset</code> component with <code>cryptoProperties</code>, and the links between assets are stored in <code>relatedCryptographicAssets</code>. Each place an asset was found is an entry in <code>evidence.occurrences</code>. The path is stored in <code>location</code>, and the layer in <code>additionalContext</code> as <code>aquasecurity:trivy:LayerDiffID=&lt;diff ID&gt;</code>.</p>
@@ -8844,7 +8845,7 @@ You're not viewing the latest version of the documentation.
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;crypto:etc/app/tls-key&quot;</span><span class="w"> </span>myimage:1.0.0
 </code></pre></div>
 <p>Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.</p>
-<p>Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well.</p>
+<p>Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, PKCS#12 and JKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.</p>
 
 
 
