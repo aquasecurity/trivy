@@ -63,8 +63,6 @@ func Test_getPrivateRegistryTokenFromEnvVars_ConvertsSiteNameToEnvVar(t *testing
 	}
 }
 
-// The registry may return a location that no other resolver handles.
-// Such a module must not be reported as resolved.
 func Test_registryResolver_UnsupportedDownloadLocation(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/v1/modules/terraform-aws-modules/s3-bucket/aws/download", func(w http.ResponseWriter, _ *http.Request) {
@@ -86,8 +84,9 @@ func Test_registryResolver_UnsupportedDownloadLocation(t *testing.T) {
 		},
 	}
 
-	_, err := Resolve(t.Context(), nil, opt)
-	require.ErrorContains(t, err, "failed to resolve module")
+	_, err := Registry.Resolve(t.Context(), nil, opt)
+	require.ErrorContains(t, err, "unsupported module location: ftp://example.com/module.zip")
+	assert.NotErrorIs(t, err, ErrNotApplicable)
 }
 
 func Test_resolveVersion(t *testing.T) {

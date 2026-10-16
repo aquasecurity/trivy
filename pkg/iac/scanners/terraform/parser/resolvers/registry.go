@@ -164,11 +164,10 @@ func (r *registryResolver) Resolve(ctx context.Context, target fs.FS, opt Option
 		log.String("source", opt.Source), log.String("name", moduleName))
 
 	res, err := Remote.Resolve(ctx, target, opt)
-	if err != nil {
-		return Result{}, err
+	if errors.Is(err, ErrNotApplicable) {
+		return Result{}, fmt.Errorf("registry %s returned an unsupported module location: %s", hostname, opt.Source)
 	}
-
-	return res, nil
+	return res, err
 }
 
 func getPrivateRegistryTokenFromEnvVars(hostname string) (string, error) {

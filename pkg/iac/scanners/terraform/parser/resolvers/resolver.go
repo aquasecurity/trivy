@@ -16,8 +16,8 @@ var ErrNotApplicable = errors.New("resolver is not applicable")
 type Result struct {
 	// FS is the filesystem the module was resolved to.
 	FS fs.FS
-	// SourcePrefix is the module source, such as
-	// "git::https://github.com/org/repo". It is empty for local modules.
+	// SourcePrefix is the module source as written in the module block.
+	// It is empty for local modules.
 	SourcePrefix string
 	// Dir is the module directory within FS.
 	Dir string
