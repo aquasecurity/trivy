@@ -82,9 +82,15 @@ func (l *License) Traverse(fsys fs.FS, root string) (map[string][]string, error)
 // IsLicenseRefToFile The license field can refer to a file
 // https://docs.npmjs.com/cli/v9/configuring-npm/package-json
 func IsLicenseRefToFile(maybeLicenses []string) (bool, string) {
-	if len(maybeLicenses) != 1 {
+	switch len(maybeLicenses) {
+	case 0:
 		// trying to find at least the LICENSE file
 		return true, "LICENSE"
+	case 1:
+	default:
+		// multiple licenses are declared (e.g. the legacy `license` array),
+		// so they are license names, not a reference to a file
+		return false, ""
 	}
 
 	var licenseFileName string
