@@ -391,7 +391,6 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			// crypto/x509 decodes an X25519 key into a key type that is not supported.
 			name:  "X25519 certificate PEM",
 			input: certificatePEM(fixtures.x25519Certificate),
 			want: []found{
@@ -810,6 +809,31 @@ func TestParseAssets(t *testing.T) {
 		}},
 	}
 
+	x25519Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.110",
+		},
+		Name: "1.3.101.110",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+	x25519CertificateKey := ftypes.CryptoAssetInfo{
+		Kind:     ftypes.CryptoKindKey,
+		KeyType:  ftypes.CryptoKeyTypePublic,
+		Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.x25519Certificate.RawSubjectPublicKeyInfo),
+		Name:     "1.3.101.110 public key",
+		Key: &ftypes.CryptoKey{
+			Size: 256,
+		},
+		Relationships: []ftypes.CryptoRelationship{{
+			Type:         ftypes.CryptoRelationshipUsedWith,
+			RelatedAsset: x25519Algorithm.Descriptor(),
+		}},
+	}
+
 	// at states where a description was found.
 	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
@@ -1062,6 +1086,42 @@ func TestParseAssets(t *testing.T) {
 				at(ed25519Algorithm),
 				at(x448CertificateKey),
 				at(x448Algorithm),
+			},
+		},
+		{
+			name:  "X25519 certificate",
+			input: []byte(x25519CertificatePEM),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindCertificate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSHA256, fixtures.x25519Certificate.Raw),
+						Name:     "x25519",
+						Certificate: &ftypes.CryptoCertificate{
+							Subject:      "CN=x25519",
+							Issuer:       "CN=x25519",
+							SerialNumber: "69e31c0018584f08dc9107306731e34a279a4d8b",
+							NotBefore:    time.Date(2026, time.October, 16, 7, 0, 21, 0, time.UTC),
+							NotAfter:     time.Date(2126, time.September, 22, 7, 0, 21, 0, time.UTC),
+							Format:       ftypes.CryptoCertificateFormatX509,
+						},
+						Relationships: []ftypes.CryptoRelationship{
+							{
+								Type:         ftypes.CryptoRelationshipSignedWith,
+								RelatedAsset: ed25519Algorithm.Descriptor(),
+							},
+							{
+								Type:         ftypes.CryptoRelationshipContains,
+								RelatedAsset: x25519CertificateKey.Descriptor(),
+							},
+						},
+					},
+					FilePath: parsedFilePath,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(ed25519Algorithm),
+				at(x25519CertificateKey),
+				at(x25519Algorithm),
 			},
 		},
 		{
