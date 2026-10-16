@@ -40,7 +40,9 @@ const parsedFilePath = "candidate.pem"
 // ed448CertificatePEM is a self-signed Ed448 certificate. crypto/x509 cannot produce Ed448,
 // so the certificate comes from OpenSSL:
 //
-//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl req -x509 -newkey ed448 -nodes -keyout /dev/null -subj /CN=ed448 -days 36500'
+//	docker run --rm alpine:3.22 sh -c '
+//	  apk add -q openssl &&
+//	  openssl req -x509 -newkey ed448 -nodes -keyout /dev/null -subj /CN=ed448 -days 36500'
 const ed448CertificatePEM = `-----BEGIN CERTIFICATE-----
 MIIBgjCCAQKgAwIBAgIUXjC0zfeRr1tKlPH01JudKhbbujIwBQYDK2VxMBAxDjAM
 BgNVBAMMBWVkNDQ4MCAXDTI2MDkzMDE5MjEzNloYDzIxMjYwOTA2MTkyMTM2WjAQ
@@ -57,7 +59,11 @@ Vx7bhgEA
 // x448CertificatePEM is a certificate for an X448 key, signed with an Ed25519 key. Neither
 // crypto/x509 nor the catalog knows X448, and the certificate comes from OpenSSL:
 //
-//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl genpkey -algorithm ed25519 -out ca.key && openssl genpkey -algorithm x448 | openssl pkey -pubout -out x448.pub && openssl x509 -new -subj /CN=x448 -key ca.key -force_pubkey x448.pub -days 36500'
+//	docker run --rm alpine:3.22 sh -c '
+//	  apk add -q openssl &&
+//	  openssl genpkey -algorithm ed25519 -out ca.key &&
+//	  openssl genpkey -algorithm x448 | openssl pkey -pubout -out x448.pub &&
+//	  openssl x509 -new -subj /CN=x448 -key ca.key -force_pubkey x448.pub -days 36500'
 const x448CertificatePEM = `-----BEGIN CERTIFICATE-----
 MIIBOzCB7qADAgECAhQ/ypyR9JPJ51E6Zo3JMU+k9OPRTTAFBgMrZXAwDzENMAsG
 A1UEAwwEeDQ0ODAgFw0yNjA5MzAxOTIxNDdaGA8yMTI2MDkwNjE5MjE0N1owDzEN
@@ -73,7 +79,11 @@ HdMHSQcwBQYDK2VwA0EAevJaAE+dQj+/CvhmsSNqV89aQK0Mj71LvZb8s6dqbf6h
 // crypto/x509 cannot produce a certificate for an X25519 key, so the certificate comes
 // from OpenSSL:
 //
-//	docker run --rm alpine:3.22 sh -c 'apk add -q openssl && openssl genpkey -algorithm ed25519 -out ca.key && openssl genpkey -algorithm x25519 | openssl pkey -pubout -out x25519.pub && openssl x509 -new -subj /CN=x25519 -key ca.key -force_pubkey x25519.pub -days 36500'
+//	docker run --rm alpine:3.22 sh -c '
+//	  apk add -q openssl &&
+//	  openssl genpkey -algorithm ed25519 -out ca.key &&
+//	  openssl genpkey -algorithm x25519 | openssl pkey -pubout -out x25519.pub &&
+//	  openssl x509 -new -subj /CN=x25519 -key ca.key -force_pubkey x25519.pub -days 36500'
 const x25519CertificatePEM = `-----BEGIN CERTIFICATE-----
 MIIBJzCB2qADAgECAhRp4xwAGFhPCNyRBzBnMeNKJ5pNizAFBgMrZXAwETEPMA0G
 A1UEAwwGeDI1NTE5MCAXDTI2MTAxNjA3MDAyMVoYDzIxMjYwOTIyMDcwMDIxWjAR
@@ -1625,22 +1635,6 @@ func newFixtures(t *testing.T) testFixtures {
 	// The signature no longer matches, which crypto/x509 does not check when parsing.
 	malformedKeyCertificate := withSubjectPublicKeyInfo(t, x448Certificate, malformedSPKI)
 
-	malformedEd25519PKIXDER, err := asn1.Marshal(struct {
-		Algorithm        pkix.AlgorithmIdentifier
-		SubjectPublicKey asn1.BitString
-	}{
-		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 112}},
-		SubjectPublicKey: asn1.BitString{Bytes: []byte{1}, BitLength: 8},
-	})
-	require.NoError(t, err)
-	malformedX25519PKIXDER, err := asn1.Marshal(struct {
-		Algorithm        pkix.AlgorithmIdentifier
-		SubjectPublicKey asn1.BitString
-	}{
-		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 110}},
-		SubjectPublicKey: asn1.BitString{Bytes: []byte{1}, BitLength: 8},
-	})
-	require.NoError(t, err)
 	unsupportedDER, err := asn1.Marshal(struct {
 		Value string
 	}{Value: "unsupported"})
@@ -1678,8 +1672,8 @@ func newFixtures(t *testing.T) testFixtures {
 		dsaDER:                  dsaDER,
 		x25519PKCS8DER:          x25519PKCS8DER,
 		x25519PKIXDER:           x25519PKIXDER,
-		malformedEd25519PKIXDER: malformedEd25519PKIXDER,
-		malformedX25519PKIXDER:  malformedX25519PKIXDER,
+		malformedEd25519PKIXDER: marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 112}, []byte{1}),
+		malformedX25519PKIXDER:  marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 110}, []byte{1}),
 		csrDER:                  csrDER,
 		csrPEM:                  pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE REQUEST", Bytes: csrDER}),
 		crlDER:                  crlDER,
@@ -1708,6 +1702,21 @@ func parseCertificatePEM(t *testing.T, content string) *stdx509.Certificate {
 	certificate, err := stdx509.ParseCertificate(block.Bytes)
 	require.NoError(t, err)
 	return certificate
+}
+
+// marshalSPKI encodes a SubjectPublicKeyInfo with the given algorithm OID and public key bytes.
+func marshalSPKI(t *testing.T, oid asn1.ObjectIdentifier, publicKey []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: oid},
+		SubjectPublicKey: asn1.BitString{Bytes: publicKey, BitLength: len(publicKey) * 8},
+	})
+	require.NoError(t, err)
+	return der
 }
 
 // withSubjectPublicKeyInfo re-encodes a certificate with spki in place of its own and

@@ -442,7 +442,8 @@ func privateKeyToObject(privateKey any, format ftypes.CryptoKeyFormat) (object, 
 	}, nil
 }
 
-// decodedKeyAlgorithms lists the key algorithms crypto/x509 decodes.
+// decodedKeyAlgorithms lists the key algorithms crypto/x509 decodes. It mirrors
+// parsePublicKey in crypto/x509 and needs updating when that function learns a new OID.
 var decodedKeyAlgorithms = []asn1.ObjectIdentifier{
 	oidRSAEncryption,
 	{1, 2, 840, 10040, 4, 1},          // DSA
@@ -471,6 +472,8 @@ func publicKeyObject(der []byte) (object, error) {
 	if err != nil {
 		return object{}, errMalformedCrypto
 	}
+	// A key of an algorithm crypto/x509 decodes is malformed only when decoding failed. An
+	// X25519 key decodes into a key that is not supported and is kept in its encoded form.
 	if parseErr != nil && slices.ContainsFunc(decodedKeyAlgorithms, oid.Equal) {
 		return object{}, errMalformedCrypto
 	}

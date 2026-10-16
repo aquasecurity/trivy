@@ -32,7 +32,7 @@ func DescribeKey(
 
 	size, subgroupSize, curve := keyDetails(pub)
 	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, subgroupSize, curve)
-	return describePublicKey(identity, keyAlgorithm, keyType, size, curve), keyAlgorithm, nil
+	return describeKeyAsset(identity, keyAlgorithm, keyType, size, curve), keyAlgorithm, nil
 }
 
 // DescribeRawPublicKey describes a key from its SubjectPublicKeyInfo DER without decoding
@@ -52,7 +52,7 @@ func DescribeRawPublicKey(
 	identity := ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, spki)
 	size := fixedKeySizes[algorithmOID]
 	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, 0, "")
-	return describePublicKey(identity, keyAlgorithm, keyType, size, ""), keyAlgorithm, nil
+	return describeKeyAsset(identity, keyAlgorithm, keyType, size, ""), keyAlgorithm, nil
 }
 
 // fixedKeySizes holds the key size in bits for the algorithms whose OID fixes it. The size
@@ -66,8 +66,9 @@ var fixedKeySizes = map[string]int{
 	"1.3.101.113": 456, // Ed448
 }
 
-// describePublicKey describes a key identified by its SubjectPublicKeyInfo.
-func describePublicKey(
+// describeKeyAsset describes a public or private key whose identity is the digest of the
+// SubjectPublicKeyInfo of the key or of its public projection.
+func describeKeyAsset(
 	identity ftypes.CryptoIdentity,
 	keyAlgorithm ftypes.CryptoAssetInfo,
 	keyType ftypes.CryptoKeyType,
@@ -251,8 +252,9 @@ func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
 		return nil, xerrors.Errorf("subject public key info is followed by %d bytes", len(rest))
 	}
 
-	// encoding/asn1 skips elements of a sequence that the target struct does not declare,
-	// and re-encoding drops them, so a structure with extra elements does not round-trip.
+	// The identity is the digest of these bytes, so a key written with extra elements would
+	// get another identity than the same key without them. encoding/asn1 skips elements the
+	// target struct does not declare, and re-encoding detects them.
 	encoded, err := asn1.Marshal(info)
 	if err != nil {
 		return nil, xerrors.Errorf("marshal subject public key info: %w", err)
