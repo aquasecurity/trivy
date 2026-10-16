@@ -14,7 +14,7 @@ func adaptAPIsV1(fctx parser.FileContext) []v1.API {
 			Metadata:  apiResource.Metadata(),
 			Name:      apiResource.GetStringProperty("Name"),
 			Stages:    adaptStagesV1(fctx, apiResource.ID()),
-			Resources: adaptResourcesV1(fctx, apiResource.ID()),
+			Resources: adaptResourcesV1(fctx, apiResource),
 		})
 	}
 
@@ -76,37 +76,49 @@ func getAccessLoggingV1(r *parser.Resource) v1.AccessLogging {
 	}
 }
 
-func adaptResourcesV1(fctx parser.FileContext, apiID string) []v1.Resource {
+func adaptResourcesV1(fctx parser.FileContext, apiResource *parser.Resource) []v1.Resource {
 	var resources []v1.Resource
 
+	// The root resource is created by the REST API itself, and !GetAtt Api.RootResourceId
+	// resolves to the logical ID of the API.
+	if methods := adaptMethodsV1(fctx, apiResource.ID()); len(methods) > 0 {
+		resources = append(resources, v1.Resource{
+			Metadata: apiResource.Metadata(),
+			Methods:  methods,
+		})
+	}
+
 	for _, resource := range fctx.GetResourcesByType("AWS::ApiGateway::Resource") {
-		if resource.GetStringProperty("RestApiId").Value() != apiID {
+		if resource.GetStringProperty("RestApiId").Value() != apiResource.ID() {
 			continue
 		}
 
-		res := v1.Resource{
+		resources = append(resources, v1.Resource{
 			Metadata: resource.Metadata(),
-		}
-
-		for _, methodResource := range fctx.GetResourcesByType("AWS::ApiGateway::Method") {
-			resourceID := methodResource.GetStringProperty("ResourceId")
-			// TODO: handle RootResourceId
-			if resourceID.Value() != resource.ID() {
-				continue
-			}
-
-			res.Methods = append(res.Methods, v1.Method{
-				Metadata:          methodResource.Metadata(),
-				HTTPMethod:        methodResource.GetStringProperty("HttpMethod"),
-				AuthorizationType: methodResource.GetStringProperty("AuthorizationType"),
-				APIKeyRequired:    methodResource.GetBoolProperty("ApiKeyRequired"),
-			})
-		}
-
-		resources = append(resources, res)
+			Methods:  adaptMethodsV1(fctx, resource.ID()),
+		})
 	}
 
 	return resources
+}
+
+func adaptMethodsV1(fctx parser.FileContext, resourceID string) []v1.Method {
+	var methods []v1.Method
+
+	for _, methodResource := range fctx.GetResourcesByType("AWS::ApiGateway::Method") {
+		if methodResource.GetStringProperty("ResourceId").Value() != resourceID {
+			continue
+		}
+
+		methods = append(methods, v1.Method{
+			Metadata:          methodResource.Metadata(),
+			HTTPMethod:        methodResource.GetStringProperty("HttpMethod"),
+			AuthorizationType: methodResource.GetStringProperty("AuthorizationType"),
+			APIKeyRequired:    methodResource.GetBoolProperty("ApiKeyRequired"),
+		})
+	}
+
+	return methods
 }
 
 func adaptDomainNamesV1(fctx parser.FileContext) []v1.DomainName {
