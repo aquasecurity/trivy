@@ -81,13 +81,14 @@ const (
 	TypeCondaEnv Type = "conda-environment"
 
 	// Python
-	TypePythonPkg    Type = "python-pkg"
-	TypePythonPkgEgg Type = "python-egg"
-	TypePip          Type = "pip"
-	TypePipenv       Type = "pipenv"
-	TypePoetry       Type = "poetry"
-	TypeUv           Type = "uv"
-	TypePyLock       Type = "pylock"
+	TypePythonPkg       Type = "python-pkg"
+	TypePythonPkgEgg    Type = "python-egg"
+	TypePythonPkgZipApp Type = "python-zipapp"
+	TypePip             Type = "pip"
+	TypePipenv          Type = "pipenv"
+	TypePoetry          Type = "poetry"
+	TypeUv              Type = "uv"
+	TypePyLock          Type = "pylock"
 
 	// Go
 	TypeGoBinary Type = "gobinary"
@@ -217,6 +218,7 @@ var (
 		TypeCondaEnv,
 		TypePythonPkg,
 		TypePythonPkgEgg,
+		TypePythonPkgZipApp,
 		TypePip,
 		TypePipenv,
 		TypePoetry,
@@ -265,6 +267,7 @@ var (
 		TypeNodePkg,
 		TypeCondaPkg,
 		TypePythonPkg,
+		TypePythonPkgZipApp,
 		TypeGoBinary,
 		TypeJar,
 		TypeRustBinary,
