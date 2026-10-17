@@ -2,6 +2,7 @@ package lock
 
 import (
 	"context"
+	"slices"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
@@ -68,6 +69,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			if savedDependsOn, ok := depsMap[depId]; ok {
 				dependsOn = lo.Uniq(append(dependsOn, savedDependsOn...))
 			}
+			slices.Sort(dependsOn)
 
 			if len(dependsOn) > 0 {
 				depsMap[depId] = dependsOn
