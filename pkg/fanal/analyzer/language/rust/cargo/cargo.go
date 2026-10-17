@@ -36,7 +36,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeCargo, newCargoAnalyzer)
 }
 
-const version = 1
+const version = 2
 
 var requiredFiles = []string{
 	types.CargoLock,
@@ -141,6 +141,11 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 				continue
 			}
 
+			// Root and workspace packages are not external dependencies
+			if pkg.ID == root || slices.Contains(workspaces, pkg.ID) {
+				continue
+			}
+
 			// Without a version constraint (git/path), pick the candidate from Cargo.lock
 			if constraint == "" && !lockDeps.Contains(pkg.ID) {
 				continue
@@ -179,7 +184,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		// Root/workspace package may include dev dependencies in lock file, so we need to remove them.
 		pkg.DependsOn = lo.Filter(pkg.DependsOn, func(dep string, _ int) bool {
 			_, ok := pkgs[dep]
-			return ok
+			return ok || slices.Contains(workspaces, dep)
 		})
 		pkgs[pkgID] = pkg
 	}

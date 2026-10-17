@@ -495,7 +495,7 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 						FilePath: "Cargo.lock",
 						Packages: types.Packages{
 							{
-								ID:           "eeae9dc40f83d7dd",
+								ID:           "35c3ea1485ef5aae",
 								Relationship: types.RelationshipRoot,
 								DependsOn: []string{
 									"member@0.1.0",
@@ -510,11 +510,12 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Locations: []types.Location{
 									{
 										StartLine: 30,
-										EndLine:   35,
+										EndLine:   36,
 									},
 								},
 								DependsOn: []string{
 									"gdb-command@0.7.6",
+									"member2@0.1.0",
 								},
 							},
 							{
@@ -524,12 +525,13 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipWorkspace,
 								Locations: []types.Location{
 									{
-										StartLine: 37,
-										EndLine:   42,
+										StartLine: 38,
+										EndLine:   45,
 									},
 								},
 								DependsOn: []string{
 									"regex@1.10.2",
+									"tantivy-fst@0.5.0",
 								},
 							},
 							{
@@ -556,8 +558,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
-										StartLine: 50,
-										EndLine:   60,
+										StartLine: 53,
+										EndLine:   63,
 									},
 								},
 								DependsOn: []string{
@@ -565,6 +567,18 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 									"memchr@2.6.4",
 									"regex-automata@0.4.3",
 									"regex-syntax@0.8.2",
+								},
+							},
+							{
+								ID:           "tantivy-fst@0.5.0",
+								Name:         "tantivy-fst",
+								Version:      "0.5.0",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 82,
+										EndLine:   85,
+									},
 								},
 							},
 							{
@@ -602,8 +616,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 44,
-										EndLine:   48,
+										StartLine: 47,
+										EndLine:   51,
 									},
 								},
 							},
@@ -615,8 +629,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 62,
-										EndLine:   71,
+										StartLine: 65,
+										EndLine:   74,
 									},
 								},
 								DependsOn: []string{
@@ -633,8 +647,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 73,
-										EndLine:   77,
+										StartLine: 76,
+										EndLine:   80,
 									},
 								},
 							},
@@ -646,8 +660,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 79,
-										EndLine:   86,
+										StartLine: 93,
+										EndLine:   100,
 									},
 								},
 								DependsOn: []string{"libc@0.2.150"},
