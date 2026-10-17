@@ -3,15 +3,16 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components.
+Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports [weak assets](#findings) found by built-in checks.
 
-The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx` or `--format json`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
+$ trivy image --scanners crypto --format json --output result.json myimage:1.0.0
 ```
 
-Cryptographic assets have no representation in the other report formats, so Trivy rejects `--scanners crypto` with any of them.
+Trivy rejects `--scanners crypto` with other report formats.
 
 ## What is scanned
 
@@ -107,6 +108,69 @@ The parameters of an algorithm are stored in `algorithmProperties`. The key size
     }
   }
 }
+```
+
+## Findings
+
+In JSON output Trivy runs built-in checks to find weak cryptographic assets. Trivy does not determine whether any software uses them.
+
+| Rule ID | Asset | Condition | Severity |
+| --- | --- | --- | --- |
+| `crypto-certificate-sha1-signature` | certificate | the signature uses SHA-1 | MEDIUM |
+| `crypto-rsa-key-below-2048` | key | the RSA key is shorter than 2048 bits | HIGH |
+| `crypto-ec-strength-below-112` | algorithm | the classical security level of an EC algorithm is below 112 bits | HIGH |
+| `crypto-certificate-expired` | certificate | `NotAfter` is before the `CreatedAt` of the report | MEDIUM |
+
+A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.
+
+A small RSA key in a certificate gets the finding on its key asset. The EC finding points to the algorithm asset, which is reported once per file, so several keys on one curve in a file give one finding. None of the curves Trivy currently recognizes is below 112 bits.
+
+A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not read the hash from the RSA-PSS parameters.
+
+`Asset`, `FilePath`, `Layer` and `Format` of a finding point to one entry of `CryptoAssets`. `Evidence` holds the values the check was evaluated on.
+
+```json
+{
+  "Target": "myimage:1.0.0",
+  "Class": "crypto",
+  "CryptoAssets": [ ... ],
+  "CryptoFindings": [
+    {
+      "RuleID": "crypto-rsa-key-below-2048",
+      "Title": "Small RSA key",
+      "Severity": "HIGH",
+      "Asset": "key:public:spki-sha256:4f1c…",
+      "AssetName": "RSA-1024 public key",
+      "FilePath": "app/certs/legacy.pem",
+      "Format": "PKIX",
+      "Layer": {
+        "DiffID": "sha256:9f3e…"
+      },
+      "Evidence": {
+        "KeySize": 1024
+      }
+    }
+  ]
+}
+```
+
+| Rule ID | Evidence |
+| --- | --- |
+| `crypto-certificate-sha1-signature` | `SignatureAlgorithm`, `SignatureAlgorithmOID` |
+| `crypto-rsa-key-below-2048` | `KeySize` |
+| `crypto-ec-strength-below-112` | `Curve`, `ClassicalSecurityLevel` |
+| `crypto-certificate-expired` | `NotAfter` |
+
+Findings do not affect the exit code of CycloneDX output.
+
+A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
+
+```yaml
+crypto:
+  - id: crypto-certificate-sha1-signature
+    paths:
+      - "etc/ssl/certs/**"
+    statement: OS root certificates, their signatures are not verified
 ```
 
 ## Filtering the inventory

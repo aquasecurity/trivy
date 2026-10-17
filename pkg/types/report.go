@@ -166,6 +166,7 @@ type Result struct {
 	Secrets           []DetectedSecret           `json:"Secrets,omitempty"`
 	Licenses          []DetectedLicense          `json:"Licenses,omitempty"`
 	CryptoAssets      []ftypes.CryptoAsset       `json:"CryptoAssets,omitempty"`
+	CryptoFindings    []CryptoFinding            `json:"CryptoFindings,omitempty"`
 	CustomResources   []ftypes.CustomResource    `json:"CustomResources,omitempty"`
 
 	// ModifiedFindings holds a list of findings that have been modified from their original state.
@@ -177,7 +178,7 @@ type Result struct {
 func (r *Result) IsEmpty() bool {
 	return len(r.Packages) == 0 && len(r.Vulnerabilities) == 0 && len(r.Misconfigurations) == 0 &&
 		len(r.Secrets) == 0 && len(r.Licenses) == 0 && len(r.CryptoAssets) == 0 &&
-		len(r.CustomResources) == 0 && len(r.ModifiedFindings) == 0
+		len(r.CryptoFindings) == 0 && len(r.CustomResources) == 0 && len(r.ModifiedFindings) == 0
 }
 
 type MisconfSummary struct {
@@ -204,6 +205,9 @@ func (results Results) Failed() bool {
 			return true
 		}
 		if len(r.Licenses) > 0 {
+			return true
+		}
+		if len(r.CryptoFindings) > 0 {
 			return true
 		}
 	}
