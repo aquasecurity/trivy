@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.77.0](https://github.com/aquasecurity/trivy/compare/v0.76.0...v0.77.0) (2026-10-16)
+
+
+### Features
+
+* **crypto:** describe keys that crypto/x509 cannot parse ([#11404](https://github.com/aquasecurity/trivy/issues/11404)) ([53d77b9](https://github.com/aquasecurity/trivy/commit/53d77b9ee282913284dcfa6621f0a5cc9ce4e6c7))
+
+
+### Bug Fixes
+
+* fail on read errors in .trivyignore ([#11414](https://github.com/aquasecurity/trivy/issues/11414)) ([25c07ab](https://github.com/aquasecurity/trivy/commit/25c07ab70ce6a73244a70af0c7bf2762e318a830))
+
 ## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-14)
 
 
