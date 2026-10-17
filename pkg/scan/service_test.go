@@ -1,6 +1,7 @@
 package scan_test
 
 import (
+	"context"
 	"testing"
 	"time"
 
@@ -461,6 +462,96 @@ func TestService_generateArtifactID(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := s.GenerateArtifactID(tt.artifactInfo)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+type fakeBackend struct {
+	response tTypes.ScanResponse
+}
+
+func (b fakeBackend) Scan(context.Context, string, string, []string, tTypes.ScanOptions) (tTypes.ScanResponse, error) {
+	return b.response, nil
+}
+
+type fakeArtifact struct{}
+
+func (fakeArtifact) Inspect(context.Context) (artifact.Reference, error) {
+	return artifact.Reference{Name: "test"}, nil
+}
+
+func (fakeArtifact) Clean(artifact.Reference) error {
+	return nil
+}
+
+func TestService_ScanArtifact_cryptoChecks(t *testing.T) {
+	now := time.Date(2026, 10, 12, 12, 0, 0, 0, time.UTC)
+	notAfter := now.Add(-time.Hour)
+
+	certificate := ftypes.CryptoAsset{
+		CryptoAssetInfo: ftypes.CryptoAssetInfo{
+			Kind: ftypes.CryptoKindCertificate,
+			Identity: ftypes.CryptoIdentity{
+				Method: ftypes.CryptoMethodSHA256,
+				Value:  "5e0b",
+			},
+			Name: "CN=legacy.example.com",
+			Certificate: &ftypes.CryptoCertificate{
+				NotAfter: notAfter,
+			},
+		},
+		FilePath: "app/legacy.pem",
+	}
+
+	tests := []struct {
+		name         string
+		cryptoChecks bool
+		want         []tTypes.CryptoFinding
+	}{
+		{
+			name:         "checks enabled",
+			cryptoChecks: true,
+			want: []tTypes.CryptoFinding{{
+				RuleID:    "crypto-certificate-expired",
+				Title:     "Expired certificate",
+				Severity:  "MEDIUM",
+				Asset:     certificate.Descriptor(),
+				AssetName: certificate.Name,
+				FilePath:  certificate.FilePath,
+				Evidence: tTypes.CryptoEvidence{
+					NotAfter: notAfter,
+				},
+			}},
+		},
+		{
+			name: "checks disabled",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			uuid.SetFakeUUIDV7(t, "017b7d41-e09f-7000-80ea-%012d")
+
+			backend := fakeBackend{
+				response: tTypes.ScanResponse{
+					Results: tTypes.Results{{
+						Target:       "test",
+						Class:        tTypes.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{certificate},
+					}},
+				},
+			}
+			s := scan.NewService(backend, fakeArtifact{})
+
+			ctx := clock.With(t.Context(), now)
+			got, err := s.ScanArtifact(ctx, tTypes.ScanOptions{
+				Scanners:     tTypes.Scanners{tTypes.CryptoScanner},
+				CryptoChecks: tt.cryptoChecks,
+			})
+			require.NoError(t, err)
+			require.Len(t, got.Results, 1)
+			assert.Equal(t, tt.want, got.Results[0].CryptoFindings)
+			assert.Equal(t, now, got.CreatedAt)
 		})
 	}
 }

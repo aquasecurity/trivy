@@ -124,6 +124,9 @@ type ScanOptions struct {
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
 	VulnSeveritySources []dbTypes.SourceID
+
+	// CryptoChecks enables the built-in checks of cryptographic assets.
+	CryptoChecks bool
 }
 
 // ScanResponse represents the response from the scan service

@@ -375,7 +375,21 @@ func TestOptions_Align(t *testing.T) {
 				ReportOptions: flag.ReportOptions{Format: types.FormatJSON},
 				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
 			},
-			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx'",
+		},
+		{
+			name: "crypto scanner with table",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatTable},
+				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
+			},
+		},
+		{
+			name: "crypto scanner with SARIF",
+			opts: flag.Options{
+				ReportOptions: flag.ReportOptions{Format: types.FormatSarif},
+				ScanOptions:   flag.ScanOptions{Scanners: types.Scanners{types.CryptoScanner}},
+			},
+			wantErr: "'--scanners crypto' can only be used with '--format cyclonedx', '--format json' or '--format table'",
 		},
 		{
 			name: "crypto scanner with SBOM sources",
@@ -415,6 +429,50 @@ func TestOptions_Align(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
+		})
+	}
+}
+
+func TestOptions_ScanOpts_cryptoChecks(t *testing.T) {
+	tests := []struct {
+		name     string
+		format   types.Format
+		scanners types.Scanners
+		want     bool
+	}{
+		{
+			name:     "crypto scanner with JSON",
+			format:   types.FormatJSON,
+			scanners: types.Scanners{types.CryptoScanner},
+			want:     true,
+		},
+		{
+			name:     "crypto scanner with table",
+			format:   types.FormatTable,
+			scanners: types.Scanners{types.CryptoScanner},
+			want:     true,
+		},
+		{
+			name:     "crypto scanner with CycloneDX",
+			format:   types.FormatCycloneDX,
+			scanners: types.Scanners{types.CryptoScanner},
+			want:     false,
+		},
+		{
+			name:     "no crypto scanner with JSON",
+			format:   types.FormatJSON,
+			scanners: types.Scanners{types.VulnerabilityScanner},
+			want:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			opts := flag.Options{
+				ReportOptions: flag.ReportOptions{Format: tt.format},
+				ScanOptions:   flag.ScanOptions{Scanners: tt.scanners},
+			}
+			assert.Equal(t, tt.want, opts.ScanOpts().CryptoChecks)
 		})
 	}
 }

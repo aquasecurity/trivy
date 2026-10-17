@@ -68,6 +68,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
 	filterSecrets(result, severities, ignoreConf)
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
+	filterCryptoFindings(result, severities)
 
 	if opt.PolicyFile != "" {
 		policyFile := filepath.ToSlash(filepath.Clean(opt.PolicyFile))
@@ -171,6 +172,16 @@ func filterSecrets(result *types.Result, severities []string, ignoreConfig Ignor
 		filtered = append(filtered, secret)
 	}
 	result.Secrets = filtered
+}
+
+func filterCryptoFindings(result *types.Result, severities []string) {
+	var filtered []types.CryptoFinding
+	for _, finding := range result.CryptoFindings {
+		if slices.Contains(severities, finding.Severity) {
+			filtered = append(filtered, finding)
+		}
+	}
+	result.CryptoFindings = filtered
 }
 
 func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {

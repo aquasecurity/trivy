@@ -4,11 +4,13 @@ import (
 	"context"
 	"crypto/sha256"
 	"fmt"
+	"time"
 
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/crypto/check"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fingerprint"
@@ -84,6 +86,12 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 		return types.Report{}, xerrors.Errorf("failed to generate ReportID: %w", err)
 	}
 
+	// Expiry is checked at the report creation time.
+	now := clock.Now(ctx)
+	if options.CryptoChecks {
+		evaluateCryptoChecks(scanResponse.Results, now)
+	}
+
 	r := types.Report{
 		SchemaVersion: report.SchemaVersion,
 		Trivy: types.TrivyInfo{
@@ -91,7 +99,7 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 			Server:  scanResponse.ServerInfo,
 		},
 		ReportID:     reportID.String(),
-		CreatedAt:    clock.Now(ctx),
+		CreatedAt:    now,
 		ArtifactID:   s.generateArtifactID(artifactInfo),
 		ArtifactName: artifactInfo.Name,
 		ArtifactType: artifactInfo.Type,
@@ -125,6 +133,14 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 	fingerprint.Fill(&r)
 
 	return r, nil
+}
+
+func evaluateCryptoChecks(results types.Results, now time.Time) {
+	for i := range results {
+		if results[i].Class == types.ClassCrypto {
+			results[i].CryptoFindings = check.Evaluate(results[i].CryptoAssets, now)
+		}
+	}
 }
 
 // generateArtifactID generates a unique ID for the artifact based on its type
