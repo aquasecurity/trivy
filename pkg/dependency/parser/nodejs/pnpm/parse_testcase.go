@@ -1123,4 +1123,51 @@ var (
 		},
 	}
 	pnpmV9MultiVersionDeps = []ftypes.Dependency{}
+
+	// Optional dependencies of an importer are production dependencies:
+	// `pnpm install --prod` installs them, only devDependencies are skipped.
+	//
+	// docker run --rm node:24-alpine sh -c '
+	//   npm install -g pnpm@10.34.7
+	//   mkdir /app && cd /app
+	//   pnpm init
+	//   pnpm add ms@2.1.3
+	//   pnpm add -O mkdirp@0.5.5
+	//   pnpm add -D lodash@4.17.21
+	//   cat pnpm-lock.yaml'
+	pnpmV9Optional = []ftypes.Package{
+		{
+			ID:           "lodash@4.17.21",
+			Name:         "lodash",
+			Version:      "4.17.21",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          true,
+		},
+		{
+			ID:           "minimist@1.2.8",
+			Name:         "minimist",
+			Version:      "1.2.8",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "mkdirp@0.5.5",
+			Name:         "mkdirp",
+			Version:      "0.5.5",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "ms@2.1.3",
+			Name:         "ms",
+			Version:      "2.1.3",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9OptionalDeps = []ftypes.Dependency{
+		{
+			ID: "mkdirp@0.5.5",
+			DependsOn: []string{
+				"minimist@1.2.8",
+			},
+		},
+	}
 )
