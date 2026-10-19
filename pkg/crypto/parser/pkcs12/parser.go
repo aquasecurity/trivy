@@ -26,7 +26,8 @@ var (
 	oidX509Certificate = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 22, 1}
 )
 
-var errNotPKCS12 = errors.New("not a PKCS#12 file")
+// ErrNotPKCS12 is returned by Parse for content that is not a PKCS#12 file in DER.
+var ErrNotPKCS12 = errors.New("not a PKCS#12 file")
 
 // pfx is the outer structure of a PKCS#12 file, as defined in RFC 7292.
 type pfx struct {
@@ -52,44 +53,29 @@ type certBag struct {
 	Data []byte `asn1:"tag:0,explicit"`
 }
 
-// Detect reports whether content is a PKCS#12 file in DER.
-func Detect(content []byte) bool {
-	_, err := decodePFX(content)
-	return err == nil
-}
-
-// decodePFX reads the outer structure of a PKCS#12 file.
-func decodePFX(content []byte) (pfx, error) {
-	var p pfx
-	rest, err := asn1.Unmarshal(content, &p)
-	if err != nil {
-		return pfx{}, err
-	}
-	if len(rest) != 0 || p.Version != 3 {
-		return pfx{}, errNotPKCS12
-	}
-	return p, nil
-}
-
 // Parse describes the unencrypted certificates of a PKCS#12 keystore as assets.
 //
-// Material that cannot be read is logged and skipped. An error means a parsed certificate
-// could not be described.
+// Content that is not a PKCS#12 file in DER gives ErrNotPKCS12. Material that cannot be read
+// is logged and skipped. Any other error means a parsed certificate could not be described.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
+	var p pfx
+	if rest, err := asn1.Unmarshal(content, &p); err != nil || len(rest) != 0 || p.Version != 3 {
+		return nil, ErrNotPKCS12
+	}
 	ctx = log.WithContextPrefix(ctx, "pkcs12")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
-	return x509.ParseCertificates(ctx, filePath, certificates(ctx, content), ftypes.CryptoEncodingPKCS12)
+	return x509.ParseCertificates(ctx, filePath, certificates(ctx, p), ftypes.CryptoEncodingPKCS12)
 }
 
 // certificates yields the DER of each certificate stored in an unencrypted content of the
-// authenticated safe.
-func certificates(ctx context.Context, content []byte) iter.Seq[[]byte] {
+// authenticated safe of p.
+func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 	return func(yield func([]byte) bool) {
-		contents, ok := authenticatedSafe(ctx, content)
+		contentInfos, ok := authenticatedSafe(ctx, p)
 		if !ok {
 			return
 		}
-		for _, ci := range contents {
+		for _, ci := range contentInfos {
 			switch {
 			case ci.ContentType.Equal(oidDataContentType):
 				var data []byte
@@ -109,15 +95,9 @@ func certificates(ctx context.Context, content []byte) iter.Seq[[]byte] {
 	}
 }
 
-// authenticatedSafe reads the contents of the authenticated safe, which is stored as data
-// in a keystore protected by a password-based MAC or by no integrity mode at all.
-func authenticatedSafe(ctx context.Context, content []byte) ([]contentInfo, bool) {
-	p, err := decodePFX(content)
-	if err != nil {
-		// A broken outer structure cannot be told apart from another format.
-		log.DebugContext(ctx, "No PKCS#12 file found")
-		return nil, false
-	}
+// authenticatedSafe reads the contents of the authenticated safe of p, which is stored as
+// data in a keystore protected by a password-based MAC or by no integrity mode at all.
+func authenticatedSafe(ctx context.Context, p pfx) ([]contentInfo, bool) {
 	if p.AuthSafe.ContentType.Equal(oidSignedDataContentType) {
 		log.DebugContext(ctx, "PKCS#12 signed with a public key skipped")
 		return nil, false
@@ -132,12 +112,12 @@ func authenticatedSafe(ctx context.Context, content []byte) ([]contentInfo, bool
 		logMalformed(ctx, err, "Malformed PKCS#12 file")
 		return nil, false
 	}
-	var contents []contentInfo
-	if rest, err := asn1.Unmarshal(data, &contents); err != nil || len(rest) != 0 {
+	var contentInfos []contentInfo
+	if rest, err := asn1.Unmarshal(data, &contentInfos); err != nil || len(rest) != 0 {
 		logMalformed(ctx, err, "Malformed PKCS#12 file")
 		return nil, false
 	}
-	return contents, true
+	return contentInfos, true
 }
 
 // walkSafeContents yields the certificates of a safe contents structure and of the safe

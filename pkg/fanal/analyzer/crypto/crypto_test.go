@@ -118,6 +118,11 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 			content:  []byte{0xFE, 0xED, 0xFE, 0xED, 0x00, 0x00, 0x00, 0x02},
 		},
 		{
+			name:     "Java cryptography extension keystore",
+			filePath: "etc/app/keystore.jceks",
+			content:  []byte{0xCE, 0xCE, 0xCE, 0xCE, 0x00, 0x00, 0x00, 0x02},
+		},
+		{
 			name:     "PKCS#12 trust store without a keystore name",
 			filePath: "etc/app/truststore",
 			content:  fixtures.truststore,

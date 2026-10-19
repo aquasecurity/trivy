@@ -4,6 +4,7 @@ import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
 	"crypto/rand"
+	"crypto/rsa"
 	stdx509 "crypto/x509"
 	"crypto/x509/pkix"
 	"encoding/asn1"
@@ -32,10 +33,20 @@ func TestParse(t *testing.T) {
 	certificate := newCertificate(t, "example.test")
 	other := newCertificate(t, "other.example.test")
 
+	ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	require.NoError(t, err)
+	pkcs8Key, err := stdx509.MarshalPKCS8PrivateKey(ecKey)
+	require.NoError(t, err)
+	sec1Key, err := stdx509.MarshalECPrivateKey(ecKey)
+	require.NoError(t, err)
+	rsaKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+
 	tests := []struct {
 		name    string
 		content []byte
 		want    []string
+		wantErr error
 	}{
 		{
 			name:    "OpenSSL keystore without a password",
@@ -91,6 +102,14 @@ func TestParse(t *testing.T) {
 			name: "enveloped content",
 			content: keystore(t,
 				pkcs12.ContentInfo{ContentType: pkcs12.OIDEnvelopedDataContentType, Content: explicit(marshal(t, []byte{0x01}))},
+				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
+			),
+			want: []string{"example.test"},
+		},
+		{
+			name: "content of an unsupported type",
+			content: keystore(t,
+				pkcs12.ContentInfo{ContentType: pkcs12.OIDSignedDataContentType, Content: explicit(marshal(t, 1))},
 				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
 			),
 			want: []string{"example.test"},
@@ -155,83 +174,69 @@ func TestParse(t *testing.T) {
 				Version:  2,
 				AuthSafe: dataContent(t, marshal(t, []pkcs12.ContentInfo{dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate)))})),
 			}),
+			wantErr: pkcs12.ErrNotPKCS12,
 		},
 		{
 			name:    "trailing data",
 			content: append(keystore(t, dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate)))), 0x00),
+			wantErr: pkcs12.ErrNotPKCS12,
 		},
 		{
 			name:    "indefinite length",
 			content: []byte{0x30, 0x80, 0x02, 0x01, 0x03, 0x00, 0x00},
+			wantErr: pkcs12.ErrNotPKCS12,
 		},
 		{
 			name:    "Java keystore",
 			content: []byte{0xFE, 0xED, 0xFE, 0xED, 0x00, 0x00, 0x00, 0x02},
+			wantErr: pkcs12.ErrNotPKCS12,
 		},
 		{
-			name: "empty file",
+			name:    "DER certificate",
+			content: certificate,
+			wantErr: pkcs12.ErrNotPKCS12,
+		},
+		{
+			name:    "PEM certificate",
+			content: []byte("-----BEGIN CERTIFICATE-----\n"),
+			wantErr: pkcs12.ErrNotPKCS12,
+		},
+		{
+			name:    "DER PKCS#1 private key",
+			content: stdx509.MarshalPKCS1PrivateKey(rsaKey),
+			wantErr: pkcs12.ErrNotPKCS12,
+		},
+		{
+			name:    "DER PKCS#8 private key",
+			content: pkcs8Key,
+			wantErr: pkcs12.ErrNotPKCS12,
+		},
+		{
+			name:    "DER SEC1 private key",
+			content: sec1Key,
+			wantErr: pkcs12.ErrNotPKCS12,
+		},
+		{
+			name:    "empty file",
+			wantErr: pkcs12.ErrNotPKCS12,
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assets, err := pkcs12.Parse(t.Context(), parsedFilePath, tt.content)
+			if tt.wantErr != nil {
+				require.ErrorIs(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, certificateNames(t, assets))
 		})
 	}
 }
 
-func TestDetect(t *testing.T) {
-	certificate := newCertificate(t, "example.test")
-
-	tests := []struct {
-		name    string
-		content []byte
-		want    bool
-	}{
-		{
-			name:    "keystore",
-			content: fixture(t, "keytool-password.p12"),
-			want:    true,
-		},
-		{
-			name:    "indefinite length",
-			content: []byte{0x30, 0x80, 0x02, 0x01, 0x03, 0x00, 0x00},
-		},
-		{
-			name: "unsupported version",
-			content: marshal(t, pkcs12.PFX{
-				Version:  2,
-				AuthSafe: dataContent(t, marshal(t, []pkcs12.ContentInfo{})),
-			}),
-		},
-		{
-			name:    "trailing data",
-			content: append(keystore(t), 0x00),
-		},
-		{
-			name:    "DER certificate",
-			content: certificate,
-		},
-		{
-			name:    "PEM certificate",
-			content: []byte("-----BEGIN CERTIFICATE-----\n"),
-		},
-		{
-			name: "empty file",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.want, pkcs12.Detect(tt.content))
-		})
-	}
-}
-
-// certificateNames checks that every asset is valid and returns the names of the
-// certificates among them.
+// certificateNames checks that every asset is valid and not a private key, and returns the
+// names of the certificates among them.
 func certificateNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	t.Helper()
 
@@ -239,6 +244,7 @@ func certificateNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
 		assert.Equalf(t, parsedFilePath, asset.FilePath, "asset %d", i)
+		assert.NotEqualf(t, ftypes.CryptoKeyTypePrivate, asset.KeyType, "asset %d", i)
 		if asset.Kind != ftypes.CryptoKindCertificate {
 			continue
 		}

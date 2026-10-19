@@ -32,7 +32,7 @@ const (
 )
 
 var (
-	requiredExtensions = set.NewCaseInsensitive(".pem", ".der", ".crt", ".cer", ".key")
+	pemDERExtensions = set.NewCaseInsensitive(".pem", ".der", ".crt", ".cer", ".key")
 
 	keystoreExtensions = set.NewCaseInsensitive(".p12", ".pfx", ".jks", ".keystore")
 
@@ -72,7 +72,7 @@ func (a *cryptoAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInp
 
 // Required selects a file by extension and size, without reading its content.
 func (a *cryptoAnalyzer) Required(filePath string, info os.FileInfo) bool {
-	if !requiredExtensions.Contains(filepath.Ext(filePath)) && !isKeystore(filePath) {
+	if !pemDERExtensions.Contains(filepath.Ext(filePath)) && !isKeystore(filePath) {
 		return false
 	}
 	if info.Size() > maxFileSize {
@@ -95,8 +95,9 @@ func parse(ctx context.Context, filePath string, content []byte) ([]types.Crypto
 			return nil, nil
 		}
 	}
-	if pkcs12.Detect(content) {
-		return pkcs12.Parse(ctx, filePath, content)
+	assets, err := pkcs12.Parse(ctx, filePath, content)
+	if !errors.Is(err, pkcs12.ErrNotPKCS12) {
+		return assets, err
 	}
 	return x509.Parse(ctx, filePath, content)
 }

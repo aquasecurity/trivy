@@ -130,12 +130,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 // ParseCertificates describes DER certificates as assets with the given encoding. A
 // certificate that cannot be read is logged and skipped, and a repeated certificate is
 // reported once.
-func ParseCertificates(
-	ctx context.Context,
-	filePath string,
-	certificates iter.Seq[[]byte],
-	encoding ftypes.CryptoEncoding,
-) ([]ftypes.CryptoAsset, error) {
+func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], encoding ftypes.CryptoEncoding) ([]ftypes.CryptoAsset, error) {
 	objects := func(yield func(object) bool) {
 		for der := range certificates {
 			obj, err := certificateObject(der)
