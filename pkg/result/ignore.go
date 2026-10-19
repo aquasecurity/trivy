@@ -304,6 +304,9 @@ func parseIgnore(ignoreFile string) (IgnoreFindings, error) {
 			ExpiredAt: exp,
 		})
 	}
+	if err := scanner.Err(); err != nil {
+		return nil, xerrors.Errorf("scan error: %w", err)
+	}
 
 	return ignoredFindings, nil
 }

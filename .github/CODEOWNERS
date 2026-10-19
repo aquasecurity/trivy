@@ -10,6 +10,7 @@ pkg/scanner/     @knqyf263 @DmitriyLewen
 # Misconfiguration scanning
 docs/guide/scanner/misconfiguration/  @nikpivkin
 docs/guide/target/aws.md              @nikpivkin
+docs/tutorials/misconfiguration/      @nikpivkin
 pkg/fanal/analyzer/config/            @nikpivkin
 pkg/config/aws/                       @nikpivkin
 pkg/iac/                              @nikpivkin

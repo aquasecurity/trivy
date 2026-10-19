@@ -4,7 +4,7 @@
     Scanning results may be inaccurate.
 
 This page describes the details of the [RapidFort](https://www.rapidfort.com/) curated vulnerability feed.
-RapidFort publishes curated builds of [Ubuntu](../os/ubuntu.md), [Alpine](../os/alpine.md), and [Red Hat Enterprise Linux](../os/rhel.md)-based container images together with the corresponding security advisories.
+RapidFort publishes curated builds of container images based on [Ubuntu](../os/ubuntu.md), [Debian](../os/debian.md), [Alpine](../os/alpine.md), [Red Hat Enterprise Linux](../os/rhel.md), [Oracle Linux](../os/oracle.md), [Rocky Linux](../os/rocky.md), [AlmaLinux](../os/alma.md) and [Amazon Linux](../os/amazon.md), together with the corresponding security advisories.
 
 RapidFort images are identified by the presence of `/usr/share/rapidfort/curated.json` in the image filesystem. When Trivy finds this sentinel file, it uses the [RapidFort security-advisories feed](https://github.com/rapidfort/security-advisories) for that image instead of the base OS vendor's advisories.
 
@@ -18,5 +18,10 @@ RapidFort also curates advisories for end-of-life releases, so Trivy scans Rapid
 For details on supported scanners, features, and behaviour for each base OS, refer to the corresponding page:
 
 - [Ubuntu](../os/ubuntu.md)
+- [Debian](../os/debian.md)
 - [Alpine](../os/alpine.md)
 - [Red Hat Enterprise Linux](../os/rhel.md)
+- [Oracle Linux](../os/oracle.md)
+- [Rocky Linux](../os/rocky.md)
+- [AlmaLinux](../os/alma.md)
+- [Amazon Linux](../os/amazon.md)

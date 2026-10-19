@@ -108,9 +108,10 @@ func (p *Parser) parsePackages(lockPkgs []packageInfo, isDev bool, pkgs map[stri
 
 		var dependsOn []string
 		for depName := range lpkg.Require {
-			// Require field includes required php version, skip this
-			// Also skip PHP extensions
-			if depName == "php" || strings.HasPrefix(depName, "ext") {
+			// Skip platform packages (php, ext-*, lib-*, composer-plugin-api, etc.).
+			// Unlike regular packages, their names never contain a vendor prefix.
+			// cf. https://getcomposer.org/doc/01-basic-usage.md#platform-packages
+			if !strings.Contains(depName, "/") {
 				continue
 			}
 			dependsOn = append(dependsOn, depName) // field uses range of versions, so later we will fill in the versions from the packages

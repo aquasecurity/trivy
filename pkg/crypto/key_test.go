@@ -9,7 +9,10 @@ import (
 	"crypto/rand"
 	"crypto/rsa"
 	stdx509 "crypto/x509"
+	"crypto/x509/pkix"
+	"encoding/asn1"
 	"math/big"
+	"slices"
 	"strings"
 	"testing"
 
@@ -76,7 +79,7 @@ func TestDescribeKey(t *testing.T) {
 		Identity: ftypes.CryptoIdentity{
 			Method:     ftypes.CryptoMethodOID,
 			Value:      "1.2.840.10040.4.1",
-			Parameters: "key-size=2048",
+			Parameters: "key-size=2048,subgroup-size=256",
 		},
 		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
@@ -269,11 +272,246 @@ func TestDescribeKey(t *testing.T) {
 	}
 }
 
-// TestDescribeKeyNoCanonicalForm covers the key of a certificate whose algorithm
-// crypto/x509 does not recognize, which parsing leaves absent.
-func TestDescribeKeyNoCanonicalForm(t *testing.T) {
-	_, _, err := crypto.DescribeKey(nil, ftypes.CryptoKeyTypePublic)
-	require.ErrorIs(t, err, crypto.ErrNoCanonicalForm)
+func TestDescribeRawPublicKey(t *testing.T) {
+	ed448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 113}, make([]byte, 57))
+	x448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 111}, make([]byte, 56))
+	rsaPSS := marshalSPKI(t, asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}, make([]byte, 270))
+
+	ed448Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.113",
+		},
+		Name: "Ed448",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "EdDSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	x448Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.3.101.111",
+		},
+		Name: "1.3.101.111",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+	rsaPSSAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "1.2.840.113549.1.1.10",
+		},
+		Name: "1.2.840.113549.1.1.10",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+
+	tests := []struct {
+		name          string
+		spki          []byte
+		keyType       ftypes.CryptoKeyType
+		wantKey       ftypes.CryptoAssetInfo
+		wantAlgorithm ftypes.CryptoAssetInfo
+		wantErr       string
+	}{
+		{
+			name:    "Ed448 public key",
+			spki:    ed448,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, ed448),
+				Name:     "Ed448 public key",
+				Key:      &ftypes.CryptoKey{Size: 456},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: ed448Algorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: ed448Algorithm,
+		},
+		{
+			// An algorithm outside the catalog is named by its OID.
+			name:    "X448 private key",
+			spki:    x448,
+			keyType: ftypes.CryptoKeyTypePrivate,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePrivate,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, x448),
+				Name:     "1.3.101.111 private key",
+				Key:      &ftypes.CryptoKey{Size: 448},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: x448Algorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: x448Algorithm,
+		},
+		{
+			// The OID does not fix the size of an RSA-PSS key.
+			name:    "RSA-PSS public key",
+			spki:    rsaPSS,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, rsaPSS),
+				Name:     "1.2.840.113549.1.1.10 public key",
+				Key:      &ftypes.CryptoKey{},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: rsaPSSAlgorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: rsaPSSAlgorithm,
+		},
+		{
+			name:    "Ed448 key of the wrong length",
+			spki:    marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 113}, []byte{1}),
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantErr: "8 bits instead of 456",
+		},
+		{
+			name:    "invalid subject public key info",
+			spki:    []byte{0x30, 0x80},
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantErr: "unmarshal subject public key info",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			key, algorithm, err := crypto.DescribeRawPublicKey(tt.spki, tt.keyType)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantKey, key)
+			assert.Equal(t, tt.wantAlgorithm, algorithm)
+
+			require.NoError(t, key.Validate())
+			require.NoError(t, algorithm.Validate())
+		})
+	}
+}
+
+// TestDescribeRawPublicKeyIdentity checks that a key described from its encoded form is the
+// same key DescribeKey reports for it, apart from the size and curve it cannot read.
+func TestDescribeRawPublicKeyIdentity(t *testing.T) {
+	fixtures := newKeyFixtures(t)
+
+	tests := []struct {
+		name string
+		pub  any
+	}{
+		{
+			// RSA carries NULL algorithm parameters.
+			name: "RSA",
+			pub:  fixtures.rsaPublic,
+		},
+		{
+			name: "ECDSA",
+			pub:  fixtures.ecdsaPublic,
+		},
+		{
+			// Ed25519 carries no algorithm parameters.
+			name: "Ed25519",
+			pub:  fixtures.ed25519Public,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			der, err := crypto.MarshalPublicKey(tt.pub)
+			require.NoError(t, err)
+
+			key, algorithm, err := crypto.DescribeRawPublicKey(der, ftypes.CryptoKeyTypePublic)
+			require.NoError(t, err)
+			parsedKey, parsedAlgorithm, err := crypto.DescribeKey(tt.pub, ftypes.CryptoKeyTypePublic)
+			require.NoError(t, err)
+
+			assert.Equal(t, parsedKey.Identity, key.Identity)
+			assert.Equal(t, parsedAlgorithm.Identity.Value, algorithm.Identity.Value)
+
+			require.NoError(t, key.Validate())
+			require.NoError(t, algorithm.Validate())
+		})
+	}
+}
+
+func TestParseSubjectPublicKeyInfo(t *testing.T) {
+	fixtures := newKeyFixtures(t)
+	der, err := crypto.MarshalPublicKey(fixtures.ed25519Public)
+	require.NoError(t, err)
+	extraElement, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+		Extra            int
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{1, 3, 101, 112}},
+		SubjectPublicKey: asn1.BitString{Bytes: []byte(fixtures.ed25519Public), BitLength: len(fixtures.ed25519Public) * 8},
+		Extra:            1,
+	})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name    string
+		spki    []byte
+		want    asn1.ObjectIdentifier
+		wantErr string
+	}{
+		{
+			name: "valid",
+			spki: der,
+			want: asn1.ObjectIdentifier{1, 3, 101, 112},
+		},
+		{
+			name:    "empty",
+			spki:    nil,
+			wantErr: "unmarshal subject public key info",
+		},
+		{
+			name:    "truncated",
+			spki:    der[:len(der)-1],
+			wantErr: "unmarshal subject public key info",
+		},
+		{
+			name:    "trailing data",
+			spki:    append(slices.Clone(der), 0x00),
+			wantErr: "followed by 1 bytes",
+		},
+		{
+			name:    "extra element",
+			spki:    extraElement,
+			wantErr: "does not round-trip",
+		},
+		{
+			name:    "X25519 key of the wrong length",
+			spki:    marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 110}, make([]byte, 31)),
+			wantErr: "248 bits instead of 256",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := crypto.ParseSubjectPublicKeyInfo(tt.spki)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.want, got)
+		})
+	}
 }
 
 func TestDescribeEncryptedKey(t *testing.T) {
@@ -502,10 +740,10 @@ func newKeyFixtures(t *testing.T) keyFixtures {
 		mldsa87Public: mldsa87Key.PublicKey(),
 		dsaPublic: &dsa.PublicKey{
 			Parameters: dsa.Parameters{
-				// A 2048-bit modulus, so that the reported key size is a realistic one.
+				// A 2048-bit p and a 256-bit q, so that (L, N) is a realistic pair.
 				// The group is not a valid one, which nothing on this path checks.
 				P: new(big.Int).Lsh(big.NewInt(1), 2047),
-				Q: big.NewInt(11),
+				Q: new(big.Int).Lsh(big.NewInt(1), 255),
 				G: big.NewInt(2),
 			},
 			Y: big.NewInt(4),
@@ -520,4 +758,19 @@ func spkiIdentity(t *testing.T, pub any) ftypes.CryptoIdentity {
 	require.NoError(t, err)
 
 	return ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, der)
+}
+
+// marshalSPKI encodes a SubjectPublicKeyInfo with the given algorithm OID and public key bytes.
+func marshalSPKI(t *testing.T, oid asn1.ObjectIdentifier, publicKey []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        pkix.AlgorithmIdentifier{Algorithm: oid},
+		SubjectPublicKey: asn1.BitString{Bytes: publicKey, BitLength: len(publicKey) * 8},
+	})
+	require.NoError(t, err)
+	return der
 }
