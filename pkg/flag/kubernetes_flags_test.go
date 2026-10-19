@@ -14,6 +14,7 @@ func TestOptionToToleration(t *testing.T) {
 		name               string
 		tolerationsOptions []string
 		want               []corev1.Toleration
+		wantErr            string
 	}{
 		{
 			name:               "no execute",
@@ -62,10 +63,31 @@ func TestOptionToToleration(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:               "key without value with seconds",
+			tolerationsOptions: []string{"node.kubernetes.io/unreachable:NoExecute:300"},
+			want: []corev1.Toleration{
+				{
+					Key:               "node.kubernetes.io/unreachable",
+					Operator:          "Exists",
+					Effect:            "NoExecute",
+					TolerationSeconds: new(int64(300)),
+				},
+			},
+		},
+		{
+			name:               "invalid value",
+			tolerationsOptions: []string{"key1=a=b:NoSchedule"},
+			wantErr:            `invalid toleration value "a=b"`,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := optionToTolerations(tt.tolerationsOptions)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				return
+			}
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
 		})

@@ -7,6 +7,7 @@ import (
 
 	"golang.org/x/xerrors"
 	corev1 "k8s.io/api/core/v1"
+	"k8s.io/apimachinery/pkg/util/validation"
 )
 
 var (
@@ -227,6 +228,9 @@ func optionToTolerations(tolerationsOptions []string) ([]corev1.Toleration, erro
 			return []corev1.Toleration{}, errors.New("toleration effect must be a valid value")
 		}
 		key, value, _ := strings.Cut(tolerationParts[0], "=")
+		if errs := validation.IsValidLabelValue(value); len(errs) > 0 {
+			return nil, xerrors.Errorf("invalid toleration value %q: %s", value, strings.Join(errs, "; "))
+		}
 		operator := corev1.TolerationOpEqual
 		if value == "" {
 			operator = corev1.TolerationOpExists
