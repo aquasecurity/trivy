@@ -167,10 +167,8 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 
 	if options.Scanners.Enabled(types.CryptoScanner) && len(target.CryptoAssets) != 0 {
 		// The security levels are assessed here rather than during analysis, so that a change
-		// to their basis applies to cached assets without analyzing them again. The IDs depend
-		// on the layer, which is known only after the layers are applied.
+		// to their basis applies to cached assets without analyzing them again.
 		crypto.AssessStrength(target.CryptoAssets)
-		crypto.AssignIDs(target.CryptoAssets)
 		results = append(results, types.Result{
 			Target:         target.Name,
 			Class:          types.ClassCrypto,
