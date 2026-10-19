@@ -275,7 +275,8 @@ func certificateNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 		if asset.Kind != ftypes.CryptoKindCertificate {
 			continue
 		}
-		assert.Equalf(t, ftypes.CryptoEncodingPKCS12, asset.Encoding, "asset %d", i)
+		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
+		assert.Equalf(t, ftypes.CryptoKeystorePKCS12, asset.Keystore, "asset %d", i)
 		names = append(names, asset.Name)
 	}
 	return names

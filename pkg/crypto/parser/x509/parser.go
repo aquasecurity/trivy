@@ -71,6 +71,8 @@ type object struct {
 	encryption encryptionFormat
 	// encoding identifies the source encoding.
 	encoding ftypes.CryptoEncoding
+	// keystore identifies the keystore the object is stored in.
+	keystore ftypes.CryptoKeystoreType
 	// keyFormat identifies the source key container format.
 	keyFormat ftypes.CryptoKeyFormat
 }
@@ -127,10 +129,10 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	return describe(filePath, parse(ctx, content))
 }
 
-// ParseCertificates describes DER certificates as assets with the given encoding. A
+// ParseCertificates describes DER certificates stored in the given keystore as assets. A
 // certificate that cannot be read is logged and skipped, and a repeated certificate is
 // reported once.
-func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], encoding ftypes.CryptoEncoding) ([]ftypes.CryptoAsset, error) {
+func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
 	objects := func(yield func(object) bool) {
 		for der := range certificates {
 			obj, err := certificateObject(der)
@@ -138,7 +140,8 @@ func ParseCertificates(ctx context.Context, filePath string, certificates iter.S
 				logParseError(ctx, "", err)
 				continue
 			}
-			obj.encoding = encoding
+			obj.encoding = ftypes.CryptoEncodingDER
+			obj.keystore = keystore
 			if !yield(obj) {
 				return
 			}

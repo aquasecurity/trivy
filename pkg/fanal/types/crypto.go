@@ -55,7 +55,7 @@ func DigestIdentity(method CryptoIdentityMethod, canonical []byte) CryptoIdentit
 	}
 }
 
-// CryptoEncoding identifies how source cryptographic data is stored in a file.
+// CryptoEncoding identifies the outer encoding of source cryptographic data.
 type CryptoEncoding string
 
 const (
@@ -63,8 +63,14 @@ const (
 	CryptoEncodingPEM CryptoEncoding = "PEM"
 	// CryptoEncodingDER identifies DER encoding.
 	CryptoEncodingDER CryptoEncoding = "DER"
-	// CryptoEncodingPKCS12 identifies a PKCS#12 keystore.
-	CryptoEncodingPKCS12 CryptoEncoding = "PKCS#12"
+)
+
+// CryptoKeystoreType identifies the keystore that source cryptographic data is stored in.
+type CryptoKeystoreType string
+
+const (
+	// CryptoKeystorePKCS12 identifies a PKCS#12 keystore.
+	CryptoKeystorePKCS12 CryptoKeystoreType = "PKCS#12"
 )
 
 // CryptoAssetInfo describes a format-neutral cryptographic asset. Its identity is derived
@@ -227,6 +233,8 @@ type CryptoAsset struct {
 	Format CryptoKeyFormat `json:",omitempty"`
 	// Encoding is empty for a derived asset, such as an algorithm.
 	Encoding CryptoEncoding `json:",omitempty"`
+	// Keystore is empty for material outside a keystore.
+	Keystore CryptoKeystoreType `json:",omitempty"`
 	// Layer is empty for a target that has no layers.
 	Layer Layer `json:",omitzero"`
 }
@@ -247,12 +255,18 @@ func (a CryptoAsset) Validate() error {
 	}
 
 	switch a.Encoding {
-	case "", CryptoEncodingPEM, CryptoEncodingDER, CryptoEncodingPKCS12:
+	case "", CryptoEncodingPEM, CryptoEncodingDER:
 	default:
 		return xerrors.Errorf("unknown encoding %q", a.Encoding)
 	}
 	if a.Encoding != "" && a.Kind == CryptoKindAlgorithm {
 		return xerrors.Errorf("asset kind %q has no encoded form", a.Kind)
+	}
+
+	switch a.Keystore {
+	case "", CryptoKeystorePKCS12:
+	default:
+		return xerrors.Errorf("unknown keystore type %q", a.Keystore)
 	}
 	return nil
 }

@@ -71,7 +71,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	}
 	ctx = log.WithContextPrefix(ctx, "pkcs12")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
-	return x509.ParseCertificates(ctx, filePath, certificates(ctx, p), ftypes.CryptoEncodingPKCS12)
+	return x509.ParseCertificates(ctx, filePath, certificates(ctx, p), ftypes.CryptoKeystorePKCS12)
 }
 
 // certificates yields the DER of each certificate stored in an unencrypted content of the

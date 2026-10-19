@@ -26,6 +26,7 @@ type assetSummary struct {
 	keyType  ftypes.CryptoKeyType
 	name     string
 	encoding ftypes.CryptoEncoding
+	keystore ftypes.CryptoKeystoreType
 }
 
 func Test_cryptoAnalyzer_Analyze(t *testing.T) {
@@ -70,7 +71,8 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 				{
 					kind:     ftypes.CryptoKindCertificate,
 					name:     "cacerts.example.test",
-					encoding: ftypes.CryptoEncodingPKCS12,
+					encoding: ftypes.CryptoEncodingDER,
+					keystore: ftypes.CryptoKeystorePKCS12,
 				},
 				{
 					kind: ftypes.CryptoKindAlgorithm,
@@ -95,7 +97,8 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 				{
 					kind:     ftypes.CryptoKindCertificate,
 					name:     "cacerts.example.test",
-					encoding: ftypes.CryptoEncodingPKCS12,
+					encoding: ftypes.CryptoEncodingDER,
+					keystore: ftypes.CryptoKeystorePKCS12,
 				},
 				{
 					kind: ftypes.CryptoKindAlgorithm,
@@ -135,7 +138,8 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 				{
 					kind:     ftypes.CryptoKindCertificate,
 					name:     "cacerts.example.test",
-					encoding: ftypes.CryptoEncodingPKCS12,
+					encoding: ftypes.CryptoEncodingDER,
+					keystore: ftypes.CryptoKeystorePKCS12,
 				},
 				{
 					kind: ftypes.CryptoKindAlgorithm,
@@ -222,6 +226,7 @@ func summarize(assets []ftypes.CryptoAsset) []assetSummary {
 			keyType:  a.KeyType,
 			name:     a.Name,
 			encoding: a.Encoding,
+			keystore: a.Keystore,
 		})
 	}
 	return summaries
