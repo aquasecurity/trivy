@@ -131,6 +131,14 @@ func TestParse(t *testing.T) {
 			want: []string{"example.test"},
 		},
 		{
+			name: "safe contents of indefinite length",
+			content: keystore(t,
+				dataContent(t, []byte{0x30, 0x80, 0x00, 0x00}),
+				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
+			),
+			want: []string{"example.test"},
+		},
+		{
 			name: "secret bag",
 			content: keystore(t, dataContent(t, safeContents(t,
 				pkcs12.SafeBag{ID: oidSecretBag, Value: explicit(marshal(t, []byte{0x01}))},

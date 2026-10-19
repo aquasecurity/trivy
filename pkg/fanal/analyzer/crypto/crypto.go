@@ -41,6 +41,10 @@ var (
 		{0xFE, 0xED, 0xFE, 0xED},
 		{0xCE, 0xCE, 0xCE, 0xCE},
 	}
+
+	// berSequence is the start of a SEQUENCE of indefinite length, which BER allows and
+	// DER does not.
+	berSequence = []byte{0x30, 0x80}
 )
 
 // javaTrustStore is the file name of the Java trust store, which is JKS before JDK 18
@@ -94,6 +98,10 @@ func parse(ctx context.Context, filePath string, content []byte) ([]types.Crypto
 			log.WithPrefix("crypto").Debug("Java keystore format is not supported", log.FilePath(filePath))
 			return nil, nil
 		}
+	}
+	if bytes.HasPrefix(content, berSequence) {
+		log.WithPrefix("crypto").Debug("BER encoding is not supported", log.FilePath(filePath))
+		return nil, nil
 	}
 	assets, err := pkcs12.Parse(ctx, filePath, content)
 	if !errors.Is(err, pkcs12.ErrNotPKCS12) {

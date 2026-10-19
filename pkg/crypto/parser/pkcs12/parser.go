@@ -9,6 +9,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"golang.org/x/xerrors"
 )
 
 // maxDepth bounds the nesting of safe contents bags, which a well-formed keystore does not use.
@@ -59,7 +60,7 @@ type certBag struct {
 // is logged and skipped. Any other error means a parsed certificate could not be described.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	var p pfx
-	if rest, err := asn1.Unmarshal(content, &p); err != nil || len(rest) != 0 || p.Version != 3 {
+	if err := unmarshal(content, &p); err != nil || p.Version != 3 {
 		return nil, ErrNotPKCS12
 	}
 	ctx = log.WithContextPrefix(ctx, "pkcs12")
@@ -79,8 +80,8 @@ func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 			switch {
 			case ci.ContentType.Equal(oidDataContentType):
 				var data []byte
-				if rest, err := asn1.Unmarshal(ci.Content.Bytes, &data); err != nil || len(rest) != 0 {
-					logMalformed(ctx, err, "Malformed PKCS#12 content")
+				if err := unmarshal(ci.Content.Bytes, &data); err != nil {
+					log.WarnContext(ctx, "Malformed PKCS#12 content", log.Err(err))
 					continue
 				}
 				if !walkSafeContents(ctx, data, 0, yield) {
@@ -108,13 +109,13 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]contentInfo, bool) {
 	}
 
 	var data []byte
-	if rest, err := asn1.Unmarshal(p.AuthSafe.Content.Bytes, &data); err != nil || len(rest) != 0 {
-		logMalformed(ctx, err, "Malformed PKCS#12 file")
+	if err := unmarshal(p.AuthSafe.Content.Bytes, &data); err != nil {
+		log.WarnContext(ctx, "Malformed PKCS#12 file", log.Err(err))
 		return nil, false
 	}
 	var contentInfos []contentInfo
-	if rest, err := asn1.Unmarshal(data, &contentInfos); err != nil || len(rest) != 0 {
-		logMalformed(ctx, err, "Malformed PKCS#12 file")
+	if err := unmarshal(data, &contentInfos); err != nil {
+		log.WarnContext(ctx, "Malformed PKCS#12 file", log.Err(err))
 		return nil, false
 	}
 	return contentInfos, true
@@ -129,8 +130,8 @@ func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]b
 	}
 
 	var bags []safeBag
-	if rest, err := asn1.Unmarshal(der, &bags); err != nil || len(rest) != 0 {
-		logMalformed(ctx, err, "Malformed PKCS#12 safe contents")
+	if err := unmarshal(der, &bags); err != nil {
+		log.WarnContext(ctx, "Malformed PKCS#12 safe contents", log.Err(err))
 		return true
 	}
 
@@ -138,8 +139,8 @@ func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]b
 		switch {
 		case bag.ID.Equal(oidCertBag):
 			var cert certBag
-			if rest, err := asn1.Unmarshal(bag.Value.Bytes, &cert); err != nil || len(rest) != 0 {
-				logMalformed(ctx, err, "Malformed PKCS#12 certificate bag")
+			if err := unmarshal(bag.Value.Bytes, &cert); err != nil {
+				log.WarnContext(ctx, "Malformed PKCS#12 certificate bag", log.Err(err))
 				continue
 			}
 			if !cert.ID.Equal(oidX509Certificate) {
@@ -160,17 +161,14 @@ func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]b
 	return true
 }
 
-// logMalformed logs a structure that could not be read. An indefinite length is valid BER,
-// which encoding/asn1 does not read, so it is not reported as malformed.
-func logMalformed(ctx context.Context, err error, msg string) {
-	if isIndefiniteLength(err) {
-		log.DebugContext(ctx, "PKCS#12 with an indefinite length is not supported")
-		return
+// unmarshal decodes der into out and rejects trailing data.
+func unmarshal(der []byte, out any) error {
+	rest, err := asn1.Unmarshal(der, out)
+	if err != nil {
+		return err
 	}
-	log.WarnContext(ctx, msg)
-}
-
-func isIndefiniteLength(err error) bool {
-	syntaxErr, ok := errors.AsType[asn1.SyntaxError](err)
-	return ok && syntaxErr.Msg == "indefinite length found (not DER)"
+	if len(rest) != 0 {
+		return xerrors.Errorf("%d bytes of trailing data", len(rest))
+	}
+	return nil
 }
