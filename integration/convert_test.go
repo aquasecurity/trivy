@@ -52,14 +52,6 @@ func TestConvert(t *testing.T) {
 			},
 			golden: goldenConvertNPMWithSuppressed,
 		},
-		{
-			name: "crypto findings removed",
-			args: args{
-				input:  goldenCryptoJSON,
-				format: "cyclonedx",
-			},
-			golden: goldenCryptoCDX,
-		},
 	}
 
 	for _, tt := range tests {
@@ -89,5 +81,28 @@ func TestConvert(t *testing.T) {
 			})
 		})
 	}
+}
 
+// TestConvertCrypto tests that converting a JSON report with crypto findings to CycloneDX
+// gives the same BOM as a scan.
+//
+// Golden files are shared with TestTar.
+func TestConvertCrypto(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestConvertCrypto when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
+	osArgs := []string{
+		"convert",
+		goldenCryptoJSON,
+		"--cache-dir",
+		t.TempDir(),
+		"-q",
+		"--format",
+		"cyclonedx",
+	}
+
+	runTest(t, osArgs, goldenCryptoCDX, types.FormatCycloneDX, runOptions{
+		fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+	})
 }
