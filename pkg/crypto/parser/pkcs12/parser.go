@@ -6,10 +6,11 @@ import (
 	"errors"
 	"iter"
 
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/crypto/parser/x509"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
-	"golang.org/x/xerrors"
 )
 
 const (
