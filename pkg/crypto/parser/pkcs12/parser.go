@@ -12,8 +12,14 @@ import (
 	"golang.org/x/xerrors"
 )
 
-// maxDepth bounds the nesting of safe contents bags, which a well-formed keystore does not use.
-const maxDepth = 8
+const (
+	// maxDepth bounds the nesting of safe contents bags, which a well-formed keystore does not use.
+	maxDepth = 8
+
+	// maxBags bounds the number of contents and bags read from one keystore. A real trust store
+	// holds a few hundred.
+	maxBags = 10000
+)
 
 var (
 	oidDataContentType          = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 1}
@@ -72,11 +78,21 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 // authenticated safe of p.
 func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 	return func(yield func([]byte) bool) {
-		contentInfos, ok := authenticatedSafe(ctx, p)
+		rest, ok := authenticatedSafe(ctx, p)
 		if !ok {
 			return
 		}
-		for _, ci := range contentInfos {
+		budget := maxBags
+		for len(rest) > 0 {
+			if !spend(ctx, &budget) {
+				return
+			}
+			var ci contentInfo
+			var err error
+			if rest, err = asn1.Unmarshal(rest, &ci); err != nil {
+				log.WarnContext(ctx, "Malformed PKCS#12 file", log.Err(err))
+				return
+			}
 			switch {
 			case ci.ContentType.Equal(oidDataContentType):
 				var data []byte
@@ -84,7 +100,7 @@ func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 					log.WarnContext(ctx, "Malformed PKCS#12 content", log.Err(err))
 					continue
 				}
-				if !walkSafeContents(ctx, data, 0, yield) {
+				if !walkSafeContents(ctx, data, 0, &budget, yield) {
 					return
 				}
 			case ci.ContentType.Equal(oidEncryptedDataContentType), ci.ContentType.Equal(oidEnvelopedDataContentType):
@@ -96,9 +112,10 @@ func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 	}
 }
 
-// authenticatedSafe reads the contents of the authenticated safe of p, which is stored as
-// data in a keystore protected by a password-based MAC or by no integrity mode at all.
-func authenticatedSafe(ctx context.Context, p pfx) ([]contentInfo, bool) {
+// authenticatedSafe returns the encoded contents of the authenticated safe of p, which is
+// stored as data in a keystore protected by a password-based MAC or by no integrity mode at
+// all.
+func authenticatedSafe(ctx context.Context, p pfx) ([]byte, bool) {
 	if p.AuthSafe.ContentType.Equal(oidSignedDataContentType) {
 		log.DebugContext(ctx, "PKCS#12 signed with a public key skipped")
 		return nil, false
@@ -113,8 +130,8 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]contentInfo, bool) {
 		log.WarnContext(ctx, "Malformed PKCS#12 file", log.Err(err))
 		return nil, false
 	}
-	var contentInfos []contentInfo
-	if err := unmarshal(data, &contentInfos); err != nil {
+	contentInfos, err := sequence(data)
+	if err != nil {
 		log.WarnContext(ctx, "Malformed PKCS#12 file", log.Err(err))
 		return nil, false
 	}
@@ -122,20 +139,29 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]contentInfo, bool) {
 }
 
 // walkSafeContents yields the certificates of a safe contents structure and of the safe
-// contents nested in it. It reports false when yield asks to stop.
-func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]byte) bool) bool {
+// contents nested in it, taking each bag from budget. It reports false when the walk has to
+// stop, because yield asks to stop or budget runs out.
+func walkSafeContents(ctx context.Context, der []byte, depth int, budget *int, yield func([]byte) bool) bool {
 	if depth > maxDepth {
 		log.WarnContext(ctx, "PKCS#12 safe contents nested too deep")
 		return true
 	}
 
-	var bags []safeBag
-	if err := unmarshal(der, &bags); err != nil {
+	rest, err := sequence(der)
+	if err != nil {
 		log.WarnContext(ctx, "Malformed PKCS#12 safe contents", log.Err(err))
 		return true
 	}
 
-	for _, bag := range bags {
+	for len(rest) > 0 {
+		if !spend(ctx, budget) {
+			return false
+		}
+		var bag safeBag
+		if rest, err = asn1.Unmarshal(rest, &bag); err != nil {
+			log.WarnContext(ctx, "Malformed PKCS#12 safe contents", log.Err(err))
+			return true
+		}
 		switch {
 		case bag.ID.Equal(oidCertBag):
 			var cert certBag
@@ -151,7 +177,7 @@ func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]b
 				return false
 			}
 		case bag.ID.Equal(oidSafeContentsBag):
-			if !walkSafeContents(ctx, bag.Value.Bytes, depth+1, yield) {
+			if !walkSafeContents(ctx, bag.Value.Bytes, depth+1, budget, yield) {
 				return false
 			}
 		default:
@@ -159,6 +185,30 @@ func walkSafeContents(ctx context.Context, der []byte, depth int, yield func([]b
 		}
 	}
 	return true
+}
+
+// spend takes one bag from budget and reports false when none is left.
+func spend(ctx context.Context, budget *int) bool {
+	if *budget == 0 {
+		log.WarnContext(ctx, "Too many PKCS#12 bags")
+		return false
+	}
+	*budget--
+	return true
+}
+
+// sequence returns the encoded elements of the SEQUENCE in der. The elements are decoded one
+// at a time, because encoding/asn1 takes far more memory for a decoded element than for its
+// DER.
+func sequence(der []byte) ([]byte, error) {
+	var seq asn1.RawValue
+	if err := unmarshal(der, &seq); err != nil {
+		return nil, err
+	}
+	if seq.Class != asn1.ClassUniversal || seq.Tag != asn1.TagSequence || !seq.IsCompound {
+		return nil, xerrors.New("not a SEQUENCE")
+	}
+	return seq.Bytes, nil
 }
 
 // unmarshal decodes der into out and rejects trailing data.

@@ -11,6 +11,7 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
@@ -89,6 +90,24 @@ func TestParse(t *testing.T) {
 				newCertBag(t, pkcs12.OIDX509Certificate, other),
 			))),
 			want: []string{"other.example.test"},
+		},
+		{
+			name: "bags at the limit",
+			content: keystore(t, dataContent(t, safeContents(t, slices.Concat(
+				[]pkcs12.SafeBag{newCertBag(t, pkcs12.OIDX509Certificate, certificate)},
+				secretBags(t, pkcs12.MaxBags-3),
+				[]pkcs12.SafeBag{newCertBag(t, pkcs12.OIDX509Certificate, other)},
+			)...))),
+			want: []string{"example.test", "other.example.test"},
+		},
+		{
+			name: "bags over the limit",
+			content: keystore(t, dataContent(t, safeContents(t, slices.Concat(
+				[]pkcs12.SafeBag{newCertBag(t, pkcs12.OIDX509Certificate, certificate)},
+				secretBags(t, pkcs12.MaxBags-2),
+				[]pkcs12.SafeBag{newCertBag(t, pkcs12.OIDX509Certificate, other)},
+			)...))),
+			want: []string{"example.test"},
 		},
 		{
 			name: "encrypted content",
@@ -325,6 +344,13 @@ func newCertBag(t *testing.T, certType asn1.ObjectIdentifier, der []byte) pkcs12
 			Data: der,
 		})),
 	}
+}
+
+func secretBags(t *testing.T, n int) []pkcs12.SafeBag {
+	t.Helper()
+
+	bag := pkcs12.SafeBag{ID: oidSecretBag, Value: explicit(marshal(t, []byte{0x01}))}
+	return slices.Repeat([]pkcs12.SafeBag{bag}, n)
 }
 
 // nest puts bag into the given number of nested safe contents bags.

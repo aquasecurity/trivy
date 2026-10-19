@@ -31,3 +31,6 @@ var (
 	// OIDX509Certificate exports oidX509Certificate for testing.
 	OIDX509Certificate = oidX509Certificate
 )
+
+// MaxBags exports maxBags for testing.
+const MaxBags = maxBags
