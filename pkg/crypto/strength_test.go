@@ -39,6 +39,7 @@ func TestAssessStrength(t *testing.T) {
 			oid:          "1.2.840.113549.1.1.1",
 			wantCategory: new(0),
 		},
+		{name: "EC-P-192", oid: "1.2.840.10045.2.1", curve: "P-192", wantClassical: new(96), wantCategory: new(0)},
 		{name: "EC-P-224", oid: "1.2.840.10045.2.1", curve: "P-224", wantClassical: new(112), wantCategory: new(0)},
 		{name: "EC-P-256", oid: "1.2.840.10045.2.1", curve: "P-256", wantClassical: new(128), wantCategory: new(0)},
 		{name: "EC-P-384", oid: "1.2.840.10045.2.1", curve: "P-384", wantClassical: new(192), wantCategory: new(0)},

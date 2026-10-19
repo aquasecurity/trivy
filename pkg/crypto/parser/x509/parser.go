@@ -35,6 +35,9 @@ const (
 	objectPublicKey
 	// objectEncryptedPrivateKey identifies an opaque encrypted private key.
 	objectEncryptedPrivateKey
+	// objectECAlgorithm identifies a certificate or key on an EC curve crypto/x509 does
+	// not support. Only its algorithm is read.
+	objectECAlgorithm
 )
 
 // encryptionFormat identifies the container format of an encrypted private key.
@@ -69,6 +72,8 @@ type object struct {
 	encrypted []byte
 	// encryption identifies the encrypted private-key container format.
 	encryption encryptionFormat
+	// curve names the curve of objectECAlgorithm.
+	curve string
 	// encoding identifies the source encoding.
 	encoding ftypes.CryptoEncoding
 	// keystore identifies the keystore the object is stored in.
@@ -107,7 +112,43 @@ type pkcs8PrivateKey struct {
 	PrivateKey []byte
 }
 
+// ecPrivateKey is an EC private key in SEC 1, as defined in RFC 5915.
+type ecPrivateKey struct {
+	Version       int
+	PrivateKey    []byte
+	NamedCurveOID asn1.ObjectIdentifier `asn1:"optional,explicit,tag:0"`
+	PublicKey     asn1.BitString        `asn1:"optional,explicit,tag:1"`
+}
+
+// rawCertificate is an X.509 certificate without the TBSCertificate fields after
+// SubjectPublicKeyInfo. The signature fields are kept so that a certificate without a
+// signature fails to parse.
+type rawCertificate struct {
+	TBSCertificate struct {
+		Version              int `asn1:"optional,explicit,default:0,tag:0"`
+		SerialNumber         asn1.RawValue
+		Signature            asn1.RawValue
+		Issuer               asn1.RawValue
+		Validity             asn1.RawValue
+		Subject              asn1.RawValue
+		SubjectPublicKeyInfo asn1.RawValue
+	}
+	SignatureAlgorithm asn1.RawValue
+	SignatureValue     asn1.BitString
+}
+
 var oidRSAEncryption = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
+
+// oidECPublicKey identifies an EC public key, defined by RFC 5480 section 2.1.1.
+// See https://www.rfc-editor.org/rfc/rfc5480#section-2.1.1
+var oidECPublicKey = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
+
+// oidNamedCurveP192 identifies the curve P-192, which RFC 5480 section 2.1.1.1 names secp192r1.
+// See https://www.rfc-editor.org/rfc/rfc5480#section-2.1.1.1
+var oidNamedCurveP192 = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 1}
+
+// p192Size is the length in bytes of a P-192 field element and of a P-192 private key.
+const p192Size = 24
 
 var (
 	errNotCryptographic  = errors.New("not cryptographic")
@@ -289,7 +330,7 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "RSA PRIVATE KEY":
 		return rsaPrivateKeyObject(der, ftypes.CryptoKeyFormatPKCS1)
 	case "EC PRIVATE KEY":
-		return privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
+		return ecPrivateKeyObject(der)
 	case "PUBLIC KEY":
 		return publicKeyObject(der)
 	case "ENCRYPTED PRIVATE KEY":
@@ -332,12 +373,118 @@ func privateKeyObject[K any](der []byte, format ftypes.CryptoKeyFormat, parseKey
 }
 
 // pkcs8PrivateKeyObject parses a private key in PKCS#8 and projects it to its public key.
+// A key on P-192 is described by its algorithm alone.
 func pkcs8PrivateKeyObject(der []byte) (object, error) {
 	var key pkcs8PrivateKey
-	if _, err := asn1.Unmarshal(der, &key); err == nil && key.Algo.Algorithm.Equal(oidRSAEncryption) {
-		return rsaPrivateKeyObject(key.PrivateKey, ftypes.CryptoKeyFormatPKCS8)
+	if _, err := asn1.Unmarshal(der, &key); err == nil {
+		switch {
+		case key.Algo.Algorithm.Equal(oidRSAEncryption):
+			return rsaPrivateKeyObject(key.PrivateKey, ftypes.CryptoKeyFormatPKCS8)
+		case key.Algo.Algorithm.Equal(oidECPublicKey) && isP192(key.Algo.Parameters.FullBytes):
+			// The curve is stored in the outer AlgorithmIdentifier, so the key may omit it.
+			if _, ok := parseP192PrivateKey(key.PrivateKey); !ok {
+				return object{}, errMalformedCrypto
+			}
+			return p192Object(), nil
+		}
 	}
 	return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
+}
+
+// ecPrivateKeyObject parses an EC private key in SEC 1 and projects it to its public key.
+// A key on P-192 is described by its algorithm alone.
+func ecPrivateKeyObject(der []byte) (object, error) {
+	obj, err := privateKeyObject(der, ftypes.CryptoKeyFormatSEC1, stdx509.ParseECPrivateKey)
+	if !errors.Is(err, errMalformedCrypto) {
+		return obj, err
+	}
+	// Bare SEC 1 must name the curve.
+	if key, ok := parseP192PrivateKey(der); ok && key.NamedCurveOID != nil {
+		return p192Object(), nil
+	}
+	return object{}, errMalformedCrypto
+}
+
+// parseP192PrivateKey parses a SEC 1 EC private key and reports whether it can be a P-192 key.
+// The key must name P-192 or no curve, and be at most 24 bytes long. A key without a curve is
+// accepted, because PKCS#8 names the curve in the algorithm identifier.
+func parseP192PrivateKey(der []byte) (ecPrivateKey, bool) {
+	var key ecPrivateKey
+	rest, err := asn1.Unmarshal(der, &key)
+	if err != nil || len(rest) > 0 || key.Version != 1 {
+		return ecPrivateKey{}, false
+	}
+	if key.NamedCurveOID != nil && !key.NamedCurveOID.Equal(oidNamedCurveP192) {
+		return ecPrivateKey{}, false
+	}
+	if len(key.PrivateKey) == 0 || len(key.PrivateKey) > p192Size {
+		return ecPrivateKey{}, false
+	}
+	return key, true
+}
+
+// p192CertificateObject reads a certificate with a P-192 key, which crypto/x509 rejects.
+func p192CertificateObject(der []byte) (object, bool) {
+	var cert rawCertificate
+	rest, err := asn1.Unmarshal(der, &cert)
+	if err != nil || len(rest) > 0 {
+		return object{}, false
+	}
+	return p192PublicKeyObject(cert.TBSCertificate.SubjectPublicKeyInfo.FullBytes)
+}
+
+// p192PublicKeyObject reads a P-192 public key in SubjectPublicKeyInfo, which crypto/x509
+// does not decode.
+func p192PublicKeyObject(spki []byte) (object, bool) {
+	var info struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}
+	rest, err := asn1.Unmarshal(spki, &info)
+	if err != nil || len(rest) > 0 {
+		return object{}, false
+	}
+	if !info.Algorithm.Algorithm.Equal(oidECPublicKey) || !isP192(info.Algorithm.Parameters.FullBytes) {
+		return object{}, false
+	}
+	if !isP192Point(info.SubjectPublicKey) {
+		return object{}, false
+	}
+	return p192Object(), true
+}
+
+// isP192 reports whether the parameters of an EC algorithm identifier name the curve P-192.
+func isP192(parameters []byte) bool {
+	var curve asn1.ObjectIdentifier
+	rest, err := asn1.Unmarshal(parameters, &curve)
+	return err == nil && len(rest) == 0 && curve.Equal(oidNamedCurveP192)
+}
+
+// isP192Point reports whether point has the length and the leading byte of a P-192 point
+// in the uncompressed or the compressed form of SEC 1 section 2.3.3. Whether the point lies
+// on the curve is not checked.
+// See https://www.secg.org/sec1-v2.pdf
+func isP192Point(point asn1.BitString) bool {
+	b := point.RightAlign()
+	if point.BitLength%8 != 0 || len(b) == 0 {
+		return false
+	}
+	switch b[0] {
+	case 4:
+		return len(b) == 1+2*p192Size
+	case 2, 3:
+		return len(b) == 1+p192Size
+	}
+	return false
+}
+
+// p192Object is the object of a certificate or key on P-192, which is described by its
+// algorithm alone.
+func p192Object() object {
+	return object{
+		kind:  objectECAlgorithm,
+		curve: "P-192",
+	}
 }
 
 // rsaPrivateKeyObject reads an RSA private key in PKCS#1 and projects it to its public key.
@@ -390,8 +537,8 @@ func parseDERObject(der []byte) (object, error) {
 		return obj, err
 	}
 
-	if privateKey, err := stdx509.ParseECPrivateKey(der); err == nil {
-		return privateKeyToObject(privateKey, ftypes.CryptoKeyFormatSEC1)
+	if obj, err := ecPrivateKeyObject(der); !errors.Is(err, errMalformedCrypto) {
+		return obj, err
 	}
 
 	if obj, err := publicKeyObject(der); err == nil {
@@ -425,6 +572,9 @@ func parseDERObject(der []byte) (object, error) {
 func certificateObject(der []byte) (object, error) {
 	parsed, err := stdx509.ParseCertificate(der)
 	if err != nil {
+		if obj, ok := p192CertificateObject(der); ok {
+			return obj, nil
+		}
 		return object{}, errMalformedCrypto
 	}
 
@@ -475,7 +625,7 @@ func privateKeyToObject(privateKey any, format ftypes.CryptoKeyFormat) (object, 
 var decodedKeyAlgorithms = []asn1.ObjectIdentifier{
 	oidRSAEncryption,
 	{1, 2, 840, 10040, 4, 1},          // DSA
-	{1, 2, 840, 10045, 2, 1},          // EC
+	oidECPublicKey,                    // EC
 	{1, 3, 101, 110},                  // X25519
 	{1, 3, 101, 112},                  // Ed25519
 	{2, 16, 840, 1, 101, 3, 4, 3, 17}, // ML-DSA-44
@@ -494,6 +644,9 @@ func publicKeyObject(der []byte) (object, error) {
 			publicKey: publicKey,
 			keyFormat: ftypes.CryptoKeyFormatPKIX,
 		}, nil
+	}
+	if obj, ok := p192PublicKeyObject(der); ok {
+		return obj, nil
 	}
 
 	oid, err := crypto.ParseSubjectPublicKeyInfo(der)

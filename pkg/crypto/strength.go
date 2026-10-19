@@ -6,7 +6,7 @@ import ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 // from. The levels themselves are assessed after caching by AssessStrength, so that a
 // change to a basis applies without analyzing again.
 //
-// The levels are nominal estimates taken from NIST and IETF publications. They estimate the
+// The levels are nominal estimates taken from NIST, IETF and SECG publications. They estimate the
 // strength of an algorithm and its parameters, and are neither a guarantee for an
 // implementation nor a statement of policy approval.
 type strengthBasis struct {
@@ -44,10 +44,12 @@ var (
 		},
 	}
 
-	// EC estimates are the ECC strength ranges in NIST SP 800-57 Part 1 Rev. 5, Table 2.
+	// EC estimates are the strengths in SEC 2 v2.0, Table 1.
+	// See https://www.secg.org/sec2-v2.pdf
 	ecStrengthBasis = strengthBasis{
 		nistCategory: new(0),
 		classicalStrengths: map[string]int{
+			"curve=P-192": 96,
 			"curve=P-224": 112,
 			"curve=P-256": 128,
 			"curve=P-384": 192,
