@@ -704,7 +704,8 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 		}
 
 		fmt.Fprintf(&usages, "%s Flags\n", group.Name())
-		usages.WriteString(flags.FlagUsages() + "\n")
+		usages.WriteString(flags.FlagUsages())
+		usages.WriteByte('\n')
 	}
 	return strings.TrimSpace(usages.String())
 }
