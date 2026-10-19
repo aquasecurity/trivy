@@ -89,7 +89,7 @@ $ trivy image --scanners license [YOUR_IMAGE_NAME]
 
 ### Cryptographic assets
 It is experimental and disabled by default.
-It requires the CycloneDX format, since the assets are reported as CycloneDX components.
+It requires the CycloneDX or JSON format.
 See [here](../scanner/crypto.md) for the detail.
 
 ```shell
