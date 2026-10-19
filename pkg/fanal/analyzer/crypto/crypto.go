@@ -23,7 +23,7 @@ func init() {
 }
 
 const (
-	version = 3
+	version = 4
 
 	// maxFileSize bounds what is read into memory. The eligible extensions are shared with
 	// unrelated formats, such as Keynote presentations, which grow far beyond any file of
