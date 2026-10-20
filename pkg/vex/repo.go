@@ -30,7 +30,17 @@ type RepositoryIndex struct {
 type RepositorySet struct {
 	indexes []RepositoryIndex
 	logOnce *xsync.Map[string, *sync.Once]
-	logger  *log.Logger
+	// documents caches the VEX documents opened so far, keyed by file path, so that a package's
+	// document is read and decoded once however many of its vulnerabilities are checked.
+	documents *xsync.Map[string, *openedDocument]
+	logger    *log.Logger
+}
+
+// openedDocument is a VEX document that is opened at most once.
+type openedDocument struct {
+	once sync.Once
+	vex  VEX
+	err  error
 }
 
 func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, error) {
@@ -61,9 +71,10 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	}
 
 	return &RepositorySet{
-		indexes: indexes, // In precedence order
-		logOnce: new(xsync.Map[string, *sync.Once]),
-		logger:  logger,
+		indexes:   indexes, // In precedence order
+		logOnce:   new(xsync.Map[string, *sync.Once]),
+		documents: new(xsync.Map[string, *openedDocument]),
+		logger:    logger,
 	}, nil
 }
 
@@ -98,7 +109,7 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		rs.logVEXFound(pkgID, index.Name, index.URL, entry.Location)
 
 		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
-		doc, err := rs.OpenDocument(source, filepath.Dir(index.Path), entry)
+		doc, err := rs.openDocumentOnce(source, filepath.Dir(index.Path), entry)
 		if err != nil {
 			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
 			return types.ModifiedFinding{}, false
@@ -111,6 +122,17 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		break // Stop searching for the next VEX document as this repository has higher precedence.
 	}
 	return types.ModifiedFinding{}, false
+}
+
+// openDocumentOnce is OpenDocument with a per-set cache. NotAffected runs once per vulnerability, and a
+// package with thousands of vulnerabilities (a kernel, for example) would otherwise read and decode
+// its VEX document that many times.
+func (rs *RepositorySet) openDocumentOnce(source, dir string, entry repo.PackageEntry) (VEX, error) {
+	doc, _ := rs.documents.LoadOrStore(filepath.Join(dir, entry.Location), &openedDocument{})
+	doc.once.Do(func() {
+		doc.vex, doc.err = rs.OpenDocument(source, dir, entry)
+	})
+	return doc.vex, doc.err
 }
 
 func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntry) (VEX, error) {

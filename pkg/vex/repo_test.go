@@ -128,3 +128,36 @@ repositories:
 		})
 	}
 }
+
+// TestRepositorySet_NotAffected_readsEachDocumentOnce checks that a package's VEX document is opened
+// once, not once per vulnerability: after the first check the document is removed, and the next
+// checks must still be answered.
+func TestRepositorySet_NotAffected_readsEachDocumentOnce(t *testing.T) {
+	// Work on a copy so the document can be removed after its first use.
+	cacheDir := t.TempDir()
+	require.NoError(t, os.CopyFS(cacheDir, os.DirFS("testdata/single-repo")))
+
+	dataHome := t.TempDir()
+	t.Setenv("XDG_DATA_HOME", dataHome)
+	vexDir := filepath.Join(dataHome, ".trivy", "vex")
+	require.NoError(t, os.MkdirAll(vexDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
+repositories:
+  - name: default
+    url: https://example.com/vex/default
+    enabled: true
+`), 0o644))
+
+	rs, err := vex.NewRepositorySet(t.Context(), cacheDir)
+	require.NoError(t, err)
+
+	_, notAffected := rs.NotAffected(vuln3, &bashComponent, nil)
+	require.True(t, notAffected)
+
+	require.NoError(t, os.Remove(filepath.Join(cacheDir, "vex", "repositories", "default", "0.1", "bash-vex.json")))
+
+	for range 3 {
+		_, notAffected = rs.NotAffected(vuln3, &bashComponent, nil)
+		assert.True(t, notAffected, "the cached document should still answer after the file is gone")
+	}
+}
