@@ -83,9 +83,9 @@ func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 		if !ok {
 			return
 		}
-		budget := maxBags
+		w := &walker{ctx: ctx, budget: maxBags, yield: yield}
 		for len(rest) > 0 {
-			if !spend(ctx, &budget) {
+			if !w.spend() {
 				return
 			}
 			var ci contentInfo
@@ -101,7 +101,7 @@ func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
 					log.WarnContext(ctx, "Malformed PKCS#12 content", log.Err(err))
 					continue
 				}
-				if !walkSafeContents(ctx, data, 0, &budget, yield) {
+				if !w.walk(data, 0) {
 					return
 				}
 			case ci.ContentType.Equal(oidEncryptedDataContentType), ci.ContentType.Equal(oidEnvelopedDataContentType):
@@ -139,62 +139,70 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]byte, bool) {
 	return contentInfos, true
 }
 
-// walkSafeContents yields the certificates of a safe contents structure and of the safe
-// contents nested in it, taking each bag from budget. It reports false when the walk has to
-// stop, because yield asks to stop or budget runs out.
-func walkSafeContents(ctx context.Context, der []byte, depth int, budget *int, yield func([]byte) bool) bool {
+// walker reads the certificates of one keystore and passes each to yield. The bags of the
+// whole keystore share one budget.
+type walker struct {
+	ctx    context.Context
+	budget int
+	yield  func([]byte) bool
+}
+
+// walk yields the certificates of a safe contents structure and of the safe contents nested
+// in it. It reports false when the walk has to stop, because yield asks to stop or the
+// budget runs out.
+func (w *walker) walk(der []byte, depth int) bool {
 	if depth > maxDepth {
-		log.WarnContext(ctx, "PKCS#12 safe contents nested too deep")
+		log.WarnContext(w.ctx, "PKCS#12 safe contents nested too deep")
 		return true
 	}
 
 	rest, err := sequence(der)
 	if err != nil {
-		log.WarnContext(ctx, "Malformed PKCS#12 safe contents", log.Err(err))
+		log.WarnContext(w.ctx, "Malformed PKCS#12 safe contents", log.Err(err))
 		return true
 	}
 
 	for len(rest) > 0 {
-		if !spend(ctx, budget) {
+		if !w.spend() {
 			return false
 		}
 		var bag safeBag
 		if rest, err = asn1.Unmarshal(rest, &bag); err != nil {
-			log.WarnContext(ctx, "Malformed PKCS#12 safe contents", log.Err(err))
+			log.WarnContext(w.ctx, "Malformed PKCS#12 safe contents", log.Err(err))
 			return true
 		}
 		switch {
 		case bag.ID.Equal(oidCertBag):
 			var cert certBag
 			if err := unmarshal(bag.Value.Bytes, &cert); err != nil {
-				log.WarnContext(ctx, "Malformed PKCS#12 certificate bag", log.Err(err))
+				log.WarnContext(w.ctx, "Malformed PKCS#12 certificate bag", log.Err(err))
 				continue
 			}
 			if !cert.ID.Equal(oidX509Certificate) {
-				log.DebugContext(ctx, "Unsupported PKCS#12 certificate type", log.String("cert_type", cert.ID.String()))
+				log.DebugContext(w.ctx, "Unsupported PKCS#12 certificate type", log.String("cert_type", cert.ID.String()))
 				continue
 			}
-			if !yield(cert.Data) {
+			if !w.yield(cert.Data) {
 				return false
 			}
 		case bag.ID.Equal(oidSafeContentsBag):
-			if !walkSafeContents(ctx, bag.Value.Bytes, depth+1, budget, yield) {
+			if !w.walk(bag.Value.Bytes, depth+1) {
 				return false
 			}
 		default:
-			log.DebugContext(ctx, "PKCS#12 bag skipped", log.String("bag_type", bag.ID.String()))
+			log.DebugContext(w.ctx, "PKCS#12 bag skipped", log.String("bag_type", bag.ID.String()))
 		}
 	}
 	return true
 }
 
-// spend takes one bag from budget and reports false when none is left.
-func spend(ctx context.Context, budget *int) bool {
-	if *budget == 0 {
-		log.WarnContext(ctx, "Too many PKCS#12 bags")
+// spend takes one bag from the budget and reports false when none is left.
+func (w *walker) spend() bool {
+	if w.budget == 0 {
+		log.WarnContext(w.ctx, "Too many PKCS#12 bags")
 		return false
 	}
-	*budget--
+	w.budget--
 	return true
 }
 
