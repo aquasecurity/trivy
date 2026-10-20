@@ -1607,6 +1607,7 @@ func TestConvertCryptoAssets(t *testing.T) {
 				asset.Certificate.BasicConstraintsValid = true
 				asset.Certificate.IsCA = true
 				asset.Certificate.MaxPathLenZero = true
+				asset.AssetID = "1e7b3d9c04a65f28"
 				asset.Relationships = []ftypes.CryptoRelationship{
 					{
 						Type:         ftypes.CryptoRelationshipSignedWith,
@@ -1681,6 +1682,80 @@ func TestConvertCryptoAssets(t *testing.T) {
 				received = append(received, &asset)
 			}
 			assert.Equal(t, assets, ConvertFromRPCCryptoAssets(received))
+		})
+	}
+}
+
+func TestConvertCryptoFindings(t *testing.T) {
+	tests := []struct {
+		name    string
+		finding types.CryptoFinding
+	}{
+		{
+			name: "SHA-1 signature",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0001",
+				Title:    "SHA-1 certificate signature",
+				Severity: "MEDIUM",
+				AssetID:  "1e7b3d9c04a65f28",
+				Evidence: types.CryptoEvidence{
+					SignatureAlgorithm:    "RSA-PKCS1-1.5-SHA-1",
+					SignatureAlgorithmOID: "1.2.840.113549.1.1.5",
+				},
+			},
+		},
+		{
+			name: "small RSA key",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0002",
+				Title:    "Small RSA key",
+				Severity: "HIGH",
+				AssetID:  "8c2f0e5a91d34b76",
+				Evidence: types.CryptoEvidence{
+					KeySize: 1024,
+				},
+			},
+		},
+		{
+			name: "weak elliptic curve",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0003",
+				Title:    "Weak elliptic curve",
+				Severity: "HIGH",
+				AssetID:  "5d90a2c7e13f6b48",
+				Evidence: types.CryptoEvidence{
+					Curve:                  "P-192",
+					ClassicalSecurityLevel: new(96),
+				},
+			},
+		},
+		{
+			name: "expired certificate",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0004",
+				Title:    "Expired certificate",
+				Severity: "MEDIUM",
+				AssetID:  "1e7b3d9c04a65f28",
+				Evidence: types.CryptoEvidence{
+					NotAfter: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			findings := []types.CryptoFinding{tt.finding}
+
+			var received []*common.CryptoFinding
+			for _, sent := range ConvertToRPCCryptoFindings(findings) {
+				wire, err := proto.Marshal(sent)
+				require.NoError(t, err)
+				var finding common.CryptoFinding
+				require.NoError(t, proto.Unmarshal(wire, &finding))
+				received = append(received, &finding)
+			}
+			assert.Equal(t, findings, ConvertFromRPCCryptoFindings(received))
 		})
 	}
 }

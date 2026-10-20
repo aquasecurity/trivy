@@ -120,6 +120,7 @@ type ScanOptions struct {
 	ScanRemovedPackages bool
 	LicenseCategories   map[types.LicenseCategory][]string
 	LicenseFull         bool
+	CryptoChecks        bool // Evaluate the built-in checks of cryptographic assets
 	FilePatterns        []string
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS

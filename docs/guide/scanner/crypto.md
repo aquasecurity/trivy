@@ -3,15 +3,16 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components.
+Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports [weak assets](#findings) found by built-in checks.
 
-The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx` or `--format json`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
+$ trivy image --scanners crypto --format json --output result.json myimage:1.0.0
 ```
 
-Cryptographic assets have no representation in the other report formats, so Trivy rejects `--scanners crypto` with any of them.
+Trivy rejects `--scanners crypto` with other report formats.
 
 ## What is scanned
 
@@ -34,7 +35,7 @@ A private key is reported with its size and algorithm, but the report never carr
 
 A key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. Its size is reported only when the OID fixes it, as for Ed448, X25519 and X448, so an RSA-PSS key has no size. An algorithm that Trivy does not recognize is named by its OID, such as `1.3.101.110` for X25519.
 
-An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.
+An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. In CycloneDX output the same asset found in several files and layers is reported once, with a list of the places it was found, and each place states the file path and the layer. In JSON output `CryptoAssets` has one entry per place.
 
 The parameters of an algorithm are the key size for RSA and the curve for EC. For DSA they are the two bit lengths that name a parameter set in FIPS 186: L, the length of the prime `p`, and N, the length of the prime `q`. So DSA keys of (2048, 224) and (2048, 256) belong to different algorithms, although both are named `DSA-2048` after the CycloneDX naming pattern. Other algorithms are identified by the OID alone.
 
@@ -108,6 +109,63 @@ The parameters of an algorithm are stored in `algorithmProperties`. The key size
   }
 }
 ```
+
+## Findings
+
+Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON output. Trivy does not determine whether any software uses these assets.
+
+| Rule ID | Title | Asset | Condition | Severity |
+| --- | --- | --- | --- | --- |
+| `CRYPTO-0001` | SHA-1 certificate signature | certificate | the signature uses SHA-1 | MEDIUM |
+| `CRYPTO-0002` | Small RSA key | key | the RSA key is shorter than 2048 bits | HIGH |
+| `CRYPTO-0003` | Weak elliptic curve | algorithm | the classical security level of an EC algorithm is below 112 bits | HIGH |
+| `CRYPTO-0004` | Expired certificate | certificate | `NotAfter` is before the time of the scan | MEDIUM |
+
+A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.
+
+A small RSA key in a certificate gets the finding on its key asset. The EC finding points to the algorithm asset, which is reported once per file, so several keys on one curve in a file give one finding.
+
+A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not read the hash from the RSA-PSS parameters.
+
+Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding refers to its asset by this ID. The ID depends on the asset identity, the file path, the layer and the format. Two scans of one image with the same Trivy version give the same IDs. `Evidence` holds the values the check was evaluated on.
+
+```json
+{
+  "Target": "myimage:1.0.0",
+  "Class": "crypto",
+  "CryptoAssets": [
+    {
+      "AssetID": "8c2f0e5a91d34b76",
+      "Kind": "key",
+      "KeyType": "public",
+      "Name": "RSA-1024 public key",
+      "FilePath": "app/certs/legacy.pem",
+      ...
+    },
+    ...
+  ],
+  "CryptoFindings": [
+    {
+      "RuleID": "CRYPTO-0002",
+      "Title": "Small RSA key",
+      "Severity": "HIGH",
+      "AssetID": "8c2f0e5a91d34b76",
+      "Evidence": {
+        "KeySize": 1024
+      }
+    }
+  ]
+}
+```
+
+| Rule ID | Evidence |
+| --- | --- |
+| `CRYPTO-0001` | `SignatureAlgorithm`, `SignatureAlgorithmOID` |
+| `CRYPTO-0002` | `KeySize` |
+| `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
+| `CRYPTO-0004` | `NotAfter` |
+
+Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
 
 ## Filtering the inventory
 

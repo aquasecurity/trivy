@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
+	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1823,6 +1824,7 @@ func TestApplyLayers(t *testing.T) {
 				}
 				return got.CustomResources[i].FilePath < got.CustomResources[j].FilePath
 			})
+			crypto.AssignIDs(tt.want.CryptoAssets)
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}

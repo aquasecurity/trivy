@@ -188,6 +188,12 @@ var algorithms = map[string]algorithm{
 	},
 }
 
+// AlgorithmName returns the name of the algorithm an OID identifies, or the OID itself if
+// the catalog does not list it.
+func AlgorithmName(oid string) string {
+	return lookupAlgorithm(oid).name
+}
+
 // lookupAlgorithm reports what the catalog knows about an OID. An OID the table does not
 // list is named by the OID itself and its primitive is unknown, because every other
 // attribute comes from the table.

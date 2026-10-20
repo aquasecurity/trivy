@@ -83,6 +83,39 @@ func TestResults_Failed(t *testing.T) {
 			},
 			want: false,
 		},
+		{
+			name: "crypto findings",
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassCrypto,
+					CryptoFindings: []types.CryptoFinding{
+						{
+							RuleID:   "CRYPTO-0002",
+							Severity: "HIGH",
+						},
+					},
+				},
+			},
+			want: true,
+		},
+		{
+			name: "crypto assets without findings",
+			results: types.Results{
+				{
+					Target: "test",
+					Class:  types.ClassCrypto,
+					CryptoAssets: []ftypes.CryptoAsset{
+						{
+							CryptoAssetInfo: ftypes.CryptoAssetInfo{
+								Kind: ftypes.CryptoKindCertificate,
+							},
+						},
+					},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

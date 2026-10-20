@@ -81,5 +81,49 @@ func TestConvert(t *testing.T) {
 			})
 		})
 	}
+}
 
+// TestConvertCrypto tests that converting a JSON report with crypto findings gives the same
+// report as a scan. Only the JSON report keeps the findings.
+//
+// Golden files are shared with TestTar.
+func TestConvertCrypto(t *testing.T) {
+	if *update {
+		t.Skipf("Skipping TestConvertCrypto when -update flag is set. Golden files should be updated via TestTar.")
+	}
+
+	tests := []struct {
+		name   string
+		format types.Format
+		golden string
+	}{
+		{
+			name:   "cyclonedx",
+			format: types.FormatCycloneDX,
+			golden: goldenCryptoCDX,
+		},
+		{
+			name:   "json",
+			format: types.FormatJSON,
+			golden: goldenCryptoJSON,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			osArgs := []string{
+				"convert",
+				goldenCryptoJSON,
+				"--cache-dir",
+				t.TempDir(),
+				"-q",
+				"--format",
+				string(tt.format),
+			}
+
+			runTest(t, osArgs, tt.golden, tt.format, runOptions{
+				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",
+			})
+		})
+	}
 }

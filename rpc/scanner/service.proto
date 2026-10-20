@@ -32,6 +32,7 @@ message ScanOptions {
   common.OS distro = 7;
   repeated string vuln_severity_sources = 8;
   bool license_full = 9;
+  bool crypto_checks = 10;
 
   reserved 3; // deleted 'list_all_packages'
 }
@@ -54,4 +55,5 @@ message Result {
   repeated common.SecretFinding secrets = 8;
   repeated common.DetectedLicense licenses = 9;
   repeated common.CryptoAsset crypto_assets = 10;
+  repeated common.CryptoFinding crypto_findings = 11;
 }
