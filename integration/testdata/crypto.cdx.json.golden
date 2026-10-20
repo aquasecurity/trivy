@@ -119,6 +119,10 @@
           {
             "location": "etc/ssl/private/ec.key",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -164,6 +168,10 @@
           {
             "location": "etc/ssl/certs/ec.der",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -216,7 +224,19 @@
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
+            "location": "opt/app/app.pfx",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
             "location": "opt/app/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/app/truststore.p12",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
@@ -297,7 +317,19 @@
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
+            "location": "opt/app/app.pfx",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
             "location": "opt/app/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/app/truststore.p12",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
@@ -602,7 +634,15 @@
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
+            "location": "opt/app/app.pfx",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
             "location": "opt/app/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/app/truststore.p12",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
@@ -742,6 +782,10 @@
           {
             "location": "etc/ssl/certs/ec.der",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -1004,6 +1048,10 @@
           {
             "location": "etc/ssl/certs/bundle.pem",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -1392,6 +1440,10 @@
           {
             "location": "etc/ssl/certs/ec.der",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -1452,6 +1504,10 @@
           {
             "location": "etc/ssl/certs/bundle.pem",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "opt/java/jdk-21/lib/security/cacerts",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
       },
@@ -1672,7 +1728,15 @@
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
           },
           {
+            "location": "opt/app/app.pfx",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
             "location": "opt/app/rsa.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          },
+          {
+            "location": "opt/app/truststore.p12",
             "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
           }
         ]
