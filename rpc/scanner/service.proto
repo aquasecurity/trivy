@@ -32,6 +32,7 @@ message ScanOptions {
   common.OS distro = 7;
   repeated string vuln_severity_sources = 8;
   bool license_full = 9;
+  bool crypto_checks = 10;
 
   reserved 3; // deleted 'list_all_packages'
 }

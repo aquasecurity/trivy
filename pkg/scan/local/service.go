@@ -169,12 +169,15 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 		// The security levels are assessed here rather than during analysis, so that a change
 		// to their basis applies to cached assets without analyzing them again.
 		crypto.AssessStrength(target.CryptoAssets)
-		results = append(results, types.Result{
-			Target:         target.Name,
-			Class:          types.ClassCrypto,
-			CryptoAssets:   target.CryptoAssets,
-			CryptoFindings: check.Evaluate(target.CryptoAssets, clock.Now(ctx)),
-		})
+		result := types.Result{
+			Target:       target.Name,
+			Class:        types.ClassCrypto,
+			CryptoAssets: target.CryptoAssets,
+		}
+		if options.CryptoChecks {
+			result.CryptoFindings = check.Evaluate(target.CryptoAssets, clock.Now(ctx))
+		}
+		results = append(results, result)
 	}
 
 	// For WASM plugins and custom analyzers

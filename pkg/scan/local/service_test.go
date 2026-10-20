@@ -1092,7 +1092,8 @@ func TestScanner_Scan(t *testing.T) {
 				target:   "alpine:latest",
 				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
 				options: types.ScanOptions{
-					Scanners: types.Scanners{types.CryptoScanner},
+					Scanners:     types.Scanners{types.CryptoScanner},
+					CryptoChecks: true,
 				},
 			},
 			fixtures: []string{"testdata/fixtures/happy.yaml"},
@@ -1130,6 +1131,40 @@ func TestScanner_Scan(t *testing.T) {
 								},
 							},
 						},
+					},
+				},
+				Layers: ftypes.Layers{
+					{
+						DiffID: "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+					},
+				},
+			},
+		},
+		{
+			name: "happy path with cryptographic assets without checks",
+			args: args{
+				target:   "alpine:latest",
+				layerIDs: []string{"sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116"},
+				options: types.ScanOptions{
+					Scanners: types.Scanners{types.CryptoScanner},
+				},
+			},
+			fixtures: []string{"testdata/fixtures/happy.yaml"},
+			setupCache: func(t *testing.T) cache.Cache {
+				c := cache.NewMemoryCache()
+				require.NoError(t, c.PutBlob(t.Context(), "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116", ftypes.BlobInfo{
+					SchemaVersion: ftypes.BlobJSONSchemaVersion,
+					DiffID:        "sha256:a6d503001157aedc826853f9b67f26d35966221b158bff03849868ae4a821116",
+					CryptoAssets:  []ftypes.CryptoAsset{cachedCertificate},
+				}))
+				return c
+			},
+			want: types.ScanResponse{
+				Results: types.Results{
+					{
+						Target:       "alpine:latest",
+						Class:        types.ClassCrypto,
+						CryptoAssets: scannedAssets[1:],
 					},
 				},
 				Layers: ftypes.Layers{

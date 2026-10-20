@@ -532,6 +532,8 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
 		LicenseFull:         o.LicenseFull,
+		// Only JSON output shows crypto findings
+		CryptoChecks:        o.Format == types.FormatJSON,
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
