@@ -309,7 +309,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement, result.artifact.Repositories, set.New[string]())
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 			}
@@ -583,7 +583,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 	var err error
 	// Resolve dependencyManagement
-	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, opts.repositories, set.New[string]())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}
@@ -605,9 +605,12 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 // resolveDepManagement resolves depManagement, including imported POMs.
 // It returns resolved depManagement with variables evaluated.
+// imported tracks already imported POMs to break import cycles.
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
-func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) ([]pomDependency, error) {
+func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency,
+	repos []repository, imported set.Set[string],
+) ([]pomDependency, error) {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -623,6 +626,13 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
+		if imported.Contains(art.String()) {
+			p.logger.Debug("Skipping already imported POM", log.String("artifact", art.String()))
+			continue
+		}
+		imported.Append(art.String())
+		art.Repositories = slices.Clone(repos) // avoid sharing
+
 		result, err := p.resolve(ctx, art, nil)
 		if shouldReturnError(err) {
 			return nil, err
@@ -633,7 +643,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// We need to recursively check all nested depManagements,
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
-		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement, result.artifact.Repositories, imported)
 		if err != nil {
 			return nil, err
 		}

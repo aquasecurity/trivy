@@ -2576,6 +2576,23 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
 			},
 		},
+		{
+			name:          "imported BOMs are fetched from repositories of the importing POM",
+			inputFile:     filepath.Join("testdata", "import-bom-from-pom-repos", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "import-bom-from-pom-repos", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "import-bom-from-pom-repos", "repo1-artifacts.txtar"),
+				"REPO2_URL": filepath.Join("testdata", "import-bom-from-pom-repos", "repo2-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				// version from the BOM in the root POM repository
+				"org.example:example-api:1.1.0::4a7b5843": "License from reporoot",
+				// version from the nested BOM in the repository of the imported BOM
+				"org.example:example-api-nested:1.2.0::47955d7d": "License from reporoot",
+				// version from the BOM in the repository of the transitive dependency
+				"org.example:example-api-transitive:1.3.0::6ce0264f": "License from repo2",
+			},
+		},
 	}
 
 	for _, tt := range tests {
