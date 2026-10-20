@@ -23,7 +23,6 @@ func TestResults_DropCryptoFindings(t *testing.T) {
 		name    string
 		results types.Results
 		want    types.Results
-		dropped bool
 	}{
 		{
 			name: "findings",
@@ -46,7 +45,6 @@ func TestResults_DropCryptoFindings(t *testing.T) {
 					CryptoAssets: assets,
 				},
 			},
-			dropped: true,
 		},
 		{
 			name: "no findings",
@@ -67,7 +65,7 @@ func TestResults_DropCryptoFindings(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.dropped, tt.results.DropCryptoFindings())
+			tt.results.DropCryptoFindings()
 			assert.Equal(t, tt.want, tt.results)
 		})
 	}

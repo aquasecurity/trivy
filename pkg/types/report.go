@@ -215,14 +215,9 @@ func (results Results) Failed() bool {
 }
 
 // DropCryptoFindings removes the findings of the built-in crypto checks and keeps the
-// cryptographic assets. It reports whether any findings were removed.
-func (results Results) DropCryptoFindings() bool {
-	var dropped bool
+// cryptographic assets.
+func (results Results) DropCryptoFindings() {
 	for i := range results {
-		if len(results[i].CryptoFindings) != 0 {
-			results[i].CryptoFindings = nil
-			dropped = true
-		}
+		results[i].CryptoFindings = nil
 	}
-	return dropped
 }
