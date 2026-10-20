@@ -68,7 +68,7 @@
       "Class": "crypto",
       "CryptoAssets": [
         {
-          "AssetID": "27245b7dde2c6345",
+          "AssetID": "3ffe62f2bc72c73",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -89,7 +89,7 @@
           }
         },
         {
-          "AssetID": "2102e2cee4a7c58",
+          "AssetID": "f8a0113c66853aae",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -108,7 +108,7 @@
           }
         },
         {
-          "AssetID": "6f19463e06d244f",
+          "AssetID": "10bb9f843a9330d1",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -128,7 +128,7 @@
           }
         },
         {
-          "AssetID": "9979525c6c6ba857",
+          "AssetID": "44b9b922907710f9",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -148,7 +148,7 @@
           }
         },
         {
-          "AssetID": "2fac032481854e99",
+          "AssetID": "50ed554f2da82e33",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -168,7 +168,7 @@
           }
         },
         {
-          "AssetID": "85a8b3f4ef1b71a0",
+          "AssetID": "5d9c4714f015f612",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -187,7 +187,7 @@
           }
         },
         {
-          "AssetID": "c3c7f39a63903150",
+          "AssetID": "35214c8f361587da",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -206,7 +206,7 @@
           }
         },
         {
-          "AssetID": "bbe46744601ebfb",
+          "AssetID": "31a2a39feabc61a5",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -226,7 +226,7 @@
           }
         },
         {
-          "AssetID": "20bf5097ac758c9e",
+          "AssetID": "94f216e1eb3755ec",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -246,7 +246,7 @@
           }
         },
         {
-          "AssetID": "974abe9aa609cd1a",
+          "AssetID": "6eb8d1205cde5b6f",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -266,7 +266,7 @@
           }
         },
         {
-          "AssetID": "e77a4875940fd50a",
+          "AssetID": "25f9928220b3c130",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -286,7 +286,7 @@
           }
         },
         {
-          "AssetID": "fb66c05448d792cd",
+          "AssetID": "12df5ae7b65d33",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -306,7 +306,7 @@
           }
         },
         {
-          "AssetID": "997901113cfdd455",
+          "AssetID": "e157dc7a65fadfaf",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -326,7 +326,7 @@
           }
         },
         {
-          "AssetID": "6c413a6a48a19bc9",
+          "AssetID": "28401195a7936d43",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -346,7 +346,7 @@
           }
         },
         {
-          "AssetID": "1e5609e84cc5c564",
+          "AssetID": "3d83cee314c27356",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -366,7 +366,7 @@
           }
         },
         {
-          "AssetID": "f8bec479f2447f5c",
+          "AssetID": "6c697ba0c622fcee",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -386,7 +386,7 @@
           }
         },
         {
-          "AssetID": "487ed0a4943a78a5",
+          "AssetID": "1455e8581fffe5c7",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -406,7 +406,7 @@
           }
         },
         {
-          "AssetID": "48c7bf3c5e3f53ce",
+          "AssetID": "779fca0806e50d0b",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -426,7 +426,7 @@
           }
         },
         {
-          "AssetID": "76309fa90810995e",
+          "AssetID": "438bf672534103b8",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -443,7 +443,7 @@
           }
         },
         {
-          "AssetID": "6a7a9a7425d7cc66",
+          "AssetID": "e3e79959a84da894",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -460,7 +460,7 @@
           }
         },
         {
-          "AssetID": "1fe5e3a8be1fce1a",
+          "AssetID": "3b97463c3e27aa10",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -479,7 +479,7 @@
           }
         },
         {
-          "AssetID": "128a33a40863a8d5",
+          "AssetID": "9bd4e0d7332574f",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -498,7 +498,7 @@
           }
         },
         {
-          "AssetID": "c75704f2a31bc806",
+          "AssetID": "9ba56c9c4f82a6bb",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -517,7 +517,7 @@
           }
         },
         {
-          "AssetID": "bac1ac5faa7b28e6",
+          "AssetID": "b1939b6db552f2f4",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -536,7 +536,7 @@
           }
         },
         {
-          "AssetID": "42bf953772fd7ee3",
+          "AssetID": "f43beea75040ae12",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -555,7 +555,7 @@
           }
         },
         {
-          "AssetID": "1397e4c579331d20",
+          "AssetID": "44bf5e1b2f104666",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -572,7 +572,7 @@
           }
         },
         {
-          "AssetID": "fb44b2ac5f7d233b",
+          "AssetID": "9835ec5a908fef35",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -589,7 +589,7 @@
           }
         },
         {
-          "AssetID": "63e661a3920c77bf",
+          "AssetID": "e35942331c5cd2fd",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -606,7 +606,7 @@
           }
         },
         {
-          "AssetID": "960a8145e9d712f5",
+          "AssetID": "ee63378c41cebc53",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -626,7 +626,7 @@
           }
         },
         {
-          "AssetID": "61ae6fd5f5dabee7",
+          "AssetID": "8df21e2ef7709ba9",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -646,7 +646,7 @@
           }
         },
         {
-          "AssetID": "36dae937781c843c",
+          "AssetID": "74c1e36bba7340fa",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -666,7 +666,7 @@
           }
         },
         {
-          "AssetID": "2058878df13e7b28",
+          "AssetID": "bfd19a5897098666",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -686,7 +686,7 @@
           }
         },
         {
-          "AssetID": "704a6893d846954f",
+          "AssetID": "a3e7a5f5479d49e1",
           "Kind": "algorithm",
           "Identity": {
             "Method": "oid",
@@ -705,7 +705,7 @@
           }
         },
         {
-          "AssetID": "e8a2bbb23a08afae",
+          "AssetID": "11891abc47d542c",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -740,7 +740,7 @@
           }
         },
         {
-          "AssetID": "14146c2f91a4bc83",
+          "AssetID": "7dd1bdf72af1418d",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -775,7 +775,7 @@
           }
         },
         {
-          "AssetID": "1593e31288ffa53",
+          "AssetID": "bbae4c06a24acb35",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -810,7 +810,7 @@
           }
         },
         {
-          "AssetID": "75a1f0c2dae3ddbb",
+          "AssetID": "446e2857eafe3d2d",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -864,7 +864,7 @@
           }
         },
         {
-          "AssetID": "2bee0f89cc08ae00",
+          "AssetID": "978841e12b532e35",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -918,7 +918,7 @@
           }
         },
         {
-          "AssetID": "d38bd6f9474c04e1",
+          "AssetID": "e425eadf9abda23",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -951,7 +951,7 @@
           }
         },
         {
-          "AssetID": "ac7d7543d4c9618f",
+          "AssetID": "192151ccdbb9433d",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -986,7 +986,7 @@
           }
         },
         {
-          "AssetID": "5f99a93d1a578e68",
+          "AssetID": "c9d68d65ea160942",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1021,7 +1021,7 @@
           }
         },
         {
-          "AssetID": "e1f4649b7d41f3f8",
+          "AssetID": "3d53cb300ec2b9da",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1056,7 +1056,7 @@
           }
         },
         {
-          "AssetID": "7313ffb9e08317df",
+          "AssetID": "a92848335a461bb5",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1091,7 +1091,7 @@
           }
         },
         {
-          "AssetID": "ea249482016ae109",
+          "AssetID": "c201d04c566b8ea7",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1126,7 +1126,7 @@
           }
         },
         {
-          "AssetID": "d40cdc8091d6e9d0",
+          "AssetID": "f37b405b85a1ede",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1159,7 +1159,7 @@
           }
         },
         {
-          "AssetID": "bcc3557f9022c355",
+          "AssetID": "331cb450b2e131d3",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1194,7 +1194,7 @@
           }
         },
         {
-          "AssetID": "cd341284d894c194",
+          "AssetID": "e4c6c1d97faea201",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1229,7 +1229,7 @@
           }
         },
         {
-          "AssetID": "2c57cf320c6af157",
+          "AssetID": "b4afacad25236991",
           "Kind": "certificate",
           "Identity": {
             "Method": "sha256",
@@ -1269,7 +1269,7 @@
           }
         },
         {
-          "AssetID": "b57b9f261982ecfb",
+          "AssetID": "68b7f4dd3bf57135",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1289,7 +1289,7 @@
           }
         },
         {
-          "AssetID": "a7bb82e0b020426a",
+          "AssetID": "8d59ee0a6fd65a94",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1309,7 +1309,7 @@
           }
         },
         {
-          "AssetID": "d938811b26255924",
+          "AssetID": "6f2775bce9fa59e2",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1339,7 +1339,7 @@
           }
         },
         {
-          "AssetID": "c9397be3969b5220",
+          "AssetID": "8c69801dadc6e43e",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1369,7 +1369,7 @@
           }
         },
         {
-          "AssetID": "b2b258827c2ca2ad",
+          "AssetID": "17b6927e601377db",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1400,7 +1400,7 @@
           }
         },
         {
-          "AssetID": "a7383f69cf4b744e",
+          "AssetID": "26519ebc086363f8",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1426,7 +1426,7 @@
           }
         },
         {
-          "AssetID": "255af0463e03e7",
+          "AssetID": "645033fd6a28968d",
           "Kind": "key",
           "KeyType": "private",
           "Identity": {
@@ -1456,7 +1456,7 @@
           }
         },
         {
-          "AssetID": "6bce8d2aa0b8a67e",
+          "AssetID": "d4405c4538791168",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1480,7 +1480,7 @@
           }
         },
         {
-          "AssetID": "d21dbc0f1665a80b",
+          "AssetID": "50c62113a6b1a011",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1506,7 +1506,7 @@
           }
         },
         {
-          "AssetID": "4480d499ab00109f",
+          "AssetID": "bccbec3af452eb1e",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1530,7 +1530,7 @@
           }
         },
         {
-          "AssetID": "2ff805e705971c1e",
+          "AssetID": "a2a6cfb4794b7f8c",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1554,7 +1554,7 @@
           }
         },
         {
-          "AssetID": "37958259fc79e58",
+          "AssetID": "7dbff042c053214e",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1580,7 +1580,7 @@
           }
         },
         {
-          "AssetID": "6c8f791dbaa2953a",
+          "AssetID": "84d90b26bfcc80e0",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1604,7 +1604,7 @@
           }
         },
         {
-          "AssetID": "b75fd2a038900e1e",
+          "AssetID": "ad2e7b31bd15a5dc",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1630,7 +1630,7 @@
           }
         },
         {
-          "AssetID": "935e45627748c34d",
+          "AssetID": "c1e203cbe5caed23",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1655,7 +1655,7 @@
           }
         },
         {
-          "AssetID": "c856cdac4de5c8ee",
+          "AssetID": "c0325b04a4b84384",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1679,7 +1679,7 @@
           }
         },
         {
-          "AssetID": "d24f87e5ec9aea77",
+          "AssetID": "f954601febe13299",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1703,7 +1703,7 @@
           }
         },
         {
-          "AssetID": "ad9d5783bb21af09",
+          "AssetID": "c5be76ca8dc34f27",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1728,7 +1728,7 @@
           }
         },
         {
-          "AssetID": "a719a68fc5a7469f",
+          "AssetID": "c7b374721b4184ad",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1752,7 +1752,7 @@
           }
         },
         {
-          "AssetID": "285d06cc41e175ee",
+          "AssetID": "dff466238aedc81c",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1778,7 +1778,7 @@
           }
         },
         {
-          "AssetID": "cb4c07cdfd4f46ec",
+          "AssetID": "4fadd197c34593f2",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1802,7 +1802,7 @@
           }
         },
         {
-          "AssetID": "8f41250377e977df",
+          "AssetID": "3f58b0318f0d3a59",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1826,7 +1826,7 @@
           }
         },
         {
-          "AssetID": "918a72fff4104b0f",
+          "AssetID": "327c92cfbd60c345",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1850,7 +1850,7 @@
           }
         },
         {
-          "AssetID": "cf83bf815d587287",
+          "AssetID": "3618ad1a6f840fa9",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1874,7 +1874,7 @@
           }
         },
         {
-          "AssetID": "ce35ada64de52546",
+          "AssetID": "3638f046439c91c8",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1898,7 +1898,7 @@
           }
         },
         {
-          "AssetID": "c225fba68a7b8063",
+          "AssetID": "b83d5b2056ab2a41",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1924,7 +1924,7 @@
           }
         },
         {
-          "AssetID": "d91888f1dbfab101",
+          "AssetID": "6546984afc4fc708",
           "Kind": "key",
           "KeyType": "public",
           "Identity": {
@@ -1953,7 +1953,7 @@
           "RuleID": "CRYPTO-0001",
           "Title": "SHA-1 certificate signature",
           "Severity": "MEDIUM",
-          "AssetID": "ac7d7543d4c9618f",
+          "AssetID": "192151ccdbb9433d",
           "Evidence": {
             "SignatureAlgorithm": "DSA-SHA-1",
             "SignatureAlgorithmOID": "1.2.840.10040.4.3"
@@ -1963,7 +1963,7 @@
           "RuleID": "CRYPTO-0001",
           "Title": "SHA-1 certificate signature",
           "Severity": "MEDIUM",
-          "AssetID": "7313ffb9e08317df",
+          "AssetID": "a92848335a461bb5",
           "Evidence": {
             "SignatureAlgorithm": "ECDSA-SHA-1",
             "SignatureAlgorithmOID": "1.2.840.10045.4.1"
@@ -1973,7 +1973,7 @@
           "RuleID": "CRYPTO-0001",
           "Title": "SHA-1 certificate signature",
           "Severity": "MEDIUM",
-          "AssetID": "bcc3557f9022c355",
+          "AssetID": "331cb450b2e131d3",
           "Evidence": {
             "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
             "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
@@ -1983,7 +1983,7 @@
           "RuleID": "CRYPTO-0002",
           "Title": "Small RSA key",
           "Severity": "HIGH",
-          "AssetID": "6bce8d2aa0b8a67e",
+          "AssetID": "d4405c4538791168",
           "Evidence": {
             "KeySize": 1024
           }
@@ -1992,7 +1992,7 @@
           "RuleID": "CRYPTO-0002",
           "Title": "Small RSA key",
           "Severity": "HIGH",
-          "AssetID": "d21dbc0f1665a80b",
+          "AssetID": "50c62113a6b1a011",
           "Evidence": {
             "KeySize": 1024
           }
@@ -2001,7 +2001,7 @@
           "RuleID": "CRYPTO-0004",
           "Title": "Expired certificate",
           "Severity": "MEDIUM",
-          "AssetID": "bcc3557f9022c355",
+          "AssetID": "331cb450b2e131d3",
           "Evidence": {
             "NotAfter": "2020-01-01T00:00:00Z"
           }
@@ -2010,7 +2010,7 @@
           "RuleID": "CRYPTO-0002",
           "Title": "Small RSA key",
           "Severity": "HIGH",
-          "AssetID": "d938811b26255924",
+          "AssetID": "6f2775bce9fa59e2",
           "Evidence": {
             "KeySize": 1024
           }
@@ -2019,7 +2019,7 @@
           "RuleID": "CRYPTO-0001",
           "Title": "SHA-1 certificate signature",
           "Severity": "MEDIUM",
-          "AssetID": "cd341284d894c194",
+          "AssetID": "e4c6c1d97faea201",
           "Evidence": {
             "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
             "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
@@ -2029,7 +2029,7 @@
           "RuleID": "CRYPTO-0002",
           "Title": "Small RSA key",
           "Severity": "HIGH",
-          "AssetID": "4480d499ab00109f",
+          "AssetID": "bccbec3af452eb1e",
           "Evidence": {
             "KeySize": 1024
           }
@@ -2038,7 +2038,7 @@
           "RuleID": "CRYPTO-0004",
           "Title": "Expired certificate",
           "Severity": "MEDIUM",
-          "AssetID": "cd341284d894c194",
+          "AssetID": "e4c6c1d97faea201",
           "Evidence": {
             "NotAfter": "2020-01-01T00:00:00Z"
           }

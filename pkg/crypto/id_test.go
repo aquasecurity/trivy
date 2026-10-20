@@ -46,10 +46,11 @@ func TestAssignIDs(t *testing.T) {
 			},
 		},
 		{
-			name: "different layer",
+			name: "same file in a different layer",
 			mutate: func(asset *ftypes.CryptoAsset) {
 				asset.Layer.DiffID = "sha256:3c1d"
 			},
+			same: true,
 		},
 		{
 			name: "key without a container of its own",
