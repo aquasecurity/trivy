@@ -228,6 +228,29 @@ func TestCryptoAssetValidate(t *testing.T) {
 			wantErr: `unknown keystore type "JCEKS"`,
 		},
 		{
+			name: "DER certificate in a keystore",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Encoding = types.CryptoEncodingDER
+				a.Keystore = types.CryptoKeystorePKCS12
+			})),
+			wantErr: "",
+		},
+		{
+			name: "PEM certificate in a keystore",
+			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Encoding = types.CryptoEncodingPEM
+				a.Keystore = types.CryptoKeystorePKCS12
+			})),
+			wantErr: `keystore "PKCS#12" requires DER encoding`,
+		},
+		{
+			name: "algorithm in a keystore",
+			asset: cryptotest.AlgorithmAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
+				a.Keystore = types.CryptoKeystorePKCS12
+			})),
+			wantErr: `keystore "PKCS#12" requires DER encoding`,
+		},
+		{
 			name: "unknown key container format",
 			asset: cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(a *types.CryptoAsset) {
 				a.Format = "OpenSSH"

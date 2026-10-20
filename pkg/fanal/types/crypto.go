@@ -268,6 +268,9 @@ func (a CryptoAsset) Validate() error {
 	default:
 		return xerrors.Errorf("unknown keystore type %q", a.Keystore)
 	}
+	if a.Keystore != "" && a.Encoding != CryptoEncodingDER {
+		return xerrors.Errorf("keystore %q requires %s encoding", a.Keystore, CryptoEncodingDER)
+	}
 	return nil
 }
 
