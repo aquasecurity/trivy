@@ -2,6 +2,7 @@ package mod
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -133,6 +134,150 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantSkipIndirect, gotSkipIndirect)
 		})
 	}
+}
+
+func TestParseEchoVersions(t *testing.T) {
+	const goMod = `module example.com/app
+
+go 1.22.0
+
+require (
+	golang.org/x/net v0.55.0+echo.1
+	example.com/replaced v1.3.4+echo.1
+	example.com/mismatch v1.4.5+echo.1
+	example.com/ordinary v1.5.6+build.1
+	example.com/v2module/v2 v2.0.0+echo.1
+)
+
+replace (
+	example.com/replaced v1.3.4+echo.1 => example.com/replacement v1.3.4+echo.2
+	example.com/mismatch v1.4.5+echo.2 => example.com/not-used v1.4.5+echo.3
+)
+`
+
+	gotPkgs, gotDeps, gotSkipIndirect, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
+	require.NoError(t, err)
+	require.False(t, gotSkipIndirect)
+
+	pkgs := make(map[string]ftypes.Package, len(gotPkgs))
+	for _, pkg := range gotPkgs {
+		pkgs[pkg.Name] = pkg
+	}
+
+	require.Len(t, pkgs, 6)
+	require.Equal(t, "v0.55.0+echo.1", pkgs["golang.org/x/net"].Version)
+	require.Equal(t, "golang.org/x/net@v0.55.0+echo.1", pkgs["golang.org/x/net"].ID)
+	require.Equal(t, "v1.3.4+echo.2", pkgs["example.com/replacement"].Version)
+	require.Equal(t, "example.com/replacement@v1.3.4+echo.2", pkgs["example.com/replacement"].ID)
+	require.Equal(t, "v1.4.5+echo.1", pkgs["example.com/mismatch"].Version)
+	require.Equal(t, "v1.5.6", pkgs["example.com/ordinary"].Version)
+	require.Equal(t, "v2.0.0+echo.1", pkgs["example.com/v2module/v2"].Version)
+	require.NotContains(t, pkgs, "example.com/replaced")
+	require.NotContains(t, pkgs, "example.com/not-used")
+
+	require.Equal(t, []ftypes.Dependency{
+		{
+			ID: "example.com/app",
+			DependsOn: []string{
+				"example.com/mismatch@v1.4.5+echo.1",
+				"example.com/ordinary@v1.5.6",
+				"example.com/replacement@v1.3.4+echo.2",
+				"example.com/v2module/v2@v2.0.0+echo.1",
+				"golang.org/x/net@v0.55.0+echo.1",
+			},
+		},
+	}, gotDeps)
+}
+
+func TestCanonicalizeVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		version string
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "Echo version",
+			version: "v0.55.0+echo.1",
+			want:    "v0.55.0+echo.1",
+		},
+		{
+			name:    "Echo prerelease version",
+			version: "v1.2.3-rc.1+echo.2",
+			want:    "v1.2.3-rc.1+echo.2",
+		},
+		{
+			name:    "zero Echo revision",
+			version: "v1.2.3+echo.0",
+			want:    "v1.2.3+echo.0",
+		},
+		{
+			name:    "zero-padded Echo revision",
+			version: "v1.2.3+echo.01",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "non-Echo build metadata",
+			version: "v1.2.3+build.1",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "Echo segment followed by another identifier",
+			version: "v1.2.3+echo.1.extra",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "non-numeric Echo revision",
+			version: "v1.2.3+echo.x",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "Echo-like identifier",
+			version: "v1.2.3+echo.1foo",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "incompatible version",
+			version: "v2.0.0+incompatible",
+			want:    "v2.0.0+incompatible",
+		},
+		{
+			name:    "malformed Echo version",
+			version: "not-a-version+echo.1",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := canonicalizeVersion("example.com/module", tt.version)
+			if tt.wantErr {
+				require.ErrorContains(t, err, "invalid version: must be of the form v1.2.3")
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestParseRejectsInvalidReplacementVersion(t *testing.T) {
+	const goMod = `module example.com/app
+
+go 1.22.0
+
+require example.com/module v1.2.3
+
+replace example.com/module => example.com/replacement not-a-version
+`
+
+	_, wantErr := modfile.Parse("go.mod", []byte(goMod), nil)
+	require.Error(t, wantErr)
+	_, gotErr := modfile.Parse("go.mod", []byte(goMod), canonicalizeVersion)
+	require.EqualError(t, gotErr, wantErr.Error())
+
+	_, _, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
+	require.ErrorContains(t, err, `replace example.com/replacement: version "not-a-version" invalid: must be of the form v1.2.3`)
 }
 
 func TestToolchainVersion(t *testing.T) {

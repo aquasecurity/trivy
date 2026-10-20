@@ -2,6 +2,7 @@ package mod
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	goversion "go/version"
 	"io"
@@ -12,6 +13,8 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
+	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -30,6 +33,9 @@ var (
 	// gopkg.in without user segment
 	// Example: gopkg.in/pkg.v3 -> github.com/go-pkg/pkg
 	VCSUrlGoPkgInRegexWithoutUser = regexp.MustCompile(`^gopkg\.in/([^.]+)\..*$`)
+
+	// echoVersionSuffixRe matches Echo's non-zero-padded numeric build metadata suffix.
+	echoVersionSuffixRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)$`)
 )
 
 type Parser struct {
@@ -82,7 +88,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, false, xerrors.Errorf("file read error: %w", err)
 	}
 
-	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
+	modFileParsed, err := modfile.Parse("go.mod", goModData, canonicalizeVersion)
 	if err != nil {
 		return nil, nil, false, xerrors.Errorf("go.mod parse error: %w", err)
 	}
@@ -191,6 +197,23 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	sort.Sort(ftypes.Packages(pkgSlice))
 
 	return pkgSlice, deps, skipIndirect, nil
+}
+
+// canonicalizeVersion preserves valid Echo versions and applies the standard Go
+// module canonicalization to every other version.
+func canonicalizeVersion(path, version string) (string, error) {
+	if echoVersionSuffixRe.MatchString(version) && semver.IsValid(version) {
+		return version, nil
+	}
+
+	canonical := module.CanonicalVersion(version)
+	if canonical == "" {
+		return "", module.VersionError(module.Version{Path: path, Version: version}, &module.InvalidVersionError{
+			Version: version,
+			Err:     errors.New("must be of the form v1.2.3"),
+		})
+	}
+	return canonical, nil
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
