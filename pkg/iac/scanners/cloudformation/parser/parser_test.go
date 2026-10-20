@@ -638,7 +638,7 @@ func Test_ExpandForEachJSON(t *testing.T) {
 	assert.Equal(t, "bucket-B", b2.GetProperty("BucketName").AsString())
 }
 
-func Test_ConditionReferencingAnotherCondition(t *testing.T) {
+func Test_ConditionWithIntrinsicAtTopLevel(t *testing.T) {
 	tests := []struct {
 		name     string
 		src      string
@@ -684,6 +684,72 @@ Resources:
 			src: `AWSTemplateFormatVersion: "2010-09-09"
 Conditions:
   IsProd: !GetAtt [TestBucket, Arn]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(map[string]string{
+				"main.yaml": tt.src,
+			})
+
+			files, err := New().ParseFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+			require.Len(t, files, 1)
+
+			res := files[0].GetResourceByLogicalID("TestBucket")
+			require.NotNil(t, res)
+
+			assert.Equal(t, tt.expected, res.GetStringProperty("BucketName").Value())
+		})
+	}
+}
+
+func Test_ConditionCycle(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected string
+	}{
+		{
+			name: "condition referencing itself with Condition",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd:
+    Condition: IsProd
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+		{
+			name: "condition referencing itself with Fn::If",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd: !If [IsProd, true, false]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+		{
+			name: "two conditions referencing each other",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd:
+    Condition: IsStaging
+  IsStaging:
+    Condition: IsProd
 Resources:
   TestBucket:
     Type: "AWS::S3::Bucket"

@@ -11,11 +11,10 @@ func ResolveCondition(property *Property) (resolved *Property, success bool) {
 	}
 	refValue := refProp.AsString()
 
-	for k, prop := range property.ctx.Conditions {
-		if k == refValue {
-			return prop.resolveValue()
-		}
+	cond, exists := property.ctx.Conditions[refValue]
+	if !exists {
+		return nil, false
 	}
 
-	return nil, false
+	return property.ctx.resolveCondition(refValue, cond)
 }
