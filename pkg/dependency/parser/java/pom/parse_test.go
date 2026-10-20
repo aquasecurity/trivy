@@ -2593,6 +2593,20 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api-transitive:1.3.0::6ce0264f": "License from repo2",
 			},
 		},
+		{
+			name:          "repositories are inherited from parent POMs",
+			inputFile:     filepath.Join("testdata", "repos-from-parent-poms", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repos-from-parent-poms", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo1-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				// version from the BOM in the repository of the parent POM
+				"org.example:example-api:1.1.0::ff70a01d": "License from repo1",
+				// version from the grandparent POM in the repository of the parent POM
+				"org.example:example-api2:1.0.0::805ec0f5": "License from repo1",
+			},
+		},
 	}
 
 	for _, tt := range tests {

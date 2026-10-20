@@ -489,17 +489,13 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		opts.exclusions = set.New[string]()
 	}
 
-	// Get repositories from current POM and merge with inherited ones
-	pomRepos := pom.repositories(p.servers)
-	opts.repositories = lo.UniqBy(append(pomRepos, opts.repositories...), func(r repository) url.URL {
-		return r.url
-	})
-
 	// Resolve parent POM
-	// TODO handle repos from parents
 	if err := p.resolveParent(ctx, pom, opts.repositories); err != nil {
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
+
+	// Get repositories from current POM, including ones from parent POMs, and merge with ones from upper-level POMs
+	opts.repositories = mergeRepositories(pom.repositories(p.servers), opts.repositories)
 
 	// Resolve dependencies
 	props := pom.properties()
@@ -531,6 +527,8 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	}
 
 	// Parse parent POM
+	// The parent POM is also searched in the repositories of this POM
+	pomRepos = mergeRepositories(pom.repositories(p.servers), pomRepos)
 	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent, pomRepos)
 	if err != nil {
 		return xerrors.Errorf("parent error: %w", err)
@@ -553,6 +551,9 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	pom.content.Dependencies.Dependency = p.mergeDependencies(
 		pom.content.Dependencies.Dependency,
 		parent.content.Dependencies.Dependency)
+
+	// Merge repositories, duplicates are removed when the repositories are resolved
+	pom.content.Repositories = append(pom.content.Repositories, parent.content.Repositories...)
 
 	return nil
 }
@@ -663,6 +664,13 @@ func (p *Parser) mergeProperties(child, parent properties) properties {
 func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependency {
 	return lo.UniqBy(append(child, parent...), func(d pomDependency) string {
 		return d.Name()
+	})
+}
+
+// mergeRepositories merges repositories in order of priority and removes duplicate URLs.
+func mergeRepositories(repos ...[]repository) []repository {
+	return lo.UniqBy(slices.Concat(repos...), func(r repository) url.URL {
+		return r.url
 	})
 }
 
