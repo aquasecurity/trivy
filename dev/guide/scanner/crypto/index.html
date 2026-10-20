@@ -2686,6 +2686,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering-the-inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8637,6 +8648,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#findings" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Findings
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#filtering-the-inventory" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8699,11 +8721,12 @@ You're not viewing the latest version of the documentation.
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components.</p>
-<p>The scanner is off by default. Enable it with <code>--scanners crypto</code> together with <code>--format cyclonedx</code>.</p>
+<p>Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports <a href="#findings">weak assets</a> found by built-in checks.</p>
+<p>The scanner is off by default. Enable it with <code>--scanners crypto</code> together with <code>--format cyclonedx</code> or <code>--format json</code>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--output<span class="w"> </span>result.cdx.json<span class="w"> </span>myimage:1.0.0
+$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span>result.json<span class="w"> </span>myimage:1.0.0
 </code></pre></div>
-<p>Cryptographic assets have no representation in the other report formats, so Trivy rejects <code>--scanners crypto</code> with any of them.</p>
+<p>Trivy rejects <code>--scanners crypto</code> with other report formats.</p>
 <h2 id="what-is-scanned">What is scanned<a class="headerlink" href="#what-is-scanned" title="Permanent link">&para;</a></h2>
 <p>Files are selected by extension: <code>.pem</code>, <code>.der</code>, <code>.crt</code>, <code>.cer</code>, <code>.key</code>. The encoding comes from the content, since these extensions carry both PEM and DER.</p>
 <table>
@@ -8737,7 +8760,7 @@ You're not viewing the latest version of the documentation.
 <p>The report lists three kinds of assets, which are certificates, keys and algorithms. A certificate adds four assets linked to each other. These are the certificate, the key it carries, the algorithm of that key and the algorithm it was signed with. A key is linked to its algorithm, and a private key also to its public key.</p>
 <p>A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.</p>
 <p>A key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. Its size is reported only when the OID fixes it, as for Ed448, X25519 and X448, so an RSA-PSS key has no size. An algorithm that Trivy does not recognize is named by its OID, such as <code>1.3.101.110</code> for X25519.</p>
-<p>An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the <code>SubjectPublicKeyInfo</code>, and for an algorithm the OID with its parameters. The same asset found in several files and layers is therefore reported once, with a list of the places it was found. Each place states the file path and the layer.</p>
+<p>An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the <code>SubjectPublicKeyInfo</code>, and for an algorithm the OID with its parameters. In CycloneDX output the same asset found in several files and layers is reported once, with a list of the places it was found, and each place states the file path and the layer. In JSON output <code>CryptoAssets</code> has one entry per place.</p>
 <p>The parameters of an algorithm are the key size for RSA and the curve for EC. For DSA they are the two bit lengths that name a parameter set in FIPS 186: L, the length of the prime <code>p</code>, and N, the length of the prime <code>q</code>. So DSA keys of (2048, 224) and (2048, 256) belong to different algorithms, although both are named <code>DSA-2048</code> after the CycloneDX naming pattern. Other algorithms are identified by the OID alone.</p>
 <h3 id="security-levels">Security levels<a class="headerlink" href="#security-levels" title="Permanent link">&para;</a></h3>
 <p>Trivy estimates two nominal security levels for the algorithms it recognizes. The classical security level is the strength in bits against classical attacks. The NIST quantum security level is the NIST post-quantum security category from 1 to 5, or 0 for an algorithm that meets none of the categories.</p>
@@ -8833,6 +8856,107 @@ You're not viewing the latest version of the documentation.
 <span class="w">  </span><span class="p">}</span>
 <span class="p">}</span>
 </code></pre></div>
+<h2 id="findings">Findings<a class="headerlink" href="#findings" title="Permanent link">&para;</a></h2>
+<p>Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON output. Trivy does not determine whether any software uses these assets.</p>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Title</th>
+<th>Asset</th>
+<th>Condition</th>
+<th>Severity</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CRYPTO-0001</code></td>
+<td>SHA-1 certificate signature</td>
+<td>certificate</td>
+<td>the signature uses SHA-1</td>
+<td>MEDIUM</td>
+</tr>
+<tr>
+<td><code>CRYPTO-0002</code></td>
+<td>Small RSA key</td>
+<td>key</td>
+<td>the RSA key is shorter than 2048 bits</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td><code>CRYPTO-0003</code></td>
+<td>Weak elliptic curve</td>
+<td>algorithm</td>
+<td>the classical security level of an EC algorithm is below 112 bits</td>
+<td>HIGH</td>
+</tr>
+<tr>
+<td><code>CRYPTO-0004</code></td>
+<td>Expired certificate</td>
+<td>certificate</td>
+<td><code>NotAfter</code> is before the time of the scan</td>
+<td>MEDIUM</td>
+</tr>
+</tbody>
+</table>
+<p>A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.</p>
+<p>A small RSA key in a certificate gets the finding on its key asset. The EC finding points to the algorithm asset, which is reported once per file, so several keys on one curve in a file give one finding.</p>
+<p>A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not read the hash from the RSA-PSS parameters.</p>
+<p>Every entry of <code>CryptoAssets</code> in JSON output has an <code>AssetID</code>, and a finding refers to its asset by this ID. The ID depends on the asset identity, the file path, the layer and the format. Two scans of one image with the same Trivy version give the same IDs. <code>Evidence</code> holds the values the check was evaluated on.</p>
+<div class="highlight"><pre><span></span><code><span class="p">{</span>
+<span class="w">  </span><span class="nt">&quot;Target&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;myimage:1.0.0&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;Class&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;crypto&quot;</span><span class="p">,</span>
+<span class="w">  </span><span class="nt">&quot;CryptoAssets&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;AssetID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8c2f0e5a91d34b76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Kind&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;KeyType&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;public&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Name&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;RSA-1024 public key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;FilePath&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;app/certs/legacy.pem&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="err">...</span>
+<span class="w">    </span><span class="p">},</span>
+<span class="w">    </span><span class="err">...</span>
+<span class="w">  </span><span class="p">],</span>
+<span class="w">  </span><span class="nt">&quot;CryptoFindings&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">[</span>
+<span class="w">    </span><span class="p">{</span>
+<span class="w">      </span><span class="nt">&quot;RuleID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;CRYPTO-0002&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Title&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;Small RSA key&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Severity&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;HIGH&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;AssetID&quot;</span><span class="p">:</span><span class="w"> </span><span class="s2">&quot;8c2f0e5a91d34b76&quot;</span><span class="p">,</span>
+<span class="w">      </span><span class="nt">&quot;Evidence&quot;</span><span class="p">:</span><span class="w"> </span><span class="p">{</span>
+<span class="w">        </span><span class="nt">&quot;KeySize&quot;</span><span class="p">:</span><span class="w"> </span><span class="mi">1024</span>
+<span class="w">      </span><span class="p">}</span>
+<span class="w">    </span><span class="p">}</span>
+<span class="w">  </span><span class="p">]</span>
+<span class="p">}</span>
+</code></pre></div>
+<table>
+<thead>
+<tr>
+<th>Rule ID</th>
+<th>Evidence</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>CRYPTO-0001</code></td>
+<td><code>SignatureAlgorithm</code>, <code>SignatureAlgorithmOID</code></td>
+</tr>
+<tr>
+<td><code>CRYPTO-0002</code></td>
+<td><code>KeySize</code></td>
+</tr>
+<tr>
+<td><code>CRYPTO-0003</code></td>
+<td><code>Curve</code>, <code>ClassicalSecurityLevel</code></td>
+</tr>
+<tr>
+<td><code>CRYPTO-0004</code></td>
+<td><code>NotAfter</code></td>
+</tr>
+</tbody>
+</table>
+<p>Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. <code>trivy convert</code> keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.</p>
 <h2 id="filtering-the-inventory">Filtering the inventory<a class="headerlink" href="#filtering-the-inventory" title="Permanent link">&para;</a></h2>
 <p>Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.</p>
 <p>Two attributes in the report separate them. The path says whether a certificate lies in a system trust store such as <code>/etc/ssl/certs</code> or <code>/usr/share/ca-certificates</code>, and the layer says whether it came from the base image or from your build. A root CA is a CA certificate whose subject and issuer match.</p>
