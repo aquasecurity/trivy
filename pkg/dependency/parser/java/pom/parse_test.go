@@ -2577,7 +2577,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			},
 		},
 		{
-			name:          "imported BOMs are fetched from repositories of the importing POM",
+			name:          "imported BOMs are fetched from repositories of the importing POM, import cycles are skipped",
 			inputFile:     filepath.Join("testdata", "import-bom-from-pom-repos", "pom.xml"),
 			rootRepoTxtar: filepath.Join("testdata", "import-bom-from-pom-repos", "repo-root-artifacts.txtar"),
 			repos: map[string]string{
@@ -2605,6 +2605,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api:1.1.0::ff70a01d": "License from repo1",
 				// version from the grandparent POM in the repository of the parent POM
 				"org.example:example-api2:1.0.0::805ec0f5": "License from repo1",
+				// repositories of the POM take precedence over the ones inherited from the parent POM
+				"org.example:example-api3:1.0.0::47b52949": "License from reporoot",
 			},
 		},
 	}

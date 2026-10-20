@@ -1,4 +1,4 @@
-Root repository: the parent POM.
+Root repository: the parent POM and a dependency also published to repository 1.
 
 -- org/example/example-parent/1.0.0/example-parent-1.0.0.pom --
 <?xml version="1.0" encoding="UTF-8"?>
@@ -21,4 +21,21 @@ Root repository: the parent POM.
             <url>REPO1_URL</url>
         </repository>
     </repositories>
+</project>
+
+-- org/example/example-api3/1.0.0/example-api3-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api3</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
 </project>

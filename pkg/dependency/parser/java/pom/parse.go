@@ -478,7 +478,7 @@ type analysisOptions struct {
 	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
 	rootFilePath  string          // File path of the root POM or module POM
-	repositories  []repository    // Repositories inherited from parent
+	repositories  []repository    // Repositories from upper-level POMs
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -606,7 +606,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 // resolveDepManagement resolves depManagement, including imported POMs.
 // It returns resolved depManagement with variables evaluated.
-// imported tracks already imported POMs to break import cycles.
+// imported tracks already imported POMs to skip repeated imports and break import cycles.
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
 func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency,

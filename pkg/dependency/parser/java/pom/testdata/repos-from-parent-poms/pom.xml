@@ -40,5 +40,9 @@
             <groupId>org.example</groupId>
             <artifactId>example-api2</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api3</artifactId>
+        </dependency>
     </dependencies>
 </project>
