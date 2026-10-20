@@ -1,0 +1,12 @@
+{
+  "name": "repro",
+  "private": true,
+  "packageManager": "yarn@4.13.0",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "minimist": "1.2.5",
+    "a": "2.0.0"
+  }
+}

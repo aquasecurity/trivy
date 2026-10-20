@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
@@ -1022,6 +1023,134 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_yarnLibraryAnalyzer_WorkspaceDependencies(t *testing.T) {
+	tests := []struct {
+		name       string
+		dir        string
+		workspaces []string
+		dev        []string
+		prod       []string
+		edges      map[string][]string
+	}{
+		{
+			name:       "referenced workspace resolved first",
+			dir:        "testdata/workspace-dev-dependencies",
+			workspaces: []string{"a@1.0.0", "b@1.0.0"},
+			dev:        []string{"minimist@1.2.5"},
+			edges:      map[string][]string{"b@1.0.0": {"a@1.0.0"}, "a@1.0.0": {"minimist@1.2.5"}},
+		},
+		{
+			name:       "referencing workspace resolved first",
+			dir:        "testdata/workspace-dev-dependencies-reversed",
+			workspaces: []string{"y@1.0.0", "z@1.0.0"},
+			dev:        []string{"minimist@1.2.5"},
+			edges:      map[string][]string{"y@1.0.0": {"z@1.0.0"}, "z@1.0.0": {"minimist@1.2.5"}},
+		},
+		{
+			name:       "chain and cycle with shared production dependency",
+			dir:        "testdata/workspace-dependency-graph",
+			workspaces: []string{"a@1.0.0", "b@1.0.0", "c@1.0.0"},
+			dev:        []string{"minimist@1.2.5", "dev-parent@1.0.0"},
+			prod:       []string{"prod-parent@1.0.0", "shared@1.0.0"},
+			edges: map[string][]string{
+				"a@1.0.0": {"b@1.0.0", "dev-parent@1.0.0", "minimist@1.2.5"},
+				"b@1.0.0": {"a@1.0.0"},
+				"c@1.0.0": {"b@1.0.0", "prod-parent@1.0.0"},
+			},
+		},
+		{
+			name:       "production dependency resolved before shared development dependency",
+			dir:        "testdata/workspace-dependency-graph-reversed",
+			workspaces: []string{"x@1.0.0", "y@1.0.0", "z@1.0.0"},
+			dev:        []string{"minimist@1.2.5", "dev-parent@1.0.0"},
+			prod:       []string{"prod-parent@1.0.0", "shared@1.0.0"},
+			edges: map[string][]string{
+				"x@1.0.0": {"prod-parent@1.0.0", "y@1.0.0"},
+				"y@1.0.0": {"z@1.0.0"},
+				"z@1.0.0": {"dev-parent@1.0.0", "minimist@1.2.5", "y@1.0.0"},
+			},
+		},
+		{
+			name:       "Yarn classic workspace version range",
+			dir:        "testdata/workspace-dev-dependencies-classic",
+			workspaces: []string{"a@1.0.0", "b@1.0.0"},
+			dev:        []string{"minimist@1.2.5"},
+			edges:      map[string][]string{"b@1.0.0": {"a@1.0.0"}, "a@1.0.0": {"minimist@1.2.5"}},
+		},
+		{
+			name:       "external alias sharing a workspace name",
+			dir:        "testdata/workspace-external-alias",
+			workspaces: []string{"foo-debug@1.0.0"},
+			dev:        []string{"foo-debug@4.3.4"},
+			edges:      map[string][]string{"package.json": {"foo-debug@1.0.0", "foo-debug@4.3.4"}},
+		},
+		{
+			name:       "versionless workspace and root references exclude same-name registry package",
+			dir:        "testdata/workspace-reference-boundaries",
+			workspaces: []string{"packages/a/package.json", "b@1.0.0"},
+			dev:        []string{"a@2.0.0", "minimist@1.2.5"},
+			edges: map[string][]string{
+				"package.json":            {"a@2.0.0", "b@1.0.0", "minimist@1.2.5", "packages/a/package.json"},
+				"packages/a/package.json": {"package.json"},
+				"b@1.0.0":                 {"packages/a/package.json"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{FS: os.DirFS(tt.dir)})
+			require.NoError(t, err)
+			require.Len(t, got.Applications, 1)
+			pkgs := make(map[string]types.Package)
+			for _, pkg := range got.Applications[0].Packages {
+				pkgs[pkg.ID] = pkg
+			}
+			for _, id := range tt.workspaces {
+				require.Contains(t, pkgs, id)
+				assert.Equal(t, types.RelationshipWorkspace, pkgs[id].Relationship, id)
+				assert.False(t, pkgs[id].Dev, id)
+			}
+			for _, id := range tt.dev {
+				require.Contains(t, pkgs, id)
+				assert.True(t, pkgs[id].Dev, id)
+				assert.Equal(t, types.RelationshipDirect, pkgs[id].Relationship, id)
+			}
+			for _, id := range tt.prod {
+				require.Contains(t, pkgs, id)
+				assert.False(t, pkgs[id].Dev, id)
+			}
+			for id, deps := range tt.edges {
+				require.Contains(t, pkgs, id)
+				assert.ElementsMatch(t, deps, pkgs[id].DependsOn, id)
+				assert.Len(t, pkgs[id].DependsOn, len(deps), id)
+			}
+			assert.Equal(t, types.RelationshipRoot, got.Applications[0].Packages[0].Relationship)
+		})
+	}
+}
+
+func Test_yarnLibraryAnalyzer_IndirectWorkspace(t *testing.T) {
+	pkgs := map[string]types.Package{
+		"workspace@1.0.0": {
+			ID:           "workspace@1.0.0",
+			Relationship: types.RelationshipWorkspace,
+			DependsOn:    []string{"dev@1.0.0"},
+		},
+		"dev@1.0.0": {
+			ID:           "dev@1.0.0",
+			Relationship: types.RelationshipDirect,
+			Dev:          true,
+		},
+	}
+	a := yarnAnalyzer{}
+	a.walkIndirectDependencies(types.Package{DependsOn: []string{"workspace@1.0.0"}}, pkgs, set.New[string]())
+	assert.Equal(t, types.RelationshipWorkspace, pkgs["workspace@1.0.0"].Relationship)
+	assert.False(t, pkgs["workspace@1.0.0"].Dev)
+	assert.True(t, pkgs["dev@1.0.0"].Dev)
 }
 
 func Test_yarnLibraryAnalyzer_Required(t *testing.T) {
