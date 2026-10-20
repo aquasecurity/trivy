@@ -41,8 +41,9 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 	}
 
 	compat(&r)
-	if r.Results.DropCryptoFindings() {
-		logger.Warn("Crypto findings are not supported by convert and were removed from the report")
+	// Only JSON output shows crypto findings
+	if opts.Format != types.FormatJSON {
+		r.Results.DropCryptoFindings()
 	}
 	if err = result.Filter(ctx, r, opts.FilterOpts()); err != nil {
 		return xerrors.Errorf("unable to filter results: %w", err)

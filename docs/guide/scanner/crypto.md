@@ -165,7 +165,7 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 | `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
 | `CRYPTO-0004` | `NotAfter` |
 
-Findings do not affect the exit code of CycloneDX output. `trivy convert` keeps the cryptographic assets of a JSON report but removes the findings with a warning.
+Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
 
 ## Filtering the inventory
 
