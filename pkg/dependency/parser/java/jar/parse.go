@@ -227,7 +227,7 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
 	var d digest.Digest
 	for i := range pkgs {
-		if pkgs[i].HasDigest() {
+		if pkgs[i].HasDigestFrom(digest.SourceJavaArchive) {
 			continue
 		}
 		// Compute the archive digest at most once and reuse it afterwards.

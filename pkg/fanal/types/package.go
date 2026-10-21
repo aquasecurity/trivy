@@ -269,10 +269,12 @@ func (pkg *Package) SourcedDigests() []digest.SourcedDigest {
 	return pkg.Digests
 }
 
-// HasDigest reports whether any digest has been collected for the package.
-// It also covers data that carries the legacy single digest only.
-func (pkg *Package) HasDigest() bool {
-	return pkg.Digest != "" || len(pkg.Digests) > 0
+// HasDigestFrom reports whether a digest acquired from the given source has been collected
+// for the package.
+func (pkg *Package) HasDigestFrom(src digest.Source) bool {
+	return slices.ContainsFunc(pkg.Digests, func(sd digest.SourcedDigest) bool {
+		return sd.Source == src
+	})
 }
 
 // AddDigests stores the digests along with the sources they were acquired from.

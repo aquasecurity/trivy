@@ -105,7 +105,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 			pkg.Arch = line[2:]
 		case "C:":
 			// An entry has a single checksum line, so ignore repetitions in a malformed database.
-			if !pkg.HasDigest() {
+			if !pkg.HasDigestFrom(digest.SourceAPKInstalledDB) {
 				pkg.AddDigests(digest.NewSourcedDigest(a.decodeChecksumLine(ctx, line), digest.SourceAPKInstalledDB))
 			}
 		case "m:":

@@ -155,17 +155,46 @@ func TestPackage_AddDigests(t *testing.T) {
 	}
 }
 
-func TestPackage_HasDigest(t *testing.T) {
-	var empty types.Package
-	assert.False(t, empty.HasDigest())
+func TestPackage_HasDigestFrom(t *testing.T) {
+	tests := []struct {
+		name string
+		pkg  types.Package
+		src  digest.Source
+		want bool
+	}{
+		{
+			name: "digest from the source",
+			pkg: types.Package{
+				Digests: []digest.SourcedDigest{
+					digest.NewSourcedDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceSBOM),
+					digest.NewSourcedDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceJavaArchive),
+				},
+			},
+			src:  digest.SourceJavaArchive,
+			want: true,
+		},
+		{
+			name: "digest from another source",
+			pkg: types.Package{
+				Digests: []digest.SourcedDigest{
+					digest.NewSourcedDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceSBOM),
+				},
+			},
+			src: digest.SourceJavaArchive,
+		},
+		{
+			// The legacy field records no source.
+			name: "legacy digest only",
+			pkg:  types.Package{Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"},
+			src:  digest.SourceUnknown,
+		},
+	}
 
-	// Data that carries the legacy digest only still has a digest.
-	legacy := types.Package{Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f"}
-	assert.True(t, legacy.HasDigest())
-
-	var collected types.Package
-	collected.AddDigests(digest.NewSourcedDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceRPMSigMD5))
-	assert.True(t, collected.HasDigest())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, tt.pkg.HasDigestFrom(tt.src))
+		})
+	}
 }
 
 func TestPackage_SourcedDigests(t *testing.T) {
