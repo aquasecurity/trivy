@@ -242,6 +242,7 @@ func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
 			}
 		}
 		pkgs[i].AddDigests(digest.NewSourcedDigest(d, digest.SourceJavaArchive))
+		pkgs[i].Digest = d // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 	}
 	return nil
 }
@@ -454,6 +455,7 @@ func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (ftypes.Package,
 	// resolved package to avoid recalculating it in fillArchiveDigest.
 	if p.checksum {
 		pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceJavaArchive))
+		pkg.Digest = d // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 	}
 	return pkg, nil
 }

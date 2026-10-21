@@ -220,6 +220,9 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 		// The digests of the component's files belong to the package; the decoders give a
 		// component at most one file.
 		pkg.AddDigests(f.Digests...)
+		if len(f.Digests) > 0 {
+			pkg.Digest = f.Digests[0].Digest // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
+		}
 	}
 
 	if p.Class() == types.ClassOSPkg {

@@ -257,6 +257,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 		pkg = a.parseDpkgPkg(header)
 		if pkg != nil {
 			pkg.AddDigests(digest.NewSourcedDigest(digests[pkg.ID], digest.SourceDpkgAvailable))
+			pkg.Digest = digests[pkg.ID] // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 			pkgs[pkg.ID] = pkg
 			pkgIDs[pkg.Name] = pkg.ID
 		}

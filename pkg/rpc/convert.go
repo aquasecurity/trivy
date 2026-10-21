@@ -126,12 +126,11 @@ func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDig
 }
 
 func ConvertFromRPCPkgDigests(rpcDigests []*common.PackageDigest) []digest.SourcedDigest {
-	if len(rpcDigests) == 0 {
-		return nil
-	}
-
-	digests := make([]digest.SourcedDigest, 0, len(rpcDigests))
+	var digests []digest.SourcedDigest
 	for _, d := range rpcDigests {
+		if d.Digest == "" {
+			continue
+		}
 		digests = append(digests, digest.SourcedDigest{
 			Digest: digest.Digest(d.Digest),
 			Source: cmp.Or(digest.Source(d.Source), digest.SourceUnknown),
@@ -356,13 +355,9 @@ func convertToRPCTime(t time.Time) *timestamppb.Timestamp {
 
 // ConvertFromRPCPkgs returns list of Fanal package objects
 func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
-	if len(rpcPkgs) == 0 {
-		return nil
-	}
-
-	pkgs := make([]ftypes.Package, 0, len(rpcPkgs))
+	var pkgs []ftypes.Package
 	for _, pkg := range rpcPkgs {
-		p := ftypes.Package{
+		pkgs = append(pkgs, ftypes.Package{
 			ID:              pkg.Id,
 			Name:            pkg.Name,
 			Version:         pkg.Version,
@@ -380,6 +375,8 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Layer:           ConvertFromRPCLayer(pkg.Layer),
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
+			Digest:          digest.Digest(pkg.Digest),
+			Digests:         ConvertFromRPCPkgDigests(pkg.Digests),
 			Relationship:    ftypes.Relationship(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -388,12 +385,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			Modularitylabel: pkg.Modularitylabel,
 			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
 			InstalledFiles:  pkg.InstalledFiles,
-		}
-		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests)...)
-		if p.Digest == "" {
-			p.Digest = digest.Digest(pkg.Digest)
-		}
-		pkgs = append(pkgs, p)
+		})
 	}
 	return pkgs
 }

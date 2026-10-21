@@ -279,8 +279,6 @@ func (pkg *Package) HasDigestFrom(src digest.Source) bool {
 
 // AddDigests stores the digests along with the sources they were acquired from.
 // Empty values, and values already stored with the same value and source, are skipped.
-// Data that carries the legacy digest alone keeps it as the first collected value, so that
-// Digest and Digests never disagree.
 func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
 	digests = lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
 		return sd.Digest != ""
@@ -288,12 +286,7 @@ func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
 	if len(digests) == 0 {
 		return
 	}
-	pkg.Digests = lo.Uniq(slices.Concat(pkg.SourcedDigests(), digests))
-
-	// Keep the legacy single-digest field in sync with the first collected value.
-	if pkg.Digest == "" {
-		pkg.Digest = pkg.Digests[0].Digest
-	}
+	pkg.Digests = lo.Uniq(slices.Concat(pkg.Digests, digests))
 }
 
 type Packages []Package
