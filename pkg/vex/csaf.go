@@ -62,7 +62,7 @@ func matchVulnerabilityID(item *csaf.Vulnerability, vulnID string) bool {
 		return true
 	}
 	return lo.ContainsBy(item.IDs, func(id *csaf.VulnerabilityID) bool {
-		return id != nil && id.Text != nil && strings.EqualFold(string(*id.Text), vulnID)
+		return id != nil && id.Text != nil && strings.EqualFold(*id.Text, vulnID)
 	})
 }
 
