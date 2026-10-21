@@ -1,5 +1,14 @@
 # Changelog
 
+## [0.76.1](https://github.com/aquasecurity/trivy/compare/v0.76.0...v0.76.1) (2026-10-21)
+
+
+### Bug Fixes
+
+* **deps:** bump the aws group across 1 directory with 6 updates [backport: release/v0.76] ([#11446](https://github.com/aquasecurity/trivy/issues/11446)) ([6647bd6](https://github.com/aquasecurity/trivy/commit/6647bd6ec5924087956285b773b8cae10508736e))
+* **deps:** bump the common group with 3 updates [backport: release/v0.76] ([#11442](https://github.com/aquasecurity/trivy/issues/11442)) ([992c360](https://github.com/aquasecurity/trivy/commit/992c360c33d9f9627bb24c1fe3f20815110c88e5))
+* **deps:** bump the docker group with 3 updates [backport: release/v0.76] ([#11443](https://github.com/aquasecurity/trivy/issues/11443)) ([e0964c9](https://github.com/aquasecurity/trivy/commit/e0964c97819b1d6a45b7e0426803745f173fc550))
+
 ## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-14)
 
 
