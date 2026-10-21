@@ -164,10 +164,19 @@ var (
 		Class:  types.ClassCrypto,
 		CryptoFindings: []types.CryptoFinding{
 			{
-				RuleID: "crypto-rsa-key-below-2048",
+				RuleID: "CRYPTO-0002",
 			},
 			{
-				RuleID: "crypto-certificate-expired",
+				RuleID: "CRYPTO-0004",
+			},
+		},
+	}
+	cryptoNoFindings = types.Result{
+		Target: "example:latest",
+		Class:  types.ClassCrypto,
+		CryptoAssets: []ftypes.CryptoAsset{
+			{
+				AssetID: "8c2f0e5a91d34b76",
 			},
 		},
 	}
@@ -363,6 +372,34 @@ Report Summary
 │ requirements.txt │  pip   │        0        │   -    │
 ├──────────────────┼────────┼─────────────────┼────────┤
 │ example:latest   │ crypto │        -        │   2    │
+└──────────────────┴────────┴─────────────────┴────────┘
+Legend:
+- '-': Not scanned
+- '0': Clean (no security findings detected)
+
+`,
+		},
+		{
+			name: "happy path no vulns + crypto assets without findings",
+			scanners: []types.Scanner{
+				types.VulnerabilityScanner,
+				types.CryptoScanner,
+			},
+			report: types.Report{
+				Results: []types.Result{
+					noVuln,
+					cryptoNoFindings,
+				},
+			},
+			want: `
+Report Summary
+
+┌──────────────────┬────────┬─────────────────┬────────┐
+│      Target      │  Type  │ Vulnerabilities │ Crypto │
+├──────────────────┼────────┼─────────────────┼────────┤
+│ requirements.txt │  pip   │        0        │   -    │
+├──────────────────┼────────┼─────────────────┼────────┤
+│ example:latest   │ crypto │        -        │   0    │
 └──────────────────┴────────┴─────────────────┴────────┘
 Legend:
 - '-': Not scanned
