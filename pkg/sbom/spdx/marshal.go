@@ -80,6 +80,7 @@ var duplicateProperties = []string{
 	core.PropertySrcEpoch,
 	core.PropertySrcVersion,
 	// `File` contains filePath.
+	// Trivy no longer adds this property, but it can still come from older SBOMs when they are rescanned.
 	core.PropertyFilePath,
 }
 
