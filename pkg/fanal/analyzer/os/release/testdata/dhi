@@ -1,0 +1,5 @@
+NAME="Docker Hardened Images (Alpine)"
+ID=dhi
+ID_LIKE=alpine
+VERSION_ID=3.24
+PRETTY_NAME="Docker Hardened Images (Alpine 3.24)"
