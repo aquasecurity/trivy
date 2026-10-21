@@ -2,6 +2,7 @@ package types
 
 import (
 	"encoding/json"
+	"slices"
 	"strings"
 
 	"github.com/package-url/packageurl-go"
@@ -227,8 +228,15 @@ type Package struct {
 	// Each package metadata have the file path, while the package from lock files does not have.
 	FilePath string `json:",omitempty"`
 
-	// This is required when using SPDX formats. Otherwise, it will be empty.
+	// Digest is the first collected digest, kept populated for backward compatibility.
+	//
+	// Deprecated: Use Digests instead.
 	Digest digest.Digest `json:",omitempty"`
+
+	// Digests holds every collected digest with the source it was acquired from.
+	// Values with the same algorithm but different sources are kept apart, as they may
+	// cover different bytes.
+	Digests []digest.SourcedDigest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
 	Locations Locations `json:",omitempty"`
@@ -243,6 +251,42 @@ type Package struct {
 
 func (pkg *Package) Empty() bool {
 	return pkg.Name == "" || pkg.Version == ""
+}
+
+// SourcedDigests returns the collected digests with their acquisition sources.
+// Data produced before the sourced digests, such as a report passed to trivy convert,
+// carries the legacy single digest only. Its acquisition method was not recorded, so it is
+// reported with an unknown source instead of a guessed one.
+func (pkg *Package) SourcedDigests() []digest.SourcedDigest {
+	if len(pkg.Digests) == 0 && pkg.Digest != "" {
+		return []digest.SourcedDigest{
+			{
+				Digest: pkg.Digest,
+				Source: digest.SourceUnknown,
+			},
+		}
+	}
+	return pkg.Digests
+}
+
+// HasDigestFrom reports whether a digest acquired from the given source has been collected
+// for the package.
+func (pkg *Package) HasDigestFrom(src digest.Source) bool {
+	return slices.ContainsFunc(pkg.Digests, func(sd digest.SourcedDigest) bool {
+		return sd.Source == src
+	})
+}
+
+// AddDigests stores the digests along with the sources they were acquired from.
+// Empty values, and values already stored with the same value and source, are skipped.
+func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
+	digests = lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
+		return sd.Digest != ""
+	})
+	if len(digests) == 0 {
+		return
+	}
+	pkg.Digests = lo.Uniq(slices.Concat(pkg.Digests, digests))
 }
 
 type Packages []Package

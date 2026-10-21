@@ -101,9 +101,10 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		// This file path is populated for virtual file paths within archives, such as nested JAR files.
 		pkg.FilePath = cmp.Or(pkg.FilePath, libFilePath)
 		pkg.DependsOn = deps[pkg.ID]
-		// Save the digest only if it has not been calculated for the package yet.
-		// For example, the digest for JAR files is calculated inside the parser.
-		pkg.Digest = cmp.Or(pkg.Digest, d)
+		if d != "" && !pkg.HasDigestFrom(digest.SourceFileContent) {
+			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceFileContent))
+			pkg.Digest = d // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
+		}
 		pkg.Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 	}
 

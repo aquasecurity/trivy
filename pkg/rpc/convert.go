@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"cmp"
 	jsonv2 "encoding/json/v2"
 	"strings"
 	"time"
@@ -73,6 +74,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
 			Digest:          pkg.Digest.String(),
+			Digests:         ConvertToRPCPkgDigests(pkg.Digests),
 			Relationship:    int32(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -110,6 +112,31 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
+}
+
+func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDigest {
+	var rpcDigests []*common.PackageDigest
+	for _, d := range digests {
+		rpcDigests = append(rpcDigests, &common.PackageDigest{
+			Digest: d.Digest.String(),
+			Source: d.Source.String(),
+		})
+	}
+	return rpcDigests
+}
+
+func ConvertFromRPCPkgDigests(rpcDigests []*common.PackageDigest) []digest.SourcedDigest {
+	var digests []digest.SourcedDigest
+	for _, d := range rpcDigests {
+		if d.Digest == "" {
+			continue
+		}
+		digests = append(digests, digest.SourcedDigest{
+			Digest: digest.Digest(d.Digest),
+			Source: cmp.Or(digest.Source(d.Source), digest.SourceUnknown),
+		})
+	}
+	return digests
 }
 
 func ConvertToRPCLocations(pkgLocs []ftypes.Location) []*common.Location {
@@ -370,6 +397,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
 			Digest:          digest.Digest(pkg.Digest),
+			Digests:         ConvertFromRPCPkgDigests(pkg.Digests),
 			Relationship:    ftypes.Relationship(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,

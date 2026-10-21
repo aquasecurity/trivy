@@ -16,6 +16,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -130,6 +131,16 @@ func TestMarshaler_Marshal(t *testing.T) {
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
 								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+										Source: digest.SourceRPMSigMD5,
+									},
+									{
+										Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+										Source: digest.SourceUnknown,
+									},
+								},
 							},
 						},
 					},
@@ -343,6 +354,10 @@ func TestMarshaler_Marshal(t *testing.T) {
 							{
 								Algorithm: common.MD5,
 								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+							{
+								Algorithm: common.SHA256,
+								Value:     "cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
 							},
 						},
 					},

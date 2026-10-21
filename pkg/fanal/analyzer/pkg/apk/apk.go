@@ -27,7 +27,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 3
+const analyzerVersion = 4
 
 var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 
@@ -104,10 +104,7 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 		case "A:":
 			pkg.Arch = line[2:]
 		case "C:":
-			d := a.decodeChecksumLine(ctx, line)
-			if d != "" {
-				pkg.Digest = d
-			}
+			a.addChecksum(ctx, &pkg, line)
 		case "m:":
 			pkg.Maintainer = line[2:]
 		}
@@ -217,6 +214,17 @@ func (a alpinePkgAnalyzer) StaticPaths() []string {
 }
 
 // decodeChecksumLine decodes checksum line
+func (a alpinePkgAnalyzer) addChecksum(ctx context.Context, pkg *types.Package, line string) {
+	// An entry has a single checksum line, so ignore repetitions in a malformed database.
+	if pkg.HasDigestFrom(digest.SourceAPKInstalledDB) {
+		return
+	}
+	if d := a.decodeChecksumLine(ctx, line); d != "" {
+		pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceAPKInstalledDB))
+		pkg.Digest = d // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
+	}
+}
+
 func (a alpinePkgAnalyzer) decodeChecksumLine(ctx context.Context, line string) digest.Digest {
 	if len(line) < 2 {
 		log.DebugContext(ctx, "Unable to decode checksum line of apk package", log.String("line", line))
