@@ -1,6 +1,8 @@
 package vex
 
 import (
+	"strings"
+
 	"github.com/gocsaf/csaf/v3/csaf"
 	"github.com/samber/lo"
 
@@ -34,21 +36,37 @@ func (v *CSAF) Filter(result *types.Result, bom *core.BOM) {
 }
 
 func (v *CSAF) NotAffected(vuln types.DetectedVulnerability, product, subProduct *core.Component) (types.ModifiedFinding, bool) {
-	found, ok := lo.Find(v.advisory.Vulnerabilities, func(item *csaf.Vulnerability) bool {
-		return item.CVE != nil && string(*item.CVE) == vuln.VulnerabilityID
-	})
-	if !ok {
+	if vuln.VulnerabilityID == "" {
 		return types.ModifiedFinding{}, false
 	}
 
-	status := v.match(found, product, subProduct)
-	if status == "" {
-		return types.ModifiedFinding{}, false
+	// The same vulnerability ID can appear in several entries, so check all of them.
+	for _, item := range v.advisory.Vulnerabilities {
+		if !matchVulnerabilityID(item, vuln.VulnerabilityID) {
+			continue
+		}
+		if status := v.match(item, product, subProduct, vuln.VulnerabilityID); status != "" {
+			return types.NewModifiedFinding(vuln, status, v.statement(item), v.source), true
+		}
 	}
-	return types.NewModifiedFinding(vuln, status, v.statement(found), v.source), true
+	return types.ModifiedFinding{}, false
 }
 
-func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component) types.FindingStatus {
+// matchVulnerabilityID checks whether the CSAF vulnerability is identified by the given ID,
+// either through the CVE field or through any of the IDs.
+func matchVulnerabilityID(item *csaf.Vulnerability, vulnID string) bool {
+	if item == nil {
+		return false
+	}
+	if item.CVE != nil && strings.EqualFold(string(*item.CVE), vulnID) {
+		return true
+	}
+	return lo.ContainsBy(item.IDs, func(id *csaf.VulnerabilityID) bool {
+		return id != nil && id.Text != nil && strings.EqualFold(string(*id.Text), vulnID)
+	})
+}
+
+func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Component, vulnId string) types.FindingStatus {
 	if product == nil || product.PkgIdentifier.PURL == nil || vuln.ProductStatus == nil {
 		return ""
 	}
@@ -60,7 +78,7 @@ func (v *CSAF) match(vuln *csaf.Vulnerability, product, subProduct *core.Compone
 	for status, productRange := range productStatusMap {
 		for _, p := range productRange {
 			productID := lo.FromPtr(p)
-			logger := v.logger.With(log.String("vulnerability-id", string(*vuln.CVE)),
+			logger := v.logger.With(log.String("vulnerability-id", vulnId),
 				log.String("product-id", string(productID)), log.String("status", string(status)))
 
 			// Check if the product is affected
