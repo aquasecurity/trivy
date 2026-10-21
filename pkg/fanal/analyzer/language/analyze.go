@@ -104,7 +104,7 @@ func toApplication(fileType types.LangType, filePath, libFilePath string, r xio.
 		// Save the digest only if it has not been calculated for the package yet.
 		// For example, the digest for JAR files is calculated inside the parser.
 		if !pkg.HasDigest() {
-			pkg.AddDigest(d, digest.SourceFileContent)
+			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceFileContent))
 		}
 		pkg.Indirect = isIndirect(pkg.Relationship) // For backward compatibility
 	}

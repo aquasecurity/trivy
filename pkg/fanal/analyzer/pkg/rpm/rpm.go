@@ -180,7 +180,7 @@ func (a rpmPkgAnalyzer) listPkgs(ctx context.Context, db RPMDB) (types.Packages,
 			InstalledFiles:  files,
 		}
 		if pkg.SigMD5 != "" {
-			p.AddDigest(digest.NewDigestFromString(digest.MD5, pkg.SigMD5), digest.SourceRPMSigMD5)
+			p.AddDigests(digest.NewSourcedDigest(digest.NewDigestFromString(digest.MD5, pkg.SigMD5), digest.SourceRPMSigMD5))
 		}
 		pkgs = append(pkgs, p)
 		installedFiles = append(installedFiles, files...)

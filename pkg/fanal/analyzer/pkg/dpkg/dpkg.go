@@ -256,7 +256,7 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 
 		pkg = a.parseDpkgPkg(header)
 		if pkg != nil {
-			pkg.AddDigest(digests[pkg.ID], digest.SourceDpkgAvailable)
+			pkg.AddDigests(digest.NewSourcedDigest(digests[pkg.ID], digest.SourceDpkgAvailable))
 			pkgs[pkg.ID] = pkg
 			pkgIDs[pkg.Name] = pkg.ID
 		}

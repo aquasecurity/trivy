@@ -69,3 +69,11 @@ func (s SourcedDigest) Algorithm() Algorithm {
 func (s SourcedDigest) Value() string {
 	return s.Digest.Encoded()
 }
+
+// NewSourcedDigest returns the digest together with the source it was acquired from.
+func NewSourcedDigest(d Digest, src Source) SourcedDigest {
+	return SourcedDigest{
+		Digest: d,
+		Source: src,
+	}
+}

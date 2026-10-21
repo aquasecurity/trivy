@@ -275,50 +275,22 @@ func (pkg *Package) HasDigest() bool {
 	return pkg.Digest != "" || len(pkg.Digests) > 0
 }
 
-// AddDigest stores the digest along with the source it was acquired from.
+// AddDigests stores the digests along with the sources they were acquired from.
 // Empty values, and values already stored with the same value and source, are skipped.
 // Data that carries the legacy digest alone keeps it as the first collected value, so that
 // Digest and Digests never disagree.
-func (pkg *Package) AddDigest(d digest.Digest, src digest.Source) {
-	if d == "" {
-		return
-	}
-	pkg.Digests = pkg.SourcedDigests()
-
-	sd := digest.SourcedDigest{
-		Digest: d,
-		Source: src,
-	}
-	if slices.Contains(pkg.Digests, sd) {
-		return
-	}
-	pkg.appendDigest(sd)
-}
-
-// AddDigests stores digests that were not collected by an analyzer, such as those decoded
-// from an SBOM or received over RPC.
-func (pkg *Package) AddDigests(digests []digest.SourcedDigest) {
+func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
+	digests = lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
+		return sd.Digest != ""
+	})
 	if len(digests) == 0 {
 		return
 	}
-
-	digests = append(slices.Clone(pkg.SourcedDigests()), digests...)
-	pkg.Digests = lo.Uniq(lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
-		return sd.Digest != ""
-	}))
-
-	// Keep the legacy single-digest field in sync with the first collected value.
-	if pkg.Digest == "" && len(pkg.Digests) > 0 {
-		pkg.Digest = pkg.Digests[0].Digest
-	}
-}
-
-func (pkg *Package) appendDigest(sd digest.SourcedDigest) {
-	pkg.Digests = append(pkg.Digests, sd)
+	pkg.Digests = lo.Uniq(slices.Concat(pkg.SourcedDigests(), digests))
 
 	// Keep the legacy single-digest field in sync with the first collected value.
 	if pkg.Digest == "" {
-		pkg.Digest = sd.Digest
+		pkg.Digest = pkg.Digests[0].Digest
 	}
 }
 

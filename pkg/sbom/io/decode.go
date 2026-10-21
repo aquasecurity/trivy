@@ -219,7 +219,7 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 		}
 		// The digests of the component's files belong to the package; the decoders give a
 		// component at most one file.
-		pkg.AddDigests(f.Digests)
+		pkg.AddDigests(f.Digests...)
 	}
 
 	if p.Class() == types.ClassOSPkg {

@@ -241,7 +241,7 @@ func fillArchiveDigest(pkgs []ftypes.Package, r xio.ReadSeekerAt) error {
 				return xerrors.Errorf("unable to calculate SHA-1: %w", err)
 			}
 		}
-		pkgs[i].AddDigest(d, digest.SourceJavaArchive)
+		pkgs[i].AddDigests(digest.NewSourcedDigest(d, digest.SourceJavaArchive))
 	}
 	return nil
 }
@@ -453,7 +453,7 @@ func (p *Parser) searchBySHA1(r io.ReadSeeker, filePath string) (ftypes.Package,
 	// searchBySHA1 has already calculated the archive's SHA-1, so stamp it on the
 	// resolved package to avoid recalculating it in fillArchiveDigest.
 	if p.checksum {
-		pkg.AddDigest(d, digest.SourceJavaArchive)
+		pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceJavaArchive))
 	}
 	return pkg, nil
 }

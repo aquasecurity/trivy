@@ -389,7 +389,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			BuildInfo:       ConvertFromRPCBuildInfo(pkg.BuildInfo),
 			InstalledFiles:  pkg.InstalledFiles,
 		}
-		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests))
+		p.AddDigests(ConvertFromRPCPkgDigests(pkg.Digests)...)
 		if !p.HasDigest() {
 			p.Digest = digest.Digest(pkg.Digest)
 		}
