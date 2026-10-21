@@ -5,6 +5,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/mod/modfile"
@@ -261,23 +262,88 @@ func TestCanonicalizeVersion(t *testing.T) {
 	}
 }
 
-func TestParseRejectsInvalidReplacementVersion(t *testing.T) {
-	const goMod = `module example.com/app
+func TestParsePreservesRetractVersionQueries(t *testing.T) {
+	tests := []struct {
+		name    string
+		retract string
+	}{
+		{
+			name:    "single version query",
+			retract: "master",
+		},
+		{
+			name:    "version query interval",
+			retract: "[master, release-branch]",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			goMod := `module example.com/app
+
+go 1.22.0
+
+require golang.org/x/net v0.55.0+echo.1
+
+retract ` + tt.retract + "\n"
+
+			gotPkgs, _, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
+			require.NoError(t, err)
+
+			pkg, found := lo.Find(gotPkgs, func(pkg ftypes.Package) bool {
+				return pkg.Name == "golang.org/x/net"
+			})
+			require.True(t, found)
+			require.Equal(t, "v0.55.0+echo.1", pkg.Version)
+		})
+	}
+}
+
+func TestParsePreservesModulelessRetract(t *testing.T) {
+	const goMod = `retract master`
+
+	gotPkgs, gotDeps, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
+	require.NoError(t, err)
+	require.Empty(t, gotPkgs)
+	require.Empty(t, gotDeps)
+}
+
+func TestParseRejectsInvalidDependencyVersions(t *testing.T) {
+	tests := []struct {
+		name  string
+		goMod string
+	}{
+		{
+			name: "require",
+			goMod: `module example.com/app
+
+go 1.22.0
+
+require example.com/module not-a-version
+`,
+		},
+		{
+			name: "replacement",
+			goMod: `module example.com/app
 
 go 1.22.0
 
 require example.com/module v1.2.3
 
 replace example.com/module => example.com/replacement not-a-version
-`
+`,
+		},
+	}
 
-	_, wantErr := modfile.Parse("go.mod", []byte(goMod), nil)
-	require.Error(t, wantErr)
-	_, gotErr := modfile.Parse("go.mod", []byte(goMod), canonicalizeVersion)
-	require.EqualError(t, gotErr, wantErr.Error())
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_, wantErr := modfile.Parse("go.mod", []byte(tt.goMod), nil)
+			require.Error(t, wantErr)
 
-	_, _, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
-	require.ErrorContains(t, err, `replace example.com/replacement: version "not-a-version" invalid: must be of the form v1.2.3`)
+			_, _, _, gotErr := NewParser(true, false).Parse(t.Context(), strings.NewReader(tt.goMod))
+			require.EqualError(t, gotErr, "go.mod parse error: "+wantErr.Error())
+		})
+	}
 }
 
 func TestToolchainVersion(t *testing.T) {
