@@ -225,6 +225,65 @@ Resources:
 	assert.Equal(t, "/aws/lambda/${ServiceName}", refProp.AsString())
 }
 
+func Test_parse_yaml_condition_short_form(t *testing.T) {
+	tests := []struct {
+		name      string
+		condition string
+		want      string
+	}{
+		{
+			name:      "and",
+			condition: `!And [!Condition IsEnvSet, !Equals [!Ref Env, prod]]`,
+			want:      "enabled",
+		},
+		{
+			name:      "and with false operand",
+			condition: `!And [!Condition IsEnvSet, !Equals [!Ref Env, dev]]`,
+			want:      "disabled",
+		},
+		{
+			name:      "or",
+			condition: `!Or [!Condition IsEnvSet, !Equals [!Ref Env, dev]]`,
+			want:      "enabled",
+		},
+		{
+			name:      "not",
+			condition: `!Not [!Condition IsEnvSet]`,
+			want:      "disabled",
+		},
+		{
+			name:      "top-level",
+			condition: `!Condition IsEnvSet`,
+			want:      "enabled",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			source := `---
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Env:
+    Type: String
+    Default: prod
+Conditions:
+  IsEnvSet: !Not [!Equals [!Ref Env, ""]]
+  Target: ` + tt.condition + `
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !If [Target, enabled, disabled]
+`
+			ctx := createTestFileContext(t, source)
+
+			res := ctx.GetResourceByLogicalID("Topic")
+			require.NotNil(t, res)
+			assert.Equal(t, tt.want, res.GetStringProperty("DisplayName").Value())
+		})
+	}
+}
+
 func TestParse_WithParameters(t *testing.T) {
 	fs := testutil.CreateFS(map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
