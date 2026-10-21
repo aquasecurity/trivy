@@ -70,7 +70,7 @@ Resources:
   MyDomainName2:
     Type: 'AWS::ApiGatewayV2::DomainName'
     Properties:
-      DomainName: mydomainame.us-east-1.com
+      DomainName: mydomainame2.us-east-1.com
       DomainNameConfigurations:
         - SecurityPolicy: "TLS_1_2"
 `,
@@ -132,7 +132,7 @@ Resources:
 					},
 					DomainNames: []v2.DomainName{
 						{
-							Name:           types.StringTest("mydomainame.us-east-1.com"),
+							Name:           types.StringTest("mydomainame2.us-east-1.com"),
 							SecurityPolicy: types.StringTest("TLS_1_2"),
 						},
 					},
