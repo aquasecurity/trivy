@@ -36,6 +36,7 @@ You can filter the results by
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |     ✓     |
 
 Use `--severity` option.
 
@@ -163,6 +164,7 @@ See https://avd.aquasec.com/misconfig/avd-aws-0081
 | Misconfiguration |           |
 |      Secret      |           |
 |     License      |           |
+|      Crypto      |           |
 
 Trivy supports the following vulnerability statuses:
 
@@ -281,6 +283,7 @@ Trivy supports the [.trivyignore](#trivyignore) and [.trivyignore.yaml](#trivyig
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 ```bash
 $ cat .trivyignore
@@ -332,6 +335,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
@@ -436,6 +440,7 @@ Total: 0 (UNKNOWN: 0, LOW: 0, MEDIUM: 0, HIGH: 0, CRITICAL: 0)
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
@@ -524,6 +529,7 @@ You can create a whitelist of checks using Rego, see the detailed [example](http
 | Misconfiguration |           |
 |      Secret      |           |
 |     License      |           |
+|      Crypto      |           |
 
 Please refer to the [VEX documentation](../supply-chain/vex/index.md) for the details.
 

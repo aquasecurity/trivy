@@ -488,9 +488,9 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
-	// Cryptographic assets are reported only as CycloneDX components
-	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX {
-		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx'")
+	// Only JSON and CycloneDX output show cryptographic assets
+	if o.Scanners.Enabled(types.CryptoScanner) && o.Format != types.FormatCycloneDX && o.Format != types.FormatJSON {
+		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx' or '--format json'")
 	}
 
 	// A remote SBOM replaces layer analysis, so cryptographic assets would not be collected
@@ -532,6 +532,8 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
 		LicenseFull:         o.LicenseFull,
+		// Only JSON output shows crypto findings
+		CryptoChecks:        o.Format == types.FormatJSON,
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
@@ -704,7 +706,8 @@ func (f *Flags) Usages(cmd *cobra.Command) string {
 		}
 
 		fmt.Fprintf(&usages, "%s Flags\n", group.Name())
-		usages.WriteString(flags.FlagUsages() + "\n")
+		usages.WriteString(flags.FlagUsages())
+		usages.WriteByte('\n')
 	}
 	return strings.TrimSpace(usages.String())
 }

@@ -251,6 +251,7 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset {
 	return xslices.Map(assets, func(asset ftypes.CryptoAsset) *common.CryptoAsset {
 		return &common.CryptoAsset{
+			AssetId:       asset.AssetID,
 			Kind:          string(asset.Kind),
 			KeyType:       string(asset.KeyType),
 			Identity:      convertToRPCCryptoIdentity(asset.Identity),
@@ -263,6 +264,26 @@ func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset
 			Format:        string(asset.Format),
 			Encoding:      string(asset.Encoding),
 			Layer:         ConvertToRPCLayer(asset.Layer),
+		}
+	})
+}
+
+// ConvertToRPCCryptoFindings returns the RPC findings of the built-in crypto checks.
+func ConvertToRPCCryptoFindings(findings []types.CryptoFinding) []*common.CryptoFinding {
+	return xslices.Map(findings, func(finding types.CryptoFinding) *common.CryptoFinding {
+		return &common.CryptoFinding{
+			RuleId:   finding.RuleID,
+			Title:    finding.Title,
+			Severity: finding.Severity,
+			AssetId:  finding.AssetID,
+			Evidence: &common.CryptoEvidence{
+				SignatureAlgorithm:     finding.Evidence.SignatureAlgorithm,
+				SignatureAlgorithmOid:  finding.Evidence.SignatureAlgorithmOID,
+				KeySize:                int32(finding.Evidence.KeySize),
+				Curve:                  finding.Evidence.Curve,
+				ClassicalSecurityLevel: convertOptionalInt[int32](finding.Evidence.ClassicalSecurityLevel),
+				NotAfter:               convertToRPCTime(finding.Evidence.NotAfter),
+			},
 		}
 	})
 }
@@ -605,6 +626,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Secrets:           ConvertFromRPCDetectedSecrets(result.Secrets),
 			Licenses:          ConvertFromRPCDetectedLicenses(result.Licenses),
 			CryptoAssets:      ConvertFromRPCCryptoAssets(result.CryptoAssets),
+			CryptoFindings:    ConvertFromRPCCryptoFindings(result.CryptoFindings),
 		})
 	}
 	return results
@@ -751,6 +773,7 @@ func ConvertFromRPCLicenseFindings(rpcFindings []*common.LicenseFinding) ftypes.
 func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.CryptoAsset {
 	return xslices.Map(rpcAssets, func(rpcAsset *common.CryptoAsset) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
+			AssetID: rpcAsset.AssetId,
 			CryptoAssetInfo: ftypes.CryptoAssetInfo{
 				Kind:          ftypes.CryptoKind(rpcAsset.Kind),
 				KeyType:       ftypes.CryptoKeyType(rpcAsset.KeyType),
@@ -766,6 +789,29 @@ func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.Crypto
 			Encoding: ftypes.CryptoEncoding(rpcAsset.Encoding),
 			Layer:    ConvertFromRPCLayer(rpcAsset.Layer),
 		}
+	})
+}
+
+// ConvertFromRPCCryptoFindings returns the findings of the built-in crypto checks.
+func ConvertFromRPCCryptoFindings(rpcFindings []*common.CryptoFinding) []types.CryptoFinding {
+	return xslices.Map(rpcFindings, func(rpcFinding *common.CryptoFinding) types.CryptoFinding {
+		finding := types.CryptoFinding{
+			RuleID:   rpcFinding.RuleId,
+			Title:    rpcFinding.Title,
+			Severity: rpcFinding.Severity,
+			AssetID:  rpcFinding.AssetId,
+		}
+		if evidence := rpcFinding.Evidence; evidence != nil {
+			finding.Evidence = types.CryptoEvidence{
+				SignatureAlgorithm:     evidence.SignatureAlgorithm,
+				SignatureAlgorithmOID:  evidence.SignatureAlgorithmOid,
+				KeySize:                int(evidence.KeySize),
+				Curve:                  evidence.Curve,
+				ClassicalSecurityLevel: convertOptionalInt[int](evidence.ClassicalSecurityLevel),
+				NotAfter:               convertFromRPCTime(evidence.NotAfter),
+			}
+		}
+		return finding
 	})
 }
 
@@ -1327,6 +1373,7 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 			Licenses:          ConvertToRPCLicenses(result.Licenses),
 			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
 			CryptoAssets:      ConvertToRPCCryptoAssets(result.CryptoAssets),
+			CryptoFindings:    ConvertToRPCCryptoFindings(result.CryptoFindings),
 		})
 	}
 
