@@ -42,7 +42,7 @@ func Run(ctx context.Context, opts flag.Options) (err error) {
 
 	compat(&r)
 
-	if !types.CryptoFindingsShown(opts.Format) {
+	if !slices.Contains(types.CryptoFindingsFormats, opts.Format) {
 		r.Results.DropCryptoFindings()
 	}
 

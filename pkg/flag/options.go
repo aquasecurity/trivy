@@ -451,7 +451,7 @@ type Options struct {
 }
 
 // cryptoFormats are the formats that show cryptographic assets or their findings.
-var cryptoFormats = set.New(types.FormatCycloneDX, types.FormatJSON, types.FormatTable)
+var cryptoFormats = set.New(append([]types.Format{types.FormatCycloneDX}, types.CryptoFindingsFormats...)...)
 
 // Align takes consistency of options
 func (o *Options) Align(f *Flags) error {
@@ -535,7 +535,7 @@ func (o *Options) ScanOpts() types.ScanOptions {
 		ScanRemovedPackages: o.ScanRemovedPkgs,     // this is valid only for 'image' subcommand
 		LicenseCategories:   o.LicenseCategories,
 		LicenseFull:         o.LicenseFull,
-		CryptoChecks:        types.CryptoFindingsShown(o.Format),
+		CryptoChecks:        slices.Contains(types.CryptoFindingsFormats, o.Format),
 		FilePatterns:        o.FilePatterns,
 		IncludeDevDeps:      o.IncludeDevDeps,
 		Distro:              o.Distro,
