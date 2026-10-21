@@ -181,18 +181,10 @@ func filterCryptoFindings(result *types.Result, severities []string, ignoreConfi
 		filePaths[asset.AssetID] = asset.FilePath
 	}
 
-	var filtered []types.CryptoFinding
-	for _, finding := range result.CryptoFindings {
-		if !slices.Contains(severities, finding.Severity) {
-			// Filter by severity
-			continue
-		} else if ignoreConfig.MatchCrypto(finding.RuleID, filePaths[finding.AssetID]) != nil {
-			// Filter by ignore file
-			continue
-		}
-		filtered = append(filtered, finding)
-	}
-	result.CryptoFindings = filtered
+	result.CryptoFindings = xslices.ZeroToNil(lo.Filter(result.CryptoFindings, func(finding types.CryptoFinding, _ int) bool {
+		return slices.Contains(severities, finding.Severity) &&
+			ignoreConfig.MatchCrypto(finding.RuleID, filePaths[finding.AssetID]) == nil
+	}))
 }
 
 func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {
