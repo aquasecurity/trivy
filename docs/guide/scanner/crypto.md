@@ -171,7 +171,7 @@ Table output shows the findings without the inventory.
 ```
 example:latest (crypto)
 =======================
-Total: 3 (MEDIUM: 1, HIGH: 2)
+Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
 
 ┌──────────┬─────────────┬───────────────────────────────┬──────────────────────┬───────────────────────┐
 │ Severity │   Rule ID   │             Asset             │         File         │        Details        │
