@@ -88,7 +88,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, false, xerrors.Errorf("file read error: %w", err)
 	}
 
-	modFileParsed, err := modfile.Parse("go.mod", goModData, canonicalizeVersion)
+	modFileParsed, err := parseModFile(goModData)
 	if err != nil {
 		return nil, nil, false, xerrors.Errorf("go.mod parse error: %w", err)
 	}
@@ -199,6 +199,34 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, skipIndirect, nil
 }
 
+// parseModFile preserves the existing parser behavior for non-Echo input.
+//
+// A non-nil VersionFixer is also applied to retract directives, where x/mod
+// deliberately permits version queries that are not semantic versions. Try the
+// strict Echo-aware parse first so valid files take the normal single-pass path.
+// If it fails, use the default parser to distinguish a dependency error from a
+// tolerated retract query, then retry with a fixer that leaves such queries
+// unchanged.
+func parseModFile(data []byte) (*modfile.File, error) {
+	parsed, err := modfile.Parse("go.mod", data, canonicalizeVersion)
+	if err == nil {
+		return parsed, nil
+	}
+
+	baseline, baselineErr := modfile.Parse("go.mod", data, nil)
+	if baselineErr != nil {
+		return nil, baselineErr
+	}
+
+	// x/mod can't apply any VersionFixer to retractions without a module path.
+	// Keep the previous result for this already non-standard file shape.
+	if baseline.Module == nil && len(baseline.Retract) != 0 {
+		return baseline, nil
+	}
+
+	return modfile.Parse("go.mod", data, canonicalizeVersionOrKeep)
+}
+
 // canonicalizeVersion preserves valid Echo versions and applies the standard Go
 // module canonicalization to every other version.
 func canonicalizeVersion(path, version string) (string, error) {
@@ -212,6 +240,17 @@ func canonicalizeVersion(path, version string) (string, error) {
 			Version: version,
 			Err:     errors.New("must be of the form v1.2.3"),
 		})
+	}
+	return canonical, nil
+}
+
+// canonicalizeVersionOrKeep is used only after the default parser has validated
+// all dependency versions. An unrecognized version can therefore be retained as
+// a retract query, matching the behavior of modfile.Parse with a nil fixer.
+func canonicalizeVersionOrKeep(path, version string) (string, error) {
+	canonical, err := canonicalizeVersion(path, version)
+	if err != nil {
+		return version, nil
 	}
 	return canonical, nil
 }
