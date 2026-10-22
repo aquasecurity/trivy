@@ -216,6 +216,12 @@ func TestFilter(t *testing.T) {
 			},
 			FilePath: "etc/ssl/certs/old-root.pem",
 		}
+		unknownAssetFinding = types.CryptoFinding{
+			RuleID:   "CRYPTO-0002",
+			Title:    "Small RSA key",
+			Severity: dbTypes.SeverityHigh.String(),
+			AssetID:  "deadbeef",
+		}
 		expiredRootCertificate = types.CryptoFinding{
 			RuleID:   "CRYPTO-0004",
 			Title:    "Expired certificate",
@@ -438,6 +444,7 @@ func TestFilter(t *testing.T) {
 								smallRSAKey,            // ignored
 								expiredCertificate,     // path does not match
 								expiredRootCertificate, // ignored
+								unknownAssetFinding,    // no asset, so no path to match
 							},
 						},
 					},
@@ -455,6 +462,7 @@ func TestFilter(t *testing.T) {
 						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate, cryptoRootCertificate},
 						CryptoFindings: []types.CryptoFinding{
 							expiredCertificate,
+							unknownAssetFinding,
 						},
 					},
 				},
