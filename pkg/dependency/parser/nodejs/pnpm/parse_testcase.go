@@ -1123,4 +1123,34 @@ var (
 		},
 	}
 	pnpmV9MultiVersionDeps = []ftypes.Dependency{}
+
+	pnpmV9OptionalDependencies = []ftypes.Package{
+		{
+			ID:           "my-dev-pkg@2.0.0",
+			Name:         "my-dev-pkg",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          true,
+		},
+		{
+			ID:           "my-opt-pkg@1.0.0",
+			Name:         "my-opt-pkg",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
+		},
+		{
+			ID:           "my-transitive-pkg@1.0.0",
+			Name:         "my-transitive-pkg",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Dev:          false,
+		},
+	}
+	pnpmV9OptionalDependenciesDeps = []ftypes.Dependency{
+		{
+			ID:        "my-opt-pkg@1.0.0",
+			DependsOn: []string{"my-transitive-pkg@1.0.0"},
+		},
+	}
 )

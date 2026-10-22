@@ -148,6 +148,9 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		for n, v := range importer.Dependencies {
 			directProdDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
+		for n, v := range importer.OptionalDependencies {
+			directProdDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
+		}
 	}
 
 	// Step 2: Process each snapshot to create package entries.

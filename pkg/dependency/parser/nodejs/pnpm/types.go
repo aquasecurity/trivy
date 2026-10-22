@@ -45,6 +45,7 @@ type LockFile struct {
 type Importer struct {
 	Dependencies               map[string]ImporterDepVersion `yaml:"dependencies,omitempty"`
 	DevDependencies            map[string]ImporterDepVersion `yaml:"devDependencies,omitempty"`
+	OptionalDependencies       map[string]ImporterDepVersion `yaml:"optionalDependencies,omitempty"`
 	ConfigDependencies         map[string]any                `yaml:"configDependencies,omitempty"`
 	PackageManagerDependencies map[string]any                `yaml:"packageManagerDependencies,omitempty"`
 }

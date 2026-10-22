@@ -1,0 +1,38 @@
+lockfileVersion: '9.0'
+
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
+importers:
+
+  .:
+    optionalDependencies:
+      my-opt-pkg:
+        specifier: 1.0.0
+        version: 1.0.0
+    devDependencies:
+      my-dev-pkg:
+        specifier: 2.0.0
+        version: 2.0.0
+
+packages:
+
+  my-dev-pkg@2.0.0:
+    resolution: {integrity: sha512-devpkg}
+
+  my-opt-pkg@1.0.0:
+    resolution: {integrity: sha512-optpkg}
+
+  my-transitive-pkg@1.0.0:
+    resolution: {integrity: sha512-transitivepkg}
+
+snapshots:
+
+  my-dev-pkg@2.0.0: {}
+
+  my-opt-pkg@1.0.0:
+    dependencies:
+      my-transitive-pkg: 1.0.0
+
+  my-transitive-pkg@1.0.0: {}
