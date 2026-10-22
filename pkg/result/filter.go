@@ -174,11 +174,15 @@ func filterSecrets(result *types.Result, severities []string, ignoreConfig Ignor
 	result.Secrets = filtered
 }
 
-// filterCryptoFindings does not add ignored findings to the modified findings.
+// filterCryptoFindings does not add ignored findings to the modified findings,
+// because `--show-suppressed` is not supported for crypto findings yet.
 func filterCryptoFindings(result *types.Result, severities []string, ignoreConfig IgnoreConfig) {
-	filePaths := make(map[string]string, len(result.CryptoAssets))
-	for _, asset := range result.CryptoAssets {
-		filePaths[asset.AssetID] = asset.FilePath
+	var filePaths map[string]string
+	if len(result.CryptoFindings) > 0 && len(ignoreConfig.Crypto) > 0 {
+		filePaths = make(map[string]string, len(result.CryptoAssets))
+		for _, asset := range result.CryptoAssets {
+			filePaths[asset.AssetID] = asset.FilePath
+		}
 	}
 
 	result.CryptoFindings = xslices.ZeroToNil(lo.Filter(result.CryptoFindings, func(finding types.CryptoFinding, _ int) bool {
