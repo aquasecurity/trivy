@@ -749,6 +749,105 @@ func TestDriver_Detect(t *testing.T) {
 			},
 			want: nil,
 		},
+		{
+			name: "echo nuget package below both fixes",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.DotNetCore,
+			args: args{
+				pkgName: "System.Security.Cryptography.Xml",
+				pkgVer:  "7.0.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-26171",
+					VendorIDs: []string{
+						"GHSA-w3x6-4m5h-cxqf",
+						"ECHO-08ee-db76-1049",
+					},
+					PkgName:          "System.Security.Cryptography.Xml",
+					InstalledVersion: "7.0.2+echo.1",
+					FixedVersion:     "8.0.0+echo.1",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2026-96959",
+					VendorIDs: []string{
+						"GHSA-c399-9853-6jmj",
+						"ECHO-a9c4-3288-b534",
+					},
+					PkgName:          "System.Security.Cryptography.Xml",
+					InstalledVersion: "7.0.2+echo.1",
+					FixedVersion:     "8.0.5",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo nuget package above the Echo fix",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.DotNetCore,
+			args: args{
+				pkgName: "System.Security.Cryptography.Xml",
+				pkgVer:  "8.0.0+echo.10",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-96959",
+					VendorIDs: []string{
+						"GHSA-c399-9853-6jmj",
+						"ECHO-a9c4-3288-b534",
+					},
+					PkgName:          "System.Security.Cryptography.Xml",
+					InstalledVersion: "8.0.0+echo.10",
+					FixedVersion:     "8.0.5",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "echo nuget package at the upstream fix",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.DotNetCore,
+			args: args{
+				pkgName: "System.Security.Cryptography.Xml",
+				pkgVer:  "8.0.5+echo.1",
+			},
+			want: nil,
+		},
+		{
+			name: "plain nuget package does not use Echo advisories",
+			fixtures: []string{
+				"testdata/fixtures/echo.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.DotNetCore,
+			args: args{
+				pkgName: "System.Security.Cryptography.Xml",
+				pkgVer:  "8.0.0",
+			},
+			want: nil,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

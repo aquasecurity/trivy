@@ -15,9 +15,10 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 		advisory types.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name              string
+		withBuildMetadata bool
+		args              args
+		want              bool
 	}{
 		{
 			name: "happy path",
@@ -105,10 +106,61 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name:              "without WithBuildMetadata: build metadata ignored",
+			withBuildMetadata: false,
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.2"},
+					PatchedVersions:    []string{"8.0.0+echo.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:              "with WithBuildMetadata: build below the patched build",
+			withBuildMetadata: true,
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.2"},
+					PatchedVersions:    []string{"8.0.0+echo.2"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: Echo patched version does not suppress release",
+			withBuildMetadata: true,
+			args: args{
+				ver: "8.0.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.5"},
+					PatchedVersions:    []string{"8.0.0+echo.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:              "with WithBuildMetadata: exact Echo patched version is suppressed",
+			withBuildMetadata: true,
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.5"},
+					PatchedVersions:    []string{"8.0.0+echo.1"},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v := compare.GenericComparer{}
+			if tt.withBuildMetadata {
+				v = compare.NewGenericComparer(compare.WithBuildMetadata())
+			}
 			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})
