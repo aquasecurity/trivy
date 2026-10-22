@@ -50,3 +50,7 @@ crypto:
   - id: CRYPTO-0004
     paths:
       - "etc/ssl/certs/**"
+  - id: CRYPTO-0004
+    expired_at: 2020-01-01
+    paths:
+      - "app/**"
