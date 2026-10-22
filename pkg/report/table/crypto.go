@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	"github.com/aquasecurity/trivy/pkg/crypto/check"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -62,14 +63,14 @@ func (r *cryptoRenderer) Render(result types.Result) {
 
 	tw := newTableWriter(r.w, r.isTerminal)
 	tw.SetColumnMaxWidth(40)
-	tw.SetHeaders("Severity", "Rule ID", "Asset", "File", "Details")
+	tw.SetHeaders("Severity", "Rule ID", "Title", "Asset", "File", "Message")
 	for _, f := range findings {
 		severity := f.Severity
 		if r.isTerminal {
 			severity = ColorizeSeverity(f.Severity, f.Severity)
 		}
 		asset := assets[f.AssetID]
-		tw.AddRow(severity, f.RuleID, cryptoAssetLabel(asset), asset.FilePath, cryptoDetails(f.Evidence))
+		tw.AddRow(severity, f.RuleID, f.Title, cryptoAssetLabel(asset), asset.FilePath, check.Message(f))
 	}
 	tw.Render()
 }
@@ -86,20 +87,4 @@ func cryptoAssetLabel(a ftypes.CryptoAsset) string {
 		return a.Name
 	}
 	return fmt.Sprintf("%s (%s)", a.Name, a.Format)
-}
-
-func cryptoDetails(e types.CryptoEvidence) string {
-	switch {
-	case e.SignatureAlgorithm != "":
-		return e.SignatureAlgorithm
-	case e.KeySize > 0:
-		return fmt.Sprintf("%d bits", e.KeySize)
-	case e.ClassicalSecurityLevel != nil && e.Curve != "":
-		return fmt.Sprintf("%s, %d bits of strength", e.Curve, *e.ClassicalSecurityLevel)
-	case e.ClassicalSecurityLevel != nil:
-		return fmt.Sprintf("%d bits of strength", *e.ClassicalSecurityLevel)
-	case !e.NotAfter.IsZero():
-		return "expired on " + e.NotAfter.UTC().Format("2006-01-02")
-	}
-	return ""
 }

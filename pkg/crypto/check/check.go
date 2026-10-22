@@ -20,6 +20,19 @@ type rule struct {
 	// match reports whether the asset fails the rule and returns the evidence.
 	// Unknown asset values never match.
 	match func(asset ftypes.CryptoAsset, now time.Time) (types.CryptoEvidence, bool)
+	// message describes the failed check by its evidence.
+	message func(evidence types.CryptoEvidence) string
+}
+
+// Message returns the text that describes why the finding was reported.
+// It is empty for a finding of an unknown rule or a rule without a description.
+func Message(finding types.CryptoFinding) string {
+	for _, r := range rules {
+		if r.id == finding.RuleID && r.message != nil {
+			return r.message(finding.Evidence)
+		}
+	}
+	return ""
 }
 
 // match is a finding together with the asset it refers to.

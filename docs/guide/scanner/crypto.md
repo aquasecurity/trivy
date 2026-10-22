@@ -173,15 +173,15 @@ example:latest (crypto)
 =======================
 Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
 
-┌──────────┬─────────────┬───────────────────────────────┬──────────────────────┬───────────────────────┐
-│ Severity │   Rule ID   │             Asset             │         File         │        Details        │
-├──────────┼─────────────┼───────────────────────────────┼──────────────────────┼───────────────────────┤
-│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8) │ app/certs/legacy.key │ 1024 bits             │
-│          │             ├───────────────────────────────┼──────────────────────┤                       │
-│          │             │ RSA-1024 public key (PKIX)    │ app/certs/legacy.pem │                       │
-├──────────┼─────────────┼───────────────────────────────┤                      ├───────────────────────┤
-│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com         │                      │ expired on 2024-03-01 │
-└──────────┴─────────────┴───────────────────────────────┴──────────────────────┴───────────────────────┘
+┌──────────┬─────────────┬─────────────────────┬───────────────────────────────┬──────────────────────┬──────────────────────────────────────┐
+│ Severity │   Rule ID   │        Title        │             Asset             │         File         │               Message                │
+├──────────┼─────────────┼─────────────────────┼───────────────────────────────┼──────────────────────┼──────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ Small RSA key       │ RSA-1024 private key (PKCS#8) │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048 │
+│          │             │                     ├───────────────────────────────┼──────────────────────┤                                      │
+│          │             │                     │ RSA-1024 public key (PKIX)    │ app/certs/legacy.pem │                                      │
+├──────────┼─────────────┼─────────────────────┼───────────────────────────────┤                      ├──────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ Expired certificate │ CN=legacy.example.com         │                      │ Certificate expired on 2024-03-01    │
+└──────────┴─────────────┴─────────────────────┴───────────────────────────────┴──────────────────────┴──────────────────────────────────────┘
 ```
 
 Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.
