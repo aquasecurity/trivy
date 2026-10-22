@@ -27,7 +27,12 @@ func TestCryptoRenderer(t *testing.T) {
 				CryptoAssets: []ftypes.CryptoAsset{
 					{
 						AssetID:         "cert",
-						CryptoAssetInfo: ftypes.CryptoAssetInfo{Name: "CN=legacy.example.com"},
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Kind: ftypes.CryptoKindCertificate, Name: "CN=legacy.example.com"},
+						FilePath:        "app/certs/legacy.pem",
+					},
+					{
+						AssetID:         "curve",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Kind: ftypes.CryptoKindAlgorithm, Name: "EC-P-192"},
 						FilePath:        "app/certs/legacy.pem",
 					},
 					{
@@ -54,6 +59,13 @@ func TestCryptoRenderer(t *testing.T) {
 						},
 					},
 					{
+						RuleID:   "CRYPTO-0003",
+						Title:    "Weak elliptic curve",
+						Severity: "HIGH",
+						AssetID:  "curve",
+						Evidence: types.CryptoEvidence{Curve: "P-192", ClassicalSecurityLevel: new(96)},
+					},
+					{
 						RuleID:   "CRYPTO-0002",
 						Title:    "Small RSA key",
 						Severity: "HIGH",
@@ -72,17 +84,20 @@ func TestCryptoRenderer(t *testing.T) {
 			want: `
 example:latest (crypto)
 =======================
-Total: 3 (MEDIUM: 1, HIGH: 2)
+Total: 4 (MEDIUM: 1, HIGH: 3)
 
-┌──────────┬─────────────┬───────────────────────────────┬──────────────────────┬──────────────────────────────────────┐
-│ Severity │   Rule ID   │             Asset             │         File         │               Message                │
-├──────────┼─────────────┼───────────────────────────────┼──────────────────────┼──────────────────────────────────────┤
-│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8) │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048 │
-│          │             ├───────────────────────────────┼──────────────────────┤                                      │
-│          │             │ RSA-1024 public key (PKIX)    │ app/certs/legacy.pem │                                      │
-├──────────┼─────────────┼───────────────────────────────┤                      ├──────────────────────────────────────┤
-│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com         │                      │ Certificate expired on 2024-03-01    │
-└──────────┴─────────────┴───────────────────────────────┴──────────────────────┴──────────────────────────────────────┘
+┌──────────┬─────────────┬───────────────────────────────────┬──────────────────────┬────────────────────────────────────────┐
+│ Severity │   Rule ID   │               Asset               │         File         │                Message                 │
+├──────────┼─────────────┼───────────────────────────────────┼──────────────────────┼────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8)     │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048   │
+│          │             ├───────────────────────────────────┼──────────────────────┤                                        │
+│          │             │ RSA-1024 public key (PKIX)        │ app/certs/legacy.pem │                                        │
+│          ├─────────────┼───────────────────────────────────┤                      ├────────────────────────────────────────┤
+│          │ CRYPTO-0003 │ EC-P-192 algorithm                │                      │ Curve P-192 gives 96 bits of security, │
+│          │             │                                   │                      │ less than 112                          │
+├──────────┼─────────────┼───────────────────────────────────┤                      ├────────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com certificate │                      │ Certificate expired on 2024-03-01      │
+└──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴────────────────────────────────────────┘
 `,
 		},
 		{

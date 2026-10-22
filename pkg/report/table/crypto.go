@@ -81,10 +81,18 @@ func (r *cryptoRenderer) printf(format string, args ...any) {
 }
 
 // cryptoAssetLabel adds the container format to the asset name, so that copies of one key in
-// different containers of a file give different rows.
+// different containers of a file give different rows. A certificate is named by its subject
+// and an algorithm by its identifier, so the label says what they are.
 func cryptoAssetLabel(a ftypes.CryptoAsset) string {
-	if a.Format == "" {
-		return a.Name
+	name := a.Name
+	switch a.Kind {
+	case ftypes.CryptoKindCertificate:
+		name += " certificate"
+	case ftypes.CryptoKindAlgorithm:
+		name += " algorithm"
 	}
-	return fmt.Sprintf("%s (%s)", a.Name, a.Format)
+	if a.Format == "" {
+		return name
+	}
+	return fmt.Sprintf("%s (%s)", name, a.Format)
 }
