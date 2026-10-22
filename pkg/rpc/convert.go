@@ -173,6 +173,10 @@ func ConvertToRPCSecrets(secrets []ftypes.Secret) []*common.Secret {
 func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.SecretFinding {
 	var rpcFindings []*common.SecretFinding
 	for _, f := range findings {
+		var deletedIn *common.Layer
+		if f.DeletedIn != nil {
+			deletedIn = ConvertToRPCLayer(*f.DeletedIn)
+		}
 		rpcFindings = append(rpcFindings, &common.SecretFinding{
 			RuleId:    f.RuleID,
 			Category:  string(f.Category),
@@ -184,6 +188,7 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
 			Offset:    int32(f.Offset),
+			DeletedIn: deletedIn,
 		})
 	}
 	return rpcFindings
@@ -683,6 +688,11 @@ func ConvertFromRPCDetectedSecrets(rpcFindings []*common.SecretFinding) []types.
 func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.SecretFinding {
 	var findings []ftypes.SecretFinding
 	for _, finding := range rpcFindings {
+		var deletedIn *ftypes.Layer
+		if finding.DeletedIn != nil {
+			l := ConvertFromRPCLayer(finding.DeletedIn)
+			deletedIn = &l
+		}
 		findings = append(findings, ftypes.SecretFinding{
 			RuleID:    finding.RuleId,
 			Category:  ftypes.SecretRuleCategory(finding.Category),
@@ -698,6 +708,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 				DiffID:    finding.Layer.DiffId,
 				CreatedBy: finding.Layer.CreatedBy,
 			},
+			DeletedIn: deletedIn,
 		})
 	}
 	return findings

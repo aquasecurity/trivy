@@ -124,6 +124,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		for _, whFile := range layer.WhiteoutFiles {
 			_ = nestedMap.DeleteByString(whFile, sep) // nolint
 		}
+		markDeletedSecrets(secretsMap, layer)
 
 		mergedLayer.OS.Merge(layer.OS)
 
@@ -407,6 +408,53 @@ func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, 
 		secretsMap[newSecret.FilePath] = newSecret
 	}
 	return secretsMap
+}
+
+// markDeletedSecrets records the layer on findings whose file this layer removes with a whiteout
+// or an opaque directory. The finding itself stays: the secret is still readable in the layer that added it.
+// It must be called before the layer's own secrets are merged, as a layer cannot delete its own files.
+func markDeletedSecrets(secretsMap map[string]ftypes.Secret, layer ftypes.BlobInfo) {
+	if len(layer.WhiteoutFiles) == 0 && len(layer.OpaqueDirs) == 0 {
+		return
+	}
+
+	deletedIn := ftypes.Layer{
+		Digest:    layer.Digest,
+		DiffID:    layer.DiffID,
+		CreatedBy: layer.CreatedBy,
+	}
+	for filePath, secret := range secretsMap {
+		// Secret paths have a leading slash, whiteout paths do not.
+		if !isDeletedByLayer(strings.TrimPrefix(filePath, "/"), layer) {
+			continue
+		}
+		// Copy the findings, as the slice may be shared with the layer cache.
+		findings := slices.Clone(secret.Findings)
+		for i := range findings {
+			if findings[i].DeletedIn == nil {
+				findings[i].DeletedIn = &deletedIn
+			}
+		}
+		secret.Findings = findings
+		secretsMap[filePath] = secret
+	}
+}
+
+// isDeletedByLayer reports whether the layer removes the file, directly or through a parent directory.
+func isDeletedByLayer(filePath string, layer ftypes.BlobInfo) bool {
+	for _, whFile := range layer.WhiteoutFiles {
+		if filePath == whFile || strings.HasPrefix(filePath, whFile+"/") {
+			return true
+		}
+	}
+	for _, opqDir := range layer.OpaqueDirs {
+		// The walker returns opaque directories with a trailing slash, and "" for the root.
+		opqDir = strings.TrimSuffix(opqDir, "/")
+		if opqDir == "" || strings.HasPrefix(filePath, opqDir+"/") {
+			return true
+		}
+	}
+	return false
 }
 
 func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.SecretFinding) bool {

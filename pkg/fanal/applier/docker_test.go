@@ -797,6 +797,11 @@ func TestApplyLayers(t *testing.T) {
 									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 									CreatedBy: "Line_2",
 								},
+								DeletedIn: &types.Layer{
+									Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+									DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+									CreatedBy: "Line_3",
+								},
 								Code: types.Code{
 									Lines: []types.Line{
 										{
@@ -823,6 +828,11 @@ func TestApplyLayers(t *testing.T) {
 									DiffID:    "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 									CreatedBy: "Line_2",
 								},
+								DeletedIn: &types.Layer{
+									Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+									DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+									CreatedBy: "Line_3",
+								},
 								Code: types.Code{
 									Lines: []types.Line{
 										{
@@ -835,6 +845,93 @@ func TestApplyLayers(t *testing.T) {
 										},
 									},
 								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "secrets deleted by opaque dirs and re-added files",
+			inputLayers: []types.BlobInfo{
+				{
+					DiffID:    "sha256:layer1",
+					CreatedBy: "COPY . /app",
+					Secrets: []types.Secret{
+						{
+							FilePath: "/app/conf/key.pem",
+							Findings: []types.SecretFinding{{RuleID: "private-key"}},
+						},
+						{
+							FilePath: "/app/token.txt",
+							Findings: []types.SecretFinding{{RuleID: "github-pat"}},
+						},
+						{
+							FilePath: "/app/kept.txt",
+							Findings: []types.SecretFinding{{RuleID: "slack-access-token"}},
+						},
+						{
+							FilePath: "/app/conference.txt",
+							Findings: []types.SecretFinding{{RuleID: "aws-access-key-id"}},
+						},
+					},
+				},
+				{
+					DiffID:        "sha256:layer2",
+					CreatedBy:     "RUN rm -rf /app/conf /app/token.txt",
+					OpaqueDirs:    []string{"app/conf/"},
+					WhiteoutFiles: []string{"app/token.txt"},
+				},
+				{
+					DiffID:    "sha256:layer3",
+					CreatedBy: "COPY token.txt /app/token.txt",
+					Secrets: []types.Secret{
+						{
+							FilePath: "/app/token.txt",
+							Findings: []types.SecretFinding{{RuleID: "github-pat"}},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Secrets: []types.Secret{
+					{
+						FilePath: "/app/conf/key.pem",
+						Findings: []types.SecretFinding{
+							{
+								RuleID: "private-key",
+								Layer:  types.Layer{DiffID: "sha256:layer1", CreatedBy: "COPY . /app"},
+								DeletedIn: &types.Layer{
+									DiffID:    "sha256:layer2",
+									CreatedBy: "RUN rm -rf /app/conf /app/token.txt",
+								},
+							},
+						},
+					},
+					{
+						FilePath: "/app/conference.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID: "aws-access-key-id",
+								Layer:  types.Layer{DiffID: "sha256:layer1", CreatedBy: "COPY . /app"},
+							},
+						},
+					},
+					{
+						FilePath: "/app/kept.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID: "slack-access-token",
+								Layer:  types.Layer{DiffID: "sha256:layer1", CreatedBy: "COPY . /app"},
+							},
+						},
+					},
+					{
+						FilePath: "/app/token.txt",
+						Findings: []types.SecretFinding{
+							{
+								RuleID: "github-pat",
+								Layer:  types.Layer{DiffID: "sha256:layer3", CreatedBy: "COPY token.txt /app/token.txt"},
 							},
 						},
 					},
