@@ -176,10 +176,6 @@ func (c *IgnoreConfig) MatchSecret(secretID, filePath string) *IgnoreFinding {
 	return c.Secrets.Match(secretID, filePath, nil)
 }
 
-func (c *IgnoreConfig) MatchCrypto(ruleID, filePath string) *IgnoreFinding {
-	return c.Crypto.Match(ruleID, filePath, nil)
-}
-
 func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 	if f := c.Licenses.Match(licenseID, filePath, nil); f != nil {
 		return f
@@ -217,6 +213,10 @@ func (c *IgnoreConfig) MatchLicense(licenseID, filePath string) *IgnoreFinding {
 	}
 
 	return nil
+}
+
+func (c *IgnoreConfig) MatchCrypto(ruleID, filePath string) *IgnoreFinding {
+	return c.Crypto.Match(ruleID, filePath, nil)
 }
 
 func ParseIgnoreFile(ctx context.Context, ignoreFile string) (IgnoreConfig, error) {
