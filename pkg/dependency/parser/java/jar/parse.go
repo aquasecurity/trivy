@@ -36,7 +36,7 @@ var (
 const maxManifestSize = 10 << 20 // 10 MiB
 
 type Client interface {
-	Exists(groupID, artifactID string) (bool, error)
+	Exists(groupID, artifactID, version string) (bool, error)
 	SearchBySHA1(sha1 string) (Properties, error)
 	SearchByArtifactID(artifactID, version string) (string, error)
 }
@@ -181,7 +181,7 @@ func (p *Parser) resolveArtifact(r xio.ReadSeekerAt, m manifest, fileProps Prope
 	if manifestProps.Valid() {
 		// Even if MANIFEST.MF is found, the groupId and artifactId might not be valid.
 		// We have to make sure that the artifact exists actually.
-		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID); ok {
+		if ok, _ := p.client.Exists(manifestProps.GroupID, manifestProps.ArtifactID, manifestProps.Version); ok {
 			// If groupId and artifactId are valid, they will be returned.
 			return manifestProps.Package(), true, nil
 		}

@@ -160,7 +160,26 @@ func NewClient() (*DB, error) {
 	return &DB{driver: dbc}, nil
 }
 
-func (d *DB) Exists(groupID, artifactID string) (bool, error) {
+func (d *DB) Exists(groupID, artifactID, version string) (bool, error) {
+	// An artifact can move to a different groupID between releases, and the old
+	// groupID keeps existing for the versions published under it. Validating the
+	// pair alone would then accept a manifest hint for a version that was never
+	// published under it, so check the version first when the database knows it.
+	if version != "" {
+		indexes, err := d.driver.SelectIndexesByArtifactIDAndFileType(artifactID, version, types.JarType)
+		if err != nil {
+			return false, err
+		}
+		if len(indexes) > 0 {
+			for _, index := range indexes {
+				if index.GroupID == groupID {
+					return true, nil
+				}
+			}
+			return false, nil
+		}
+	}
+
 	index, err := d.driver.SelectIndexByArtifactIDAndGroupID(artifactID, groupID)
 	if err != nil {
 		return false, err
