@@ -18,7 +18,7 @@ require (
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11
 	github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4
-	github.com/aquasecurity/go-version v0.0.1
+	github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3
 	github.com/aquasecurity/iamgo v0.0.10
 	github.com/aquasecurity/table v1.11.0
 	github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56

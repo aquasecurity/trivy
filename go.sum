@@ -154,8 +154,8 @@ github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11/go.m
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4 h1:QC8nsF3LvAGHUxkr5bvcekaUQPE9Zk4jyMugyg5Fxy0=
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/go-version v0.0.1 h1:4cNl516agK0TCn5F7mmYN+xVs1E3S45LkgZk3cbaW2E=
-github.com/aquasecurity/go-version v0.0.1/go.mod h1:s1UU6/v2hctXcOa3OLwfj5d9yoXHa3ahf+ipSwEvGT0=
+github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3 h1:hVZDaungF6r+e1UruVVvyR5HjKTX2y8D5zYm05HdnzE=
+github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3/go.mod h1:s1UU6/v2hctXcOa3OLwfj5d9yoXHa3ahf+ipSwEvGT0=
 github.com/aquasecurity/iamgo v0.0.10 h1:t/HG/MI1eSephztDc+Rzh/YfgEa+NqgYRSfr6pHdSCQ=
 github.com/aquasecurity/iamgo v0.0.10/go.mod h1:GI9IQJL2a+C+V2+i3vcwnNKuIJXZ+HAfqxZytwy+cPk=
 github.com/aquasecurity/jfather v0.0.8 h1:tUjPoLGdlkJU0qE7dSzd1MHk2nQFNPR0ZfF+6shaExE=
