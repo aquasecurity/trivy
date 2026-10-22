@@ -178,6 +178,35 @@ var (
 		InstalledVersion: bashPackage.Version,
 		PkgIdentifier:    bashPackage.Identifier,
 	}
+	vulnID1 = types.DetectedVulnerability{
+		VulnerabilityID:  "SUSE-SU-2026:0001-1",
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
+	vulnIDLower = types.DetectedVulnerability{
+		VulnerabilityID:  "suse-su-2026:0001-1",
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
+	vulnID2 = types.DetectedVulnerability{
+		VulnerabilityID:  "SUSE-SU-2026:0002-1",
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
+	vulnIDUnknown = types.DetectedVulnerability{
+		VulnerabilityID:  "SUSE-SU-2026:9999-1",
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
+	vulnIDEmpty = types.DetectedVulnerability{
+		PkgName:          goTransitivePackage.Name,
+		InstalledVersion: goTransitivePackage.Version,
+		PkgIdentifier:    goTransitivePackage.Identifier,
+	}
 	vuln5 = types.DetectedVulnerability{
 		VulnerabilityID:  "CVE-2024-0001",
 		PkgName:          goTransitivePackage.Name,
@@ -569,6 +598,124 @@ func TestFilter(t *testing.T) {
 			want: imageReport([]types.Result{
 				goSinglePathResult(types.Result{
 					Vulnerabilities: []types.DetectedVulnerability{vuln6}, // The statement doesn't apply to the product itself
+				}),
+			}),
+		},
+		{
+			name: "CSAF with non-CVE ID, not affected",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vulnID1},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-ids.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vulnID1, vulnerableCodeNotInExecutePath, "testdata/csaf-ids.json")},
+				}),
+			}),
+		},
+		{
+			name: "CSAF with non-CVE ID, case-insensitive",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vulnIDLower},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-ids.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vulnIDLower, vulnerableCodeNotInExecutePath, "testdata/csaf-ids.json")},
+				}),
+			}),
+		},
+		{
+			name: "CSAF with duplicated ID entries, later entry matches",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vulnID2},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-ids.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities:  []types.DetectedVulnerability{},
+					ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vulnID2, vulnerableCodeNotInExecutePath, "testdata/csaf-ids.json")},
+				}),
+			}),
+		},
+		{
+			name: "CSAF with non-CVE ID, unknown ID",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vulnIDUnknown},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-ids.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{vulnIDUnknown},
+				}),
+			}),
+		},
+		{
+			name: "CSAF with empty vulnerability ID",
+			args: args{
+				report: imageReport([]types.Result{
+					goSinglePathResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{vulnIDEmpty},
+					}),
+				}),
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/csaf-ids.json",
+						},
+					},
+				},
+			},
+			want: imageReport([]types.Result{
+				goSinglePathResult(types.Result{
+					Vulnerabilities: []types.DetectedVulnerability{vulnIDEmpty},
 				}),
 			}),
 		},
