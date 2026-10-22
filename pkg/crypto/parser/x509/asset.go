@@ -19,7 +19,7 @@ import (
 func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 	switch obj.kind {
 	case objectCertificate:
-		return describeCertificate(obj.certificate, obj.encoding)
+		return describeCertificate(obj.certificate, obj.encoding, obj.keystore)
 	case objectPublicKey:
 		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePublic)
 	case objectPrivateKey:
@@ -36,6 +36,7 @@ func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 func describeCertificate(
 	cert certificate,
 	encoding ftypes.CryptoEncoding,
+	keystore ftypes.CryptoKeystoreType,
 ) ([]ftypes.CryptoAsset, error) {
 	// The full distinguished name is reported, because a certificate authority often
 	// identifies itself by organization alone and carries no common name.
@@ -98,6 +99,7 @@ func describeCertificate(
 	asset := ftypes.CryptoAsset{
 		CryptoAssetInfo: info,
 		Encoding:        encoding,
+		Keystore:        keystore,
 	}
 	return append([]ftypes.CryptoAsset{asset}, related...), nil
 }
