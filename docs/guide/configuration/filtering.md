@@ -350,7 +350,7 @@ Available fields:
 
 | Field      | Required | Type                | Description                                                                                                                                                             |
 |------------|:--------:|---------------------|-------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, license[^1], or crypto check.                                                                            |
+| id         |    ✓     | string              | The identifier of the vulnerability, misconfiguration, secret, license[^1], or crypto rule.                                                                             |
 | paths[^2]  |          | string array        | The list of file paths to ignore. If `paths` is not set, the ignore finding is applied to all files.                                                                    |
 | purls      |          | string array        | The list of PURLs to ignore packages. If `purls` is not set, the ignore finding is applied to all packages. This field is currently available only for vulnerabilities. |
 | expired_at |          | date (`yyyy-mm-dd`) | The expiration date of the ignore finding. If `expired_at` is not set, the ignore finding is always valid.                                                              |
@@ -396,7 +396,7 @@ crypto:
   - id: CRYPTO-0001
     paths:
       - "etc/ssl/certs/**"
-    statement: OS root certificates, their signatures are not verified
+    statement: Signatures of OS root certificates are not verified
 ```
 
 !!! info "Enhanced License Expression Support"

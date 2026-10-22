@@ -174,10 +174,10 @@ crypto:
   - id: CRYPTO-0001
     paths:
       - "etc/ssl/certs/**"
-    statement: OS root certificates, their signatures are not verified
+    statement: Signatures of OS root certificates are not verified
 ```
 
-## Filtering the inventory
+## Telling system certificates from your own
 
 Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.
 
