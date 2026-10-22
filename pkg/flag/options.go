@@ -26,7 +26,6 @@ import (
 	"github.com/aquasecurity/trivy/pkg/plugin"
 	"github.com/aquasecurity/trivy/pkg/result"
 	"github.com/aquasecurity/trivy/pkg/rpc/client"
-	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/version/app"
 )
@@ -451,7 +450,7 @@ type Options struct {
 }
 
 // cryptoFormats are the formats that show cryptographic assets or their findings.
-var cryptoFormats = set.New(append([]types.Format{types.FormatCycloneDX}, types.CryptoFindingsFormats...)...)
+var cryptoFormats = slices.Concat([]types.Format{types.FormatCycloneDX}, types.CryptoFindingsFormats)
 
 // Align takes consistency of options
 func (o *Options) Align(f *Flags) error {
@@ -492,7 +491,7 @@ func (o *Options) Align(f *Flags) error {
 		}
 	}
 
-	if o.Scanners.Enabled(types.CryptoScanner) && !cryptoFormats.Contains(o.Format) {
+	if o.Scanners.Enabled(types.CryptoScanner) && !slices.Contains(cryptoFormats, o.Format) {
 		return xerrors.Errorf("'--scanners crypto' can only be used with '--format cyclonedx', '--format json' or '--format table'")
 	}
 
