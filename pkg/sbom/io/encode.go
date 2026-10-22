@@ -478,6 +478,16 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		},
 	}
 
+	// Only third-party packages carry a repository class. "official" is the default for every OS
+	// package, so emitting it would add a property to every component without telling a consumer
+	// anything it can act on.
+	if pkg.Repository.Class == ftypes.RepositoryClassThirdParty {
+		properties = append(properties, core.Property{
+			Name:  core.PropertyRepositoryClass,
+			Value: string(pkg.Repository.Class),
+		})
+	}
+
 	// Fill Red Hat specific properties
 	if pkg.BuildInfo != nil {
 		for _, cs := range pkg.BuildInfo.ContentSets {
