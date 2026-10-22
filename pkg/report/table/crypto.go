@@ -63,14 +63,14 @@ func (r *cryptoRenderer) Render(result types.Result) {
 
 	tw := newTableWriter(r.w, r.isTerminal)
 	tw.SetColumnMaxWidth(40)
-	tw.SetHeaders("Severity", "Rule ID", "Title", "Asset", "File", "Message")
+	tw.SetHeaders("Severity", "Rule ID", "Asset", "File", "Message")
 	for _, f := range findings {
 		severity := f.Severity
 		if r.isTerminal {
 			severity = ColorizeSeverity(f.Severity, f.Severity)
 		}
 		asset := assets[f.AssetID]
-		tw.AddRow(severity, f.RuleID, f.Title, cryptoAssetLabel(asset), asset.FilePath, check.Message(f))
+		tw.AddRow(severity, f.RuleID, cryptoAssetLabel(asset), asset.FilePath, check.Message(f))
 	}
 	tw.Render()
 }
