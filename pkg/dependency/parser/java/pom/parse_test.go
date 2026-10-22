@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/samber/lo"
@@ -2576,6 +2577,57 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
 			},
 		},
+		{
+			name:          "BOM imported with scope=import from remote repository",
+			inputFile:     filepath.Join("testdata", "repo-bom-import", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-bom-import", "repo-artifacts.txtar"),
+			repos:         nil,
+			wantPackages: map[string]string{
+				"org.example:example-lib:2.0.0": "License from root repo",
+			},
+		},
+		{
+			name:          "nested BOM import with repository declared in intermediate BOM",
+			inputFile:     filepath.Join("testdata", "repo-bom-nested-import", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-bom-nested-import", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "repo-bom-nested-import", "repo1-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				"org.example:example-lib:3.0.0": "License from root repo for nested BOM",
+			},
+		},
+		{
+			name:          "BOM imported from parent POM repository",
+			inputFile:     filepath.Join("testdata", "repo-bom-parent-repo", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-bom-parent-repo", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "repo-bom-parent-repo", "repo1-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				"org.example:example-lib:4.0.0": "License from parent repo",
+			},
+		},
+		{
+			name:          "root POM with module inherits repository for BOM import",
+			inputFile:     filepath.Join("testdata", "repo-from-root-for-bom-from-module", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-from-root-for-bom-from-module", "repo-artifacts.txtar"),
+			repos:         nil,
+			wantPackages: map[string]string{
+				"org.example:example-lib:6.0.0": "License from module root repo",
+			},
+		},
+		{
+			name:          "transitive dependency POM importing BOM from remote repository",
+			inputFile:     filepath.Join("testdata", "repo-bom-transitive", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repo-bom-transitive", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "repo-bom-transitive", "repo1-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				"org.example:transitive-lib:5.0.0": "License from repo1",
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -2603,7 +2655,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			// Verify expected packages
 			for pkgID, wantLicense := range tt.wantPackages {
 				p, found := lo.Find(pkgs, func(pkg ftypes.Package) bool {
-					return pkg.ID == pkgID
+					return pkg.ID == pkgID || strings.HasPrefix(pkg.ID, pkgID+"::")
 				})
 				require.True(t, found, "package %s not found", pkgID)
 				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)

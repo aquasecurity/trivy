@@ -1,0 +1,40 @@
+-- org/example/bom1/1.0.0/bom1-1.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>bom1</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <repositories>
+        <repository>
+            <id>nested-repo</id>
+            <url>REPO1_URL</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>bom2</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+-- org/example/example-lib/3.0.0/example-lib-3.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>example-lib</artifactId>
+    <version>3.0.0</version>
+    <licenses>
+        <license>
+            <name>License from root repo for nested BOM</name>
+        </license>
+    </licenses>
+</project>

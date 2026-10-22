@@ -309,7 +309,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement, result.artifact.Repositories)
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 			}
@@ -323,7 +323,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		// Parse, cache, and enqueue modules.
 		for _, relativePath := range result.modules {
-			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath, root.Repositories)
+			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath, result.artifact.Repositories)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
 					log.FilePath(result.filePath), log.Err(err))
@@ -421,6 +421,7 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 	moduleArtifact.Module = true
 	moduleArtifact.RootFilePath = module.filePath
 	moduleArtifact.Relationship = ftypes.RelationshipWorkspace
+	moduleArtifact.Repositories = result.artifact.Repositories
 
 	p.cache.put(moduleArtifact, result)
 
@@ -496,10 +497,15 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	})
 
 	// Resolve parent POM
-	// TODO handle repos from parents
 	if err := p.resolveParent(ctx, pom, opts.repositories); err != nil {
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
+
+	// Re-evaluate repositories after parent inheritance, so parent repositories are included
+	pomRepos = pom.repositories(p.servers)
+	opts.repositories = lo.UniqBy(append(pomRepos, opts.repositories...), func(r repository) url.URL {
+		return r.url
+	})
 
 	// Resolve dependencies
 	props := pom.properties()
@@ -542,6 +548,13 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	// Merge properties
 	pom.content.Properties = p.mergeProperties(pom.content.Properties, parent.content.Properties)
 
+	// Merge repositories with the following priority:
+	// 1. Repositories from this POM
+	// 2. Repositories from parent of this POM
+	pom.content.Repositories = p.mergeRepositories(
+		pom.content.Repositories,
+		parent.content.Repositories)
+
 	// Merge dependencyManagement with the following priority:
 	// 1. Managed dependencies from this POM
 	// 2. Managed dependencies from parent of this POM
@@ -555,6 +568,37 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 		parent.content.Dependencies.Dependency)
 
 	return nil
+}
+
+func (p *Parser) mergeRepositories(child, parent []pomRepository) []pomRepository {
+	uniqID := set.New[string]()
+	uniqURL := set.New[string]()
+	var repos []pomRepository
+	for _, repo := range child {
+		if repo.ID != "" {
+			uniqID.Append(repo.ID)
+		}
+		if repo.URL != "" {
+			uniqURL.Append(repo.URL)
+		}
+		repos = append(repos, repo)
+	}
+	for _, repo := range parent {
+		if repo.ID != "" && uniqID.Contains(repo.ID) {
+			continue
+		}
+		if repo.URL != "" && uniqURL.Contains(repo.URL) {
+			continue
+		}
+		repos = append(repos, repo)
+		if repo.ID != "" {
+			uniqID.Append(repo.ID)
+		}
+		if repo.URL != "" {
+			uniqURL.Append(repo.URL)
+		}
+	}
+	return repos
 }
 
 func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) []pomDependency {
@@ -583,7 +627,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 	var err error
 	// Resolve dependencyManagement
-	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, opts.repositories)
 	if err != nil {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}
@@ -607,7 +651,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 // It returns resolved depManagement with variables evaluated.
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
-func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) ([]pomDependency, error) {
+func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency, repos []repository) ([]pomDependency, error) {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -623,6 +667,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
+		art.Repositories = slices.Clone(repos)
 		result, err := p.resolve(ctx, art, nil)
 		if shouldReturnError(err) {
 			return nil, err
@@ -633,7 +678,10 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// We need to recursively check all nested depManagements,
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
-		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		nestedRepos := lo.UniqBy(append(slices.Clone(repos), result.artifact.Repositories...), func(r repository) url.URL {
+			return r.url
+		})
+		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement, nestedRepos)
 		if err != nil {
 			return nil, err
 		}

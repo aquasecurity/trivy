@@ -1,0 +1,17 @@
+-- org/example/remote-parent/1.0.0/remote-parent-1.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>remote-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <repositories>
+        <repository>
+            <id>parent-repo</id>
+            <url>REPO1_URL</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+</project>

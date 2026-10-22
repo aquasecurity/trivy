@@ -1,0 +1,29 @@
+-- org/example/example-bom/1.0.0/example-bom-1.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>example-bom</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-lib</artifactId>
+                <version>2.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+-- org/example/example-lib/2.0.0/example-lib-2.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>example-lib</artifactId>
+    <version>2.0.0</version>
+    <licenses>
+        <license>
+            <name>License from root repo</name>
+        </license>
+    </licenses>
+</project>

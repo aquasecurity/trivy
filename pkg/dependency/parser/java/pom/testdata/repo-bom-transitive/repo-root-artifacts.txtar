@@ -1,0 +1,34 @@
+-- org/example/dep1/1.0.0/dep1-1.0.0.pom --
+<project xmlns="http://maven.apache.org/POM/4.0.0">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>org.example</groupId>
+    <artifactId>dep1</artifactId>
+    <version>1.0.0</version>
+    <packaging>jar</packaging>
+    <repositories>
+        <repository>
+            <id>transitive-repo</id>
+            <url>REPO1_URL</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+        </repository>
+    </repositories>
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>dep-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>transitive-lib</artifactId>
+        </dependency>
+    </dependencies>
+</project>
