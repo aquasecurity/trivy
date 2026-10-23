@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.77.0](https://github.com/aquasecurity/trivy/compare/v0.76.0...v0.77.0) (2026-10-23)
+
+
+### Features
+
+* **crypto:** add built-in checks of cryptographic assets ([#11394](https://github.com/aquasecurity/trivy/issues/11394)) ([78479c9](https://github.com/aquasecurity/trivy/commit/78479c92dd00b4a80bbcf1e2a27752aab09526fd))
+* **crypto:** describe keys that crypto/x509 cannot parse ([#11404](https://github.com/aquasecurity/trivy/issues/11404)) ([53d77b9](https://github.com/aquasecurity/trivy/commit/53d77b9ee282913284dcfa6621f0a5cc9ce4e6c7))
+* **crypto:** read unencrypted certificates from PKCS[#12](https://github.com/aquasecurity/trivy/issues/12) keystores ([#11399](https://github.com/aquasecurity/trivy/issues/11399)) ([2f4aaf7](https://github.com/aquasecurity/trivy/commit/2f4aaf7e7caa9eb91fb6abefc05a78a899698b5b))
+
+
+### Bug Fixes
+
+* **cloudformation:** set the file context on condition map entries ([#11429](https://github.com/aquasecurity/trivy/issues/11429)) ([a2a80d4](https://github.com/aquasecurity/trivy/commit/a2a80d42401106b9d16de2e7f89c1df7a9824c90))
+* fail on read errors in .trivyignore ([#11414](https://github.com/aquasecurity/trivy/issues/11414)) ([25c07ab](https://github.com/aquasecurity/trivy/commit/25c07ab70ce6a73244a70af0c7bf2762e318a830))
+* **k8s:** accept tolerations without a value ([#11425](https://github.com/aquasecurity/trivy/issues/11425)) ([914b658](https://github.com/aquasecurity/trivy/commit/914b658c88d6413bea4a6233082a0abd6f4a9c8c))
+* **terraform:** convert primitives to string in list attributes ([#11223](https://github.com/aquasecurity/trivy/issues/11223)) ([0231990](https://github.com/aquasecurity/trivy/commit/0231990f702f626e6981afaafcb0c97d43be28c7))
+
 ## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-14)
 
 
