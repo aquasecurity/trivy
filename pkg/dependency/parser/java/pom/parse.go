@@ -309,7 +309,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement, result.artifact.Repositories, set.New[string]())
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 			}
@@ -478,7 +478,7 @@ type analysisOptions struct {
 	exclusions    set.Set[string]
 	depManagement []pomDependency // from the root POM
 	rootFilePath  string          // File path of the root POM or module POM
-	repositories  []repository    // Repositories inherited from parent
+	repositories  []repository    // Repositories from upper-level POMs
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -489,17 +489,13 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		opts.exclusions = set.New[string]()
 	}
 
-	// Get repositories from current POM and merge with inherited ones
-	pomRepos := pom.repositories(p.servers)
-	opts.repositories = lo.UniqBy(append(pomRepos, opts.repositories...), func(r repository) url.URL {
-		return r.url
-	})
-
 	// Resolve parent POM
-	// TODO handle repos from parents
 	if err := p.resolveParent(ctx, pom, opts.repositories); err != nil {
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
+
+	// Get repositories from current POM, including ones from parent POMs, and merge with ones from upper-level POMs
+	opts.repositories = mergeRepositories(pom.repositories(p.servers), opts.repositories)
 
 	// Resolve dependencies
 	props := pom.properties()
@@ -531,6 +527,8 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	}
 
 	// Parse parent POM
+	// The parent POM is also searched in the repositories of this POM
+	pomRepos = mergeRepositories(pom.repositories(p.servers), pomRepos)
 	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent, pomRepos)
 	if err != nil {
 		return xerrors.Errorf("parent error: %w", err)
@@ -553,6 +551,9 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	pom.content.Dependencies.Dependency = p.mergeDependencies(
 		pom.content.Dependencies.Dependency,
 		parent.content.Dependencies.Dependency)
+
+	// Merge repositories, duplicates are removed when the repositories are resolved
+	pom.content.Repositories = append(pom.content.Repositories, parent.content.Repositories...)
 
 	return nil
 }
@@ -583,7 +584,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 	var err error
 	// Resolve dependencyManagement
-	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, opts.repositories, set.New[string]())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}
@@ -605,9 +606,12 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 // resolveDepManagement resolves depManagement, including imported POMs.
 // It returns resolved depManagement with variables evaluated.
+// imported tracks already imported POMs to skip repeated imports and break import cycles.
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
-func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) ([]pomDependency, error) {
+func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency,
+	repos []repository, imported set.Set[string],
+) ([]pomDependency, error) {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -623,6 +627,13 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
+		if imported.Contains(art.String()) {
+			p.logger.Debug("Skipping already imported POM", log.String("artifact", art.String()))
+			continue
+		}
+		imported.Append(art.String())
+		art.Repositories = slices.Clone(repos) // avoid sharing
+
 		result, err := p.resolve(ctx, art, nil)
 		if shouldReturnError(err) {
 			return nil, err
@@ -633,7 +644,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// We need to recursively check all nested depManagements,
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
-		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement, result.artifact.Repositories, imported)
 		if err != nil {
 			return nil, err
 		}
@@ -653,6 +664,13 @@ func (p *Parser) mergeProperties(child, parent properties) properties {
 func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependency {
 	return lo.UniqBy(append(child, parent...), func(d pomDependency) string {
 		return d.Name()
+	})
+}
+
+// mergeRepositories merges repositories in order of priority and removes duplicate URLs.
+func mergeRepositories(repos ...[]repository) []repository {
+	return lo.UniqBy(slices.Concat(repos...), func(r repository) url.URL {
+		return r.url
 	})
 }
 
