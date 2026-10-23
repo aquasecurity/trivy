@@ -113,26 +113,51 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 	}
 
 	for _, ver := range vers {
-		var vRange string
-
-		switch r := versRange.(type) {
-		case string:
-			vRange = r
-		case map[string]any:
-			for k, v := range r {
-				if k == "version" {
-					vRange = v.(string)
-				}
+		for _, vRange := range versionRanges(versRange) {
+			if matched, err := matchVersion(ver, vRange); err != nil {
+				return "", xerrors.Errorf("failed to match version for %s: %w", name, err)
+			} else if matched {
+				return packageID(name, ver), nil
 			}
-		}
-
-		if matched, err := matchVersion(ver, vRange); err != nil {
-			return "", xerrors.Errorf("failed to match version for %s: %w", name, err)
-		} else if matched {
-			return packageID(name, ver), nil
 		}
 	}
 	return "", xerrors.Errorf("no matched version found for %q", name)
+}
+
+// versionRanges returns the version constraint(s) declared for a dependency.
+// The value is usually a single range - either a plain string (">=1.0", "*")
+// or an inline table ({version = "...", markers = "..."}). Poetry also records
+// an array of inline tables when the same dependency is required with different
+// constraints per environment marker, e.g.
+//
+//	typing-extensions = [
+//	    {version = ">=4.6.0", markers = "python_version < \"3.15\""},
+//	    {version = ">=4.14.0", markers = "python_version >= \"3.15\""},
+//	]
+//
+// That array form was previously unhandled, so the dependency edge was dropped.
+func versionRanges(versRange any) []string {
+	switch r := versRange.(type) {
+	case string:
+		return []string{r}
+	case map[string]any:
+		if v, ok := r["version"].(string); ok {
+			return []string{v}
+		}
+	case []any:
+		ranges := make([]string, 0, len(r))
+		for _, e := range r {
+			m, ok := e.(map[string]any)
+			if !ok {
+				continue
+			}
+			if v, ok := m["version"].(string); ok {
+				ranges = append(ranges, v)
+			}
+		}
+		return ranges
+	}
+	return nil
 }
 
 // matchVersion checks if the package version satisfies the given constraint.

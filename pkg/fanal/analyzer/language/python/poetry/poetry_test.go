@@ -594,3 +594,39 @@ func Test_poetryLibraryAnalyzer_Analyze(t *testing.T) {
 		})
 	}
 }
+
+func Test_poetryLibraryAnalyzer_MultipleConstraints(t *testing.T) {
+	a, err := newPoetryAnalyzer(analyzer.AnalyzerOptions{})
+	require.NoError(t, err)
+
+	got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{
+		FS: os.DirFS("testdata/multiple-constraints"),
+	})
+	require.NoError(t, err)
+	require.Len(t, got.Applications, 1)
+
+	assert.Equal(t, types.Packages{
+		{
+			ID: "numpy@2.5.3", Name: "numpy", Version: "2.5.3",
+			Indirect: true, Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID: "pandas@3.0.6", Name: "pandas", Version: "3.0.6",
+			Relationship: types.RelationshipDirect,
+			DependsOn:    []string{"numpy@2.5.3", "python-dateutil@2.9.0.post0", "tzdata@2026.4"},
+		},
+		{
+			ID: "python-dateutil@2.9.0.post0", Name: "python-dateutil", Version: "2.9.0.post0",
+			Indirect: true, Relationship: types.RelationshipIndirect,
+			DependsOn: []string{"six@1.17.0"},
+		},
+		{
+			ID: "six@1.17.0", Name: "six", Version: "1.17.0",
+			Indirect: true, Relationship: types.RelationshipIndirect,
+		},
+		{
+			ID: "tzdata@2026.4", Name: "tzdata", Version: "2026.4",
+			Indirect: true, Relationship: types.RelationshipIndirect,
+		},
+	}, got.Applications[0].Packages)
+}
