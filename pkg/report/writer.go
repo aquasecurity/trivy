@@ -80,6 +80,7 @@ func initWriter(output io.Writer, report types.Report, option flag.Options) (Wri
 			LicenseRiskThreshold: option.LicenseRiskThreshold,
 			IgnoredLicenses:      option.IgnoredLicenses,
 			TableModes:           option.TableModes,
+			ColorMode:            option.Color,
 		}), nil
 	case types.FormatJSON:
 		return &JSONWriter{
