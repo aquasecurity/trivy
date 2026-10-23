@@ -1,0 +1,59 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "app",
+      "dependencies": {
+        "adm-zip": "git+https://git@github.com/cthackers/adm-zip.git#ff17ae85000b62b9d159e2520564902724d26c17",
+        "debug": "2.2.0",
+        "ms": "2.1.3",
+        "my-mkdirp": "npm:mkdirp@0.5.1",
+      },
+      "devDependencies": {
+        "send": "0.13.0",
+      },
+    },
+  },
+  "packages": {
+    "adm-zip": ["adm-zip@git+https://git@github.com/cthackers/adm-zip.git#ff17ae85000b62b9d159e2520564902724d26c17", {}, "ff17ae85000b62b9d159e2520564902724d26c17"],
+
+    "debug": ["debug@2.2.0", "", { "dependencies": { "ms": "0.7.1" } }, "sha512-X0rGvJcskG1c3TgSCPqHJ0XJgwlcvOC7elJ5Y0hYuKBZoVqWpAMfLOeIh2UI/DCQ5ruodIjvsugZtjUYUw2pUw=="],
+
+    "depd": ["depd@1.0.1", "", {}, "sha512-OEWAMbCkK9IWQ8pfTvHBhCSqHgR+sk5pbiYqq0FqfARG4Cy+cRsCbITx6wh5pcsmfBPiJAcbd98tfdz5fnBbag=="],
+
+    "destroy": ["destroy@1.0.3", "", {}, "sha512-KB/AVLKRwZPOEo6/lxkDJ+Bv3jFRRrhmnRMPvpWwmIfUggpzGkQBqolyo8FRf833b/F5rzmy1uVN3fHBkjTxgw=="],
+
+    "ee-first": ["ee-first@1.1.1", "", {}, "sha512-WMwm9LhRUo+WUaRN+vRuETqG89IgZphVSNkdFgeb6sS/E4OrDIN7t48CAewSHXc6C8lefD8KKfr5vY61brQlow=="],
+
+    "escape-html": ["escape-html@1.0.2", "", {}, "sha512-J5ahyCRC4liskWVAfkmosNWfG0eHQxI0W+Ko7k3cZaYVMfgt05dwZ68vw6S/TZM1BPvuTv3kq6CRCb7WWtBUVA=="],
+
+    "etag": ["etag@1.7.0", "", {}, "sha512-Mbv5pNpLNPrm1b4rzZlZlfTRpdDr31oiD43N362sIyvSWVNu5Du33EcJGzvEV4YdYLuENB1HzND907cQkFmXNw=="],
+
+    "fresh": ["fresh@0.3.0", "", {}, "sha512-akx5WBKAwMSg36qoHTuMMVncHWctlaDGslJASDYAhoLrzDUDCjZlOngNa/iC6lPm9aA0qk8pN5KnpmbJHSIIQQ=="],
+
+    "http-errors": ["http-errors@1.3.1", "", { "dependencies": { "inherits": "~2.0.1", "statuses": "1" } }, "sha512-gMygNskMurDCWfoCdyh1gOeDfSbkAHXqz94QoPj5IHIUjC/BG8/xv7FSEUr7waR5RcAya4j58bft9Wu/wHNeXA=="],
+
+    "inherits": ["inherits@2.0.4", "", {}, "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ=="],
+
+    "mime": ["mime@1.3.4", "", { "bin": { "mime": "cli.js" } }, "sha512-sAaYXszED5ALBt665F0wMQCUXpGuZsGdopoqcHPdL39ZYdi7uHoZlhrfZfhv8WzivhBzr/oXwaj+yiK5wY8MXQ=="],
+
+    "minimist": ["minimist@0.0.8", "", {}, "sha512-miQKw5Hv4NS1Psg2517mV4e4dYNaO3++hjAvLOAzKqZ61rH8NS1SK+vbfBWZ5PY/Me/bEWhUwqMghEW5Fb9T7Q=="],
+
+    "ms": ["ms@2.1.3", "", {}, "sha512-6FlzubTLZG3J2a/NVCAleEhjzq5oxgHyaCU9yYXvcLsvoVaHJq/s5xXI6/XXP6tz7R9xAOtHnSO/tXtF3WRTlA=="],
+
+    "my-mkdirp": ["mkdirp@0.5.1", "", { "dependencies": { "minimist": "0.0.8" }, "bin": { "mkdirp": "bin/cmd.js" } }, "sha512-SknJC52obPfGQPnjIkXbmA6+5H15E+fR+E4iR2oQ3zzCLbd7/ONua69R/Gw7AgkTLsRG+r5fzksYwWe1AgTyWA=="],
+
+    "on-finished": ["on-finished@2.3.0", "", { "dependencies": { "ee-first": "1.1.1" } }, "sha512-ikqdkGAAyf/X/gPhXGvfgAytDZtDbr+bkNUJ0N9h5MI/dmdgCs3l6hoHrcUv41sRKew3jIwrp4qQDXiK99Utww=="],
+
+    "range-parser": ["range-parser@1.0.3", "", {}, "sha512-nDsRrtIxVUO5opg/A8T2S3ebULVIfuh8ECbh4w3N4mWxIiT3QILDJDUQayPqm2e8Q8NUa0RSUkGCfe33AfjR3Q=="],
+
+    "send": ["send@0.13.0", "", { "dependencies": { "debug": "~2.2.0", "depd": "~1.0.1", "destroy": "1.0.3", "escape-html": "1.0.2", "etag": "~1.7.0", "fresh": "0.3.0", "http-errors": "~1.3.1", "mime": "1.3.4", "ms": "0.7.1", "on-finished": "~2.3.0", "range-parser": "~1.0.2", "statuses": "~1.2.1" } }, "sha512-zck2y84i0SbUUiwq2l5gGPNVpCplL48og5xIhFjNjQa09003YCTy6Vb3rKfVuG8W8PWNUtUOntjQEBdwkJ9oBw=="],
+
+    "statuses": ["statuses@1.2.1", "", {}, "sha512-pVEuxHdSGrt8QmQ3LOZXLhSA6MP/iPqKzZeO6Squ7PNGkA/9MBsSfV0/L+bIxkoDmjF4tZcLpcVq/fkqoHvuKg=="],
+
+    "debug/ms": ["ms@0.7.1", "", {}, "sha512-lRLiIR9fSNpnP6TC4v8+4OU7oStC01esuNowdQ34L+Gk8e5Puoc88IqJ+XAY/B3Mn2ZKis8l8HX90oU8ivzUHg=="],
+
+    "send/ms": ["ms@0.7.1", "", {}, "sha512-lRLiIR9fSNpnP6TC4v8+4OU7oStC01esuNowdQ34L+Gk8e5Puoc88IqJ+XAY/B3Mn2ZKis8l8HX90oU8ivzUHg=="],
+  }
+}
