@@ -125,6 +125,8 @@ type ScanOptions struct {
 	IncludeDevDeps      bool
 	Distro              types.OS // Forced OS
 	VulnSeveritySources []dbTypes.SourceID
+	CacheDir            string // Cache directory holding the local databases
+	IsRemote            bool   // Client/server mode
 }
 
 // ScanResponse represents the response from the scan service
