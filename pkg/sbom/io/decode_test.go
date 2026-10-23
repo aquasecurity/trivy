@@ -406,3 +406,34 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 		})
 	}
 }
+
+func TestDecoder_Decode_RepositoryClass(t *testing.T) {
+	bom := core.NewBOM(core.Options{})
+	bom.SerialNumber = "test-repository-class"
+	bom.Version = 1
+	bom.AddComponent(&core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "docker-ce",
+		Version: "5:27.3.1-1~debian.12~bookworm",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeDebian,
+				Namespace: "debian",
+				Name:      "docker-ce",
+				Version:   "5:27.3.1-1~debian.12~bookworm",
+			},
+		},
+		Properties: []core.Property{
+			{Name: core.PropertyPkgType, Value: "debian"},
+			{Name: core.PropertyRepositoryClass, Value: "third-party"},
+		},
+	})
+
+	var gotSBOM types.SBOM
+	require.NoError(t, sbomio.NewDecoder(bom).Decode(t.Context(), &gotSBOM))
+
+	require.Len(t, gotSBOM.Packages, 1)
+	require.Len(t, gotSBOM.Packages[0].Packages, 1)
+	assert.Equal(t, ftypes.PackageRepository{Class: ftypes.RepositoryClassThirdParty},
+		gotSBOM.Packages[0].Packages[0].Repository)
+}
