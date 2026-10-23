@@ -37,7 +37,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 // Taken from Yarn
 // cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12
@@ -177,6 +177,11 @@ func (a yarnAnalyzer) analyzeDependencies(fsys fs.FS, dir string, app *types.App
 	pkgs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
+	// Register local packages before resolving references between them.
+	pkgs[root.ID] = root.Package
+	for _, workspace := range workspaces {
+		pkgs[workspace.ID] = workspace.Package
+	}
 
 	if err := a.resolveRootDependencies(&root, pkgs, patterns); err != nil {
 		return xerrors.Errorf("unable to resolve root dependencies: %w", err)
@@ -232,6 +237,7 @@ func (a yarnAnalyzer) resolveRootDependencies(root *packagejson.Package, pkgs ma
 
 	// Add root package to the package map
 	slices.Sort(root.Package.DependsOn)
+	root.Package.DependsOn = slices.Compact(root.Package.DependsOn)
 	pkgs[root.Package.ID] = root.Package
 
 	return nil
@@ -250,6 +256,7 @@ func (a yarnAnalyzer) resolveWorkspaceDependencies(workspaces []packagejson.Pack
 
 		// Add workspace to the package map
 		slices.Sort(workspace.Package.DependsOn)
+		workspace.Package.DependsOn = slices.Compact(workspace.Package.DependsOn)
 		pkgs[workspace.ID] = workspace.Package
 	}
 
@@ -285,6 +292,29 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 	for _, pkg := range pkgs {
 		constraint, ok := directDeps[pkg.Name]
 		if !ok {
+			continue
+		}
+
+		local := pkg.Relationship == types.RelationshipRoot || pkg.Relationship == types.RelationshipWorkspace
+		workspaceRef := strings.HasPrefix(constraint, "workspace:")
+		if workspaceRef && !local {
+			continue // A workspace reference must not match a registry package with the same name.
+		}
+		if local {
+			if !workspaceRef {
+				if pkg.Version == "" {
+					continue
+				}
+				match, err := a.comparer.MatchVersion(pkg.Version, constraint)
+				if err != nil || !match {
+					// Aliases, tags and other external references are resolved against
+					// lockfile packages rather than local workspace versions.
+					continue
+				}
+			}
+			// Resolve each local package from its own manifest. Its DependsOn also
+			// contains dev dependencies, which must not be promoted by a consumer.
+			parent.DependsOn = append(parent.DependsOn, pkg.ID)
 			continue
 		}
 
@@ -338,7 +368,7 @@ func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgs map[strin
 		}
 
 		dep, ok := pkgs[pkgID]
-		if !ok {
+		if !ok || dep.Relationship == types.RelationshipRoot || dep.Relationship == types.RelationshipWorkspace {
 			continue
 		}
 

@@ -1,0 +1,5 @@
+# yarn lockfile v1
+
+minimist@1.2.5:
+  version "1.2.5"
+  resolved "https://registry.yarnpkg.com/minimist/-/minimist-1.2.5.tgz"
