@@ -18,17 +18,19 @@ var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
 
 func init() {
 	library.RegisterSupplier(echoSupplier{
-		pipComparer: pep440.NewComparer(pep440.AllowLocalSpecifier()),
-		npmComparer: npm.NewComparer(npm.WithBuildMetadata()),
+		pipComparer:   pep440.NewComparer(pep440.AllowLocalSpecifier()),
+		npmComparer:   npm.NewComparer(npm.WithBuildMetadata()),
+		nugetComparer: compare.NewGenericComparer(compare.WithBuildMetadata()),
 	})
 }
 
 // echoSupplier matches language packages patched by Echo.
-// Echo provides patched versions of Python (pip), Java (maven), and JavaScript
-// (npm) packages identified by a "+echo.N" version segment.
+// Echo provides patched versions of Python (pip), Java (maven), JavaScript
+// (npm), and .NET (NuGet) packages identified by a "+echo.N" version segment.
 type echoSupplier struct {
-	pipComparer compare.Comparer
-	npmComparer compare.Comparer
+	pipComparer   compare.Comparer
+	npmComparer   compare.Comparer
+	nugetComparer compare.Comparer
 }
 
 func (echoSupplier) Name() string {
@@ -40,7 +42,7 @@ func (echoSupplier) Name() string {
 // string, where N is a numeric revision (e.g. "2.14.2+echo.1" or "2.14.2+echo.1.post1").
 func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchResult {
 	switch eco {
-	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm:
+	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm, ecosystem.NuGet:
 	default:
 		return library.NoMatch
 	}
@@ -56,8 +58,8 @@ func (e echoSupplier) BucketPrefix(eco ecosystem.Type) string {
 }
 
 // Comparer returns a version comparer for the given ecosystem.
-// pip and npm get comparers that keep the "+echo.N" suffix significant, since
-// PEP 440 local versions and SemVer build metadata are otherwise ignored;
+// pip, npm and NuGet get comparers that keep the "+echo.N" suffix significant,
+// since PEP 440 local versions and SemVer build metadata are otherwise ignored;
 // Maven's default comparer already orders it correctly.
 func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	switch eco {
@@ -65,6 +67,8 @@ func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Compa
 		return e.pipComparer
 	case ecosystem.Npm:
 		return e.npmComparer
+	case ecosystem.NuGet:
+		return e.nugetComparer
 	default:
 		return defaultComparer
 	}
