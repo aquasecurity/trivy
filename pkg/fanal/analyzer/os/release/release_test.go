@@ -2,13 +2,19 @@ package release
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+	"golang.org/x/sync/errgroup"
+	"golang.org/x/sync/semaphore"
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
+
+	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os/debian"
 )
 
 func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
@@ -36,6 +42,16 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 				OS: types.OS{
 					Family: types.Fedora,
 					Name:   "42",
+				},
+			},
+		},
+		{
+			name:      "Ubuntu",
+			inputFile: "testdata/ubuntu",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.Ubuntu,
+					Name:   "26.10",
 				},
 			},
 		},
@@ -307,5 +323,37 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, res)
 		})
+	}
+}
+
+func TestUbuntuWithDebianVersion(t *testing.T) {
+	osRelease, err := os.ReadFile("testdata/ubuntu")
+	require.NoError(t, err)
+	info, err := os.Stat("testdata/ubuntu")
+	require.NoError(t, err)
+	group, err := analyzer.NewAnalyzerGroup(analyzer.AnalyzerOptions{})
+	require.NoError(t, err)
+
+	for _, path := range []string{"etc/os-release", "usr/lib/os-release"} {
+		files := map[string]string{
+			path:                 string(osRelease),
+			"etc/debian_version": "forky/sid\n",
+		}
+		for _, paths := range [][]string{{path, "etc/debian_version"}, {"etc/debian_version", path}} {
+			t.Run(strings.Join(paths, ","), func(t *testing.T) {
+				result := new(analyzer.AnalysisResult)
+				for _, filePath := range paths {
+					eg, ctx := errgroup.WithContext(t.Context())
+					err := group.AnalyzeFile(ctx, eg, semaphore.NewWeighted(1), result, "", filePath, info,
+						func() (xio.ReadSeekCloserAt, error) {
+							return xio.NopCloser(strings.NewReader(files[filePath])), nil
+						}, nil, analyzer.AnalysisOptions{})
+					require.NoError(t, err)
+					// Complete each file's analysis to exercise both merge orders.
+					require.NoError(t, eg.Wait())
+				}
+				assert.Equal(t, types.OS{Family: types.Ubuntu, Name: "26.10"}, result.OS)
+			})
+		}
 	}
 }
