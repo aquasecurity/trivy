@@ -71,6 +71,8 @@ type CryptoKeystoreType string
 const (
 	// CryptoKeystorePKCS12 identifies a PKCS#12 keystore.
 	CryptoKeystorePKCS12 CryptoKeystoreType = "PKCS#12"
+	// CryptoKeystoreJKS identifies a JKS keystore.
+	CryptoKeystoreJKS CryptoKeystoreType = "JKS"
 )
 
 // CryptoAssetInfo describes a format-neutral cryptographic asset. Its identity is derived
@@ -264,7 +266,7 @@ func (a CryptoAsset) Validate() error {
 	}
 
 	switch a.Keystore {
-	case "", CryptoKeystorePKCS12:
+	case "", CryptoKeystorePKCS12, CryptoKeystoreJKS:
 	default:
 		return xerrors.Errorf("unknown keystore type %q", a.Keystore)
 	}
