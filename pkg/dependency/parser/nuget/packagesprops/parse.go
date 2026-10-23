@@ -44,12 +44,37 @@ func (p Pkg) Package() ftypes.Package {
 	}
 
 	name = strings.TrimSpace(name)
-	version := strings.TrimSpace(p.Version)
+	version := exactVersion(strings.TrimSpace(p.Version))
 	return ftypes.Package{
 		ID:      dependency.ID(ftypes.NuGet, name, version),
 		Name:    name,
 		Version: version,
 	}
+}
+
+// exactVersion returns the version a NuGet range pins exactly: "[4.7.0]" and "[4.7.0, 4.7.0]" give "4.7.0".
+// Any other value, including ranges, floating versions and malformed brackets, is returned as is.
+// https://learn.microsoft.com/en-us/nuget/concepts/package-versioning#version-ranges
+func exactVersion(version string) string {
+	inner, ok := strings.CutPrefix(version, "[")
+	if !ok {
+		return version
+	}
+	if inner, ok = strings.CutSuffix(inner, "]"); !ok {
+		return version
+	}
+	if lower, upper, found := strings.Cut(inner, ","); found {
+		if lower, upper = strings.TrimSpace(lower), strings.TrimSpace(upper); lower != upper {
+			return version
+		}
+		inner = lower
+	}
+	inner = strings.TrimSpace(inner)
+	// A variable such as "[$(Version)]" is unwrapped too, so that it is skipped like an unbracketed one.
+	if inner == "" || strings.ContainsAny(inner, "[],*") || strings.ContainsAny(inner, "()") && !isVariable(inner) {
+		return version
+	}
+	return inner
 }
 
 func shouldSkipPkg(pkg ftypes.Package) bool {
