@@ -85,6 +85,8 @@ func idToOSFamily(id string) types.OSType {
 		return types.Fedora
 	case "alpine":
 		return types.Alpine
+	case "ubuntu":
+		return types.Ubuntu
 	case "bottlerocket":
 		return types.Bottlerocket
 	case "opensuse-tumbleweed":
