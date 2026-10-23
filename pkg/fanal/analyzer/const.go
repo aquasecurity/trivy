@@ -67,6 +67,7 @@ const (
 	// Node.js
 	TypeNpmPkgLock Type = "npm"
 	TypeNodePkg    Type = "node-pkg"
+	TypeNode       Type = "node"
 	TypeYarn       Type = "yarn"
 	TypePnpm       Type = "pnpm"
 	TypeBun        Type = "bun"
@@ -207,6 +208,7 @@ var (
 		TypeSbtLock,
 		TypeNpmPkgLock,
 		TypeNodePkg,
+		TypeNode,
 		TypeYarn,
 		TypePnpm,
 		TypeBun,
@@ -263,6 +265,7 @@ var (
 	TypeIndividualPkgs = []Type{
 		TypeGemSpec,
 		TypeNodePkg,
+		TypeNode,
 		TypeCondaPkg,
 		TypePythonPkg,
 		TypeGoBinary,
