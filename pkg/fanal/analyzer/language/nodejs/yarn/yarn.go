@@ -19,6 +19,7 @@ import (
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
 
+	npmversion "github.com/aquasecurity/go-npm-version/pkg"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/yarn"
@@ -37,7 +38,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 // Taken from Yarn
 // cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12
@@ -288,20 +289,35 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 			continue
 		}
 
-		// Handle aliases
-		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
-		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
-			pkg.Name = m[2] // original name
-			constraint = m[4]
+		protocol, fragment, hasProtocol := strings.Cut(constraint, ":")
+		if protocol == "workspace" && hasProtocol {
+			// Workspace references only add an edge to an existing workspace.
+			if pkg.Relationship == types.RelationshipWorkspace {
+				parent.DependsOn = append(parent.DependsOn, pkg.ID)
+			}
+			continue
+		}
+		if hasProtocol && protocol != "npm" && protocol != "yarn" {
+			continue
+		}
+
+		// The lockfile parser strips the registry protocol from patterns.
+		pattern := dependency.ID(types.Yarn, pkg.Name, constraint)
+		if hasProtocol {
+			pattern = dependency.ID(types.Yarn, pkg.Name, fragment)
+			pkg.Name, constraint = parseRegistryRange(pkg.Name, constraint)
 		}
 
 		// Try to find an exact match to the pattern.
 		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
 		// Therefore, if the patterns don't match - compare versions.
-		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
+		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, pattern) &&
+			!slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
 			// npm has own comparer to compare versions
 			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return xerrors.Errorf("unable to match version for %s", pkg.Name)
+				a.logger.Debug("Unable to match dependency version",
+					log.String("package", pkg.Name), log.String("constraint", constraint), log.Err(err))
+				continue
 			} else if !match {
 				continue
 			}
@@ -329,6 +345,28 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 	}
 
 	return nil
+}
+
+// parseRegistryRange handles npm/yarn aliases and explicit npm version ranges.
+func parseRegistryRange(name, constraint string) (string, string) {
+	m := fragmentRegexp.FindStringSubmatch(constraint)
+	if len(m) != 5 {
+		return name, constraint
+	}
+
+	// Berry remaps require a range, including for scoped package names.
+	if m[3] != "" {
+		return m[2], cmp.Or(m[4], "latest")
+	}
+	protocol, fragment, _ := strings.Cut(constraint, ":")
+	if protocol == "npm" {
+		if _, err := npmversion.NewConstraints(fragment); err == nil {
+			return name, fragment
+		}
+	}
+
+	// Keep Yarn v1's bare-name alias semantics when no range is provided.
+	return m[2], "latest"
 }
 
 func (a yarnAnalyzer) walkIndirectDependencies(pkg types.Package, pkgs map[string]types.Package, seenIDs set.Set[string]) {
