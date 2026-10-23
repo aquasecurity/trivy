@@ -95,6 +95,46 @@ wPyCQoe49bPiUWB8/x06gL27PLIqu2ZglEe/VC6SRV+0yHcrlalqxtq7s67IbH2k
 -----END CERTIFICATE-----
 `
 
+// The P-192 fixtures are a self-signed certificate and its key in every form the parser
+// reads. crypto/x509 does not support P-192, so they come from OpenSSL:
+//
+//	docker run --rm alpine:3.22 sh -c '
+//	  apk add -q openssl &&
+//	  openssl req -x509 -newkey ec -pkeyopt ec_paramgen_curve:P-192 -nodes -keyout key.pem -subj /CN=p192 -days 36500 &&
+//	  cat key.pem &&
+//	  openssl ec -in key.pem &&
+//	  openssl pkey -in key.pem -pubout'
+const (
+	p192CertificatePEM = `-----BEGIN CERTIFICATE-----
+MIIBVTCCAQugAwIBAgIUYOyOWGD1O9UuPc8l8IFxG8v67NEwCgYIKoZIzj0EAwIw
+DzENMAsGA1UEAwwEcDE5MjAgFw0yNjEwMTYxMjQ5MTNaGA8yMTI2MDkyMjEyNDkx
+M1owDzENMAsGA1UEAwwEcDE5MjBJMBMGByqGSM49AgEGCCqGSM49AwEBAzIABBYq
+XHGsm8w7kRzKfRouJTjxdzufi3eLlJChrD0hWN8VQkeSZqmnFSTPxLLDWbnGN6NT
+MFEwHQYDVR0OBBYEFPjzRjRj0sLkKoupN9gJiDZ1CLFbMB8GA1UdIwQYMBaAFPjz
+RjRj0sLkKoupN9gJiDZ1CLFbMA8GA1UdEwEB/wQFMAMBAf8wCgYIKoZIzj0EAwID
+OAAwNQIZAO/H03Gm8vN/34wxNd0vju0uSM+Shr7SzgIYIVZ+alM5dclVBAXpBhJX
+GKh8LkK0kF4z
+-----END CERTIFICATE-----
+`
+	p192PKCS8PrivateKeyPEM = `-----BEGIN PRIVATE KEY-----
+MG8CAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQEEVTBTAgEBBBgQW7hyOKagpDHl65RX
+R+R18SRA2nYcse6hNAMyAAQWKlxxrJvMO5Ecyn0aLiU48Xc7n4t3i5SQoaw9IVjf
+FUJHkmappxUkz8Syw1m5xjc=
+-----END PRIVATE KEY-----
+`
+	p192SEC1PrivateKeyPEM = `-----BEGIN EC PRIVATE KEY-----
+MF8CAQEEGBBbuHI4pqCkMeXrlFdH5HXxJEDadhyx7qAKBggqhkjOPQMBAaE0AzIA
+BBYqXHGsm8w7kRzKfRouJTjxdzufi3eLlJChrD0hWN8VQkeSZqmnFSTPxLLDWbnG
+Nw==
+-----END EC PRIVATE KEY-----
+`
+	p192PublicKeyPEM = `-----BEGIN PUBLIC KEY-----
+MEkwEwYHKoZIzj0CAQYIKoZIzj0DAQEDMgAEFipccaybzDuRHMp9Gi4lOPF3O5+L
+d4uUkKGsPSFY3xVCR5JmqacVJM/EssNZucY3
+-----END PUBLIC KEY-----
+`
+)
+
 // rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
 // mutate to it. Its values are not consistent with each other.
 func rsaPrivateKeyDER(t *testing.T, mutate func(*cryptox509.PKCS1PrivateKey)) []byte {
@@ -661,6 +701,25 @@ func TestParseAssets(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveUnknown,
 		},
 	}
+	p192Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method:     ftypes.CryptoMethodOID,
+			Value:      "1.2.840.10045.2.1",
+			Parameters: "curve=P-192",
+		},
+		Name: "EC-P-192",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+	var p192Certificate struct {
+		TBSCertificate asn1.RawValue
+	}
+	_, err := asn1.Unmarshal(decodePEM(t, p192CertificatePEM), &p192Certificate)
+	require.NoError(t, err)
+	p192UnsignedCertificate, err := asn1.Marshal(p192Certificate)
+	require.NoError(t, err)
 	ecSignatureAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
@@ -1123,6 +1182,119 @@ func TestParseAssets(t *testing.T) {
 				at(x25519CertificateKey),
 				at(x25519Algorithm),
 			},
+		},
+		{
+			// crypto/x509 does not support P-192, so only the algorithm of the key is described.
+			name:  "P-192 certificate PEM",
+			input: []byte(p192CertificatePEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 certificate DER",
+			input: decodePEM(t, p192CertificatePEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 public key",
+			input: []byte(p192PublicKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 PKCS#8 private key",
+			input: []byte(p192PKCS8PrivateKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 SEC 1 private key PEM",
+			input: []byte(p192SEC1PrivateKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 SEC 1 private key DER",
+			input: decodePEM(t, p192SEC1PrivateKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			// The algorithm is reported once per file.
+			name:  "P-192 certificate and keys",
+			input: []byte(p192CertificatePEM + p192PublicKeyPEM + p192PKCS8PrivateKeyPEM + p192SEC1PrivateKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 public key DER",
+			input: decodePEM(t, p192PublicKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name:  "P-192 PKCS#8 private key DER",
+			input: decodePEM(t, p192PKCS8PrivateKeyPEM),
+			want:  []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name: "P-192 public key with a compressed point",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:  "PUBLIC KEY",
+				Bytes: p192PublicKeyDER(t, append([]byte{2}, make([]byte, 24)...)),
+			}),
+			want: []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name: "P-192 public key with a short point",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type:  "PUBLIC KEY",
+				Bytes: p192PublicKeyDER(t, []byte{4, 1, 2}),
+			}),
+		},
+		{
+			name:  "P-192 certificate without a signature",
+			input: pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: p192UnsignedCertificate}),
+		},
+		{
+			name: "P-192 SEC 1 private key without a curve",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "EC PRIVATE KEY",
+				Bytes: p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.NamedCurveOID = nil
+				}),
+			}),
+		},
+		{
+			name: "P-192 SEC 1 private key longer than 24 bytes",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "EC PRIVATE KEY",
+				Bytes: p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.PrivateKey = make([]byte, 25)
+				}),
+			}),
+		},
+		{
+			name: "P-192 SEC 1 private key of version 2",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "EC PRIVATE KEY",
+				Bytes: p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.Version = 2
+				}),
+			}),
+		},
+		{
+			// PKCS#8 names the curve in its algorithm, so the inner key may omit it.
+			name: "P-192 PKCS#8 private key without a curve in SEC 1",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "PRIVATE KEY",
+				Bytes: p192PKCS8PrivateKeyDER(t, p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.NamedCurveOID = nil
+				})),
+			}),
+			want: []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name: "P-192 PKCS#8 private key with P-256 in SEC 1",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "PRIVATE KEY",
+				Bytes: p192PKCS8PrivateKeyDER(t, p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.NamedCurveOID = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 7}
+				})),
+			}),
 		},
 		{
 			// The key of a certificate and the same key on its own share an identity.
@@ -1757,11 +1929,71 @@ func newCertificate(t *testing.T, template *stdx509.Certificate, key stdcrypto.S
 func parseCertificatePEM(t *testing.T, content string) *stdx509.Certificate {
 	t.Helper()
 
-	block, _ := pem.Decode([]byte(content))
-	require.NotNil(t, block)
-	certificate, err := stdx509.ParseCertificate(block.Bytes)
+	certificate, err := stdx509.ParseCertificate(decodePEM(t, content))
 	require.NoError(t, err)
 	return certificate
+}
+
+// decodePEM returns the DER of the first PEM block in content.
+func decodePEM(t *testing.T, content string) []byte {
+	t.Helper()
+
+	block, _ := pem.Decode([]byte(content))
+	require.NotNil(t, block)
+	return block.Bytes
+}
+
+// p192PublicKeyDER encodes a SubjectPublicKeyInfo on P-192 with point as its public key.
+func p192PublicKeyDER(t *testing.T, point []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        p192AlgorithmIdentifier(t),
+		SubjectPublicKey: asn1.BitString{Bytes: point, BitLength: len(point) * 8},
+	})
+	require.NoError(t, err)
+	return der
+}
+
+// p192SEC1PrivateKeyDER encodes the P-192 key of the fixtures in SEC 1 after applying
+// mutate to it.
+func p192SEC1PrivateKeyDER(t *testing.T, mutate func(*cryptox509.ECPrivateKey)) []byte {
+	t.Helper()
+
+	var key cryptox509.ECPrivateKey
+	_, err := asn1.Unmarshal(decodePEM(t, p192SEC1PrivateKeyPEM), &key)
+	require.NoError(t, err)
+	mutate(&key)
+	der, err := asn1.Marshal(key)
+	require.NoError(t, err)
+	return der
+}
+
+// p192PKCS8PrivateKeyDER encodes a PKCS#8 private key on P-192 that holds sec1.
+func p192PKCS8PrivateKeyDER(t *testing.T, sec1 []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(cryptox509.PKCS8PrivateKey{
+		Algo:       p192AlgorithmIdentifier(t),
+		PrivateKey: sec1,
+	})
+	require.NoError(t, err)
+	return der
+}
+
+// p192AlgorithmIdentifier returns the algorithm identifier of an EC key on P-192.
+func p192AlgorithmIdentifier(t *testing.T) pkix.AlgorithmIdentifier {
+	t.Helper()
+
+	parameters, err := asn1.Marshal(cryptox509.OIDNamedCurveP192)
+	require.NoError(t, err)
+	return pkix.AlgorithmIdentifier{
+		Algorithm:  cryptox509.OIDECPublicKey,
+		Parameters: asn1.RawValue{FullBytes: parameters},
+	}
 }
 
 // marshalSPKI encodes a SubjectPublicKeyInfo with the given algorithm OID and public key bytes.
