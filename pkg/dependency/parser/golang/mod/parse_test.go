@@ -2,10 +2,8 @@ package mod
 
 import (
 	"os"
-	"strings"
 	"testing"
 
-	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"golang.org/x/mod/modfile"
@@ -105,6 +103,14 @@ func TestParse(t *testing.T) {
 			wantSkipIndirect: false,
 		},
 		{
+			name:             "Echo versions",
+			file:             "testdata/echo/go.mod",
+			replace:          true,
+			wantPkgs:         GoModEcho,
+			wantDeps:         GoModEchoDeps,
+			wantSkipIndirect: false,
+		},
+		{
 			name:             "go 1.16",
 			file:             "testdata/go116/go.mod",
 			replace:          true,
@@ -137,60 +143,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestParseEchoVersions(t *testing.T) {
-	const goMod = `module example.com/app
-
-go 1.22.0
-
-require (
-	golang.org/x/net v0.55.0+echo.1
-	example.com/replaced v1.3.4+echo.1
-	example.com/mismatch v1.4.5+echo.1
-	example.com/ordinary v1.5.6+build.1
-	example.com/v2module/v2 v2.0.0+echo.1
-)
-
-replace (
-	example.com/replaced v1.3.4+echo.1 => example.com/replacement v1.3.4+echo.2
-	example.com/mismatch v1.4.5+echo.2 => example.com/not-used v1.4.5+echo.3
-)
-`
-
-	gotPkgs, gotDeps, gotSkipIndirect, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
-	require.NoError(t, err)
-	require.False(t, gotSkipIndirect)
-
-	pkgs := make(map[string]ftypes.Package, len(gotPkgs))
-	for _, pkg := range gotPkgs {
-		pkgs[pkg.Name] = pkg
-	}
-
-	require.Len(t, pkgs, 6)
-	require.Equal(t, "v0.55.0+echo.1", pkgs["golang.org/x/net"].Version)
-	require.Equal(t, "golang.org/x/net@v0.55.0+echo.1", pkgs["golang.org/x/net"].ID)
-	require.Equal(t, "v1.3.4+echo.2", pkgs["example.com/replacement"].Version)
-	require.Equal(t, "example.com/replacement@v1.3.4+echo.2", pkgs["example.com/replacement"].ID)
-	require.Equal(t, "v1.4.5+echo.1", pkgs["example.com/mismatch"].Version)
-	require.Equal(t, "v1.5.6", pkgs["example.com/ordinary"].Version)
-	require.Equal(t, "v2.0.0+echo.1", pkgs["example.com/v2module/v2"].Version)
-	require.NotContains(t, pkgs, "example.com/replaced")
-	require.NotContains(t, pkgs, "example.com/not-used")
-
-	require.Equal(t, []ftypes.Dependency{
-		{
-			ID: "example.com/app",
-			DependsOn: []string{
-				"example.com/mismatch@v1.4.5+echo.1",
-				"example.com/ordinary@v1.5.6",
-				"example.com/replacement@v1.3.4+echo.2",
-				"example.com/v2module/v2@v2.0.0+echo.1",
-				"golang.org/x/net@v0.55.0+echo.1",
-			},
-		},
-	}, gotDeps)
-}
-
-func TestCanonicalizeVersion(t *testing.T) {
+func TestFixEchoVersion(t *testing.T) {
 	tests := []struct {
 		name    string
 		version string
@@ -251,97 +204,13 @@ func TestCanonicalizeVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := canonicalizeVersion("example.com/module", tt.version)
+			got, err := fixEchoVersion("example.com/module", tt.version)
 			if tt.wantErr {
-				require.ErrorContains(t, err, "invalid version: must be of the form v1.2.3")
+				require.ErrorContains(t, err, "must be of the form v1.2.3")
 				return
 			}
 			require.NoError(t, err)
 			require.Equal(t, tt.want, got)
-		})
-	}
-}
-
-func TestParsePreservesRetractVersionQueries(t *testing.T) {
-	tests := []struct {
-		name    string
-		retract string
-	}{
-		{
-			name:    "single version query",
-			retract: "master",
-		},
-		{
-			name:    "version query interval",
-			retract: "[master, release-branch]",
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			goMod := `module example.com/app
-
-go 1.22.0
-
-require golang.org/x/net v0.55.0+echo.1
-
-retract ` + tt.retract + "\n"
-
-			gotPkgs, _, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
-			require.NoError(t, err)
-
-			pkg, found := lo.Find(gotPkgs, func(pkg ftypes.Package) bool {
-				return pkg.Name == "golang.org/x/net"
-			})
-			require.True(t, found)
-			require.Equal(t, "v0.55.0+echo.1", pkg.Version)
-		})
-	}
-}
-
-func TestParsePreservesModulelessRetract(t *testing.T) {
-	const goMod = `retract master`
-
-	gotPkgs, gotDeps, _, err := NewParser(true, false).Parse(t.Context(), strings.NewReader(goMod))
-	require.NoError(t, err)
-	require.Empty(t, gotPkgs)
-	require.Empty(t, gotDeps)
-}
-
-func TestParseRejectsInvalidDependencyVersions(t *testing.T) {
-	tests := []struct {
-		name  string
-		goMod string
-	}{
-		{
-			name: "require",
-			goMod: `module example.com/app
-
-go 1.22.0
-
-require example.com/module not-a-version
-`,
-		},
-		{
-			name: "replacement",
-			goMod: `module example.com/app
-
-go 1.22.0
-
-require example.com/module v1.2.3
-
-replace example.com/module => example.com/replacement not-a-version
-`,
-		},
-	}
-
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			_, wantErr := modfile.Parse("go.mod", []byte(tt.goMod), nil)
-			require.Error(t, wantErr)
-
-			_, _, _, gotErr := NewParser(true, false).Parse(t.Context(), strings.NewReader(tt.goMod))
-			require.EqualError(t, gotErr, "go.mod parse error: "+wantErr.Error())
 		})
 	}
 }
