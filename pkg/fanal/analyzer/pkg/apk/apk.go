@@ -27,7 +27,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 3
+const analyzerVersion = 4
 
 var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 
@@ -134,12 +134,13 @@ func (a alpinePkgAnalyzer) parseApkInfo(ctx context.Context, scanner *bufio.Scan
 }
 
 func (a alpinePkgAnalyzer) trimRequirement(s string) string {
-	// Trim version requirements
-	// e.g.
+	// Trim version requirements. In apk, a dependency name ends at the first
+	// comparer character (<, =, >, ~), e.g.
 	//   so:libssl.so.1.1=1.1 => so:libssl.so.1.1
 	//   musl>=1.2 => musl
-	if strings.ContainsAny(s, "<>=") {
-		s = s[:strings.IndexAny(s, "><=")]
+	//   python3~3.12 => python3
+	if strings.ContainsAny(s, "<>=~") {
+		s = s[:strings.IndexAny(s, "><=~")]
 	}
 	return s
 }

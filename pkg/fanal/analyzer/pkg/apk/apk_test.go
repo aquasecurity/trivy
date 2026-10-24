@@ -465,6 +465,31 @@ func TestParseApkInfo(t *testing.T) {
 	}
 }
 
+func TestTrimRequirement(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{name: "plain name", input: "musl", want: "musl"},
+		{name: "shared lib with pinned version", input: "so:libssl.so.1.1=1.1", want: "so:libssl.so.1.1"},
+		{name: "greater or equal", input: "musl>=1.2", want: "musl"},
+		{name: "less than", input: "musl<1.2", want: "musl"},
+		{name: "fuzzy version", input: "python3~3.12", want: "python3"},
+		{name: "fuzzy greater", input: "python3>~3.12", want: "python3"},
+		{name: "fuzzy less", input: "python3<~3.12", want: "python3"},
+		{name: "version range", input: "python3><3.12", want: "python3"},
+		{name: "exact version", input: "musl=1.2.5-r0", want: "musl"},
+	}
+
+	a := alpinePkgAnalyzer{}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, a.trimRequirement(tt.input))
+		})
+	}
+}
+
 func TestRequired(t *testing.T) {
 	tests := []struct {
 		name     string
