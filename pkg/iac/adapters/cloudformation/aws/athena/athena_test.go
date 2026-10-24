@@ -25,7 +25,8 @@ Resources:
       WorkGroupConfiguration:
         EnforceWorkGroupConfiguration: true
         ResultConfiguration:
-          EncryptionOption: SSE_KMS
+          EncryptionConfiguration:
+            EncryptionOption: SSE_KMS
 `,
 			expected: athena.Athena{
 				Workgroups: []athena.Workgroup{
