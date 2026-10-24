@@ -1,8 +1,8 @@
 package mod
 
 import (
+	"bytes"
 	"context"
-	"errors"
 	"fmt"
 	goversion "go/version"
 	"io"
@@ -199,60 +199,38 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, skipIndirect, nil
 }
 
-// parseModFile preserves the existing parser behavior for non-Echo input.
-//
-// A non-nil VersionFixer is also applied to retract directives, where x/mod
-// deliberately permits version queries that are not semantic versions. Try the
-// strict Echo-aware parse first so valid files take the normal single-pass path.
-// If it fails, use the default parser to distinguish a dependency error from a
-// tolerated retract query, then retry with a fixer that leaves such queries
-// unchanged.
+// parseModFile parses go.mod and keeps Echo versions (e.g. v0.55.0+echo.1),
+// which modfile.Parse otherwise strips as build metadata.
 func parseModFile(data []byte) (*modfile.File, error) {
-	parsed, err := modfile.Parse("go.mod", data, canonicalizeVersion)
-	if err == nil {
-		return parsed, nil
+	f, err := modfile.Parse("go.mod", data, nil)
+	// The default parse validates every version, so its error is returned as is.
+	// Only files with Echo versions need the second parse below.
+	if err != nil || !bytes.Contains(data, []byte("+echo.")) {
+		return f, err
 	}
 
-	baseline, baselineErr := modfile.Parse("go.mod", data, nil)
-	if baselineErr != nil {
-		return nil, baselineErr
+	// A VersionFixer also applies to retract directives, which Trivy doesn't use
+	// and which may contain version queries, so blank them out before re-parsing.
+	data = bytes.Clone(data)
+	for _, r := range f.Retract {
+		for i := r.Syntax.Start.Byte; i < r.Syntax.End.Byte; i++ {
+			data[i] = ' '
+		}
 	}
-
-	// x/mod can't apply any VersionFixer to retractions without a module path.
-	// Keep the previous result for this already non-standard file shape.
-	if baseline.Module == nil && len(baseline.Retract) != 0 {
-		return baseline, nil
-	}
-
-	return modfile.Parse("go.mod", data, canonicalizeVersionOrKeep)
+	return modfile.Parse("go.mod", data, fixEchoVersion)
 }
 
-// canonicalizeVersion preserves valid Echo versions and applies the standard Go
-// module canonicalization to every other version.
-func canonicalizeVersion(path, version string) (string, error) {
+// fixEchoVersion keeps Echo versions and canonicalizes all others,
+// matching what modfile.Parse does with a nil VersionFixer.
+func fixEchoVersion(path, version string) (string, error) {
 	if echoVersionSuffixRe.MatchString(version) && semver.IsValid(version) {
 		return version, nil
 	}
 
-	canonical := module.CanonicalVersion(version)
-	if canonical == "" {
-		return "", module.VersionError(module.Version{Path: path, Version: version}, &module.InvalidVersionError{
-			Version: version,
-			Err:     errors.New("must be of the form v1.2.3"),
-		})
+	if canonical := module.CanonicalVersion(version); canonical != "" {
+		return canonical, nil
 	}
-	return canonical, nil
-}
-
-// canonicalizeVersionOrKeep is used only after the default parser has validated
-// all dependency versions. An unrecognized version can therefore be retained as
-// a retract query, matching the behavior of modfile.Parse with a nil fixer.
-func canonicalizeVersionOrKeep(path, version string) (string, error) {
-	canonical, err := canonicalizeVersion(path, version)
-	if err != nil {
-		return version, nil
-	}
-	return canonical, nil
+	return "", xerrors.Errorf("invalid version %q of %s: must be of the form v1.2.3", version, path)
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
