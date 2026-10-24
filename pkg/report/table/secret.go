@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -126,15 +127,9 @@ func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) 
 			offsetInfo = tml.Sprintf(" <dim>(offset: </dim><cyan>%d<dim> bytes)</dim>", secret.Offset)
 		}
 
-		var note string
-		if c := secret.Layer.CreatedBy; c != "" {
-			if len(c) > 40 {
-				// Too long
-				c = c[:40]
-			}
-			note = fmt.Sprintf(" (added by '%s')", c)
-		} else if secret.Layer.DiffID != "" {
-			note = fmt.Sprintf(" (added in layer '%s')", strings.TrimPrefix(secret.Layer.DiffID, "sha256:")[:12])
+		note := layerNote("added", secret.Layer)
+		if secret.DeletedIn != nil {
+			note += layerNote("deleted", *secret.DeletedIn)
 		}
 		r.printf(" <blue>%s%s%s<magenta>%s\r\n", target, lineInfo, offsetInfo, note)
 		r.printSingleDivider()
@@ -166,4 +161,19 @@ func (r *secretRenderer) renderCode(target string, secret types.DetectedSecret) 
 		}
 		r.printSingleDivider()
 	}
+}
+
+// layerNote describes the layer that added or deleted the file, e.g. " (added by 'COPY foo /foo')"
+func layerNote(action string, layer ftypes.Layer) string {
+	if c := layer.CreatedBy; c != "" {
+		if len(c) > 40 {
+			// Too long
+			c = c[:40]
+		}
+		return fmt.Sprintf(" (%s by '%s')", action, c)
+	}
+	if layer.DiffID != "" {
+		return fmt.Sprintf(" (%s in layer '%s')", action, strings.TrimPrefix(layer.DiffID, "sha256:")[:12])
+	}
+	return ""
 }

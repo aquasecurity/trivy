@@ -242,6 +242,7 @@ message SecretFinding {
   string match = 8;
   Layer layer = 10;
   int32 offset = 11;
+  Layer deleted_in = 12;
 
   reserved 9; // deprecated 'deleted'
 }
