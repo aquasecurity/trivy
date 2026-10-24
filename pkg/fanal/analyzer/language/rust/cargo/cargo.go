@@ -110,7 +110,7 @@ func (a cargoAnalyzer) parseCargoLock(ctx context.Context, filePath string, r io
 
 func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.Application) error {
 	cargoTOMLPath := path.Join(dir, types.CargoToml)
-	root, workspaces, directDeps, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
+	root, workspaces, owners, err := a.parseRootCargoTOML(fsys, cargoTOMLPath)
 	if errors.Is(err, fs.ErrNotExist) {
 		a.logger.Debug("Cargo.toml not found", log.FilePath(cargoTOMLPath))
 		return nil
@@ -118,31 +118,26 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		return xerrors.Errorf("unable to parse %s: %w", cargoTOMLPath, err)
 	}
 
-	// Cargo.toml file can contain same packages with different versions.
-	// Save versions separately for version comparison by comparator
+	// Index lock packages by ID for quick lookup.
 	pkgIDs := lo.SliceToMap(app.Packages, func(pkg types.Package) (string, types.Package) {
 		return pkg.ID, pkg
 	})
 
-	// Identify direct dependencies
+	// Identify direct dependencies.
+	// The version Cargo selected is already recorded in the lock file: the root package
+	// and every workspace member list their direct dependencies (including dev/build ones)
+	// in `dependencies`, which the lock parser resolves to exact package IDs in DependsOn.
+	// So for each owner we keep the DependsOn IDs whose name is declared in that owner's
+	// [dependencies] / [target.*.dependencies]. This also covers git/path/workspace-inherited
+	// dependencies that have no version string in Cargo.toml.
 	pkgs := make(map[string]types.Package)
-	for name, constraint := range directDeps {
-		for _, pkg := range app.Packages {
-			if pkg.Name != name {
-				continue
-			}
-
-			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
-				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
-				continue
-			} else if match {
-				// Mark as a direct dependency
-				pkg.Indirect = false
-				pkg.Relationship = types.RelationshipDirect
-				pkgs[pkg.ID] = pkg
-				break
-			}
+	for _, owner := range owners {
+		ownerPkg, ok := pkgIDs[owner.id]
+		if !ok {
+			// The owner may not have a lock entry (e.g. a purely virtual workspace root).
+			continue
 		}
+		a.selectDirectDependencies(ownerPkg, owner.deps, pkgIDs, pkgs)
 	}
 
 	// Walk indirect dependencies
@@ -212,18 +207,62 @@ type cargoTomlWorkspace struct {
 
 type Dependencies map[string]any
 
-// parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
-// It also parses workspace members and their dependencies.
-func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
-	rootPkg, dependencies, members, rootWorkspaceVersion, err := a.parseCargoTOML(fsys, filePath, "")
+// cargoTOMLResult holds the parsed data of a single Cargo.toml file.
+type cargoTOMLResult struct {
+	// pkgID is the lock file package ID of the manifest's package.
+	pkgID string
+	// dependencies are the manifest's [dependencies] and [target.*.dependencies].
+	dependencies Dependencies
+	// members are the workspace member paths declared in [workspace].members.
+	members []string
+	// workspaceVersion is the effective [workspace.package] version.
+	workspaceVersion string
+	// workspaceDependencies are the [workspace.dependencies] definitions.
+	workspaceDependencies Dependencies
+}
+
+// dependencyOwner represents a package (the root package or a workspace member)
+// that declares its own direct dependencies in a Cargo.toml.
+type dependencyOwner struct {
+	// id is the lock file package ID of the owner.
+	id string
+	// deps maps a declared dependency name to its version constraint.
+	// The constraint is empty when the dependency has no version string
+	// (git/path/workspace-inherited dependencies).
+	deps map[string]string
+}
+
+// parseRootCargoTOML parses top-level Cargo.toml and returns the root package ID,
+// the workspace member package IDs, and the list of dependency owners (the root
+// package plus each workspace member) with the dependency names each one declares.
+func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, []dependencyOwner, error) {
+	root, err := a.parseCargoTOML(fsys, filePath, "")
 	if err != nil {
 		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
 	}
+	rootPkg := root.pkgID
+
+	var owners []dependencyOwner
+	// The root package declares its own dependencies (single-crate projects and
+	// projects that are both a package and a workspace root).
+	// The root also owns [workspace.dependencies]: unlike members, the workspace root
+	// itself may use them directly, and the lock file already restricts the root's
+	// DependsOn to the crates it actually pulls in.
+	rootDeclared := resolveDeclaredDeps(root.dependencies, root.workspaceDependencies)
+	for name, value := range root.workspaceDependencies {
+		if _, ok := rootDeclared[name]; !ok {
+			rootDeclared[name] = workspaceConstraint(value)
+		}
+	}
+	owners = append(owners, dependencyOwner{
+		id:   rootPkg,
+		deps: rootDeclared,
+	})
 
 	// According to Cargo workspace RFC, workspaces can't be nested:
 	// https://github.com/nox/rust-rfcs/blob/master/text/1525-cargo-workspace.md#validating-a-workspace
 	var workspaces []string
-	for _, member := range members {
+	for _, member := range root.members {
 		memberPath := path.Join(path.Dir(filePath), member, types.CargoToml)
 
 		// Cargo workspaces can be globs:
@@ -240,19 +279,28 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 		}
 
 		for _, pkg := range resolvedPaths {
-			memberPkg, memberDeps, _, _, err := a.parseCargoTOML(fsys, pkg, rootWorkspaceVersion)
+			member, err := a.parseCargoTOML(fsys, pkg, root.workspaceVersion)
 			if err != nil {
 				a.logger.Warn("Unable to parse Cargo.toml", log.String("member_path", pkg), log.Err(err))
 				continue
 			}
-			workspaces = append(workspaces, memberPkg)
-
-			// Member dependencies shouldn't overwrite dependencies from root cargo.toml file
-			maps.Copy(memberDeps, dependencies)
-			dependencies = memberDeps
+			workspaces = append(workspaces, member.pkgID)
+			owners = append(owners, dependencyOwner{
+				id:   member.pkgID,
+				deps: resolveDeclaredDeps(member.dependencies, root.workspaceDependencies),
+			})
 		}
 	}
 
+	return rootPkg, workspaces, owners, nil
+}
+
+// resolveDeclaredDeps turns the raw [dependencies] / [target.*.dependencies] entries
+// of a single manifest into a map of dependency name -> version constraint.
+// The constraint is empty when no version string is present (git/path/workspace-inherited
+// dependencies). For `name = { workspace = true }` entries, the version constraint is
+// taken from the matching [workspace.dependencies] definition when it is a string.
+func resolveDeclaredDeps(dependencies, workspaceDeps Dependencies) map[string]string {
 	deps := make(map[string]string)
 	for name, value := range dependencies {
 		switch ver := value.(type) {
@@ -260,19 +308,82 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 			// e.g. regex = "1.5"
 			deps[name] = ver
 		case map[string]any:
-			// e.g. serde = { version = "1.0", features = ["derive"] }
-			for k, v := range ver {
-				if k == "version" {
-					if vv, ok := v.(string); ok {
-						deps[name] = vv
-					}
-					break
+			if ws, ok := ver["workspace"]; ok {
+				if b, ok := ws.(bool); ok && b {
+					// e.g. regex = { workspace = true }
+					// The dependency is declared by this owner; reuse the workspace
+					// definition only to recover a version constraint if it has one.
+					deps[name] = workspaceConstraint(workspaceDeps[name])
+					continue
 				}
 			}
+			// e.g. serde = { version = "1.0", features = ["derive"] }
+			// git/path dependencies have no version key and keep an empty constraint.
+			deps[name] = versionConstraint(ver)
 		}
 	}
+	return deps
+}
 
-	return rootPkg, workspaces, deps, nil
+// workspaceConstraint extracts the version constraint from a [workspace.dependencies] entry.
+func workspaceConstraint(value any) string {
+	switch ver := value.(type) {
+	case string:
+		return ver
+	case map[string]any:
+		return versionConstraint(ver)
+	default:
+		return ""
+	}
+}
+
+// versionConstraint returns the `version` string of a table dependency, or "" if absent.
+func versionConstraint(table map[string]any) string {
+	if v, ok := table["version"]; ok {
+		if vv, ok := v.(string); ok {
+			return vv
+		}
+	}
+	return ""
+}
+
+// selectDirectDependencies marks the direct dependencies of a single owner package.
+// It keeps only the owner's DependsOn IDs whose name is declared in the owner's manifest.
+// When several versions of the same declared name are reachable, the version constraint
+// (when present) is used to disambiguate, preserving the behavior added in #3919.
+func (a cargoAnalyzer) selectDirectDependencies(owner types.Package, declared map[string]string, pkgIDs, pkgs map[string]types.Package) {
+	// Group the owner's resolved dependencies by name so we can tell single-version
+	// crates (accepted by name) apart from multi-version crates (disambiguated by constraint).
+	byName := make(map[string][]types.Package)
+	for _, depID := range owner.DependsOn {
+		dep, ok := pkgIDs[depID]
+		if !ok {
+			continue
+		}
+		if _, declaredDep := declared[dep.Name]; !declaredDep {
+			continue
+		}
+		byName[dep.Name] = append(byName[dep.Name], dep)
+	}
+
+	for name, candidates := range byName {
+		constraint := declared[name]
+		for _, pkg := range candidates {
+			// When only one version is reachable, accept it by name (the core fix:
+			// git/path/workspace-inherited deps have no version constraint).
+			if len(candidates) > 1 && constraint != "" {
+				if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
+					a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
+					continue
+				} else if !match {
+					continue
+				}
+			}
+			pkg.Indirect = false
+			pkg.Relationship = types.RelationshipDirect
+			pkgs[pkg.ID] = pkg
+		}
+	}
 }
 
 func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps map[string]types.Package) {
@@ -317,11 +428,11 @@ func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, er
 	return c.Check(ver), nil
 }
 
-func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion string) (string, Dependencies, []string, string, error) {
+func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion string) (cargoTOMLResult, error) {
 	// Parse Cargo.toml
 	f, err := fsys.Open(filePath)
 	if err != nil {
-		return "", nil, nil, "", xerrors.Errorf("file open error: %w", err)
+		return cargoTOMLResult{}, xerrors.Errorf("file open error: %w", err)
 	}
 	defer func() { _ = f.Close() }()
 
@@ -332,7 +443,7 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion str
 	// declare `dependencies` to avoid panic
 	dependencies := Dependencies{}
 	if _, err = toml.NewDecoder(f).Decode(&tomlFile); err != nil {
-		return "", nil, nil, "", xerrors.Errorf("toml decode error: %w", err)
+		return cargoTOMLResult{}, xerrors.Errorf("toml decode error: %w", err)
 	}
 
 	// https://rust-lang.github.io/rfcs/2906-cargo-workspace-deduplicate.html
@@ -368,10 +479,19 @@ func (a cargoAnalyzer) parseCargoTOML(fsys fs.FS, filePath, workspaceVersion str
 		maps.Copy(dependencies, target["dependencies"])
 	}
 
+	// [workspace.dependencies] are NOT direct dependencies of the workspace root or of any
+	// member on their own: a member becomes a direct dependent only when it declares the
+	// dependency (with `workspace = true`). They are returned separately so the constraint
+	// can be recovered for `workspace = true` entries.
 	// https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#inheriting-a-dependency-from-a-workspace
-	maps.Copy(dependencies, tomlFile.Workspace.Dependencies)
 	// https://doc.rust-lang.org/cargo/reference/workspaces.html#the-members-and-exclude-fields
-	return pkgID, dependencies, tomlFile.Workspace.Members, workspaceVersion, nil
+	return cargoTOMLResult{
+		pkgID:                 pkgID,
+		dependencies:          dependencies,
+		members:               tomlFile.Workspace.Members,
+		workspaceVersion:      workspaceVersion,
+		workspaceDependencies: tomlFile.Workspace.Dependencies,
+	}, nil
 }
 
 // packageID builds PackageID by Package name and version.
