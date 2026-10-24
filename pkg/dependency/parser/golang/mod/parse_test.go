@@ -103,6 +103,14 @@ func TestParse(t *testing.T) {
 			wantSkipIndirect: false,
 		},
 		{
+			name:             "Echo versions",
+			file:             "testdata/echo/go.mod",
+			replace:          true,
+			wantPkgs:         GoModEcho,
+			wantDeps:         GoModEchoDeps,
+			wantSkipIndirect: false,
+		},
+		{
 			name:             "go 1.16",
 			file:             "testdata/go116/go.mod",
 			replace:          true,
@@ -131,6 +139,78 @@ func TestParse(t *testing.T) {
 			assert.Equal(t, tt.wantPkgs, gotPkgs)
 			assert.Equal(t, tt.wantDeps, gotDeps)
 			assert.Equal(t, tt.wantSkipIndirect, gotSkipIndirect)
+		})
+	}
+}
+
+func TestFixEchoVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		version string
+		want    string
+		wantErr bool
+	}{
+		{
+			name:    "Echo version",
+			version: "v0.55.0+echo.1",
+			want:    "v0.55.0+echo.1",
+		},
+		{
+			name:    "Echo prerelease version",
+			version: "v1.2.3-rc.1+echo.2",
+			want:    "v1.2.3-rc.1+echo.2",
+		},
+		{
+			name:    "zero Echo revision",
+			version: "v1.2.3+echo.0",
+			want:    "v1.2.3+echo.0",
+		},
+		{
+			name:    "zero-padded Echo revision",
+			version: "v1.2.3+echo.01",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "non-Echo build metadata",
+			version: "v1.2.3+build.1",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "Echo segment followed by another identifier",
+			version: "v1.2.3+echo.1.extra",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "non-numeric Echo revision",
+			version: "v1.2.3+echo.x",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "Echo-like identifier",
+			version: "v1.2.3+echo.1foo",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "incompatible version",
+			version: "v2.0.0+incompatible",
+			want:    "v2.0.0+incompatible",
+		},
+		{
+			name:    "malformed Echo version",
+			version: "not-a-version+echo.1",
+			wantErr: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := fixEchoVersion("example.com/module", tt.version)
+			if tt.wantErr {
+				require.ErrorContains(t, err, "must be of the form v1.2.3")
+				return
+			}
+			require.NoError(t, err)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }
