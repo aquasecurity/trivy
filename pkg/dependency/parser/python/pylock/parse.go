@@ -59,6 +59,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	pkgs := make(map[string]ftypes.Package)
 	deps := make(map[string][]string)
 
+	// Index package IDs by normalized name so that name-only dependency
+	// selectors (PEP 751) can be resolved when unambiguous.
+	byName := make(map[string][]string)
+	for _, pkg := range lock.Packages {
+		normalizedPkgName := python.NormalizePkgName(pkg.Name, true)
+		byName[normalizedPkgName] = append(byName[normalizedPkgName], packageID(normalizedPkgName, pkg.Version))
+	}
+
 	for _, pkg := range lock.Packages {
 		normalizedPkgName := python.NormalizePkgName(pkg.Name, true)
 		pkgID := packageID(normalizedPkgName, pkg.Version)
@@ -73,8 +81,16 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		var dependsOn []string
 		for _, dep := range pkg.Dependencies {
 			depName := python.NormalizePkgName(dep.Name, true)
-			depID := packageID(depName, dep.Version)
-			dependsOn = append(dependsOn, depID)
+			if dep.Version == "" {
+				// PEP 751: a selector may omit `version` when the name
+				// identifies the package unambiguously. Ambiguous selectors
+				// (several entries with the same name) are left out.
+				if ids := byName[depName]; len(ids) == 1 {
+					dependsOn = append(dependsOn, ids[0])
+				}
+				continue
+			}
+			dependsOn = append(dependsOn, packageID(depName, dep.Version))
 		}
 		if len(dependsOn) > 0 {
 			sort.Strings(dependsOn)

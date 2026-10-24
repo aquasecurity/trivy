@@ -83,6 +83,23 @@ func TestParser_Parse(t *testing.T) {
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
 		},
+		{
+			name: "name-only dependency selector",
+			file: "testdata/name-only.toml",
+			wantPkgs: []ftypes.Package{
+				{ID: "alpha@1.0.0", Name: "alpha", Version: "1.0.0"},
+				{ID: "beta@2.0.0", Name: "beta", Version: "2.0.0"},
+				{ID: "delta@1.0.0", Name: "delta", Version: "1.0.0"},
+				{ID: "delta@2.0.0", Name: "delta", Version: "2.0.0"},
+				{ID: "gamma@1.0.0", Name: "gamma", Version: "1.0.0"},
+			},
+			// gamma -> delta stays unresolved: two "delta" entries make the
+			// name-only selector ambiguous (PEP 751), so no edge is recorded.
+			wantDeps: []ftypes.Dependency{
+				{ID: "alpha@1.0.0", DependsOn: []string{"beta@2.0.0"}},
+			},
+			wantErr: assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
