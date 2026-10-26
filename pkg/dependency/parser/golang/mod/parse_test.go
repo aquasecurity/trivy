@@ -176,8 +176,13 @@ func TestFixEchoVersion(t *testing.T) {
 			want:    "v1.2.3",
 		},
 		{
-			name:    "Echo segment followed by another identifier",
-			version: "v1.2.3+echo.1.extra",
+			name:    "Echo version with later metadata identifiers",
+			version: "v1.2.3+echo.1.extra.1",
+			want:    "v1.2.3+echo.1.extra.1",
+		},
+		{
+			name:    "Echo revision joined to another identifier",
+			version: "v1.2.3+echo.1-extra.1",
 			want:    "v1.2.3",
 		},
 		{

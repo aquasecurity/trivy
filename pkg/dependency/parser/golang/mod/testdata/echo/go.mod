@@ -4,6 +4,7 @@ go 1.22.0
 
 require (
 	golang.org/x/net v0.55.0+echo.1
+	example.com/variant v1.2.3+echo.2.variant.1
 	example.com/replaced v1.3.4+echo.1
 	example.com/mismatch v1.4.5+echo.1
 	example.com/ordinary v1.5.6+build.1

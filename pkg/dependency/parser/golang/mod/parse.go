@@ -34,8 +34,9 @@ var (
 	// Example: gopkg.in/pkg.v3 -> github.com/go-pkg/pkg
 	VCSUrlGoPkgInRegexWithoutUser = regexp.MustCompile(`^gopkg\.in/([^.]+)\..*$`)
 
-	// echoVersionSuffixRe matches Echo's non-zero-padded numeric build metadata suffix.
-	echoVersionSuffixRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)$`)
+	// echoVersionRe matches Echo's non-zero-padded numeric build metadata
+	// segment, optionally followed by additional metadata identifiers.
+	echoVersionRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(?:\.|$)`)
 )
 
 type Parser struct {
@@ -199,8 +200,9 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	return pkgSlice, deps, skipIndirect, nil
 }
 
-// parseModFile parses go.mod and keeps Echo versions (e.g. v0.55.0+echo.1),
-// which modfile.Parse otherwise strips as build metadata.
+// parseModFile parses go.mod and keeps Echo versions (e.g. v0.55.0+echo.1
+// and v0.55.0+echo.1.extra.1), which modfile.Parse otherwise strips as
+// build metadata.
 func parseModFile(data []byte) (*modfile.File, error) {
 	f, err := modfile.Parse("go.mod", data, nil)
 	// The default parse validates every version, so its error is returned as is.
@@ -223,7 +225,7 @@ func parseModFile(data []byte) (*modfile.File, error) {
 // fixEchoVersion keeps Echo versions and canonicalizes all others,
 // matching what modfile.Parse does with a nil VersionFixer.
 func fixEchoVersion(path, version string) (string, error) {
-	if echoVersionSuffixRe.MatchString(version) && semver.IsValid(version) {
+	if echoVersionRe.MatchString(version) && semver.IsValid(version) {
 		return version, nil
 	}
 
