@@ -278,7 +278,8 @@ func (pkg *Package) HasDigestFrom(src digest.Source) bool {
 }
 
 // AddDigests stores the digests along with the sources they were acquired from.
-// Empty values, and values already stored with the same value and source, are skipped.
+// A source yields a single value per algorithm, so empty values and values whose algorithm
+// and source are already stored are skipped, keeping the first one.
 func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
 	digests = lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
 		return sd.Digest != ""
@@ -286,7 +287,16 @@ func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
 	if len(digests) == 0 {
 		return
 	}
-	pkg.Digests = lo.Uniq(slices.Concat(pkg.Digests, digests))
+	type key struct {
+		algorithm digest.Algorithm
+		source    digest.Source
+	}
+	pkg.Digests = lo.UniqBy(slices.Concat(pkg.Digests, digests), func(sd digest.SourcedDigest) key {
+		return key{
+			algorithm: sd.Algorithm(),
+			source:    sd.Source,
+		}
+	})
 }
 
 type Packages []Package

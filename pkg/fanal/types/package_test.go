@@ -85,6 +85,24 @@ func TestPackage_AddDigests(t *testing.T) {
 			},
 		},
 		{
+			name: "same algorithm and source",
+			digests: []digest.SourcedDigest{
+				digest.NewSourcedDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceSBOM),
+				digest.NewSourcedDigest("sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061", digest.SourceSBOM),
+				digest.NewSourcedDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceSBOM),
+			},
+			wantDigests: []digest.SourcedDigest{
+				{
+					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+					Source: digest.SourceSBOM,
+				},
+				{
+					Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+					Source: digest.SourceSBOM,
+				},
+			},
+		},
+		{
 			name: "empty digest",
 			digests: []digest.SourcedDigest{
 				digest.NewSourcedDigest("", digest.SourceRPMSigMD5),
@@ -103,6 +121,7 @@ func TestPackage_AddDigests(t *testing.T) {
 			},
 			digests: []digest.SourcedDigest{
 				digest.NewSourcedDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceRPMSigMD5),
+				digest.NewSourcedDigest("md5:0c4b9d8e7f6a5b4c3d2e1f0a9b8c7d6e", digest.SourceRPMSigMD5),
 				digest.NewSourcedDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceSBOM),
 			},
 			wantDigest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",

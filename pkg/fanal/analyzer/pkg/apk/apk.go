@@ -213,7 +213,7 @@ func (a alpinePkgAnalyzer) StaticPaths() []string {
 	return requiredFiles
 }
 
-// decodeChecksumLine decodes checksum line
+// addChecksum stores the digest decoded from the checksum line of an installed database entry.
 func (a alpinePkgAnalyzer) addChecksum(ctx context.Context, pkg *types.Package, line string) {
 	// An entry has a single checksum line, so ignore repetitions in a malformed database.
 	if pkg.HasDigestFrom(digest.SourceAPKInstalledDB) {
@@ -225,6 +225,7 @@ func (a alpinePkgAnalyzer) addChecksum(ctx context.Context, pkg *types.Package, 
 	}
 }
 
+// decodeChecksumLine decodes checksum line
 func (a alpinePkgAnalyzer) decodeChecksumLine(ctx context.Context, line string) digest.Digest {
 	if len(line) < 2 {
 		log.DebugContext(ctx, "Unable to decode checksum line of apk package", log.String("line", line))
