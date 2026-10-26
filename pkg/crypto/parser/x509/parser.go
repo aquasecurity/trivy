@@ -71,6 +71,8 @@ type object struct {
 	encryption encryptionFormat
 	// encoding identifies the source encoding.
 	encoding ftypes.CryptoEncoding
+	// keystore identifies the keystore the object is stored in.
+	keystore ftypes.CryptoKeystoreType
 	// keyFormat identifies the source key container format.
 	keyFormat ftypes.CryptoKeyFormat
 }
@@ -124,7 +126,33 @@ var (
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
+	return describe(filePath, parse(ctx, content))
+}
 
+// ParseCertificates describes DER certificates stored in the given keystore as assets. A
+// certificate that cannot be read is logged and skipped, and a repeated certificate is
+// reported once.
+func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
+	objects := func(yield func(object) bool) {
+		for der := range certificates {
+			obj, err := certificateObject(der)
+			if err != nil {
+				logParseError(ctx, "", err)
+				continue
+			}
+			obj.encoding = ftypes.CryptoEncodingDER
+			obj.keystore = keystore
+			if !yield(obj) {
+				return
+			}
+		}
+	}
+	return describe(filePath, objects)
+}
+
+// describe describes objects as assets found in filePath, reporting each asset once per
+// container format.
+func describe(filePath string, objects iter.Seq[object]) ([]ftypes.CryptoAsset, error) {
 	type assetKey struct {
 		descriptor ftypes.CryptoDescriptor
 		format     ftypes.CryptoKeyFormat
@@ -132,7 +160,7 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 	var assets []ftypes.CryptoAsset
 	seen := set.New[assetKey]()
-	for obj := range parse(ctx, content) {
+	for obj := range objects {
 		described, err := objectToAssets(obj)
 		if err != nil {
 			return nil, err

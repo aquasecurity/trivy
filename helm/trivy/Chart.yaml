@@ -1,7 +1,7 @@
 apiVersion: v2
 name: trivy
-version: 0.28.0
-appVersion: 0.76.0
+version: 0.28.1
+appVersion: 0.76.1
 description: Trivy helm chart
 keywords:
   - scanner

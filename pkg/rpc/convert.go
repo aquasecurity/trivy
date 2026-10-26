@@ -263,6 +263,7 @@ func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset
 			FilePath:      asset.FilePath,
 			Format:        string(asset.Format),
 			Encoding:      string(asset.Encoding),
+			Keystore:      string(asset.Keystore),
 			Layer:         ConvertToRPCLayer(asset.Layer),
 		}
 	})
@@ -787,6 +788,7 @@ func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.Crypto
 			FilePath: rpcAsset.FilePath,
 			Format:   ftypes.CryptoKeyFormat(rpcAsset.Format),
 			Encoding: ftypes.CryptoEncoding(rpcAsset.Encoding),
+			Keystore: ftypes.CryptoKeystoreType(rpcAsset.Keystore),
 			Layer:    ConvertFromRPCLayer(rpcAsset.Layer),
 		}
 	})

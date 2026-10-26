@@ -1727,6 +1727,8 @@ func TestConvertCryptoAssets(t *testing.T) {
 		{
 			name: "certificate",
 			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Encoding = ftypes.CryptoEncodingDER
+				asset.Keystore = ftypes.CryptoKeystorePKCS12
 				asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 				asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 				asset.Certificate.KeyUsage = []string{"digitalSignature"}

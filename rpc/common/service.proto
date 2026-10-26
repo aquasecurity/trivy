@@ -322,6 +322,7 @@ message CryptoAsset {
   string encoding = 11;
   Layer layer = 12;
   string asset_id = 13;
+  string keystore = 14;
 }
 
 message CryptoFinding {
