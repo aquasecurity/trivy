@@ -65,14 +65,16 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	// Meta can be 2 or 3 array elements
+	// Meta is the second or third array element
 	// [pkg: string, info: BunLockFilePackageInfo]
 	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string]
+	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string, integrity: string] (git packages, Bun 1.4+)
 	// [pkg: string, info: Pick<BunLockFileBasePackageInfo, "bin" | "binDir">]
 	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string]
 	// cf.https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7745-L7755
+	// Pick the info by type: the length alone cannot tell git and registry entries apart.
 	metaRaw := raw[1]
-	if len(raw) > 3 {
+	if metaRaw.Kind() != '{' && len(raw) > 2 {
 		metaRaw = raw[2]
 	}
 	return json.Unmarshal(metaRaw, &p.Meta)
