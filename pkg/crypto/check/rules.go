@@ -1,12 +1,17 @@
 package check
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"math/big"
 	"slices"
+	"sync"
 	"time"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -38,6 +43,13 @@ var rules = []rule{
 		severity: dbTypes.SeverityMedium,
 		kind:     ftypes.CryptoKindCertificate,
 		match:    matchExpiredCertificate,
+	},
+	{
+		id:       "CRYPTO-0005",
+		title:    "Small EC private key",
+		severity: dbTypes.SeverityCritical,
+		kind:     ftypes.CryptoKindKey,
+		match:    matchSmallECPrivateKey,
 	},
 }
 
@@ -96,6 +108,55 @@ func matchWeakCurve(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence
 		Curve:                  parameters.Curve,
 		ClassicalSecurityLevel: new(*level),
 	}, true
+}
+
+// maxSmallScalar is the largest private key value that counts as small.
+// All 8 affected eMudhra keys used values up to 255.
+// See https://bugzilla.mozilla.org/show_bug.cgi?id=2083449#c5
+const maxSmallScalar = 255
+
+var smallKeyCurves = []elliptic.Curve{
+	elliptic.P256(),
+	elliptic.P384(),
+	elliptic.P521(),
+}
+
+// smallKeyIdentities maps a curve name to the identities of the public keys
+// for the private keys from 1 to maxSmallScalar.
+var smallKeyIdentities = sync.OnceValue(func() map[string]set.Set[string] {
+	byCurve := make(map[string]set.Set[string], len(smallKeyCurves))
+	for _, curve := range smallKeyCurves {
+		params := curve.Params()
+		// The private key is a big-endian integer of (BitSize+7)/8 bytes.
+		scalar := make([]byte, (params.BitSize+7)/8)
+
+		identities := set.New[string]()
+		for k := 1; k <= maxSmallScalar; k++ {
+			big.NewInt(int64(k)).FillBytes(scalar)
+			priv, err := ecdsa.ParseRawPrivateKey(curve, scalar)
+			if err != nil {
+				continue
+			}
+			key, _, err := crypto.DescribeKey(&priv.PublicKey, ftypes.CryptoKeyTypePublic)
+			if err != nil {
+				continue
+			}
+			identities.Append(key.Identity.Value)
+		}
+		byCurve[params.Name] = identities
+	}
+	return byCurve
+})
+
+func matchSmallECPrivateKey(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
+	if asset.Key == nil || asset.Key.Curve == "" || asset.Identity.Method != ftypes.CryptoMethodSPKISHA256 {
+		return types.CryptoEvidence{}, false
+	}
+	identities, found := smallKeyIdentities()[asset.Key.Curve]
+	if !found || !identities.Contains(asset.Identity.Value) {
+		return types.CryptoEvidence{}, false
+	}
+	return types.CryptoEvidence{Curve: asset.Key.Curve}, true
 }
 
 func matchExpiredCertificate(asset ftypes.CryptoAsset, now time.Time) (types.CryptoEvidence, bool) {

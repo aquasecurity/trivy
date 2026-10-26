@@ -122,6 +122,7 @@ Trivy runs built-in checks to find weak cryptographic assets and reports the fin
 | `CRYPTO-0002` | Small RSA key | key | the RSA key is shorter than 2048 bits | HIGH |
 | `CRYPTO-0003` | Weak elliptic curve | algorithm | the classical security level of an EC algorithm is below 112 bits | HIGH |
 | `CRYPTO-0004` | Expired certificate | certificate | `NotAfter` is before the time of the scan | MEDIUM |
+| `CRYPTO-0005` | Small EC private key | key | the public point of a P-256, P-384 or P-521 key equals k*G for k from 1 to 255, so the private key can be guessed | CRITICAL |
 
 A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.
 
@@ -166,6 +167,7 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 | `CRYPTO-0002` | `KeySize` |
 | `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
 | `CRYPTO-0004` | `NotAfter` |
+| `CRYPTO-0005` | `Curve` |
 
 Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
 
