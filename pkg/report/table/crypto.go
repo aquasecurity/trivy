@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/crypto/check"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
+	"github.com/samber/lo"
 )
 
 type cryptoRenderer struct {
@@ -52,17 +53,15 @@ func (r *cryptoRenderer) Render(result types.Result) {
 		)
 	})
 
-	severityCount := make(map[string]int)
-	for _, f := range findings {
-		severityCount[f.Severity]++
-	}
+	severityCount := lo.CountValuesBy(findings, func(f types.CryptoFinding) string {
+		return f.Severity
+	})
 	total, summaries := summarize(r.severities, severityCount)
 
 	RenderTarget(r.w, result.Target+" (crypto)", r.isTerminal)
-	r.printf("Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
+	fmt.Fprintf(r.w, "Total: %d (%s)\n\n", total, strings.Join(summaries, ", "))
 
 	tw := newTableWriter(r.w, r.isTerminal)
-	tw.SetColumnMaxWidth(40)
 	tw.SetHeaders("Severity", "Rule ID", "Asset", "File", "Message")
 	for _, f := range findings {
 		severity := f.Severity
@@ -70,19 +69,16 @@ func (r *cryptoRenderer) Render(result types.Result) {
 			severity = ColorizeSeverity(f.Severity, f.Severity)
 		}
 		asset := assets[f.AssetID]
-		tw.AddRow(severity, f.RuleID, cryptoAssetLabel(asset), asset.FilePath, check.Message(f))
+		message := tml.Sprintf("%s\n<blue>%s</blue>", check.Message(f), cryptoRuleURL(f.RuleID))
+		tw.AddRow(severity, f.RuleID, cryptoAssetLabel(asset), asset.FilePath, message)
 	}
 	tw.Render()
 }
 
-func (r *cryptoRenderer) printf(format string, args ...any) {
-	// nolint
-	_ = tml.Fprintf(r.w, format, args...)
+func cryptoRuleURL(ruleID string) string {
+	return "https://avd.aquasec.com/crypto/" + strings.ToLower(ruleID) + "/"
 }
 
-// cryptoAssetLabel adds the container format to the asset name, so that copies of one key in
-// different containers of a file give different rows. A certificate is named by its subject
-// and an algorithm by its identifier, so the label says what they are.
 func cryptoAssetLabel(a ftypes.CryptoAsset) string {
 	name := a.Name
 	switch a.Kind {
@@ -94,5 +90,6 @@ func cryptoAssetLabel(a ftypes.CryptoAsset) string {
 	if a.Format == "" {
 		return name
 	}
+	// The format keeps the same key in different containers from being merged into one cell.
 	return fmt.Sprintf("%s (%s)", name, a.Format)
 }
