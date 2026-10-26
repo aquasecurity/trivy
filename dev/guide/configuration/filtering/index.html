@@ -9058,7 +9058,7 @@ It displays "fixed" vulnerabilities only.</p>
 <li><a href="#by-rego">Rego</a></li>
 <li><a href="#by-vulnerability-exploitability-exchange-vex">Vulnerability Exploitability Exchange (VEX)</a></li>
 </ul>
-<p>To show the suppressed results, use the <code>--show-suppressed</code> flag.</p>
+<p>To show the suppressed results, use the <code>--show-suppressed</code> flag. It does not apply to crypto findings.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>It's exported as <code>ExperimentalModifiedFindings</code> in the JSON output.</p>
@@ -9119,7 +9119,7 @@ Suppressed<span class="w"> </span>Vulnerabilities<span class="w"> </span><span c
 </tr>
 <tr>
 <td style="text-align: center;">Crypto</td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
 </tr>
 </tbody>
 </table>
@@ -9143,6 +9143,9 @@ aws-account-id
 <span class="c1"># Ignore licenses</span>
 GPL-3.0
 Apache-2.0<span class="w"> </span>WITH<span class="w"> </span>LLVM-exception
+
+<span class="c1"># Ignore crypto findings</span>
+CRYPTO-0004
 </code></pre></div>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>python:3.4-alpine3.9
 </code></pre></div>
@@ -9186,7 +9189,7 @@ Total:<span class="w"> </span><span class="m">0</span><span class="w"> </span><s
 </tr>
 <tr>
 <td style="text-align: center;">Crypto</td>
-<td style="text-align: center;"></td>
+<td style="text-align: center;">✓</td>
 </tr>
 </tbody>
 </table>
@@ -9195,7 +9198,7 @@ Total:<span class="w"> </span><span class="m">0</span><span class="w"> </span><s
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
 <p>When the extension of the specified ignore file is either <code>.yml</code> or <code>.yaml</code>, Trivy will load the file as YAML.
-For the <code>.trivyignore.yaml</code> file, you can set ignored IDs separately for <code>vulnerabilities</code>, <code>misconfigurations</code>, <code>secrets</code>, or <code>licenses</code><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</p>
+For the <code>.trivyignore.yaml</code> file, you can set ignored IDs separately for <code>vulnerabilities</code>, <code>misconfigurations</code>, <code>secrets</code>, <code>licenses</code><sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, or <code>crypto</code>.</p>
 <p>Available fields:</p>
 <table>
 <thead>
@@ -9211,7 +9214,7 @@ For the <code>.trivyignore.yaml</code> file, you can set ignored IDs separately 
 <td>id</td>
 <td style="text-align: center;">✓</td>
 <td>string</td>
-<td>The identifier of the vulnerability, misconfiguration, secret, or license<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>.</td>
+<td>The identifier of the vulnerability, misconfiguration, secret, license<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup>, or crypto rule.</td>
 </tr>
 <tr>
 <td>paths<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
@@ -9273,6 +9276,12 @@ licenses:
 <span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>MIT<span class="w"> </span>AND<span class="w"> </span>GPL-2.0-or-later<span class="w"> </span><span class="c1"># Compound license expressions are supported</span>
 <span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>Apache-2.0<span class="w"> </span>WITH<span class="w"> </span>LLVM-exception<span class="w"> </span><span class="c1"># License expressions with exceptions are supported</span>
 <span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>LLVM-exception<span class="w"> </span><span class="c1"># Individual license components or exceptions can be ignored</span>
+
+crypto:
+<span class="w">  </span>-<span class="w"> </span>id:<span class="w"> </span>CRYPTO-0001
+<span class="w">    </span>paths:
+<span class="w">      </span>-<span class="w"> </span><span class="s2">&quot;etc/ssl/certs/**&quot;</span>
+<span class="w">    </span>statement:<span class="w"> </span>Signatures<span class="w"> </span>of<span class="w"> </span>OS<span class="w"> </span>root<span class="w"> </span>certificates<span class="w"> </span>are<span class="w"> </span>not<span class="w"> </span>verified
 </code></pre></div>
 <div class="admonition info">
 <p class="admonition-title">Enhanced License Expression Support</p>
@@ -9405,8 +9414,8 @@ The <code>input</code> for the evaluation is each <a href="https://github.com/aq
 <span class="p">}</span>
 </code></pre></div>
 <p>For more advanced use cases, there is a built-in Rego library with helper functions that you can import into your policy using: <code>import data.lib.trivy</code>.
-More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-18-g2f4aaf7e7/pkg/result/module.go">here</a>.</p>
-<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-18-g2f4aaf7e7/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-18-g2f4aaf7e7/examples/ignore-policies">here</a>.</p>
+More info about the helper functions are in the library <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-23-g0bd8831e5/pkg/result/module.go">here</a>.</p>
+<p>You can create a whitelist of checks using Rego, see the detailed <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-23-g0bd8831e5/examples/ignore-policies/whitelist.rego">example</a>. Additional examples are available <a href="https://github.com/aquasecurity/trivy/tree/v0.76.0-23-g0bd8831e5/examples/ignore-policies">here</a>.</p>
 <h3 id="by-vulnerability-exploitability-exchange-vex">By Vulnerability Exploitability Exchange (VEX)<a class="headerlink" href="#by-vulnerability-exploitability-exchange-vex" title="Permanent link">&para;</a></h3>
 <table>
 <thead>

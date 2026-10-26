@@ -2697,10 +2697,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#filtering-the-inventory" class="md-nav__link">
+  <a href="#telling-system-certificates-from-your-own" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Filtering the inventory
+        Telling system certificates from your own
       
     </span>
   </a>
@@ -8659,10 +8659,10 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
-  <a href="#filtering-the-inventory" class="md-nav__link">
+  <a href="#telling-system-certificates-from-your-own" class="md-nav__link">
     <span class="md-ellipsis">
       
-        Filtering the inventory
+        Telling system certificates from your own
       
     </span>
   </a>
@@ -8958,7 +8958,14 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 </tbody>
 </table>
 <p>Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. <code>trivy convert</code> keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.</p>
-<h2 id="filtering-the-inventory">Filtering the inventory<a class="headerlink" href="#filtering-the-inventory" title="Permanent link">&para;</a></h2>
+<p>A rule ID in an <a href="../../configuration/filtering/#by-finding-ids">ignore file</a> suppresses its findings, and the <code>crypto</code> section of <code>.trivyignore.yaml</code> can limit that to some file paths. The assets of suppressed findings stay in the inventory. <code>--ignore-policy</code> and <code>--show-suppressed</code> do not apply to crypto findings.</p>
+<div class="highlight"><pre><span></span><code><span class="nt">crypto</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CRYPTO-0001</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="s">&quot;etc/ssl/certs/**&quot;</span>
+<span class="w">    </span><span class="nt">statement</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Signatures of OS root certificates are not verified</span>
+</code></pre></div>
+<h2 id="telling-system-certificates-from-your-own">Telling system certificates from your own<a class="headerlink" href="#telling-system-certificates-from-your-own" title="Permanent link">&para;</a></h2>
 <p>Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.</p>
 <p>Two attributes in the report separate them. The path says whether a certificate lies in a system trust store such as <code>/etc/ssl/certs</code> or <code>/usr/share/ca-certificates</code>, and the layer says whether it came from the base image or from your build. A root CA is a CA certificate whose subject and issuer match.</p>
 <h2 id="clientserver-mode">Client/server mode<a class="headerlink" href="#clientserver-mode" title="Permanent link">&para;</a></h2>
