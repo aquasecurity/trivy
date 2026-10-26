@@ -68,7 +68,7 @@ func FilterResult(ctx context.Context, result *types.Result, ignoreConf IgnoreCo
 	filterMisconfigurations(result, severities, opt.IncludeNonFailures, ignoreConf)
 	filterSecrets(result, severities, ignoreConf)
 	filterLicenses(result, severities, opt.IgnoreLicenses, ignoreConf)
-	filterCryptoFindings(result, severities)
+	filterCryptoFindings(result, severities, ignoreConf)
 
 	if opt.PolicyFile != "" {
 		policyFile := filepath.ToSlash(filepath.Clean(opt.PolicyFile))
@@ -174,14 +174,21 @@ func filterSecrets(result *types.Result, severities []string, ignoreConfig Ignor
 	result.Secrets = filtered
 }
 
-func filterCryptoFindings(result *types.Result, severities []string) {
-	var filtered []types.CryptoFinding
-	for _, finding := range result.CryptoFindings {
-		if slices.Contains(severities, finding.Severity) {
-			filtered = append(filtered, finding)
+// filterCryptoFindings does not add ignored findings to the modified findings,
+// because `--show-suppressed` is not supported for crypto findings yet.
+func filterCryptoFindings(result *types.Result, severities []string, ignoreConfig IgnoreConfig) {
+	var filePaths map[string]string
+	if len(result.CryptoFindings) > 0 && len(ignoreConfig.Crypto) > 0 {
+		filePaths = make(map[string]string, len(result.CryptoAssets))
+		for _, asset := range result.CryptoAssets {
+			filePaths[asset.AssetID] = asset.FilePath
 		}
 	}
-	result.CryptoFindings = filtered
+
+	result.CryptoFindings = xslices.ZeroToNil(lo.Filter(result.CryptoFindings, func(finding types.CryptoFinding, _ int) bool {
+		return slices.Contains(severities, finding.Severity) &&
+			ignoreConfig.MatchCrypto(finding.RuleID, filePaths[finding.AssetID]) == nil
+	}))
 }
 
 func filterLicenses(result *types.Result, severities, ignoreLicenseNames []string, ignoreConfig IgnoreConfig) {
