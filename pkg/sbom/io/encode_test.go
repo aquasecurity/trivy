@@ -71,6 +71,9 @@ func TestEncoder_Encode(t *testing.T) {
 										Version: "2.37-15.1",
 									},
 								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
+								},
 							},
 							{
 								ID:      "curl@7.50.3-1",
@@ -83,6 +86,9 @@ func TestEncoder_Encode(t *testing.T) {
 										Name:    "curl",
 										Version: "7.50.3-1",
 									},
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
 								},
 								DependsOn: []string{
 									"libc6@2.37-15.1",
@@ -302,6 +308,10 @@ func TestEncoder_Encode(t *testing.T) {
 							Name:  core.PropertyPkgType,
 							Value: "debian",
 						},
+						{
+							Name:  core.PropertyRepositoryClass,
+							Value: "official",
+						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{
 						UID: "33654D2C483FC3AD",
@@ -325,6 +335,10 @@ func TestEncoder_Encode(t *testing.T) {
 						{
 							Name:  core.PropertyPkgType,
 							Value: "debian",
+						},
+						{
+							Name:  core.PropertyRepositoryClass,
+							Value: "official",
 						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{
@@ -1870,64 +1884,4 @@ func newTestBOM2(t *testing.T) *core.BOM {
 	// Add empty relationship for libComponent to preserve structure for SBOM rescanning
 	bom.AddRelationship(libComp, nil, core.RelationshipDependsOn)
 	return bom
-}
-
-func TestEncoder_Encode_RepositoryClass(t *testing.T) {
-	report := types.Report{
-		SchemaVersion: 2,
-		ArtifactName:  "debian:12",
-		ArtifactType:  ftypes.TypeContainerImage,
-		Metadata: types.Metadata{
-			OS: &ftypes.OS{
-				Family: ftypes.Debian,
-				Name:   "12",
-			},
-		},
-		Results: []types.Result{
-			{
-				Target: "debian:12",
-				Type:   ftypes.Debian,
-				Class:  types.ClassOSPkg,
-				Packages: []ftypes.Package{
-					{
-						ID:      "docker-ce@5:27.3.1-1~debian.12~bookworm",
-						Name:    "docker-ce",
-						Version: "5:27.3.1-1~debian.12~bookworm",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassThirdParty,
-						},
-					},
-					{
-						ID:      "libc6@2.36-9+deb12u8",
-						Name:    "libc6",
-						Version: "2.36-9+deb12u8",
-						Repository: ftypes.PackageRepository{
-							Class: ftypes.RepositoryClassOfficial,
-						},
-					},
-				},
-			},
-		},
-	}
-
-	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
-	bom, err := sbomio.NewEncoder(sbomio.WithBOMRef()).Encode(report)
-	require.NoError(t, err)
-
-	props := make(map[string]map[string]string)
-	for _, c := range bom.Components() {
-		if c.Type != core.TypeLibrary {
-			continue
-		}
-		props[c.Name] = make(map[string]string)
-		for _, p := range c.Properties {
-			props[c.Name][p.Name] = p.Value
-		}
-	}
-
-	assert.Equal(t, "third-party", props["docker-ce"][core.PropertyRepositoryClass])
-
-	// Official packages stay unannotated, so the property does not land on every component of
-	// every SBOM.
-	assert.NotContains(t, props["libc6"], core.PropertyRepositoryClass)
 }

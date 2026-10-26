@@ -106,6 +106,44 @@ var (
 		Licenses: []string{"GPL-2.0"},
 	}
 
+	dockerCEComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "docker-ce",
+		Version: "27.3.1-1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeDebian,
+				Name:    "docker-ce",
+				Version: "27.3.1-1",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyRepositoryClass,
+				Value: "third-party",
+			},
+		},
+	}
+
+	libc6Component = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "libc6",
+		Version: "2.36-9",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeDebian,
+				Name:    "libc6",
+				Version: "2.36-9",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyRepositoryClass,
+				Value: "official",
+			},
+		},
+	}
+
 	orphanedApkComponent = &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    "orphaned-package",
@@ -293,6 +331,56 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			},
 		},
 		{
+			name: "deb packages with repository class",
+			setupBOM: func() *core.BOM {
+				bom := core.NewBOM(core.Options{})
+				bom.SerialNumber = "test-repository-class"
+				bom.Version = 1
+
+				bom.AddComponent(dockerCEComponent)
+				bom.AddComponent(libc6Component)
+
+				return bom
+			},
+			wantSBOM: types.SBOM{
+				Metadata: types.Metadata{
+					OS: nil, // No OS detected
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "docker-ce@27.3.1-1",
+								Name:       "docker-ce",
+								Version:    "27.3.1-1",
+								SrcName:    "docker-ce",
+								SrcVersion: "27.3.1-1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: dockerCEComponent.PkgIdentifier.PURL,
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassThirdParty,
+								},
+							},
+							{
+								ID:         "libc6@2.36-9",
+								Name:       "libc6",
+								Version:    "2.36-9",
+								SrcName:    "libc6",
+								SrcVersion: "2.36-9",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: libc6Component.PkgIdentifier.PURL,
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "multiple OS package types should return error",
 			setupBOM: func() *core.BOM {
 				bom := core.NewBOM(core.Options{})
@@ -405,35 +493,4 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			assert.EqualExportedValues(t, tt.wantSBOM, gotSBOM)
 		})
 	}
-}
-
-func TestDecoder_Decode_RepositoryClass(t *testing.T) {
-	bom := core.NewBOM(core.Options{})
-	bom.SerialNumber = "test-repository-class"
-	bom.Version = 1
-	bom.AddComponent(&core.Component{
-		Type:    core.TypeLibrary,
-		Name:    "docker-ce",
-		Version: "5:27.3.1-1~debian.12~bookworm",
-		PkgIdentifier: ftypes.PkgIdentifier{
-			PURL: &packageurl.PackageURL{
-				Type:      packageurl.TypeDebian,
-				Namespace: "debian",
-				Name:      "docker-ce",
-				Version:   "5:27.3.1-1~debian.12~bookworm",
-			},
-		},
-		Properties: []core.Property{
-			{Name: core.PropertyPkgType, Value: "debian"},
-			{Name: core.PropertyRepositoryClass, Value: "third-party"},
-		},
-	})
-
-	var gotSBOM types.SBOM
-	require.NoError(t, sbomio.NewDecoder(bom).Decode(t.Context(), &gotSBOM))
-
-	require.Len(t, gotSBOM.Packages, 1)
-	require.Len(t, gotSBOM.Packages[0].Packages, 1)
-	assert.Equal(t, ftypes.PackageRepository{Class: ftypes.RepositoryClassThirdParty},
-		gotSBOM.Packages[0].Packages[0].Repository)
 }
