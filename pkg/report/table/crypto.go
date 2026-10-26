@@ -7,12 +7,13 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/samber/lo"
+
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/crypto/check"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
-	"github.com/samber/lo"
 )
 
 type cryptoRenderer struct {
@@ -49,7 +50,8 @@ func (r *cryptoRenderer) Render(result types.Result) {
 			dbTypes.CompareSeverityString(a.Severity, b.Severity),
 			cmp.Compare(a.RuleID, b.RuleID),
 			cmp.Compare(assetA.FilePath, assetB.FilePath),
-			cmp.Compare(assetA.Name, assetB.Name),
+			cmp.Compare(cryptoAssetLabel(assetA), cryptoAssetLabel(assetB)),
+			cmp.Compare(check.Message(a), check.Message(b)),
 		)
 	})
 
@@ -63,16 +65,47 @@ func (r *cryptoRenderer) Render(result types.Result) {
 
 	tw := newTableWriter(r.w, r.isTerminal)
 	tw.SetHeaders("Severity", "Rule ID", "Asset", "File", "Message")
-	for _, f := range findings {
+	for _, row := range groupCryptoFindings(findings, assets) {
+		f := row.finding
 		severity := f.Severity
 		if r.isTerminal {
 			severity = ColorizeSeverity(f.Severity, f.Severity)
 		}
-		asset := assets[f.AssetID]
+		label := cryptoAssetLabel(row.asset)
+		if row.count > 1 {
+			label = fmt.Sprintf("%s x%d", label, row.count)
+		}
 		message := tml.Sprintf("%s\n<blue>%s</blue>", check.Message(f), cryptoRuleURL(f.RuleID))
-		tw.AddRow(severity, f.RuleID, cryptoAssetLabel(asset), asset.FilePath, message)
+		tw.AddRow(severity, f.RuleID, label, row.asset.FilePath, message)
 	}
 	tw.Render()
+}
+
+// cryptoRow is a table row for findings that look the same.
+type cryptoRow struct {
+	finding types.CryptoFinding
+	asset   ftypes.CryptoAsset
+	count   int
+}
+
+// groupCryptoFindings joins neighboring findings of different assets that show the same values in the table.
+// The findings must be sorted.
+func groupCryptoFindings(findings []types.CryptoFinding, assets map[string]ftypes.CryptoAsset) []cryptoRow {
+	var rows []cryptoRow
+	for _, f := range findings {
+		asset := assets[f.AssetID]
+		if n := len(rows); n > 0 {
+			prev := rows[n-1]
+			if prev.finding.Severity == f.Severity && prev.finding.RuleID == f.RuleID &&
+				prev.asset.FilePath == asset.FilePath && cryptoAssetLabel(prev.asset) == cryptoAssetLabel(asset) &&
+				check.Message(prev.finding) == check.Message(f) {
+				rows[n-1].count++
+				continue
+			}
+		}
+		rows = append(rows, cryptoRow{finding: f, asset: asset, count: 1})
+	}
+	return rows
 }
 
 func cryptoRuleURL(ruleID string) string {

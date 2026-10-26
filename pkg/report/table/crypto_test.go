@@ -104,6 +104,53 @@ Total: 4 (MEDIUM: 1, HIGH: 3)
 `,
 		},
 		{
+			name: "group different assets that look the same",
+			input: types.Result{
+				Target: "example:latest",
+				Class:  types.ClassCrypto,
+				CryptoAssets: []ftypes.CryptoAsset{
+					{
+						AssetID:         "first",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Name: "RSA-1024 public key"},
+						FilePath:        "app/certs/keys.pem",
+						Format:          ftypes.CryptoKeyFormatPKIX,
+					},
+					{
+						AssetID:         "second",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Name: "RSA-1024 public key"},
+						FilePath:        "app/certs/keys.pem",
+						Format:          ftypes.CryptoKeyFormatPKIX,
+					},
+				},
+				CryptoFindings: []types.CryptoFinding{
+					{
+						RuleID:   "CRYPTO-0002",
+						Severity: "HIGH",
+						AssetID:  "first",
+						Evidence: types.CryptoEvidence{KeySize: 1024},
+					},
+					{
+						RuleID:   "CRYPTO-0002",
+						Severity: "HIGH",
+						AssetID:  "second",
+						Evidence: types.CryptoEvidence{KeySize: 1024},
+					},
+				},
+			},
+			want: `
+example:latest (crypto)
+=======================
+Total: 2 (MEDIUM: 0, HIGH: 2)
+
+┌──────────┬─────────────┬───────────────────────────────┬────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │             Asset             │        File        │                   Message                   │
+├──────────┼─────────────┼───────────────────────────────┼────────────────────┼─────────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 public key (PKIX) x2 │ app/certs/keys.pem │ RSA key is 1024 bits, less than 2048        │
+│          │             │                               │                    │ https://avd.aquasec.com/crypto/crypto-0002/ │
+└──────────┴─────────────┴───────────────────────────────┴────────────────────┴─────────────────────────────────────────────┘
+`,
+		},
+		{
 			name: "no findings",
 			input: types.Result{
 				Target: "example:latest",
