@@ -438,6 +438,12 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 		},
 		{
+			ID:           "example.com/variant@v1.2.3+echo.2.variant.1",
+			Name:         "example.com/variant",
+			Version:      "v1.2.3+echo.2.variant.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
 			ID:           "golang.org/x/net@v0.55.0+echo.1",
 			Name:         "golang.org/x/net",
 			Version:      "v0.55.0+echo.1",
@@ -453,6 +459,7 @@ var (
 				"example.com/ordinary@v1.5.6",
 				"example.com/replacement@v1.3.4+echo.2",
 				"example.com/v2module/v2@v2.0.0+echo.1",
+				"example.com/variant@v1.2.3+echo.2.variant.1",
 				"golang.org/x/net@v0.55.0+echo.1",
 			},
 		},
