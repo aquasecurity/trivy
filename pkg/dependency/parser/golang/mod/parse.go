@@ -36,7 +36,7 @@ var (
 
 	// echoVersionRe matches Echo's non-zero-padded numeric build metadata
 	// segment, optionally followed by additional metadata identifiers.
-	echoVersionRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(?:\.|$)`)
+	echoVersionRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
 )
 
 type Parser struct {
