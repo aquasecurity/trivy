@@ -397,10 +397,12 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 									},
 								},
 								Digest: "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
+								// A recorded source is restored and a malformed record is ignored. A hash without a
+								// recorded source falls back to the SBOM source.
 								Digests: []digest.SourcedDigest{
 									{
 										Digest: "sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a",
-										Source: digest.SourceSBOM,
+										Source: digest.SourceFileContent,
 									},
 									{
 										Digest: "sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",

@@ -48,6 +48,12 @@ const (
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
 
+	// PropertySourcedDigest records a digest of the component together with the source it was
+	// acquired from, as "<source>:<algorithm>:<value>". Neither CycloneDX hashes nor SPDX
+	// checksums have room for the source, so the property holds the whole digest and does not
+	// depend on them.
+	PropertySourcedDigest = "SourcedDigest"
+
 	// Red Hat packages only.
 	// A package can use multiple NVR + Arch content sets or fields.
 	PropertyContentSet = "ContentSet"
@@ -164,8 +170,8 @@ type Component struct {
 	Supplier string
 
 	// Files is a list of files that are part of the component.
-	// CycloneDX: component.properties
-	// SPDX: files
+	// CycloneDX: component.hashes
+	// SPDX: files, package.checksums
 	Files []File
 
 	// Properties is a list of key-value pairs that provide additional information about the component

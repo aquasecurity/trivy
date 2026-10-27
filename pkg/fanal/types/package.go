@@ -280,8 +280,9 @@ func (pkg *Package) HasDigestFrom(src digest.Source) bool {
 }
 
 // AddDigests stores the digests along with the sources they were acquired from.
-// A source yields a single value per algorithm, so empty values and values whose algorithm
-// and source are already stored are skipped, keeping the first one.
+// One value is kept per algorithm and source: empty values and values whose algorithm and
+// source are already stored are skipped, keeping the first one. For SourceSBOM this drops
+// further values of the same algorithm found in the document.
 func (pkg *Package) AddDigests(digests ...digest.SourcedDigest) {
 	digests = lo.Filter(digests, func(sd digest.SourcedDigest, _ int) bool {
 		return sd.Digest != ""

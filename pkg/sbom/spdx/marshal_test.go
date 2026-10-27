@@ -336,6 +336,8 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageLicenseDeclared:  "GPL-3.0-or-later",
 						Annotations: []spdx.Annotation{
 							annotation(t, "PkgType: centos"),
+							annotation(t, "SourcedDigest: rpm-sigmd5:md5:7459cec61bb4d1b0ca8107e25e0dd005"),
+							annotation(t, "SourcedDigest: unknown:sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3"),
 						},
 						PackageSupplier: &spdx.Supplier{
 							SupplierType: tspdx.PackageSupplierOrganization,
@@ -573,6 +575,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						PackageLicenseDeclared:  "GPL-2.0-or-later",
 						Annotations: []spdx.Annotation{
 							annotation(t, "PkgType: centos"),
+							annotation(t, "SourcedDigest: unknown:md5:483792b8b5f9eb8be7dc4407733118d0"),
 						},
 						PackageExternalReferences: []*spdx.PackageExternalReference{
 							{
@@ -608,6 +611,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488"),
 							annotation(t, "PkgType: gemspec"),
+							annotation(t, "SourcedDigest: unknown:sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"),
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
@@ -633,6 +637,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "LayerDiffID: sha256:ccb64cf0b7ba2e50741d0b64cae324eb5de3b1e2f580bbf177e721b67df38488"),
 							annotation(t, "PkgType: gemspec"),
+							annotation(t, "SourcedDigest: unknown:sha1:d2f9f9aed5161f6e4116a3f9573f41cd832f137c"),
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},
@@ -1218,6 +1223,7 @@ func TestMarshaler_Marshal(t *testing.T) {
 						Annotations: []spdx.Annotation{
 							annotation(t, "LayerDiffID: sha256:661c3fd3cc16b34c070f3620ca6b03b6adac150f9a7e5d0e3c707a159990f88e"),
 							annotation(t, "PkgType: node-pkg"),
+							annotation(t, "SourcedDigest: unknown:sha256:a5efa82f08774597165e8c1a102d45d0406913b74c184883ac91f409ae26009d"),
 						},
 						PrimaryPackagePurpose: tspdx.PackagePurposeLibrary,
 						PackageSupplier:       &spdx.Supplier{Supplier: tspdx.PackageSupplierNoAssertion},

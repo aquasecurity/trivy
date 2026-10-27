@@ -384,6 +384,14 @@ func TestEncoder_Encode(t *testing.T) {
 							Name:  core.PropertyPkgType,
 							Value: "jar",
 						},
+						{
+							Name:  core.PropertySourcedDigest,
+							Value: "java-archive:sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb",
+						},
+						{
+							Name:  core.PropertySourcedDigest,
+							Value: "unknown:sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{
 						UID: "A6BD5A2FE5C00E10",
@@ -425,6 +433,10 @@ func TestEncoder_Encode(t *testing.T) {
 						{
 							Name:  core.PropertyPkgType,
 							Value: "jar",
+						},
+						{
+							Name:  core.PropertySourcedDigest,
+							Value: "unknown:sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
 						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{

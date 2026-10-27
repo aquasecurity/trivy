@@ -20,6 +20,8 @@ const (
 	// scanned artifact, or an attestation fetched from a source such as Rekor.
 	// It states the algorithm and the value, but not what the value covers, so the covered
 	// bytes cannot be determined either.
+	// Neither the values nor the sources recorded in an SBOM are verified: a source restored
+	// from an SBOM is what the document claims.
 	SourceSBOM Source = "sbom"
 
 	// SourceRPMSigMD5 is the SIGMD5 tag of the RPM database. It covers the main header and

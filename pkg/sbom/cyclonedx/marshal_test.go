@@ -595,6 +595,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Value: "centos",
 							},
 							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "rpm-sigmd5:md5:7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							},
+							{
 								Name:  "aquasecurity:trivy:SrcName",
 								Value: "binutils",
 							},
@@ -1116,6 +1124,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Value: "centos",
 							},
 							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:md5:483792b8b5f9eb8be7dc4407733118d0",
+							},
+							{
 								Name:  "aquasecurity:trivy:SrcEpoch",
 								Value: "1",
 							},
@@ -1160,6 +1172,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
+							},
+							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:md5:969b3c9231627022f8bf7ac70de807a1",
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcName",

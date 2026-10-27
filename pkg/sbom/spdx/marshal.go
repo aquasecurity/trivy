@@ -332,7 +332,7 @@ func (m *Marshaler) advisoryExternalReference(primaryURL string) *spdx.PackageEx
 }
 
 func (m *Marshaler) spdxPackage(c *core.Component, timeNow, pkgDownloadLocation string) (spdx.Package, error) {
-	pkgID, err := calcSPDXID(m.hasher, c)
+	pkgID, err := calcSPDXID(m.hasher, withoutSourcedDigests(c))
 	if err != nil {
 		return spdx.Package{}, xerrors.Errorf("failed to get os metadata package ID: %w", err)
 	}
@@ -649,6 +649,17 @@ func rootDocumentNamespace(root *core.Component) string {
 		strings.ReplaceAll(strings.ReplaceAll(root.Name, "https://", ""), "http://", ""), // remove http(s):// prefix when scanning repos
 		uuid.New().String(),
 	)
+}
+
+// withoutSourcedDigests returns the component without its core.PropertySourcedDigest properties.
+// The source of a digest is not part of the package identity, so it is left out of the SPDX-ID,
+// as it is for the digests in Files.
+func withoutSourcedDigests(c *core.Component) *core.Component {
+	cc := *c
+	cc.Properties = lo.Reject(c.Properties, func(p core.Property, _ int) bool {
+		return p.Name == core.PropertySourcedDigest
+	})
+	return &cc
 }
 
 func calcSPDXID(h Hash, v any) (string, error) {

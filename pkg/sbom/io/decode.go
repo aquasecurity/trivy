@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
@@ -15,6 +16,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -213,13 +215,23 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
 
+	// Digests taken from the properties carry their recorded sources; the remaining hashes of the
+	// component's files keep SourceSBOM.
+	pkgDigests := lo.Map(pkg.Digests, func(sd digest.SourcedDigest, _ int) digest.Digest {
+		return sd.Digest
+	})
+
 	for _, f := range c.Files {
 		if f.Path != "" && pkg.FilePath == "" {
 			pkg.FilePath = f.Path
 		}
-		// The digests of the component's files belong to the package; the decoders give a
-		// component at most one file.
-		pkg.AddDigests(f.Digests...)
+
+		// Skip the hashes whose values are already taken from the properties.
+		unsourced := lo.WithoutBy(f.Digests, func(sd digest.SourcedDigest) digest.Digest {
+			return sd.Digest
+		}, pkgDigests...)
+		pkg.AddDigests(unsourced...)
+
 		if len(f.Digests) > 0 {
 			pkg.Digest = f.Digests[0].Digest // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 		}
@@ -430,6 +442,10 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 			buildInfo.Nvr = prop.Value
 		case core.PropertyArch:
 			buildInfo.Arch = prop.Value
+		case core.PropertySourcedDigest:
+			if d, ok := parseSourcedDigest(prop.Value); ok {
+				pkg.AddDigests(d)
+			}
 		}
 	}
 
@@ -437,4 +453,13 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 		pkg.BuildInfo = buildInfo
 	}
 	return nil
+}
+
+// parseSourcedDigest parses a core.PropertySourcedDigest value, "<source>:<algorithm>:<value>".
+func parseSourcedDigest(v string) (digest.SourcedDigest, bool) {
+	src, d, ok := strings.Cut(v, ":")
+	if !ok || src == "" || !strings.Contains(d, ":") {
+		return digest.SourcedDigest{}, false
+	}
+	return digest.NewSourcedDigest(digest.Digest(d), digest.Source(src)), true
 }

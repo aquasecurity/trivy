@@ -38,6 +38,12 @@
           "annotationDate": "2021-08-25T12:20:30Z",
           "annotationType": "OTHER",
           "comment": "PkgType: conda-pkg"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: file-content:sha1:237db0da53131e4548cb1181337fa0f420299e1f"
         }
       ]
     },
@@ -67,6 +73,12 @@
           "annotationDate": "2021-08-25T12:20:30Z",
           "annotationType": "OTHER",
           "comment": "PkgType: conda-pkg"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: file-content:sha1:a6a2db7668f1ad541d704369fc66c96a4415aa24"
         }
       ]
     },
