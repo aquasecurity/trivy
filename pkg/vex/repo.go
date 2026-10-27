@@ -30,17 +30,16 @@ type RepositoryIndex struct {
 type RepositorySet struct {
 	indexes []RepositoryIndex
 	logOnce *xsync.Map[string, *sync.Once]
-	// documents caches the VEX documents opened so far, keyed by file path, so that a package's
-	// document is read and decoded once however many of its vulnerabilities are checked.
-	documents *xsync.Map[string, *openedDocument]
+	// documents caches opened VEX documents, as a package's document is checked once per vulnerability.
+	documents *xsync.Map[documentKey, func() (VEX, error)]
 	logger    *log.Logger
 }
 
-// openedDocument is a VEX document that is opened at most once.
-type openedDocument struct {
-	once sync.Once
-	vex  VEX
-	err  error
+// documentKey identifies a VEX document by its location as written in the repository index.
+type documentKey struct {
+	dir      string
+	location string
+	format   string
 }
 
 func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, error) {
@@ -73,7 +72,7 @@ func NewRepositorySet(ctx context.Context, cacheDir string) (*RepositorySet, err
 	return &RepositorySet{
 		indexes:   indexes, // In precedence order
 		logOnce:   new(xsync.Map[string, *sync.Once]),
-		documents: new(xsync.Map[string, *openedDocument]),
+		documents: new(xsync.Map[documentKey, func() (VEX, error)]),
 		logger:    logger,
 	}, nil
 }
@@ -109,9 +108,8 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 		rs.logVEXFound(pkgID, index.Name, index.URL, entry.Location)
 
 		source := fmt.Sprintf("VEX Repository: %s (%s)", index.Name, index.URL)
-		doc, err := rs.openDocumentOnce(source, filepath.Dir(index.Path), entry)
+		doc, err := rs.document(source, filepath.Dir(index.Path), entry)
 		if err != nil {
-			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
 			return types.ModifiedFinding{}, false
 		}
 
@@ -124,15 +122,18 @@ func (rs *RepositorySet) NotAffected(vuln types.DetectedVulnerability, product, 
 	return types.ModifiedFinding{}, false
 }
 
-// openDocumentOnce is OpenDocument with a per-set cache. NotAffected runs once per vulnerability, and a
-// package with thousands of vulnerabilities (a kernel, for example) would otherwise read and decode
-// its VEX document that many times.
-func (rs *RepositorySet) openDocumentOnce(source, dir string, entry repo.PackageEntry) (VEX, error) {
-	doc, _ := rs.documents.LoadOrStore(filepath.Join(dir, entry.Location), &openedDocument{})
-	doc.once.Do(func() {
-		doc.vex, doc.err = rs.OpenDocument(source, dir, entry)
-	})
-	return doc.vex, doc.err
+// document returns the VEX document for entry, opening it on first use.
+// The result, including an error, is reused for the lifetime of the set.
+func (rs *RepositorySet) document(source, dir string, entry repo.PackageEntry) (VEX, error) {
+	key := documentKey{dir: dir, location: entry.Location, format: entry.Format}
+	openDoc, _ := rs.documents.LoadOrStore(key, sync.OnceValues(func() (VEX, error) {
+		doc, err := rs.OpenDocument(source, dir, entry)
+		if err != nil {
+			rs.logger.Warn("Failed to open the VEX document", log.String("location", entry.Location), log.Err(err))
+		}
+		return doc, err
+	}))
+	return openDoc()
 }
 
 func (rs *RepositorySet) OpenDocument(source, dir string, entry repo.PackageEntry) (VEX, error) {

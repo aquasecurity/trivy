@@ -130,34 +130,75 @@ repositories:
 }
 
 // TestRepositorySet_NotAffected_readsEachDocumentOnce checks that a package's VEX document is opened
-// once, not once per vulnerability: after the first check the document is removed, and the next
-// checks must still be answered.
+// once, not once per vulnerability: the document file is removed or restored after the first check,
+// and the next checks must still return the result of the first one.
 func TestRepositorySet_NotAffected_readsEachDocumentOnce(t *testing.T) {
-	// Work on a copy so the document can be removed after its first use.
-	cacheDir := t.TempDir()
-	require.NoError(t, os.CopyFS(cacheDir, os.DirFS("testdata/single-repo")))
+	tests := []struct {
+		name string
+		// docExists is whether the document exists for the first check; the next checks see the opposite.
+		docExists       bool
+		wantModified    types.ModifiedFinding
+		wantNotAffected bool
+	}{
+		{
+			name:      "opened document is reused after the file is removed",
+			docExists: true,
+			wantModified: types.ModifiedFinding{
+				Type:      types.FindingTypeVulnerability,
+				Finding:   vuln3,
+				Status:    types.FindingStatusNotAffected,
+				Statement: "vulnerable_code_not_in_execute_path",
+				Source:    "VEX Repository: default (https://example.com/vex/default)",
+			},
+			wantNotAffected: true,
+		},
+		{
+			name:            "open error is reused after the file is restored",
+			docExists:       false,
+			wantNotAffected: false,
+		},
+	}
 
-	dataHome := t.TempDir()
-	t.Setenv("XDG_DATA_HOME", dataHome)
-	vexDir := filepath.Join(dataHome, ".trivy", "vex")
-	require.NoError(t, os.MkdirAll(vexDir, 0o755))
-	require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Work on a copy so the document can be removed and restored.
+			cacheDir := t.TempDir()
+			require.NoError(t, os.CopyFS(cacheDir, os.DirFS("testdata/single-repo")))
+			docPath := filepath.Join(cacheDir, "vex", "repositories", "default", "0.1", "bash-vex.json")
+			doc, err := os.ReadFile(docPath)
+			require.NoError(t, err)
+			if !tt.docExists {
+				require.NoError(t, os.Remove(docPath))
+			}
+
+			dataHome := t.TempDir()
+			t.Setenv("XDG_DATA_HOME", dataHome)
+			vexDir := filepath.Join(dataHome, ".trivy", "vex")
+			require.NoError(t, os.MkdirAll(vexDir, 0o755))
+			require.NoError(t, os.WriteFile(filepath.Join(vexDir, "repository.yaml"), []byte(`
 repositories:
   - name: default
     url: https://example.com/vex/default
     enabled: true
 `), 0o644))
 
-	rs, err := vex.NewRepositorySet(t.Context(), cacheDir)
-	require.NoError(t, err)
+			rs, err := vex.NewRepositorySet(t.Context(), cacheDir)
+			require.NoError(t, err)
 
-	_, notAffected := rs.NotAffected(vuln3, &bashComponent, nil)
-	require.True(t, notAffected)
+			for i := range 3 {
+				if i == 1 {
+					// Flip the document after the first check; a cached result must not notice.
+					if tt.docExists {
+						require.NoError(t, os.Remove(docPath))
+					} else {
+						require.NoError(t, os.WriteFile(docPath, doc, 0o644))
+					}
+				}
 
-	require.NoError(t, os.Remove(filepath.Join(cacheDir, "vex", "repositories", "default", "0.1", "bash-vex.json")))
-
-	for range 3 {
-		_, notAffected = rs.NotAffected(vuln3, &bashComponent, nil)
-		assert.True(t, notAffected, "the cached document should still answer after the file is gone")
+				modified, notAffected := rs.NotAffected(vuln3, &bashComponent, nil)
+				assert.Equal(t, tt.wantNotAffected, notAffected)
+				assert.Equal(t, tt.wantModified, modified)
+			}
+		})
 	}
 }
