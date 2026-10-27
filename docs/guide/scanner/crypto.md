@@ -166,12 +166,12 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 | `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
 | `CRYPTO-0004` | `NotAfter` |
 
-Table output shows the findings without the inventory.
+Table output shows the findings without the inventory. Identical rows are merged and the asset name ends with their number, such as `x2`. `Total` counts every finding, and JSON output tells the assets apart.
 
 ```
 example:latest (crypto)
 =======================
-Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
 
 ┌──────────┬─────────────┬───────────────────────────────────┬──────────────────────┬─────────────────────────────────────────────┐
 │ Severity │   Rule ID   │               Asset               │         File         │                   Message                   │
@@ -179,7 +179,7 @@ Total: 3 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 2, CRITICAL: 0)
 │ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8)     │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048        │
 │          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0002/ │
 │          │             ├───────────────────────────────────┼──────────────────────┤                                             │
-│          │             │ RSA-1024 public key (PKIX)        │ app/certs/legacy.pem │                                             │
+│          │             │ RSA-1024 public key (PKIX) x2     │ app/certs/legacy.pem │                                             │
 │          │             │                                   │                      │                                             │
 ├──────────┼─────────────┼───────────────────────────────────┤                      ├─────────────────────────────────────────────┤
 │ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com certificate │                      │ Certificate expired on 2024-03-01           │

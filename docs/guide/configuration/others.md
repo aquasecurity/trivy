@@ -24,6 +24,7 @@ $ trivy image --scanners vuln alpine:3.15
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |     ✓     |
 
 By default, `Trivy` exits with code 0 even when security issues are detected.
 Use the `--exit-code` option if you want to exit with a non-zero exit code.
