@@ -143,7 +143,7 @@ func TestEncoder_Encode(t *testing.T) {
 								Version:  "2.13.4",
 								FilePath: "/bar/jackson-databind-2.13.4.jar",
 								// Data written before the sourced digests carries the legacy field only.
-								Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
+								Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f00918273645",
 								Identifier: ftypes.PkgIdentifier{
 									UID: "64244651208EC759",
 									PURL: &packageurl.PackageURL{
@@ -415,7 +415,7 @@ func TestEncoder_Encode(t *testing.T) {
 							// The acquisition method of a legacy value is not guessed.
 							Digests: []digest.SourcedDigest{
 								{
-									Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
+									Digest: "sha1:1e2d3c4b5a69788796a5b4c3d2e1f00918273645",
 									Source: digest.SourceUnknown,
 								},
 							},
@@ -436,7 +436,7 @@ func TestEncoder_Encode(t *testing.T) {
 						},
 						{
 							Name:  core.PropertySourcedDigest,
-							Value: "unknown:sha1:1e2d3c4b5a69788796a5b4c3d2e1f009182736455",
+							Value: "unknown:sha1:1e2d3c4b5a69788796a5b4c3d2e1f00918273645",
 						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{

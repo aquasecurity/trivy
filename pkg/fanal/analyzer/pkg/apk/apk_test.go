@@ -540,7 +540,7 @@ func TestParseApkInfo(t *testing.T) {
 			wantFiles: files,
 		},
 		{
-			// A malformed database must not pile up digests on a single package.
+			// The first checksum line is kept, so Digest and Digests agree.
 			name: "repeated checksum lines in one entry",
 			path: "./testdata/apk-repeated-checksum",
 			wantPkgs: []types.Package{

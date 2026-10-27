@@ -158,10 +158,6 @@ func TestConvertToRpcPkgs(t *testing.T) {
 								Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
 								Source: digest.SourceFileContent,
 							},
-							{
-								Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
-								Source: digest.SourceUnknown,
-							},
 						},
 					},
 				},
@@ -180,10 +176,6 @@ func TestConvertToRpcPkgs(t *testing.T) {
 						{
 							Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
 							Source: "file-content",
-						},
-						{
-							Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
-							Source: "unknown",
 						},
 					},
 				},

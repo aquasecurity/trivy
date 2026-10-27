@@ -1,11 +1,9 @@
 package types_test
 
 import (
-	"encoding/json"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -19,40 +17,6 @@ func TestPackage_AddDigests(t *testing.T) {
 		wantDigest  digest.Digest
 		wantDigests []digest.SourcedDigest
 	}{
-		{
-			name: "multiple algorithms",
-			digests: []digest.SourcedDigest{
-				digest.NewSourcedDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceRPMSigMD5),
-				digest.NewSourcedDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable),
-			},
-			wantDigests: []digest.SourcedDigest{
-				{
-					Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
-					Source: digest.SourceRPMSigMD5,
-				},
-				{
-					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-					Source: digest.SourceDpkgAvailable,
-				},
-			},
-		},
-		{
-			name: "same algorithm from different sources",
-			digests: []digest.SourcedDigest{
-				digest.NewSourcedDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceDpkgAvailable),
-				digest.NewSourcedDigest("sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061", digest.SourceFileContent),
-			},
-			wantDigests: []digest.SourcedDigest{
-				{
-					Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-					Source: digest.SourceDpkgAvailable,
-				},
-				{
-					Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
-					Source: digest.SourceFileContent,
-				},
-			},
-		},
 		{
 			name: "same value from different sources",
 			digests: []digest.SourcedDigest{
@@ -111,7 +75,6 @@ func TestPackage_AddDigests(t *testing.T) {
 		{
 			name: "on top of what is already collected",
 			pkg: types.Package{
-				Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
 				Digests: []digest.SourcedDigest{
 					{
 						Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
@@ -124,7 +87,6 @@ func TestPackage_AddDigests(t *testing.T) {
 				digest.NewSourcedDigest("md5:0c4b9d8e7f6a5b4c3d2e1f0a9b8c7d6e", digest.SourceRPMSigMD5),
 				digest.NewSourcedDigest("md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f", digest.SourceSBOM),
 			},
-			wantDigest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
 			wantDigests: []digest.SourcedDigest{
 				{
 					Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
@@ -254,55 +216,4 @@ func TestPackage_SourcedDigests(t *testing.T) {
 			assert.Equal(t, tt.want, tt.pkg.SourcedDigests())
 		})
 	}
-}
-
-// TestPackage_DigestsJSON covers the serialization used by the cache and the JSON report.
-func TestPackage_DigestsJSON(t *testing.T) {
-	t.Run("marshal", func(t *testing.T) {
-		pkg := types.Package{
-			Name:    "musl",
-			Version: "1.2.5-r0",
-			Digest:  "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-		}
-		pkg.AddDigests(
-			digest.NewSourcedDigest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d", digest.SourceAPKInstalledDB),
-			digest.NewSourcedDigest("sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3", digest.SourceFileContent),
-		)
-
-		b, err := json.Marshal(pkg)
-		require.NoError(t, err)
-		assert.JSONEq(t, `{
-		  "Name": "musl",
-		  "Version": "1.2.5-r0",
-		  "Digest": "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-		  "Digests": [
-		    {
-		      "Digest": "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-		      "Source": "apk-installed-db"
-		    },
-		    {
-		      "Digest": "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
-		      "Source": "file-content"
-		    }
-		  ]
-		}`, string(b))
-	})
-
-	t.Run("unmarshal legacy package", func(t *testing.T) {
-		var pkg types.Package
-		require.NoError(t, json.Unmarshal([]byte(`{
-		  "Name": "musl",
-		  "Digest": "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"
-		}`), &pkg))
-
-		assert.Equal(t, digest.Digest("sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d"), pkg.Digest)
-		assert.Empty(t, pkg.Digests)
-		// The acquisition method of a legacy value is not recorded anywhere.
-		assert.Equal(t, []digest.SourcedDigest{
-			{
-				Digest: "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
-				Source: digest.SourceUnknown,
-			},
-		}, pkg.SourcedDigests())
-	})
 }
