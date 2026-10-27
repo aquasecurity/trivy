@@ -1,4 +1,4 @@
-package check_test
+package scanner_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
-	"github.com/aquasecurity/trivy/pkg/crypto/check"
+	"github.com/aquasecurity/trivy/pkg/crypto/scanner"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -142,7 +142,7 @@ const (
 	oidSHA256WithRSA = "1.2.840.113549.1.1.11"
 )
 
-func TestEvaluate(t *testing.T) {
+func TestScan(t *testing.T) {
 	valid := now.AddDate(1, 0, 0)
 
 	tests := []struct {
@@ -269,7 +269,7 @@ func TestEvaluate(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := check.Evaluate(tt.assets, now)
+			got := scanner.Scan(tt.assets, now)
 			assert.Equal(t, tt.want, got)
 		})
 	}

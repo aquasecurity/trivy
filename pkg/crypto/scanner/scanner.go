@@ -1,5 +1,5 @@
-// Package check evaluates the built-in checks of cryptographic assets.
-package check
+// Package scanner scans cryptographic assets with the built-in checks.
+package scanner
 
 import (
 	"cmp"
@@ -28,9 +28,9 @@ type match struct {
 	finding types.CryptoFinding
 }
 
-// Evaluate returns the findings of the built-in checks for the given assets. The assets must
+// Scan returns the findings of the built-in checks for the given assets. The assets must
 // already have their IDs and the security levels of algorithm assets.
-func Evaluate(assets []ftypes.CryptoAsset, now time.Time) []types.CryptoFinding {
+func Scan(assets []ftypes.CryptoAsset, now time.Time) []types.CryptoFinding {
 	var matches []match
 	for _, asset := range assets {
 		for _, r := range rules {

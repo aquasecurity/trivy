@@ -15,7 +15,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/crypto"
-	"github.com/aquasecurity/trivy/pkg/crypto/check"
+	"github.com/aquasecurity/trivy/pkg/crypto/scanner"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -411,7 +411,7 @@ func (s Service) scanCrypto(ctx context.Context, target types.ScanTarget, option
 		CryptoAssets: target.CryptoAssets,
 	}
 	if options.CryptoChecks {
-		result.CryptoFindings = check.Evaluate(target.CryptoAssets, clock.Now(ctx))
+		result.CryptoFindings = scanner.Scan(target.CryptoAssets, clock.Now(ctx))
 	}
 	return types.Results{result}
 }
