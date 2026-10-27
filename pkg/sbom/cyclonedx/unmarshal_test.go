@@ -873,8 +873,8 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 								},
 								// The legacy field carries the first hash of the component.
 								Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",
-								// A recorded source is restored. A hash without a recorded source falls back to the
-								// SBOM source.
+								// A recorded source is restored, and a recorded digest whose value is not among the
+								// hashes is ignored. A hash without a recorded source falls back to the SBOM source.
 								Digests: []digest.SourcedDigest{
 									{
 										Digest: "sha512:2e51fa9add03f3e308d0b57c40dc7dfeba8b2efd1609f60f4bfe625d21a92327ec7e52e83b97511a1b52e297506eee60aa69cb75ff62eebe257512637fbc1bfa",

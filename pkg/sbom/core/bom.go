@@ -50,8 +50,7 @@ const (
 
 	// PropertySourcedDigest records a digest of the component together with the source it was
 	// acquired from, as "<source>:<algorithm>:<value>". Neither CycloneDX hashes nor SPDX
-	// checksums have room for the source, so the property holds the whole digest and does not
-	// depend on them.
+	// checksums have room for the source, so the property refers to the hash by its value.
 	PropertySourcedDigest = "SourcedDigest"
 
 	// Red Hat packages only.

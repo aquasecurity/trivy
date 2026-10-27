@@ -215,27 +215,20 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
 
-	// Digests taken from the properties carry their recorded sources; the remaining hashes of the
-	// component's files keep SourceSBOM.
-	pkgDigests := lo.Map(pkg.Digests, func(sd digest.SourcedDigest, _ int) digest.Digest {
-		return sd.Digest
-	})
-
+	var hashes []digest.SourcedDigest
 	for _, f := range c.Files {
 		if f.Path != "" && pkg.FilePath == "" {
 			pkg.FilePath = f.Path
 		}
-
-		// Skip the hashes whose values are already taken from the properties.
-		unsourced := lo.WithoutBy(f.Digests, func(sd digest.SourcedDigest) digest.Digest {
-			return sd.Digest
-		}, pkgDigests...)
-		pkg.AddDigests(unsourced...)
-
+		hashes = append(hashes, f.Digests...)
 		if len(f.Digests) > 0 {
 			pkg.Digest = f.Digests[0].Digest // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 		}
 	}
+
+	// The hashes of the component's files are authoritative: the properties only restore their
+	// sources, and the hashes without a recorded source keep SourceSBOM.
+	pkg.AddDigests(restoreDigestSources(c.Properties, hashes)...)
 
 	if p.Class() == types.ClassOSPkg {
 		m.fillSrcPkg(ctx, c, pkg)
@@ -413,7 +406,6 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 
 func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package) error {
 	buildInfo := &ftypes.BuildInfo{}
-	var sourcedDigests []digest.SourcedDigest
 	var err error
 	for _, prop := range props {
 		switch prop.Name {
@@ -443,13 +435,8 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 			buildInfo.Nvr = prop.Value
 		case core.PropertyArch:
 			buildInfo.Arch = prop.Value
-		case core.PropertySourcedDigest:
-			if d, ok := parseSourcedDigest(prop.Value); ok {
-				sourcedDigests = append(sourcedDigests, d)
-			}
 		}
 	}
-	pkg.AddDigests(sourcedDigests...)
 
 	if len(buildInfo.ContentSets) > 0 || buildInfo.Nvr != "" {
 		pkg.BuildInfo = buildInfo
@@ -457,13 +444,27 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 	return nil
 }
 
-// parseSourcedDigest parses a core.PropertySourcedDigest value, "<source>:<algorithm>:<value>".
-// A value with an empty part is rejected.
-func parseSourcedDigest(v string) (digest.SourcedDigest, bool) {
-	src, d, _ := strings.Cut(v, ":")
-	alg, value, _ := strings.Cut(d, ":")
-	if src == "" || alg == "" || value == "" {
-		return digest.SourcedDigest{}, false
+// restoreDigestSources returns the hashes with the sources recorded by
+// core.PropertySourcedDigest as "<source>:<algorithm>:<value>". A record is matched to a hash by
+// its value, and the first record of a value wins. Records without a source or a matching hash
+// are ignored.
+func restoreDigestSources(props []core.Property, hashes []digest.SourcedDigest) []digest.SourcedDigest {
+	sources := make(map[digest.Digest]digest.Source)
+	for _, p := range props {
+		if p.Name != core.PropertySourcedDigest {
+			continue
+		}
+		src, d, _ := strings.Cut(p.Value, ":")
+		if _, ok := sources[digest.Digest(d)]; src != "" && !ok {
+			sources[digest.Digest(d)] = digest.Source(src)
+		}
 	}
-	return digest.NewSourcedDigest(digest.Digest(d), digest.Source(src)), true
+
+	hashes = slices.Clone(hashes)
+	for i, h := range hashes {
+		if src, ok := sources[h.Digest]; ok {
+			hashes[i].Source = src
+		}
+	}
+	return hashes
 }

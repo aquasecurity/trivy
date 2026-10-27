@@ -47,6 +47,12 @@
           "annotationDate": "2022-09-12T17:02:46Z",
           "annotationType": "OTHER",
           "comment": "SourcedDigest: sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2022-09-12T17:02:46Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: java-archive:sha1:a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         }
       ]
     }
