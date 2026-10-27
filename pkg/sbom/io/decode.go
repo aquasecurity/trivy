@@ -413,6 +413,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 
 func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package) error {
 	buildInfo := &ftypes.BuildInfo{}
+	var sourcedDigests []digest.SourcedDigest
 	var err error
 	for _, prop := range props {
 		switch prop.Name {
@@ -444,10 +445,11 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 			buildInfo.Arch = prop.Value
 		case core.PropertySourcedDigest:
 			if d, ok := parseSourcedDigest(prop.Value); ok {
-				pkg.AddDigests(d)
+				sourcedDigests = append(sourcedDigests, d)
 			}
 		}
 	}
+	pkg.AddDigests(sourcedDigests...)
 
 	if len(buildInfo.ContentSets) > 0 || buildInfo.Nvr != "" {
 		pkg.BuildInfo = buildInfo
@@ -456,9 +458,11 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 }
 
 // parseSourcedDigest parses a core.PropertySourcedDigest value, "<source>:<algorithm>:<value>".
+// A value with an empty part is rejected.
 func parseSourcedDigest(v string) (digest.SourcedDigest, bool) {
-	src, d, ok := strings.Cut(v, ":")
-	if !ok || src == "" || !strings.Contains(d, ":") {
+	src, d, _ := strings.Cut(v, ":")
+	alg, value, _ := strings.Cut(d, ":")
+	if src == "" || alg == "" || value == "" {
 		return digest.SourcedDigest{}, false
 	}
 	return digest.NewSourcedDigest(digest.Digest(d), digest.Source(src)), true
