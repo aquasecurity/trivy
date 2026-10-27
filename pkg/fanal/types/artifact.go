@@ -230,7 +230,7 @@ type ArtifactDetail struct {
 	Misconfigurations []Misconfiguration `json:",omitempty"`
 	Secrets           Secrets            `json:",omitempty"`
 	Licenses          LicenseFiles       `json:",omitempty"`
-	CryptoAssets      []CryptoAsset      `json:",omitempty"`
+	CryptoAssets      CryptoAssets       `json:",omitempty"`
 
 	// ImageConfig has information from container image config
 	ImageConfig ImageConfigDetail

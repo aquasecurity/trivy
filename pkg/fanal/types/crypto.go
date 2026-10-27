@@ -5,9 +5,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"slices"
+	"strconv"
 
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // CryptoKind identifies the category of a cryptographic asset.
@@ -278,4 +282,67 @@ func (a CryptoAsset) Validate() error {
 func (a CryptoAsset) Clone() CryptoAsset {
 	a.CryptoAssetInfo = a.CryptoAssetInfo.Clone()
 	return a
+}
+
+// CryptoAssets is a list of cryptographic assets.
+type CryptoAssets []CryptoAsset
+
+// Finalize sets the ID of every asset and links key pairs.
+func (assets CryptoAssets) Finalize() {
+	assets.assignIDs()
+	assets.linkKeyPairs()
+}
+
+func (assets CryptoAssets) assignIDs() {
+	for i := range assets {
+		assets[i].AssetID = assetID(assets[i])
+	}
+}
+
+// linkKeyPairs points every private key at the public key derived from it, when both were
+// found. An encrypted container is never linked, because its identity is the digest of the
+// container and not of a SubjectPublicKeyInfo.
+func (assets CryptoAssets) linkKeyPairs() {
+	public := make(map[CryptoIdentity]CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
+			Type:         CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
+}
+
+// assetID derives the ID from the descriptor, the file path and the format, so the same
+// material found in different files gets different IDs.
+func assetID(asset CryptoAsset) string {
+	v := map[string]any{
+		"descriptor": asset.Descriptor().String(),
+		"filePath":   asset.FilePath,
+		"format":     asset.Format,
+	}
+	hash, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:         true,
+		IgnoreZeroValue: true,
+	})
+	if err != nil {
+		log.Warn("Failed to calculate the cryptographic asset hash",
+			log.String("asset", asset.Descriptor().String()), log.FilePath(asset.FilePath), log.Err(err))
+	}
+	return strconv.FormatUint(hash, 16)
 }

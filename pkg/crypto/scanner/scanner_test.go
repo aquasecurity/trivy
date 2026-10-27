@@ -6,7 +6,6 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/crypto/scanner"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
@@ -34,8 +33,8 @@ func algorithmDescriptor(oid, parameters string) ftypes.CryptoDescriptor {
 
 // withID sets the ID the scan assigns to the asset.
 func withID(asset ftypes.CryptoAsset) ftypes.CryptoAsset {
-	assets := []ftypes.CryptoAsset{asset}
-	crypto.AssignIDs(assets)
+	assets := ftypes.CryptoAssets{asset}
+	assets.Finalize()
 	return assets[0]
 }
 
