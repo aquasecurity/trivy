@@ -502,11 +502,12 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 	}
 
 	var files []core.File
-	if pkg.FilePath != "" || pkg.Digest != "" {
+	if digests := pkg.SourcedDigests(); pkg.FilePath != "" || len(digests) > 0 {
 		files = append(files, core.File{
 			Path:    pkg.FilePath,
-			Digests: lo.Ternary(pkg.Digest != "", []digest.Digest{pkg.Digest}, nil),
+			Digests: digests,
 		})
+		properties = append(properties, sourcedDigestProperties(digests)...)
 	}
 
 	// TODO(refactor): simplify the list of conditions
@@ -576,4 +577,20 @@ func filterProperties(props []core.Property) []core.Property {
 	return lo.Filter(props, func(property core.Property, _ int) bool {
 		return property.Value != "" && (property.Name != core.PropertySrcEpoch || property.Value != "0")
 	})
+}
+
+// sourcedDigestProperties returns a property per digest that has a source, recording the source,
+// which neither CycloneDX hashes nor SPDX checksums can hold.
+func sourcedDigestProperties(digests []digest.SourcedDigest) []core.Property {
+	var props []core.Property
+	for _, d := range digests {
+		if d.Digest == "" || d.Source == "" {
+			continue
+		}
+		props = append(props, core.Property{
+			Name:  core.PropertySourcedDigest,
+			Value: d.Source.String() + ":" + d.Digest.String(),
+		})
+	}
+	return props
 }
