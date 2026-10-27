@@ -579,8 +579,8 @@ func filterProperties(props []core.Property) []core.Property {
 	})
 }
 
-// sourcedDigestProperties returns a property per digest, recording the source it was acquired
-// from, which neither CycloneDX hashes nor SPDX checksums can hold.
+// sourcedDigestProperties returns a property per digest that has a source, recording the source,
+// which neither CycloneDX hashes nor SPDX checksums can hold.
 func sourcedDigestProperties(digests []digest.SourcedDigest) []core.Property {
 	var props []core.Property
 	for _, d := range digests {

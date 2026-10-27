@@ -55,10 +55,10 @@ const (
 // The algorithm is part of Digest ("<algorithm>:<value>"), so it is never stored twice.
 type SourcedDigest struct {
 	Digest Digest `json:",omitempty"`
-	// The same value can arrive with a different source, or without one at all, as for an SBOM
-	// shipped inside an image, and packages found through several sources are deduplicated.
-	// The source is therefore left out of the hashes behind PkgIdentifier.UID and the SPDX-IDs,
-	// so that results stay consistent.
+	// The source tells how a value was acquired, not which package it belongs to: the same
+	// package can carry the same value with another source, e.g. SourceSBOM when it is read
+	// from an SBOM shipped inside an image. The source is therefore left out of the hashes
+	// behind PkgIdentifier.UID and the SPDX-IDs.
 	Source Source `json:",omitempty" hash:"ignore"`
 }
 

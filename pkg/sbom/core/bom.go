@@ -206,7 +206,7 @@ type File struct {
 	// acquired from. A file can have several digests with different algorithms, like SHA1,
 	// SHA256, etc., and the same algorithm may be acquired from several sources.
 	// CycloneDX: component.hashes
-	// SPDX: package.files[].checksums
+	// SPDX: package.files[].checksums, or package.checksums for a file without a path
 	Digests []digest.SourcedDigest
 }
 

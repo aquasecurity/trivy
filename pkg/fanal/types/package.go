@@ -235,9 +235,9 @@ type Package struct {
 	// Deprecated: Use Digests instead.
 	Digest digest.Digest `json:",omitempty"`
 
-	// Digests holds every collected digest with the source it was acquired from.
-	// Values with the same algorithm but different sources are kept apart, as they may
-	// cover different bytes.
+	// Digests holds the collected digests with the sources they were acquired from, one value
+	// per algorithm and source. Values with the same algorithm but different sources are kept
+	// apart, as they may cover different bytes.
 	Digests []digest.SourcedDigest `json:",omitempty"`
 
 	// lines from the lock file where the dependency is written
