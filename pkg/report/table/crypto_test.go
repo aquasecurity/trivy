@@ -151,6 +151,108 @@ Total: 2 (MEDIUM: 0, HIGH: 2)
 `,
 		},
 		{
+			name: "do not group keys of different formats",
+			input: types.Result{
+				Target: "example:latest",
+				Class:  types.ClassCrypto,
+				CryptoAssets: []ftypes.CryptoAsset{
+					{
+						AssetID:         "pkix",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Name: "RSA-1024 public key"},
+						FilePath:        "app/certs/keys.pem",
+						Format:          ftypes.CryptoKeyFormatPKIX,
+					},
+					{
+						AssetID:         "pkcs1",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Name: "RSA-1024 public key"},
+						FilePath:        "app/certs/keys.pem",
+						Format:          ftypes.CryptoKeyFormatPKCS1,
+					},
+				},
+				CryptoFindings: []types.CryptoFinding{
+					{
+						RuleID:   "CRYPTO-0002",
+						Severity: "HIGH",
+						AssetID:  "pkix",
+						Evidence: types.CryptoEvidence{KeySize: 1024},
+					},
+					{
+						RuleID:   "CRYPTO-0002",
+						Severity: "HIGH",
+						AssetID:  "pkcs1",
+						Evidence: types.CryptoEvidence{KeySize: 1024},
+					},
+				},
+			},
+			want: `
+example:latest (crypto)
+=======================
+Total: 2 (MEDIUM: 0, HIGH: 2)
+
+┌──────────┬─────────────┬──────────────────────────────┬────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │            Asset             │        File        │                   Message                   │
+├──────────┼─────────────┼──────────────────────────────┼────────────────────┼─────────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 public key (PKCS#1) │ app/certs/keys.pem │ RSA key is 1024 bits, less than 2048        │
+│          │             │                              │                    │ https://avd.aquasec.com/crypto/crypto-0002/ │
+│          │             ├──────────────────────────────┤                    │                                             │
+│          │             │ RSA-1024 public key (PKIX)   │                    │                                             │
+│          │             │                              │                    │                                             │
+└──────────┴─────────────┴──────────────────────────────┴────────────────────┴─────────────────────────────────────────────┘
+`,
+		},
+		{
+			name: "do not group certificates with different messages",
+			input: types.Result{
+				Target: "example:latest",
+				Class:  types.ClassCrypto,
+				CryptoAssets: []ftypes.CryptoAsset{
+					{
+						AssetID:         "old",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Kind: ftypes.CryptoKindCertificate, Name: "legacy.example.com"},
+						FilePath:        "app/certs/chain.pem",
+					},
+					{
+						AssetID:         "older",
+						CryptoAssetInfo: ftypes.CryptoAssetInfo{Kind: ftypes.CryptoKindCertificate, Name: "legacy.example.com"},
+						FilePath:        "app/certs/chain.pem",
+					},
+				},
+				CryptoFindings: []types.CryptoFinding{
+					{
+						RuleID:   "CRYPTO-0004",
+						Severity: "MEDIUM",
+						AssetID:  "old",
+						Evidence: types.CryptoEvidence{
+							NotAfter: time.Date(2024, 3, 1, 0, 0, 0, 0, time.UTC),
+						},
+					},
+					{
+						RuleID:   "CRYPTO-0004",
+						Severity: "MEDIUM",
+						AssetID:  "older",
+						Evidence: types.CryptoEvidence{
+							NotAfter: time.Date(2023, 3, 1, 0, 0, 0, 0, time.UTC),
+						},
+					},
+				},
+			},
+			want: `
+example:latest (crypto)
+=======================
+Total: 2 (MEDIUM: 2, HIGH: 0)
+
+┌──────────┬─────────────┬────────────────────────────────┬─────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │             Asset              │        File         │                   Message                   │
+├──────────┼─────────────┼────────────────────────────────┼─────────────────────┼─────────────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ legacy.example.com certificate │ app/certs/chain.pem │ Certificate expired on 2023-03-01           │
+│          │             │                                │                     │ https://avd.aquasec.com/crypto/crypto-0004/ │
+│          │             │                                │                     ├─────────────────────────────────────────────┤
+│          │             │                                │                     │ Certificate expired on 2024-03-01           │
+│          │             │                                │                     │ https://avd.aquasec.com/crypto/crypto-0004/ │
+└──────────┴─────────────┴────────────────────────────────┴─────────────────────┴─────────────────────────────────────────────┘
+`,
+		},
+		{
 			name: "no findings",
 			input: types.Result{
 				Target: "example:latest",
