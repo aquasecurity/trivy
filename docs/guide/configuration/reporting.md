@@ -267,6 +267,7 @@ Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to reso
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 ```
 $ trivy image -f json -o results.json alpine:latest
@@ -637,6 +638,8 @@ $ trivy image --format json -o result.json debian:11
 $ trivy convert --format table --severity CRITICAL result.json
 ```
 
+The findings of the [crypto scanner](../scanner/crypto.md#findings) are kept only for the formats that show them.
+
 !!! note
     JSON reports from "trivy k8s" are not yet supported.
 
@@ -670,3 +673,4 @@ $ trivy convert --format table --severity CRITICAL result.json
 [cargo-binaries]: ../coverage/language/rust.md#binaries
 
 [^1]: To show summary table in `convert` mode - you need to enable the scanners used during JSON report generation.
+[^2]: Experimental. Available for container image scanning only. See [Cryptographic Asset Scanning](../scanner/crypto.md).
