@@ -106,6 +106,44 @@ var (
 		Licenses: []string{"GPL-2.0"},
 	}
 
+	dockerCEComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "docker-ce",
+		Version: "27.3.1-1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeDebian,
+				Name:    "docker-ce",
+				Version: "27.3.1-1",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyRepositoryClass,
+				Value: "third-party",
+			},
+		},
+	}
+
+	libc6Component = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "libc6",
+		Version: "2.36-9",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeDebian,
+				Name:    "libc6",
+				Version: "2.36-9",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyRepositoryClass,
+				Value: "official",
+			},
+		},
+	}
+
 	orphanedApkComponent = &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    "orphaned-package",
@@ -285,6 +323,56 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 										"rhel-9-for-aarch64-appstream-rpms",
 										"rhel-9-for-aarch64-appstream-source-rpms",
 									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "deb packages with repository class",
+			setupBOM: func() *core.BOM {
+				bom := core.NewBOM(core.Options{})
+				bom.SerialNumber = "test-repository-class"
+				bom.Version = 1
+
+				bom.AddComponent(dockerCEComponent)
+				bom.AddComponent(libc6Component)
+
+				return bom
+			},
+			wantSBOM: types.SBOM{
+				Metadata: types.Metadata{
+					OS: nil, // No OS detected
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "docker-ce@27.3.1-1",
+								Name:       "docker-ce",
+								Version:    "27.3.1-1",
+								SrcName:    "docker-ce",
+								SrcVersion: "27.3.1-1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: dockerCEComponent.PkgIdentifier.PURL,
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassThirdParty,
+								},
+							},
+							{
+								ID:         "libc6@2.36-9",
+								Name:       "libc6",
+								Version:    "2.36-9",
+								SrcName:    "libc6",
+								SrcVersion: "2.36-9",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: libc6Component.PkgIdentifier.PURL,
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
 								},
 							},
 						},

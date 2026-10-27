@@ -71,6 +71,9 @@ func TestEncoder_Encode(t *testing.T) {
 										Version: "2.37-15.1",
 									},
 								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
+								},
 							},
 							{
 								ID:      "curl@7.50.3-1",
@@ -83,6 +86,9 @@ func TestEncoder_Encode(t *testing.T) {
 										Name:    "curl",
 										Version: "7.50.3-1",
 									},
+								},
+								Repository: ftypes.PackageRepository{
+									Class: ftypes.RepositoryClassOfficial,
 								},
 								DependsOn: []string{
 									"libc6@2.37-15.1",
@@ -302,6 +308,10 @@ func TestEncoder_Encode(t *testing.T) {
 							Name:  core.PropertyPkgType,
 							Value: "debian",
 						},
+						{
+							Name:  core.PropertyRepositoryClass,
+							Value: "official",
+						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{
 						UID: "33654D2C483FC3AD",
@@ -325,6 +335,10 @@ func TestEncoder_Encode(t *testing.T) {
 						{
 							Name:  core.PropertyPkgType,
 							Value: "debian",
+						},
+						{
+							Name:  core.PropertyRepositoryClass,
+							Value: "official",
 						},
 					},
 					PkgIdentifier: ftypes.PkgIdentifier{

@@ -478,6 +478,13 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 		},
 	}
 
+	if pkg.Repository.Class != ftypes.RepositoryClassUnknown {
+		properties = append(properties, core.Property{
+			Name:  core.PropertyRepositoryClass,
+			Value: string(pkg.Repository.Class),
+		})
+	}
+
 	// Fill Red Hat specific properties
 	if pkg.BuildInfo != nil {
 		for _, cs := range pkg.BuildInfo.ContentSets {
