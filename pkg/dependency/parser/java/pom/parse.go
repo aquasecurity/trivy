@@ -95,7 +95,8 @@ type Parser struct {
 	logger          *log.Logger
 	rootPath        string
 	cache           pomCache
-	importCache     pomCache // POMs imported into dependencyManagement are resolved without dependencies, so they are cached separately
+	importCache     pomCache        // POMs imported into dependencyManagement are resolved without dependencies, so they are cached separately
+	notFoundPOMs    set.Set[string] // POMs not found in remote repositories, keyed by repository URL and POM path
 	localRepository string
 	remoteRepos     repositories
 	offline         bool
@@ -159,6 +160,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		rootPath:        filepath.Clean(filePath),
 		cache:           newPOMCache(),
 		importCache:     newPOMCache(),
+		notFoundPOMs:    set.New[string](),
 		localRepository: localRepository,
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
@@ -429,9 +431,9 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 	return moduleArtifact, nil
 }
 
-func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency, skipDependencies bool) (analysisResult, error) {
+func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency, isImportedArt bool) (analysisResult, error) {
 	cache := p.cache
-	if skipDependencies {
+	if isImportedArt {
 		cache = p.importCache
 	}
 
@@ -463,13 +465,17 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 		depManagement:    rootDepManagement,
 		rootFilePath:     art.RootFilePath,
 		repositories:     art.Repositories,
-		skipDependencies: skipDependencies,
+		skipDependencies: isImportedArt,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
-	cache.put(art, result)
+	// As in Maven, an imported (from depManagement) POM that was not found is not cached,
+	// because another POM importing it may declare other repositories where it can be found.
+	if pomContent != nil || !isImportedArt {
+		cache.put(art, result)
+	}
 	return result, nil
 }
 
@@ -922,6 +928,13 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			seen.Append(candidate.url.String())
 
+			// As in Maven Resolver, a POM not found in a repository is not requested from it again.
+			// cf. https://github.com/apache/maven-resolver/blob/maven-resolver-1.9.22/maven-resolver-impl/src/main/java/org/eclipse/aether/internal/impl/DefaultUpdateCheckManager.java#L183
+			notFoundKey := candidate.url.String() + "|" + path.Join(paths...)
+			if p.notFoundPOMs.Contains(notFoundKey) {
+				continue
+			}
+
 			repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
 			if snapshot {
 				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
@@ -945,6 +958,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 				}
 				return nil, xerrors.Errorf("fetch repository error: %w", err)
 			} else if fetched == nil {
+				p.notFoundPOMs.Append(notFoundKey)
 				continue
 			}
 			return fetched, nil

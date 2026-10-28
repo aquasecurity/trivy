@@ -22,6 +22,14 @@
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <!-- not found in the repositories of this POM, but found in the repositories of example-dependency -->
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-dependency-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
