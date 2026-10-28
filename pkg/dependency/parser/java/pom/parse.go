@@ -95,6 +95,7 @@ type Parser struct {
 	logger          *log.Logger
 	rootPath        string
 	cache           pomCache
+	importCache     pomCache // POMs imported into dependencyManagement are resolved without dependencies, so they are cached separately
 	localRepository string
 	remoteRepos     repositories
 	offline         bool
@@ -157,6 +158,7 @@ func NewParser(filePath string, opts ...option) *Parser {
 		logger:          log.WithPrefix("pom"),
 		rootPath:        filepath.Clean(filePath),
 		cache:           newPOMCache(),
+		importCache:     newPOMCache(),
 		localRepository: localRepository,
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
@@ -302,7 +304,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			}
 		}
 
-		result, err := p.resolve(ctx, art, rootDepManagement)
+		result, err := p.resolve(ctx, art, rootDepManagement, false)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
@@ -427,9 +429,14 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 	return moduleArtifact, nil
 }
 
-func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency) (analysisResult, error) {
+func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency, skipDependencies bool) (analysisResult, error) {
+	cache := p.cache
+	if skipDependencies {
+		cache = p.importCache
+	}
+
 	// If the artifact is found in cache, it is returned.
-	if result := p.cache.get(art); result != nil {
+	if result := cache.get(art); result != nil {
 		return *result, nil
 	}
 
@@ -452,16 +459,17 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 	}
 
 	result, err := p.analyze(ctx, pomContent, analysisOptions{
-		exclusions:    art.Exclusions,
-		depManagement: rootDepManagement,
-		rootFilePath:  art.RootFilePath,
-		repositories:  art.Repositories,
+		exclusions:       art.Exclusions,
+		depManagement:    rootDepManagement,
+		rootFilePath:     art.RootFilePath,
+		repositories:     art.Repositories,
+		skipDependencies: skipDependencies,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
-	p.cache.put(art, result)
+	cache.put(art, result)
 	return result, nil
 }
 
@@ -475,10 +483,11 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    set.Set[string]
-	depManagement []pomDependency // from the root POM
-	rootFilePath  string          // File path of the root POM or module POM
-	repositories  []repository    // Repositories from upper-level POMs
+	exclusions       set.Set[string]
+	depManagement    []pomDependency // from the root POM
+	rootFilePath     string          // File path of the root POM or module POM
+	repositories     []repository    // Repositories from upper-level POMs
+	skipDependencies bool            // skipDependencies skips resolving dependencies, e.g. for POMs imported into dependencyManagement
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -500,11 +509,15 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	// Resolve dependencies
 	props := pom.properties()
 	depManagement := pom.content.DependencyManagement.Dependencies.Dependency
-	deps, err := p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
-	if err != nil {
-		return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
+	var deps []artifact
+	if !opts.skipDependencies {
+		var err error
+		deps, err = p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
+		if err != nil {
+			return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
+		}
+		deps = p.filterDependencies(deps, opts.exclusions)
 	}
-	deps = p.filterDependencies(deps, opts.exclusions)
 
 	art := pom.artifact()
 	art.RootFilePath = opts.rootFilePath
@@ -636,7 +649,12 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		imported.Append(art.String())
 		art.Repositories = slices.Clone(repos) // avoid sharing
 
-		result, err := p.resolve(ctx, art, nil)
+		// As in Maven, only dependencyManagement of the imported POM is used,
+		// so its dependencies, including ones inherited from parent POMs, are not resolved.
+		// Resolving them would resolve their dependencyManagement and could import the same POM again,
+		// bypassing the check for repeated imports.
+		// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1104
+		result, err := p.resolve(ctx, art, nil, true)
 		if shouldReturnError(err) {
 			return nil, err
 		} else if err != nil {

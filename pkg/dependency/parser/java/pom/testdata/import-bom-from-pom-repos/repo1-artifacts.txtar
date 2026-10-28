@@ -1,4 +1,5 @@
-Repository 1: the nested BOM imported by example-bom. It imports example-bom back to form an import cycle.
+Repository 1: the nested BOM imported by example-bom. It imports example-bom back to form an import cycle
+and has ordinary dependencies, which are not imported.
 
 -- org/example/example-nested-bom/1.0.0/example-nested-bom-1.0.0.pom --
 <?xml version="1.0" encoding="UTF-8"?>
@@ -27,4 +28,11 @@ Repository 1: the nested BOM imported by example-bom. It imports example-bom bac
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api-nested</artifactId>
+        </dependency>
+    </dependencies>
 </project>
