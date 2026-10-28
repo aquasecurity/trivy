@@ -3,13 +3,12 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports [weak assets](#findings) found by built-in checks.
+Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON and table output Trivy also reports [weak assets](#findings) found by built-in checks.
 
-The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx` or `--format json`.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`, `--format json` or `--format table`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
-$ trivy image --scanners crypto --format json --output result.json myimage:1.0.0
 ```
 
 Trivy rejects `--scanners crypto` with other report formats.
@@ -114,7 +113,7 @@ The parameters of an algorithm are stored in `algorithmProperties`. The key size
 
 ## Findings
 
-Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON output. Trivy does not determine whether any software uses these assets.
+Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON and table output. Trivy does not determine whether any software uses these assets.
 
 | Rule ID | Title | Asset | Condition | Severity |
 | --- | --- | --- | --- | --- |
@@ -167,7 +166,28 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 | `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
 | `CRYPTO-0004` | `NotAfter` |
 
-Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
+Table output shows the findings without the inventory. Identical rows are merged and the asset name ends with their number, such as `x2`. `Total` counts every finding, and JSON output tells the assets apart.
+
+```
+example:latest (crypto)
+=======================
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
+
+┌──────────┬─────────────┬───────────────────────────────────┬──────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │               Asset               │         File         │                   Message                   │
+├──────────┼─────────────┼───────────────────────────────────┼──────────────────────┼─────────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8)     │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048        │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0002/ │
+│          │             ├───────────────────────────────────┼──────────────────────┤                                             │
+│          │             │ RSA-1024 public key (PKIX) x2     │ app/certs/legacy.pem │                                             │
+│          │             │                                   │                      │                                             │
+├──────────┼─────────────┼───────────────────────────────────┤                      ├─────────────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com certificate │                      │ Certificate expired on 2024-03-01           │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0004/ │
+└──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴─────────────────────────────────────────────┘
+```
+
+Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.
 
 A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
 
