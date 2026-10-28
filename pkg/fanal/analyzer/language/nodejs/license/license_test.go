@@ -27,6 +27,7 @@ func Test_ParseLicenses(t *testing.T) {
 				"package-c@0.0.1": {"BSD-3-Clause"},
 				"package-d@0.0.1": {"BSD-3-Clause"},
 				"package-e@0.0.1": {"(GPL-3.0 OR LGPL-3.0 OR MPL-1.1 OR SEE LICENSE IN LICENSE)"},
+				"package-g@0.0.1": {"MIT", "Apache-2.0"},
 			},
 		},
 	}
@@ -63,6 +64,10 @@ func Test_IsLicenseRefToFile(t *testing.T) {
 			name:         "empty input",
 			wantOk:       true,
 			wantFileName: "LICENSE",
+		},
+		{
+			name:  "multiple licenses",
+			input: []string{"MIT", "Apache-2.0"},
 		},
 		{
 			name:         "happy `SEE LICENSE IN`",
