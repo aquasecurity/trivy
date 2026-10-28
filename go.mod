@@ -112,9 +112,15 @@ require (
 	github.com/zclconf/go-cty v1.19.0
 	github.com/zclconf/go-cty-yaml v1.2.0
 	go.etcd.io/bbolt v1.5.0
+<<<<<<< HEAD
 	golang.org/x/crypto v0.57.0
 	golang.org/x/mod v0.41.0
 	golang.org/x/net v0.60.0
+=======
+	golang.org/x/crypto v0.58.0
+	golang.org/x/mod v0.42.0
+	golang.org/x/net v0.62.0
+>>>>>>> 948767f83 (chore(deps): bump golang.org/x/net from 0.61.0 to 0.62.0 (#11489))
 	golang.org/x/sync v0.24.0
 	golang.org/x/term v0.46.0
 	golang.org/x/text v0.42.0
