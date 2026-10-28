@@ -69,6 +69,7 @@ type Results []Result
 type ResultClass string
 type Compliance = string
 type Format string
+type ColorMode string
 
 const (
 	ClassUnknown     ResultClass = "unknown"
@@ -100,6 +101,10 @@ const (
 	FormatSPDXJSON   Format = "spdx-json"
 	FormatGitHub     Format = "github"
 	FormatCosignVuln Format = "cosign-vuln"
+
+	ColorAuto   ColorMode = "auto"   // Colorize output only when writing to a terminal
+	ColorAlways ColorMode = "always" // Always colorize output
+	ColorNever  ColorMode = "never"  // Never colorize output
 )
 
 var BuiltInK8sCompliances = []string{
@@ -128,6 +133,11 @@ var (
 		FormatSPDX,
 		FormatSPDXJSON,
 		FormatGitHub,
+	}
+	SupportedColorModes = []ColorMode{
+		ColorAuto,
+		ColorAlways,
+		ColorNever,
 	}
 	SupportedCompliances = []string{
 		ComplianceK8sNsa10,
