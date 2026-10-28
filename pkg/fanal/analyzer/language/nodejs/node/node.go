@@ -13,11 +13,12 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 const (
-	version      = 1
+	version      = 2
 	requiredFile = "node_version.h"
 )
 
@@ -70,11 +71,19 @@ func (parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]types.Package, []t
 type nodeAnalyzer struct{}
 
 func (nodeAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput) (*analyzer.AnalysisResult, error) {
-	return language.AnalyzePackage(ctx, types.Node, input.FilePath, input.Content, parser{}, input.Options.FileChecksum)
+	var p language.Parser = parser{}
+	if filepath.Base(input.FilePath) != requiredFile {
+		p = binaryParser{}
+	}
+	return language.AnalyzePackage(ctx, types.Node, input.FilePath, input.Content, p, input.Options.FileChecksum)
 }
 
-func (nodeAnalyzer) Required(filePath string, _ os.FileInfo) bool {
-	return strings.HasSuffix(filepath.ToSlash(filePath), "include/node/"+requiredFile)
+func (nodeAnalyzer) Required(filePath string, info os.FileInfo) bool {
+	if strings.HasSuffix(filepath.ToSlash(filePath), "include/node/"+requiredFile) {
+		return true
+	}
+	name := filepath.Base(filePath)
+	return (name == "node" || name == "nodejs") && info != nil && info.Mode().IsRegular() && utils.IsExecutable(info)
 }
 
 func (nodeAnalyzer) Type() analyzer.Type { return analyzer.TypeNode }

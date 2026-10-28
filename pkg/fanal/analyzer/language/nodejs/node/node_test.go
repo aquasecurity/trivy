@@ -1,8 +1,8 @@
 package node
 
 import (
-	"context"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -17,7 +17,7 @@ func TestNodeAnalyzer_Analyze(t *testing.T) {
 	require.NoError(t, err)
 	t.Cleanup(func() { require.NoError(t, f.Close()) })
 
-	got, err := nodeAnalyzer{}.Analyze(context.Background(), analyzer.AnalysisInput{
+	got, err := nodeAnalyzer{}.Analyze(t.Context(), analyzer.AnalysisInput{
 		FilePath: "usr/local/include/node/node_version.h",
 		Content:  f,
 	})
@@ -53,5 +53,33 @@ func TestNodeAnalyzer_Required(t *testing.T) {
 func TestNodeAnalyzer_Metadata(t *testing.T) {
 	a := nodeAnalyzer{}
 	assert.Equal(t, analyzer.TypeNode, a.Type())
-	assert.Equal(t, 1, a.Version())
+	assert.Equal(t, 2, a.Version())
+}
+
+func TestHeaderParser_Parse(t *testing.T) {
+	for _, tt := range []struct {
+		name, header, want string
+		wantErr            bool
+	}{
+		{name: "complete", header: "#define NODE_MAJOR_VERSION 26\n#define NODE_MINOR_VERSION 12\n#define NODE_PATCH_VERSION 1\n", want: "26.12.1"},
+		{name: "zero components", header: "#define NODE_MAJOR_VERSION 26\n#define NODE_MINOR_VERSION 0\n#define NODE_PATCH_VERSION 0\n", want: "26.0.0"},
+		{name: "incomplete", header: "#define NODE_MAJOR_VERSION 26\n#define NODE_MINOR_VERSION 12\n"},
+		{name: "invalid component", header: "#define NODE_MAJOR_VERSION invalid\n", wantErr: true},
+		{name: "unrelated defines", header: "#define OTHER_VERSION 26\n"},
+	} {
+		t.Run(tt.name, func(t *testing.T) {
+			pkgs, deps, err := (parser{}).Parse(t.Context(), strings.NewReader(tt.header))
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Empty(t, deps)
+			if tt.want == "" {
+				assert.Empty(t, pkgs)
+				return
+			}
+			assert.Equal(t, []types.Package{{ID: "node@" + tt.want, Name: "node", Version: tt.want}}, pkgs)
+		})
+	}
 }
