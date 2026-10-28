@@ -552,8 +552,10 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 		pom.content.Dependencies.Dependency,
 		parent.content.Dependencies.Dependency)
 
-	// Merge repositories, duplicates are removed when the repositories are resolved
-	pom.content.Repositories = append(pom.content.Repositories, parent.content.Repositories...)
+	// Merge repositories.
+	// Disabled repositories are filtered out only when the repositories are resolved,
+	// so a repository disabled in this POM also hides the one with the same ID from the parent POM.
+	pom.content.Repositories = mergePomRepositories(pom.content.Repositories, parent.content.Repositories)
 
 	return nil
 }
@@ -671,6 +673,18 @@ func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependenc
 func mergeRepositories(repos ...[]repository) []repository {
 	return lo.UniqBy(slices.Concat(repos...), func(r repository) url.URL {
 		return r.url
+	})
+}
+
+// mergePomRepositories merges repository declarations of a child POM and its parent POM by ID, the child taking precedence.
+// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/merge/MavenModelMerger.java#L237
+func mergePomRepositories(child, parent []pomRepository) []pomRepository {
+	return lo.UniqBy(slices.Concat(child, parent), func(r pomRepository) string {
+		// Maven requires the repository ID, so fall back to the URL to keep repositories without one
+		if r.ID == "" {
+			return r.URL
+		}
+		return r.ID
 	})
 }
 

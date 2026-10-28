@@ -2551,7 +2551,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		inputFile     string
 		rootRepoTxtar string            // txtar file for root repository
 		repos         map[string]string // key: repository URL placeholder, value: txtar file path
-		wantPackages  map[string]string
+		wantPackages  map[string]string // key: package ID, value: license; empty if the POM must not be found
 	}{
 		{
 			name:          "different repos for different dependencies",
@@ -2594,11 +2594,13 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			},
 		},
 		{
-			name:          "repositories are inherited from parent POMs",
+			name:          "repositories are inherited from parent POMs and overridden by ID",
 			inputFile:     filepath.Join("testdata", "repos-from-parent-poms", "pom.xml"),
 			rootRepoTxtar: filepath.Join("testdata", "repos-from-parent-poms", "repo-root-artifacts.txtar"),
 			repos: map[string]string{
 				"REPO1_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo1-artifacts.txtar"),
+				"REPO2_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo2-artifacts.txtar"),
+				"REPO3_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo3-artifacts.txtar"),
 			},
 			wantPackages: map[string]string{
 				// version from the BOM in the repository of the parent POM
@@ -2607,6 +2609,10 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api2:1.0.0::805ec0f5": "License from repo1",
 				// repositories of the POM take precedence over the ones inherited from the parent POM
 				"org.example:example-api3:1.0.0::47b52949": "License from reporoot",
+				// the parent repository is overridden by the child repository with the same ID
+				"org.example:example-api4:1.0.0::1ad0a18b": "",
+				// the parent repository is disabled by the child repository with the same ID
+				"org.example:example-api5:1.0.0::505b8e76": "",
 			},
 		},
 	}
@@ -2639,6 +2645,10 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 					return pkg.ID == pkgID
 				})
 				require.True(t, found, "package %s not found", pkgID)
+				if wantLicense == "" {
+					require.Empty(t, p.Licenses, "package %s has licenses", pkgID)
+					continue
+				}
 				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
 				require.Equal(t, wantLicense, p.Licenses[0])
 			}
