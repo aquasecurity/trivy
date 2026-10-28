@@ -108,6 +108,31 @@ func TestUniqueLibraries(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "direct wins over indirect",
+			pkgs: []ftypes.Package{
+				{
+					ID:           "asn1@0.2.6",
+					Name:         "asn1",
+					Version:      "0.2.6",
+					Relationship: ftypes.RelationshipIndirect,
+				},
+				{
+					ID:           "asn1@0.2.6",
+					Name:         "asn1",
+					Version:      "0.2.6",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+			wantPkgs: []ftypes.Package{
+				{
+					ID:           "asn1@0.2.6",
+					Name:         "asn1",
+					Version:      "0.2.6",
+					Relationship: ftypes.RelationshipDirect,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

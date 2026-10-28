@@ -38,6 +38,11 @@ func TestParse(t *testing.T) {
 			want:     nuGetLegacy,
 			wantDeps: nuGetLegacyDeps,
 		},
+		{
+			file:     "testdata/packages_lock_multi_relationship.json",
+			want:     nuGetMultiRelationship,
+			wantDeps: nuGetMultiRelationshipDeps,
+		},
 	}
 
 	for _, v := range vectors {
@@ -66,8 +71,4 @@ func sortDeps(deps []ftypes.Dependency) {
 	sort.Slice(deps, func(i, j int) bool {
 		return deps[i].ID < deps[j].ID
 	})
-
-	for i := range deps {
-		sort.Strings(deps[i].DependsOn)
-	}
 }
