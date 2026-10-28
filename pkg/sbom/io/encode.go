@@ -476,13 +476,10 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			Name:  core.PropertyLayerDiffID,
 			Value: pkg.Layer.DiffID,
 		},
-	}
-
-	if pkg.Repository.Class != ftypes.RepositoryClassUnknown {
-		properties = append(properties, core.Property{
+		{
 			Name:  core.PropertyRepositoryClass,
 			Value: string(pkg.Repository.Class),
-		})
+		},
 	}
 
 	// Fill Red Hat specific properties

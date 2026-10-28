@@ -144,6 +144,25 @@ var (
 		},
 	}
 
+	zlib1gComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "zlib1g",
+		Version: "1.2.13",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:    packageurl.TypeDebian,
+				Name:    "zlib1g",
+				Version: "1.2.13",
+			},
+		},
+		Properties: core.Properties{
+			{
+				Name:  core.PropertyRepositoryClass,
+				Value: "foo", // invalid
+			},
+		},
+	}
+
 	orphanedApkComponent = &core.Component{
 		Type:    core.TypeLibrary,
 		Name:    "orphaned-package",
@@ -339,6 +358,7 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 
 				bom.AddComponent(dockerCEComponent)
 				bom.AddComponent(libc6Component)
+				bom.AddComponent(zlib1gComponent)
 
 				return bom
 			},
@@ -374,6 +394,18 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 								Repository: ftypes.PackageRepository{
 									Class: ftypes.RepositoryClassOfficial,
 								},
+							},
+							{
+								ID:         "zlib1g@1.2.13",
+								Name:       "zlib1g",
+								Version:    "1.2.13",
+								SrcName:    "zlib1g",
+								SrcVersion: "1.2.13",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: zlib1gComponent.PkgIdentifier.PURL,
+								},
+								// Invalid class is dropped
+								Repository: ftypes.PackageRepository{},
 							},
 						},
 					},

@@ -419,7 +419,11 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 		case core.PropertyModularitylabel:
 			pkg.Modularitylabel = prop.Value
 		case core.PropertyRepositoryClass:
-			pkg.Repository.Class = ftypes.RepositoryClass(prop.Value)
+			// Drop unknown values so that they don't leak into the report
+			class := ftypes.RepositoryClass(prop.Value)
+			if class == ftypes.RepositoryClassOfficial || class == ftypes.RepositoryClassThirdParty {
+				pkg.Repository.Class = class
+			}
 		case core.PropertyLayerDigest:
 			pkg.Layer.Digest = prop.Value
 		case core.PropertyLayerDiffID:
