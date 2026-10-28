@@ -8721,10 +8721,9 @@ You're not viewing the latest version of the documentation.
 <p class="admonition-title">EXPERIMENTAL</p>
 <p>This feature might change without preserving backwards compatibility.</p>
 </div>
-<p>Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports <a href="#findings">weak assets</a> found by built-in checks.</p>
-<p>The scanner is off by default. Enable it with <code>--scanners crypto</code> together with <code>--format cyclonedx</code> or <code>--format json</code>.</p>
+<p>Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON and table output Trivy also reports <a href="#findings">weak assets</a> found by built-in checks.</p>
+<p>The scanner is off by default. Enable it with <code>--scanners crypto</code> together with <code>--format cyclonedx</code>, <code>--format json</code> or <code>--format table</code>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--output<span class="w"> </span>result.cdx.json<span class="w"> </span>myimage:1.0.0
-$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>json<span class="w"> </span>--output<span class="w"> </span>result.json<span class="w"> </span>myimage:1.0.0
 </code></pre></div>
 <p>Trivy rejects <code>--scanners crypto</code> with other report formats.</p>
 <h2 id="what-is-scanned">What is scanned<a class="headerlink" href="#what-is-scanned" title="Permanent link">&para;</a></h2>
@@ -8858,7 +8857,7 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 <span class="p">}</span>
 </code></pre></div>
 <h2 id="findings">Findings<a class="headerlink" href="#findings" title="Permanent link">&para;</a></h2>
-<p>Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON output. Trivy does not determine whether any software uses these assets.</p>
+<p>Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON and table output. Trivy does not determine whether any software uses these assets.</p>
 <table>
 <thead>
 <tr>
@@ -8957,7 +8956,25 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 </tr>
 </tbody>
 </table>
-<p>Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. <code>trivy convert</code> keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.</p>
+<p>Table output shows the findings without the inventory. Identical rows are merged and the asset name ends with their number, such as <code>x2</code>. <code>Total</code> counts every finding, and JSON output tells the assets apart.</p>
+<div class="highlight"><pre><span></span><code>example:latest (crypto)
+=======================
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
+
+┌──────────┬─────────────┬───────────────────────────────────┬──────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │               Asset               │         File         │                   Message                   │
+├──────────┼─────────────┼───────────────────────────────────┼──────────────────────┼─────────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8)     │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048        │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0002/ │
+│          │             ├───────────────────────────────────┼──────────────────────┤                                             │
+│          │             │ RSA-1024 public key (PKIX) x2     │ app/certs/legacy.pem │                                             │
+│          │             │                                   │                      │                                             │
+├──────────┼─────────────┼───────────────────────────────────┤                      ├─────────────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com certificate │                      │ Certificate expired on 2024-03-01           │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0004/ │
+└──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴─────────────────────────────────────────────┘
+</code></pre></div>
+<p>Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. <code>trivy convert</code> keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.</p>
 <p>A rule ID in an <a href="../../configuration/filtering/#by-finding-ids">ignore file</a> suppresses its findings, and the <code>crypto</code> section of <code>.trivyignore.yaml</code> can limit that to some file paths. The assets of suppressed findings stay in the inventory. <code>--ignore-policy</code> and <code>--show-suppressed</code> do not apply to crypto findings.</p>
 <div class="highlight"><pre><span></span><code><span class="nt">crypto</span><span class="p">:</span>
 <span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">id</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">CRYPTO-0001</span>

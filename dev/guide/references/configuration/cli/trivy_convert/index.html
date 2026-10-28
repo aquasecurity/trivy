@@ -8683,7 +8683,13 @@ You're not viewing the latest version of the documentation.
   -o, --output string              output file name
       --output-plugin-arg string   [EXPERIMENTAL] output plugin arguments
       --report string              specify a report format for the output (allowed values: all,summary) (default &quot;all&quot;)
-      --scanners strings           List of scanners included when generating the json report. Used only for rendering the summary table. (allowed values: vuln,misconfig,secret,license)
+      --scanners strings           List of scanners included when generating the json report. Used only for rendering the summary table.
+                                   Allowed values:
+                                     - vuln
+                                     - misconfig
+                                     - secret
+                                     - license
+                                     - crypto
   -s, --severity strings           severities of security issues to be displayed
                                    Allowed values:
                                      - UNKNOWN
