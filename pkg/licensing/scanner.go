@@ -77,7 +77,11 @@ func (s *Scanner) detectCategory(license expression.Expression) types.LicenseCat
 // ScanTextLicense checks license names from `categories` as glob patterns and matches licenseText against those patterns.
 // If a match is found, it returns `unknown` category and severity.
 func (s *Scanner) ScanTextLicense(licenseText string) (types.LicenseCategory, string) {
-	for cat, names := range s.categories {
+	for _, cat := range types.LicenseCategoriesBySeverity {
+		names, ok := s.categories[cat]
+		if !ok {
+			continue
+		}
 		for name := range names.Iter() {
 			n, ok := strings.CutPrefix(name, LicenseTextPrefix)
 			if !ok {
@@ -114,7 +118,11 @@ func (s *Scanner) licenseToCategory(se expression.SimpleExpr) types.LicenseCateg
 	normalizedNames := set.NewCaseInsensitive(se.String()) // The license name with suffix (e.g. AGPL-1.0-or-later)
 	normalizedNames.Append(se.License)                     // Also accept the license name without suffix (e.g. AGPL-1.0)
 
-	for category, names := range s.categories {
+	for _, category := range types.LicenseCategoriesBySeverity {
+		names, ok := s.categories[category]
+		if !ok {
+			continue
+		}
 		if normalizedNames.Intersection(names).Size() > 0 {
 			return category
 		}
