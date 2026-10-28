@@ -889,6 +889,13 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		// Route each repository through its mirrors; a config-file mirror may expand
 		// one repository into several ordered fallback candidates.
 		for _, candidate := range p.mirrorFor(repo) {
+			// Skip Release only repositories for snapshot artifacts and vice versa.
+			// This is checked before deduplication, so a skipped repository doesn't hide
+			// a mirror that another repository with an enabled policy is routed to.
+			if snapshot && !candidate.snapshotEnabled || !snapshot && !candidate.releaseEnabled {
+				continue
+			}
+
 			// After mirrorFor different source repositories may collapse to the same URL
 			// (e.g. mirrorOf=*). Maven's aggregateRepositories deduplicates the post-mirror
 			// set so a not-found artifact is fetched from each mirror only once; mirror by URL.
@@ -896,11 +903,6 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 				continue
 			}
 			seen.Append(candidate.url.String())
-
-			// Skip Release only repositories for snapshot artifacts and vice versa
-			if snapshot && !candidate.snapshotEnabled || !snapshot && !candidate.releaseEnabled {
-				continue
-			}
 
 			repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
 			if snapshot {
