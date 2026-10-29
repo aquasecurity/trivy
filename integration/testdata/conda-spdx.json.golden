@@ -14,7 +14,7 @@
   "packages": [
     {
       "name": "openssl",
-      "SPDXID": "SPDXRef-Package-8217dab1d30aca2",
+      "SPDXID": "SPDXRef-Package-710ea94d91d730ae",
       "versionInfo": "1.1.1q",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -38,12 +38,18 @@
           "annotationDate": "2021-08-25T12:20:30Z",
           "annotationType": "OTHER",
           "comment": "PkgType: conda-pkg"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: file-content:sha1:237db0da53131e4548cb1181337fa0f420299e1f"
         }
       ]
     },
     {
       "name": "pip",
-      "SPDXID": "SPDXRef-Package-1c3eafceb0a76303",
+      "SPDXID": "SPDXRef-Package-ddf70708b454a209",
       "versionInfo": "22.2.2",
       "supplier": "NOASSERTION",
       "downloadLocation": "NONE",
@@ -67,6 +73,12 @@
           "annotationDate": "2021-08-25T12:20:30Z",
           "annotationType": "OTHER",
           "comment": "PkgType: conda-pkg"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2021-08-25T12:20:30Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: file-content:sha1:a6a2db7668f1ad541d704369fc66c96a4415aa24"
         }
       ]
     },
@@ -120,22 +132,22 @@
     },
     {
       "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
-      "relatedSpdxElement": "SPDXRef-Package-1c3eafceb0a76303",
+      "relatedSpdxElement": "SPDXRef-Package-710ea94d91d730ae",
       "relationshipType": "CONTAINS"
     },
     {
       "spdxElementId": "SPDXRef-Filesystem-2e2426fd0f2580ef",
-      "relatedSpdxElement": "SPDXRef-Package-8217dab1d30aca2",
+      "relatedSpdxElement": "SPDXRef-Package-ddf70708b454a209",
       "relationshipType": "CONTAINS"
     },
     {
-      "spdxElementId": "SPDXRef-Package-1c3eafceb0a76303",
-      "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
-      "relationshipType": "CONTAINS"
-    },
-    {
-      "spdxElementId": "SPDXRef-Package-8217dab1d30aca2",
+      "spdxElementId": "SPDXRef-Package-710ea94d91d730ae",
       "relatedSpdxElement": "SPDXRef-File-600e5e0110a84891",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-ddf70708b454a209",
+      "relatedSpdxElement": "SPDXRef-File-7eb62e2a3edddc0a",
       "relationshipType": "CONTAINS"
     }
   ]

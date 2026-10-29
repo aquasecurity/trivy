@@ -13,6 +13,7 @@ import (
 	dtypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/sbom/core"
@@ -186,6 +187,16 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Licenses:        []string{"GPLv3+"},
 								Maintainer:      "CentOS",
 								Digest:          "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "md5:7459cec61bb4d1b0ca8107e25e0dd005",
+										Source: digest.SourceRPMSigMD5,
+									},
+									{
+										Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+										Source: digest.SourceUnknown,
+									},
+								},
 							},
 						},
 						Vulnerabilities: []types.DetectedVulnerability{
@@ -584,6 +595,14 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Value: "centos",
 							},
 							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "rpm-sigmd5:md5:7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							},
+							{
 								Name:  "aquasecurity:trivy:SrcName",
 								Value: "binutils",
 							},
@@ -600,6 +619,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Algorithm: cdx.HashAlgoMD5,
 								Value:     "7459cec61bb4d1b0ca8107e25e0dd005",
+							},
+							{
+								Algorithm: cdx.HashAlgoSHA256,
+								Value:     "cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
 							},
 						},
 					},
@@ -1101,6 +1124,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								Value: "centos",
 							},
 							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:md5:483792b8b5f9eb8be7dc4407733118d0",
+							},
+							{
 								Name:  "aquasecurity:trivy:SrcEpoch",
 								Value: "1",
 							},
@@ -1145,6 +1172,10 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							{
 								Name:  "aquasecurity:trivy:PkgType",
 								Value: "centos",
+							},
+							{
+								Name:  "aquasecurity:trivy:SourcedDigest",
+								Value: "unknown:md5:969b3c9231627022f8bf7ac70de807a1",
 							},
 							{
 								Name:  "aquasecurity:trivy:SrcName",

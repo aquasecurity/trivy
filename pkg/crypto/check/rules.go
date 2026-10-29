@@ -3,6 +3,7 @@ package check
 import (
 	"crypto/ecdsa"
 	"crypto/elliptic"
+	"fmt"
 	"math/big"
 	"slices"
 	"sync"
@@ -22,6 +23,7 @@ var rules = []rule{
 		severity: dbTypes.SeverityMedium,
 		kind:     ftypes.CryptoKindCertificate,
 		match:    matchSHA1Signature,
+		message:  sha1SignatureMessage,
 	},
 	{
 		id:       "CRYPTO-0002",
@@ -29,6 +31,7 @@ var rules = []rule{
 		severity: dbTypes.SeverityHigh,
 		kind:     ftypes.CryptoKindKey,
 		match:    matchSmallRSAKey,
+		message:  smallRSAKeyMessage,
 	},
 	{
 		id:       "CRYPTO-0003",
@@ -36,6 +39,7 @@ var rules = []rule{
 		severity: dbTypes.SeverityHigh,
 		kind:     ftypes.CryptoKindAlgorithm,
 		match:    matchWeakCurve,
+		message:  weakCurveMessage,
 	},
 	{
 		id:       "CRYPTO-0004",
@@ -43,6 +47,7 @@ var rules = []rule{
 		severity: dbTypes.SeverityMedium,
 		kind:     ftypes.CryptoKindCertificate,
 		match:    matchExpiredCertificate,
+		message:  expiredCertificateMessage,
 	},
 	{
 		id:       "CRYPTO-0005",
@@ -58,6 +63,13 @@ const (
 	oidRSAEncryption = "1.2.840.113549.1.1.1"
 	// oidECPublicKey identifies the elliptic curve key algorithm, defined by RFC 5480 section 2.1.1.
 	oidECPublicKey = "1.2.840.10045.2.1"
+)
+
+const (
+	// minRSAKeySize is the smallest RSA key size in bits that passes CRYPTO-0002.
+	minRSAKeySize = 2048
+	// minSecurityLevel is the smallest classical security level in bits that passes CRYPTO-0003.
+	minSecurityLevel = 112
 )
 
 // sha1SignatureOIDs are the signature algorithms that hash with SHA-1. RSASSA-PSS names its
@@ -81,7 +93,7 @@ func matchSHA1Signature(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvid
 }
 
 func matchSmallRSAKey(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
-	if asset.Key == nil || asset.Key.Size <= 0 || asset.Key.Size >= 2048 {
+	if asset.Key == nil || asset.Key.Size <= 0 || asset.Key.Size >= minRSAKeySize {
 		return types.CryptoEvidence{}, false
 	}
 	algorithm, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipUsedWith)
@@ -99,7 +111,7 @@ func matchWeakCurve(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence
 		return types.CryptoEvidence{}, false
 	}
 	level := asset.Algorithm.ClassicalSecurityLevel
-	if level == nil || *level >= 112 {
+	if level == nil || *level >= minSecurityLevel {
 		return types.CryptoEvidence{}, false
 	}
 	// The curve is only evidence, so a parse error is ignored.
@@ -167,6 +179,30 @@ func matchExpiredCertificate(asset ftypes.CryptoAsset, now time.Time) (types.Cry
 	return types.CryptoEvidence{
 		NotAfter: asset.Certificate.NotAfter,
 	}, true
+}
+
+func sha1SignatureMessage(e types.CryptoEvidence) string {
+	return fmt.Sprintf("Certificate is signed with %s", e.SignatureAlgorithm)
+}
+
+func smallRSAKeyMessage(e types.CryptoEvidence) string {
+	return fmt.Sprintf("RSA key is %d bits, less than %d", e.KeySize, minRSAKeySize)
+}
+
+func weakCurveMessage(e types.CryptoEvidence) string {
+	curve := "Elliptic curve"
+	if e.Curve != "" {
+		curve = "Curve " + e.Curve
+	}
+	level := 0
+	if e.ClassicalSecurityLevel != nil {
+		level = *e.ClassicalSecurityLevel
+	}
+	return fmt.Sprintf("%s gives %d bits of security, less than %d", curve, level, minSecurityLevel)
+}
+
+func expiredCertificateMessage(e types.CryptoEvidence) string {
+	return "Certificate expired on " + e.NotAfter.UTC().Format("2006-01-02")
 }
 
 // relatedAlgorithm returns the identity of the algorithm the asset has the given
