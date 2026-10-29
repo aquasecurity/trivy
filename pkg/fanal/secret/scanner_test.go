@@ -2757,3 +2757,32 @@ func TestIsSkippedSlashConversion(t *testing.T) {
 		})
 	}
 }
+
+// TestSecretScannerComposioAdjacentKeys pins the reason the Composio rules use a
+// zero-width leading boundary. startWord consumes the delimiter, so of two keys
+// separated by a single comma the first match eats what the second needs and only
+// one is reported; `\b` reports both. Asserting counts rather than whole findings
+// keeps the intent visible.
+func TestSecretScannerComposioAdjacentKeys(t *testing.T) {
+	inputFilePath := filepath.Join("testdata", "composio-adjacent-keys.txt")
+	content, err := os.ReadFile(inputFilePath)
+	require.NoError(t, err)
+
+	c, err := secret.ParseConfig(filepath.Join("testdata", "config.yaml"))
+	require.NoError(t, err)
+
+	sc := secret.NewScanner(c)
+	got := sc.Scan(secret.ScanArgs{
+		FilePath: inputFilePath,
+		Content:  bytes.NewReader(content),
+	})
+
+	lines := make(map[int]int)
+	for _, f := range got.Findings {
+		if f.RuleID == "composio-project-api-key" {
+			lines[f.StartLine]++
+		}
+	}
+	// Two comma-separated keys on line 1, then one per line on lines 2 and 3.
+	assert.Equal(t, map[int]int{1: 2, 2: 1, 3: 1}, lines)
+}

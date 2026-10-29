@@ -1074,20 +1074,25 @@ var builtinRules = []Rule{
 	//
 	// The leading boundary is mandatory, not stylistic: `oak_` and `uak_` both
 	// end in `ak_`, so without it every organization and user key would also be
-	// reported as a project key.
+	// reported as a project key. It is `\b` rather than startWord because `\b`
+	// is zero-width: startWord consumes the delimiter, so of two keys separated
+	// by a single comma or newline the first match eats what the second needs
+	// and only one is reported. `\b` cannot match between the "o" and "a" of
+	// `oak_` either, since both are word characters, so it enforces the rule
+	// above for free.
 	//
 	// The trailing boundary is endKeyWord rather than the shared endWord because
 	// "-" belongs to the key alphabet. endWord accepts "-", so it closes the
 	// match at the fixed body length and reports `ak_<20>-<more>` as a project
-	// key. `\b` is wrong for the same reason in the other direction: "-" is not
-	// a word character, so a body ending in "-" has no word boundary after it
-	// and roughly one key in 64 would be missed.
+	// key. `\b` would be wrong in this position for the opposite reason: "-" is
+	// not a word character, so a body ending in "-" has no word boundary after
+	// it and roughly one key in 64 would be missed.
 	{
 		ID:              "composio-project-api-key",
 		Category:        CategoryComposio,
 		Title:           "Composio Project API Key",
 		Severity:        "CRITICAL",
-		Regex:           MustCompile(startWord + `(?P<secret>ak_[A-Za-z0-9_-]{20})` + endKeyWord),
+		Regex:           MustCompile(`\b` + `(?P<secret>ak_[A-Za-z0-9_-]{20})` + endKeyWord),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ak_"},
 	},
@@ -1096,7 +1101,7 @@ var builtinRules = []Rule{
 		Category:        CategoryComposio,
 		Title:           "Composio Organization API Key",
 		Severity:        "CRITICAL",
-		Regex:           MustCompile(startWord + `(?P<secret>oak_[A-Za-z0-9_-]{20})` + endKeyWord),
+		Regex:           MustCompile(`\b` + `(?P<secret>oak_[A-Za-z0-9_-]{20})` + endKeyWord),
 		SecretGroupName: "secret",
 		Keywords:        []string{"oak_"},
 	},
@@ -1105,7 +1110,7 @@ var builtinRules = []Rule{
 		Category:        CategoryComposio,
 		Title:           "Composio User API Key",
 		Severity:        "CRITICAL",
-		Regex:           MustCompile(startWord + `(?P<secret>uak_[A-Za-z0-9_-]{43})` + endKeyWord),
+		Regex:           MustCompile(`\b` + `(?P<secret>uak_[A-Za-z0-9_-]{43})` + endKeyWord),
 		SecretGroupName: "secret",
 		Keywords:        []string{"uak_"},
 	},
