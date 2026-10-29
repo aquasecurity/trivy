@@ -11,18 +11,26 @@ The following scanners are supported.
 
 The following table provides an outline of the features Trivy offers.
 
-| Package manager | File               | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
-|:---------------:|--------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
-|    .Net Core    | *.deps.json        |            ✓            |     Excluded     |                  ✓                   |    ✓     |
-|      NuGet      | packages.config    |            ✓            |     Excluded     |                  -                   |    -     |
-|      NuGet      | *Packages.props    |            -            |     Excluded     |                  -                   |    -     |
-|      NuGet      | packages.lock.json |            ✓            |     Included     |                  ✓                   |    ✓     |
+| Package manager | File                    | Transitive dependencies | Dev dependencies | [Dependency graph][dependency-graph] | Position |
+|:---------------:|-------------------------|:-----------------------:|:----------------:|:------------------------------------:|:--------:|
+|    .Net Core    | *.deps.json             |            ✓            |     Excluded     |                  ✓                   |    ✓     |
+|    .Net Core    | Single-file executables |            ✓            |     Excluded     |                  ✓                   |    -     |
+|      NuGet      | packages.config         |            ✓            |     Excluded     |                  -                   |    -     |
+|      NuGet      | *Packages.props         |            -            |     Excluded     |                  -                   |    -     |
+|      NuGet      | packages.lock.json      |            ✓            |     Included     |                  ✓                   |    ✓     |
 
 ## *.deps.json
 Trivy parses `*.deps.json` files. Trivy currently excludes dev dependencies from the report.
 
 !!! note
     Trivy only includes runtime dependencies in the report.
+
+## Single-file executables
+Apps published with `-p:PublishSingleFile=true` don't have a `*.deps.json` file on disk; it is embedded in the executable.
+Trivy reads the embedded `*.deps.json` from Linux (ELF), Windows (PE) and macOS (Mach-O) single-file executables and reports the same packages as for a `*.deps.json` file, including the bundled .NET runtime of self-contained apps.
+
+!!! note
+    Single-file executables are scanned only when scanning container images and root filesystems, like other binaries.
 
 ## packages.config
 Trivy only finds dependency names and versions from `packages.config` files. To build dependency graph, it is better to use `packages.lock.json` files.
