@@ -197,6 +197,9 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 			continue
 		}
 
+		// only the unindented block header holds package patterns; indented keys such as
+		// the ones under dependenciesMeta (e.g. "debug@4.3.4:") look like patterns too
+		isHeader := line[0] != ' '
 		line = strings.TrimPrefix(strings.TrimSpace(line), "\"")
 
 		switch {
@@ -208,6 +211,10 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 		case strings.HasPrefix(line, "dependencies:"):
 			// start dependencies block
 			deps = parseDependencies(scanner)
+			continue
+		}
+
+		if !isHeader {
 			continue
 		}
 

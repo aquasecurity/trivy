@@ -151,6 +151,10 @@ var (
 		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 28, EndLine: 33}}},
 	}
 
+	yarnV2WithDependenciesMeta = []ftypes.Package{
+		{ID: "es-toolkit@1.47.0", Name: "es-toolkit", Version: "1.47.0", Locations: []ftypes.Location{{StartLine: 16, EndLine: 24}}},
+	}
+
 	yarnV2DepsWithProtocolDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@4.3.4",
