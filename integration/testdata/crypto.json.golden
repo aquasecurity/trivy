@@ -118,7 +118,7 @@
           "Name": "EC-P-192",
           "Algorithm": {
             "Primitive": "unknown",
-            "ClassicalSecurityLevel": 96,
+            "ClassicalSecurityLevel": 80,
             "NISTQuantumSecurityLevel": 0
           },
           "FilePath": "etc/ssl/certs/p192.pem",
@@ -138,7 +138,7 @@
           "Name": "EC-P-192",
           "Algorithm": {
             "Primitive": "unknown",
-            "ClassicalSecurityLevel": 96,
+            "ClassicalSecurityLevel": 80,
             "NISTQuantumSecurityLevel": 0
           },
           "FilePath": "etc/ssl/private/p192.key",
@@ -158,7 +158,7 @@
           "Name": "EC-P-192",
           "Algorithm": {
             "Primitive": "unknown",
-            "ClassicalSecurityLevel": 96,
+            "ClassicalSecurityLevel": 80,
             "NISTQuantumSecurityLevel": 0
           },
           "FilePath": "etc/ssl/public/p192.pem",
@@ -2476,7 +2476,7 @@
           "AssetID": "b8ababf0115fb157",
           "Evidence": {
             "Curve": "P-192",
-            "ClassicalSecurityLevel": 96
+            "ClassicalSecurityLevel": 80
           }
         },
         {
@@ -2523,7 +2523,7 @@
           "AssetID": "ba912ff4a9c6b357",
           "Evidence": {
             "Curve": "P-192",
-            "ClassicalSecurityLevel": 96
+            "ClassicalSecurityLevel": 80
           }
         },
         {
@@ -2542,7 +2542,7 @@
           "AssetID": "362831e38706a08f",
           "Evidence": {
             "Curve": "P-192",
-            "ClassicalSecurityLevel": 96
+            "ClassicalSecurityLevel": 80
           }
         },
         {

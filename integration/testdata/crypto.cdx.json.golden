@@ -127,7 +127,7 @@
         "algorithmProperties": {
           "primitive": "unknown",
           "ellipticCurve": "nist/P-192",
-          "classicalSecurityLevel": 96,
+          "classicalSecurityLevel": 80,
           "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.10045.2.1"

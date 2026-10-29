@@ -45,12 +45,12 @@ The parameters of an algorithm are the key size for RSA and the curve for EC. Fo
 
 Trivy estimates two nominal security levels for the algorithms it recognizes. The classical security level is the strength in bits against classical attacks. The NIST quantum security level is the NIST post-quantum security category from 1 to 5, or 0 for an algorithm that meets none of the categories.
 
-The levels are estimates for an algorithm and its parameters, taken from NIST, IETF and SECG publications. They are not a guarantee about an implementation, nor a statement that any policy approves the algorithm.
+The levels are estimates for an algorithm and its parameters, taken from NIST and IETF publications. They are not a guarantee about an implementation, nor a statement that any policy approves the algorithm.
 
 | Algorithm | Classical security level (bits) | NIST quantum security level |
 | --- | --- | --- |
 | RSA, key size 1024 / 2048 / 3072 / 4096 / 6144 / 8192 bits | 80 / 112 / 128 / 152 / 176 / 200 | 0 |
-| EC, curve P-192 / P-224 / P-256 / P-384 / P-521 | 96 / 112 / 128 / 192 / 256 | 0 |
+| EC, curve P-192 / P-224 / P-256 / P-384 / P-521 | 80 / 112 / 128 / 192 / 256 | 0 |
 | DSA, (L, N) of (1024, 160) / (2048, 224) / (2048, 256) / (3072, 256) | 80 / 112 / 112 / 128 | 0 |
 | Ed25519 / Ed448 | 128 / 224 | 0 |
 | ML-DSA-44 / ML-DSA-65 / ML-DSA-87 | - | 2 / 3 / 5 |
@@ -61,7 +61,7 @@ A dash means that the level is left out of the report.
 The levels come from these publications:
 
 - RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of [NIST SP 800-56B Rev. 2](https://csrc.nist.gov/pubs/sp/800/56/b/r2/final). RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of [NIST SP 800-57 Part 1 Rev. 5](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final), whose row for a 1024-bit modulus states at most 80 bits.
-- EC takes the strengths in Table 1 of [SEC 2: Recommended Elliptic Curve Domain Parameters, v2.0](https://www.secg.org/sec2-v2.pdf).
+- EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5. The curve P-192 takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
 - DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of [NIST SP 800-131A Rev. 2](https://csrc.nist.gov/pubs/sp/800/131/a/r2/final). The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
 - Ed25519 and Ed448 take their strengths from [RFC 8032, Section 8.5](https://datatracker.ietf.org/doc/html/rfc8032#section-8.5).
 - ML-DSA takes its categories from [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final).
