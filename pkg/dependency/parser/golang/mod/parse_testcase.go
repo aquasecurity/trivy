@@ -407,6 +407,64 @@ var (
 		},
 	}
 
+	GoModEcho = []ftypes.Package{
+		{
+			ID:           "example.com/app",
+			Name:         "example.com/app",
+			Relationship: ftypes.RelationshipRoot,
+		},
+		{
+			ID:           "example.com/mismatch@v1.4.5+echo.1",
+			Name:         "example.com/mismatch",
+			Version:      "v1.4.5+echo.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "example.com/ordinary@v1.5.6",
+			Name:         "example.com/ordinary",
+			Version:      "v1.5.6",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "example.com/replacement@v1.3.4+echo.2",
+			Name:         "example.com/replacement",
+			Version:      "v1.3.4+echo.2",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "example.com/v2module/v2@v2.0.0+echo.1",
+			Name:         "example.com/v2module/v2",
+			Version:      "v2.0.0+echo.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "example.com/variant@v1.2.3+echo.2.variant.1",
+			Name:         "example.com/variant",
+			Version:      "v1.2.3+echo.2.variant.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "golang.org/x/net@v0.55.0+echo.1",
+			Name:         "golang.org/x/net",
+			Version:      "v0.55.0+echo.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+
+	GoModEchoDeps = ftypes.Dependencies{
+		{
+			ID: "example.com/app",
+			DependsOn: []string{
+				"example.com/mismatch@v1.4.5+echo.1",
+				"example.com/ordinary@v1.5.6",
+				"example.com/replacement@v1.3.4+echo.2",
+				"example.com/v2module/v2@v2.0.0+echo.1",
+				"example.com/variant@v1.2.3+echo.2.variant.1",
+				"golang.org/x/net@v0.55.0+echo.1",
+			},
+		},
+	}
+
 	// execute go mod tidy in go116 folder
 	GoMod116 = []ftypes.Package{
 		{
