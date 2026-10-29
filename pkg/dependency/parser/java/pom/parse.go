@@ -627,7 +627,10 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 // resolveDepManagement resolves depManagement, including imported POMs.
 // It returns resolved depManagement with variables evaluated.
-// imported tracks already imported POMs to skip repeated imports and break import cycles.
+// imported tracks POMs in the current chain of imports to break import cycles.
+// As in Maven, a POM is removed from it after its import is resolved,
+// so the same POM imported by another POM (e.g. with other repositories) is resolved again.
+// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1259
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
 func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency,
@@ -649,7 +652,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
 		if imported.Contains(art.String()) {
-			p.logger.Debug("Skipping already imported POM", log.String("artifact", art.String()))
+			p.logger.Debug("Skipping import cycle", log.String("artifact", art.String()))
 			continue
 		}
 		imported.Append(art.String())
@@ -658,12 +661,13 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// As in Maven, only dependencyManagement of the imported POM is used,
 		// so its dependencies, including ones inherited from parent POMs, are not resolved.
 		// Resolving them would resolve their dependencyManagement and could import the same POM again,
-		// bypassing the check for repeated imports.
+		// bypassing the check for import cycles.
 		// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1104
 		result, err := p.resolve(ctx, art, nil, true)
 		if shouldReturnError(err) {
 			return nil, err
-		} else if err != nil {
+		} else if err != nil || result.artifact.IsEmpty() {
+			imported.Remove(art.String())
 			continue
 		}
 
@@ -674,6 +678,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		if err != nil {
 			return nil, err
 		}
+		imported.Remove(art.String())
 		for k, dd := range result.dependencyManagement {
 			// Evaluate variables and overwrite dependencyManagement
 			result.dependencyManagement[k] = dd.Resolve(newProps, nil, nil)

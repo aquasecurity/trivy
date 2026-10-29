@@ -2589,6 +2589,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api:1.1.0::4a7b5843": "License from reporoot",
 				// version from the nested BOM in the repository of the imported BOM
 				"org.example:example-api-nested:1.2.0::47955d7d": "License from reporoot",
+				// version from the BOM imported by two BOMs, found only in the repository of the second one
+				"org.example:example-api-shared:1.4.0::c490d1f7": "License from reporoot",
 				// version from the BOM in the repository of the transitive dependency
 				"org.example:example-api-transitive:1.3.0::6ce0264f": "License from repo2",
 			},

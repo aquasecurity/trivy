@@ -1,4 +1,5 @@
-Root repository: the BOM imported by the root POM, the transitive dependency and the libraries managed for the root POM.
+Root repository: the BOMs imported by the root POM, the transitive dependency and the libraries managed for the root POM.
+Both BOMs import example-shared-bom, which is found only in repository 2 declared by example-sibling-bom.
 
 -- org/example/example-bom/1.0.0/example-bom-1.0.0.pom --
 <?xml version="1.0" encoding="UTF-8"?>
@@ -32,8 +33,63 @@ Root repository: the BOM imported by the root POM, the transitive dependency and
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-shared-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+</project>
+
+-- org/example/example-sibling-bom/1.0.0/example-sibling-bom-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-sibling-bom</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <repository>
+            <id>repo2</id>
+            <url>REPO2_URL</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-shared-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+
+-- org/example/example-api-shared/1.4.0/example-api-shared-1.4.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api-shared</artifactId>
+    <version>1.4.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
 </project>
 
 -- org/example/example-dependency/1.0.0/example-dependency-1.0.0.pom --
