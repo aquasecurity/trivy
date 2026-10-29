@@ -1725,6 +1725,45 @@ var (
 		},
 	}
 
+	npmV3WithWorkspacePrefixPkgs = []ftypes.Package{
+		{
+			ID:           "@acme/design-system@2.0.0",
+			Name:         "@acme/design-system",
+			Version:      "2.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "packages/ui-kit",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 24,
+					EndLine:   27,
+				},
+			},
+		},
+		{
+			ID:           "@acme/ui@1.0.0",
+			Name:         "@acme/ui",
+			Version:      "1.0.0",
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "packages/ui",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 20,
+					EndLine:   23,
+				},
+			},
+		},
+	}
+
 	npmV3WithoutRootDepsFieldDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@2.6.9",

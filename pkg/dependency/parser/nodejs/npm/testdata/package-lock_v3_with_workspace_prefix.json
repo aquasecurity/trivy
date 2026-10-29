@@ -1,0 +1,29 @@
+{
+  "name": "acme",
+  "lockfileVersion": 3,
+  "requires": true,
+  "packages": {
+    "": {
+      "name": "acme",
+      "workspaces": [
+        "packages/*"
+      ]
+    },
+    "node_modules/@acme/design-system": {
+      "resolved": "packages/ui-kit",
+      "link": true
+    },
+    "node_modules/@acme/ui": {
+      "resolved": "packages/ui",
+      "link": true
+    },
+    "packages/ui": {
+      "name": "@acme/ui",
+      "version": "1.0.0"
+    },
+    "packages/ui-kit": {
+      "name": "@acme/design-system",
+      "version": "2.0.0"
+    }
+  }
+}
