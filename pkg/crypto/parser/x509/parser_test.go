@@ -1268,6 +1268,24 @@ func TestParseAssets(t *testing.T) {
 			}),
 		},
 		{
+			name: "P-192 SEC 1 private key of zero",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "EC PRIVATE KEY",
+				Bytes: p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.PrivateKey = make([]byte, 24)
+				}),
+			}),
+		},
+		{
+			name: "P-192 SEC 1 private key above the order of the curve",
+			input: pem.EncodeToMemory(&pem.Block{
+				Type: "EC PRIVATE KEY",
+				Bytes: p192SEC1PrivateKeyDER(t, func(key *cryptox509.ECPrivateKey) {
+					key.PrivateKey = bytes.Repeat([]byte{0xff}, 24)
+				}),
+			}),
+		},
+		{
 			name: "P-192 SEC 1 private key of version 2",
 			input: pem.EncodeToMemory(&pem.Block{
 				Type: "EC PRIVATE KEY",

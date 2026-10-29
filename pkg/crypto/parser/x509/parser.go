@@ -121,8 +121,8 @@ type ecPrivateKey struct {
 }
 
 // rawCertificate is an X.509 certificate without the TBSCertificate fields after
-// SubjectPublicKeyInfo. The signature fields are kept so that a certificate without a
-// signature fails to parse.
+// SubjectPublicKeyInfo. Only SubjectPublicKeyInfo is read. The other fields are not checked
+// and stand in their places, so that a certificate without a signature fails to parse.
 type rawCertificate struct {
 	TBSCertificate struct {
 		Version              int `asn1:"optional,explicit,default:0,tag:0"`
@@ -149,6 +149,10 @@ var oidNamedCurveP192 = asn1.ObjectIdentifier{1, 2, 840, 10045, 3, 1, 1}
 
 // p192Size is the length in bytes of a P-192 field element and of a P-192 private key.
 const p192Size = 24
+
+// p192Order is the order of the base point of P-192, given in SEC 2 section 2.2.2.
+// See https://www.secg.org/sec2-v2.pdf
+var p192Order, _ = new(big.Int).SetString("FFFFFFFFFFFFFFFFFFFFFFFF99DEF836146BC9B1B4D22831", 16)
 
 var (
 	errNotCryptographic  = errors.New("not cryptographic")
@@ -385,7 +389,7 @@ func pkcs8PrivateKeyObject(der []byte) (object, error) {
 			if _, ok := parseP192PrivateKey(key.PrivateKey); !ok {
 				return object{}, errMalformedCrypto
 			}
-			return p192Object(), nil
+			return p192AlgorithmObject(), nil
 		}
 	}
 	return privateKeyObject(der, ftypes.CryptoKeyFormatPKCS8, stdx509.ParsePKCS8PrivateKey)
@@ -400,14 +404,14 @@ func ecPrivateKeyObject(der []byte) (object, error) {
 	}
 	// Bare SEC 1 must name the curve.
 	if key, ok := parseP192PrivateKey(der); ok && key.NamedCurveOID != nil {
-		return p192Object(), nil
+		return p192AlgorithmObject(), nil
 	}
 	return object{}, errMalformedCrypto
 }
 
 // parseP192PrivateKey parses a SEC 1 EC private key and reports whether it can be a P-192 key.
-// The key must name P-192 or no curve, and be at most 24 bytes long. A key without a curve is
-// accepted, because PKCS#8 names the curve in the algorithm identifier.
+// The key must name P-192 or no curve, and be a valid scalar of at most 24 bytes. A key
+// without a curve is accepted, because PKCS#8 names the curve in the algorithm identifier.
 func parseP192PrivateKey(der []byte) (ecPrivateKey, bool) {
 	var key ecPrivateKey
 	rest, err := asn1.Unmarshal(der, &key)
@@ -420,37 +424,38 @@ func parseP192PrivateKey(der []byte) (ecPrivateKey, bool) {
 	if len(key.PrivateKey) == 0 || len(key.PrivateKey) > p192Size {
 		return ecPrivateKey{}, false
 	}
+	if d := new(big.Int).SetBytes(key.PrivateKey); d.Sign() == 0 || d.Cmp(p192Order) >= 0 {
+		return ecPrivateKey{}, false
+	}
 	return key, true
 }
 
-// p192CertificateObject reads a certificate with a P-192 key, which crypto/x509 rejects.
-func p192CertificateObject(der []byte) (object, bool) {
+// isP192Certificate reports whether der is a certificate with a P-192 key, which crypto/x509
+// rejects.
+func isP192Certificate(der []byte) bool {
 	var cert rawCertificate
 	rest, err := asn1.Unmarshal(der, &cert)
 	if err != nil || len(rest) > 0 {
-		return object{}, false
+		return false
 	}
-	return p192PublicKeyObject(cert.TBSCertificate.SubjectPublicKeyInfo.FullBytes)
+	return isP192PublicKey(cert.TBSCertificate.SubjectPublicKeyInfo.FullBytes)
 }
 
-// p192PublicKeyObject reads a P-192 public key in SubjectPublicKeyInfo, which crypto/x509
-// does not decode.
-func p192PublicKeyObject(spki []byte) (object, bool) {
+// isP192PublicKey reports whether spki is a P-192 public key in SubjectPublicKeyInfo, which
+// crypto/x509 does not decode.
+func isP192PublicKey(spki []byte) bool {
 	var info struct {
 		Algorithm        pkix.AlgorithmIdentifier
 		SubjectPublicKey asn1.BitString
 	}
 	rest, err := asn1.Unmarshal(spki, &info)
 	if err != nil || len(rest) > 0 {
-		return object{}, false
+		return false
 	}
 	if !info.Algorithm.Algorithm.Equal(oidECPublicKey) || !isP192(info.Algorithm.Parameters.FullBytes) {
-		return object{}, false
+		return false
 	}
-	if !isP192Point(info.SubjectPublicKey) {
-		return object{}, false
-	}
-	return p192Object(), true
+	return isP192Point(info.SubjectPublicKey)
 }
 
 // isP192 reports whether the parameters of an EC algorithm identifier name the curve P-192.
@@ -461,8 +466,9 @@ func isP192(parameters []byte) bool {
 }
 
 // isP192Point reports whether point has the length and the leading byte of a P-192 point
-// in the uncompressed or the compressed form of SEC 1 section 2.3.3. Whether the point lies
-// on the curve is not checked.
+// in the uncompressed or the compressed form of SEC 1 section 2.3.3. RFC 5480 allows both
+// forms, so the compressed one is accepted although crypto/x509 reads only the uncompressed
+// one for the other curves. Whether the point lies on the curve is not checked.
 // See https://www.secg.org/sec1-v2.pdf
 func isP192Point(point asn1.BitString) bool {
 	b := point.RightAlign()
@@ -478,9 +484,9 @@ func isP192Point(point asn1.BitString) bool {
 	return false
 }
 
-// p192Object is the object of a certificate or key on P-192, which is described by its
-// algorithm alone.
-func p192Object() object {
+// p192AlgorithmObject is the object of a certificate or key on P-192, which is described by
+// its algorithm alone.
+func p192AlgorithmObject() object {
 	return object{
 		kind:  objectECAlgorithm,
 		curve: "P-192",
@@ -572,8 +578,8 @@ func parseDERObject(der []byte) (object, error) {
 func certificateObject(der []byte) (object, error) {
 	parsed, err := stdx509.ParseCertificate(der)
 	if err != nil {
-		if obj, ok := p192CertificateObject(der); ok {
-			return obj, nil
+		if isP192Certificate(der) {
+			return p192AlgorithmObject(), nil
 		}
 		return object{}, errMalformedCrypto
 	}
@@ -645,8 +651,8 @@ func publicKeyObject(der []byte) (object, error) {
 			keyFormat: ftypes.CryptoKeyFormatPKIX,
 		}, nil
 	}
-	if obj, ok := p192PublicKeyObject(der); ok {
-		return obj, nil
+	if isP192PublicKey(der) {
+		return p192AlgorithmObject(), nil
 	}
 
 	oid, err := crypto.ParseSubjectPublicKeyInfo(der)
