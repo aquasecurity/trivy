@@ -41,6 +41,17 @@ For convenience, you can use the install script to download and install Trivy fr
 curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin {{ git.tag }}
 ```
 
+By default the script verifies the downloaded archive against the checksum file published with the release, which only proves download integrity.
+If you already trust a checksum from elsewhere (e.g. pinned in your CI configuration), you can verify against that value instead with the `-k` flag or the `TRIVY_CHECKSUM` environment variable:
+
+```bash
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sudo sh -s -- -b /usr/local/bin -k <sha256-of-the-archive> {{ git.tag }}
+# or (note: the variable must be set for the shell running the script, not for curl)
+curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | TRIVY_CHECKSUM=<sha256-of-the-archive> sh -s -- -b /usr/local/bin {{ git.tag }}
+```
+
+For real benefit, pin the install script itself to a known-good commit and supply the checksum from a trusted location, since a repository compromise could otherwise modify the script.
+
 ## RHEL/CentOS (Official)
 
 === "Repository"
