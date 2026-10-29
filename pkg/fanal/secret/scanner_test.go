@@ -1334,6 +1334,104 @@ func TestSecretScanner(t *testing.T) {
 	wantFindingOpenAIServiceAPIKey := openAIFinding("openai-service-api-key", "OpenAI Service API Key", "HIGH", 68)
 	wantFindingOpenAIRealtimeClientSecret := openAIFinding("openai-realtime-client-secret", "OpenAI Realtime Client Secret", "MEDIUM", 35)
 
+	// composio-project-api-key.txt holds two project keys, both 23 characters
+	// (`ak_` + a 20 character body). The second body ends in "-", which the
+	// trailing boundary of the rule has to accept even though "-" is not a word
+	// character; the whole key including that "-" is masked when it does.
+	composioProjectMask := strings.Repeat("*", 23)
+	composioProjectLine1 := "COMPOSIO_API_KEY=" + composioProjectMask
+	composioProjectLine2 := "COMPOSIO_API_KEY=" + composioProjectMask + " # a key whose body ends in a dash"
+	wantFindingComposioProjectAPIKey := types.SecretFinding{
+		RuleID:    "composio-project-api-key",
+		Category:  secret.CategoryComposio,
+		Title:     "Composio Project API Key",
+		Severity:  "CRITICAL",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     composioProjectLine1,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     composioProjectLine1,
+					Highlighted: composioProjectLine1,
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     composioProjectLine2,
+					Highlighted: composioProjectLine2,
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+		Offset: 17,
+	}
+	wantFindingComposioProjectAPIKeyTrailingDash := types.SecretFinding{
+		RuleID:    "composio-project-api-key",
+		Category:  secret.CategoryComposio,
+		Title:     "Composio Project API Key",
+		Severity:  "CRITICAL",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     composioProjectLine2,
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     composioProjectLine1,
+					Highlighted: composioProjectLine1,
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     composioProjectLine2,
+					Highlighted: composioProjectLine2,
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+			},
+		},
+		Offset: 58,
+	}
+	composioFinding := func(ruleID, title string, length int) types.SecretFinding {
+		masked := strings.Repeat("*", length)
+		return types.SecretFinding{
+			RuleID:    ruleID,
+			Category:  secret.CategoryComposio,
+			Title:     title,
+			Severity:  "CRITICAL",
+			StartLine: 1,
+			EndLine:   1,
+			Match:     masked,
+			Code: types.Code{
+				Lines: []types.Line{
+					{
+						Number:      1,
+						Content:     masked,
+						Highlighted: masked,
+						IsCause:     true,
+						FirstCause:  true,
+						LastCause:   true,
+					},
+				},
+			},
+			Offset: 0,
+		}
+	}
+	// `oak_` + 20 and `uak_` + 43. Each case below expects exactly one finding,
+	// which is what proves the project rule does not also fire on these keys:
+	// both prefixes end in `ak_`, so only the leading boundary keeps them apart.
+	wantFindingComposioOrgAPIKey := composioFinding("composio-org-api-key", "Composio Organization API Key", 24)
+	wantFindingComposioUserAPIKey := composioFinding("composio-user-api-key", "Composio User API Key", 47)
+
 	wantFindingMavenSettingsPassword := types.SecretFinding{
 		RuleID:    "maven-settings-password",
 		Category:  secret.CategoryMaven,
@@ -2085,6 +2183,46 @@ func TestSecretScanner(t *testing.T) {
 			name:          "invalid OpenAI tokens",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "openai-invalid.txt"),
+			want:          types.Secret{},
+		},
+		{
+			name:          "find Composio Project API Keys, including a body ending in a dash",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "composio-project-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "composio-project-api-key.txt"),
+				Findings: []types.SecretFinding{
+					wantFindingComposioProjectAPIKey,
+					wantFindingComposioProjectAPIKeyTrailingDash,
+				},
+			},
+		},
+		{
+			name:          "find Composio Organization API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "composio-org-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "composio-org-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingComposioOrgAPIKey},
+			},
+		},
+		{
+			name:          "find Composio User API Key",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "composio-user-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "composio-user-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingComposioUserAPIKey},
+			},
+		},
+		{
+			// Bodies one character short and one character long for each of the
+			// three key types, plus a body of the right length followed by
+			// "-abc": "-" is in the key alphabet, so a trailing boundary that
+			// accepted it would report the right-length prefix of a longer token.
+			name:          "invalid Composio API keys",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "composio-invalid.txt"),
 			want:          types.Secret{},
 		},
 		{
