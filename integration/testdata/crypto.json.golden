@@ -108,6 +108,66 @@
           }
         },
         {
+          "AssetID": "b8ababf0115fb157",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/p192.pem",
+          "Layer": {
+            "Digest": "sha256:e7d05081011beef8ab3c013bab7b9110aaa546f789473ec203c5a88b56800fc3",
+            "DiffID": "sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        },
+        {
+          "AssetID": "ba912ff4a9c6b357",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/p192.key",
+          "Layer": {
+            "Digest": "sha256:e7d05081011beef8ab3c013bab7b9110aaa546f789473ec203c5a88b56800fc3",
+            "DiffID": "sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        },
+        {
+          "AssetID": "362831e38706a08f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/public/p192.pem",
+          "Layer": {
+            "Digest": "sha256:e7d05081011beef8ab3c013bab7b9110aaa546f789473ec203c5a88b56800fc3",
+            "DiffID": "sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        },
+        {
           "AssetID": "10bb9f843a9330d1",
           "Kind": "algorithm",
           "Identity": {
@@ -2410,6 +2470,16 @@
           }
         },
         {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "b8ababf0115fb157",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
+          }
+        },
+        {
           "RuleID": "CRYPTO-0001",
           "Title": "SHA-1 certificate signature",
           "Severity": "MEDIUM",
@@ -2447,12 +2517,32 @@
           }
         },
         {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "ba912ff4a9c6b357",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
+          }
+        },
+        {
           "RuleID": "CRYPTO-0002",
           "Title": "Small RSA key",
           "Severity": "HIGH",
           "AssetID": "6f2775bce9fa59e2",
           "Evidence": {
             "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "362831e38706a08f",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
           }
         },
         {

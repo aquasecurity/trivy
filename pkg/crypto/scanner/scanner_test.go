@@ -202,13 +202,13 @@ func TestScan(t *testing.T) {
 		},
 		{
 			name:   "EC strength below 112 bits",
-			assets: []ftypes.CryptoAsset{algorithm("key.pem", oidECPublicKey, "curve=P-192", new(96))},
+			assets: []ftypes.CryptoAsset{algorithm("key.pem", oidECPublicKey, "curve=P-192", new(80))},
 			want: []types.CryptoFinding{
 				finding("CRYPTO-0003", "Weak elliptic curve", "HIGH",
-					algorithm("key.pem", oidECPublicKey, "curve=P-192", new(96)),
+					algorithm("key.pem", oidECPublicKey, "curve=P-192", new(80)),
 					types.CryptoEvidence{
 						Curve:                  "P-192",
-						ClassicalSecurityLevel: new(96),
+						ClassicalSecurityLevel: new(80),
 					}),
 			},
 		},

@@ -1850,7 +1850,7 @@ func TestConvertCryptoFindings(t *testing.T) {
 				AssetID:  "5d90a2c7e13f6b48",
 				Evidence: types.CryptoEvidence{
 					Curve:                  "P-192",
-					ClassicalSecurityLevel: new(96),
+					ClassicalSecurityLevel: new(80),
 				},
 			},
 		},

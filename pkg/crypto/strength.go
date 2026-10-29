@@ -45,9 +45,11 @@ var (
 	}
 
 	// EC estimates are the ECC strength ranges in NIST SP 800-57 Part 1 Rev. 5, Table 2.
+	// P-192 takes the nominal maximum of 80 from the at-most-80 row.
 	ecStrengthBasis = strengthBasis{
 		nistCategory: new(0),
 		classicalStrengths: map[string]int{
+			"curve=P-192": 80,
 			"curve=P-224": 112,
 			"curve=P-256": 128,
 			"curve=P-384": 192,
