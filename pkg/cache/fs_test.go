@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 	bolt "go.etcd.io/bbolt"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -266,6 +267,69 @@ func TestFSCache_PutBlob(t *testing.T) {
 				diffID: "sha256:dab15cac9ebd43beceeeda3ce95c574d6714ed3d3969071caead678c065813ec/11111",
 			},
 			wantErr: "database not open",
+		},
+		{
+			// The digests below are synthetic, put together for this test to exercise the
+			// serialization of a package that carries more than one value.
+			name: "package with several digests",
+			args: args{
+				diffID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				layerInfo: types.BlobInfo{
+					SchemaVersion: 1,
+					DiffID:        "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+					PackageInfos: []types.PackageInfo{
+						{
+							FilePath: "var/lib/rpm/Packages",
+							Packages: types.Packages{
+								{
+									Name:    "glibc",
+									Version: "2.17",
+									Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+									Digests: []digest.SourcedDigest{
+										{
+											Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+											Source: digest.SourceRPMSigMD5,
+										},
+										{
+											Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+											Source: digest.SourceSBOM,
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: `
+				{
+				  "SchemaVersion": 1,
+				  "DiffID": "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
+				  "PackageInfos": [
+				    {
+				      "FilePath": "var/lib/rpm/Packages",
+				      "Packages": [
+				        {
+				          "Name": "glibc",
+				          "Version": "2.17",
+				          "Digest": "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+				          "Digests": [
+				            {
+				              "Digest": "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+				              "Source": "rpm-sigmd5"
+				            },
+				            {
+				              "Digest": "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+				              "Source": "sbom"
+				            }
+				          ]
+				        }
+				      ]
+				    }
+				  ]
+				}
+			`,
+			wantLayerID: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 		},
 	}
 	for _, tt := range tests {
