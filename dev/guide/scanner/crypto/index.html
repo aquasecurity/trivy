@@ -8780,8 +8780,8 @@ You're not viewing the latest version of the documentation.
 <td>0</td>
 </tr>
 <tr>
-<td>EC, curve P-224 / P-256 / P-384 / P-521</td>
-<td>112 / 128 / 192 / 256</td>
+<td>EC, curve P-192 / P-224 / P-256 / P-384 / P-521</td>
+<td>80 / 112 / 128 / 192 / 256</td>
 <td>0</td>
 </tr>
 <tr>
@@ -8810,7 +8810,7 @@ You're not viewing the latest version of the documentation.
 <p>The levels come from these publications:</p>
 <ul>
 <li>RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of <a href="https://csrc.nist.gov/pubs/sp/800/56/b/r2/final">NIST SP 800-56B Rev. 2</a>. RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of <a href="https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final">NIST SP 800-57 Part 1 Rev. 5</a>, whose row for a 1024-bit modulus states at most 80 bits.</li>
-<li>EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5.</li>
+<li>EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5. The curve P-192 takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.</li>
 <li>DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of <a href="https://csrc.nist.gov/pubs/sp/800/131/a/r2/final">NIST SP 800-131A Rev. 2</a>. The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.</li>
 <li>Ed25519 and Ed448 take their strengths from <a href="https://datatracker.ietf.org/doc/html/rfc8032#section-8.5">RFC 8032, Section 8.5</a>.</li>
 <li>ML-DSA takes its categories from <a href="https://csrc.nist.gov/pubs/fips/204/final">FIPS 204</a>.</li>
@@ -8995,6 +8995,7 @@ Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
 </code></pre></div>
 <p>Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.</p>
 <p>Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JKS and JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.</p>
+<p>From certificates and keys on the curve P-192, only the <code>EC-P-192</code> algorithm is extracted.</p>
 <p>Trivy does not decrypt PKCS#12 keystores and does not report their private keys, so it reads only the certificates stored without encryption. keytool, OpenSSL and .NET encrypt the certificates unless encryption is turned off explicitly, such as with <code>-certpbe NONE</code> in OpenSSL or <code>-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE</code> in keytool. OpenSSL encrypts them even with an empty password. The <code>cacerts</code> trust store that ships with JDK 18 and later has no password and is read in full.</p>
 <p>The <code>cacerts</code> of JDK 17 and earlier is a JKS keystore and is skipped. A PKCS#12 keystore protected by a public-key signature instead of a password-based MAC is not read. Parts of a keystore encoded in BER rather than DER are skipped. Trivy reads at most 10000 bags from one keystore.</p>
 
