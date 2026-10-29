@@ -187,7 +187,13 @@ Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
 └──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴─────────────────────────────────────────────┘
 ```
 
-Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.
+Each format contains the findings, the assets or both, as the table shows. Findings are evaluated only for the formats that contain them, so they do not affect the exit code of CycloneDX output. `trivy convert` can write the findings of a JSON report only to JSON and table, while the assets can be converted to any format.
+
+| Format | Findings | Assets |
+| --- | :---: | :---: |
+| Table | ✓ | |
+| JSON | ✓ | ✓ |
+| CycloneDX | | ✓ |
 
 `--severity` filters only the findings. `--skip-files` and `--skip-dirs` exclude the assets.
 

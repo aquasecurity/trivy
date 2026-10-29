@@ -18,7 +18,7 @@ Trivy supports the following formats:
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
-|      Crypto      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 ```bash
 $ trivy image -f table golang:1.22.11-alpine3.20
