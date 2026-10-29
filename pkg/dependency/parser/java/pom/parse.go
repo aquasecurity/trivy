@@ -546,8 +546,9 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	}
 
 	// Parse parent POM
-	// The parent POM is also searched in the repositories of this POM
-	pomRepos = mergeRepositories(pom.repositories(p.servers), pomRepos)
+	// The parent POM is also searched in the repositories of this POM.
+	// Repositories from child POMs take precedence over parent repositories with the same ID.
+	pomRepos = mergeRepositories(pomRepos, pom.repositories(p.servers))
 	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent, pomRepos)
 	if err != nil {
 		return xerrors.Errorf("parent error: %w", err)
@@ -698,10 +699,14 @@ func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependenc
 	})
 }
 
-// mergeRepositories merges repositories in order of priority and removes duplicate URLs.
+// mergeRepositories merges repositories in order of priority and removes duplicate IDs or URLs.
 func mergeRepositories(repos ...[]repository) []repository {
-	return lo.UniqBy(slices.Concat(repos...), func(r repository) url.URL {
-		return r.url
+	return lo.UniqBy(slices.Concat(repos...), func(r repository) string {
+		// Maven requires the repository ID, so fall back to the URL to keep repositories without one
+		if r.id == "" {
+			return r.url.String()
+		}
+		return r.id
 	})
 }
 

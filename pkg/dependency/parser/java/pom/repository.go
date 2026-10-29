@@ -57,6 +57,10 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			logger.Debug("Unable to parse remote repository url", log.String("id", rep.ID), log.Err(err))
 			continue
 		}
+		if !repoURL.IsAbs() {
+			logger.Debug("Remote repository url must be absolute", log.String("id", rep.ID), log.String("url", rep.URL))
+			continue
+		}
 
 		// Get the credentials from settings.xml based on matching server id
 		// with the repository id from pom.xml and use it for accessing the repository url

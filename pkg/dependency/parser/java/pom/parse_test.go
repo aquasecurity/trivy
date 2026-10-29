@@ -2615,6 +2615,10 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api4:1.0.0::1ad0a18b": "",
 				// the parent repository is disabled by the child repository with the same ID
 				"org.example:example-api5:1.0.0::505b8e76": "",
+				// version from the greatgrandparent POM in the child's overridden repository
+				"org.example:example-api6:1.0.0-reporoot::b56c1528": "License from reporoot",
+				// ancestor in the child's disabled repository is not resolved
+				"org.example:example-api7:1.0.0::cc0410ac": "",
 			},
 		},
 	}
