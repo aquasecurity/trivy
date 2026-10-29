@@ -2640,8 +2640,12 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				rootRepoPlaceholder: rootRepoURL,
 			})
 
+			// Default repository that always returns 404 to ensure remote tests don't reach Maven Central
+			dummyServer := httptest.NewServer(http.NotFoundHandler())
+			t.Cleanup(dummyServer.Close)
+
 			// Parse the POM
-			parser := pom.NewParser(tt.inputFile)
+			parser := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(dummyServer.URL, true, true))
 			pkgs, _, err := parser.Parse(t.Context(), bytes.NewReader(pomContent))
 			require.NoError(t, err)
 
