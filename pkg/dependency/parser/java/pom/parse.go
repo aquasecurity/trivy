@@ -630,7 +630,8 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 // It returns resolved depManagement with variables evaluated.
 // imported tracks POMs in the current chain of imports to break import cycles.
 // As in Maven, a POM is removed from it after its import is resolved,
-// so the same POM imported by another POM (e.g. with other repositories) is resolved again.
+// so a previously not found POM can be resolved again when imported by another POM
+// (e.g. with other repositories).
 // cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1259
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
@@ -663,7 +664,7 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 		// so its dependencies, including ones inherited from parent POMs, are not resolved.
 		// Resolving them would resolve their dependencyManagement and could import the same POM again,
 		// bypassing the check for import cycles.
-		// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1104
+		// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1241
 		result, err := p.resolve(ctx, art, nil, true)
 		if shouldReturnError(err) {
 			return nil, err
