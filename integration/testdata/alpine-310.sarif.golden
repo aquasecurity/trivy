@@ -32,6 +32,10 @@
                 "cvssv3_baseScore": 5.3,
                 "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                 "precision": "very-high",
+                "purls": [
+                  "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+                  "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+                ],
                 "security-severity": "5.3",
                 "tags": [
                   "vulnerability",
@@ -63,6 +67,10 @@
                 "cvssv3_baseScore": 5.3,
                 "cvssv3_vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:L/I:N/A:N",
                 "precision": "very-high",
+                "purls": [
+                  "pkg:apk/alpine/libcrypto1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2",
+                  "pkg:apk/alpine/libssl1.1@1.1.1c-r0?arch=x86_64\u0026distro=3.10.2"
+                ],
                 "security-severity": "5.3",
                 "tags": [
                   "vulnerability",
