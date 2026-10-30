@@ -1232,6 +1232,52 @@
       }
     },
     {
+      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:6b9cd2a85a29850fbf2cab27ae517c7d4506befdcf34c6945574b71eee71512f",
+      "type": "cryptographic-asset",
+      "name": "Encrypted PKCS#8 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "opt/app/protected.p12",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "6b9cd2a85a29850fbf2cab27ae517c7d4506befdcf34c6945574b71eee71512f"
+          }
+        }
+      }
+    },
+    {
+      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:dd719caf1978154be8604f224caf8c59c50317f4ed29912085cbb51e5a6dc7b2",
+      "type": "cryptographic-asset",
+      "name": "Encrypted PKCS#8 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "opt/app/app.pfx",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "dd719caf1978154be8604f224caf8c59c50317f4ed29912085cbb51e5a6dc7b2"
+          }
+        }
+      }
+    },
+    {
       "bom-ref": "crypto:key:private:encrypted-rfc1423-sha256:2b5621233cc496e24f1e29e72505bf6273955ead95dab28df598022f261aed64",
       "type": "cryptographic-asset",
       "name": "Encrypted PKCS#1 private key",
@@ -2050,6 +2096,14 @@
     },
     {
       "ref": "crypto:key:private:encrypted-pkcs8-sha256:0328841dc0bb9f51b44755275a8c59b651405bf41d0ffb901c75054734ffd463",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:encrypted-pkcs8-sha256:6b9cd2a85a29850fbf2cab27ae517c7d4506befdcf34c6945574b71eee71512f",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:encrypted-pkcs8-sha256:dd719caf1978154be8604f224caf8c59c50317f4ed29912085cbb51e5a6dc7b2",
       "dependsOn": []
     },
     {

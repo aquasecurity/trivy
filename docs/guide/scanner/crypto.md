@@ -24,7 +24,7 @@ Keystores are selected by the `.p12`, `.pfx`, `.jks` and `.keystore` extensions 
 | X.509 certificates | PEM, DER, PKCS#12 and JKS keystores |
 | Private keys | PKCS#1, PKCS#8, SEC1, in PEM or DER |
 | Public keys | PKIX, in PEM or DER |
-| Encrypted private keys | PKCS#8 in PEM or DER, legacy encrypted PEM |
+| Encrypted private keys | PKCS#8 in PEM or DER, legacy encrypted PEM, PKCS#12 keystores |
 
 A single file may hold many objects. A certificate chain, a CA bundle of several hundred certificates, or a certificate stored next to its key are all read block by block, and an entry Trivy cannot read is skipped without discarding the rest of the file.
 
@@ -229,6 +229,6 @@ Some objects are recognized and skipped. Certificate signing requests, CRLs and 
 
 From certificates and keys on the curve P-192, only the `EC-P-192` algorithm is extracted.
 
-Trivy does not decrypt PKCS#12 keystores and does not report their private keys, so it reads only the certificates stored without encryption. keytool, OpenSSL and .NET encrypt the certificates unless encryption is turned off explicitly, such as with `-certpbe NONE` in OpenSSL or `-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE` in keytool. OpenSSL encrypts them even with an empty password. The `cacerts` trust store that ships with JDK 18 and later has no password and is read in full. A PKCS#12 keystore protected by a public-key signature instead of a password-based MAC is not read. Parts of a keystore encoded in BER rather than DER are skipped. Trivy reads at most 10000 bags from one keystore.
+Trivy does not decrypt PKCS#12 keystores, so it reads only the certificates stored without encryption and reports each private key as an encrypted key. A private key stored in the keystore without encryption is not reported. keytool, OpenSSL and .NET encrypt the certificates unless encryption is turned off explicitly, such as with `-certpbe NONE` in OpenSSL or `-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE` in keytool. OpenSSL encrypts them even with an empty password. The `cacerts` trust store that ships with JDK 18 and later has no password and is read in full. A PKCS#12 keystore protected by a public-key signature instead of a password-based MAC is not read. Parts of a keystore encoded in BER rather than DER are skipped. Trivy reads at most 10000 bags from one keystore.
 
 A JKS keystore stores its certificates without encryption, so Trivy reads all of them, including the `cacerts` trust store of JDK 17 and earlier. Trivy does not decrypt JKS keystores and does not report private keys, but it reads the certificate chains associated with private key entries. Trivy reads at most 10000 certificates from one JKS keystore.

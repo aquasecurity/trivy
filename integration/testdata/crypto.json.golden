@@ -2064,6 +2064,48 @@
           }
         },
         {
+          "AssetID": "165415a9f9f87aef",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "6b9cd2a85a29850fbf2cab27ae517c7d4506befdcf34c6945574b71eee71512f"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/protected.p12",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:ec2035faa60e152a6d26159f920d4f5faef9df5fb555d93952b68f42467ac203",
+            "DiffID": "sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        },
+        {
+          "AssetID": "95369947992f694e",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "dd719caf1978154be8604f224caf8c59c50317f4ed29912085cbb51e5a6dc7b2"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/app.pfx",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:ec2035faa60e152a6d26159f920d4f5faef9df5fb555d93952b68f42467ac203",
+            "DiffID": "sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        },
+        {
           "AssetID": "8d59ee0a6fd65a94",
           "Kind": "key",
           "KeyType": "private",
