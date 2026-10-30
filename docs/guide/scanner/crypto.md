@@ -125,7 +125,7 @@ Trivy runs built-in checks to find weak cryptographic assets and reports the fin
 
 A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.
 
-A small RSA key in a certificate gets the finding on its key asset. The EC finding points to the algorithm asset, which is reported once per file, so several keys on one curve in a file give one finding.
+A small RSA key or a small EC private key gets the finding on its key asset. The weak curve finding points to the algorithm asset, which is reported once per file, so several keys on one weak curve in a file give one finding.
 
 A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not read the hash from the RSA-PSS parameters.
 
