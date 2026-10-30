@@ -48,8 +48,9 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 // certificates yields the DER of each trusted certificate and of each certificate in the
 // chain of a private key.
-func certificates(ctx context.Context, s cryptobyte.String) iter.Seq[[]byte] {
+func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
 	return func(yield func([]byte) bool) {
+		s := cryptobyte.String(data)
 		var version, count uint32
 		if !s.ReadUint32(&version) || !s.ReadUint32(&count) {
 			log.WarnContext(ctx, "Malformed JKS file")
