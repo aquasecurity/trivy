@@ -157,6 +157,21 @@ func TestContainerd_SearchLocalStoreByNameOrDigest(t *testing.T) {
 			searchName: fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
 		},
 		{
+			name:       "familiarName:tag stored as docker.io/library/name:tag",
+			imageName:  fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("%s:%s", basename, tag),
+		},
+		{
+			name:       "docker.io/library/name:tag stored as familiarName:tag",
+			imageName:  fmt.Sprintf("%s:%s", basename, tag),
+			searchName: fmt.Sprintf("docker.io/library/%s:%s", basename, tag),
+		},
+		{
+			name:       "compound/name:tag stored as docker.io/compound/name:tag",
+			imageName:  fmt.Sprintf("docker.io/say/%s:%s", basename, tag),
+			searchName: fmt.Sprintf("say/%s:%s", basename, tag),
+		},
+		{
 			name:       "other-registry.io/library/name:tag",
 			imageName:  fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
 			searchName: fmt.Sprintf("other-registry.io/library/%s:%s", basename, tag),
