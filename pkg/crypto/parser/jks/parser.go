@@ -47,13 +47,13 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	}
 	ctx = log.WithContextPrefix(ctx, "jks")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
-	return x509.ParseCertificates(ctx, filePath, certificates(ctx, s), ftypes.CryptoKeystoreJKS)
+	return x509.ParseKeystoreObjects(ctx, filePath, objects(ctx, s), ftypes.CryptoKeystoreJKS)
 }
 
-// certificates yields the DER of each trusted certificate and of each certificate in the
-// chain of a private key.
-func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
-	return func(yield func([]byte) bool) {
+// objects yields each trusted certificate and each certificate in the chain of a private
+// key.
+func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
+	return func(yield func(x509.DERObject) bool) {
 		s := cryptobyte.String(data)
 		var version, count uint32
 		if !s.ReadUint32(&version) || !s.ReadUint32(&count) {
@@ -66,13 +66,13 @@ func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
 		}
 
 		budget := maxCertificates
-		next := func(der []byte) bool {
+		next := func(obj x509.DERObject) bool {
 			if budget == 0 {
 				log.WarnContext(ctx, "Too many JKS certificates")
 				return false
 			}
 			budget--
-			return yield(der)
+			return yield(obj)
 		}
 
 		// An entry carries no length of its own, so the rest of the file is lost after a
@@ -104,7 +104,7 @@ func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
 
 // readPrivateKeyEntry skips the encrypted key of an entry and yields the certificates of
 // its chain. It reports whether reading can continue.
-func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func([]byte) bool) bool {
+func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.DERObject) bool) bool {
 	var keyLen, chainLen uint32
 	if !s.ReadUint32(&keyLen) || !s.Skip(int(keyLen)) || !s.ReadUint32(&chainLen) {
 		log.WarnContext(ctx, "Malformed JKS entry")
@@ -120,7 +120,7 @@ func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint
 
 // readCertificate yields one certificate of an entry. It reports whether reading can
 // continue.
-func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, yield func([]byte) bool) bool {
+func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.DERObject) bool) bool {
 	certType := certificateTypeX509
 	if version == version2 {
 		var t cryptobyte.String
@@ -141,5 +141,5 @@ func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, 
 		log.DebugContext(ctx, "Unsupported JKS certificate type", log.String("cert_type", certType))
 		return true
 	}
-	return yield(der)
+	return yield(x509.DERObject{Kind: x509.DERCertificate, DER: der})
 }

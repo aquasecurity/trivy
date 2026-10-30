@@ -72,13 +72,13 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	}
 	ctx = log.WithContextPrefix(ctx, "pkcs12")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
-	return x509.ParseCertificates(ctx, filePath, certificates(ctx, p), ftypes.CryptoKeystorePKCS12)
+	return x509.ParseKeystoreObjects(ctx, filePath, objects(ctx, p), ftypes.CryptoKeystorePKCS12)
 }
 
-// certificates yields the DER of each certificate stored in an unencrypted content of the
-// authenticated safe of p.
-func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
-	return func(yield func([]byte) bool) {
+// objects yields each certificate stored in an unencrypted content of the authenticated safe
+// of p.
+func objects(ctx context.Context, p pfx) iter.Seq[x509.DERObject] {
+	return func(yield func(x509.DERObject) bool) {
 		rest, ok := authenticatedSafe(ctx, p)
 		if !ok {
 			return
@@ -139,16 +139,16 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]byte, bool) {
 	return contentInfos, true
 }
 
-// walker reads the certificates of one keystore and passes each to yield. The bags of the
-// whole keystore share one budget.
+// walker reads the objects of one keystore and passes each to yield. The bags of the whole
+// keystore share one budget.
 type walker struct {
 	ctx    context.Context
 	budget int
-	yield  func([]byte) bool
+	yield  func(x509.DERObject) bool
 }
 
-// walk yields the certificates of a safe contents structure and of the safe contents nested
-// in it. It reports false when the walk has to stop, because yield asks to stop or the
+// walk yields the objects of a safe contents structure and of the safe contents nested in
+// it. It reports false when the walk has to stop, because yield asks to stop or the
 // budget runs out.
 func (w *walker) walk(der []byte, depth int) bool {
 	if depth > maxDepth {
@@ -182,7 +182,7 @@ func (w *walker) walk(der []byte, depth int) bool {
 				log.DebugContext(w.ctx, "Unsupported PKCS#12 certificate type", log.String("cert_type", cert.ID.String()))
 				continue
 			}
-			if !w.yield(cert.Data) {
+			if !w.yield(x509.DERObject{Kind: x509.DERCertificate, DER: cert.Data}) {
 				return false
 			}
 		case bag.ID.Equal(oidSafeContentsBag):

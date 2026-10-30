@@ -174,13 +174,30 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	return describe(filePath, parse(ctx, content))
 }
 
-// ParseCertificates describes DER certificates stored in the given keystore as assets. A
-// certificate that cannot be read is logged and skipped, and a repeated certificate is
-// reported once.
-func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
-	objects := func(yield func(object) bool) {
-		for der := range certificates {
-			obj, err := certificateObject(der)
+// DERKind identifies the structure of a DER object read out of a keystore.
+type DERKind uint8
+
+const (
+	// DERCertificate identifies an X.509 certificate.
+	DERCertificate DERKind = iota + 1
+	// DERPrivateKey identifies a PKCS#8 PrivateKeyInfo.
+	DERPrivateKey
+	// DEREncryptedPrivateKey identifies a PKCS#8 EncryptedPrivateKeyInfo.
+	DEREncryptedPrivateKey
+)
+
+// DERObject is a DER object read out of a keystore.
+type DERObject struct {
+	Kind DERKind
+	DER  []byte
+}
+
+// ParseKeystoreObjects describes DER objects stored in the given keystore as assets. An
+// object that cannot be read is logged and skipped, and a repeated asset is reported once.
+func ParseKeystoreObjects(ctx context.Context, filePath string, objects iter.Seq[DERObject], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
+	parsed := func(yield func(object) bool) {
+		for o := range objects {
+			obj, err := parseKeystoreObject(o)
 			if err != nil {
 				logParseError(ctx, "", err)
 				continue
@@ -192,7 +209,24 @@ func ParseCertificates(ctx context.Context, filePath string, certificates iter.S
 			}
 		}
 	}
-	return describe(filePath, objects)
+	return describe(filePath, parsed)
+}
+
+func parseKeystoreObject(o DERObject) (object, error) {
+	switch o.Kind {
+	case DERCertificate:
+		return certificateObject(o.DER)
+	case DERPrivateKey:
+		return pkcs8PrivateKeyObject(o.DER)
+	case DEREncryptedPrivateKey:
+		obj, ok := parseEncryptedPKCS8(o.DER)
+		if !ok {
+			return object{}, errMalformedCrypto
+		}
+		return obj, nil
+	default:
+		return object{}, errUnsupportedCrypto
+	}
 }
 
 // describe describes objects as assets found in filePath, reporting each asset once per
