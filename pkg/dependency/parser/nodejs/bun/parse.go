@@ -60,7 +60,7 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 	}
 
 	// When package contains only package field [pkg: string]
-	// cf. https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7751
+	// cf. https://github.com/oven-sh/bun/blob/9b4284f788f20e3d6ec8358daf62ad10694b158a/src/install/lockfile/bun.lock.rs#L851-L858
 	if len(raw) == 1 {
 		return nil
 	}
