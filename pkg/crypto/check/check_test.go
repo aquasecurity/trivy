@@ -1,10 +1,15 @@
 package check_test
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"math/big"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/crypto/check"
@@ -85,6 +90,32 @@ func publicKey(filePath, algorithmOID string, size int, format ftypes.CryptoKeyF
 		FilePath: filePath,
 		Format:   format,
 		Layer:    layer,
+	})
+}
+
+func ecKey(t *testing.T, curve elliptic.Curve, k int, keyType ftypes.CryptoKeyType) ftypes.CryptoAsset {
+	t.Helper()
+
+	var pub *ecdsa.PublicKey
+	if k == 0 {
+		priv, err := ecdsa.GenerateKey(curve, rand.Reader)
+		require.NoError(t, err)
+		pub = &priv.PublicKey
+	} else {
+		scalar := make([]byte, (curve.Params().BitSize+7)/8)
+		big.NewInt(int64(k)).FillBytes(scalar)
+		priv, err := ecdsa.ParseRawPrivateKey(curve, scalar)
+		require.NoError(t, err)
+		pub = &priv.PublicKey
+	}
+
+	key, _, err := crypto.DescribeKey(pub, keyType)
+	require.NoError(t, err)
+	return withID(ftypes.CryptoAsset{
+		CryptoAssetInfo: key,
+		FilePath:        "key.pem",
+		Format:          ftypes.CryptoKeyFormatPKIX,
+		Layer:           layer,
 	})
 }
 
@@ -200,6 +231,54 @@ func TestEvaluate(t *testing.T) {
 		{
 			name:   "small key of another algorithm",
 			assets: []ftypes.CryptoAsset{publicKey("key.pem", "1.2.840.10040.4.1", 1024, ftypes.CryptoKeyFormatPKIX)},
+		},
+		{
+			name:   "small P-256 public key",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P256(), 230, ftypes.CryptoKeyTypePublic)},
+			want: []types.CryptoFinding{
+				finding("CRYPTO-0005", "Small EC private key", "CRITICAL", ecKey(t, elliptic.P256(), 230, ftypes.CryptoKeyTypePublic),
+					types.CryptoEvidence{Curve: "P-256"}),
+			},
+		},
+		{
+			name:   "small P-384 public key",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P384(), 230, ftypes.CryptoKeyTypePublic)},
+			want: []types.CryptoFinding{
+				finding("CRYPTO-0005", "Small EC private key", "CRITICAL", ecKey(t, elliptic.P384(), 230, ftypes.CryptoKeyTypePublic),
+					types.CryptoEvidence{Curve: "P-384"}),
+			},
+		},
+		{
+			name:   "small P-384 private key",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P384(), 230, ftypes.CryptoKeyTypePrivate)},
+			want: []types.CryptoFinding{
+				finding("CRYPTO-0005", "Small EC private key", "CRITICAL", ecKey(t, elliptic.P384(), 230, ftypes.CryptoKeyTypePrivate),
+					types.CryptoEvidence{Curve: "P-384"}),
+			},
+		},
+		{
+			name:   "small P-521 public key",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P521(), 230, ftypes.CryptoKeyTypePublic)},
+			want: []types.CryptoFinding{
+				finding("CRYPTO-0005", "Small EC private key", "CRITICAL", ecKey(t, elliptic.P521(), 230, ftypes.CryptoKeyTypePublic),
+					types.CryptoEvidence{Curve: "P-521"}),
+			},
+		},
+		{
+			name:   "P-384 key at the limit",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P384(), 255, ftypes.CryptoKeyTypePublic)},
+			want: []types.CryptoFinding{
+				finding("CRYPTO-0005", "Small EC private key", "CRITICAL", ecKey(t, elliptic.P384(), 255, ftypes.CryptoKeyTypePublic),
+					types.CryptoEvidence{Curve: "P-384"}),
+			},
+		},
+		{
+			name:   "P-384 key just above the limit",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P384(), 256, ftypes.CryptoKeyTypePublic)},
+		},
+		{
+			name:   "random P-384 key",
+			assets: []ftypes.CryptoAsset{ecKey(t, elliptic.P384(), 0, ftypes.CryptoKeyTypePublic)},
 		},
 		{
 			name:   "EC strength below 112 bits",
@@ -320,6 +399,14 @@ func TestMessage(t *testing.T) {
 				Evidence: types.CryptoEvidence{NotAfter: time.Date(2024, 3, 1, 12, 0, 0, 0, time.UTC)},
 			},
 			want: "Certificate expired on 2024-03-01",
+		},
+		{
+			name: "small EC private key",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0005",
+				Evidence: types.CryptoEvidence{Curve: "P-256"},
+			},
+			want: "Private key of this P-256 key is at most 255 and can be recovered",
 		},
 		{
 			name:    "unknown rule",
