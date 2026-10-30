@@ -65,20 +65,19 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	// Meta is the second or third array element
-	// [pkg: string, info: BunLockFilePackageInfo]
-	// [pkg: string, info: Pick<BunLockFileBasePackageInfo, "bin" | "binDir">]
-	// [pkg: string, info: BunLockFilePackageInfo, integrity: string] (tarball)
-	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string] (git)
-	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string, integrity: string] (git, Bun 1.4+)
-	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string] (npm)
+	// Meta is the first object after the package field
+	// [pkg: string, info: object]
+	// [pkg: string, info: object, integrity: string] (tarball)
+	// [pkg: string, info: object, bunTag: string] (git)
+	// [pkg: string, info: object, bunTag: string, integrity: string] (git, Bun 1.4+)
+	// [pkg: string, registry: string, info: object, integrity: string] (npm)
 	// cf. https://github.com/oven-sh/bun/blob/9b4284f788f20e3d6ec8358daf62ad10694b158a/src/install/lockfile/bun.lock.rs#L750-L896
-	// Pick the info by type: the length alone cannot tell git and registry entries apart.
-	metaRaw := raw[1]
-	if metaRaw.Kind() != '{' && len(raw) > 2 {
-		metaRaw = raw[2]
+	for _, v := range raw[1:] {
+		if v.Kind() == '{' {
+			return json.Unmarshal(v, &p.Meta)
+		}
 	}
-	return json.Unmarshal(metaRaw, &p.Meta)
+	return fmt.Errorf("invalid package entry: no info object: %s", string(data))
 }
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
