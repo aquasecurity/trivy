@@ -1278,6 +1278,29 @@
       }
     },
     {
+      "bom-ref": "crypto:key:private:encrypted-pkcs8-sha256:eee717935d370b31f8e52004dae522f95aa314bc4a99876a77286334fe0679fe",
+      "type": "cryptographic-asset",
+      "name": "Encrypted PKCS#8 private key",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "opt/app/app.jks",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "related-crypto-material",
+        "relatedCryptoMaterialProperties": {
+          "type": "private-key",
+          "fingerprint": {
+            "alg": "SHA-256",
+            "content": "eee717935d370b31f8e52004dae522f95aa314bc4a99876a77286334fe0679fe"
+          }
+        }
+      }
+    },
+    {
       "bom-ref": "crypto:key:private:encrypted-rfc1423-sha256:2b5621233cc496e24f1e29e72505bf6273955ead95dab28df598022f261aed64",
       "type": "cryptographic-asset",
       "name": "Encrypted PKCS#1 private key",
@@ -2104,6 +2127,10 @@
     },
     {
       "ref": "crypto:key:private:encrypted-pkcs8-sha256:dd719caf1978154be8604f224caf8c59c50317f4ed29912085cbb51e5a6dc7b2",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:key:private:encrypted-pkcs8-sha256:eee717935d370b31f8e52004dae522f95aa314bc4a99876a77286334fe0679fe",
       "dependsOn": []
     },
     {

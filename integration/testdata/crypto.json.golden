@@ -2106,6 +2106,27 @@
           }
         },
         {
+          "AssetID": "b0dd2378134647e5",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "eee717935d370b31f8e52004dae522f95aa314bc4a99876a77286334fe0679fe"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/app.jks",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:ec2035faa60e152a6d26159f920d4f5faef9df5fb555d93952b68f42467ac203",
+            "DiffID": "sha256:7c6de831d8d17bab922424c2fe6bcc7310f351947d7c7ac942c65538742cba20"
+          }
+        },
+        {
           "AssetID": "8d59ee0a6fd65a94",
           "Kind": "key",
           "KeyType": "private",

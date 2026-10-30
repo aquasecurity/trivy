@@ -26,19 +26,19 @@ const (
 	tagTrustedCert = 2
 )
 
-// maxCertificates bounds the number of X.509 certificates read from one keystore. A real trust
-// store holds a few hundred.
-const maxCertificates = 10000
+// maxObjects bounds the number of certificates and private keys read from one keystore. A real
+// trust store holds a few hundred.
+const maxObjects = 10000
 
 const certificateTypeX509 = "X.509"
 
 // ErrNotJKS means that the content is not a JKS file.
 var ErrNotJKS = errors.New("not a JKS file")
 
-// Parse describes the certificates of a JKS keystore as assets.
+// Parse describes the certificates and encrypted private keys of a JKS keystore as assets.
 //
 // Content that is not a JKS file gives ErrNotJKS. Material that cannot be read is logged
-// and skipped. Any other error means a parsed certificate could not be described.
+// and skipped. Any other error means a parsed object could not be described.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	s := cryptobyte.String(content)
 	var m uint32
@@ -50,8 +50,8 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	return x509.ParseKeystoreObjects(ctx, filePath, objects(ctx, s), ftypes.CryptoKeystoreJKS)
 }
 
-// objects yields each trusted certificate and each certificate in the chain of a private
-// key.
+// objects yields each trusted certificate, and each private key with the certificates of its
+// chain.
 func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
 	return func(yield func(x509.DERObject) bool) {
 		s := cryptobyte.String(data)
@@ -65,10 +65,10 @@ func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
 			return
 		}
 
-		budget := maxCertificates
+		budget := maxObjects
 		next := func(obj x509.DERObject) bool {
 			if budget == 0 {
-				log.WarnContext(ctx, "Too many JKS certificates")
+				log.WarnContext(ctx, "Too many JKS objects")
 				return false
 			}
 			budget--
@@ -102,12 +102,17 @@ func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
 	}
 }
 
-// readPrivateKeyEntry skips the encrypted key of an entry and yields the certificates of
-// its chain. It reports whether reading can continue.
+// readPrivateKeyEntry yields the encrypted key of an entry and the certificates of its
+// chain. It reports whether reading can continue.
 func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.DERObject) bool) bool {
 	var keyLen, chainLen uint32
-	if !s.ReadUint32(&keyLen) || !s.Skip(int(keyLen)) || !s.ReadUint32(&chainLen) {
+	var key []byte
+	if !s.ReadUint32(&keyLen) || !s.ReadBytes(&key, int(keyLen)) || !s.ReadUint32(&chainLen) {
 		log.WarnContext(ctx, "Malformed JKS entry")
+		return false
+	}
+	// The key is an EncryptedPrivateKeyInfo with the algorithm of the JKS key protector.
+	if !yield(x509.DERObject{Kind: x509.DEREncryptedPrivateKey, DER: key}) {
 		return false
 	}
 	for range chainLen {

@@ -1,4 +1,4 @@
 package jks
 
-// MaxCertificates exports maxCertificates for testing.
-const MaxCertificates = maxCertificates
+// MaxObjects exports maxObjects for testing.
+const MaxObjects = maxObjects
