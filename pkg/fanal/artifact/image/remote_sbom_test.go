@@ -68,7 +68,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			},
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+					ID: "sha256:bfa9e1885d8daab6a5c70909186d440a4011b6eea4f363f68520f1eb2c2118c5",
 					BlobInfo: ftypes.BlobInfo{
 						SchemaVersion: ftypes.BlobJSONSchemaVersion,
 						OS: ftypes.OS{
@@ -113,9 +113,9 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 			want: artifact.Reference{
 				Name: "test/image:10",
 				Type: ftypes.TypeCycloneDX,
-				ID:   "sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+				ID:   "sha256:bfa9e1885d8daab6a5c70909186d440a4011b6eea4f363f68520f1eb2c2118c5",
 				BlobIDs: []string{
-					"sha256:066b9998617ffb7dfe0a3219ac5c3efc1008a6223606fcf474e7d5c965e4e8da",
+					"sha256:bfa9e1885d8daab6a5c70909186d440a4011b6eea4f363f68520f1eb2c2118c5",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:9c6f0724472873bb50a2ae67a9e7adcb57673a183cea8b06eb778dca859181b5",
@@ -179,7 +179,7 @@ func TestArtifact_InspectRekorAttestation(t *testing.T) {
 // Common test data for CycloneDX SBOM (used by OCI referrer tests)
 var wantBlobsCycloneDX = []cachetest.WantBlob{
 	{
-		ID: "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+		ID: "sha256:9084315f7262462d2f77efdad45f6515ef03a9df0d358e690a40a2d533b336a7",
 		BlobInfo: ftypes.BlobInfo{
 			SchemaVersion: ftypes.BlobJSONSchemaVersion,
 			Applications: []ftypes.Application{
@@ -250,7 +250,7 @@ func TestArtifact_InspectOCIReferrerSBOM(t *testing.T) {
 					[]string{fmt.Sprintf("%s/test/cyclonedx@%s", registryHost, subjectDesc.Digest.String())}
 			},
 			wantType:  ftypes.TypeCycloneDX,
-			wantID:    "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+			wantID:    "sha256:9084315f7262462d2f77efdad45f6515ef03a9df0d358e690a40a2d533b336a7",
 			wantBlobs: wantBlobsCycloneDX,
 		},
 		{
@@ -267,7 +267,7 @@ func TestArtifact_InspectOCIReferrerSBOM(t *testing.T) {
 					[]string{fmt.Sprintf("%s/test/sigstore@%s", registryHost, subjectDesc.Digest.String())}
 			},
 			wantType:  ftypes.TypeCycloneDX,
-			wantID:    "sha256:2171d8ccf798e94d09aca9c6abf15d28abd3236def1caa4a394b6f0a69c4266d",
+			wantID:    "sha256:9084315f7262462d2f77efdad45f6515ef03a9df0d358e690a40a2d533b336a7",
 			wantBlobs: wantBlobsCycloneDX,
 		},
 		{

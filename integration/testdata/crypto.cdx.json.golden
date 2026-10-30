@@ -103,6 +103,37 @@
       }
     },
     {
+      "bom-ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-192",
+      "type": "cryptographic-asset",
+      "name": "EC-P-192",
+      "evidence": {
+        "occurrences": [
+          {
+            "location": "etc/ssl/certs/p192.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/private/p192.key",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          },
+          {
+            "location": "etc/ssl/public/p192.pem",
+            "additionalContext": "aquasecurity:trivy:LayerDiffID=sha256:8be4950119af3d5904781c15c5ba7e01951daf465a3567077b031a9c58d5275f"
+          }
+        ]
+      },
+      "cryptoProperties": {
+        "assetType": "algorithm",
+        "algorithmProperties": {
+          "primitive": "unknown",
+          "ellipticCurve": "nist/P-192",
+          "classicalSecurityLevel": 80,
+          "nistQuantumSecurityLevel": 0
+        },
+        "oid": "1.2.840.10045.2.1"
+      }
+    },
+    {
       "bom-ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-256",
       "type": "cryptographic-asset",
       "name": "EC-P-256",
@@ -1903,6 +1934,10 @@
     },
     {
       "ref": "crypto:algorithm:oid:1.2.840.10040.4.3",
+      "dependsOn": []
+    },
+    {
+      "ref": "crypto:algorithm:oid:1.2.840.10045.2.1:curve%3DP-192",
       "dependsOn": []
     },
     {

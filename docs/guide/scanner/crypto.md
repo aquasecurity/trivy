@@ -3,13 +3,12 @@
 !!! warning "EXPERIMENTAL"
     This feature might change without preserving backwards compatibility.
 
-Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON output Trivy also reports [weak assets](#findings) found by built-in checks.
+Trivy inventories the cryptographic material it finds in a container image and reports it as a CBOM (Cryptography Bill of Materials). The CBOM lists the certificates and keys themselves and the algorithms they use. The result is part of the CycloneDX report, next to the software components. In JSON and table output Trivy also reports [weak assets](#findings) found by built-in checks.
 
-The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx` or `--format json`.
+The scanner is off by default. Enable it with `--scanners crypto` together with `--format cyclonedx`, `--format json` or `--format table`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --output result.cdx.json myimage:1.0.0
-$ trivy image --scanners crypto --format json --output result.json myimage:1.0.0
 ```
 
 Trivy rejects `--scanners crypto` with other report formats.
@@ -50,7 +49,7 @@ The levels are estimates for an algorithm and its parameters, taken from NIST an
 | Algorithm | Classical security level (bits) | NIST quantum security level |
 | --- | --- | --- |
 | RSA, key size 1024 / 2048 / 3072 / 4096 / 6144 / 8192 bits | 80 / 112 / 128 / 152 / 176 / 200 | 0 |
-| EC, curve P-224 / P-256 / P-384 / P-521 | 112 / 128 / 192 / 256 | 0 |
+| EC, curve P-192 / P-224 / P-256 / P-384 / P-521 | 80 / 112 / 128 / 192 / 256 | 0 |
 | DSA, (L, N) of (1024, 160) / (2048, 224) / (2048, 256) / (3072, 256) | 80 / 112 / 112 / 128 | 0 |
 | Ed25519 / Ed448 | 128 / 224 | 0 |
 | ML-DSA-44 / ML-DSA-65 / ML-DSA-87 | - | 2 / 3 / 5 |
@@ -61,7 +60,7 @@ A dash means that the level is left out of the report.
 The levels come from these publications:
 
 - RSA with a key size of 2048 bits and above takes the approximate maximum strengths in Appendix D, Table 4 of [NIST SP 800-56B Rev. 2](https://csrc.nist.gov/pubs/sp/800/56/b/r2/final). RSA with a key size of 1024 bits takes the nominal maximum of 80 from Table 2 of [NIST SP 800-57 Part 1 Rev. 5](https://csrc.nist.gov/pubs/sp/800/57/pt1/r5/final), whose row for a 1024-bit modulus states at most 80 bits.
-- EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5.
+- EC takes the ECC strength ranges in Table 2 of NIST SP 800-57 Part 1 Rev. 5. The curve P-192 takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
 - DSA takes the FFC entries in Table 2 of NIST SP 800-57 Part 1 Rev. 5 and the DSA strengths in Section 3 of [NIST SP 800-131A Rev. 2](https://csrc.nist.gov/pubs/sp/800/131/a/r2/final). The (1024, 160) pair takes the nominal maximum of 80 from the Table 2 row that states at most 80 bits.
 - Ed25519 and Ed448 take their strengths from [RFC 8032, Section 8.5](https://datatracker.ietf.org/doc/html/rfc8032#section-8.5).
 - ML-DSA takes its categories from [FIPS 204](https://csrc.nist.gov/pubs/fips/204/final).
@@ -114,7 +113,7 @@ The parameters of an algorithm are stored in `algorithmProperties`. The key size
 
 ## Findings
 
-Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON output. Trivy does not determine whether any software uses these assets.
+Trivy runs built-in checks to find weak cryptographic assets and reports the findings in JSON and table output. Trivy does not determine whether any software uses these assets.
 
 | Rule ID | Title | Asset | Condition | Severity |
 | --- | --- | --- | --- | --- |
@@ -167,9 +166,40 @@ Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding ref
 | `CRYPTO-0003` | `Curve`, `ClassicalSecurityLevel` |
 | `CRYPTO-0004` | `NotAfter` |
 
-Findings are evaluated only for JSON output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON, and keeps the cryptographic assets for any format.
+Table output shows the findings without the inventory. Identical rows are merged and the asset name ends with their number, such as `x2`. `Total` counts every finding, and JSON output tells the assets apart.
 
-## Filtering the inventory
+```
+example:latest (crypto)
+=======================
+Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
+
+┌──────────┬─────────────┬───────────────────────────────────┬──────────────────────┬─────────────────────────────────────────────┐
+│ Severity │   Rule ID   │               Asset               │         File         │                   Message                   │
+├──────────┼─────────────┼───────────────────────────────────┼──────────────────────┼─────────────────────────────────────────────┤
+│ HIGH     │ CRYPTO-0002 │ RSA-1024 private key (PKCS#8)     │ app/certs/legacy.key │ RSA key is 1024 bits, less than 2048        │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0002/ │
+│          │             ├───────────────────────────────────┼──────────────────────┤                                             │
+│          │             │ RSA-1024 public key (PKIX) x2     │ app/certs/legacy.pem │                                             │
+│          │             │                                   │                      │                                             │
+├──────────┼─────────────┼───────────────────────────────────┤                      ├─────────────────────────────────────────────┤
+│ MEDIUM   │ CRYPTO-0004 │ CN=legacy.example.com certificate │                      │ Certificate expired on 2024-03-01           │
+│          │             │                                   │                      │ https://avd.aquasec.com/crypto/crypto-0004/ │
+└──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴─────────────────────────────────────────────┘
+```
+
+Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.
+
+A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
+
+```yaml
+crypto:
+  - id: CRYPTO-0001
+    paths:
+      - "etc/ssl/certs/**"
+    statement: Signatures of OS root certificates are not verified
+```
+
+## Telling system certificates from your own
 
 Trivy inventories everything it finds and classifies nothing. A base image brings its own trust store, so a typical scan reports a few hundred public root certificates alongside your own material.
 
@@ -194,6 +224,8 @@ $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/a
 Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
 
 Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.
+
+From certificates and keys on the curve P-192, only the `EC-P-192` algorithm is extracted.
 
 Trivy does not decrypt PKCS#12 keystores and does not report their private keys, so it reads only the certificates stored without encryption. keytool, OpenSSL and .NET encrypt the certificates unless encryption is turned off explicitly, such as with `-certpbe NONE` in OpenSSL or `-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE` in keytool. OpenSSL encrypts them even with an empty password. The `cacerts` trust store that ships with JDK 18 and later has no password and is read in full. A PKCS#12 keystore protected by a public-key signature instead of a password-based MAC is not read. Parts of a keystore encoded in BER rather than DER are skipped. Trivy reads at most 10000 bags from one keystore.
 

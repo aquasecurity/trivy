@@ -203,13 +203,13 @@ func TestEvaluate(t *testing.T) {
 		},
 		{
 			name:   "EC strength below 112 bits",
-			assets: []ftypes.CryptoAsset{algorithm("key.pem", oidECPublicKey, "curve=P-192", new(96))},
+			assets: []ftypes.CryptoAsset{algorithm("key.pem", oidECPublicKey, "curve=P-192", new(80))},
 			want: []types.CryptoFinding{
 				finding("CRYPTO-0003", "Weak elliptic curve", "HIGH",
-					algorithm("key.pem", oidECPublicKey, "curve=P-192", new(96)),
+					algorithm("key.pem", oidECPublicKey, "curve=P-192", new(80)),
 					types.CryptoEvidence{
 						Curve:                  "P-192",
-						ClassicalSecurityLevel: new(96),
+						ClassicalSecurityLevel: new(80),
 					}),
 			},
 		},
@@ -271,6 +271,65 @@ func TestEvaluate(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := check.Evaluate(tt.assets, now)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestMessage(t *testing.T) {
+	tests := []struct {
+		name    string
+		finding types.CryptoFinding
+		want    string
+	}{
+		{
+			name: "SHA-1 signature",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0001",
+				Evidence: types.CryptoEvidence{SignatureAlgorithm: "RSA-PKCS1-1.5-SHA-1"},
+			},
+			want: "Certificate is signed with RSA-PKCS1-1.5-SHA-1",
+		},
+		{
+			name: "small RSA key",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0002",
+				Evidence: types.CryptoEvidence{KeySize: 1024},
+			},
+			want: "RSA key is 1024 bits, less than 2048",
+		},
+		{
+			name: "weak curve",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0003",
+				Evidence: types.CryptoEvidence{Curve: "P-192", ClassicalSecurityLevel: new(96)},
+			},
+			want: "Curve P-192 gives 96 bits of security, less than 112",
+		},
+		{
+			name: "weak curve without a name",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0003",
+				Evidence: types.CryptoEvidence{ClassicalSecurityLevel: new(96)},
+			},
+			want: "Elliptic curve gives 96 bits of security, less than 112",
+		},
+		{
+			name: "expired certificate",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0004",
+				Evidence: types.CryptoEvidence{NotAfter: time.Date(2024, 3, 1, 12, 0, 0, 0, time.UTC)},
+			},
+			want: "Certificate expired on 2024-03-01",
+		},
+		{
+			name:    "unknown rule",
+			finding: types.CryptoFinding{RuleID: "CRYPTO-9999"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, check.Message(tt.finding))
 		})
 	}
 }
