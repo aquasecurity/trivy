@@ -1,12 +1,16 @@
 {
-  "name": "acme",
+  "name": "app",
+  "version": "1.0.0",
   "lockfileVersion": 3,
   "requires": true,
   "packages": {
     "": {
-      "name": "acme",
+      "name": "app",
+      "version": "1.0.0",
+      "license": "ISC",
       "workspaces": [
-        "packages/*"
+        "packages/ui",
+        "packages/ui-kit"
       ]
     },
     "node_modules/@acme/design-system": {
@@ -19,11 +23,13 @@
     },
     "packages/ui": {
       "name": "@acme/ui",
-      "version": "1.0.0"
+      "version": "1.0.0",
+      "license": "ISC"
     },
     "packages/ui-kit": {
       "name": "@acme/design-system",
-      "version": "2.0.0"
+      "version": "2.0.0",
+      "license": "ISC"
     }
   }
 }

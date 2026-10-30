@@ -1725,12 +1725,22 @@ var (
 		},
 	}
 
+	// docker run --rm node:19.7.0@sha256:51dd437f31812df71108b81385e2945071ec813d5815fa3403855669c8f3432b sh -c '
+	//   mkdir /app && cd /app
+	//   npm init -y
+	//   npm init -y -w packages/ui
+	//   npm init -y -w packages/ui-kit
+	//   npm pkg set name=@acme/ui -w packages/ui
+	//   npm pkg set name=@acme/design-system version=2.0.0 -w packages/ui-kit
+	//   npm install
+	//   cat package-lock.json'
 	npmV3WithWorkspacePrefixPkgs = []ftypes.Package{
 		{
 			ID:           "@acme/design-system@2.0.0",
 			Name:         "@acme/design-system",
 			Version:      "2.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			Licenses:     []string{"ISC"},
 			ExternalReferences: []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefOther,
@@ -1739,8 +1749,8 @@ var (
 			},
 			Locations: []ftypes.Location{
 				{
-					StartLine: 24,
-					EndLine:   27,
+					StartLine: 29,
+					EndLine:   33,
 				},
 			},
 		},
@@ -1749,6 +1759,7 @@ var (
 			Name:         "@acme/ui",
 			Version:      "1.0.0",
 			Relationship: ftypes.RelationshipDirect,
+			Licenses:     []string{"ISC"},
 			ExternalReferences: []ftypes.ExternalRef{
 				{
 					Type: ftypes.RefOther,
@@ -1757,8 +1768,8 @@ var (
 			},
 			Locations: []ftypes.Location{
 				{
-					StartLine: 20,
-					EndLine:   23,
+					StartLine: 24,
+					EndLine:   28,
 				},
 			},
 		},
