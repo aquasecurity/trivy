@@ -15,7 +15,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&osReleaseAnalyzer{})
 }
 
-const version = 2
+const version = 3
 
 var requiredFiles = []string{
 	"etc/os-release",
