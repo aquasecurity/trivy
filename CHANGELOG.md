@@ -1,5 +1,34 @@
 # Changelog
 
+## [0.77.0](https://github.com/aquasecurity/trivy/compare/v0.76.0...v0.77.0) (2026-10-30)
+
+
+### Features
+
+* **crypto:** add built-in checks of cryptographic assets ([#11394](https://github.com/aquasecurity/trivy/issues/11394)) ([78479c9](https://github.com/aquasecurity/trivy/commit/78479c92dd00b4a80bbcf1e2a27752aab09526fd))
+* **crypto:** add check for small EC private keys ([#11479](https://github.com/aquasecurity/trivy/issues/11479)) ([e2c05f7](https://github.com/aquasecurity/trivy/commit/e2c05f7ae66bedacd4a51594a71cbe95566cc838))
+* **crypto:** describe keys that crypto/x509 cannot parse ([#11404](https://github.com/aquasecurity/trivy/issues/11404)) ([53d77b9](https://github.com/aquasecurity/trivy/commit/53d77b9ee282913284dcfa6621f0a5cc9ce4e6c7))
+* **crypto:** read unencrypted certificates from PKCS[#12](https://github.com/aquasecurity/trivy/issues/12) keystores ([#11399](https://github.com/aquasecurity/trivy/issues/11399)) ([2f4aaf7](https://github.com/aquasecurity/trivy/commit/2f4aaf7e7caa9eb91fb6abefc05a78a899698b5b))
+* **crypto:** report the EC-P-192 algorithm for P-192 keys and certificates ([#11431](https://github.com/aquasecurity/trivy/issues/11431)) ([6ec0da2](https://github.com/aquasecurity/trivy/commit/6ec0da294ff6501226a42a222a313938e79d95e0))
+* **crypto:** show findings in table output ([#11395](https://github.com/aquasecurity/trivy/issues/11395)) ([4cdb2db](https://github.com/aquasecurity/trivy/commit/4cdb2db63d52cfb5f6c9199e2d08196f2bb9dc77))
+* **crypto:** suppress findings via ignore files ([#11413](https://github.com/aquasecurity/trivy/issues/11413)) ([0bd8831](https://github.com/aquasecurity/trivy/commit/0bd8831e5d74eeea62ee9f11a95ba35f79b0cb49))
+* support multiple package digests with acquisition sources ([#11216](https://github.com/aquasecurity/trivy/issues/11216)) ([d18962e](https://github.com/aquasecurity/trivy/commit/d18962e8f8177361e8397924f6aa6838c4a351aa))
+* **ubuntu:** support Ubuntu 26.10 ([#11460](https://github.com/aquasecurity/trivy/issues/11460)) ([201dda0](https://github.com/aquasecurity/trivy/commit/201dda06333414b44147f9b4a867d46d30590084))
+
+
+### Bug Fixes
+
+* **cloudformation:** set the file context on condition map entries ([#11429](https://github.com/aquasecurity/trivy/issues/11429)) ([a2a80d4](https://github.com/aquasecurity/trivy/commit/a2a80d42401106b9d16de2e7f89c1df7a9824c90))
+* **containerd:** export image by its stored name ([#11511](https://github.com/aquasecurity/trivy/issues/11511)) ([60b6903](https://github.com/aquasecurity/trivy/commit/60b69032794eb8003b64cb3267dfa10270736b5b))
+* fail on read errors in .trivyignore ([#11414](https://github.com/aquasecurity/trivy/issues/11414)) ([25c07ab](https://github.com/aquasecurity/trivy/commit/25c07ab70ce6a73244a70af0c7bf2762e318a830))
+* **k8s:** accept tolerations without a value ([#11425](https://github.com/aquasecurity/trivy/issues/11425)) ([914b658](https://github.com/aquasecurity/trivy/commit/914b658c88d6413bea4a6233082a0abd6f4a9c8c))
+* **terraform:** convert primitives to string in list attributes ([#11223](https://github.com/aquasecurity/trivy/issues/11223)) ([0231990](https://github.com/aquasecurity/trivy/commit/0231990f702f626e6981afaafcb0c97d43be28c7))
+
+
+### Performance Improvements
+
+* **vex:** open each VEX repository document once per repository set ([#11477](https://github.com/aquasecurity/trivy/issues/11477)) ([273e46e](https://github.com/aquasecurity/trivy/commit/273e46ebb8f55fee0ae9c1d912bef1ab0bfd1b7b))
+
 ## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-14)
 
 
