@@ -151,6 +151,26 @@ var (
 		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 28, EndLine: 33}}},
 	}
 
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add es-toolkit@1.47.0
+	//   cat yarn.lock'
+	yarnV2WithDependenciesMeta = []ftypes.Package{
+		{ID: "es-toolkit@1.47.0", Name: "es-toolkit", Version: "1.47.0", Locations: []ftypes.Location{{StartLine: 16, EndLine: 28}}},
+	}
+
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add versions@15.5.2
+	//   cat yarn.lock'
+	yarnV2WithVersionBin = []ftypes.Package{
+		{ID: "versions@15.5.2", Name: "versions", Version: "15.5.2", Locations: []ftypes.Location{{StartLine: 16, EndLine: 23}}},
+	}
+
 	yarnV2DepsWithProtocolDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@4.3.4",
