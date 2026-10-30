@@ -18,7 +18,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&pomAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
 // pomAnalyzer analyzes pom.xml
 type pomAnalyzer struct{}

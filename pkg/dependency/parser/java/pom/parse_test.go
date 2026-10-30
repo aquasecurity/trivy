@@ -2551,7 +2551,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		inputFile     string
 		rootRepoTxtar string            // txtar file for root repository
 		repos         map[string]string // key: repository URL placeholder, value: txtar file path
-		wantPackages  map[string]string
+		wantPackages  map[string]string // key: package ID, value: license; empty if the POM must not be found
 	}{
 		{
 			name:          "different repos for different dependencies",
@@ -2576,6 +2576,51 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
 			},
 		},
+		{
+			name:          "imported BOMs are fetched from repositories of the importing POM, import cycles are skipped",
+			inputFile:     filepath.Join("testdata", "import-bom-from-pom-repos", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "import-bom-from-pom-repos", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "import-bom-from-pom-repos", "repo1-artifacts.txtar"),
+				"REPO2_URL": filepath.Join("testdata", "import-bom-from-pom-repos", "repo2-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				// version from the BOM in the root POM repository
+				"org.example:example-api:1.1.0::4a7b5843": "License from reporoot",
+				// version from the nested BOM in the repository of the imported BOM
+				"org.example:example-api-nested:1.2.0::47955d7d": "License from reporoot",
+				// version from the BOM imported by two BOMs, found only in the repository of the second one
+				"org.example:example-api-shared:1.4.0::c490d1f7": "License from reporoot",
+				// version from the BOM in the repository of the transitive dependency
+				"org.example:example-api-transitive:1.3.0::6ce0264f": "License from repo2",
+			},
+		},
+		{
+			name:          "repositories are inherited from parent POMs and overridden by ID",
+			inputFile:     filepath.Join("testdata", "repos-from-parent-poms", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "repos-from-parent-poms", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO1_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo1-artifacts.txtar"),
+				"REPO2_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo2-artifacts.txtar"),
+				"REPO3_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo3-artifacts.txtar"),
+			},
+			wantPackages: map[string]string{
+				// version from the BOM in the repository of the parent POM
+				"org.example:example-api:1.1.0::ff70a01d": "License from repo1",
+				// version from the grandparent POM in the repository of the parent POM
+				"org.example:example-api2:1.0.0::805ec0f5": "License from repo1",
+				// repositories of the POM take precedence over the ones inherited from the parent POM
+				"org.example:example-api3:1.0.0::47b52949": "License from reporoot",
+				// the parent repository is overridden by the child repository with the same ID
+				"org.example:example-api4:1.0.0::1ad0a18b": "",
+				// the parent repository is disabled by the child repository with the same ID
+				"org.example:example-api5:1.0.0::505b8e76": "",
+				// version from the greatgrandparent POM in the child's overridden repository
+				"org.example:example-api6:1.0.0-reporoot::b56c1528": "License from reporoot",
+				// ancestor in the child's disabled repository is not resolved
+				"org.example:example-api7:1.0.0::cc0410ac": "",
+			},
+		},
 	}
 
 	for _, tt := range tests {
@@ -2595,8 +2640,12 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				rootRepoPlaceholder: rootRepoURL,
 			})
 
+			// Default repository that always returns 404 to ensure remote tests don't reach Maven Central
+			dummyServer := httptest.NewServer(http.NotFoundHandler())
+			t.Cleanup(dummyServer.Close)
+
 			// Parse the POM
-			parser := pom.NewParser(tt.inputFile)
+			parser := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(dummyServer.URL, true, true))
 			pkgs, _, err := parser.Parse(t.Context(), bytes.NewReader(pomContent))
 			require.NoError(t, err)
 
@@ -2606,6 +2655,10 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 					return pkg.ID == pkgID
 				})
 				require.True(t, found, "package %s not found", pkgID)
+				if wantLicense == "" {
+					require.Empty(t, p.Licenses, "package %s has licenses", pkgID)
+					continue
+				}
 				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
 				require.Equal(t, wantLicense, p.Licenses[0])
 			}
