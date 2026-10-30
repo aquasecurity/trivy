@@ -128,7 +128,7 @@ A small RSA key in a certificate gets the finding on its key asset. The EC findi
 
 A certificate signed with RSA-PSS gives no SHA-1 finding, because Trivy does not read the hash from the RSA-PSS parameters.
 
-Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding refers to its asset by this ID. The ID depends on the asset identity, the file path, the layer and the format. Two scans of one image with the same Trivy version give the same IDs. `Evidence` holds the values the check was evaluated on.
+Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding refers to its asset by this ID. The ID depends on the asset identity, the file path and the format. Two scans of one image with the same Trivy version give the same IDs. `Evidence` holds the values the check was evaluated on.
 
 ```json
 {
@@ -187,7 +187,15 @@ Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
 └──────────┴─────────────┴───────────────────────────────────┴──────────────────────┴─────────────────────────────────────────────┘
 ```
 
-Findings are evaluated only for JSON and table output, so they do not affect the exit code of CycloneDX output. `trivy convert` keeps the findings of a JSON report only when converting to JSON or table, and keeps the cryptographic assets for any format.
+Each format contains the findings, the assets or both, as the table shows. Findings are evaluated only for the formats that contain them, so they do not affect the exit code of CycloneDX output. `trivy convert` can write the findings of a JSON report only to JSON and table, while the assets can be converted only to JSON and CycloneDX.
+
+| Format | Findings | Assets |
+| --- | :---: | :---: |
+| Table | ✓ | |
+| JSON | ✓ | ✓ |
+| CycloneDX | | ✓ |
+
+`--severity` filters only the findings. `--skip-files` and `--skip-dirs` exclude the assets.
 
 A rule ID in an [ignore file](../configuration/filtering.md#by-finding-ids) suppresses its findings, and the `crypto` section of `.trivyignore.yaml` can limit that to some file paths. The assets of suppressed findings stay in the inventory. `--ignore-policy` and `--show-suppressed` do not apply to crypto findings.
 
@@ -207,7 +215,7 @@ Two attributes in the report separate them. The path says whether a certificate 
 
 ## Client/server mode
 
-The scanner works the same way in [client/server mode](../references/modes/client-server.md).
+The scanner also works in [client/server mode](../references/modes/client-server.md). The client extracts the cryptographic assets from the image. The server assesses their security levels and runs the checks, and it uses its own clock to decide whether a certificate has expired.
 
 ## Limitations
 

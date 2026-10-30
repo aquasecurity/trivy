@@ -15,7 +15,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/clock"
 	"github.com/aquasecurity/trivy/pkg/crypto"
-	"github.com/aquasecurity/trivy/pkg/crypto/check"
+	"github.com/aquasecurity/trivy/pkg/crypto/scanner"
 	ospkgDetector "github.com/aquasecurity/trivy/pkg/detector/ospkg"
 	"github.com/aquasecurity/trivy/pkg/extension"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
@@ -165,20 +165,7 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	// Scan licenses
 	results = append(results, s.scanLicenses(target, options)...)
 
-	if options.Scanners.Enabled(types.CryptoScanner) && len(target.CryptoAssets) != 0 {
-		// The security levels are assessed here rather than during analysis, so that a change
-		// to their basis applies to cached assets without analyzing them again.
-		crypto.AssessStrength(target.CryptoAssets)
-		result := types.Result{
-			Target:       target.Name,
-			Class:        types.ClassCrypto,
-			CryptoAssets: target.CryptoAssets,
-		}
-		if options.CryptoChecks {
-			result.CryptoFindings = check.Evaluate(target.CryptoAssets, clock.Now(ctx))
-		}
-		results = append(results, result)
-	}
+	results = append(results, s.scanCrypto(ctx, target, options)...)
 
 	// For WASM plugins and custom analyzers
 	if len(target.CustomResources) != 0 {
@@ -408,6 +395,25 @@ func (s Service) scanFileLicenses(licenses []ftypes.LicenseFile, scanner licensi
 		Class:    types.ClassLicenseFile,
 		Licenses: detectedLicenses,
 	}
+}
+
+func (s Service) scanCrypto(ctx context.Context, target types.ScanTarget, options types.ScanOptions) types.Results {
+	if !options.Scanners.Enabled(types.CryptoScanner) || len(target.CryptoAssets) == 0 {
+		return nil
+	}
+
+	// The security levels are assessed here rather than during analysis, so that a change
+	// to their basis applies to cached assets without analyzing them again.
+	crypto.AssessStrength(target.CryptoAssets)
+	result := types.Result{
+		Target:       target.Name,
+		Class:        types.ClassCrypto,
+		CryptoAssets: target.CryptoAssets,
+	}
+	if options.CryptoChecks {
+		result.CryptoFindings = scanner.Scan(target.CryptoAssets, clock.Now(ctx))
+	}
+	return types.Results{result}
 }
 
 func toDetectedMisconfiguration(res ftypes.MisconfResult, defaultSeverity dbTypes.Severity,

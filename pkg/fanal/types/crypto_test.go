@@ -518,3 +518,156 @@ func TestCryptoAssetClone(t *testing.T) {
 		assert.Equal(t, 0, *source.Algorithm.NISTQuantumSecurityLevel)
 	})
 }
+
+func TestCryptoAssetsFinalize_AssetID(t *testing.T) {
+	base := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Layer = types.Layer{DiffID: "sha256:9a4f"}
+	}))
+
+	tests := []struct {
+		name   string
+		mutate func(*types.CryptoAsset)
+		same   bool
+	}{
+		{
+			name:   "same asset",
+			mutate: func(*types.CryptoAsset) {},
+			same:   true,
+		},
+		{
+			name: "different name and encoding",
+			mutate: func(asset *types.CryptoAsset) {
+				asset.Name = "RSA-2048 public key"
+				asset.Encoding = types.CryptoEncodingDER
+			},
+			same: true,
+		},
+		{
+			name: "different identity",
+			mutate: func(asset *types.CryptoAsset) {
+				asset.Identity.Value = "4f1c"
+			},
+		},
+		{
+			name: "different file path",
+			mutate: func(asset *types.CryptoAsset) {
+				asset.FilePath = "/etc/other.pem"
+			},
+		},
+		{
+			name: "same file in a different layer",
+			mutate: func(asset *types.CryptoAsset) {
+				asset.Layer.DiffID = "sha256:3c1d"
+			},
+			same: true,
+		},
+		{
+			name: "key without a container of its own",
+			mutate: func(asset *types.CryptoAsset) {
+				asset.Format = ""
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			other := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+				asset.Layer = base.Layer
+				tt.mutate(asset)
+			}))
+			assets := types.CryptoAssets{base, other}
+			assets.Finalize()
+			assert.NotEmpty(t, assets[0].AssetID)
+			assert.Equal(t, tt.same, assets[0].AssetID == assets[1].AssetID)
+		})
+	}
+}
+
+func TestCryptoAssetsFinalize_KeyPairs(t *testing.T) {
+	publicKey := cryptotest.PublicKeyAsset()
+	otherPublicKey := cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+		asset.Identity.Value = strings.Repeat("d", 64)
+		asset.FilePath = "etc/ssl/certs/other.pem"
+	}))
+	correspondsTo := types.CryptoRelationship{
+		Type:         types.CryptoRelationshipCorrespondsTo,
+		RelatedAsset: publicKey.Descriptor(),
+	}
+	privateKeyAt := func(path string, relationships ...types.CryptoRelationship) types.CryptoAsset {
+		return cryptotest.PrivateKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
+			asset.FilePath = path
+			asset.Relationships = relationships
+		}))
+	}
+
+	tests := []struct {
+		name   string
+		assets types.CryptoAssets
+		want   types.CryptoAssets
+	}{
+		{
+			name:   "a private key found without its public half",
+			assets: types.CryptoAssets{privateKeyAt("etc/ssl/private/server.key")},
+			want:   types.CryptoAssets{privateKeyAt("etc/ssl/private/server.key")},
+		},
+		{
+			name: "a private key and the public key derived from it",
+			assets: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key"),
+				publicKey,
+			},
+			want: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "another public key of the same size",
+			assets: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key"),
+				otherPublicKey,
+				publicKey,
+			},
+			want: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				otherPublicKey,
+				publicKey,
+			},
+		},
+		{
+			name: "the same private key found in two files",
+			assets: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key"),
+				privateKeyAt("opt/app/server.key"),
+				publicKey,
+			},
+			want: types.CryptoAssets{
+				privateKeyAt("etc/ssl/private/server.key", correspondsTo),
+				privateKeyAt("opt/app/server.key", correspondsTo),
+				publicKey,
+			},
+		},
+		{
+			name: "an encrypted container is identified by the container itself",
+			assets: types.CryptoAssets{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+			want: types.CryptoAssets{
+				cryptotest.EncryptedPrivateKeyAsset(),
+				publicKey,
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.assets.Finalize()
+			// IDs are covered by the other test
+			for i := range tt.assets {
+				tt.assets[i].AssetID = ""
+			}
+			assert.Equal(t, tt.want, tt.assets)
+		})
+	}
+}
