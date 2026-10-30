@@ -100,6 +100,10 @@ func TestParse(t *testing.T) {
 			want: []string{"example.test"},
 		},
 		{
+			name:    "no entries",
+			content: keystore(2),
+		},
+		{
 			name:    "unsupported version",
 			content: keystore(3, trustedCertEntry(2, "X.509", certificate)),
 		},
