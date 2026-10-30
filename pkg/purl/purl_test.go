@@ -79,6 +79,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "Node.js runtime",
+			typ:  ftypes.Node,
+			pkg: ftypes.Package{
+				Name:    "node",
+				Version: "26.5.0",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "node",
+				Version: "26.5.0",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
