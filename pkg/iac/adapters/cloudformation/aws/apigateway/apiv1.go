@@ -1,6 +1,7 @@
 package apigateway
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	v1 "github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway/v1"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 )
@@ -100,7 +101,7 @@ func adaptDomainNamesV1(fctx parser.FileContext) []v1.DomainName {
 		domainNames = append(domainNames, v1.DomainName{
 			Metadata:       domainNameResource.Metadata(),
 			Name:           domainNameResource.GetStringProperty("DomainName"),
-			SecurityPolicy: domainNameResource.GetStringProperty("SecurityPolicy"),
+			SecurityPolicy: domainNameResource.GetStringProperty("SecurityPolicy", apigateway.DefaultSecurityPolicy),
 		})
 	}
 
