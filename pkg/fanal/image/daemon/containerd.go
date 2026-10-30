@@ -55,10 +55,7 @@ func (n familiarNamed) String() string {
 
 func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
 	return func(ctx context.Context, _ []string, _ ...dockerClient.ImageSaveOption) (dockerClient.ImageSaveResult, error) {
-		// WithImage looks the image up by name, and the store may not have the requested reference,
-		// e.g. "redis:7" is stored as "docker.io/library/redis:7" in CRI stores.
-		imgOpts := archive.WithImage(c.ImageService(), img.Name())
-		manifestOpts := archive.WithManifest(img.Target())
+		manifestOpts := archive.WithManifest(img.Target(), img.Name())
 
 		var platformMatchComparer platforms.MatchComparer
 		if platform.Platform == nil {
@@ -69,7 +66,7 @@ func imageWriter(c *client.Client, img client.Image, platform types.Platform) im
 		platOpts := archive.WithPlatform(platformMatchComparer)
 		pr, pw := io.Pipe()
 		go func() {
-			pw.CloseWithError(archive.Export(ctx, c.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
+			pw.CloseWithError(archive.Export(ctx, c.ContentStore(), pw, manifestOpts, platOpts))
 		}()
 		return pr, nil
 	}
