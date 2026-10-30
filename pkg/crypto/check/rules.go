@@ -55,6 +55,7 @@ var rules = []rule{
 		severity: dbTypes.SeverityCritical,
 		kind:     ftypes.CryptoKindKey,
 		match:    matchSmallECPrivateKey,
+		message:  smallECPrivateKeyMessage,
 	},
 }
 
@@ -203,6 +204,10 @@ func weakCurveMessage(e types.CryptoEvidence) string {
 
 func expiredCertificateMessage(e types.CryptoEvidence) string {
 	return "Certificate expired on " + e.NotAfter.UTC().Format("2006-01-02")
+}
+
+func smallECPrivateKeyMessage(e types.CryptoEvidence) string {
+	return fmt.Sprintf("Private key of this %s key is at most %d and can be recovered", e.Curve, maxSmallScalar)
 }
 
 // relatedAlgorithm returns the identity of the algorithm the asset has the given

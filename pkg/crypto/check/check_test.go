@@ -401,6 +401,14 @@ func TestMessage(t *testing.T) {
 			want: "Certificate expired on 2024-03-01",
 		},
 		{
+			name: "small EC private key",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0005",
+				Evidence: types.CryptoEvidence{Curve: "P-256"},
+			},
+			want: "Private key of this P-256 key is at most 255 and can be recovered",
+		},
+		{
 			name:    "unknown rule",
 			finding: types.CryptoFinding{RuleID: "CRYPTO-9999"},
 		},
