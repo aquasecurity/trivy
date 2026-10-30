@@ -35,6 +35,17 @@ func TestParse(t *testing.T) {
 			want:     multipleWsPkgs,
 			wantDeps: multipleWsDeps,
 		},
+		{
+			name: "git dependency from Bun 1.3",
+			file: "testdata/bun_git_v1.3.lock",
+			want: gitV13Pkgs,
+		},
+		{
+			name:     "git dependency with integrity from Bun 1.4",
+			file:     "testdata/bun_git_v1.4.lock",
+			want:     gitV14Pkgs,
+			wantDeps: gitV14Deps,
+		},
 	}
 
 	for _, tt := range tests {
