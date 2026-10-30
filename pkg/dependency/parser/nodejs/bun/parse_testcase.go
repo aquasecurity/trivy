@@ -158,7 +158,12 @@ var (
 
 	multipleWsDeps = []ftypes.Dependency(nil)
 
-	gitPkgs = []ftypes.Package{
+	// docker run --rm oven/bun@sha256:e90cdbaf9ccdb3d4bd693aa335c3310a6004286a880f62f79b18f9b1312a8ec3 sh -c '
+	//   mkdir /app && cd /app
+	//   bun add github:jonschlinkert/kind-of#6.0.3
+	//   cat bun.lock'
+	// Bun 1.3.5 writes git entries as [pkg, info, bunTag].
+	gitV13Pkgs = []ftypes.Package{
 		{
 			ID:           "kind-of@github:jonschlinkert/kind-of#668b595",
 			Name:         "kind-of",
@@ -166,11 +171,19 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 15,
-					EndLine:   15,
+					StartLine: 12,
+					EndLine:   12,
 				},
 			},
 		},
+	}
+
+	// docker run --rm oven/bun@sha256:1d22548f177f4ff38e0c15baa3c2c46c6c2060ba2d1bc573bb4720b407548f1d sh -c '
+	//   mkdir /app && cd /app
+	//   bun add github:micromatch/to-regex-range#5.0.1
+	//   cat bun.lock'
+	// Bun 1.4.4 writes git entries as [pkg, info, bunTag, integrity].
+	gitV14Pkgs = []ftypes.Package{
 		{
 			ID:           "to-regex-range@github:micromatch/to-regex-range#1191a52",
 			Name:         "to-regex-range",
@@ -178,8 +191,8 @@ var (
 			Relationship: ftypes.RelationshipDirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 17,
-					EndLine:   17,
+					StartLine: 14,
+					EndLine:   14,
 				},
 			},
 		},
@@ -190,14 +203,14 @@ var (
 			Relationship: ftypes.RelationshipIndirect,
 			Locations: ftypes.Locations{
 				{
-					StartLine: 13,
-					EndLine:   13,
+					StartLine: 12,
+					EndLine:   12,
 				},
 			},
 		},
 	}
 
-	gitDeps = []ftypes.Dependency{
+	gitV14Deps = []ftypes.Dependency{
 		{
 			ID:        "to-regex-range@github:micromatch/to-regex-range#1191a52",
 			DependsOn: []string{"is-number@7.0.0"},

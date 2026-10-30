@@ -67,11 +67,12 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 
 	// Meta is the second or third array element
 	// [pkg: string, info: BunLockFilePackageInfo]
-	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string]
-	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string, integrity: string] (git packages, Bun 1.4+)
 	// [pkg: string, info: Pick<BunLockFileBasePackageInfo, "bin" | "binDir">]
-	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string]
-	// cf.https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7745-L7755
+	// [pkg: string, info: BunLockFilePackageInfo, integrity: string] (tarball)
+	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string] (git)
+	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string, integrity: string] (git, Bun 1.4+)
+	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string] (npm)
+	// cf. https://github.com/oven-sh/bun/blob/9b4284f788f20e3d6ec8358daf62ad10694b158a/src/install/lockfile/bun.lock.rs#L750-L896
 	// Pick the info by type: the length alone cannot tell git and registry entries apart.
 	metaRaw := raw[1]
 	if metaRaw.Kind() != '{' && len(raw) > 2 {

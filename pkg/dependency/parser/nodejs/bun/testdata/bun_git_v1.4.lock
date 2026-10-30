@@ -1,18 +1,15 @@
 {
-  "lockfileVersion": 1,
+  "lockfileVersion": 2,
+  "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "bungit",
       "dependencies": {
-        "kind-of": "github:jonschlinkert/kind-of#6.0.3",
         "to-regex-range": "github:micromatch/to-regex-range#5.0.1",
       },
     },
   },
   "packages": {
     "is-number": ["is-number@7.0.0", "", {}, "sha512-41Cifkg6e8TylSpdtTpeLVMqvSBEVzTttHvERD741+pnZ8ANv0004MRL43QKPDlK9cGvNp6NZWZUBlbGXYxxng=="],
-
-    "kind-of": ["kind-of@github:jonschlinkert/kind-of#668b595", {}, "jonschlinkert-kind-of-668b595"],
 
     "to-regex-range": ["to-regex-range@github:micromatch/to-regex-range#1191a52", { "dependencies": { "is-number": "^7.0.0" } }, "micromatch-to-regex-range-1191a52", "sha512-0OMl/bvc0YBj5eF7r+tS8G/D8MdFGqLTU1cBcObhJL6ly2HKPETpyXFPDlFE4ZAQd3cNjFltmiZhT1QphrGipQ=="],
   }
