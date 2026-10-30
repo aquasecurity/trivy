@@ -50,7 +50,7 @@ func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 		if encAtRestProp := r.GetProperty("EncryptionInfo.EncryptionAtRest"); encAtRestProp.IsNotNil() {
 			cluster.EncryptionAtRest = msk.EncryptionAtRest{
 				Metadata:  encAtRestProp.Metadata(),
-				KMSKeyARN: encAtRestProp.GetStringProperty("DataVolumeKMSKeyId", ""),
+				KMSKeyARN: encAtRestProp.GetStringProperty("DataVolumeKMSKeyId"),
 				Enabled:   iacTypes.BoolDefault(true, encAtRestProp.Metadata()),
 			}
 		}
@@ -61,15 +61,15 @@ func getClusters(ctx parser.FileContext) (clusters []msk.Cluster) {
 				cluster.Logging.Broker.Metadata = brokerLoggingProp.Metadata()
 				if s3Prop := brokerLoggingProp.GetProperty("S3"); s3Prop.IsNotNil() {
 					cluster.Logging.Broker.S3.Metadata = s3Prop.Metadata()
-					cluster.Logging.Broker.S3.Enabled = s3Prop.GetBoolProperty("Enabled", false)
+					cluster.Logging.Broker.S3.Enabled = s3Prop.GetBoolProperty("Enabled")
 				}
 				if cwProp := brokerLoggingProp.GetProperty("CloudWatchLogs"); cwProp.IsNotNil() {
 					cluster.Logging.Broker.Cloudwatch.Metadata = cwProp.Metadata()
-					cluster.Logging.Broker.Cloudwatch.Enabled = cwProp.GetBoolProperty("Enabled", false)
+					cluster.Logging.Broker.Cloudwatch.Enabled = cwProp.GetBoolProperty("Enabled")
 				}
 				if fhProp := brokerLoggingProp.GetProperty("Firehose"); fhProp.IsNotNil() {
 					cluster.Logging.Broker.Firehose.Metadata = fhProp.Metadata()
-					cluster.Logging.Broker.Firehose.Enabled = fhProp.GetBoolProperty("Enabled", false)
+					cluster.Logging.Broker.Firehose.Enabled = fhProp.GetBoolProperty("Enabled")
 				}
 			}
 		}
