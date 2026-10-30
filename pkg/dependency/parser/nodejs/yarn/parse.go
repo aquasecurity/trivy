@@ -197,24 +197,23 @@ func (p *Parser) parseBlock(block []byte, lineNum int) (lib Library, deps []stri
 			continue
 		}
 
-		// only the unindented block header holds package patterns; indented keys such as
-		// the ones under dependenciesMeta (e.g. "debug@4.3.4:") look like patterns too
-		isHeader := line[0] != ' '
+		// yarn v1 and Berry indent block fields by two spaces and nested keys by four or more
+		indent := len(line) - len(strings.TrimLeft(line, " "))
 		line = strings.TrimPrefix(strings.TrimSpace(line), "\"")
 
 		switch {
-		case strings.HasPrefix(line, "version"):
+		case indent == 2 && strings.HasPrefix(line, "version"):
 			if lib.Version, err = getVersion(line); err != nil {
 				skipBlock = true
 			}
 			continue
-		case strings.HasPrefix(line, "dependencies:"):
+		case indent == 2 && strings.HasPrefix(line, "dependencies:"):
 			// start dependencies block
 			deps = parseDependencies(scanner)
 			continue
-		}
-
-		if !isHeader {
+		case indent != 0:
+			// only the block header holds package patterns, other fields and nested keys
+			// such as the ones under dependenciesMeta or bin are skipped
 			continue
 		}
 

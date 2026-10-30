@@ -291,6 +291,11 @@ func TestParse(t *testing.T) {
 			want: yarnV2WithDependenciesMeta,
 		},
 		{
+			name: "yarn v2 with a bin name that starts with version",
+			file: "testdata/yarn_v2_with_version_bin.lock",
+			want: yarnV2WithVersionBin,
+		},
+		{
 			name: "yarn with git dependency",
 			file: "testdata/yarn_with_git.lock",
 		},

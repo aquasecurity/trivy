@@ -151,8 +151,36 @@ var (
 		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 28, EndLine: 33}}},
 	}
 
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add es-toolkit@1.47.0
+	//   cat yarn.lock'
 	yarnV2WithDependenciesMeta = []ftypes.Package{
-		{ID: "es-toolkit@1.47.0", Name: "es-toolkit", Version: "1.47.0", Locations: []ftypes.Location{{StartLine: 16, EndLine: 24}}},
+		{ID: "es-toolkit@1.47.0", Name: "es-toolkit", Version: "1.47.0", Locations: []ftypes.Location{{StartLine: 16, EndLine: 28}}},
+	}
+
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add version-changelog@3.1.1
+	//   cat yarn.lock'
+	yarnV2WithVersionBin = []ftypes.Package{
+		{ID: "bitbucket-url-from-git@1.0.2", Name: "bitbucket-url-from-git", Version: "1.0.2", Locations: []ftypes.Location{{StartLine: 16, EndLine: 21}}},
+		{ID: "cross-spawn@4.0.2", Name: "cross-spawn", Version: "4.0.2", Locations: []ftypes.Location{{StartLine: 23, EndLine: 31}}},
+		{ID: "github-url-from-git@1.5.0", Name: "github-url-from-git", Version: "1.5.0", Locations: []ftypes.Location{{StartLine: 33, EndLine: 38}}},
+		{ID: "giturl@1.0.3", Name: "giturl", Version: "1.0.3", Locations: []ftypes.Location{{StartLine: 40, EndLine: 45}}},
+		{ID: "has-yarn@1.0.0", Name: "has-yarn", Version: "1.0.0", Locations: []ftypes.Location{{StartLine: 47, EndLine: 52}}},
+		{ID: "isexe@2.0.0", Name: "isexe", Version: "2.0.0", Locations: []ftypes.Location{{StartLine: 54, EndLine: 59}}},
+		{ID: "lru-cache@4.1.5", Name: "lru-cache", Version: "4.1.5", Locations: []ftypes.Location{{StartLine: 61, EndLine: 69}}},
+		{ID: "minimist@1.2.8", Name: "minimist", Version: "1.2.8", Locations: []ftypes.Location{{StartLine: 71, EndLine: 76}}},
+		{ID: "pseudomap@1.0.2", Name: "pseudomap", Version: "1.0.2", Locations: []ftypes.Location{{StartLine: 78, EndLine: 83}}},
+		{ID: "upath@1.2.0", Name: "upath", Version: "1.2.0", Locations: []ftypes.Location{{StartLine: 85, EndLine: 90}}},
+		{ID: "version-changelog@3.1.1", Name: "version-changelog", Version: "3.1.1", Locations: []ftypes.Location{{StartLine: 92, EndLine: 107}}},
+		{ID: "which@1.3.1", Name: "which", Version: "1.3.1", Locations: []ftypes.Location{{StartLine: 109, EndLine: 118}}},
+		{ID: "yallist@2.1.2", Name: "yallist", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 120, EndLine: 125}}},
 	}
 
 	yarnV2DepsWithProtocolDeps = []ftypes.Dependency{

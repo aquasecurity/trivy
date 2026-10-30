@@ -2,22 +2,26 @@
 # Manual changes might be lost - proceed with caution!
 
 __metadata:
-  version: 8
+  version: 10
   cacheKey: 10c0
 
 "app@workspace:.":
   version: 0.0.0-use.local
   resolution: "app@workspace:."
   dependencies:
-    es-toolkit: "npm:^1.39.7"
+    es-toolkit: "npm:1.47.0"
   languageName: unknown
   linkType: soft
 
-"es-toolkit@npm:^1.39.7":
+"es-toolkit@npm:1.47.0":
   version: 1.47.0
   resolution: "es-toolkit@npm:1.47.0"
   dependenciesMeta:
+    "@trivago/prettier-plugin-sort-imports@4.3.0":
+      unplugged: true
     prettier-plugin-sort-re-exports@0.0.1:
+      unplugged: true
+    vitepress-plugin-sandpack@1.1.4:
       unplugged: true
   checksum: 10c0/6edc9709fccc409fa4adddd318971d8a18335de9225f2dc99021aacba44fe66a2437a831923589c643865caab261a087bd974338294a60bb5a74932caa102901
   languageName: node
