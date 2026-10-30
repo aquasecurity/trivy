@@ -26,6 +26,10 @@ const (
 	tagTrustedCert = 2
 )
 
+// maxCertificates bounds the number of X.509 certificates read from one keystore. A real trust
+// store holds a few hundred.
+const maxCertificates = 10000
+
 const certificateTypeX509 = "X.509"
 
 // ErrNotJKS means that the content is not a JKS file.
@@ -61,6 +65,16 @@ func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
 			return
 		}
 
+		budget := maxCertificates
+		next := func(der []byte) bool {
+			if budget == 0 {
+				log.WarnContext(ctx, "Too many JKS certificates")
+				return false
+			}
+			budget--
+			return yield(der)
+		}
+
 		// An entry carries no length of its own, so the rest of the file is lost after a
 		// malformed entry.
 		for range count {
@@ -74,9 +88,9 @@ func certificates(ctx context.Context, data []byte) iter.Seq[[]byte] {
 			var ok bool
 			switch tag {
 			case tagPrivateKey:
-				ok = readPrivateKeyEntry(ctx, &s, version, yield)
+				ok = readPrivateKeyEntry(ctx, &s, version, next)
 			case tagTrustedCert:
-				ok = readCertificate(ctx, &s, version, yield)
+				ok = readCertificate(ctx, &s, version, next)
 			default:
 				log.WarnContext(ctx, "Malformed JKS entry", log.Int("tag", int(tag)))
 				return

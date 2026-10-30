@@ -9,6 +9,7 @@ import (
 	"math/big"
 	"os"
 	"path/filepath"
+	"slices"
 	"testing"
 	"time"
 
@@ -110,6 +111,22 @@ func TestParse(t *testing.T) {
 					b.AddUint32(1000)
 					b.AddBytes([]byte{0x01})
 				}),
+				trustedCertEntry(2, "X.509", other),
+			),
+			want: []string{"example.test"},
+		},
+		{
+			name: "certificates at the limit",
+			content: keystore(2,
+				privateKeyEntry(2, []byte{0x01}, slices.Repeat([][]byte{certificate}, jks.MaxCertificates-1)...),
+				trustedCertEntry(2, "X.509", other),
+			),
+			want: []string{"example.test", "other.example.test"},
+		},
+		{
+			name: "certificates over the limit",
+			content: keystore(2,
+				privateKeyEntry(2, []byte{0x01}, slices.Repeat([][]byte{certificate}, jks.MaxCertificates)...),
 				trustedCertEntry(2, "X.509", other),
 			),
 			want: []string{"example.test"},
