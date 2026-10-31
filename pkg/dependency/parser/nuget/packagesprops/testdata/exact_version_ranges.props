@@ -1,0 +1,17 @@
+<Project>
+    <ItemGroup>
+        <PackageVersion Include="ExactPin" Version="[4.7.0]" />
+        <PackageVersion Include="SpacedPin" Version=" [ 4.7.1 ] " />
+        <PackageVersion Include="EqualBounds" Version="[1.0, 1.0]" />
+        <PackageVersion Include="VariablePin" Version="[$(PinnedVersion)]" />
+        <PackageVersion Include="OpenRange" Version="[8.0.32,9)" />
+        <PackageVersion Include="InclusiveRange" Version="[1.0,2.0]" />
+        <PackageVersion Include="ExclusivePin" Version="(1.0)" />
+        <PackageVersion Include="HalfOpenPin" Version="[1.0)" />
+        <PackageVersion Include="FloatingPin" Version="[1.*]" />
+        <PackageVersion Include="EmptyBrackets" Version="[]" />
+        <PackageVersion Include="UnclosedBracket" Version="[1.0" />
+        <PackageVersion Include="MissingLowerBound" Version="[,1.0]" />
+        <PackageVersion Include="DifferentSpelling" Version="[1.0,1.0.0]" />
+    </ItemGroup>
+</Project>
