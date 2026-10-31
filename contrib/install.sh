@@ -86,6 +86,10 @@ execute() {
     log_info "verifying tarball against user-supplied checksum"
     hash_sha256_verify_expected "${tmpdir}/${TARBALL}" "${CHECKSUM_EXPECTED}"
   else
+    # Say so explicitly: a silently dropped TRIVY_CHECKSUM (e.g. reset by
+    # sudo, or an empty CI variable) lands here too, so the fallback must
+    # be visible rather than silent.
+    log_info "verifying tarball against release checksum file"
     http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
     hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
   fi
