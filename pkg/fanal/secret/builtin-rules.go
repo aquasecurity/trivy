@@ -74,6 +74,7 @@ var (
 	CategoryAzure                = types.SecretRuleCategory("Azure")
 	CategoryMaven                = types.SecretRuleCategory("Maven")
 	CategoryOpenAI               = types.SecretRuleCategory("OpenAI")
+	CategoryComposio             = types.SecretRuleCategory("Composio")
 )
 
 // Reusable regex patterns
@@ -83,6 +84,11 @@ const (
 	endSecret = `[.,]?(\s+|$)`
 	startWord = "([^0-9a-zA-Z_]|^)"
 	endWord   = "([^0-9a-zA-Z_]|$)"
+
+	// endKeyWord ends a secret whose own alphabet holds "-". endWord accepts "-"
+	// as a terminator, so for a fixed-length body it closes the match at the
+	// expected length and reports a longer token as a valid-length key.
+	endKeyWord = "([^0-9a-zA-Z_-]|$)"
 
 	aws = `aws_?`
 )
@@ -1061,5 +1067,51 @@ var builtinRules = []Rule{
 		Regex:           MustCompileWithBoundaries(`?P<secret>ek_[a-f0-9]{32}`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ek_"},
+	},
+	// Composio API keys. The three key types differ only in the prefix, over the
+	// shared alphabet [A-Za-z0-9_-] with a fixed body length and no checksum:
+	// `ak_` + 20 (project), `oak_` + 20 (organization), `uak_` + 43 (user).
+	//
+	// The leading boundary is mandatory, not stylistic: `oak_` and `uak_` both
+	// end in `ak_`, so without it every organization and user key would also be
+	// reported as a project key. It is `\b` rather than startWord because `\b`
+	// is zero-width: startWord consumes the delimiter, so of two keys separated
+	// by a single comma or newline the first match eats what the second needs
+	// and only one is reported. `\b` cannot match between the "o" and "a" of
+	// `oak_` either, since both are word characters, so it enforces the rule
+	// above for free.
+	//
+	// The trailing boundary is endKeyWord rather than the shared endWord because
+	// "-" belongs to the key alphabet. endWord accepts "-", so it closes the
+	// match at the fixed body length and reports `ak_<20>-<more>` as a project
+	// key. `\b` would be wrong in this position for the opposite reason: "-" is
+	// not a word character, so a body ending in "-" has no word boundary after
+	// it and roughly one key in 64 would be missed.
+	{
+		ID:              "composio-project-api-key",
+		Category:        CategoryComposio,
+		Title:           "Composio Project API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`\b` + `(?P<secret>ak_[A-Za-z0-9_-]{20})` + endKeyWord),
+		SecretGroupName: "secret",
+		Keywords:        []string{"ak_"},
+	},
+	{
+		ID:              "composio-org-api-key",
+		Category:        CategoryComposio,
+		Title:           "Composio Organization API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`\b` + `(?P<secret>oak_[A-Za-z0-9_-]{20})` + endKeyWord),
+		SecretGroupName: "secret",
+		Keywords:        []string{"oak_"},
+	},
+	{
+		ID:              "composio-user-api-key",
+		Category:        CategoryComposio,
+		Title:           "Composio User API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompile(`\b` + `(?P<secret>uak_[A-Za-z0-9_-]{43})` + endKeyWord),
+		SecretGroupName: "secret",
+		Keywords:        []string{"uak_"},
 	},
 }
