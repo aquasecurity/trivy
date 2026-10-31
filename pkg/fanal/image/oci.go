@@ -1,6 +1,8 @@
 package image
 
 import (
+	"os"
+	"path/filepath"
 	"strings"
 
 	v1 "github.com/google/go-containerregistry/pkg/v1"
@@ -10,21 +12,7 @@ import (
 )
 
 func tryOCI(fileName string) (v1.Image, error) {
-	var inputRef, inputFileName string
-
-	// Check if tag is specified in input
-	// e.g. /path/to/oci:0.0.1
-
-	inputFileName, inputRef, found := strings.Cut(fileName, "@")
-
-	if !found {
-		inputFileName, inputRef, found = strings.Cut(fileName, ":")
-	}
-
-	if !found {
-		inputFileName = fileName
-		inputRef = ""
-	}
+	inputFileName, inputRef := splitOCIRef(fileName)
 
 	lp, err := layout.FromPath(inputFileName)
 	if err != nil {
@@ -79,4 +67,40 @@ func getOCIImage(m *v1.IndexManifest, index v1.ImageIndex, inputRef string) (v1.
 	}
 
 	return nil, xerrors.New("invalid OCI image ref")
+}
+
+// splitOCIRef splits an optional tag or digest off an OCI layout path,
+// e.g. /path/to/oci:0.0.1 or /path/to/oci@sha256:...
+//
+// The path itself may contain '@' or ':' (Jenkins names workspaces "job@2" and "job@tmp"),
+// so a separator splits the input only where the part before it is an OCI layout.
+// When no split point is a layout, the first '@', else the first ':', is used as before.
+func splitOCIRef(fileName string) (string, string) {
+	if isOCILayout(fileName) {
+		return fileName, ""
+	}
+	for _, sep := range []string{"@", ":"} {
+		for i := 0; i < len(fileName); {
+			j := strings.Index(fileName[i:], sep)
+			if j < 0 {
+				break
+			}
+			i += j
+			if isOCILayout(fileName[:i]) {
+				return fileName[:i], fileName[i+1:]
+			}
+			i++
+		}
+	}
+	for _, sep := range []string{"@", ":"} {
+		if path, ref, found := strings.Cut(fileName, sep); found {
+			return path, ref
+		}
+	}
+	return fileName, ""
+}
+
+func isOCILayout(dir string) bool {
+	fi, err := os.Stat(filepath.Join(dir, "index.json"))
+	return err == nil && !fi.IsDir()
 }
