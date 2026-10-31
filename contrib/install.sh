@@ -8,9 +8,15 @@ usage() {
   cat <<EOF
 $this: download go binaries for aquasecurity/trivy
 
-Usage: $this [-b] bindir [-c] client [-d] [tag]
+Usage: $this [-b] bindir [-c] client [-k] checksum [-d] [tag]
   -b sets bindir or installation directory, Defaults to ./bin
   -c sets client identifier for download tracking (letters, digits, and '-' characters are allowed), Defaults to install-script
+  -k sets the expected sha256 checksum of the downloaded archive (64 hex characters).
+     It can also be set with the TRIVY_CHECKSUM environment variable; the flag takes precedence.
+     When set, the archive is verified against this value instead of the checksum file
+     published with the release, so the check is meaningful even if the release assets
+     were tampered with. For real benefit, pin this script to a known-good commit and
+     supply the checksum from a trusted location.
   -d turns on debug logging
   -x turns on verbose logging
    [tag] is a tag from
@@ -30,7 +36,8 @@ parse_args() {
 
   BINDIR=${BINDIR:-./bin}
   CLIENT=${CLIENT:-install-script}
-  while getopts "b:c:dh?x" arg; do
+  CHECKSUM_EXPECTED=${TRIVY_CHECKSUM:-}
+  while getopts "b:c:dh?k:x" arg; do
     case "$arg" in
       b) BINDIR="$OPTARG" ;;
       c)
@@ -41,11 +48,26 @@ parse_args() {
           exit 1
         fi
         ;;
+      k)
+        if printf '%s' "$OPTARG" | grep -Eq '^[0-9a-fA-F]{64}$'; then
+          CHECKSUM_EXPECTED="$OPTARG"
+        else
+          log_crit "invalid checksum '${OPTARG}'; expected 64 hex characters (sha256)"
+          exit 1
+        fi
+        ;;
       d) log_set_priority 10 ;;
       h | \?) usage "$0" ;;
       x) set -x ;;
     esac
   done
+  # normalize so an uppercase checksum still matches the lowercase hash output
+  CHECKSUM_EXPECTED=$(printf '%s' "$CHECKSUM_EXPECTED" | tr '[:upper:]' '[:lower:]')
+  # validate here too: a value from TRIVY_CHECKSUM bypasses the -k check above
+  if [ -n "$CHECKSUM_EXPECTED" ] && ! printf '%s' "$CHECKSUM_EXPECTED" | grep -Eq '^[0-9a-f]{64}$'; then
+    log_crit "invalid checksum '${CHECKSUM_EXPECTED}'; expected 64 hex characters (sha256)"
+    exit 1
+  fi
   shift $((OPTIND - 1))
   TAG=$1
 }
@@ -57,8 +79,20 @@ execute() {
   tmpdir=$(mktemp -d)
   log_debug "downloading files into ${tmpdir}"
   http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
-  http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
-  hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  if [ -n "${CHECKSUM_EXPECTED:-}" ]; then
+    # A user-supplied checksum is trusted over the checksum file published
+    # with the release (an attacker able to tamper with the release assets
+    # could tamper with that file too), so it replaces that check.
+    log_info "verifying tarball against user-supplied checksum"
+    hash_sha256_verify_expected "${tmpdir}/${TARBALL}" "${CHECKSUM_EXPECTED}"
+  else
+    # Say so explicitly: a silently dropped TRIVY_CHECKSUM (e.g. reset by
+    # sudo, or an empty CI variable) lands here too, so the fallback must
+    # be visible rather than silent.
+    log_info "verifying tarball against release checksum file"
+    http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
+    hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  fi
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   test ! -d "${BINDIR}" && install -d "${BINDIR}"
@@ -347,6 +381,19 @@ hash_sha256_verify() {
   got=$(hash_sha256 "$TARGET")
   if [ "$want" != "$got" ]; then
     log_err "hash_sha256_verify checksum for '$TARGET' did not verify ${want} vs $got"
+    return 1
+  fi
+}
+hash_sha256_verify_expected() {
+  TARGET=$1
+  want=$2
+  if [ -z "$want" ]; then
+    log_err "hash_sha256_verify_expected expected checksum not specified in arg2"
+    return 1
+  fi
+  got=$(hash_sha256 "$TARGET")
+  if [ "$want" != "$got" ]; then
+    log_err "hash_sha256_verify_expected checksum for '$TARGET' did not verify ${want} vs $got"
     return 1
   fi
 }
