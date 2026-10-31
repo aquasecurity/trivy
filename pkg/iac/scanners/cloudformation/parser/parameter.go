@@ -122,11 +122,11 @@ func (p *Parameters) UnmarshalJSONFrom(d *jsontext.Decoder) error {
 
 		if err := json.Unmarshal(jval, &params); err == nil {
 			for _, param := range params {
-				parts := strings.Split(param, "=")
-				if len(parts) != 2 {
+				key, val, ok := strings.Cut(param, "=")
+				if !ok {
 					return fmt.Errorf("invalid key-value parameter: %q", param)
 				}
-				(*p)[parts[0]] = parts[1]
+				(*p)[key] = val
 			}
 			return nil
 		}
