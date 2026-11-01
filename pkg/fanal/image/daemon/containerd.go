@@ -110,6 +110,18 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
 
+	// Assign the cleanup function before the temporary file exists so that every
+	// error path below closes the client. The temp-file close is nil-safe.
+	var f *os.File
+	cleanup = func() {
+		_ = c.Close()
+		if f == nil {
+			return
+		}
+		_ = f.Close()
+		_ = os.Remove(f.Name())
+	}
+
 	namespace := os.Getenv("CONTAINERD_NAMESPACE")
 	if namespace == "" {
 		namespace = defaultContainerdNamespace
@@ -130,15 +142,9 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	img := imgs[0]
 
-	f, err := xos.CreateTemp("", "containerd-export-")
+	f, err = xos.CreateTemp("", "containerd-export-")
 	if err != nil {
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
-	}
-
-	cleanup = func() {
-		_ = c.Close()
-		_ = f.Close()
-		_ = os.Remove(f.Name())
 	}
 
 	insp, history, ref, err := inspect(ctx, img, ref)
