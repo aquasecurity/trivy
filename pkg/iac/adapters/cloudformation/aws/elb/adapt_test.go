@@ -75,6 +75,112 @@ Resources:
 				},
 			},
 		},
+		{
+			name: "https listener without ssl policy",
+			source: `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTPS
+`,
+			expected: elb.ELB{
+				LoadBalancers: []elb.LoadBalancer{
+					{
+						Type: types.StringTest("application"),
+						Listeners: []elb.Listener{
+							{
+								Protocol:  types.StringTest("HTTPS"),
+								TLSPolicy: types.StringTest(elb.DefaultTLSPolicy),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "http listener without ssl policy",
+			source: `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: HTTP
+`,
+			expected: elb.ELB{
+				LoadBalancers: []elb.LoadBalancer{
+					{
+						Type: types.StringTest("application"),
+						Listeners: []elb.Listener{
+							{
+								Protocol: types.StringTest("HTTP"),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "tls listener without ssl policy",
+			source: `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: network
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: TLS
+`,
+			expected: elb.ELB{
+				LoadBalancers: []elb.LoadBalancer{
+					{
+						Type: types.StringTest("network"),
+						Listeners: []elb.Listener{
+							{
+								Protocol:  types.StringTest("TLS"),
+								TLSPolicy: types.StringTest(elb.DefaultTLSPolicy),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "tcp listener without ssl policy",
+			source: `AWSTemplateFormatVersion: "2010-09-09"
+Resources:
+  LoadBalancer:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: network
+  Listener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      LoadBalancerArn: !Ref LoadBalancer
+      Protocol: TCP
+`,
+			expected: elb.ELB{
+				LoadBalancers: []elb.LoadBalancer{
+					{
+						Type: types.StringTest("network"),
+						Listeners: []elb.Listener{
+							{
+								Protocol: types.StringTest("TCP"),
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

@@ -30,10 +30,15 @@ func getListeners(lbr *parser.Resource, ctx parser.FileContext) (listeners []elb
 
 	for _, r := range listenerResources {
 		if r.GetStringProperty("LoadBalancerArn").Value() == lbr.ID() {
+			protocol := r.GetStringProperty("Protocol", "HTTP")
+			defaultPolicy := ""
+			if protocol.IsOneOf("HTTPS", "TLS") {
+				defaultPolicy = elb.DefaultTLSPolicy
+			}
 			listener := elb.Listener{
 				Metadata:       r.Metadata(),
-				Protocol:       r.GetStringProperty("Protocol", "HTTP"),
-				TLSPolicy:      r.GetStringProperty("SslPolicy", ""),
+				Protocol:       protocol,
+				TLSPolicy:      r.GetStringProperty("SslPolicy", defaultPolicy),
 				DefaultActions: getDefaultListenerActions(r),
 			}
 
