@@ -8703,6 +8703,7 @@ You're not viewing the latest version of the documentation.
 <li>misconfig</li>
 <li>secret</li>
 <li>license</li>
+<li>crypto<sup id="fnref2:1"><a class="footnote-ref" href="#fn:1">1</a></sup></li>
 </ul>
 <p>For example, container image scanning enables vulnerability and secret scanners by default.
 If you don't need secret scanning, it can be disabled.</p>
@@ -8735,7 +8736,7 @@ If you don't need secret scanning, it can be disabled.</p>
 </tr>
 <tr>
 <td style="text-align: center;">Crypto</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓<sup id="fnref:1"><a class="footnote-ref" href="#fn:1">1</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -8891,6 +8892,14 @@ You can disable telemetry collection using the <code>--disable-telemetry</code> 
 <p class="admonition-title">Note</p>
 <p>The <a href="#check-for-updates">version check</a> and telemetry share a single request to <code>check.trivy.dev</code>, so the request is still sent unless the version check is disabled as well.
 See <a href="../../advanced/air-gap/#check-updates-service">Check updates service</a> for details.</p>
+</div>
+<div class="footnote">
+<hr />
+<ol>
+<li id="fn:1">
+<p>Experimental. Available for container image scanning only. See <a href="../../scanner/crypto/">Cryptographic Asset Scanning</a>.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+</ol>
 </div>
 
 

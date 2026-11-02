@@ -9100,7 +9100,7 @@ You're not viewing the latest version of the documentation.
 </tr>
 <tr>
 <td style="text-align: center;">Crypto</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 </tr>
 </tbody>
 </table>
@@ -9445,6 +9445,10 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓</td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;">✓<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
 </tbody>
 </table>
 <div class="highlight"><pre><span></span><code>$ trivy image -f json -o results.json alpine:latest
@@ -9651,6 +9655,10 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓</td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;"></td>
+</tr>
 </tbody>
 </table>
 <p><a href="https://sarifweb.azurewebsites.net">SARIF</a> (Static Analysis Results Interchange Format) complying with <a href="https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html">SARIF 2.1.0 OASIS standard</a> can be generated with the <code>--format sarif</code> flag.</p>
@@ -9695,6 +9703,10 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 <tr>
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓</td>
+</tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;"></td>
 </tr>
 </tbody>
 </table>
@@ -9758,6 +9770,10 @@ The template file must have a <code>.tpl</code> extension.</p>
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓</td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;"></td>
+</tr>
 </tbody>
 </table>
 <p>In the following example using the template <code>junit.tpl</code> XML can be generated.
@@ -9788,6 +9804,10 @@ The template file must have a <code>.tpl</code> extension.</p>
 <td style="text-align: center;">License</td>
 <td style="text-align: center;"></td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;"></td>
+</tr>
 </tbody>
 </table>
 <p>Trivy also supports an <a href="../../../tutorials/integrations/aws-security-hub/">ASFF template for reporting findings to AWS Security Hub</a></p>
@@ -9814,6 +9834,10 @@ The template file must have a <code>.tpl</code> extension.</p>
 </tr>
 <tr>
 <td style="text-align: center;">License</td>
+<td style="text-align: center;"></td>
+</tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
 <td style="text-align: center;"></td>
 </tr>
 </tbody>
@@ -9858,6 +9882,7 @@ $<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </sp
 <span class="c1"># Output only critical issues in table format</span>
 $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </span>--format<span class="w"> </span>table<span class="w"> </span>--severity<span class="w"> </span>CRITICAL<span class="w"> </span>result.json
 </code></pre></div>
+<p>The findings of the <a href="../../scanner/crypto/#findings">crypto scanner</a> are kept only for the formats that show them (<code>table</code> and <code>json</code>).</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>JSON reports from "trivy k8s" are not yet supported.</p>
@@ -9867,6 +9892,9 @@ $<span class="w"> </span>trivy<span class="w"> </span>convert<span class="w"> </
 <ol>
 <li id="fn:1">
 <p>To show summary table in <code>convert</code> mode - you need to enable the scanners used during JSON report generation.&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Experimental. Available for container image scanning only. See <a href="../../scanner/crypto/">Cryptographic Asset Scanning</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>

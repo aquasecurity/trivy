@@ -8630,6 +8630,10 @@ You're not viewing the latest version of the documentation.
 <td style="text-align: center;">License</td>
 <td style="text-align: center;">✓</td>
 </tr>
+<tr>
+<td style="text-align: center;">Crypto</td>
+<td style="text-align: center;">✓<sup id="fnref2:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
+</tr>
 </tbody>
 </table>
 <p>It's possible to specify glob patterns when referring to a file or directory. The glob expression follows the <a href="https://pkg.go.dev/github.com/bmatcuk/doublestar/v4@v4.8.1#readme-patterns">"doublestar" library syntax</a>.</p>
@@ -8694,11 +8698,11 @@ A file pattern configuration takes the following form: <code>&lt;analyzer&gt;:&l
 </tr>
 <tr>
 <td style="text-align: center;">Crypto</td>
-<td style="text-align: center;">✓</td>
+<td style="text-align: center;">✓<sup id="fnref:2"><a class="footnote-ref" href="#fn:2">2</a></sup></td>
 </tr>
 </tbody>
 </table>
-<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/559ee386546eab9dd829dd96ff5afd5c46164750/pkg/fanal/analyzer/const.go">here</a>.
+<p>The list of analyzers can be found <a href="https://github.com/aquasecurity/trivy/tree/1d1ab074ed6f2834633370ddc11256fd7ef8e052/pkg/fanal/analyzer/const.go">here</a>.
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.</p>
 <p>The file path can use a <a href="https://pkg.go.dev/regexp/syntax">regular expression</a>. For example:</p>
 <div class="highlight"><pre><span></span><code><span class="c1"># interpret any file with .txt extension as a python pip requirements file</span>
@@ -8716,6 +8720,9 @@ For more information see <a href="../../target/rootfs/#performance-optimization"
 <ol>
 <li id="fn:1">
 <p>Only work with the <a href="../../scanner/license/">license-full</a> flag&#160;<a class="footnote-backref" href="#fnref:1" title="Jump back to footnote 1 in the text">&#8617;</a></p>
+</li>
+<li id="fn:2">
+<p>Experimental. Available for container image scanning only. See <a href="../../scanner/crypto/">Cryptographic Asset Scanning</a>.&#160;<a class="footnote-backref" href="#fnref:2" title="Jump back to footnote 2 in the text">&#8617;</a><a class="footnote-backref" href="#fnref2:2" title="Jump back to footnote 2 in the text">&#8617;</a></p>
 </li>
 </ol>
 </div>
