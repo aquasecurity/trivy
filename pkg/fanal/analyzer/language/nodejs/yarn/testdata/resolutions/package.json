@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "version": "1.0.0",
+  "dependencies": {
+    "debug": "^4.3.5"
+  },
+  "devDependencies": {
+    "lint-tool": "1.0.0"
+  },
+  "resolutions": {
+    "markdown-it": "14.3.0"
+  }
+}
