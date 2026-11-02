@@ -317,11 +317,7 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "PUBLIC KEY":
 		return publicKeyObject(der)
 	case "ENCRYPTED PRIVATE KEY":
-		obj, ok := parseEncryptedPKCS8(der)
-		if !ok {
-			return object{}, errMalformedCrypto
-		}
-		return obj, nil
+		return encryptedPKCS8Object(der)
 	case "CERTIFICATE REQUEST",
 		"NEW CERTIFICATE REQUEST",
 		"X509 CRL",
@@ -530,7 +526,7 @@ func parseDERObject(der []byte) (object, error) {
 		return obj, nil
 	}
 
-	if obj, ok := parseEncryptedPKCS8(der); ok {
+	if obj, err := encryptedPKCS8Object(der); err == nil {
 		return obj, nil
 	}
 
@@ -650,19 +646,19 @@ func publicKeyObject(der []byte) (object, error) {
 	}, nil
 }
 
-// parseEncryptedPKCS8 validates only the opaque envelope and retains the DER it was read from.
-func parseEncryptedPKCS8(der []byte) (object, bool) {
+// encryptedPKCS8Object validates only the opaque envelope and retains the DER it was read from.
+func encryptedPKCS8Object(der []byte) (object, error) {
 	var encrypted encryptedPrivateKeyInfo
 	rest, err := asn1.Unmarshal(der, &encrypted)
 	if err != nil || len(rest) != 0 || len(encrypted.Algorithm.Algorithm) == 0 || len(encrypted.EncryptedData) == 0 {
-		return object{}, false
+		return object{}, errMalformedCrypto
 	}
 	return object{
 		kind:       objectEncryptedPrivateKey,
 		encrypted:  der,
 		encryption: encryptionFormatPKCS8,
 		keyFormat:  ftypes.CryptoKeyFormatPKCS8,
-	}, true
+	}, nil
 }
 
 func isSupportedPublicKey(key any) bool {

@@ -67,11 +67,7 @@ func parseKeystoreObject(o KeystoreObject) (object, error) {
 	case KeystorePrivateKey:
 		return pkcs8PrivateKeyObject(o.DER)
 	case KeystoreEncryptedPrivateKey:
-		obj, ok := parseEncryptedPKCS8(o.DER)
-		if !ok {
-			return object{}, errMalformedCrypto
-		}
-		return obj, nil
+		return encryptedPKCS8Object(o.DER)
 	default:
 		return object{}, errUnsupportedCrypto
 	}
