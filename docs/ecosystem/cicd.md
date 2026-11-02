@@ -91,7 +91,7 @@ The Trivy integration supports scanning Docker images and local filesystems for 
 ## Draugr (Community)
 [Draugr](https://draugr.dev) runs Trivy and other scanners from one YAML descriptor, as a GitHub Action, a GitLab CI include or an Azure Pipelines step template.
 
-Trivy is Draugr's default scanner for dependencies, IaC, container images and licenses. Draugr merges Trivy's findings with the other scanners' and ranks each one P1 to P4 by its severity and by the exposure and criticality declared for the component it sits in. A CVE on CISA's KEV list or a package OpenSSF lists as malicious goes straight to critical, an EPSS score at or above the threshold raises a finding one band, and a Go finding govulncheck shows the code cannot reach drops one band.
+Trivy is Draugr's default scanner for dependencies, IaC, container images and licenses. Draugr merges Trivy's findings with the other scanners' and ranks each one P1 to P4 by its severity and by the exposure and criticality declared for the component it sits in. Signals turned on in the descriptor then move the severity: a CVE on CISA's KEV list or a package OpenSSF lists as malicious goes straight to critical, an EPSS score at or above the threshold raises a finding one band, and a Go finding govulncheck shows the code cannot reach drops one band.
 
 The report then turns findings into actions, grouped by the work each one takes: bump a dependency, change the code, change the infrastructure, rotate a credential, wait for a release, or decide. Each action says how many findings it clears, so eight CVEs in one library are one upgrade.
 
