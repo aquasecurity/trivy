@@ -64,7 +64,7 @@ func TestParse(t *testing.T) {
 		{
 			name:    "OpenSSL keystore without a password",
 			content: fixture(t, "openssl-no-password.p12"),
-			want:    []string{"openssl-leaf.example.test", "openssl-ca.example.test"},
+			want:    []string{"openssl-leaf.example.test", "openssl-ca.example.test", "EC-P-256 private key"},
 		},
 		{
 			name:    "keytool trust store without a password",
@@ -87,6 +87,30 @@ func TestParse(t *testing.T) {
 				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
 				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
 			),
+			want: []string{"example.test"},
+		},
+		{
+			name: "private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newKeyBag(t, pkcs8Key),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
+			want: []string{"EC-P-256 private key", "example.test"},
+		},
+		{
+			name: "repeated private key",
+			content: keystore(t,
+				dataContent(t, safeContents(t, newKeyBag(t, pkcs8Key))),
+				dataContent(t, safeContents(t, newKeyBag(t, pkcs8Key))),
+			),
+			want: []string{"EC-P-256 private key"},
+		},
+		{
+			name: "malformed private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newKeyBag(t, marshal(t, 1)),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
 			want: []string{"example.test"},
 		},
 		{
@@ -316,12 +340,12 @@ func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
 		assert.Equalf(t, parsedFilePath, asset.FilePath, "asset %d", i)
-		if asset.Kind != ftypes.CryptoKindCertificate && asset.KeyType != ftypes.CryptoKeyTypePrivate {
-			continue
-		}
-		if asset.KeyType == ftypes.CryptoKeyTypePrivate {
-			assert.Truef(t, asset.Key.Encrypted, "asset %d", i)
+		switch {
+		case asset.Kind == ftypes.CryptoKindCertificate:
+		case asset.KeyType == ftypes.CryptoKeyTypePrivate:
 			assert.Equalf(t, ftypes.CryptoKeyFormatPKCS8, asset.Format, "asset %d", i)
+		default:
+			continue
 		}
 		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
 		assert.Equalf(t, ftypes.CryptoKeystorePKCS12, asset.Keystore, "asset %d", i)
@@ -392,6 +416,15 @@ func newCertBag(t *testing.T, certType asn1.ObjectIdentifier, der []byte) pkcs12
 			ID:   certType,
 			Data: der,
 		})),
+	}
+}
+
+func newKeyBag(t *testing.T, der []byte) pkcs12.SafeBag {
+	t.Helper()
+
+	return pkcs12.SafeBag{
+		ID:    pkcs12.OIDKeyBag,
+		Value: explicit(der),
 	}
 }
 

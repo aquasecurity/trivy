@@ -28,6 +28,7 @@ var (
 	oidEnvelopedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
 	oidEncryptedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
 
+	oidKeyBag              = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 1}
 	oidPKCS8ShroudedKeyBag = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 2}
 	oidCertBag             = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 3}
 	oidSafeContentsBag     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 6}
@@ -62,8 +63,8 @@ type certBag struct {
 	Data []byte `asn1:"tag:0,explicit"`
 }
 
-// Parse describes the certificates and encrypted private keys stored in the unencrypted
-// contents of a PKCS#12 keystore as assets.
+// Parse describes the certificates and private keys stored in the unencrypted contents of a
+// PKCS#12 keystore as assets.
 //
 // Content that is not a PKCS#12 file in DER gives ErrNotPKCS12. Material that cannot be read
 // is logged and skipped. Any other error means a parsed object could not be described.
@@ -77,8 +78,8 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	return x509.ParseKeystoreObjects(ctx, filePath, objects(ctx, p), ftypes.CryptoKeystorePKCS12)
 }
 
-// objects yields each certificate and encrypted private key stored in an unencrypted content
-// of the authenticated safe of p.
+// objects yields each certificate and private key stored in an unencrypted content of the
+// authenticated safe of p.
 func objects(ctx context.Context, p pfx) iter.Seq[x509.DERObject] {
 	return func(yield func(x509.DERObject) bool) {
 		rest, ok := authenticatedSafe(ctx, p)
@@ -185,6 +186,10 @@ func (w *walker) walk(der []byte, depth int) bool {
 				continue
 			}
 			if !w.yield(x509.DERObject{Kind: x509.DERCertificate, DER: cert.Data}) {
+				return false
+			}
+		case bag.ID.Equal(oidKeyBag):
+			if !w.yield(x509.DERObject{Kind: x509.DERPrivateKey, DER: bag.Value.Bytes}) {
 				return false
 			}
 		case bag.ID.Equal(oidPKCS8ShroudedKeyBag):

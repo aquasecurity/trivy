@@ -24,6 +24,8 @@ var (
 	OIDEnvelopedDataContentType = oidEnvelopedDataContentType
 	// OIDEncryptedDataContentType exports oidEncryptedDataContentType for testing.
 	OIDEncryptedDataContentType = oidEncryptedDataContentType
+	// OIDKeyBag exports oidKeyBag for testing.
+	OIDKeyBag = oidKeyBag
 	// OIDPKCS8ShroudedKeyBag exports oidPKCS8ShroudedKeyBag for testing.
 	OIDPKCS8ShroudedKeyBag = oidPKCS8ShroudedKeyBag
 	// OIDCertBag exports oidCertBag for testing.

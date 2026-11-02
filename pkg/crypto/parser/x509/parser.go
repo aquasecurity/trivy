@@ -13,6 +13,7 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
+	"fmt"
 	"iter"
 	"math/big"
 	"slices"
@@ -186,6 +187,19 @@ const (
 	DEREncryptedPrivateKey
 )
 
+func (k DERKind) String() string {
+	switch k {
+	case DERCertificate:
+		return "certificate"
+	case DERPrivateKey:
+		return "private key"
+	case DEREncryptedPrivateKey:
+		return "encrypted private key"
+	default:
+		return fmt.Sprintf("DERKind(%d)", uint8(k))
+	}
+}
+
 // DERObject is a DER object read out of a keystore.
 type DERObject struct {
 	Kind DERKind
@@ -199,7 +213,7 @@ func ParseKeystoreObjects(ctx context.Context, filePath string, objects iter.Seq
 		for o := range objects {
 			obj, err := parseKeystoreObject(o)
 			if err != nil {
-				logParseError(ctx, "", err)
+				logParseError(ctx, err, log.String("der_kind", o.Kind.String()))
 				continue
 			}
 			obj.encoding = ftypes.CryptoEncodingDER
@@ -281,7 +295,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 			}
 			recognized = true
 			if err != nil {
-				logParseError(ctx, block.Type, err)
+				logParseError(ctx, err, log.String("pem_type", block.Type))
 				continue
 			}
 			if !yield(obj) {
@@ -300,7 +314,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 		// No PEM block was decoded, so try the whole file as DER.
 		obj, err := parseDERObject(content)
 		if err != nil {
-			logParseError(ctx, "", err)
+			logParseError(ctx, err)
 			return
 		}
 		obj.encoding = ftypes.CryptoEncodingDER
@@ -729,12 +743,7 @@ func isSupportedPublicKey(key any) bool {
 	}
 }
 
-func logParseError(ctx context.Context, pemType string, err error) {
-	var attrs []any
-	if pemType != "" {
-		attrs = append(attrs, log.String("pem_type", pemType))
-	}
-
+func logParseError(ctx context.Context, err error, attrs ...any) {
 	switch {
 	case errors.Is(err, errUnsupportedCrypto):
 		log.DebugContext(ctx, "Unsupported cryptographic object", attrs...)
