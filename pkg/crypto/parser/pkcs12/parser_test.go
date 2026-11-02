@@ -343,6 +343,7 @@ func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 		switch {
 		case asset.Kind == ftypes.CryptoKindCertificate:
 		case asset.KeyType == ftypes.CryptoKeyTypePrivate:
+			assert.Equalf(t, asset.Name == encryptedKeyName, asset.Key.Encrypted, "asset %d", i)
 			assert.Equalf(t, ftypes.CryptoKeyFormatPKCS8, asset.Format, "asset %d", i)
 		default:
 			continue

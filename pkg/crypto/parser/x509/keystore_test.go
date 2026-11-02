@@ -57,6 +57,14 @@ func TestParseKeystoreObjects(t *testing.T) {
 			want: []ftypes.CryptoAsset{at(p192Algorithm)},
 		},
 		{
+			// An algorithm belongs to no keystore.
+			name: "P-192 certificate",
+			objects: []cryptox509.KeystoreObject{
+				{Kind: cryptox509.KeystoreCertificate, DER: decodePEM(t, p192CertificatePEM)},
+			},
+			want: []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
 			name: "repeated object",
 			objects: []cryptox509.KeystoreObject{
 				{Kind: cryptox509.KeystoreEncryptedPrivateKey, DER: encryptedDER},
