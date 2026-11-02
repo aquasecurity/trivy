@@ -105,9 +105,9 @@ func objects(ctx context.Context, data []byte) iter.Seq[x509.KeystoreObject] {
 // readPrivateKeyEntry yields the encrypted key of an entry and the certificates of its
 // chain. It reports whether reading can continue.
 func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.KeystoreObject) bool) bool {
-	var keyLen, chainLen uint32
+	var chainLen uint32
 	var key []byte
-	if !s.ReadUint32(&keyLen) || !s.ReadBytes(&key, int(keyLen)) || !s.ReadUint32(&chainLen) {
+	if !readUint32LengthPrefixed(s, &key) || !s.ReadUint32(&chainLen) {
 		log.WarnContext(ctx, "Malformed JKS entry")
 		return false
 	}
@@ -136,9 +136,8 @@ func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, 
 		certType = string(t)
 	}
 
-	var certLen uint32
 	var der []byte
-	if !s.ReadUint32(&certLen) || !s.ReadBytes(&der, int(certLen)) {
+	if !readUint32LengthPrefixed(s, &der) {
 		log.WarnContext(ctx, "Malformed JKS certificate")
 		return false
 	}
@@ -147,4 +146,10 @@ func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, 
 		return true
 	}
 	return yield(x509.KeystoreObject{Kind: x509.KeystoreCertificate, DER: der})
+}
+
+// readUint32LengthPrefixed reads bytes prefixed with their 32-bit length.
+func readUint32LengthPrefixed(s *cryptobyte.String, out *[]byte) bool {
+	var n uint32
+	return s.ReadUint32(&n) && s.ReadBytes(out, int(n))
 }
