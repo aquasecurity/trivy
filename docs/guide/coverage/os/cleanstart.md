@@ -19,7 +19,7 @@ The table below outlines the features offered by Trivy.
 Same as [Alpine Linux](alpine.md#sbom).
 
 ## Vulnerability
-CleanStart OS offers its own security advisories, and these are utilized when scanning CleanStart for vulnerabilities.
+CleanStart OS offers its own [security advisories][advisories], and these are utilized when scanning CleanStart for vulnerabilities.
 Everything else is the same as [Alpine Linux](alpine.md#vulnerability).
 
 ### Data Source

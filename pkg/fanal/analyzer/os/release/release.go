@@ -115,7 +115,7 @@ func idToOSFamily(id string) types.OSType {
 	case "minimos":
 		return types.MinimOS
 	case "clnstrt", "cleanstart":
-    	return types.CleanStart
+		return types.CleanStart
 	case "coreos":
 		return types.CoreOS
 	}
