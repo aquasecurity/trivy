@@ -87,3 +87,10 @@ It has capabilities to fail the pipeline, create issues, alert communication cha
 The Trivy integration supports scanning Docker images and local filesystems for vulnerabilities as well as scanning IaC files for misconfigurations.
 
 👉 Get it at: <https://github.com/SecObserve/secobserve_actions_templates>
+
+## Draugr (Community)
+[Draugr](https://draugr.dev) runs Trivy and other scanners from one YAML descriptor, as a GitHub Action, a GitLab CI include or an Azure Pipelines step template.
+
+Trivy is Draugr's default scanner for dependencies, IaC, container images and licenses. Draugr merges Trivy's findings with the other scanners' into one SARIF report and ranks them by the exposure and criticality declared in the descriptor. It checks every finding against CISA's KEV list, EPSS scores and OpenSSF's malicious-packages data, and uses govulncheck to rank Go findings by whether the code reaches them.
+
+👉 Get it at: <https://github.com/draugr-dev/draugr>
