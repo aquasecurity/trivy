@@ -717,6 +717,14 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"limited": 1},
 			wantErr:        "429",
 		},
+		{
+			// Multiple mirrors are rate-limited; all are queried and the 429 is returned.
+			name:           "multiple mirrors rate-limited: all are queried and 429 is returned",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"limited", "limited2"}},
+			wantHits:       map[string]int{"limited": 1, "limited2": 1},
+			wantErr:        `429 Too Many Requests for:\n  - http://.*/example-api-1\.0\.0\.pom\n  - http://.*/example-api-1\.0\.0\.pom`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -745,11 +753,12 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":    newServer("repo1", http.StatusOK),
+				"mirror":   newServer("mirror", http.StatusOK),
+				"chain":    newServer("chain", http.StatusOK),
+				"dead":     newServer("dead", http.StatusNotFound),
+				"limited":  newServer("limited", http.StatusTooManyRequests),
+				"limited2": newServer("limited2", http.StatusTooManyRequests),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -785,7 +794,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
 			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
+				require.Regexp(t, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, got)
