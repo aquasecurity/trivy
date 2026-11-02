@@ -11,7 +11,6 @@ import (
 	"github.com/package-url/packageurl-go"
 	"github.com/samber/lo"
 
-	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -214,11 +213,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		return nil
 	})
 
-	// A key file states nothing about where the other half of the pair was found, so the
-	// two are linked here, once every layer has been applied.
-	crypto.LinkKeyPairs(mergedLayer.CryptoAssets)
-	// IDs are assigned after merging, when the final list of assets is known.
-	crypto.AssignIDs(mergedLayer.CryptoAssets)
+	// IDs are assigned and key pairs are linked after merging, when the final list of assets
+	// is known. A key file states nothing about where the other half of the pair was found.
+	mergedLayer.CryptoAssets.Finalize()
 
 	for _, s := range secretsMap {
 		mergedLayer.Secrets = append(mergedLayer.Secrets, s)

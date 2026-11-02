@@ -9,6 +9,7 @@ Supported values:
 - misconfig
 - secret
 - license
+- crypto[^1]
  
 For example, container image scanning enables vulnerability and secret scanners by default.
 If you don't need secret scanning, it can be disabled.
@@ -24,7 +25,7 @@ $ trivy image --scanners vuln alpine:3.15
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
-|      Crypto      |     ✓     |
+|      Crypto      |   ✓[^1]   |
 
 By default, `Trivy` exits with code 0 even when security issues are detected.
 Use the `--exit-code` option if you want to exit with a non-zero exit code.
@@ -180,3 +181,5 @@ You can disable telemetry collection using the `--disable-telemetry` flag.
 !!! note
     The [version check](#check-for-updates) and telemetry share a single request to `check.trivy.dev`, so the request is still sent unless the version check is disabled as well.
     See [Check updates service](../advanced/air-gap.md#check-updates-service) for details.
+
+[^1]: Experimental. Available for container image scanning only. See [Cryptographic Asset Scanning](../scanner/crypto.md).

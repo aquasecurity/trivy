@@ -11,7 +11,7 @@ import (
 
 	"github.com/aquasecurity/tml"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/crypto/check"
+	"github.com/aquasecurity/trivy/pkg/crypto/scanner"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -51,7 +51,7 @@ func (r *cryptoRenderer) Render(result types.Result) {
 			cmp.Compare(a.RuleID, b.RuleID),
 			cmp.Compare(assetA.FilePath, assetB.FilePath),
 			cmp.Compare(cryptoAssetLabel(assetA), cryptoAssetLabel(assetB)),
-			cmp.Compare(check.Message(a), check.Message(b)),
+			cmp.Compare(scanner.Message(a), scanner.Message(b)),
 		)
 	})
 
@@ -75,7 +75,7 @@ func (r *cryptoRenderer) Render(result types.Result) {
 		if row.count > 1 {
 			label = fmt.Sprintf("%s x%d", label, row.count)
 		}
-		message := tml.Sprintf("%s\n<blue>%s</blue>", check.Message(f), cryptoRuleURL(f.RuleID))
+		message := tml.Sprintf("%s\n<blue>%s</blue>", scanner.Message(f), cryptoRuleURL(f.RuleID))
 		tw.AddRow(severity, f.RuleID, label, row.asset.FilePath, message)
 	}
 	tw.Render()
@@ -98,7 +98,7 @@ func groupCryptoFindings(findings []types.CryptoFinding, assets map[string]ftype
 			prev := rows[n-1]
 			if prev.finding.Severity == f.Severity && prev.finding.RuleID == f.RuleID &&
 				prev.asset.FilePath == asset.FilePath && cryptoAssetLabel(prev.asset) == cryptoAssetLabel(asset) &&
-				check.Message(prev.finding) == check.Message(f) {
+				scanner.Message(prev.finding) == scanner.Message(f) {
 				rows[n-1].count++
 				continue
 			}

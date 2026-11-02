@@ -14,7 +14,6 @@ import (
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/internal/hooktest"
 	"github.com/aquasecurity/trivy/pkg/cache"
-	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/scan/langpkg"
@@ -174,8 +173,8 @@ func TestScanner_Scan(t *testing.T) {
 	}))
 	scannedCertificate := cachedCertificate
 	scannedCertificate.Layer = cryptoLayer
-	scannedAssets := []ftypes.CryptoAsset{scannedAlgorithm, scannedCertificate}
-	crypto.AssignIDs(scannedAssets)
+	scannedAssets := ftypes.CryptoAssets{scannedAlgorithm, scannedCertificate}
+	scannedAssets.Finalize()
 
 	tests := []struct {
 		name       string

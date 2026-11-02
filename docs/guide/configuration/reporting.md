@@ -18,7 +18,7 @@ Trivy supports the following formats:
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
-|      Crypto      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 ```bash
 $ trivy image -f table golang:1.22.11-alpine3.20
@@ -268,6 +268,7 @@ Then, you can try to update **axios@0.21.4** and **cra-append-sw@2.7.0** to reso
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 ```
 $ trivy image -f json -o results.json alpine:latest
@@ -460,6 +461,7 @@ $ trivy image -f json -o results.json alpine:latest
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 [SARIF][sarif-home] (Static Analysis Results Interchange Format) complying with [SARIF 2.1.0 OASIS standard][sarif-spec] can be generated with the `--format sarif` flag.
 
@@ -494,6 +496,7 @@ This snapshot file can be [submitted][github-sbom-submit] to your GitHub reposit
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 #### Custom Template
 
@@ -556,6 +559,7 @@ If Trivy is installed using rpm then default templates can be found at `/usr/loc
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |           |
 
 In the following example using the template `junit.tpl` XML can be generated.
 ```
@@ -569,6 +573,7 @@ $ trivy image --format template --template "@contrib/junit.tpl" -o junit-report.
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |           |
+|      Crypto      |           |
 
 Trivy also supports an [ASFF template for reporting findings to AWS Security Hub][asff]
 
@@ -579,6 +584,7 @@ Trivy also supports an [ASFF template for reporting findings to AWS Security Hub
 | Misconfiguration |     ✓     |
 |      Secret      |           |
 |     License      |           |
+|      Crypto      |           |
 
 ```
 $ trivy image --format template --template "@contrib/html.tpl" -o report.html golang:1.12-alpine
@@ -638,6 +644,8 @@ $ trivy image --format json -o result.json debian:11
 $ trivy convert --format table --severity CRITICAL result.json
 ```
 
+The findings of the [crypto scanner](../scanner/crypto.md#findings) are kept only for the formats that show them (`table` and `json`).
+
 !!! note
     JSON reports from "trivy k8s" are not yet supported.
 
@@ -671,3 +679,4 @@ $ trivy convert --format table --severity CRITICAL result.json
 [cargo-binaries]: ../coverage/language/rust.md#binaries
 
 [^1]: To show summary table in `convert` mode - you need to enable the scanners used during JSON report generation.
+[^2]: Experimental. Available for container image scanning only. See [Cryptographic Asset Scanning](../scanner/crypto.md).

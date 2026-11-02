@@ -14,6 +14,7 @@ Some scanners run on the client side, even in client/server mode.
 | Misconfiguration |       Client[^1]        |
 |      Secret      |       Client[^2]        |
 |     License      |         Server          |
+|      Crypto      |       Server[^3]        |
 
 !!! note
     Scanning of misconfigurations and secrets is performed on the client side (as in standalone mode).
@@ -351,3 +352,4 @@ Returns the `200 OK` status if the request was successful.
 
 [^1]: The checks bundle is also downloaded on the client side.
 [^2]: The scan result with masked secrets is sent to the server
+[^3]: See [Cryptographic Asset Scanning](../../scanner/crypto.md#clientserver-mode).
