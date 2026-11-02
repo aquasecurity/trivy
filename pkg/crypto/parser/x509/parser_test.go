@@ -18,6 +18,7 @@ import (
 	"math/big"
 	"net"
 	"net/url"
+	"slices"
 	"sync"
 	"testing"
 	"time"
@@ -134,6 +135,20 @@ d4uUkKGsPSFY3xVCR5JmqacVJM/EssNZucY3
 -----END PUBLIC KEY-----
 `
 )
+
+// p192Algorithm is the only asset described from P-192 material.
+var p192Algorithm = ftypes.CryptoAssetInfo{
+	Kind: ftypes.CryptoKindAlgorithm,
+	Identity: ftypes.CryptoIdentity{
+		Method:     ftypes.CryptoMethodOID,
+		Value:      "1.2.840.10045.2.1",
+		Parameters: "curve=P-192",
+	},
+	Name: "EC-P-192",
+	Algorithm: &ftypes.CryptoAlgorithm{
+		Primitive: ftypes.CryptoPrimitiveUnknown,
+	},
+}
 
 // rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
 // mutate to it. Its values are not consistent with each other.
@@ -701,18 +716,6 @@ func TestParseAssets(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveUnknown,
 		},
 	}
-	p192Algorithm := ftypes.CryptoAssetInfo{
-		Kind: ftypes.CryptoKindAlgorithm,
-		Identity: ftypes.CryptoIdentity{
-			Method:     ftypes.CryptoMethodOID,
-			Value:      "1.2.840.10045.2.1",
-			Parameters: "curve=P-192",
-		},
-		Name: "EC-P-192",
-		Algorithm: &ftypes.CryptoAlgorithm{
-			Primitive: ftypes.CryptoPrimitiveUnknown,
-		},
-	}
 	var p192Certificate struct {
 		TBSCertificate asn1.RawValue
 	}
@@ -891,14 +894,6 @@ func TestParseAssets(t *testing.T) {
 			Type:         ftypes.CryptoRelationshipUsedWith,
 			RelatedAsset: x25519Algorithm.Descriptor(),
 		}},
-	}
-
-	// at states where a description was found.
-	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
-		return ftypes.CryptoAsset{
-			CryptoAssetInfo: info,
-			FilePath:        parsedFilePath,
-		}
 	}
 
 	tests := []struct {
@@ -1562,6 +1557,83 @@ func TestParseUnknownSignatureAlgorithm(t *testing.T) {
 	})
 }
 
+func TestParseKeystoreObjects(t *testing.T) {
+	encryptedDER, err := asn1.Marshal(cryptox509.EncryptedPrivateKeyInfo{
+		Algorithm:     pkix.AlgorithmIdentifier{Algorithm: oidPBES2},
+		EncryptedData: []byte{0x01, 0x02, 0x03},
+	})
+	require.NoError(t, err)
+
+	encryptedKey := ftypes.CryptoAsset{
+		CryptoAssetInfo: ftypes.CryptoAssetInfo{
+			Kind:     ftypes.CryptoKindKey,
+			KeyType:  ftypes.CryptoKeyTypePrivate,
+			Identity: ftypes.DigestIdentity(ftypes.CryptoMethodEncryptedPKCS8SHA256, encryptedDER),
+			Name:     "Encrypted PKCS#8 private key",
+			Key: &ftypes.CryptoKey{
+				Encrypted: true,
+			},
+		},
+		FilePath: parsedFilePath,
+		Format:   ftypes.CryptoKeyFormatPKCS8,
+		Encoding: ftypes.CryptoEncodingDER,
+		Keystore: ftypes.CryptoKeystorePKCS12,
+	}
+
+	tests := []struct {
+		name    string
+		objects []cryptox509.DERObject
+		want    []ftypes.CryptoAsset
+	}{
+		{
+			name: "encrypted private key",
+			objects: []cryptox509.DERObject{
+				{Kind: cryptox509.DEREncryptedPrivateKey, DER: encryptedDER},
+			},
+			want: []ftypes.CryptoAsset{encryptedKey},
+		},
+		{
+			// An algorithm belongs to no keystore.
+			name: "P-192 private key",
+			objects: []cryptox509.DERObject{
+				{Kind: cryptox509.DERPrivateKey, DER: decodePEM(t, p192PKCS8PrivateKeyPEM)},
+			},
+			want: []ftypes.CryptoAsset{at(p192Algorithm)},
+		},
+		{
+			name: "repeated object",
+			objects: []cryptox509.DERObject{
+				{Kind: cryptox509.DEREncryptedPrivateKey, DER: encryptedDER},
+				{Kind: cryptox509.DEREncryptedPrivateKey, DER: encryptedDER},
+			},
+			want: []ftypes.CryptoAsset{encryptedKey},
+		},
+		{
+			name: "malformed object",
+			objects: []cryptox509.DERObject{
+				{Kind: cryptox509.DERPrivateKey, DER: []byte{0x01}},
+				{Kind: cryptox509.DEREncryptedPrivateKey, DER: encryptedDER},
+			},
+			want: []ftypes.CryptoAsset{encryptedKey},
+		},
+		{
+			name: "object without a kind",
+			objects: []cryptox509.DERObject{
+				{DER: encryptedDER},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assets, err := cryptox509.ParseKeystoreObjects(t.Context(), parsedFilePath, slices.Values(tt.objects), ftypes.CryptoKeystorePKCS12)
+			require.NoError(t, err)
+			checkAssets(t, assets)
+			assert.Equal(t, tt.want, assets)
+		})
+	}
+}
+
 // TestParseIdentity states what identity has to hold across files.
 func TestParseIdentity(t *testing.T) {
 	fixtures := newFixtures(t)
@@ -1613,13 +1685,27 @@ func TestParseIdentity(t *testing.T) {
 	})
 }
 
-// parse describes a file and checks that every asset it reports is valid and relates only
-// to assets reported with it.
+// parse describes a file and checks the assets it reports.
 func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 	t.Helper()
 
 	assets, err := cryptox509.Parse(t.Context(), parsedFilePath, content)
 	require.NoError(t, err)
+	checkAssets(t, assets)
+	return assets
+}
+
+// at states where a description was found.
+func at(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
+	return ftypes.CryptoAsset{
+		CryptoAssetInfo: info,
+		FilePath:        parsedFilePath,
+	}
+}
+
+// checkAssets checks that every asset is valid and relates only to assets reported with it.
+func checkAssets(t *testing.T, assets []ftypes.CryptoAsset) {
+	t.Helper()
 
 	reported := set.New[ftypes.CryptoDescriptor]()
 	for i, asset := range assets {
@@ -1631,7 +1717,6 @@ func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 			require.Truef(t, reported.Contains(relationship.RelatedAsset), "asset %d", i)
 		}
 	}
-	return assets
 }
 
 // recognized reduces assets to what the input was recognized as. Algorithm assets are left
