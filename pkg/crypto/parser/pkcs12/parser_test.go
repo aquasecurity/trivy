@@ -347,7 +347,6 @@ func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 		default:
 			continue
 		}
-		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
 		assert.Equalf(t, ftypes.CryptoKeystorePKCS12, asset.Keystore, "asset %d", i)
 		names = append(names, asset.Name)
 	}

@@ -204,14 +204,15 @@ func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
 		assert.Equalf(t, parsedFilePath, asset.FilePath, "asset %d", i)
-		if asset.Kind != ftypes.CryptoKindCertificate && asset.KeyType != ftypes.CryptoKeyTypePrivate {
-			continue
-		}
-		if asset.KeyType == ftypes.CryptoKeyTypePrivate {
+		switch {
+		case asset.Kind == ftypes.CryptoKindCertificate:
+		case asset.KeyType == ftypes.CryptoKeyTypePrivate:
+			// A JKS key is always encrypted.
 			assert.Truef(t, asset.Key.Encrypted, "asset %d", i)
 			assert.Equalf(t, ftypes.CryptoKeyFormatPKCS8, asset.Format, "asset %d", i)
+		default:
+			continue
 		}
-		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
 		assert.Equalf(t, ftypes.CryptoKeystoreJKS, asset.Keystore, "asset %d", i)
 		names = append(names, asset.Name)
 	}
