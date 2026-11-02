@@ -114,6 +114,7 @@ func idToOSFamily(id string) types.OSType {
 		return types.Echo
 	case "minimos":
 		return types.MinimOS
+	// Older CleanStart images shipped ID=clnstrt before it was renamed to ID=cleanstart.
 	case "clnstrt", "cleanstart":
 		return types.CleanStart
 	case "coreos":
