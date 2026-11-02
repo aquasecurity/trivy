@@ -13,7 +13,6 @@ import (
 	"encoding/asn1"
 	"encoding/pem"
 	"errors"
-	"fmt"
 	"iter"
 	"math/big"
 	"slices"
@@ -173,74 +172,6 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	ctx = log.WithContextPrefix(ctx, "x509")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
 	return describe(filePath, parse(ctx, content))
-}
-
-// DERKind identifies the structure of a DER object read out of a keystore.
-type DERKind uint8
-
-const (
-	// DERCertificate identifies an X.509 certificate.
-	DERCertificate DERKind = iota + 1
-	// DERPrivateKey identifies a PKCS#8 PrivateKeyInfo.
-	DERPrivateKey
-	// DEREncryptedPrivateKey identifies a PKCS#8 EncryptedPrivateKeyInfo.
-	DEREncryptedPrivateKey
-)
-
-func (k DERKind) String() string {
-	switch k {
-	case DERCertificate:
-		return "certificate"
-	case DERPrivateKey:
-		return "private key"
-	case DEREncryptedPrivateKey:
-		return "encrypted private key"
-	default:
-		return fmt.Sprintf("DERKind(%d)", uint8(k))
-	}
-}
-
-// DERObject is a DER object read out of a keystore.
-type DERObject struct {
-	Kind DERKind
-	DER  []byte
-}
-
-// ParseKeystoreObjects describes DER objects stored in the given keystore as assets. An
-// object that cannot be read is logged and skipped, and a repeated asset is reported once.
-func ParseKeystoreObjects(ctx context.Context, filePath string, objects iter.Seq[DERObject], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
-	parsed := func(yield func(object) bool) {
-		for o := range objects {
-			obj, err := parseKeystoreObject(o)
-			if err != nil {
-				logParseError(ctx, err, log.String("der_kind", o.Kind.String()))
-				continue
-			}
-			obj.encoding = ftypes.CryptoEncodingDER
-			obj.keystore = keystore
-			if !yield(obj) {
-				return
-			}
-		}
-	}
-	return describe(filePath, parsed)
-}
-
-func parseKeystoreObject(o DERObject) (object, error) {
-	switch o.Kind {
-	case DERCertificate:
-		return certificateObject(o.DER)
-	case DERPrivateKey:
-		return pkcs8PrivateKeyObject(o.DER)
-	case DEREncryptedPrivateKey:
-		obj, ok := parseEncryptedPKCS8(o.DER)
-		if !ok {
-			return object{}, errMalformedCrypto
-		}
-		return obj, nil
-	default:
-		return object{}, errUnsupportedCrypto
-	}
 }
 
 // describe describes objects as assets found in filePath, reporting each asset once per

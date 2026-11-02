@@ -80,8 +80,8 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 // objects yields each certificate and private key stored in an unencrypted content of the
 // authenticated safe of p.
-func objects(ctx context.Context, p pfx) iter.Seq[x509.DERObject] {
-	return func(yield func(x509.DERObject) bool) {
+func objects(ctx context.Context, p pfx) iter.Seq[x509.KeystoreObject] {
+	return func(yield func(x509.KeystoreObject) bool) {
 		rest, ok := authenticatedSafe(ctx, p)
 		if !ok {
 			return
@@ -147,7 +147,7 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]byte, bool) {
 type walker struct {
 	ctx    context.Context
 	budget int
-	yield  func(x509.DERObject) bool
+	yield  func(x509.KeystoreObject) bool
 }
 
 // walk yields the objects of a safe contents structure and of the safe contents nested in
@@ -185,17 +185,17 @@ func (w *walker) walk(der []byte, depth int) bool {
 				log.DebugContext(w.ctx, "Unsupported PKCS#12 certificate type", log.String("cert_type", cert.ID.String()))
 				continue
 			}
-			if !w.yield(x509.DERObject{Kind: x509.DERCertificate, DER: cert.Data}) {
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystoreCertificate, DER: cert.Data}) {
 				return false
 			}
 		case bag.ID.Equal(oidKeyBag):
-			if !w.yield(x509.DERObject{Kind: x509.DERPrivateKey, DER: bag.Value.Bytes}) {
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystorePrivateKey, DER: bag.Value.Bytes}) {
 				return false
 			}
 		case bag.ID.Equal(oidPKCS8ShroudedKeyBag):
 			// The bag holds an EncryptedPrivateKeyInfo, which stays in plain data content
 			// even when the certificates are encrypted.
-			if !w.yield(x509.DERObject{Kind: x509.DEREncryptedPrivateKey, DER: bag.Value.Bytes}) {
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystoreEncryptedPrivateKey, DER: bag.Value.Bytes}) {
 				return false
 			}
 		case bag.ID.Equal(oidSafeContentsBag):

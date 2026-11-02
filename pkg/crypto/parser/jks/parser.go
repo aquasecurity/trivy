@@ -52,8 +52,8 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 
 // objects yields each trusted certificate, and each private key with the certificates of its
 // chain.
-func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
-	return func(yield func(x509.DERObject) bool) {
+func objects(ctx context.Context, data []byte) iter.Seq[x509.KeystoreObject] {
+	return func(yield func(x509.KeystoreObject) bool) {
 		s := cryptobyte.String(data)
 		var version, count uint32
 		if !s.ReadUint32(&version) || !s.ReadUint32(&count) {
@@ -66,7 +66,7 @@ func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
 		}
 
 		budget := maxObjects
-		next := func(obj x509.DERObject) bool {
+		next := func(obj x509.KeystoreObject) bool {
 			if budget == 0 {
 				log.WarnContext(ctx, "Too many JKS objects")
 				return false
@@ -104,7 +104,7 @@ func objects(ctx context.Context, data []byte) iter.Seq[x509.DERObject] {
 
 // readPrivateKeyEntry yields the encrypted key of an entry and the certificates of its
 // chain. It reports whether reading can continue.
-func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.DERObject) bool) bool {
+func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.KeystoreObject) bool) bool {
 	var keyLen, chainLen uint32
 	var key []byte
 	if !s.ReadUint32(&keyLen) || !s.ReadBytes(&key, int(keyLen)) || !s.ReadUint32(&chainLen) {
@@ -112,7 +112,7 @@ func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint
 		return false
 	}
 	// The key is an EncryptedPrivateKeyInfo with the algorithm of the JKS key protector.
-	if !yield(x509.DERObject{Kind: x509.DEREncryptedPrivateKey, DER: key}) {
+	if !yield(x509.KeystoreObject{Kind: x509.KeystoreEncryptedPrivateKey, DER: key}) {
 		return false
 	}
 	for range chainLen {
@@ -125,7 +125,7 @@ func readPrivateKeyEntry(ctx context.Context, s *cryptobyte.String, version uint
 
 // readCertificate yields one certificate of an entry. It reports whether reading can
 // continue.
-func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.DERObject) bool) bool {
+func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, yield func(x509.KeystoreObject) bool) bool {
 	certType := certificateTypeX509
 	if version == version2 {
 		var t cryptobyte.String
@@ -146,5 +146,5 @@ func readCertificate(ctx context.Context, s *cryptobyte.String, version uint32, 
 		log.DebugContext(ctx, "Unsupported JKS certificate type", log.String("cert_type", certType))
 		return true
 	}
-	return yield(x509.DERObject{Kind: x509.DERCertificate, DER: der})
+	return yield(x509.KeystoreObject{Kind: x509.KeystoreCertificate, DER: der})
 }
