@@ -17,6 +17,7 @@ import (
 const (
 	baseURL         = "https://search.maven.org/solrsearch/select"
 	idQuery         = `g:"%s" AND a:"%s"`
+	idVersionQuery  = `g:"%s" AND a:"%s" AND v:"%s"`
 	artifactIdQuery = `a:"%s" AND p:"jar"`
 	sha1Query       = `1:"%s"`
 )
@@ -82,14 +83,18 @@ func New(opts ...Option) Sonatype {
 	return s
 }
 
-func (s Sonatype) Exists(groupID, artifactID string) (bool, error) {
+func (s Sonatype) Exists(groupID, artifactID, version string) (bool, error) {
 	req, err := http.NewRequest(http.MethodGet, s.baseURL, http.NoBody)
 	if err != nil {
 		return false, xerrors.Errorf("unable to initialize HTTP client: %w", err)
 	}
 
 	q := req.URL.Query()
-	q.Set("q", fmt.Sprintf(idQuery, groupID, artifactID))
+	query := fmt.Sprintf(idQuery, groupID, artifactID)
+	if version != "" {
+		query = fmt.Sprintf(idVersionQuery, groupID, artifactID, version)
+	}
+	q.Set("q", query)
 	q.Set("rows", "1")
 	req.URL.RawQuery = q.Encode()
 
