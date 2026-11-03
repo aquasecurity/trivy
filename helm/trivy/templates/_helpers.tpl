@@ -53,3 +53,14 @@ Return the proper imageRef as used by the container template spec.
 {{- $tag := .Values.image.tag | default .Chart.AppVersion | toString -}}
 {{- printf "%s/%s:%s" $registryName $repositoryName $tag -}}
 {{- end -}}
+
+{{/*
+Return the proper customContainerArgs as used by the container template spec.
+*/}}
+{{- define "trivy.containerArgs" -}}
+{{- if .Values.trivy.customContainerArgs -}}
+{{- toYaml .Values.trivy.customContainerArgs -}}
+{{- else -}}
+- server
+{{- end -}}
+{{- end -}}
