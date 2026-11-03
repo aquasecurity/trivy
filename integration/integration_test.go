@@ -113,6 +113,7 @@ const (
 	goldenDockerfileFilePattern                  = "testdata/dockerfile_file_pattern.json.golden"
 	goldenDotNet                                 = "testdata/dotnet.json.golden"
 	goldenGoMod                                  = "testdata/gomod.json.golden"
+	goldenGoModCycloneDX                         = "testdata/gomod-cyclonedx.json.golden"
 	goldenGoModSkip                              = "testdata/gomod-skip.json.golden"
 	goldenGoModVEX                               = "testdata/gomod-vex.json.golden"
 	goldenGradle                                 = "testdata/gradle.json.golden"

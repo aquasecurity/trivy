@@ -16,10 +16,12 @@ import (
 	"unicode"
 
 	"github.com/samber/lo"
+	"golang.org/x/mod/module"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -34,7 +36,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newGoModAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 var (
 	requiredFiles = []string{
@@ -103,14 +105,19 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 			return nil
 		}
 
+		// e.g. /app/go.mod => /app/go.sum
+		sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
+
 		if parser.skipIndirect {
-			// e.g. /app/go.mod => /app/go.sum
-			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
 			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
 			if err != nil && !errors.Is(err, fs.ErrNotExist) {
 				return xerrors.Errorf("parse error: %w", err)
 			}
 			mergeGoSum(gomod, gosum)
+		}
+
+		if err := fillDigests(input.FS, sumPath, gomod); err != nil {
+			a.logger.Warn("Unable to collect module checksums", log.FilePath(sumPath), log.Err(err))
 		}
 
 		apps = append(apps, *gomod)
@@ -346,6 +353,31 @@ func mergeGoSum(gomod, gosum *types.Application) {
 	}
 
 	gomod.Packages = lo.Values(uniq)
+}
+
+func fillDigests(fsys fs.FS, sumPath string, gomod *types.Application) error {
+	r, err := fsys.Open(sumPath)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil
+	} else if err != nil {
+		return xerrors.Errorf("open file: %w", err)
+	}
+	defer r.Close()
+
+	digests, err := sum.ParseDigests(r)
+	if err != nil {
+		return xerrors.Errorf("parse digests: %w", err)
+	}
+
+	for i := range gomod.Packages {
+		pkg := &gomod.Packages[i]
+		ver := module.Version{Path: pkg.Name, Version: pkg.Version}
+		if d, ok := digests[ver]; ok {
+			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceGoModuleH1))
+		}
+	}
+
+	return nil
 }
 
 func findLicense(searchDirs []searchDir, pkg types.Package, licenses map[string][]string, classifierConfidenceLevel float64) ([]string, error) {
