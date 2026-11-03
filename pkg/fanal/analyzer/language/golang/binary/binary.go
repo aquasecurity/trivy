@@ -18,7 +18,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&gobinaryLibraryAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
 type gobinaryLibraryAnalyzer struct{}
 

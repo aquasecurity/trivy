@@ -72,17 +72,10 @@ func ParseDigests(r io.Reader) (map[module.Version]digest.Digest, error) {
 			continue
 		}
 
-		h, ok := strings.CutPrefix(s[2], "h1:")
+		d, ok := DecodeH1(s[2])
 		if !ok {
 			continue
 		}
-
-		b, err := base64.StdEncoding.DecodeString(h)
-		if err != nil || len(b) != sha256.Size {
-			continue
-		}
-
-		d := digest.NewDigestFromString(digest.SHA256, hex.EncodeToString(b))
 		digests[module.Version{Path: s[0], Version: s[1]}] = d
 	}
 
@@ -91,4 +84,20 @@ func ParseDigests(r io.Reader) (map[module.Version]digest.Digest, error) {
 	}
 
 	return digests, nil
+}
+
+// DecodeH1 decodes an h1 checksum ("h1:<base64>") to a SHA-256 digest.
+// It returns false if the value is not a valid h1 checksum.
+func DecodeH1(s string) (digest.Digest, bool) {
+	h, ok := strings.CutPrefix(s, "h1:")
+	if !ok {
+		return "", false
+	}
+
+	b, err := base64.StdEncoding.DecodeString(h)
+	if err != nil || len(b) != sha256.Size {
+		return "", false
+	}
+
+	return digest.NewDigestFromString(digest.SHA256, hex.EncodeToString(b)), true
 }
