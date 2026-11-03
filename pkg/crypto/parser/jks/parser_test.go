@@ -6,6 +6,7 @@ import (
 	"crypto/rand"
 	stdx509 "crypto/x509"
 	"crypto/x509/pkix"
+	"encoding/asn1"
 	"math/big"
 	"os"
 	"path/filepath"
@@ -24,9 +25,23 @@ import (
 // parsedFilePath is the path every keystore is parsed from.
 const parsedFilePath = "keystore.jks"
 
+// encryptedKeyName is the name of every encrypted private key.
+const encryptedKeyName = "Encrypted PKCS#8 private key"
+
+// oidKeyProtector identifies the algorithm of sun.security.provider.KeyProtector.
+var oidKeyProtector = asn1.ObjectIdentifier{1, 3, 6, 1, 4, 1, 42, 2, 17, 1, 1}
+
+// encryptedPrivateKeyInfo is a PKCS#8 EncryptedPrivateKeyInfo, as defined in RFC 5208.
+type encryptedPrivateKeyInfo struct {
+	Algorithm     pkix.AlgorithmIdentifier
+	EncryptedData []byte
+}
+
 func TestParse(t *testing.T) {
 	certificate := newCertificate(t, "example.test")
 	other := newCertificate(t, "other.example.test")
+	encryptedKey := newEncryptedKey(t, []byte{0x01})
+	otherEncryptedKey := newEncryptedKey(t, []byte{0x02})
 
 	// The last 30 bytes are the 20-byte integrity hash and the end of the second certificate.
 	truncated := keystore(2,
@@ -49,7 +64,7 @@ func TestParse(t *testing.T) {
 		{
 			name:    "keytool keystore with a private key",
 			content: fixture(t, "keytool-keystore.jks"),
-			want:    []string{"keytool-key.example.test"},
+			want:    []string{encryptedKeyName, "keytool-key.example.test"},
 		},
 		{
 			name:    "version 1",
@@ -58,16 +73,37 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:    "private key with a chain",
-			content: keystore(2, privateKeyEntry(2, []byte{0x01}, certificate, other)),
-			want:    []string{"example.test", "other.example.test"},
+			content: keystore(2, privateKeyEntry(2, encryptedKey, certificate, other)),
+			want:    []string{encryptedKeyName, "example.test", "other.example.test"},
 		},
 		{
 			name: "repeated certificate",
 			content: keystore(2,
-				privateKeyEntry(2, []byte{0x01}, certificate),
+				privateKeyEntry(2, encryptedKey, certificate),
 				trustedCertEntry(2, "X.509", certificate),
 			),
-			want: []string{"example.test"},
+			want: []string{encryptedKeyName, "example.test"},
+		},
+		{
+			name: "repeated private key",
+			content: keystore(2,
+				privateKeyEntry(2, encryptedKey, certificate),
+				privateKeyEntry(2, encryptedKey, certificate),
+			),
+			want: []string{encryptedKeyName, "example.test"},
+		},
+		{
+			name: "two private keys",
+			content: keystore(2,
+				privateKeyEntry(2, encryptedKey, certificate),
+				privateKeyEntry(2, otherEncryptedKey, other),
+			),
+			want: []string{encryptedKeyName, "example.test", encryptedKeyName, "other.example.test"},
+		},
+		{
+			name:    "malformed private key",
+			content: keystore(2, privateKeyEntry(2, []byte{0x01}, certificate)),
+			want:    []string{"example.test"},
 		},
 		{
 			name: "certificate of another type",
@@ -120,20 +156,20 @@ func TestParse(t *testing.T) {
 			want: []string{"example.test"},
 		},
 		{
-			name: "certificates at the limit",
+			name: "objects at the limit",
 			content: keystore(2,
-				privateKeyEntry(2, []byte{0x01}, slices.Repeat([][]byte{certificate}, jks.MaxCertificates-1)...),
+				privateKeyEntry(2, encryptedKey, slices.Repeat([][]byte{certificate}, jks.MaxObjects-2)...),
 				trustedCertEntry(2, "X.509", other),
 			),
-			want: []string{"example.test", "other.example.test"},
+			want: []string{encryptedKeyName, "example.test", "other.example.test"},
 		},
 		{
-			name: "certificates over the limit",
+			name: "objects over the limit",
 			content: keystore(2,
-				privateKeyEntry(2, []byte{0x01}, slices.Repeat([][]byte{certificate}, jks.MaxCertificates)...),
+				privateKeyEntry(2, encryptedKey, slices.Repeat([][]byte{certificate}, jks.MaxObjects-1)...),
 				trustedCertEntry(2, "X.509", other),
 			),
-			want: []string{"example.test"},
+			want: []string{encryptedKeyName, "example.test"},
 		},
 		{
 			name:    "JCEKS keystore",
@@ -154,24 +190,29 @@ func TestParse(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, certificateNames(t, assets))
+			assert.Equal(t, tt.want, assetNames(t, assets))
 		})
 	}
 }
 
-// certificateNames checks that every asset is valid and returns the names of the
-// certificates among them.
-func certificateNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
+// assetNames checks that every asset is valid, and returns the names of the certificates and
+// private keys among them.
+func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	t.Helper()
 
 	var names []string
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
 		assert.Equalf(t, parsedFilePath, asset.FilePath, "asset %d", i)
-		if asset.Kind != ftypes.CryptoKindCertificate {
+		switch {
+		case asset.Kind == ftypes.CryptoKindCertificate:
+		case asset.KeyType == ftypes.CryptoKeyTypePrivate:
+			// A JKS key is always encrypted.
+			assert.Truef(t, asset.Key.Encrypted, "asset %d", i)
+			assert.Equalf(t, ftypes.CryptoKeyFormatPKCS8, asset.Format, "asset %d", i)
+		default:
 			continue
 		}
-		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
 		assert.Equalf(t, ftypes.CryptoKeystoreJKS, asset.Keystore, "asset %d", i)
 		names = append(names, asset.Name)
 	}
@@ -236,6 +277,17 @@ func privateKeyEntry(version uint32, encryptedKey []byte, chain ...[]byte) []byt
 			addCertificate(b, version, "X.509", der)
 		}
 	})
+}
+
+func newEncryptedKey(t *testing.T, data []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(encryptedPrivateKeyInfo{
+		Algorithm:     pkix.AlgorithmIdentifier{Algorithm: oidKeyProtector},
+		EncryptedData: data,
+	})
+	require.NoError(t, err)
+	return der
 }
 
 // addCertificate writes a certificate, which states its type only in version 2.

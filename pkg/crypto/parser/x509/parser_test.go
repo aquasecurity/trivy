@@ -135,6 +135,20 @@ d4uUkKGsPSFY3xVCR5JmqacVJM/EssNZucY3
 `
 )
 
+// p192Algorithm is the only asset described from P-192 material.
+var p192Algorithm = ftypes.CryptoAssetInfo{
+	Kind: ftypes.CryptoKindAlgorithm,
+	Identity: ftypes.CryptoIdentity{
+		Method:     ftypes.CryptoMethodOID,
+		Value:      "1.2.840.10045.2.1",
+		Parameters: "curve=P-192",
+	},
+	Name: "EC-P-192",
+	Algorithm: &ftypes.CryptoAlgorithm{
+		Primitive: ftypes.CryptoPrimitiveUnknown,
+	},
+}
+
 // rsaPrivateKeyDER encodes a structurally valid 2048-bit RSA key in PKCS#1 after applying
 // mutate to it. Its values are not consistent with each other.
 func rsaPrivateKeyDER(t *testing.T, mutate func(*cryptox509.PKCS1PrivateKey)) []byte {
@@ -701,18 +715,6 @@ func TestParseAssets(t *testing.T) {
 			Primitive: ftypes.CryptoPrimitiveUnknown,
 		},
 	}
-	p192Algorithm := ftypes.CryptoAssetInfo{
-		Kind: ftypes.CryptoKindAlgorithm,
-		Identity: ftypes.CryptoIdentity{
-			Method:     ftypes.CryptoMethodOID,
-			Value:      "1.2.840.10045.2.1",
-			Parameters: "curve=P-192",
-		},
-		Name: "EC-P-192",
-		Algorithm: &ftypes.CryptoAlgorithm{
-			Primitive: ftypes.CryptoPrimitiveUnknown,
-		},
-	}
 	var p192Certificate struct {
 		TBSCertificate asn1.RawValue
 	}
@@ -891,14 +893,6 @@ func TestParseAssets(t *testing.T) {
 			Type:         ftypes.CryptoRelationshipUsedWith,
 			RelatedAsset: x25519Algorithm.Descriptor(),
 		}},
-	}
-
-	// at states where a description was found.
-	at := func(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
-		return ftypes.CryptoAsset{
-			CryptoAssetInfo: info,
-			FilePath:        parsedFilePath,
-		}
 	}
 
 	tests := []struct {
@@ -1613,13 +1607,27 @@ func TestParseIdentity(t *testing.T) {
 	})
 }
 
-// parse describes a file and checks that every asset it reports is valid and relates only
-// to assets reported with it.
+// parse describes a file and checks the assets it reports.
 func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 	t.Helper()
 
 	assets, err := cryptox509.Parse(t.Context(), parsedFilePath, content)
 	require.NoError(t, err)
+	checkAssets(t, assets)
+	return assets
+}
+
+// at states where a description was found.
+func at(info ftypes.CryptoAssetInfo) ftypes.CryptoAsset {
+	return ftypes.CryptoAsset{
+		CryptoAssetInfo: info,
+		FilePath:        parsedFilePath,
+	}
+}
+
+// checkAssets checks that every asset is valid and relates only to assets reported with it.
+func checkAssets(t *testing.T, assets []ftypes.CryptoAsset) {
+	t.Helper()
 
 	reported := set.New[ftypes.CryptoDescriptor]()
 	for i, asset := range assets {
@@ -1631,7 +1639,6 @@ func parse(t *testing.T, content []byte) []ftypes.CryptoAsset {
 			require.Truef(t, reported.Contains(relationship.RelatedAsset), "asset %d", i)
 		}
 	}
-	return assets
 }
 
 // recognized reduces assets to what the input was recognized as. Algorithm assets are left

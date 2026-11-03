@@ -174,27 +174,6 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	return describe(filePath, parse(ctx, content))
 }
 
-// ParseCertificates describes DER certificates stored in the given keystore as assets. A
-// certificate that cannot be read is logged and skipped, and a repeated certificate is
-// reported once.
-func ParseCertificates(ctx context.Context, filePath string, certificates iter.Seq[[]byte], keystore ftypes.CryptoKeystoreType) ([]ftypes.CryptoAsset, error) {
-	objects := func(yield func(object) bool) {
-		for der := range certificates {
-			obj, err := certificateObject(der)
-			if err != nil {
-				logParseError(ctx, "", err)
-				continue
-			}
-			obj.encoding = ftypes.CryptoEncodingDER
-			obj.keystore = keystore
-			if !yield(obj) {
-				return
-			}
-		}
-	}
-	return describe(filePath, objects)
-}
-
 // describe describes objects as assets found in filePath, reporting each asset once per
 // container format.
 func describe(filePath string, objects iter.Seq[object]) ([]ftypes.CryptoAsset, error) {
@@ -247,7 +226,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 			}
 			recognized = true
 			if err != nil {
-				logParseError(ctx, block.Type, err)
+				logParseError(ctx, err, log.String("pem_type", block.Type))
 				continue
 			}
 			if !yield(obj) {
@@ -266,7 +245,7 @@ func parse(ctx context.Context, content []byte) iter.Seq[object] {
 		// No PEM block was decoded, so try the whole file as DER.
 		obj, err := parseDERObject(content)
 		if err != nil {
-			logParseError(ctx, "", err)
+			logParseError(ctx, err)
 			return
 		}
 		obj.encoding = ftypes.CryptoEncodingDER
@@ -338,11 +317,7 @@ func parsePEMObject(label string, der []byte) (object, error) {
 	case "PUBLIC KEY":
 		return publicKeyObject(der)
 	case "ENCRYPTED PRIVATE KEY":
-		obj, ok := parseEncryptedPKCS8(der)
-		if !ok {
-			return object{}, errMalformedCrypto
-		}
-		return obj, nil
+		return encryptedPKCS8Object(der)
 	case "CERTIFICATE REQUEST",
 		"NEW CERTIFICATE REQUEST",
 		"X509 CRL",
@@ -551,7 +526,7 @@ func parseDERObject(der []byte) (object, error) {
 		return obj, nil
 	}
 
-	if obj, ok := parseEncryptedPKCS8(der); ok {
+	if obj, err := encryptedPKCS8Object(der); err == nil {
 		return obj, nil
 	}
 
@@ -671,19 +646,19 @@ func publicKeyObject(der []byte) (object, error) {
 	}, nil
 }
 
-// parseEncryptedPKCS8 validates only the opaque envelope and retains the DER it was read from.
-func parseEncryptedPKCS8(der []byte) (object, bool) {
+// encryptedPKCS8Object validates only the opaque envelope and retains the DER it was read from.
+func encryptedPKCS8Object(der []byte) (object, error) {
 	var encrypted encryptedPrivateKeyInfo
 	rest, err := asn1.Unmarshal(der, &encrypted)
 	if err != nil || len(rest) != 0 || len(encrypted.Algorithm.Algorithm) == 0 || len(encrypted.EncryptedData) == 0 {
-		return object{}, false
+		return object{}, errMalformedCrypto
 	}
 	return object{
 		kind:       objectEncryptedPrivateKey,
 		encrypted:  der,
 		encryption: encryptionFormatPKCS8,
 		keyFormat:  ftypes.CryptoKeyFormatPKCS8,
-	}, true
+	}, nil
 }
 
 func isSupportedPublicKey(key any) bool {
@@ -695,12 +670,7 @@ func isSupportedPublicKey(key any) bool {
 	}
 }
 
-func logParseError(ctx context.Context, pemType string, err error) {
-	var attrs []any
-	if pemType != "" {
-		attrs = append(attrs, log.String("pem_type", pemType))
-	}
-
+func logParseError(ctx context.Context, err error, attrs ...any) {
 	switch {
 	case errors.Is(err, errUnsupportedCrypto):
 		log.DebugContext(ctx, "Unsupported cryptographic object", attrs...)

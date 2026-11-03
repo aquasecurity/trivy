@@ -129,6 +129,7 @@ func describeStandaloneKey(obj object, keyType ftypes.CryptoKeyType) ([]ftypes.C
 			CryptoAssetInfo: key,
 			Format:          obj.keyFormat,
 			Encoding:        obj.encoding,
+			Keystore:        obj.keystore,
 		},
 		// An algorithm has no format or encoding.
 		{CryptoAssetInfo: keyAlgorithm},
@@ -154,6 +155,7 @@ func describeEncryptedPrivateKey(obj object) ([]ftypes.CryptoAsset, error) {
 		CryptoAssetInfo: key,
 		Format:          obj.keyFormat,
 		Encoding:        obj.encoding,
+		Keystore:        obj.keystore,
 	}}, nil
 }
 
