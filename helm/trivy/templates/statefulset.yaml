@@ -101,23 +101,9 @@ spec:
             - name: trivy-http
               containerPort: {{ .Values.service.port }}
           livenessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /healthz
-              port: trivy-http
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 10
+            {{- toYaml .Values.livenessProbe | nindent 12 }}
           readinessProbe:
-            httpGet:
-              scheme: HTTP
-              path: /healthz
-              port: trivy-http
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            successThreshold: 1
-            failureThreshold: 3
+            {{- toYaml .Values.readinessProbe | nindent 12 }}
           volumeMounts:
             - mountPath: /tmp
               name: tmp-data
