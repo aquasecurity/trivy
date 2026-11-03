@@ -1,6 +1,10 @@
 package pom
 
 import (
+	"bytes"
+	"cmp"
+	"fmt"
+	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -8,8 +12,6 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
-
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Test_mirror_matches(t *testing.T) {
@@ -668,16 +670,20 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 	// can only be observed end-to-end through HTTP: that mirrorFor is applied to the
 	// fetch loop, that mirror credentials reach the remote request as Basic Auth, that
 	// a settings.xml -> trivy.yaml chain routes the fetch through to the final mirror,
-	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, and that a
-	// 429 is returned only when every mirror is rate-limited.
+	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, that a
+	// 429 is returned only when every mirror is rate-limited, and that rejected
+	// credentials are warned about once.
 	tests := []struct {
 		name            string
 		mirrorPatterns  []string
 		mirrorWithCreds bool
+		mirrorRole      string // settings.xml mirror target; "mirror" if empty
+		parsers         int    // parsers (pom.xml files) fetching the POM; 1 if zero
 		wantBasicAuth   string
 		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
 		wantHits        map[string]int      // expected request count per server role
 		wantErr         string              // non-empty: fetch must fail with an error containing this
+		wantWarn        int                 // status code of the expected warning; 0: none
 	}{
 		{
 			name:            "settings.xml <server> credentials reach the mirror as Basic Auth",
@@ -717,6 +723,35 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"limited": 1},
 			wantErr:        "429",
 		},
+		{
+			// Both parsers hit the mirror, but the warning is logged once.
+			name:            "401 with credentials: warned once per repository across parsers",
+			mirrorPatterns:  []string{"*"},
+			mirrorWithCreds: true,
+			mirrorRole:      "unauthorized",
+			parsers:         2,
+			wantBasicAuth:   "mirror-user",
+			wantHits:        map[string]int{"unauthorized": 2},
+			wantErr:         "not found",
+			wantWarn:        http.StatusUnauthorized,
+		},
+		{
+			name:            "403 with credentials: warned",
+			mirrorPatterns:  []string{"*"},
+			mirrorWithCreds: true,
+			mirrorRole:      "forbidden",
+			wantBasicAuth:   "mirror-user",
+			wantHits:        map[string]int{"forbidden": 1},
+			wantErr:         "not found",
+			wantWarn:        http.StatusForbidden,
+		},
+		{
+			name:           "401 without credentials: not warned",
+			mirrorPatterns: []string{"*"},
+			mirrorRole:     "unauthorized",
+			wantHits:       map[string]int{"unauthorized": 1},
+			wantErr:        "not found",
+		},
 	}
 
 	for _, tt := range tests {
@@ -743,13 +778,15 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			}
 
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
-			// trivy.yaml targets (dead always 404s).
+			// trivy.yaml targets (dead always 404s); unauthorized/forbidden: 401/403.
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":        newServer("repo1", http.StatusOK),
+				"mirror":       newServer("mirror", http.StatusOK),
+				"chain":        newServer("chain", http.StatusOK),
+				"dead":         newServer("dead", http.StatusNotFound),
+				"limited":      newServer("limited", http.StatusTooManyRequests),
+				"unauthorized": newServer("unauthorized", http.StatusUnauthorized),
+				"forbidden":    newServer("forbidden", http.StatusForbidden),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -761,13 +798,13 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 				}
 			}
 
-			// settings.xml mirror central -> "mirror"; creds (if any) come from a <server>.
+			// settings.xml mirror central -> tt.mirrorRole; creds (if any) come from a <server>.
 			var srvCreds []Server
 			if tt.mirrorWithCreds {
 				srvCreds = []Server{{ID: "m1", Username: "mirror-user", Password: "mirror-pass"}}
 			}
 			resolved := resolveMirrors(
-				[]Mirror{{ID: "m1", URL: servers["mirror"].URL, MirrorOf: strings.Join(tt.mirrorPatterns, ",")}},
+				[]Mirror{{ID: "m1", URL: servers[cmp.Or(tt.mirrorRole, "mirror")].URL, MirrorOf: strings.Join(tt.mirrorPatterns, ",")}},
 				srvCreds,
 				configFileMirrors,
 			)
@@ -776,25 +813,45 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			require.NoError(t, err)
 			pomRepo := repository{id: "central", url: *origURL, releaseEnabled: true}
 
-			p := &Parser{
-				logger:     log.WithPrefix("pom"),
-				mirrors:    resolved,
-				httpClient: http.DefaultClient,
-			}
+			// Reset the package-level warning state between cases.
+			rejectedCredentialsRepos.Clear()
+			t.Cleanup(rejectedCredentialsRepos.Clear)
+			var logs bytes.Buffer
+			logger := slog.New(slog.NewTextHandler(&logs, &slog.HandlerOptions{Level: slog.LevelWarn}))
 
-			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
-			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, got)
+			// One parser per pom.xml.
+			for range cmp.Or(tt.parsers, 1) {
+				p := &Parser{
+					logger:     logger,
+					mirrors:    resolved,
+					httpClient: http.DefaultClient,
+				}
+
+				paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
+				if tt.wantErr != "" {
+					require.ErrorContains(t, err, tt.wantErr)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, got)
+				}
 			}
 
 			for role := range servers {
 				require.Equal(t, tt.wantHits[role], hits[role], "request count for %q", role)
 			}
 			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
+
+			if tt.wantWarn == 0 {
+				require.Empty(t, logs.String())
+				return
+			}
+			warns := strings.Split(strings.TrimSpace(logs.String()), "\n")
+			require.Len(t, warns, 1)
+			require.Contains(t, warns[0], "rejected the configured credentials")
+			require.Contains(t, warns[0], "id=m1")
+			require.Contains(t, warns[0], fmt.Sprintf("statusCode=%d", tt.wantWarn))
+			require.NotContains(t, warns[0], "mirror-user", "credentials must not be logged")
 		})
 	}
 }

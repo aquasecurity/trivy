@@ -16,6 +16,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure/v2"
@@ -872,7 +873,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 
 			repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
 			if snapshot {
-				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
+				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate, repoPaths)
 				if err != nil {
 					if _, ok := errors.AsType[*rateLimitError](err); ok {
 						lastRateLimitErr = err
@@ -885,7 +886,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 					repoPaths[len(repoPaths)-1] = pomFileName
 				}
 			}
-			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate.url, repoPaths)
+			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate, repoPaths)
 			if err != nil {
 				if _, ok := errors.AsType[*rateLimitError](err); ok {
 					lastRateLimitErr = err
@@ -920,15 +921,34 @@ func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths [
 	return req, nil
 }
 
+// rejectedCredentialsRepos holds repositories (by mirrorKey) already warned about.
+// It is package-level because a parser is created per pom.xml.
+var rejectedCredentialsRepos sync.Map
+
+// logFetchStatus logs a response other than 200 and 429. A 401/403 to a request with
+// credentials is warned about once per repository; anonymous ones stay at debug level.
+func (p *Parser) logFetchStatus(repo repository, req *http.Request, statusCode int) {
+	if repo.url.User != nil && (statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden) {
+		if _, reported := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), struct{}{}); !reported {
+			// Unlike Redacted(), this hides the username too.
+			repoURL := repo.url
+			repoURL.User = nil
+			p.logger.Warn("Maven repository rejected the configured credentials",
+				log.String("id", repo.id), log.String("url", repoURL.String()), log.Int("statusCode", statusCode))
+		}
+	}
+	p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", statusCode))
+}
+
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
-func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL url.URL, paths []string) (string, error) {
+func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo repository, paths []string) (string, error) {
 	// Overwrite pom file name to `maven-metadata.xml`
 	mavenMetadataPaths := slices.Clone(paths[:len(paths)-1]) // Clone slice to avoid shadow overwriting last element of `paths`
 	mavenMetadataPaths = append(mavenMetadataPaths, "maven-metadata.xml")
 
-	req, err := p.remoteRepoRequest(ctx, repoURL, mavenMetadataPaths)
+	req, err := p.remoteRepoRequest(ctx, repo.url, mavenMetadataPaths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repoURL.Redacted()), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repo.url.Redacted()), log.Err(err))
 		return "", nil
 	}
 
@@ -946,7 +966,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 		return "", newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
+		p.logFetchStatus(repo, req, resp.StatusCode)
 		return "", nil
 	}
 
@@ -966,10 +986,10 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	return pomFileName, nil
 }
 
-func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.URL, paths []string) (*pom, error) {
-	req, err := p.remoteRepoRequest(ctx, repoURL, paths)
+func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo repository, paths []string) (*pom, error) {
+	req, err := p.remoteRepoRequest(ctx, repo.url, paths)
 	if err != nil {
-		p.logger.Debug("Unable to create request", log.String("repo", repoURL.Redacted()), log.Err(err))
+		p.logger.Debug("Unable to create request", log.String("repo", repo.url.Redacted()), log.Err(err))
 		return nil, nil
 	}
 
@@ -987,7 +1007,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 		return nil, newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
-		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
+		p.logFetchStatus(repo, req, resp.StatusCode)
 		return nil, nil
 	}
 
