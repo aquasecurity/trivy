@@ -100,6 +100,9 @@ var (
 
 	// Regex patterns for redaction
 	asteriskPattern = regexp.MustCompile(`\*+`)
+	jsonPattern     = regexp.MustCompile(`(?i)"(password|passwd|pwd|secret|token|api_key|apikey|access_token|client_secret|auth_token|private_key)"\s*:\s*"[^"]*"`)
+	formPattern     = regexp.MustCompile(`(?i)(password|passwd|pwd|secret|token|api_key|apikey|access_token|client_secret|auth_token|private_key)=[^&\s]+`)
+	bearerPattern   = regexp.MustCompile(`(?i)Bearer\s+[A-Za-z0-9\-._~+/]+=*`)
 )
 
 type traceTransport struct {
@@ -320,7 +323,6 @@ func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	coloredRedactedText := redactedColor(redactedText)
 
 	// Handle JSON patterns
-	jsonPattern := regexp.MustCompile(`(?i)"(password|passwd|pwd|secret|token|api_key|apikey|access_token|client_secret|auth_token|private_key)"\s*:\s*"[^"]*"`)
 	redacted = jsonPattern.ReplaceAllStringFunc(redacted, func(match string) string {
 		colonIndex := strings.Index(match, ":")
 		if colonIndex != -1 {
@@ -331,7 +333,6 @@ func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	})
 
 	// Handle form data patterns
-	formPattern := regexp.MustCompile(`(?i)(password|passwd|pwd|secret|token|api_key|apikey|access_token|client_secret|auth_token|private_key)=[^&\s]+`)
 	redacted = formPattern.ReplaceAllStringFunc(redacted, func(match string) string {
 		equalIndex := strings.Index(match, "=")
 		if equalIndex != -1 {
@@ -342,7 +343,6 @@ func (tt *traceTransport) redactBody(body []byte, contentType string) []byte {
 	})
 
 	// Handle Bearer tokens
-	bearerPattern := regexp.MustCompile(`(?i)Bearer\s+[A-Za-z0-9\-._~+/]+=*`)
 	redacted = bearerPattern.ReplaceAllString(redacted, coloredRedactedText)
 
 	return []byte(redacted)
