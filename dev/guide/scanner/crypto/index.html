@@ -2727,6 +2727,56 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-targets-and-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported targets and options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupported-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unsupported material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystore-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keystore limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -8689,6 +8739,56 @@ You're not viewing the latest version of the documentation.
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Limitations">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#supported-targets-and-options" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Supported targets and options
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#file-selection" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        File selection
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#unsupported-material" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Unsupported material
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#keystore-limitations" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Keystore limitations
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
     </ul>
@@ -9026,14 +9126,26 @@ Total: 4 (UNKNOWN: 0, LOW: 0, MEDIUM: 1, HIGH: 3, CRITICAL: 0)
 <h2 id="clientserver-mode">Client/server mode<a class="headerlink" href="#clientserver-mode" title="Permanent link">&para;</a></h2>
 <p>The scanner also works in <a href="../../references/modes/client-server/">client/server mode</a>. The client extracts the cryptographic assets from the image. The server assesses their security levels and runs the checks, and it uses its own clock to decide whether a certificate has expired.</p>
 <h2 id="limitations">Limitations<a class="headerlink" href="#limitations" title="Permanent link">&para;</a></h2>
-<p>The scanner is available for <code>trivy image</code> only.</p>
-<p>Trivy rejects <code>--scanners crypto</code> together with <a href="../../target/container_image/#discover-sbom-referencing-the-container-image"><code>--sbom-sources</code></a>, because a remote SBOM found for the image replaces the analysis of its layers.</p>
-<p>A file without one of the extensions above is not read, so a key in a file named <code>tls-key</code> or inside a config file is missed. You can point the scanner at such a file with <a href="../../configuration/skipping/#customizing-file-handling"><code>--file-patterns</code></a>, as long as it holds PEM or DER material or a PKCS#12 or JKS keystore:</p>
+<h3 id="supported-targets-and-options">Supported targets and options<a class="headerlink" href="#supported-targets-and-options" title="Permanent link">&para;</a></h3>
+<ul>
+<li>The scanner is available for <code>trivy image</code> only.</li>
+<li>Trivy rejects <code>--scanners crypto</code> together with <a href="../../target/container_image/#discover-sbom-referencing-the-container-image"><code>--sbom-sources</code></a>, because a remote SBOM found for the image replaces the analysis of its layers.</li>
+</ul>
+<h3 id="file-selection">File selection<a class="headerlink" href="#file-selection" title="Permanent link">&para;</a></h3>
+<p>By default, Trivy selects files by the extensions listed under <a href="#what-is-scanned">What is scanned</a> and by the exact file name <code>cacerts</code>. Files larger than 10 MiB are skipped, including files selected with <code>--file-patterns</code>.</p>
+<p>Use <a href="../../configuration/skipping/#customizing-file-handling"><code>--file-patterns</code></a> to select a file with another name if it contains PEM or DER material or is a PKCS#12 or JKS keystore. This example scans a key named <code>tls-key</code>.</p>
 <div class="highlight"><pre><span></span><code>$<span class="w"> </span>trivy<span class="w"> </span>image<span class="w"> </span>--scanners<span class="w"> </span>crypto<span class="w"> </span>--format<span class="w"> </span>cyclonedx<span class="w"> </span>--file-patterns<span class="w"> </span><span class="s2">&quot;crypto:etc/app/tls-key&quot;</span><span class="w"> </span>myimage:1.0.0
 </code></pre></div>
-<p>Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.</p>
-<p>Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.</p>
+<h3 id="unsupported-material">Unsupported material<a class="headerlink" href="#unsupported-material" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Certificates embedded in application binaries, such as Node.js's built-in root certificates.</li>
+<li>Certificate signing requests, certificate revocation lists (CRLs), and PKCS#7 bundles.</li>
+<li>OpenSSH keys, JCEKS keystores, and OpenPGP keyrings.</li>
+<li>Certificates and keys that use explicit EC curve parameters instead of a named curve.</li>
+<li>X25519, X448, and Ed448 private keys. Trivy reports their public keys.</li>
+</ul>
 <p>From certificates and keys on the curve P-192, only the <code>EC-P-192</code> algorithm is extracted.</p>
+<h3 id="keystore-limitations">Keystore limitations<a class="headerlink" href="#keystore-limitations" title="Permanent link">&para;</a></h3>
 <p>Trivy does not decrypt PKCS#12 keystores and reads only what is stored without encryption. Private keys are usually stored this way, because keytool, OpenSSL and .NET encrypt each key separately and keep it out of the encrypted part. An encrypted key is reported without its algorithm, and a key stored in the clear, such as with <code>-keypbe NONE</code> in OpenSSL, is reported with it. The same tools encrypt certificates unless this is turned off, such as with <code>-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE</code> in keytool or <code>-certpbe NONE</code> in OpenSSL. OpenSSL encrypts them even with an empty password. The <code>cacerts</code> trust store of JDK 18 and later has no password, so all its certificates are reported.</p>
 <p>A PKCS#12 keystore protected by a public-key signature instead of a password-based MAC is not read. Parts of a keystore encoded in BER rather than DER are skipped. Trivy reads at most 10000 bags from one keystore.</p>
 <p>A JKS keystore stores its certificates without encryption, so Trivy reads all of them, including the <code>cacerts</code> trust store of JDK 17 and earlier. Trivy does not decrypt JKS keystores, so a private key entry gives an encrypted key and the certificates of its chain. Trivy reads at most 10000 certificates and keys from one JKS keystore.</p>
