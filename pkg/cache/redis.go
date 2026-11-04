@@ -243,7 +243,9 @@ func GetTLSConfig(caCertPath, certPath, keyPath string) (*x509.CertPool, tls.Cer
 	}
 
 	caCertPool := x509.NewCertPool()
-	caCertPool.AppendCertsFromPEM(caCert)
+	if !caCertPool.AppendCertsFromPEM(caCert) {
+		return nil, tls.Certificate{}, xerrors.Errorf("no valid PEM certificates found in CA file %q", caCertPath)
+	}
 
 	return caCertPool, cert, nil
 }
