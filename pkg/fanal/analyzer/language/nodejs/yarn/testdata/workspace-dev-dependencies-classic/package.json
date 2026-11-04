@@ -1,0 +1,7 @@
+{
+  "name": "repro",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ]
+}

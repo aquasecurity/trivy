@@ -1,0 +1,10 @@
+{
+  "name": "x",
+  "version": "1.0.0",
+  "dependencies": {
+    "y": "workspace:*"
+  },
+  "optionalDependencies": {
+    "prod-parent": "1.0.0"
+  }
+}

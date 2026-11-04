@@ -1,0 +1,10 @@
+{
+  "name": "repro",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "foo-debug": "npm:debug@^4.3"
+  }
+}
