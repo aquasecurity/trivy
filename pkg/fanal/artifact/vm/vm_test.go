@@ -14,6 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/cachetest"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact/vm"
@@ -116,16 +117,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
+					ID:       "sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
+				ID:   "sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
 				BlobIDs: []string{
-					"sha256:e04ee0f05d1384ec4b48c99f9d05491bff1ddbc2331b8419bcde7548070e314b",
+					"sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
 				},
 			},
 		},
@@ -135,16 +136,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
+					ID:       "sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "ebs-012345",
 				Type: types.TypeVM,
-				ID:   "sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
+				ID:   "sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
 				BlobIDs: []string{
-					"sha256:d1690d3201420ddb690be85be011afd36be4c8bff47c474d7fcfe9c7efea9a3f",
+					"sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
 				},
 			},
 		},
@@ -203,6 +204,12 @@ var expectedBlobInfo = types.BlobInfo{
 					Maintainer: "Timo Teräs <timo.teras@iki.fi>",
 					Arch:       "aarch64",
 					Digest:     "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha1:742b0a26f327c6da60d42a02c3eb6189a58e468f",
+							Source: digest.SourceAPKInstalledDB,
+						},
+					},
 					InstalledFiles: []string{
 						"lib/ld-musl-aarch64.so.1",
 						"lib/libc.musl-aarch64.so.1",

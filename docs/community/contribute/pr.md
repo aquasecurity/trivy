@@ -171,6 +171,9 @@ config:
 - dockerfile
 - terraform
 - cloudformation
+- helm
+- ansible
+- arm
 
 container
 
@@ -192,7 +195,7 @@ SBOM:
 
 others:
 
-- helm
+- chart
 - report
 - db
 - parser

@@ -13,10 +13,11 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
-// ellipticCurves maps the curve names of crypto/elliptic to the CycloneDX elliptic curve
+// ellipticCurves maps the NIST curve names to the CycloneDX elliptic curve
 // enumeration, which qualifies a curve with the body that standardized it. A curve absent
 // from the map is left out, because the enumeration accepts nothing else.
 var ellipticCurves = map[string]string{
+	"P-192": "nist/P-192",
 	"P-224": "nist/P-224",
 	"P-256": "nist/P-256",
 	"P-384": "nist/P-384",
@@ -153,21 +154,29 @@ func (m *Marshaler) relatedCryptoMaterialProperties(asset ftypes.CryptoAssetInfo
 
 func (m *Marshaler) algorithmProperties(asset ftypes.CryptoAssetInfo) *cdx.CryptoAlgorithmProperties {
 	properties := &cdx.CryptoAlgorithmProperties{
-		Primitive:       cryptoPrimitive(asset.Algorithm.Primitive),
-		AlgorithmFamily: asset.Algorithm.Family,
+		Primitive:                cryptoPrimitive(asset.Algorithm.Primitive),
+		AlgorithmFamily:          asset.Algorithm.Family,
+		ClassicalSecurityLevel:   asset.Algorithm.ClassicalSecurityLevel,
+		NistQuantumSecurityLevel: asset.Algorithm.NISTQuantumSecurityLevel,
 	}
 
-	// The property that distinguishes algorithms sharing one OID is kept as a parameter of
-	// the identity, and only its value is reported here.
-	name, value, found := asset.Identity.AlgorithmParameter()
-	if !found {
+	// The properties that distinguish algorithms sharing one OID are kept as parameters of
+	// the identity, and only their values are reported here.
+	parameters, err := asset.Identity.AlgorithmParameters()
+	if err != nil {
+		m.logger.Debug("Omitting invalid algorithm parameters",
+			log.String("bom-ref", core.CryptoBOMRef(asset.Descriptor())), log.Err(err))
 		return properties
 	}
-	switch name {
-	case ftypes.CryptoParameterKeySize:
-		properties.ParameterSetIdentifier = value
-	case ftypes.CryptoParameterCurve:
-		properties.EllipticCurve = ellipticCurves[value]
+	if parameters.KeySize > 0 {
+		properties.ParameterSetIdentifier = strconv.Itoa(parameters.KeySize)
+		// FIPS 186 names a DSA parameter set by both L and N.
+		if parameters.SubgroupSize > 0 {
+			properties.ParameterSetIdentifier += "-" + strconv.Itoa(parameters.SubgroupSize)
+		}
+	}
+	if parameters.Curve != "" {
+		properties.EllipticCurve = ellipticCurves[parameters.Curve]
 	}
 	return properties
 }

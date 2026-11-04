@@ -30,13 +30,13 @@ func (r *remoteResolver) GetDownloadCount() int {
 	return int(r.count.Load())
 }
 
-func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
+func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (Result, error) {
 	if !opt.hasPrefix("github.com/", "bitbucket.org/", "s3:", "git@", "git:", "hg:", "https:", "gcs:") {
-		return nil, "", "", false, nil
+		return Result{}, ErrNotApplicable
 	}
 
 	if !opt.AllowDownloads {
-		return nil, "", "", false, nil
+		return Result{}, ErrNotApplicable
 	}
 
 	origSrc, subdir := splitPackageSubdirRaw(opt.OriginalSource)
@@ -45,7 +45,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 
 	baseCacheDir, err := locateCacheDir(opt.CacheDir)
 	if err != nil {
-		return nil, "", "", true, fmt.Errorf("failed to locate cache directory: %w", err)
+		return Result{}, fmt.Errorf("failed to locate cache directory: %w", err)
 	}
 
 	cacheDir := filepath.Join(baseCacheDir, key)
@@ -54,7 +54,7 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 
 	opt.Source = src
 	if err := r.download(ctx, opt, cacheDir); err != nil {
-		return nil, "", "", true, err
+		return Result{}, err
 	}
 
 	r.incrementCount(opt)
@@ -62,7 +62,11 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (fil
 		log.String("name", opt.Name),
 		log.String("source", opt.OriginalSource),
 	)
-	return os.DirFS(cacheDir), opt.OriginalSource, subdir, true, nil
+	return Result{
+		FS:           os.DirFS(cacheDir),
+		SourcePrefix: opt.OriginalSource,
+		Dir:          subdir,
+	}, nil
 }
 
 func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) error {

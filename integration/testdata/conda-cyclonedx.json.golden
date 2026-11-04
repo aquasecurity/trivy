@@ -59,6 +59,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "conda-pkg"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:237db0da53131e4548cb1181337fa0f420299e1f"
         }
       ]
     },
@@ -89,6 +93,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "conda-pkg"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:a6a2db7668f1ad541d704369fc66c96a4415aa24"
         }
       ]
     }

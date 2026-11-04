@@ -23,6 +23,7 @@ This feature is relevant for the following scanners:
 | Misconfiguration |     ✓     |
 |      Secret      |     ✓     |
 |     License      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 It's possible to specify glob patterns when referring to a file or directory. The glob expression follows the ["doublestar" library syntax](https://pkg.go.dev/github.com/bmatcuk/doublestar/v4@v4.8.1#readme-patterns).
 
@@ -85,7 +86,7 @@ This feature is relevant for the following scanners:
 | Misconfiguration |     ✓     |
 |      Secret      |           |
 |     License      |   ✓[^1]   |
-|      Crypto      |     ✓     |
+|      Crypto      |   ✓[^2]   |
 
 The list of analyzers can be found [here](https://github.com/aquasecurity/trivy/tree/{{ git.commit }}/pkg/fanal/analyzer/const.go).
 Note that this flag is not applicable for parsers that accepts files of different extensions, for example the Terraform file parser which handles .tf and .tf.json files.
@@ -106,6 +107,7 @@ trivy fs --scanners misconfig,vuln --file-patterns "dockerfile:.production.docke
 ```
 
 [^1]: Only work with the [license-full](../scanner/license.md) flag
+[^2]: Experimental. Available for container image scanning only. See [Cryptographic Asset Scanning](../scanner/crypto.md).
 
 ## Avoid full filesystem traversal
 

@@ -14,5 +14,14 @@ type PKCS1AdditionalPrime = pkcs1AdditionalPrime
 // PKCS8PrivateKey exports pkcs8PrivateKey for testing.
 type PKCS8PrivateKey = pkcs8PrivateKey
 
+// ECPrivateKey exports ecPrivateKey for testing.
+type ECPrivateKey = ecPrivateKey
+
 // OIDRSAEncryption exports oidRSAEncryption for testing.
 var OIDRSAEncryption = oidRSAEncryption
+
+// OIDECPublicKey exports oidECPublicKey for testing.
+var OIDECPublicKey = oidECPublicKey
+
+// OIDNamedCurveP192 exports oidNamedCurveP192 for testing.
+var OIDNamedCurveP192 = oidNamedCurveP192

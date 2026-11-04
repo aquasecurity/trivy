@@ -154,9 +154,12 @@ func (p *Parser) ParseFile(ctx context.Context, fsys fs.FS, filePath string) (fc
 
 	p.logger.Debug("Context loaded from source", log.FilePath(filePath))
 
-	// the context must be set to conditions before resources
-	for _, c := range fctx.Conditions {
+	// the context must be set to conditions before resources.
+	// Conditions holds values, so the map entry must be written back:
+	// setContext would otherwise only reach the loop copy.
+	for name, c := range fctx.Conditions {
 		c.setContext(fctx)
+		fctx.Conditions[name] = c
 	}
 
 	for name, r := range fctx.Resources {

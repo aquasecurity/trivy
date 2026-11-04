@@ -16,34 +16,34 @@ You can load check files or directories including your custom checks using the `
 This can be repeated for specifying multiple files or directories.
 
 ```bash
-trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --namespaces user myapp
+trivy config --config-check custom-policy/policy --config-check combine/policy --config-check policy.rego --check-namespaces user myapp
 ```
 
 You can load checks bundle as OCI Image from a Container Registry using the `--checks-bundle-repository` flag.
 
 ```bash
-trivy config --checks-bundle-repository myregistry.local/mychecks --namespaces user myapp
+trivy config --checks-bundle-repository myregistry.local/mychecks --check-namespaces user myapp
 ```
 
 
 ### Passing custom data
-You can pass directories including your custom data through `--data` option.
+You can pass directories including your custom data through `--config-data` option.
 This can be repeated for specifying multiple directories.
 
 ```bash
 cd examples/misconf/custom-data
-trivy config --config-check ./my-check --data ./data --namespaces user ./configs
+trivy config --config-check ./my-check --config-data ./data --check-namespaces user ./configs
 ```
 
 For more details, see [Custom Data](../custom/data.md).
 
 ### Passing namespaces
 By default, Trivy evaluates checks defined in `builtin.*`.
-If you want to evaluate custom checks in other packages, you have to specify package prefixes through `--namespaces` option.
+If you want to evaluate custom checks in other packages, you have to specify package prefixes through `--check-namespaces` option.
 This can be repeated for specifying multiple packages.
 
 ``` bash
-trivy config --config-check ./my-check --namespaces main --namespaces user ./configs
+trivy config --config-check ./my-check --check-namespaces main --check-namespaces user ./configs
 ```
 
 ### Limiting Rego compile errors
@@ -143,7 +143,7 @@ If the schema is specified in the check metadata and is in the directory specifi
 If a user specifies the `--config-file-schemas` flag, all input IaC config files are ensured that they pass type-checking. It is not required to pass an input schema in case type checking is not required. This is helpful for scenarios where you simply want to write a Rego check and pass in IaC input for it. Such a use case could include scanning for a new service which Trivy might not support just yet.
 
 !!! tip
-It is also possible to specify multiple input schemas with `--config-file-schema` flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
+It is also possible to specify multiple input schemas with `--config-file-schemas` flag as it can accept a comma separated list of file paths or a directory as input. In the case of multiple schemas being specified, all of them will be evaluated against all the input files.
 
 
 ### Filtering resources by inline comments

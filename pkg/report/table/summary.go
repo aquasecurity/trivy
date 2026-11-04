@@ -37,6 +37,8 @@ func NewScanner(scanner types.Scanner) Scanner {
 		return SecretScanner{}
 	case types.LicenseScanner:
 		return LicenseScanner{}
+	case types.CryptoScanner:
+		return CryptoScanner{}
 	}
 	return nil
 }
@@ -115,6 +117,23 @@ func (s LicenseScanner) String() string {
 	return string(types.LicenseScanner)
 }
 
+type CryptoScanner struct{ scannerAlignment }
+
+func (s CryptoScanner) Header() string {
+	return "Crypto"
+}
+
+func (s CryptoScanner) Count(result types.Result) int {
+	if result.Class == types.ClassCrypto {
+		return len(result.CryptoFindings)
+	}
+	return -1
+}
+
+func (s CryptoScanner) String() string {
+	return string(types.CryptoScanner)
+}
+
 type summaryRenderer struct {
 	w          *bytes.Buffer
 	isTerminal bool
@@ -172,14 +191,12 @@ func (r *summaryRenderer) Render(report types.Report) {
 	t.SetAlignment(alignments...)
 
 	for _, result := range r.splitAggregatedPackages(report.Results) {
-		// The summary counts findings, and cryptographic assets are an inventory.
-		if result.Class == types.ClassCrypto {
-			continue
-		}
 		resultType := string(result.Type)
 		switch result.Class {
 		case types.ClassSecret:
 			resultType = "text"
+		case types.ClassCrypto:
+			resultType = "crypto"
 		case types.ClassLicense, types.ClassLicenseFile:
 			resultType = "-"
 		}
@@ -224,6 +241,7 @@ func (r *summaryRenderer) showEmptyResultsWarning() {
 	resultByFindings := []Scanner{
 		NewScanner(types.SecretScanner),
 		NewScanner(types.LicenseScanner),
+		NewScanner(types.CryptoScanner),
 	}
 
 	if scanners := lo.Intersect(resultByFiles, r.scanners); len(scanners) > 0 {

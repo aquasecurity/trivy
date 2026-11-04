@@ -163,6 +163,71 @@ func TestFilter(t *testing.T) {
 			EndLine:   2,
 			Match:     "*****",
 		}
+		cryptoKey = ftypes.CryptoAsset{
+			AssetID: "8c2f0e5a91d34b76",
+			CryptoAssetInfo: ftypes.CryptoAssetInfo{
+				Kind:    ftypes.CryptoKindKey,
+				KeyType: ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.CryptoIdentity{
+					Method: ftypes.CryptoMethodSPKISHA256,
+					Value:  "4f1c",
+				},
+				Name: "RSA-1024 public key",
+				Key:  &ftypes.CryptoKey{Size: 1024},
+			},
+			FilePath: "app/legacy.pem",
+		}
+		cryptoCertificate = ftypes.CryptoAsset{
+			AssetID: "1e7b3d9c04a65f28",
+			CryptoAssetInfo: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindCertificate,
+				Identity: ftypes.CryptoIdentity{
+					Method: ftypes.CryptoMethodSHA256,
+					Value:  "5e0b",
+				},
+				Name:        "CN=legacy.example.com",
+				Certificate: &ftypes.CryptoCertificate{Subject: "CN=legacy.example.com"},
+			},
+			FilePath: "app/legacy.pem",
+		}
+		smallRSAKey = types.CryptoFinding{
+			RuleID:   "CRYPTO-0002",
+			Title:    "Small RSA key",
+			Severity: dbTypes.SeverityHigh.String(),
+			AssetID:  cryptoKey.AssetID,
+			Evidence: types.CryptoEvidence{KeySize: 1024},
+		}
+		expiredCertificate = types.CryptoFinding{
+			RuleID:   "CRYPTO-0004",
+			Title:    "Expired certificate",
+			Severity: dbTypes.SeverityMedium.String(),
+			AssetID:  cryptoCertificate.AssetID,
+		}
+		cryptoRootCertificate = ftypes.CryptoAsset{
+			AssetID: "7a3d51c8e02b94f6",
+			CryptoAssetInfo: ftypes.CryptoAssetInfo{
+				Kind: ftypes.CryptoKindCertificate,
+				Identity: ftypes.CryptoIdentity{
+					Method: ftypes.CryptoMethodSHA256,
+					Value:  "7a3d",
+				},
+				Name:        "CN=Old Root CA",
+				Certificate: &ftypes.CryptoCertificate{Subject: "CN=Old Root CA"},
+			},
+			FilePath: "etc/ssl/certs/old-root.pem",
+		}
+		unknownAssetFinding = types.CryptoFinding{
+			RuleID:   "CRYPTO-0002",
+			Title:    "Small RSA key",
+			Severity: dbTypes.SeverityHigh.String(),
+			AssetID:  "deadbeef",
+		}
+		expiredRootCertificate = types.CryptoFinding{
+			RuleID:   "CRYPTO-0004",
+			Title:    "Expired certificate",
+			Severity: dbTypes.SeverityMedium.String(),
+			AssetID:  cryptoRootCertificate.AssetID,
+		}
 		secret2 = types.DetectedSecret{
 			RuleID:    "generic-unwanted-rule",
 			Severity:  dbTypes.SeverityLow.String(),
@@ -271,6 +336,133 @@ func TestFilter(t *testing.T) {
 						},
 						Secrets: []types.DetectedSecret{
 							secret1,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings by severity",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								smallRSAKey,
+								expiredCertificate, // filtered
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityHigh,
+				},
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+						CryptoFindings: []types.CryptoFinding{
+							smallRSAKey,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings all filtered",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								expiredCertificate, // filtered
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityCritical,
+				},
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoCertificate},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings by ignore file",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								smallRSAKey,
+								expiredCertificate, // ignored
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+				},
+				ignoreFile: "testdata/.trivyignore",
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate},
+						CryptoFindings: []types.CryptoFinding{
+							smallRSAKey,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "crypto findings by ignore yaml",
+			args: args{
+				report: types.Report{
+					Results: []types.Result{
+						{
+							Class:        types.ClassCrypto,
+							CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate, cryptoRootCertificate},
+							CryptoFindings: []types.CryptoFinding{
+								smallRSAKey,            // ignored
+								expiredCertificate,     // path does not match
+								expiredRootCertificate, // ignored
+								unknownAssetFinding,    // no asset, so no path to match
+							},
+						},
+					},
+				},
+				severities: []dbTypes.Severity{
+					dbTypes.SeverityMedium,
+					dbTypes.SeverityHigh,
+				},
+				ignoreFile: "testdata/.trivyignore.yaml",
+			},
+			want: types.Report{
+				Results: []types.Result{
+					{
+						Class:        types.ClassCrypto,
+						CryptoAssets: []ftypes.CryptoAsset{cryptoKey, cryptoCertificate, cryptoRootCertificate},
+						CryptoFindings: []types.CryptoFinding{
+							expiredCertificate,
+							unknownAssetFinding,
 						},
 					},
 				},

@@ -1,5 +1,22 @@
 # Changelog
 
+## [0.76.0](https://github.com/aquasecurity/trivy/compare/v0.75.0...v0.76.0) (2026-10-14)
+
+
+### Features
+
+* **crypto:** distinguish DSA algorithms by L and N ([#11366](https://github.com/aquasecurity/trivy/issues/11366)) ([bcc9bd4](https://github.com/aquasecurity/trivy/commit/bcc9bd47fa67dd251312d0b361fa568a108f0cac))
+* **crypto:** report nominal security levels of algorithms ([#11369](https://github.com/aquasecurity/trivy/issues/11369)) ([a67baa8](https://github.com/aquasecurity/trivy/commit/a67baa8d36f5307d5f9fbdfd9bc9977bf74228a7))
+* **echo:** support Echo Maven and npm package scanning ([#10883](https://github.com/aquasecurity/trivy/issues/10883)) ([7c1b1fa](https://github.com/aquasecurity/trivy/commit/7c1b1fa19f1628132a9e8377fed127682500d87d))
+* **vuln:** extend RapidFort scanner to Debian, Oracle, Rocky, Alma, and Amazon ([#11285](https://github.com/aquasecurity/trivy/issues/11285)) ([aaebec6](https://github.com/aquasecurity/trivy/commit/aaebec6cf772111b2bd1dca221e0c36e0a952817))
+
+
+### Bug Fixes
+
+* **echo:** match +echo.N local segment anywhere in pip versions ([#11367](https://github.com/aquasecurity/trivy/issues/11367)) ([bfb43a4](https://github.com/aquasecurity/trivy/commit/bfb43a49642fbdf60f5e794bba5982fdaa433136))
+* **php:** keep dependency edges to packages named like PHP extensions ([#11051](https://github.com/aquasecurity/trivy/issues/11051)) ([0900c7e](https://github.com/aquasecurity/trivy/commit/0900c7eb5a29f1169a3fdabd6ce4b45da2271400))
+* **vex:** avoid panic on CSAF advisory without a CVE ([#10990](https://github.com/aquasecurity/trivy/issues/10990)) ([431288f](https://github.com/aquasecurity/trivy/commit/431288f897ff543f19c49274dcc1df1a3bef8664))
+
 ## [0.75.0](https://github.com/aquasecurity/trivy/compare/v0.74.0...v0.75.0) (2026-10-01)
 
 

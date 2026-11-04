@@ -6,6 +6,7 @@ import (
 	"slices"
 	"sort"
 	"strconv"
+	"strings"
 	"sync"
 
 	debver "github.com/knqyf263/go-deb-version"
@@ -15,6 +16,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/image/name"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -213,15 +215,20 @@ func (m *Decoder) decodePackage(ctx context.Context, c *core.Component) (*ftypes
 	pkg.Identifier.BOMRef = c.PkgIdentifier.BOMRef
 	pkg.Licenses = c.Licenses
 
+	var hashes []digest.SourcedDigest
 	for _, f := range c.Files {
 		if f.Path != "" && pkg.FilePath == "" {
 			pkg.FilePath = f.Path
 		}
-		// An empty path represents a package digest
+		hashes = append(hashes, f.Digests...)
 		if len(f.Digests) > 0 {
-			pkg.Digest = f.Digests[0]
+			pkg.Digest = f.Digests[0].Digest // TODO: Remove this backward-compatibility assignment when Package.Digest is removed.
 		}
 	}
+
+	// The hashes of the component's files are authoritative: the properties only restore their
+	// sources, and the hashes without a recorded source keep SourceSBOM.
+	pkg.AddDigests(restoreDigestSources(c.Properties, hashes)...)
 
 	if p.Class() == types.ClassOSPkg {
 		m.fillSrcPkg(ctx, c, pkg)
@@ -435,4 +442,29 @@ func fillPkgFieldsFromComponentProps(props []core.Property, pkg *ftypes.Package)
 		pkg.BuildInfo = buildInfo
 	}
 	return nil
+}
+
+// restoreDigestSources returns the hashes with the sources recorded by
+// core.PropertySourcedDigest as "<source>:<algorithm>:<value>". A record is matched to a hash by
+// its value, and the first record of a value wins. Records without a source or a matching hash
+// are ignored.
+func restoreDigestSources(props []core.Property, hashes []digest.SourcedDigest) []digest.SourcedDigest {
+	sources := make(map[digest.Digest]digest.Source)
+	for _, p := range props {
+		if p.Name != core.PropertySourcedDigest {
+			continue
+		}
+		src, d, _ := strings.Cut(p.Value, ":")
+		if _, ok := sources[digest.Digest(d)]; src != "" && !ok {
+			sources[digest.Digest(d)] = digest.Source(src)
+		}
+	}
+
+	hashes = slices.Clone(hashes)
+	for i, h := range hashes {
+		if src, ok := sources[h.Digest]; ok {
+			hashes[i].Source = src
+		}
+	}
+	return hashes
 }

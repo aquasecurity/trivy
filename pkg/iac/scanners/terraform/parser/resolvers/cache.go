@@ -42,15 +42,15 @@ func locateCacheDir(cacheDir string) (string, error) {
 	return cacheDir, nil
 }
 
-func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesystem fs.FS, prefix, downloadPath string, applies bool, err error) {
+func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (Result, error) {
 	if opt.SkipCache {
 		opt.Logger.Debug("Module caching is disabled")
-		return nil, "", "", false, nil
+		return Result{}, ErrNotApplicable
 	}
 	cacheFS, err := locateCacheFS(opt.CacheDir)
 	if err != nil {
 		opt.Logger.Debug("No cache filesystem is available on this machine.", log.Err(err))
-		return nil, "", "", false, nil
+		return Result{}, ErrNotApplicable
 	}
 
 	src, subdir := splitPackageSubdirRaw(opt.Source)
@@ -61,12 +61,16 @@ func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (filesy
 		opt.Logger.Debug("Module resolved from cache", log.String("key", key))
 		cacheDir, err := locateCacheDir(opt.CacheDir)
 		if err != nil {
-			return nil, "", "", true, err
+			return Result{}, err
 		}
 
-		return os.DirFS(filepath.Join(cacheDir, key)), opt.OriginalSource, subdir, true, nil
+		return Result{
+			FS:           os.DirFS(filepath.Join(cacheDir, key)),
+			SourcePrefix: opt.OriginalSource,
+			Dir:          subdir,
+		}, nil
 	}
-	return nil, "", "", false, nil
+	return Result{}, ErrNotApplicable
 }
 
 func cacheKey(source, version string) string {

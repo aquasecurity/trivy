@@ -9,3 +9,10 @@ rules:
   # See: https://docs.zizmor.sh/audits/#secrets-outside-env
   secrets-outside-env:
     disable: true
+
+  # TODO: Switch to the `$/` syntax and re-enable this rule once the runner can load
+  # self-repository actions from a repository with dangling symlinks.
+  # See: https://github.com/actions/runner/issues/4631
+  # See: https://docs.zizmor.sh/audits/#self-repository
+  self-repository:
+    disable: true

@@ -12,7 +12,7 @@ func Supplier(os ftypes.OS, _ []ftypes.Package) driver.Driver {
 		return nil
 	}
 	switch os.Family {
-	case ftypes.Ubuntu, ftypes.Alpine, ftypes.RedHat:
+	case ftypes.Ubuntu, ftypes.Alpine, ftypes.Debian, ftypes.RedHat, ftypes.Oracle, ftypes.Rocky, ftypes.Alma, ftypes.Amazon:
 		return NewScanner(os.Family)
 	}
 	return nil

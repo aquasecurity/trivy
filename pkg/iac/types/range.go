@@ -1,7 +1,8 @@
 package types
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"fmt"
 	"io/fs"
 	"path"
@@ -41,40 +42,40 @@ type Range struct {
 	fsKey           string
 }
 
-func (r Range) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]any{
-		"filename":        r.filename,
-		"startLine":       r.startLine,
-		"endLine":         r.endLine,
-		"sourcePrefix":    r.sourcePrefix,
-		"fsKey":           r.fsKey,
-		"isLogicalSource": r.isLogicalSource,
+// rangeJSON mirrors the unexported fields of [Range].
+// The file system is not serialized and is restored by the caller if needed.
+type rangeJSON struct {
+	Filename        string `json:"filename"`
+	StartLine       int    `json:"startLine"`
+	EndLine         int    `json:"endLine"`
+	SourcePrefix    string `json:"sourcePrefix"`
+	FSKey           string `json:"fsKey"`
+	IsLogicalSource bool   `json:"isLogicalSource"`
+}
+
+func (r Range) MarshalJSONTo(enc *jsontext.Encoder) error {
+	return json.MarshalEncode(enc, rangeJSON{
+		Filename:        r.filename,
+		StartLine:       r.startLine,
+		EndLine:         r.endLine,
+		SourcePrefix:    r.sourcePrefix,
+		FSKey:           r.fsKey,
+		IsLogicalSource: r.isLogicalSource,
 	})
 }
 
-func (r *Range) UnmarshalJSON(data []byte) error {
-	var keys map[string]any
-	if err := json.Unmarshal(data, &keys); err != nil {
+func (r *Range) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	var raw rangeJSON
+	if err := json.UnmarshalDecode(dec, &raw); err != nil {
 		return err
 	}
-	if keys["filename"] != nil {
-		r.filename = keys["filename"].(string)
-	}
-	if keys["startLine"] != nil {
-		r.startLine = int(keys["startLine"].(float64))
-	}
-	if keys["endLine"] != nil {
-		r.endLine = int(keys["endLine"].(float64))
-	}
-	if keys["sourcePrefix"] != nil {
-		r.sourcePrefix = keys["sourcePrefix"].(string)
-	}
-	if keys["fsKey"] != nil {
-		r.fsKey = keys["fsKey"].(string)
-	}
-	if keys["isLogicalSource"] != nil {
-		r.isLogicalSource = keys["isLogicalSource"].(bool)
-	}
+
+	r.filename = raw.Filename
+	r.startLine = raw.StartLine
+	r.endLine = raw.EndLine
+	r.sourcePrefix = raw.SourcePrefix
+	r.fsKey = raw.FSKey
+	r.isLogicalSource = raw.IsLogicalSource
 	return nil
 }
 

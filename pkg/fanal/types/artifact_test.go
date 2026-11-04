@@ -150,6 +150,12 @@ func TestOS_Merge(t *testing.T) {
 			want:  OS{Family: Ubuntu, Name: "24.04", Supplier: SupplierSeal},
 		},
 		{
+			name:  "ubuntu is not replaced by debian",
+			os:    OS{Family: Ubuntu, Name: "26.10"},
+			newOS: OS{Family: Debian, Name: "forky/sid"},
+			want:  OS{Family: Ubuntu, Name: "26.10"},
+		},
+		{
 			// A supplier carries no family, so it must not trigger the wholesale
 			// overwrite above and wipe the detected OS.
 			name:  "supplier does not replace redhat",

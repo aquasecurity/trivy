@@ -48,6 +48,11 @@ const (
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
 
+	// PropertySourcedDigest records a digest of the component together with the source it was
+	// acquired from, as "<source>:<algorithm>:<value>". Neither CycloneDX hashes nor SPDX
+	// checksums have room for the source, so the property refers to the hash by its value.
+	PropertySourcedDigest = "SourcedDigest"
+
 	// Red Hat packages only.
 	// A package can use multiple NVR + Arch content sets or fields.
 	PropertyContentSet = "ContentSet"
@@ -164,8 +169,8 @@ type Component struct {
 	Supplier string
 
 	// Files is a list of files that are part of the component.
-	// CycloneDX: component.properties
-	// SPDX: files
+	// CycloneDX: component.hashes
+	// SPDX: files, package.checksums
 	Files []File
 
 	// Properties is a list of key-value pairs that provide additional information about the component
@@ -196,11 +201,12 @@ type File struct {
 	// SPDX: package.files[].fileName
 	Path string
 
-	// Hash is a hash that uniquely identify the component.
-	// A file can have several digests with different algorithms, like SHA1, SHA256, etc.
+	// Digests are hashes that uniquely identify the component, each with the source it was
+	// acquired from. A file can have several digests with different algorithms, like SHA1,
+	// SHA256, etc., and the same algorithm may be acquired from several sources.
 	// CycloneDX: component.hashes
-	// SPDX: package.files[].checksums
-	Digests []digest.Digest
+	// SPDX: package.files[].checksums, or package.checksums for a file without a path
+	Digests []digest.SourcedDigest
 }
 
 func (f File) IsEmpty() bool {

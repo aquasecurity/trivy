@@ -89,6 +89,52 @@ func Test_Attribute_AsMapValue(t *testing.T) {
 	}
 }
 
+func Test_Attribute_AsStringValues(t *testing.T) {
+	tests := []struct {
+		name     string
+		expr     string
+		expected []string
+	}{
+		{
+			name:     "strings",
+			expr:     `["80", "9090-9095"]`,
+			expected: []string{"80", "9090-9095"},
+		},
+		{
+			name:     "numbers",
+			expr:     `[80, 8080]`,
+			expected: []string{"80", "8080"},
+		},
+		{
+			name:     "number in exponent notation",
+			expr:     `[1e3]`,
+			expected: []string{"1000"},
+		},
+		{
+			name:     "numbers mixed with strings",
+			expr:     `[80, "9090-9095"]`,
+			expected: []string{"80", "9090-9095"},
+		},
+		{
+			name:     "bools",
+			expr:     `[true, false]`,
+			expected: []string{"true", "false"},
+		},
+		{
+			name:     "value that has no string representation",
+			expr:     `[["80"]]`,
+			expected: []string{""},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			attr := newTestAttribute(t, tt.expr, nil)
+			assert.Equal(t, tt.expected, attr.AsStringValues().AsStrings())
+		})
+	}
+}
+
 func Test_Attribute_Marks(t *testing.T) {
 	val := cty.StringVal("secret").Mark("sensitive")
 	attr := newTestAttribute(t, "val", map[string]cty.Value{"val": val})

@@ -62,11 +62,17 @@ message Package {
   string modularitylabel = 25;
   BuildInfo build_info = 26;
   repeated string installed_files = 27;
+  repeated PackageDigest digests = 28;
 }
 
 // PackageRepository indicates where the package was distributed from.
 message PackageRepository {
   string class = 1;
+}
+
+message PackageDigest {
+  string digest = 1;
+  string source = 2;
 }
 
 message PkgIdentifier {
@@ -315,6 +321,25 @@ message CryptoAsset {
   string format = 10;
   string encoding = 11;
   Layer layer = 12;
+  string asset_id = 13;
+  string keystore = 14;
+}
+
+message CryptoFinding {
+  string rule_id = 1;
+  string title = 2;
+  string severity = 3;
+  string asset_id = 4;
+  CryptoEvidence evidence = 5;
+}
+
+message CryptoEvidence {
+  string signature_algorithm = 1;
+  string signature_algorithm_oid = 2;
+  int32 key_size = 3;
+  string curve = 4;
+  optional int32 classical_security_level = 5;
+  google.protobuf.Timestamp not_after = 6;
 }
 
 message CryptoIdentity {
@@ -351,6 +376,10 @@ message CryptoKey {
 message CryptoAlgorithm {
   string family = 1;
   string primitive = 2;
+  // The security levels are unset when they are not estimated, and an explicit zero NIST
+  // category means that the algorithm meets none of the categories.
+  optional int32 classical_security_level = 3;
+  optional int32 nist_quantum_security_level = 4;
 }
 
 message CryptoDescriptor {

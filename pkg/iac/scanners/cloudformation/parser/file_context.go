@@ -10,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/ignore"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 type SourceFormat string
@@ -33,6 +34,26 @@ type FileContext struct {
 	Globals      map[string]*Resource  `json:"Globals" yaml:"Globals"`
 	Mappings     map[string]any        `json:"Mappings,omitempty" yaml:"Mappings"`
 	Conditions   map[string]Property   `json:"Conditions,omitempty" yaml:"Conditions"`
+
+	// names of the conditions currently being resolved
+	resolvingConditions set.Set[string]
+}
+
+// resolveCondition resolves the named condition. A condition that is already
+// being resolved is part of a cycle and resolves to nothing.
+func (t *FileContext) resolveCondition(name string, cond Property) (*Property, bool) {
+	if t.resolvingConditions == nil {
+		t.resolvingConditions = set.New[string]()
+	}
+
+	if t.resolvingConditions.Contains(name) {
+		return nil, false
+	}
+
+	t.resolvingConditions.Append(name)
+	defer t.resolvingConditions.Remove(name)
+
+	return cond.resolveValue()
 }
 
 func (t *FileContext) GetResourceByLogicalID(name string) *Resource {

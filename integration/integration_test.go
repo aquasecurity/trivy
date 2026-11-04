@@ -70,6 +70,7 @@ const (
 	goldenCentOS7IgnoreUnfixed        = "testdata/centos-7-ignore-unfixed.json.golden"
 	goldenCentOS7Medium               = "testdata/centos-7-medium.json.golden"
 	goldenCryptoCDX                   = "testdata/crypto.cdx.json.golden"
+	goldenCryptoJSON                  = "testdata/crypto.json.golden"
 	goldenDebianBuster                = "testdata/debian-buster.json.golden"
 	goldenDebianBusterIgnoreUnfixed   = "testdata/debian-buster-ignore-unfixed.json.golden"
 	goldenDebianStretch               = "testdata/debian-stretch.json.golden"

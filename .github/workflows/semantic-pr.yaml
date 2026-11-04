@@ -101,6 +101,9 @@ jobs:
             dockerfile
             terraform
             cloudformation
+            helm
+            ansible
+            arm
 
             # Container
             docker
@@ -118,7 +121,7 @@ jobs:
             flag
             purl
             vex
-            helm
+            chart
             report
             db
             parser

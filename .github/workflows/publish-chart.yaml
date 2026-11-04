@@ -42,7 +42,7 @@ jobs:
           # v6.0.0 resolved the compatibility issue with Python > 3.13. may be removed after the action itself is updated
           yamale_version: "6.0.0"
       - name: Setup Kubernetes cluster (KIND)
-        uses: helm/kind-action@ef37e7f390d99f746eb8b610417061a60e82a6cc # v1.14.0
+        uses: helm/kind-action@06c1ae10762d3b9c1644e7fe69596ae519e015a2 # v1.15.0
         with:
           version: ${{ env.KIND_VERSION }}
           image: ${{ env.KIND_IMAGE }}

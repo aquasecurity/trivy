@@ -1,7 +1,9 @@
 package result
 
 import (
+	"bufio"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -29,10 +31,11 @@ func TestParseIgnoreFile(t *testing.T) {
 
 		// IDs in .trivyignore are treated as IDs for all scanners
 		// as it is unclear which type of security issue they are
-		assert.Len(t, got.Vulnerabilities, 8)
-		assert.Len(t, got.Misconfigurations, 8)
-		assert.Len(t, got.Secrets, 8)
-		assert.Len(t, got.Licenses, 8)
+		assert.Len(t, got.Vulnerabilities, 9)
+		assert.Len(t, got.Misconfigurations, 9)
+		assert.Len(t, got.Secrets, 9)
+		assert.Len(t, got.Licenses, 9)
+		assert.Len(t, got.Crypto, 9)
 	})
 
 	t.Run("happy path valid YAML config file", func(t *testing.T) {
@@ -43,6 +46,7 @@ func TestParseIgnoreFile(t *testing.T) {
 		assert.Len(t, got.Misconfigurations, 4)
 		assert.Len(t, got.Secrets, 3)
 		assert.Len(t, got.Licenses, 5)
+		assert.Len(t, got.Crypto, 2)
 	})
 
 	t.Run("empty YAML file passed", func(t *testing.T) {
@@ -77,6 +81,19 @@ func TestParseIgnoreFile(t *testing.T) {
 
 		_, err = ParseIgnoreFile(t.Context(), f.Name())
 		require.NoError(t, err) // TODO(simar7): We don't verify correctness, should we?
+	})
+
+	t.Run("line too long", func(t *testing.T) {
+		f, err := os.CreateTemp(t.TempDir(), "TestParseIgnoreFile-*")
+		require.NoError(t, err)
+		defer f.Close()
+
+		_, err = f.WriteString("CVE-2024-0001\n" + strings.Repeat("A", bufio.MaxScanTokenSize) + "\nCVE-2024-0002\n")
+		require.NoError(t, err)
+
+		got, err := ParseIgnoreFile(t.Context(), f.Name())
+		require.ErrorIs(t, err, bufio.ErrTooLong)
+		assert.Empty(t, got)
 	})
 
 	t.Run("non existing file passed", func(t *testing.T) {
