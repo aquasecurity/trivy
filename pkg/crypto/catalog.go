@@ -81,6 +81,13 @@ var algorithms = map[string]algorithm{
 		primitive:     ftypes.CryptoPrimitiveSignature,
 		strengthBasis: signatureStrengthBasis,
 	},
+	// The OIW arc carries a second OID for MD5 with RSA.
+	"1.3.14.3.2.3": {
+		name:          "RSA-PKCS1-1.5-MD5",
+		family:        "RSASSA-PKCS1",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: signatureStrengthBasis,
+	},
 	"1.2.840.10040.4.3": {
 		name:          "DSA-SHA-1",
 		family:        "DSA",
