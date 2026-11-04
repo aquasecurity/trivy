@@ -274,6 +274,10 @@ func readReport(t *testing.T, filePath string) types.Report {
 	// We don't compare history because the nano-seconds in "created" don't match
 	report.Metadata.ImageConfig.History = nil
 
+	// We don't compare the scan start time to keep golden files stable across
+	// reports generated before this field existed. It is covered by unit tests.
+	report.StartedAt = time.Time{}
+
 	// We don't compare repo digests because archives don't contain them
 	report.Metadata.RepoDigests = nil
 	for i := range report.Metadata.Layers {
