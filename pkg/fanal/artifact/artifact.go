@@ -31,6 +31,7 @@ type Option struct {
 	AWSRegion         string
 	AWSEndpoint       string
 	FileChecksum      bool // For SPDX
+	DecompressUPX     bool
 	DetectionPriority types.DetectionPriority
 
 	// MavenMirrors maps a Maven repository URL to an ordered list of fallback mirror URLs.

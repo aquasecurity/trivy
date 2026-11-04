@@ -90,8 +90,9 @@ func (a *Storage) Analyze(ctx context.Context, r *io.SectionReader) (types.BlobI
 	result := analyzer.NewAnalysisResult()
 
 	opts := analyzer.AnalysisOptions{
-		Offline:      a.artifactOption.Offline,
-		FileChecksum: a.artifactOption.FileChecksum,
+		Offline:       a.artifactOption.Offline,
+		FileChecksum:  a.artifactOption.FileChecksum,
+		DecompressUPX: a.artifactOption.DecompressUPX,
 	}
 
 	// Prepare filesystem for post analysis

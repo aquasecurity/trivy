@@ -647,6 +647,7 @@ func (r *runner) initScannerConfig(ctx context.Context, opts flag.Options) (Scan
 			FilePatterns:      opts.FilePatterns,
 			Parallel:          opts.Parallel,
 			Offline:           opts.OfflineScan,
+			DecompressUPX:     opts.DecompressUPX,
 			NoProgress:        opts.NoProgress || opts.Quiet,
 			Insecure:          opts.Insecure,
 			RepoBranch:        opts.RepoBranch,

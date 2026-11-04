@@ -21,6 +21,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils/upx"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -191,6 +192,40 @@ func (s Service) ScanTarget(ctx context.Context, target types.ScanTarget, option
 	for i := range results {
 		// Fill vulnerability details
 		s.vulnClient.FillInfo(results[i].Vulnerabilities, options.VulnSeveritySources)
+
+		// Annotate description for findings detected on UPX decompressed binaries
+		upxFiles := make(map[string]struct{})
+		for _, cr := range target.CustomResources {
+			if cr.Type == upx.CustomResourceType {
+				upxFiles[cr.FilePath] = struct{}{}
+				upxFiles[strings.TrimLeft(cr.FilePath, "/")] = struct{}{}
+			}
+		}
+
+		cleanTarget := strings.TrimLeft(results[i].Target, "/")
+		_, isTargetUPX := upxFiles[results[i].Target]
+		if !isTargetUPX {
+			_, isTargetUPX = upxFiles[cleanTarget]
+		}
+
+		for j := range results[i].Vulnerabilities {
+			v := &results[i].Vulnerabilities[j]
+			cleanPkgPath := strings.TrimLeft(v.PkgPath, "/")
+			_, isPkgUPX := upxFiles[v.PkgPath]
+			if !isPkgUPX && v.PkgPath != "" {
+				_, isPkgUPX = upxFiles[cleanPkgPath]
+			}
+
+			if isTargetUPX || isPkgUPX {
+				if !strings.Contains(v.Description, upx.FindingNote) {
+					if v.Description == "" {
+						v.Description = upx.FindingNote
+					} else {
+						v.Description = upx.FindingNote + " " + v.Description
+					}
+				}
+			}
+		}
 	}
 
 	// Call post-scan hooks
