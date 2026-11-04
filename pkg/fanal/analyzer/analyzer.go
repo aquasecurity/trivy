@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 	"sync"
+	syncAtomic "sync/atomic"
 
 	"github.com/samber/lo"
 	"golang.org/x/sync/errgroup"
@@ -18,6 +19,8 @@ import (
 
 	fos "github.com/aquasecurity/trivy/pkg/fanal/analyzer/os"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils"
+	"github.com/aquasecurity/trivy/pkg/fanal/utils/upx"
 	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/misconf"
@@ -170,8 +173,9 @@ func (f FilePatterns) Match(filePath string) bool {
 }
 
 type AnalysisOptions struct {
-	Offline      bool
-	FileChecksum bool
+	Offline       bool
+	FileChecksum  bool
+	DecompressUPX bool
 
 	// MavenMirrors maps a Maven repository URL to an ordered list of fallback mirror URLs.
 	MavenMirrors map[string][]string
@@ -480,20 +484,71 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 	// filepath extracted from tar file doesn't have the prefix "/"
 	cleanPath := strings.TrimLeft(filePath, "/")
 
+	var matchingAnalyzers []analyzer
 	for _, a := range ag.analyzers {
-		// Skip disabled analyzers
 		if slices.Contains(disabled, a.Type()) {
 			continue
 		}
-
-		if !ag.filePatterns[a.Type()].Match(cleanPath) && !a.Required(cleanPath, info) {
-			continue
+		if ag.filePatterns[a.Type()].Match(cleanPath) || a.Required(cleanPath, info) {
+			matchingAnalyzers = append(matchingAnalyzers, a)
 		}
+	}
+	if len(matchingAnalyzers) == 0 {
+		return nil
+	}
+
+	var decompressedFile *os.File
+	var upxCleanup func()
+	if opts.DecompressUPX && utils.IsExecutable(info) {
 		rc, err := opener()
+		if err == nil {
+			decompressed, cleanup, err := upx.Decompress(ctx, rc, info.Size())
+			_ = rc.Close()
+			if err == nil && decompressed != nil {
+				if f, ok := decompressed.(*os.File); ok {
+					decompressedFile = f
+					upxCleanup = cleanup
+					result.Merge(&AnalysisResult{
+						CustomResources: []ftypes.CustomResource{
+							{
+								Type:     upx.CustomResourceType,
+								FilePath: filePath,
+							},
+						},
+					})
+				} else {
+					cleanup()
+				}
+			}
+		}
+	}
+
+	// Refcount for upxCleanup across goroutines
+	var refCount int32
+	if upxCleanup != nil {
+		refCount = int32(len(matchingAnalyzers))
+	}
+	releaseUPX := func() {
+		if upxCleanup != nil && syncAtomic.AddInt32(&refCount, -1) == 0 {
+			upxCleanup()
+		}
+	}
+
+	for _, a := range matchingAnalyzers {
+		var rc xio.ReadSeekCloserAt
+		var err error
+		if decompressedFile != nil {
+			rc, err = os.Open(decompressedFile.Name())
+		} else {
+			rc, err = opener()
+		}
+
 		if errors.Is(err, fs.ErrPermission) {
 			ag.logger.Debug("Permission error", log.FilePath(filePath))
+			releaseUPX()
 			break
 		} else if err != nil {
+			releaseUPX()
 			return xerrors.Errorf("unable to open %s: %w", filePath, err)
 		}
 
@@ -501,12 +556,14 @@ func (ag AnalyzerGroup) AnalyzeFile(ctx context.Context, eg *errgroup.Group, lim
 			// The goroutine below (which closes rc) is not started on this path,
 			// so close the opened file here to avoid leaking the handle.
 			_ = rc.Close()
+			releaseUPX()
 			return xerrors.Errorf("semaphore acquire: %w", err)
 		}
 
 		eg.Go(func() error {
 			defer limit.Release(1)
 			defer rc.Close()
+			defer releaseUPX()
 
 			ret, analyzeErr := ag.analyze(ctx, a, AnalysisInput{
 				Dir:      dir,

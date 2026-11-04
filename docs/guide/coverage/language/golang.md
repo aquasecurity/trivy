@@ -116,7 +116,7 @@ $ trivy rootfs ./your_binary
 ```
 
 !!! note
-    It doesn't work with UPX-compressed binaries.
+    By default, Trivy cannot parse UPX-compressed binaries directly. Use `--decompress-upx` to decompress and scan them.
 
 ### Main Module
 Go binaries installed using the `go install` command contains correct (semver) version for the main module and therefore are detected by Trivy.

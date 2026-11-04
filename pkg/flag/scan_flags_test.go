@@ -18,6 +18,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 		skipDirs         []string
 		skipFiles        []string
 		offlineScan      bool
+		decompressUPX    bool
 		scanners         string
 		distro           string
 		skipVersionCheck bool
@@ -36,6 +37,16 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			fields: fields{},
 			want: flag.ScanOptions{
 				Target: "alpine:latest",
+			},
+			assertion: require.NoError,
+		},
+		{
+			name: "decompress upx",
+			fields: fields{
+				decompressUPX: true,
+			},
+			want: flag.ScanOptions{
+				DecompressUPX: true,
 			},
 			assertion: require.NoError,
 		},
@@ -280,6 +291,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 			setSliceValue(flag.SkipDirsFlag.ConfigName, tt.fields.skipDirs)
 			setSliceValue(flag.SkipFilesFlag.ConfigName, tt.fields.skipFiles)
 			setValue(flag.OfflineScanFlag.ConfigName, tt.fields.offlineScan)
+			setValue(flag.DecompressUPXFlag.ConfigName, tt.fields.decompressUPX)
 			setValue(flag.ScannersFlag.ConfigName, tt.fields.scanners)
 			setValue(flag.DistroFlag.ConfigName, tt.fields.distro)
 			setValue(flag.SkipVersionCheckFlag.ConfigName, tt.fields.skipVersionCheck)
@@ -292,6 +304,7 @@ func TestScanFlagGroup_ToOptions(t *testing.T) {
 				SkipDirs:         flag.SkipDirsFlag.Clone(),
 				SkipFiles:        flag.SkipFilesFlag.Clone(),
 				OfflineScan:      flag.OfflineScanFlag.Clone(),
+				DecompressUPX:    flag.DecompressUPXFlag.Clone(),
 				Scanners:         flag.ScannersFlag.Clone(),
 				DistroFlag:       flag.DistroFlag.Clone(),
 				SkipVersionCheck: flag.SkipVersionCheckFlag.Clone(),
