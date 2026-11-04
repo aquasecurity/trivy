@@ -42,4 +42,12 @@ func Test_TFVarsFile(t *testing.T) {
 		assert.True(t, vars["foo2"].True())
 		assert.True(t, vars["foo3"].Equals(cty.NumberIntVal(3)).True())
 	})
+
+	t.Run("env var value containing equals sign", func(t *testing.T) {
+		t.Setenv("TF_VAR_connection_string", "Endpoint=sb://example/;SharedAccessKey=abc==")
+
+		vars, err := loadTFVars(testutil.CreateFS(make(map[string]string)), nil)
+		require.NoError(t, err)
+		assert.Equal(t, "Endpoint=sb://example/;SharedAccessKey=abc==", vars["connection_string"].AsString())
+	})
 }
