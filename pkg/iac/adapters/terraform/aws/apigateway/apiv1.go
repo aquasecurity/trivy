@@ -8,6 +8,13 @@ import (
 
 func adaptAPIResourcesV1(modules terraform.Modules, apiBlock *terraform.Block) []v1.Resource {
 	var resources []v1.Resource
+	// Methods on the root resource refer to the REST API through root_resource_id.
+	if methods := adaptAPIMethodsV1(modules, apiBlock); len(methods) > 0 {
+		resources = append(resources, v1.Resource{
+			Metadata: apiBlock.GetMetadata(),
+			Methods:  methods,
+		})
+	}
 	for _, resourceBlock := range modules.GetReferencingResources(apiBlock, "aws_api_gateway_resource", "rest_api_id") {
 		method := v1.Resource{
 			Metadata: resourceBlock.GetMetadata(),
