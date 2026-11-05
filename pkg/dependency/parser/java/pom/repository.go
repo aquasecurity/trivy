@@ -21,6 +21,11 @@ type repository struct {
 	snapshotEnabled bool
 }
 
+// hasCredentials reports whether requests to the repository carry credentials.
+func (r repository) hasCredentials() bool {
+	return r.url.User != nil
+}
+
 type repositories struct {
 	settings    []repository // Repositories from settings.xml files
 	defaultRepo repository   // Default repository - Maven Central for Release, empty for Snapshot

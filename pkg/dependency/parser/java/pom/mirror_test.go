@@ -657,14 +657,6 @@ func TestParser_mirrorFor(t *testing.T) {
 // the target URL inside fetchPOMFromRemoteRepositories — i.e. that mirrorFor
 // is wired into the fetch loop, not just the matching logic.
 func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
-	const minimalPOM = `<?xml version="1.0" encoding="UTF-8"?>
-<project>
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>com.example</groupId>
-  <artifactId>example-api</artifactId>
-  <version>1.0.0</version>
-</project>`
-
 	// Matching logic and credential resolution are covered by Test_mirror_matches,
 	// Test_resolveMirrors and TestParser_mirrorFor. Here we verify the things that
 	// can only be observed end-to-end through HTTP: that mirrorFor is applied to the
@@ -672,163 +664,160 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 	// a settings.xml -> trivy.yaml chain routes the fetch through to the final mirror,
 	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, that a
 	// 429 is returned only when every mirror is rate-limited, and that rejected
-	// credentials are warned about once.
+	// credentials are warned about once per repository, for both the POM and
+	// maven-metadata.xml requests.
 	tests := []struct {
-		name            string
-		mirrorPatterns  []string
-		mirrorWithCreds bool
-		mirrorRole      string // settings.xml mirror target; "mirror" if empty
-		parsers         int    // parsers (pom.xml files) fetching the POM; 1 if zero
-		wantBasicAuth   string
-		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
-		wantHits        map[string]int      // expected request count per server role
-		wantErr         string              // non-empty: fetch must fail with an error containing this
-		wantWarn        int                 // status code of the expected warning; 0: none
+		name           string
+		mirrors        fetchMirrorSetup
+		snapshot       bool // fetch a snapshot artifact, which requests maven-metadata.xml first
+		parserCount    int  // parsers (pom.xml files) fetching the POM; 1 if zero
+		wantBasicAuth  string
+		wantHits       map[string]int // expected request count per server role
+		wantErr        string         // non-empty: fetch must fail with an error containing this
+		wantWarnStatus []int          // status codes of the expected warnings, one per repository
 	}{
 		{
-			name:            "settings.xml <server> credentials reach the mirror as Basic Auth",
-			mirrorPatterns:  []string{"*"},
-			mirrorWithCreds: true,
-			wantBasicAuth:   "mirror-user",
-			wantHits:        map[string]int{"mirror": 1},
+			name: "settings.xml <server> credentials reach the mirror as Basic Auth",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"*"},
+				withCreds: true,
+			},
+			wantBasicAuth: "mirror-user",
+			wantHits:      map[string]int{"mirror": 1},
 		},
 		{
 			// Example 2 end-to-end: settings.xml rewrites central(repo1) -> mirror(repo2),
 			// then trivy.yaml rewrites repo2 -> chain(repo3), so only repo3 is requested.
-			name:           "cross-source chaining: settings.xml then trivy.yaml routes to the final mirror",
-			mirrorPatterns: []string{"*"},
-			configMirrors:  map[string][]string{"mirror": {"chain"}},
-			wantHits:       map[string]int{"chain": 1},
+			name: "cross-source chaining: settings.xml then trivy.yaml routes to the final mirror",
+			mirrors: fetchMirrorSetup{
+				patterns: []string{"*"},
+				config:   map[string][]string{"mirror": {"chain"}},
+			},
+			wantHits: map[string]int{"chain": 1},
 		},
 		{
 			// trivy.yaml lists two mirrors for repo2; the first 404s, so the fetch falls
 			// back to the second and succeeds there.
-			name:           "trivy.yaml fallback: first mirror 404s, second one serves",
-			mirrorPatterns: []string{"*"},
-			configMirrors:  map[string][]string{"mirror": {"dead", "chain"}},
-			wantHits:       map[string]int{"dead": 1, "chain": 1},
+			name: "trivy.yaml fallback: first mirror 404s, second one serves",
+			mirrors: fetchMirrorSetup{
+				patterns: []string{"*"},
+				config:   map[string][]string{"mirror": {"dead", "chain"}},
+			},
+			wantHits: map[string]int{"dead": 1, "chain": 1},
 		},
 		{
 			// The first mirror returns 429; the fetch skips it and succeeds on the second.
-			name:           "trivy.yaml fallback: first mirror 429s, second one serves",
-			mirrorPatterns: []string{"*"},
-			configMirrors:  map[string][]string{"mirror": {"limited", "chain"}},
-			wantHits:       map[string]int{"limited": 1, "chain": 1},
+			name: "trivy.yaml fallback: first mirror 429s, second one serves",
+			mirrors: fetchMirrorSetup{
+				patterns: []string{"*"},
+				config:   map[string][]string{"mirror": {"limited", "chain"}},
+			},
+			wantHits: map[string]int{"limited": 1, "chain": 1},
 		},
 		{
 			// Every mirror is rate-limited; the 429 is returned rather than "not found".
-			name:           "all mirrors rate-limited: the 429 is returned",
-			mirrorPatterns: []string{"*"},
-			configMirrors:  map[string][]string{"mirror": {"limited"}},
-			wantHits:       map[string]int{"limited": 1},
-			wantErr:        "429",
+			name: "all mirrors rate-limited: the 429 is returned",
+			mirrors: fetchMirrorSetup{
+				patterns: []string{"*"},
+				config:   map[string][]string{"mirror": {"limited"}},
+			},
+			wantHits: map[string]int{"limited": 1},
+			wantErr:  "429",
 		},
 		{
 			// Both parsers hit the mirror, but the warning is logged once.
-			name:            "401 with credentials: warned once per repository across parsers",
-			mirrorPatterns:  []string{"*"},
-			mirrorWithCreds: true,
-			mirrorRole:      "unauthorized",
-			parsers:         2,
-			wantBasicAuth:   "mirror-user",
-			wantHits:        map[string]int{"unauthorized": 2},
-			wantErr:         "not found",
-			wantWarn:        http.StatusUnauthorized,
-		},
-		{
-			name:            "403 with credentials: warned",
-			mirrorPatterns:  []string{"*"},
-			mirrorWithCreds: true,
-			mirrorRole:      "forbidden",
-			wantBasicAuth:   "mirror-user",
-			wantHits:        map[string]int{"forbidden": 1},
-			wantErr:         "not found",
-			wantWarn:        http.StatusForbidden,
-		},
-		{
-			name:           "401 without credentials: not warned",
-			mirrorPatterns: []string{"*"},
-			mirrorRole:     "unauthorized",
-			wantHits:       map[string]int{"unauthorized": 1},
+			name: "401 with credentials: warned once per repository across parsers",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"*"},
+				withCreds: true,
+				role:      "unauthorized",
+			},
+			parserCount:    2,
+			wantBasicAuth:  "mirror-user",
+			wantHits:       map[string]int{"unauthorized": 2},
 			wantErr:        "not found",
+			wantWarnStatus: []int{http.StatusUnauthorized},
+		},
+		{
+			name: "403 with credentials: warned, without the URL query",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"*"},
+				withCreds: true,
+				role:      "forbidden",
+				query:     "?token=secret-token",
+			},
+			wantBasicAuth:  "mirror-user",
+			wantHits:       map[string]int{"forbidden": 1},
+			wantErr:        "not found",
+			wantWarnStatus: []int{http.StatusForbidden},
+		},
+		{
+			// The same status on maven-metadata.xml is warned about too; the POM is then served.
+			name: "401 on maven-metadata.xml with credentials: warned",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"*"},
+				withCreds: true,
+				role:      "metadata-unauthorized",
+			},
+			snapshot:       true,
+			wantBasicAuth:  "mirror-user",
+			wantHits:       map[string]int{"metadata-unauthorized": 2},
+			wantWarnStatus: []int{http.StatusUnauthorized},
+		},
+		{
+			name: "different repositories are warned about separately",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"central"},
+				withCreds: true,
+				role:      "unauthorized",
+				otherRole: "forbidden",
+			},
+			wantBasicAuth:  "mirror-user",
+			wantHits:       map[string]int{"unauthorized": 1, "forbidden": 1},
+			wantErr:        "not found",
+			wantWarnStatus: []int{http.StatusUnauthorized, http.StatusForbidden},
+		},
+		{
+			name: "404 with credentials: not warned",
+			mirrors: fetchMirrorSetup{
+				patterns:  []string{"*"},
+				withCreds: true,
+				role:      "dead",
+			},
+			wantBasicAuth: "mirror-user",
+			wantHits:      map[string]int{"dead": 1},
+			wantErr:       "not found",
+		},
+		{
+			name: "401 without credentials: not warned",
+			mirrors: fetchMirrorSetup{
+				patterns: []string{"*"},
+				role:     "unauthorized",
+			},
+			wantHits: map[string]int{"unauthorized": 1},
+			wantErr:  "not found",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			hits := make(map[string]int)
-			var gotBasicAuth string
+			srv := startFetchServers(t)
+			resolved, repos := tt.mirrors.resolve(t, srv)
 
-			// newServer registers an HTTP server for a role. status 200 serves the POM;
-			// any other status (e.g. 404 or 429) makes the fetch fall back to the next candidate.
-			newServer := func(role string, status int) *httptest.Server {
-				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-					hits[role]++
-					if u, _, ok := r.BasicAuth(); ok {
-						gotBasicAuth = u
-					}
-					if status != http.StatusOK {
-						w.WriteHeader(status)
-						return
-					}
-					_, _ = w.Write([]byte(minimalPOM))
-				}))
-				t.Cleanup(s.Close)
-				return s
-			}
-
-			// repo1: original repository; mirror: settings.xml target; chain/dead:
-			// trivy.yaml targets (dead always 404s); unauthorized/forbidden: 401/403.
-			servers := map[string]*httptest.Server{
-				"repo1":        newServer("repo1", http.StatusOK),
-				"mirror":       newServer("mirror", http.StatusOK),
-				"chain":        newServer("chain", http.StatusOK),
-				"dead":         newServer("dead", http.StatusNotFound),
-				"limited":      newServer("limited", http.StatusTooManyRequests),
-				"unauthorized": newServer("unauthorized", http.StatusUnauthorized),
-				"forbidden":    newServer("forbidden", http.StatusForbidden),
-			}
-
-			// trivy.yaml mirrors: resolve role names to server URLs.
-			configFileMirrors := make(map[string][]string)
-			for srcRole, dstRoles := range tt.configMirrors {
-				for _, dstRole := range dstRoles {
-					src := servers[srcRole].URL
-					configFileMirrors[src] = append(configFileMirrors[src], servers[dstRole].URL)
-				}
-			}
-
-			// settings.xml mirror central -> tt.mirrorRole; creds (if any) come from a <server>.
-			var srvCreds []Server
-			if tt.mirrorWithCreds {
-				srvCreds = []Server{{ID: "m1", Username: "mirror-user", Password: "mirror-pass"}}
-			}
-			resolved := resolveMirrors(
-				[]Mirror{{ID: "m1", URL: servers[cmp.Or(tt.mirrorRole, "mirror")].URL, MirrorOf: strings.Join(tt.mirrorPatterns, ",")}},
-				srvCreds,
-				configFileMirrors,
-			)
-
-			origURL, err := url.Parse(servers["repo1"].URL)
-			require.NoError(t, err)
-			pomRepo := repository{id: "central", url: *origURL, releaseEnabled: true}
-
-			// Reset the package-level warning state between cases.
-			rejectedCredentialsRepos.Clear()
-			t.Cleanup(rejectedCredentialsRepos.Clear)
+			// The package-level warning state is not reset: each case has its own servers.
 			var logs bytes.Buffer
 			logger := slog.New(slog.NewTextHandler(&logs, &slog.HandlerOptions{Level: slog.LevelWarn}))
 
+			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			// One parser per pom.xml.
-			for range cmp.Or(tt.parsers, 1) {
+			for range cmp.Or(tt.parserCount, 1) {
 				p := &Parser{
 					logger:     logger,
 					mirrors:    resolved,
 					httpClient: http.DefaultClient,
 				}
 
-				paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
-				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, repos)
 				if tt.wantErr != "" {
 					require.ErrorContains(t, err, tt.wantErr)
 				} else {
@@ -837,21 +826,136 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 				}
 			}
 
-			for role := range servers {
-				require.Equal(t, tt.wantHits[role], hits[role], "request count for %q", role)
+			for role := range srv.byRole {
+				require.Equal(t, tt.wantHits[role], srv.hits[role], "request count for %q", role)
 			}
-			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
+			require.Equal(t, tt.wantBasicAuth, srv.basicAuth, "basic auth user")
 
-			if tt.wantWarn == 0 {
-				require.Empty(t, logs.String())
-				return
-			}
-			warns := strings.Split(strings.TrimSpace(logs.String()), "\n")
-			require.Len(t, warns, 1)
-			require.Contains(t, warns[0], "rejected the configured credentials")
-			require.Contains(t, warns[0], "id=m1")
-			require.Contains(t, warns[0], fmt.Sprintf("statusCode=%d", tt.wantWarn))
-			require.NotContains(t, warns[0], "mirror-user", "credentials must not be logged")
+			assertRejectedCredentialsWarnings(t, logs.String(), tt.wantWarnStatus)
 		})
 	}
+}
+
+const fetchTestPOM = `<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>example-api</artifactId>
+  <version>1.0.0</version>
+</project>`
+
+// fetchServers are the HTTP servers of Test_fetchPOMFromRemoteRepositories_mirror, by role.
+// Each answers with the status of its role: 200 serves the POM, any other status makes the fetch
+// fall back to the next candidate. repo1 is the original repository, mirror the settings.xml
+// target, chain and dead the trivy.yaml targets (dead 404s), limited 429s, unauthorized and
+// forbidden answer 401 and 403, metadata-unauthorized serves the POM but 401s maven-metadata.xml.
+type fetchServers struct {
+	byRole    map[string]*httptest.Server
+	hits      map[string]int // request count per role
+	basicAuth string         // user of the last request that carried Basic Auth
+}
+
+func startFetchServers(t *testing.T) *fetchServers {
+	t.Helper()
+
+	statuses := map[string]int{
+		"repo1":                 http.StatusOK,
+		"mirror":                http.StatusOK,
+		"chain":                 http.StatusOK,
+		"dead":                  http.StatusNotFound,
+		"limited":               http.StatusTooManyRequests,
+		"unauthorized":          http.StatusUnauthorized,
+		"forbidden":             http.StatusForbidden,
+		"metadata-unauthorized": http.StatusOK,
+	}
+	// A role may answer maven-metadata.xml differently from the POM.
+	metadataStatuses := map[string]int{"metadata-unauthorized": http.StatusUnauthorized}
+
+	srv := &fetchServers{
+		byRole: make(map[string]*httptest.Server, len(statuses)),
+		hits:   make(map[string]int),
+	}
+	for role, status := range statuses {
+		s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			srv.hits[role]++
+			if u, _, ok := r.BasicAuth(); ok {
+				srv.basicAuth = u
+			}
+			respStatus := status
+			if strings.HasSuffix(r.URL.Path, "/maven-metadata.xml") {
+				respStatus = cmp.Or(metadataStatuses[role], status)
+			}
+			if respStatus != http.StatusOK {
+				w.WriteHeader(respStatus)
+				return
+			}
+			_, _ = w.Write([]byte(fetchTestPOM))
+		}))
+		t.Cleanup(s.Close)
+		srv.byRole[role] = s
+	}
+	return srv
+}
+
+// fetchMirrorSetup describes the mirrors of Test_fetchPOMFromRemoteRepositories_mirror.
+// Servers are referenced by role.
+type fetchMirrorSetup struct {
+	patterns  []string            // mirrorOf of the settings.xml mirror m1, which serves the repository "central"
+	role      string              // server that m1 points to; "mirror" if empty
+	query     string              // appended to the URL of m1, e.g. a token
+	otherRole string              // if set, mirror m2 serves a second repository "other" from this server
+	withCreds bool                // m1 and m2 get credentials from a settings.xml <server>
+	config    map[string][]string // trivy.yaml mirrors: source role -> mirror roles
+}
+
+// resolve builds the mirrors and the repositories to fetch from.
+func (m fetchMirrorSetup) resolve(t *testing.T, srv *fetchServers) (mirrors, []repository) {
+	t.Helper()
+
+	configFileMirrors := make(map[string][]string)
+	for srcRole, dstRoles := range m.config {
+		for _, dstRole := range dstRoles {
+			src := srv.byRole[srcRole].URL
+			configFileMirrors[src] = append(configFileMirrors[src], srv.byRole[dstRole].URL)
+		}
+	}
+
+	origURL, err := url.Parse(srv.byRole["repo1"].URL)
+	require.NoError(t, err)
+	central := repository{id: "central", url: *origURL, releaseEnabled: true, snapshotEnabled: true}
+
+	settingsMirrors := []Mirror{{
+		ID:       "m1",
+		URL:      srv.byRole[cmp.Or(m.role, "mirror")].URL + m.query,
+		MirrorOf: strings.Join(m.patterns, ","),
+	}}
+	repos := []repository{central}
+	if m.otherRole != "" {
+		other := central
+		other.id = "other"
+		repos = append(repos, other)
+		settingsMirrors = append(settingsMirrors, Mirror{ID: "m2", URL: srv.byRole[m.otherRole].URL, MirrorOf: "other"})
+	}
+
+	var srvCreds []Server
+	if m.withCreds {
+		srvCreds = []Server{
+			{ID: "m1", Username: "mirror-user", Password: "mirror-pass"},
+			{ID: "m2", Username: "mirror-user", Password: "mirror-pass"},
+		}
+	}
+	return resolveMirrors(settingsMirrors, srvCreds, configFileMirrors), repos
+}
+
+// assertRejectedCredentialsWarnings checks for exactly one warning per status code
+// and that no credentials were logged.
+func assertRejectedCredentialsWarnings(t *testing.T, logs string, wantStatuses []int) {
+	t.Helper()
+	require.Equal(t, len(wantStatuses), strings.Count(logs, "rejected the configured credentials"), logs)
+	for _, status := range wantStatuses {
+		require.Contains(t, logs, fmt.Sprintf("statusCode=%d", status))
+	}
+	require.NotContains(t, logs, "mirror-user", "credentials must not be logged")
+	require.NotContains(t, logs, "mirror-pass", "credentials must not be logged")
+	require.NotContains(t, logs, "secret-token", "the URL query must not be logged")
 }

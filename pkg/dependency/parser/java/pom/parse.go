@@ -33,6 +33,7 @@ import (
 	xhttp "github.com/aquasecurity/trivy/pkg/x/http"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
+	xsync "github.com/aquasecurity/trivy/pkg/x/sync"
 )
 
 type options struct {
@@ -921,23 +922,26 @@ func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths [
 	return req, nil
 }
 
-// rejectedCredentialsRepos holds repositories (by mirrorKey) already warned about.
-// It is package-level because a parser is created per pom.xml.
-var rejectedCredentialsRepos sync.Map
+// rejectedCredentialsRepos holds a Once per repository (by mirrorKey) that rejected the credentials.
+// It is package-level because a parser is created per pom.xml, and lives as long as the process.
+var rejectedCredentialsRepos xsync.Map[string, *sync.Once]
 
-// logFetchStatus logs a response other than 200 and 429. A 401/403 to a request with
-// credentials is warned about once per repository; anonymous ones stay at debug level.
-func (p *Parser) logFetchStatus(repo repository, req *http.Request, statusCode int) {
-	if repo.url.User != nil && (statusCode == http.StatusUnauthorized || statusCode == http.StatusForbidden) {
-		if _, reported := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), struct{}{}); !reported {
-			// Unlike Redacted(), this hides the username too.
-			repoURL := repo.url
-			repoURL.User = nil
-			p.logger.Warn("Maven repository rejected the configured credentials",
-				log.String("id", repo.id), log.String("url", repoURL.String()), log.Int("statusCode", statusCode))
-		}
+// logUnexpectedStatus logs a response other than 200 and 429.
+// A 401/403 to a request with credentials is additionally warned about, once per repository.
+func (p *Parser) logUnexpectedStatus(repo repository, reqURL *url.URL, statusCode int) {
+	p.logger.Debug("Failed to fetch", log.String("url", reqURL.Redacted()), log.Int("statusCode", statusCode))
+
+	if !repo.hasCredentials() || (statusCode != http.StatusUnauthorized && statusCode != http.StatusForbidden) {
+		return
 	}
-	p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", statusCode))
+	once, _ := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), &sync.Once{})
+	once.Do(func() {
+		// Drop the userinfo, and the query and fragment as they may carry a token.
+		repoURL := repo.url
+		repoURL.User, repoURL.RawQuery, repoURL.Fragment, repoURL.ForceQuery = nil, "", "", false
+		p.logger.Warn("Maven repository rejected the configured credentials",
+			log.String("id", repo.id), log.String("url", repoURL.String()), log.Int("statusCode", statusCode))
+	})
 }
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
@@ -966,7 +970,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repo rep
 		return "", newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
-		p.logFetchStatus(repo, req, resp.StatusCode)
+		p.logUnexpectedStatus(repo, req.URL, resp.StatusCode)
 		return "", nil
 	}
 
@@ -1007,7 +1011,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repo reposito
 		return nil, newRateLimitError(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
-		p.logFetchStatus(repo, req, resp.StatusCode)
+		p.logUnexpectedStatus(repo, req.URL, resp.StatusCode)
 		return nil, nil
 	}
 
