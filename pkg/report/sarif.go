@@ -43,11 +43,18 @@ var (
 
 // SarifWriter implements result Writer
 type SarifWriter struct {
-	Output        io.Writer
-	Version       string
-	run           *sarif.Run
-	locationCache map[string][]location
-	Target        string
+	Output  io.Writer
+	Version string
+	run     *sarif.Run
+	// ShowSuppressed controls whether suppressed findings are emitted as
+	// SARIF results with suppression metadata. Production callers set it
+	// from option.ShowSuppressed (see initWriter in writer.go), so the
+	// default --format sarif output matches --format json and --format
+	// table — suppressed findings are only emitted when the user passes
+	// --show-suppressed.
+	ShowSuppressed bool
+	locationCache  map[string][]location
+	Target         string
 }
 
 type sarifData struct {
@@ -105,6 +112,123 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) *sarif.Result {
 	return result
 }
 
+// vulnSarifData builds the sarifData for a single vulnerability.
+// Shared by the active-finding and suppressed-finding emission paths so the
+// two cannot drift (e.g. help text or CVSS formatting changes land in one
+// place).
+func (sw *SarifWriter) vulnSarifData(vuln types.DetectedVulnerability, res types.Result, target string, ruleIndexes map[string]int) *sarifData {
+	fullDescription := vuln.Description
+	if fullDescription == "" {
+		fullDescription = vuln.Title
+	}
+	path := target
+	if vuln.PkgPath != "" {
+		path = ToPathUri(vuln.PkgPath, res.Class)
+	}
+	cvssData, cvssScore := toCVSSData(vuln)
+	return &sarifData{
+		title:            "vulnerability",
+		vulnerabilityId:  vuln.VulnerabilityID,
+		severity:         vuln.Severity,
+		cvssScore:        cvssScore,
+		cvssData:         cvssData,
+		url:              toUri(vuln.PrimaryURL),
+		resourceClass:    res.Class,
+		artifactLocation: toUri(path),
+		locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
+		locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
+		resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
+		shortDescription: vuln.Title,
+		fullDescription:  fullDescription,
+		helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
+			vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
+		helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
+			vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
+		message: fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
+			vuln.PkgName, vuln.InstalledVersion, vuln.VulnerabilityID, vuln.Severity, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL),
+	}
+}
+
+func misconfSarifData(misconf types.DetectedMisconfiguration, res types.Result, ruleIndexes map[string]int) *sarifData {
+	locationURI := clearURI(res.Target)
+	return &sarifData{
+		title:            "misconfiguration",
+		vulnerabilityId:  misconf.ID,
+		severity:         misconf.Severity,
+		cvssScore:        severityToScore(misconf.Severity),
+		url:              toUri(misconf.PrimaryURL),
+		resourceClass:    res.Class,
+		artifactLocation: toUri(locationURI),
+		locationMessage:  locationURI,
+		locations: []location{
+			{
+				startLine: misconf.CauseMetadata.StartLine,
+				endLine:   misconf.CauseMetadata.EndLine,
+			},
+		},
+		resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
+		shortDescription: misconf.Title,
+		fullDescription:  misconf.Description,
+		helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
+			misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+		helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
+			misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
+		message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
+			locationURI, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
+	}
+}
+
+func secretSarifData(secret types.DetectedSecret, res types.Result, target string, ruleIndexes map[string]int) *sarifData {
+	return &sarifData{
+		title:            "secret",
+		vulnerabilityId:  secret.RuleID,
+		severity:         secret.Severity,
+		cvssScore:        severityToScore(secret.Severity),
+		url:              toUri(builtinRulesUrl),
+		resourceClass:    res.Class,
+		artifactLocation: toUri(target),
+		locationMessage:  target,
+		locations: []location{
+			{
+				startLine: secret.StartLine,
+				endLine:   secret.EndLine,
+			},
+		},
+		resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
+		shortDescription: secret.Title,
+		fullDescription:  secret.Match,
+		helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
+			secret.Title, secret.Severity, secret.Match),
+		helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
+			secret.Title, secret.Severity, secret.Match),
+		message: fmt.Sprintf("Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v",
+			res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
+	}
+}
+
+func licenseSarifData(license types.DetectedLicense, res types.Result, target string, ruleIndexes map[string]int) *sarifData {
+	id := fmt.Sprintf("%s:%s", license.PkgName, license.Name)
+	desc := fmt.Sprintf("%s in %s", license.Name, license.PkgName)
+	return &sarifData{
+		title:            "license",
+		vulnerabilityId:  id,
+		severity:         license.Severity,
+		cvssScore:        severityToScore(license.Severity),
+		url:              toUri(license.Link),
+		resourceClass:    res.Class,
+		artifactLocation: toUri(target),
+		resultIndex:      getRuleIndex(id, ruleIndexes),
+		shortDescription: desc,
+		fullDescription:  desc,
+		helpText: fmt.Sprintf("License %s\nClassification: %s\nPkgName: %s\nPath: %s",
+			license.Name, license.Category, license.PkgName, license.FilePath),
+		helpMarkdown: fmt.Sprintf("**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|",
+			license.Name, license.PkgName, license.Category, license.FilePath),
+		message: fmt.Sprintf("Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s",
+			res.Target, license.Name, license.PkgName, license.Category, license.FilePath),
+	}
+}
+
 func getRuleIndex(id string, indexes map[string]int) int {
 	i, ok := indexes[id]
 	if ok {
@@ -149,113 +273,41 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 		target := ToPathUri(res.Target, res.Class)
 
 		for _, vuln := range res.Vulnerabilities {
-			fullDescription := vuln.Description
-			if fullDescription == "" {
-				fullDescription = vuln.Title
-			}
-			path := target
-			if vuln.PkgPath != "" {
-				path = ToPathUri(vuln.PkgPath, res.Class)
-			}
-			cvssData, cvssScore := toCVSSData(vuln)
-			sw.addSarifResult(&sarifData{
-				title:            "vulnerability",
-				vulnerabilityId:  vuln.VulnerabilityID,
-				severity:         vuln.Severity,
-				cvssScore:        cvssScore,
-				cvssData:         cvssData,
-				url:              toUri(vuln.PrimaryURL),
-				resourceClass:    res.Class,
-				artifactLocation: toUri(path),
-				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
-				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
-				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
-				shortDescription: vuln.Title,
-				fullDescription:  fullDescription,
-				helpText: fmt.Sprintf("Vulnerability %v\nSeverity: %v\nPackage: %v\nFixed Version: %v\nLink: [%v](%v)\n%v",
-					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
-				helpMarkdown: fmt.Sprintf("**Vulnerability %v**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|%v|%v|%v|[%v](%v)|\n\n%v",
-					vuln.VulnerabilityID, vuln.Severity, vuln.PkgName, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL, vuln.Description),
-				message: fmt.Sprintf("Package: %v\nInstalled Version: %v\nVulnerability %v\nSeverity: %v\nFixed Version: %v\nLink: [%v](%v)",
-					vuln.PkgName, vuln.InstalledVersion, vuln.VulnerabilityID, vuln.Severity, vuln.FixedVersion, vuln.VulnerabilityID, vuln.PrimaryURL),
-			})
+			sw.addSarifResult(sw.vulnSarifData(vuln, res, target, ruleIndexes))
 		}
 		for _, misconf := range res.Misconfigurations {
-			locationURI := clearURI(res.Target)
-			sw.addSarifResult(&sarifData{
-				title:            "misconfiguration",
-				vulnerabilityId:  misconf.ID,
-				severity:         misconf.Severity,
-				cvssScore:        severityToScore(misconf.Severity),
-				url:              toUri(misconf.PrimaryURL),
-				resourceClass:    res.Class,
-				artifactLocation: toUri(locationURI),
-				locationMessage:  locationURI,
-				locations: []location{
-					{
-						startLine: misconf.CauseMetadata.StartLine,
-						endLine:   misconf.CauseMetadata.EndLine,
-					},
-				},
-				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
-				shortDescription: misconf.Title,
-				fullDescription:  misconf.Description,
-				helpText: fmt.Sprintf("Misconfiguration %v\nType: %s\nSeverity: %v\nCheck: %v\nMessage: %v\nLink: [%v](%v)\n%s",
-					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
-				helpMarkdown: fmt.Sprintf("**Misconfiguration %v**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|%v|%v|%v|%s|[%v](%v)|\n\n%v",
-					misconf.ID, misconf.Type, misconf.Severity, misconf.Title, misconf.Message, misconf.ID, misconf.PrimaryURL, misconf.Description),
-				message: fmt.Sprintf("Artifact: %v\nType: %v\nVulnerability %v\nSeverity: %v\nMessage: %v\nLink: [%v](%v)",
-					locationURI, res.Type, misconf.ID, misconf.Severity, misconf.Message, misconf.ID, misconf.PrimaryURL),
-			})
+			sw.addSarifResult(misconfSarifData(misconf, res, ruleIndexes))
 		}
 		for _, secret := range res.Secrets {
-			sw.addSarifResult(&sarifData{
-				title:            "secret",
-				vulnerabilityId:  secret.RuleID,
-				severity:         secret.Severity,
-				cvssScore:        severityToScore(secret.Severity),
-				url:              toUri(builtinRulesUrl),
-				resourceClass:    res.Class,
-				artifactLocation: toUri(target),
-				locationMessage:  target,
-				locations: []location{
-					{
-						startLine: secret.StartLine,
-						endLine:   secret.EndLine,
-					},
-				},
-				resultIndex:      getRuleIndex(secret.RuleID, ruleIndexes),
-				shortDescription: secret.Title,
-				fullDescription:  secret.Match,
-				helpText: fmt.Sprintf("Secret %v\nSeverity: %v\nMatch: %s",
-					secret.Title, secret.Severity, secret.Match),
-				helpMarkdown: fmt.Sprintf("**Secret %v**\n| Severity | Match |\n| --- | --- |\n|%v|%v|",
-					secret.Title, secret.Severity, secret.Match),
-				message: fmt.Sprintf("Artifact: %v\nType: %v\nSecret %v\nSeverity: %v\nMatch: %v",
-					res.Target, res.Type, secret.Title, secret.Severity, secret.Match),
-			})
+			sw.addSarifResult(secretSarifData(secret, res, target, ruleIndexes))
 		}
 		for _, license := range res.Licenses {
-			id := fmt.Sprintf("%s:%s", license.PkgName, license.Name)
-			desc := fmt.Sprintf("%s in %s", license.Name, license.PkgName)
-			sw.addSarifResult(&sarifData{
-				title:            "license",
-				vulnerabilityId:  id,
-				severity:         license.Severity,
-				cvssScore:        severityToScore(license.Severity),
-				url:              toUri(license.Link),
-				resourceClass:    res.Class,
-				artifactLocation: toUri(target),
-				resultIndex:      getRuleIndex(id, ruleIndexes),
-				shortDescription: desc,
-				fullDescription:  desc,
-				helpText: fmt.Sprintf("License %s\nClassification: %s\nPkgName: %s\nPath: %s",
-					license.Name, license.Category, license.PkgName, license.FilePath),
-				helpMarkdown: fmt.Sprintf("**License %s**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|%s|%s|%s|",
-					license.Name, license.PkgName, license.Category, license.FilePath),
-				message: fmt.Sprintf("Artifact: %s\nLicense %s\nPkgName: %s\n Classification: %s\n Path: %s",
-					res.Target, license.Name, license.PkgName, license.Category, license.FilePath),
-			})
+			sw.addSarifResult(licenseSarifData(license, res, target, ruleIndexes))
+		}
+		// Emit suppressed findings as SARIF results with suppression metadata
+		// when --show-suppressed is set; otherwise skip them to match the
+		// default behavior of the table and json writers.
+		if sw.ShowSuppressed {
+			for _, m := range res.ModifiedFindings {
+				if m.Status == types.FindingStatusAffected {
+					continue
+				}
+
+				var data *sarifData
+				switch f := m.Finding.(type) {
+				case types.DetectedVulnerability:
+					data = sw.vulnSarifData(f, res, target, ruleIndexes)
+				case types.DetectedMisconfiguration:
+					data = misconfSarifData(f, res, ruleIndexes)
+				case types.DetectedSecret:
+					data = secretSarifData(f, res, target, ruleIndexes)
+				case types.DetectedLicense:
+					data = licenseSarifData(f, res, target, ruleIndexes)
+				default:
+					continue
+				}
+				sw.addSarifResult(data).AddSuppression(toSarifSuppression(m))
+			}
 		}
 
 	}
@@ -331,6 +383,63 @@ func toSarifErrorLevel(severity string) string {
 	default:
 		return sarifNone
 	}
+}
+
+// ToSarifSuppressionStatus maps a Trivy FindingStatus to a SARIF suppression
+// status (SARIF 2.1.0 §3.34.3), one of "accepted" | "underReview" | "rejected".
+// SARIF's enum is narrower than Trivy's FindingStatus and today every
+// FindingStatus that reaches a SARIF suppression collapses onto "accepted";
+// the unmodified Trivy value is preserved in the Suppression's
+// "originalStatus" property for consumers that need the finer-grained signal.
+//
+// Only the three statuses below actually enter result.ModifiedFindings in
+// production:
+//
+//   - FindingStatusIgnored     -> "accepted": the user explicitly suppressed
+//     the finding via .trivyignore, policy, Rego, or --ignored-licenses.
+//   - FindingStatusNotAffected -> "accepted": a VEX document (OpenVEX, CSAF
+//     or CycloneDX VEX) asserts the artifact is not affected; the VEX
+//     filter moves the finding into ModifiedFindings on this signal.
+//   - FindingStatusFixed       -> "accepted": a VEX document asserts the
+//     vulnerability has been fixed in this artifact. SARIF has no "fixed"
+//     state, and "accepted" is the least-wrong spec value: consumers (e.g.
+//     GitHub Code Scanning) close the alert, which is the right outcome.
+//     The original "fixed" semantic survives via "originalStatus".
+//
+// Trivy's other FindingStatus values (affected, under_investigation, unknown)
+// keep the finding in result.Vulnerabilities and never reach a suppression;
+// an "affected" finding, for example, becomes a normal SARIF result with no
+// suppressions array. If an unmapped status does somehow arrive (e.g. a
+// future VEX filter admits "under_investigation", or a plugin populates
+// ModifiedFindings), this function returns an empty string so the caller
+// omits the "status" property entirely — spec-legal per §3.34.4 — and logs
+// a warning so the gap is noticed.
+func ToSarifSuppressionStatus(status types.FindingStatus) string {
+	switch status {
+	case types.FindingStatusIgnored,
+		types.FindingStatusNotAffected,
+		types.FindingStatusFixed:
+		return "accepted"
+	default:
+		log.WithPrefix("sarif").Warn("Unmapped Trivy FindingStatus; omitting SARIF suppression status",
+			log.String("status", string(status)))
+		return ""
+	}
+}
+
+func toSarifSuppression(m types.ModifiedFinding) *sarif.Suppression {
+	s := sarif.NewSuppression("external")
+	if status := ToSarifSuppressionStatus(m.Status); status != "" {
+		s.WithStatus(status)
+	}
+	if m.Statement != "" {
+		s.WithJustifcation(m.Statement)
+	}
+	s.Properties = sarif.Properties{
+		"source":         m.Source,
+		"originalStatus": string(m.Status),
+	}
+	return s
 }
 
 func ToPathUri(input string, resultClass types.ResultClass) string {

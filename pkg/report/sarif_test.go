@@ -553,6 +553,714 @@ func TestReportWriter_Sarif(t *testing.T) {
 			},
 		},
 		{
+			name:   "report with suppressed vulnerability",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "library/test",
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								Name:    "foo",
+								Version: "1.2.3",
+								Locations: []ftypes.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+							},
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Not exploitable in our environment",
+								Source:    ".trivyignore",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2020-0002",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0002",
+									SeveritySource:   "redhat",
+									Vulnerability: dbTypes.Vulnerability{
+										Title:       "Test vuln",
+										Description: "Test description",
+										Severity:    "MEDIUM",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "CVE-2020-0002",
+										Name:             new("OsPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("Test vuln")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("Test description")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "warning",
+										},
+										HelpURI: new("https://avd.aquasec.com/nvd/cve-2020-0002"),
+										Properties: map[string]any{
+											"tags": []any{
+												"vulnerability",
+												"security",
+												"MEDIUM",
+											},
+											"precision":         "very-high",
+											"security-severity": "5.5",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Vulnerability CVE-2020-0002\nSeverity: MEDIUM\nPackage: foo\nFixed Version: 1.2.4\nLink: [CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)\nTest description"),
+											Markdown: new("**Vulnerability CVE-2020-0002**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|MEDIUM|foo|1.2.4|[CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)|\n\nTest description"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("CVE-2020-0002"),
+								RuleIndex: new(uint(0)),
+								Level:     new("warning"),
+								Message:   sarif.Message{Text: new("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0002\nSeverity: MEDIUM\nFixed Version: 1.2.4\nLink: [CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("library/test: foo@1.2.3")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("library/test"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(5),
+												EndLine:     new(10),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+								Suppressions: []*sarif.Suppression{
+									{
+										Kind:          "external",
+										Status:        new("accepted"),
+										Justification: new("Not exploitable in our environment"),
+										PropertyBag: sarif.PropertyBag{
+											Properties: map[string]any{
+												"source":         ".trivyignore",
+												"originalStatus": "ignored",
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "report with suppressed misconfiguration",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "library/test 1",
+						Class:  types.ClassConfig,
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeMisconfiguration,
+								Status:    types.FindingStatusNotAffected,
+								Statement: "Not applicable to our configuration",
+								Source:    "vex.json",
+								Finding: types.DetectedMisconfiguration{
+									Type:       "Kubernetes Security Check",
+									ID:         "KSV003",
+									Title:      "Test misconfig",
+									Message:    "Test message",
+									Severity:   "LOW",
+									PrimaryURL: "https://avd.aquasec.com/appshield/ksv003",
+									Status:     types.MisconfStatusFailure,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "KSV003",
+										Name:             new("Misconfiguration"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("Test misconfig")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "note",
+										},
+										HelpURI: new("https://avd.aquasec.com/appshield/ksv003"),
+										Properties: map[string]any{
+											"tags": []any{
+												"misconfiguration",
+												"security",
+												"LOW",
+											},
+											"precision":         "very-high",
+											"security-severity": "2.0",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Misconfiguration KSV003\nType: Kubernetes Security Check\nSeverity: LOW\nCheck: Test misconfig\nMessage: Test message\nLink: [KSV003](https://avd.aquasec.com/appshield/ksv003)\n"),
+											Markdown: new("**Misconfiguration KSV003**\n| Type | Severity | Check | Message | Link |\n| --- | --- | --- | --- | --- |\n|Kubernetes Security Check|LOW|Test misconfig|Test message|[KSV003](https://avd.aquasec.com/appshield/ksv003)|\n\n"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("KSV003"),
+								RuleIndex: new(uint(0)),
+								Level:     new("note"),
+								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nVulnerability KSV003\nSeverity: LOW\nMessage: Test message\nLink: [KSV003](https://avd.aquasec.com/appshield/ksv003)")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("library/test 1")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("library/test%201"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(1),
+												EndLine:     new(1),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+								Suppressions: []*sarif.Suppression{
+									{
+										Kind:          "external",
+										Status:        new("accepted"),
+										Justification: new("Not applicable to our configuration"),
+										PropertyBag: sarif.PropertyBag{
+											Properties: map[string]any{
+												"source":         "vex.json",
+												"originalStatus": "not_affected",
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "report with suppressed secret",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "library/test 1",
+						Class:  types.ClassSecret,
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeSecret,
+								Status:    types.FindingStatusFixed,
+								Statement: "Secret has been rotated",
+								Source:    "vex.json",
+								Finding: types.DetectedSecret{
+									RuleID:    "aws-secret-access-key",
+									Category:  "AWS",
+									Severity:  "CRITICAL",
+									Title:     "AWS Secret Access Key",
+									StartLine: 1,
+									EndLine:   1,
+									Match:     "'AWS_secret_KEY'=\"****************************************\"",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "aws-secret-access-key",
+										Name:             new("Secret"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("AWS Secret Access Key")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("'AWS_secret_KEY'=\"****************************************\"")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "error",
+										},
+										HelpURI: new("https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go"),
+										Properties: map[string]any{
+											"tags": []any{
+												"secret",
+												"security",
+												"CRITICAL",
+											},
+											"precision":         "very-high",
+											"security-severity": "9.5",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Secret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\""),
+											Markdown: new("**Secret AWS Secret Access Key**\n| Severity | Match |\n| --- | --- |\n|CRITICAL|'AWS_secret_KEY'=\"****************************************\"|"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("aws-secret-access-key"),
+								RuleIndex: new(uint(0)),
+								Level:     new("error"),
+								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nSecret AWS Secret Access Key\nSeverity: CRITICAL\nMatch: 'AWS_secret_KEY'=\"****************************************\"")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("library/test 1")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("library/test%201"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(1),
+												EndLine:     new(1),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+								Suppressions: []*sarif.Suppression{
+									{
+										Kind:          "external",
+										Status:        new("accepted"),
+										Justification: new("Secret has been rotated"),
+										PropertyBag: sarif.PropertyBag{
+											Properties: map[string]any{
+												"source":         "vex.json",
+												"originalStatus": "fixed",
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "report with suppressed license",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "OS Packages",
+						Class:  "license",
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeLicense,
+								Status:    types.FindingStatusIgnored,
+								Statement: "License approved by legal team",
+								Source:    ".trivyignore",
+								Finding: types.DetectedLicense{
+									Severity:   "HIGH",
+									Category:   "restricted",
+									PkgName:    "alpine-base",
+									FilePath:   "",
+									Name:       "GPL-3.0",
+									Confidence: 1,
+									Link:       "",
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:                   "alpine-base:GPL-3.0",
+										Name:                 new("License"),
+										ShortDescription:     sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										FullDescription:      sarif.NewMultiformatMessageString("GPL-3.0 in alpine-base"),
+										DefaultConfiguration: sarif.NewReportingConfiguration().WithLevel("error"),
+										Help: sarif.NewMultiformatMessageString("License GPL-3.0\nClassification: restricted\nPkgName: alpine-base\nPath: ").
+											WithMarkdown("**License GPL-3.0**\n| PkgName | Classification | Path |\n| --- | --- | --- |\n|alpine-base|restricted||"),
+										Properties: map[string]any{
+											"tags": []any{
+												"license",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "8.0",
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("alpine-base:GPL-3.0"),
+								RuleIndex: new(uint(0)),
+								Level:     new("error"),
+								Message:   sarif.Message{Text: new("Artifact: OS Packages\nLicense GPL-3.0\nPkgName: alpine-base\n Classification: restricted\n Path: ")},
+								Locations: []*sarif.Location{
+									{
+										Message: sarif.NewTextMessage(""),
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("OS%20Packages"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(1),
+												EndLine:     new(1),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+								Suppressions: []*sarif.Suppression{
+									{
+										Kind:          "external",
+										Status:        new("accepted"),
+										Justification: new("License approved by legal team"),
+										PropertyBag: sarif.PropertyBag{
+											Properties: map[string]any{
+												"source":         ".trivyignore",
+												"originalStatus": "ignored",
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "report with mixed active and suppressed findings",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "library/test",
+						Class:  types.ClassOSPkg,
+						Packages: []ftypes.Package{
+							{
+								Name:    "foo",
+								Version: "1.2.3",
+								Locations: []ftypes.Location{
+									{
+										StartLine: 5,
+										EndLine:   10,
+									},
+								},
+							},
+						},
+						Vulnerabilities: []types.DetectedVulnerability{
+							{
+								VulnerabilityID:  "CVE-2020-0001",
+								PkgName:          "foo",
+								InstalledVersion: "1.2.3",
+								FixedVersion:     "3.4.5",
+								PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0001",
+								Vulnerability: dbTypes.Vulnerability{
+									Title:       "Active vuln",
+									Description: "Active description",
+									Severity:    "HIGH",
+								},
+							},
+						},
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:      types.FindingTypeVulnerability,
+								Status:    types.FindingStatusIgnored,
+								Statement: "Ignored via trivyignore",
+								Source:    ".trivyignore",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2020-0002",
+									PkgName:          "foo",
+									InstalledVersion: "1.2.3",
+									FixedVersion:     "1.2.4",
+									PrimaryURL:       "https://avd.aquasec.com/nvd/cve-2020-0002",
+									Vulnerability: dbTypes.Vulnerability{
+										Title:       "Suppressed vuln",
+										Description: "Suppressed description",
+										Severity:    "LOW",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules: []*sarif.ReportingDescriptor{
+									{
+										ID:               "CVE-2020-0001",
+										Name:             new("OsPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("Active vuln")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("Active description")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "error",
+										},
+										HelpURI: new("https://avd.aquasec.com/nvd/cve-2020-0001"),
+										Properties: map[string]any{
+											"tags": []any{
+												"vulnerability",
+												"security",
+												"HIGH",
+											},
+											"precision":         "very-high",
+											"security-severity": "8.0",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Vulnerability CVE-2020-0001\nSeverity: HIGH\nPackage: foo\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)\nActive description"),
+											Markdown: new("**Vulnerability CVE-2020-0001**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|HIGH|foo|3.4.5|[CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)|\n\nActive description"),
+										},
+									},
+									{
+										ID:               "CVE-2020-0002",
+										Name:             new("OsPackageVulnerability"),
+										ShortDescription: &sarif.MultiformatMessageString{Text: new("Suppressed vuln")},
+										FullDescription:  &sarif.MultiformatMessageString{Text: new("Suppressed description")},
+										DefaultConfiguration: &sarif.ReportingConfiguration{
+											Level: "note",
+										},
+										HelpURI: new("https://avd.aquasec.com/nvd/cve-2020-0002"),
+										Properties: map[string]any{
+											"tags": []any{
+												"vulnerability",
+												"security",
+												"LOW",
+											},
+											"precision":         "very-high",
+											"security-severity": "2.0",
+										},
+										Help: &sarif.MultiformatMessageString{
+											Text:     new("Vulnerability CVE-2020-0002\nSeverity: LOW\nPackage: foo\nFixed Version: 1.2.4\nLink: [CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)\nSuppressed description"),
+											Markdown: new("**Vulnerability CVE-2020-0002**\n| Severity | Package | Fixed Version | Link |\n| --- | --- | --- | --- |\n|LOW|foo|1.2.4|[CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)|\n\nSuppressed description"),
+										},
+									},
+								},
+							},
+						},
+						Results: []*sarif.Result{
+							{
+								RuleID:    new("CVE-2020-0001"),
+								RuleIndex: new(uint(0)),
+								Level:     new("error"),
+								Message:   sarif.Message{Text: new("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0001\nSeverity: HIGH\nFixed Version: 3.4.5\nLink: [CVE-2020-0001](https://avd.aquasec.com/nvd/cve-2020-0001)")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("library/test: foo@1.2.3")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("library/test"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(5),
+												EndLine:     new(10),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+							},
+							{
+								RuleID:    new("CVE-2020-0002"),
+								RuleIndex: new(uint(1)),
+								Level:     new("note"),
+								Message:   sarif.Message{Text: new("Package: foo\nInstalled Version: 1.2.3\nVulnerability CVE-2020-0002\nSeverity: LOW\nFixed Version: 1.2.4\nLink: [CVE-2020-0002](https://avd.aquasec.com/nvd/cve-2020-0002)")},
+								Locations: []*sarif.Location{
+									{
+										Message: &sarif.Message{Text: new("library/test: foo@1.2.3")},
+										PhysicalLocation: &sarif.PhysicalLocation{
+											ArtifactLocation: &sarif.ArtifactLocation{
+												URI:       new("library/test"),
+												URIBaseId: new("ROOTPATH"),
+											},
+											Region: &sarif.Region{
+												StartLine:   new(5),
+												EndLine:     new(10),
+												StartColumn: new(1),
+												EndColumn:   new(1),
+											},
+										},
+									},
+								},
+								Suppressions: []*sarif.Suppression{
+									{
+										Kind:          "external",
+										Status:        new("accepted"),
+										Justification: new("Ignored via trivyignore"),
+										PropertyBag: sarif.PropertyBag{
+											Properties: map[string]any{
+												"source":         ".trivyignore",
+												"originalStatus": "ignored",
+											},
+										},
+									},
+								},
+							},
+						},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:   "affected status is not included",
+			target: "/tmp/scan",
+			input: types.Report{
+				Results: types.Results{
+					{
+						Target: "library/test",
+						Class:  types.ClassOSPkg,
+						ModifiedFindings: []types.ModifiedFinding{
+							{
+								Type:   types.FindingTypeVulnerability,
+								Status: types.FindingStatusAffected,
+								Source: "vex.json",
+								Finding: types.DetectedVulnerability{
+									VulnerabilityID:  "CVE-2020-9999",
+									PkgName:          "bar",
+									InstalledVersion: "2.0.0",
+									Vulnerability: dbTypes.Vulnerability{
+										Title:    "Affected vuln",
+										Severity: "HIGH",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &sarif.Report{
+				Version: "2.1.0",
+				Schema:  "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/main/sarif-2.1/schema/sarif-schema-2.1.0.json",
+				Runs: []*sarif.Run{
+					{
+						Tool: sarif.Tool{
+							Driver: &sarif.ToolComponent{
+								FullName:       new("Trivy Vulnerability Scanner"),
+								Name:           "Trivy",
+								Version:        new(""),
+								InformationURI: new("https://github.com/aquasecurity/trivy"),
+								Rules:          []*sarif.ReportingDescriptor{},
+							},
+						},
+						Results:    []*sarif.Result{},
+						ColumnKind: "utf16CodeUnits",
+						OriginalUriBaseIDs: map[string]*sarif.ArtifactLocation{
+							"ROOTPATH": {
+								URI: new(tmpScanURI),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "ref to github",
 			input: types.Report{
 				Results: types.Results{
@@ -737,8 +1445,9 @@ func TestReportWriter_Sarif(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			sarifWritten := bytes.NewBuffer(nil)
 			w := report.SarifWriter{
-				Output: sarifWritten,
-				Target: tt.target,
+				Output:         sarifWritten,
+				Target:         tt.target,
+				ShowSuppressed: true,
 			}
 			err := w.Write(t.Context(), tt.input)
 			require.NoError(t, err)
@@ -973,6 +1682,106 @@ func TestMakePropertiesMarshal(t *testing.T) {
 			err = json.Compact(&expectedJSON, []byte(tt.expected))
 			require.NoError(t, err)
 			assert.JSONEq(t, expectedJSON.String(), string(actualJSON))
+		})
+	}
+}
+
+func TestReportWriter_Sarif_ShowSuppressedFalse(t *testing.T) {
+	input := types.Report{
+		Results: types.Results{
+			{
+				Target: "library/test",
+				Class:  types.ClassOSPkg,
+				Packages: []ftypes.Package{
+					{
+						Name:    "foo",
+						Version: "1.2.3",
+					},
+				},
+				ModifiedFindings: []types.ModifiedFinding{
+					{
+						Type:      types.FindingTypeVulnerability,
+						Status:    types.FindingStatusIgnored,
+						Statement: "Not exploitable",
+						Source:    ".trivyignore",
+						Finding: types.DetectedVulnerability{
+							VulnerabilityID:  "CVE-2020-0001",
+							PkgName:          "foo",
+							InstalledVersion: "1.2.3",
+							Vulnerability: dbTypes.Vulnerability{
+								Title:    "Test",
+								Severity: "HIGH",
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	sarifWritten := bytes.NewBuffer(nil)
+	w := report.SarifWriter{
+		Output:         sarifWritten,
+		ShowSuppressed: false,
+	}
+	err := w.Write(t.Context(), input)
+	require.NoError(t, err)
+
+	result := &sarif.Report{}
+	err = json.Unmarshal(sarifWritten.Bytes(), result)
+	require.NoError(t, err)
+
+	// When ShowSuppressed is false, ModifiedFindings should not produce any results
+	require.Len(t, result.Runs, 1)
+	assert.Empty(t, result.Runs[0].Results)
+	assert.Empty(t, result.Runs[0].Tool.Driver.Rules)
+}
+
+func TestToSarifSuppressionStatus(t *testing.T) {
+	tests := []struct {
+		name   string
+		status types.FindingStatus
+		want   string
+	}{
+		{
+			name:   "ignored maps to accepted",
+			status: types.FindingStatusIgnored,
+			want:   "accepted",
+		},
+		{
+			name:   "not_affected maps to accepted",
+			status: types.FindingStatusNotAffected,
+			want:   "accepted",
+		},
+		{
+			name:   "fixed maps to accepted",
+			status: types.FindingStatusFixed,
+			want:   "accepted",
+		},
+		{
+			// under_investigation is not produced into ModifiedFindings by any
+			// current VEX filter, so it falls through to the empty default
+			// (which the caller treats as "omit WithStatus").
+			name:   "under_investigation falls through to empty",
+			status: types.FindingStatusUnderInvestigation,
+			want:   "",
+		},
+		{
+			name:   "unknown falls through to empty",
+			status: types.FindingStatusUnknown,
+			want:   "",
+		},
+		{
+			name:   "unmapped status returns empty so WithStatus is skipped",
+			status: types.FindingStatus("made_up_future_status"),
+			want:   "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := report.ToSarifSuppressionStatus(tt.status)
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

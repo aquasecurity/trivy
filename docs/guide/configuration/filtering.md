@@ -242,6 +242,26 @@ To show the suppressed results, use the `--show-suppressed` flag. It does not ap
 !!! note
     It's exported as `ExperimentalModifiedFindings` in the JSON output.
 
+!!! note "SARIF output"
+    `--format sarif` honors `--show-suppressed` the same way as the table
+    and JSON writers. Pass the flag to include suppressed findings; leave
+    it off to get the same output you get today.
+
+    When they are included, SARIF carries them as native
+    [suppression metadata][sarif-suppression] on the result, so GitHub Code
+    Scanning (and other SARIF consumers) can tell the finding apart from
+    a fresh alert instead of re-raising it on every scan.
+
+    Three Trivy statuses end up as SARIF suppressions: `ignored` (from
+    `.trivyignore`, policy, or Rego), `not_affected` and `fixed` (both from
+    VEX). All three map to SARIF `status: "accepted"` — SARIF's enum is
+    narrower than Trivy's, so the exact Trivy status is kept on the
+    suppression's `originalStatus` property for consumers that need to
+    distinguish the three. VEX `affected` and `under_investigation` are not
+    suppressions in Trivy's model and appear as normal SARIF results.
+
+[sarif-suppression]: https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317852
+
 ```bash
 $ trivy image --vex debian11.csaf.vex --ignorefile .trivyignore.yaml --show-suppressed debian:11
 ...
