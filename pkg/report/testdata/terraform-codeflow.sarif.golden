@@ -1,0 +1,40 @@
+[
+  {
+    "threadFlows": [
+      {
+        "locations": [
+          {
+            "nestingLevel": 0,
+            "location": {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "service/main.tf", "uriBaseId": "ROOTPATH"},
+                "region": {"startLine": 1, "endLine": 18, "startColumn": 1, "endColumn": 1}
+              },
+              "message": {"text": "service/main.tf (module.rds_provisioner[0])"}
+            }
+          },
+          {
+            "nestingLevel": 1,
+            "location": {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "module/lambda.tf", "uriBaseId": "ROOTPATH"},
+                "region": {"startLine": 72, "endLine": 81, "startColumn": 1, "endColumn": 1}
+              },
+              "message": {"text": "module/lambda.tf (aws_security_group_rule.egress_https_anywhere)"}
+            }
+          },
+          {
+            "nestingLevel": 2,
+            "location": {
+              "physicalLocation": {
+                "artifactLocation": {"uri": "module/lambda.tf", "uriBaseId": "ROOTPATH"},
+                "region": {"startLine": 80, "endLine": 80, "startColumn": 1, "endColumn": 1}
+              },
+              "message": {"text": "module/lambda.tf"}
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
