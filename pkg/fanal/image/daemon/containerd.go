@@ -110,8 +110,10 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 		return nil, cleanup, xerrors.Errorf("failed to initialize a containerd client: %w", err)
 	}
 
-	// Assign the cleanup function before the temporary file exists so that every
-	// error path below closes the client. The temp-file close is nil-safe.
+	// Assign the cleanup function before the temporary file exists so that every error
+	// path below can undo what has been created so far. NewContainerImage only keeps the
+	// returned cleanup function when it returns no error, so each error path has to call
+	// it here. The temp-file close is nil-safe.
 	var f *os.File
 	cleanup = func() {
 		_ = c.Close()
@@ -131,12 +133,12 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	imgs, err := c.ListImages(ctx, searchFilters...)
 	if err != nil {
-		_ = c.Close()
+		cleanup()
 		return nil, cleanup, xerrors.Errorf("failed to list images from containerd client: %w", err)
 	}
 
 	if len(imgs) < 1 {
-		_ = c.Close()
+		cleanup()
 		return nil, cleanup, xerrors.Errorf("image not found in containerd store: %s", imageName)
 	}
 
@@ -144,11 +146,13 @@ func ContainerdImage(ctx context.Context, imageName string, opts types.ImageOpti
 
 	f, err = xos.CreateTemp("", "containerd-export-")
 	if err != nil {
+		cleanup()
 		return nil, cleanup, xerrors.Errorf("failed to create a temporary file: %w", err)
 	}
 
 	insp, history, ref, err := inspect(ctx, img, ref)
 	if err != nil {
+		cleanup()
 		return nil, cleanup, xerrors.Errorf("inspect error: %w", err)
 	}
 

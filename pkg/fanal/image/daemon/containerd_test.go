@@ -167,9 +167,9 @@ func breakCreateTemp(t *testing.T) func() {
 }
 
 // TestContainerdImage_CreateTempErrorClosesClient pins the error path between
-// client.New and the assignment of cleanup: when xos.CreateTemp fails, the
-// cleanup function returned by ContainerdImage must close the containerd
-// client.
+// client.New and the temporary file. NewContainerImage drops the cleanup function it
+// gets back when it returns an error, so ContainerdImage has to close the client
+// itself before returning; the cleanup function is deliberately not called here.
 func TestContainerdImage_CreateTempErrorClosesClient(t *testing.T) {
 	tracker := startFakeContainerd(t)
 
@@ -181,12 +181,47 @@ func TestContainerdImage_CreateTempErrorClosesClient(t *testing.T) {
 	require.Error(t, err)
 	assert.ErrorContains(t, err, "failed to create a temporary file")
 	assert.Nil(t, img)
+	_ = cleanup // a failing ContainerdImage never hands the caller a chance to use it
 
-	// Before the fix this was a no-op, which left the client open.
-	cleanup()
-
-	// The client opened one connection for ListImages. If cleanup did not close
+	// The client opened one connection for ListImages. If the error path did not close
 	// the client, that connection is still open.
 	assert.Eventually(t, tracker.allClosed, 5*time.Second, 50*time.Millisecond,
 		"the containerd client was not closed after xos.CreateTemp failed")
+}
+
+// tempDirEntries lists the names in dir so a test can compare it before and after.
+func tempDirEntries(t *testing.T, dir string) []string {
+	t.Helper()
+
+	entries, err := os.ReadDir(dir)
+	require.NoError(t, err)
+
+	names := make([]string, 0, len(entries))
+	for _, entry := range entries {
+		names = append(names, entry.Name())
+	}
+	return names
+}
+
+// TestContainerdImage_InspectErrorClosesClientAndRemovesTempFile covers the error path
+// after the temporary file exists. The fake server implements List only, so reading the
+// image config inside inspect fails; both the client and the temporary file have to be
+// released before that error is returned.
+func TestContainerdImage_InspectErrorClosesClientAndRemovesTempFile(t *testing.T) {
+	tracker := startFakeContainerd(t)
+	tempDir := xos.TempDir()
+	before := tempDirEntries(t, tempDir)
+
+	img, cleanup, err := ContainerdImage(t.Context(), "alpine:3.11", types.ImageOptions{})
+
+	require.Error(t, err)
+	assert.ErrorContains(t, err, "inspect error")
+	assert.Nil(t, img)
+	_ = cleanup // a failing ContainerdImage never hands the caller a chance to use it
+
+	assert.Eventually(t, tracker.allClosed, 5*time.Second, 50*time.Millisecond,
+		"the containerd client was not closed after inspect failed")
+
+	assert.ElementsMatch(t, before, tempDirEntries(t, tempDir),
+		"the temporary file was left behind after inspect failed")
 }
