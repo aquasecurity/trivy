@@ -28,6 +28,12 @@ In this action, Trivy scans the dependency files such as package-lock.json and g
 
 👉 Get it at: <https://github.com/marketplace/actions/trivy-github-issues>
 
+### CRA Release Evidence (Community)
+
+CRA Release Evidence is an MIT-licensed GitHub Action that collects existing Trivy CycloneDX SBOM and SARIF outputs with test results and Git release changes, then creates version-specific Markdown and JSON evidence packages. It is an evidence collector, not a scanner: it does not evaluate findings or provide compliance or legal verdicts.
+
+👉 Get it at: <https://github.com/marketplace/actions/cra-release-evidence>
+
 ## Buildkite Plugin (Community)
 
 The trivy buildkite plugin provides a convenient mechanism for running the open-source trivy static analysis tool on your project. 
