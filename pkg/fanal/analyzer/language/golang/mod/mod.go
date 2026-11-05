@@ -16,10 +16,14 @@ import (
 	"unicode"
 
 	"github.com/samber/lo"
+	"golang.org/x/mod/module"
+	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/mod"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -34,7 +38,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newGoModAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 var (
 	requiredFiles = []string{
@@ -45,9 +49,8 @@ var (
 )
 
 type gomodAnalyzer struct {
-	// root go.mod/go.sum
+	// root go.mod
 	modParser *mod.Parser
-	sumParser language.Parser
 
 	// go.mod/go.sum in dependencies
 	leafModParser *mod.Parser
@@ -64,8 +67,7 @@ type gomodAnalyzer struct {
 func newGoModAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &gomodAnalyzer{
 		modParser:                        mod.NewParser(true, opt.DetectionPriority == types.PriorityComprehensive), // Only the root module should replace
-		sumParser:                        sum.NewParser(),
-		leafModParser:                    mod.NewParser(false, false), // Don't detect stdlib for non-root go.mod files
+		leafModParser:                    mod.NewParser(false, false),                                               // Don't detect stdlib for non-root go.mod files
 		licenseClassifierConfidenceLevel: opt.LicenseScannerOption.ClassifierConfidenceLevel,
 		gopathFS:                         os.DirFS(cmp.Or(os.Getenv("GOPATH"), build.Default.GOPATH)),
 		logger:                           log.WithPrefix("golang"),
@@ -103,14 +105,16 @@ func (a *gomodAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostAnal
 			return nil
 		}
 
-		if parser.skipIndirect {
-			// e.g. /app/go.mod => /app/go.sum
-			sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
-			gosum, err := parse(ctx, input.FS, sumPath, a.sumParser)
-			if err != nil && !errors.Is(err, fs.ErrNotExist) {
-				return xerrors.Errorf("parse error: %w", err)
+		// e.g. /app/go.mod => /app/go.sum
+		sumPath := filepath.Join(filepath.Dir(path), types.GoSum)
+		gosum, err := parseGoSum(input.FS, sumPath)
+		if err != nil {
+			a.logger.Warn("Unable to parse go.sum", log.FilePath(sumPath), log.Err(err))
+		} else {
+			if parser.skipIndirect {
+				mergeGoSum(gomod, gosum)
 			}
-			mergeGoSum(gomod, gosum)
+			fillDigests(gomod, gosum)
 		}
 
 		apps = append(apps, *gomod)
@@ -318,12 +322,24 @@ func parse(ctx context.Context, fsys fs.FS, path string, parser language.Parser)
 		return nil, xerrors.Errorf("type assertion error: %w", err)
 	}
 
-	// Parse go.mod or go.sum
+	// Parse go.mod
 	return language.Parse(ctx, types.GoModule, path, file, parser)
 }
 
-func mergeGoSum(gomod, gosum *types.Application) {
-	if gomod == nil || gosum == nil {
+func parseGoSum(fsys fs.FS, path string) ([]sum.Entry, error) {
+	f, err := fsys.Open(path)
+	if errors.Is(err, fs.ErrNotExist) {
+		return nil, nil
+	} else if err != nil {
+		return nil, xerrors.Errorf("file open error: %w", err)
+	}
+	defer f.Close()
+
+	return sum.Parse(f)
+}
+
+func mergeGoSum(gomod *types.Application, gosum []sum.Entry) {
+	if len(gosum) == 0 {
 		return
 	}
 	uniq := make(map[string]types.Package)
@@ -332,20 +348,46 @@ func mergeGoSum(gomod, gosum *types.Application) {
 		uniq[lib.Name] = lib
 	}
 
+	// go.sum may list several versions of a module, the highest one is taken.
+	latest := make(map[string]string)
+	for _, e := range gosum {
+		if v, ok := latest[e.Module.Path]; !ok || semver.Compare(e.Module.Version, v) > 0 {
+			latest[e.Module.Path] = e.Module.Version
+		}
+	}
+
 	// For Go 1.16 or less, we need to merge go.sum into go.mod.
-	for _, lib := range gosum.Packages {
+	for name, ver := range latest {
 		// Skip dependencies in go.mod so that go.mod should be preferred.
-		if _, ok := uniq[lib.Name]; ok {
+		if _, ok := uniq[name]; ok {
 			continue
 		}
 
 		// This dependency doesn't exist in go.mod, so it must be an indirect dependency.
-		lib.Indirect = true
-		lib.Relationship = types.RelationshipIndirect
-		uniq[lib.Name] = lib
+		uniq[name] = types.Package{
+			ID:           dependency.ID(types.GoModule, name, ver),
+			Name:         name,
+			Version:      ver,
+			Indirect:     true,
+			Relationship: types.RelationshipIndirect,
+		}
 	}
 
 	gomod.Packages = lo.Values(uniq)
+}
+
+func fillDigests(gomod *types.Application, gosum []sum.Entry) {
+	sums := make(map[module.Version]string)
+	for _, e := range gosum {
+		sums[e.Module] = e.ModuleSum
+	}
+
+	for i := range gomod.Packages {
+		pkg := &gomod.Packages[i]
+		if d, ok := sum.DecodeH1(sums[module.Version{Path: pkg.Name, Version: pkg.Version}]); ok {
+			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceGoModuleH1))
+		}
+	}
 }
 
 func findLicense(searchDirs []searchDir, pkg types.Package, licenses map[string][]string, classifierConfidenceLevel float64) ([]string, error) {

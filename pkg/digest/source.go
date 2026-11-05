@@ -49,6 +49,12 @@ const (
 	// PKG-INFO extracted from the archive.
 	// Trivy computes it only for the cyclonedx, spdx and spdx-json formats.
 	SourceFileContent Source = "file-content"
+
+	// SourceGoModuleH1 is the h1 checksum of a Go module, read from go.sum or from the build
+	// info of a Go binary. It is a SHA-256 over the list of the module's file names
+	// and their SHA-256 hashes, so it differs from the SHA-256 of the module zip file.
+	// https://go.dev/ref/mod#go-sum-files
+	SourceGoModuleH1 Source = "go-module-h1"
 )
 
 // SourcedDigest is a digest value together with the source it was acquired from.

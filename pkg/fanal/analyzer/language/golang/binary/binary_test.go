@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -50,16 +51,34 @@ func Test_gobinaryLibraryAnalyzer_Analyze(t *testing.T) {
 								ID:      "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
 								Name:    "github.com/aquasecurity/go-pep440-version",
 								Version: "v0.0.0-20210121094942-22b2f8951d46",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:be65cd97e1c37eaa9782bd2e6355202b5180869b3c9db000b6a1cd05c8327fee",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 							},
 							{
 								ID:      "github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
 								Name:    "github.com/aquasecurity/go-version",
 								Version: "v0.0.0-20210121072130-637058cfe492",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:adc106e47238f74145d1aef3bafc4ec5e9f9d9d7728027cd5633f45ce08c97e3",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 							},
 							{
 								ID:      "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 								Name:    "golang.org/x/xerrors",
 								Version: "v0.0.0-20200804184101-5ec99f83aff1",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 							},
 						},
 					},
