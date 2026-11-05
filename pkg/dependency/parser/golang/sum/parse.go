@@ -2,7 +2,6 @@ package sum
 
 import (
 	"bufio"
-	"context"
 	"crypto/sha256"
 	"encoding/base64"
 	"encoding/hex"
@@ -12,78 +11,48 @@ import (
 	"golang.org/x/mod/module"
 	"golang.org/x/xerrors"
 
-	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/digest"
-	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
-type Parser struct{}
-
-func NewParser() *Parser {
-	return &Parser{}
+// Entry holds the go.sum lines of one module version.
+type Entry struct {
+	Module module.Version
+	// ModuleSum is the checksum of the whole module, e.g. "h1:...". It is empty
+	// if go.sum has only the checksum of the module's go.mod file.
+	ModuleSum string
 }
 
-// Parse parses a go.sum file
-func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
-	var pkgs []ftypes.Package
-	uniquePkgs := make(map[string]string)
+// Parse returns the entries of a go.sum file, one per module version, in the order
+// of their first line.
+func Parse(r io.Reader) ([]Entry, error) {
+	var entries []Entry
+	index := make(map[module.Version]int)
 
 	scanner := bufio.NewScanner(r)
 	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
-		s := strings.Fields(line)
+		s := strings.Fields(scanner.Text())
 		if len(s) < 2 {
 			continue
 		}
 
-		// go.sum records and sorts all non-major versions
-		// with the latest version as last entry
-		uniquePkgs[s[0]] = strings.TrimSuffix(s[1], "/go.mod")
-	}
-	if err := scanner.Err(); err != nil {
-		return nil, nil, xerrors.Errorf("scan error: %w", err)
-	}
-
-	for k, v := range uniquePkgs {
-		pkgs = append(pkgs, ftypes.Package{
-			ID:      dependency.ID(ftypes.GoModule, k, v),
-			Name:    k,
-			Version: v,
-		})
-	}
-
-	return pkgs, nil, nil
-}
-
-// ParseDigests returns the h1 checksums of whole modules recorded in a go.sum file,
-// decoded to SHA-256 digests and keyed by module path and version.
-func ParseDigests(r io.Reader) (map[module.Version]digest.Digest, error) {
-	digests := make(map[module.Version]digest.Digest)
-	scanner := bufio.NewScanner(r)
-	for scanner.Scan() {
-		s := strings.Fields(scanner.Text())
-		if len(s) < 3 {
-			continue
-		}
-
-		// A /go.mod entry covers only the go.mod file, not the whole module.
-		if strings.HasSuffix(s[1], "/go.mod") {
-			continue
-		}
-
-		d, ok := DecodeH1(s[2])
+		ver, goMod := strings.CutSuffix(s[1], "/go.mod")
+		mod := module.Version{Path: s[0], Version: ver}
+		i, ok := index[mod]
 		if !ok {
-			continue
+			i = len(entries)
+			index[mod] = i
+			entries = append(entries, Entry{Module: mod})
 		}
-		digests[module.Version{Path: s[0], Version: s[1]}] = d
-	}
 
+		if !goMod && len(s) >= 3 {
+			entries[i].ModuleSum = s[2]
+		}
+	}
 	if err := scanner.Err(); err != nil {
 		return nil, xerrors.Errorf("scan error: %w", err)
 	}
 
-	return digests, nil
+	return entries, nil
 }
 
 // DecodeH1 decodes an h1 checksum ("h1:<base64>") to a SHA-256 digest.
