@@ -878,7 +878,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 						rateLimitTargets = append(rateLimitTargets, *target)
 						continue
 					}
-					return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+					return nil, wrapWithRateLimitTargets(xerrors.Errorf("fetch maven-metadata.xml error: %w", err), rateLimitTargets)
 				}
 				// Use file name from `maven-metadata.xml` if it exists
 				if pomFileName != "" {
@@ -891,7 +891,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 					rateLimitTargets = append(rateLimitTargets, *target)
 					continue
 				}
-				return nil, xerrors.Errorf("fetch repository error: %w", err)
+				return nil, wrapWithRateLimitTargets(xerrors.Errorf("fetch repository error: %w", err), rateLimitTargets)
 			} else if fetched == nil {
 				continue
 			}
@@ -1098,7 +1098,8 @@ type rateLimitError struct {
 func (e *rateLimitError) Error() string { return e.err.Error() }
 func (e *rateLimitError) Unwrap() error { return e.err }
 
-func newRateLimitError(targets []rateLimitTarget) *rateLimitError {
+// formatRateLimitTargets lists the rate-limited URLs with their Retry-After values, one per line.
+func formatRateLimitTargets(targets []rateLimitTarget) string {
 	var lines []string
 	for _, t := range targets {
 		line := fmt.Sprintf("  - %s", t.url)
@@ -1107,7 +1108,21 @@ func newRateLimitError(targets []rateLimitTarget) *rateLimitError {
 		}
 		lines = append(lines, line)
 	}
+	return strings.Join(lines, "\n")
+}
 
+// wrapWithRateLimitTargets appends the 429 responses collected before a later failure to that failure.
+// Unlike newRateLimitError, it keeps the failure itself in the error chain, so that e.g. a timeout
+// is neither hidden behind the *types.UserError nor loses the diagnostics.
+func wrapWithRateLimitTargets(err error, targets []rateLimitTarget) error {
+	if len(targets) == 0 {
+		return err
+	}
+	return fmt.Errorf("%w\nBefore that, remote Maven repositories returned 429 Too Many Requests for:\n%s",
+		err, formatRateLimitTargets(targets))
+}
+
+func newRateLimitError(targets []rateLimitTarget) *rateLimitError {
 	return &rateLimitError{
 		err: &types.UserError{
 			Message: fmt.Sprintf(
@@ -1115,7 +1130,7 @@ func newRateLimitError(targets []rateLimitTarget) *rateLimitError {
 					"The repositories block all subsequent requests from this IP until the block clears.\n"+
 					"To avoid this, populate the local Maven cache before scanning "+
 					"(e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).",
-				strings.Join(lines, "\n"),
+				formatRateLimitTargets(targets),
 			),
 		},
 	}
