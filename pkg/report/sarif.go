@@ -7,6 +7,7 @@ import (
 	"net/url"
 	"path/filepath"
 	"regexp"
+	"slices"
 	"strings"
 
 	containerName "github.com/google/go-containerregistry/pkg/name"
@@ -67,6 +68,7 @@ type sarifData struct {
 	cvssScore        string
 	cvssData         map[string]any
 	locations        []location
+	codeFlows        []*sarif.CodeFlow
 }
 
 type location struct {
@@ -100,7 +102,8 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
+		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage)).
+		WithCodeFlows(data.codeFlows)
 	sw.run.AddResult(result)
 }
 
@@ -190,6 +193,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				resourceClass:    res.Class,
 				artifactLocation: toUri(locationURI),
 				locationMessage:  locationURI,
+				codeFlows:        toSarifCodeFlows(locationURI, misconf.CauseMetadata),
 				locations: []location{
 					{
 						startLine: misconf.CauseMetadata.StartLine,
@@ -300,6 +304,58 @@ func toSarifLocations(locations []location, artifactLocation, locationMessage st
 	}
 
 	return sarifLocs
+}
+
+func toSarifCodeFlows(target string, cause ftypes.CauseMetadata) []*sarif.CodeFlow {
+	if len(cause.Occurrences) == 0 {
+		return nil
+	}
+
+	flow := sarif.NewThreadFlow()
+	// Occurrences run from the nearest parent to the outermost caller.
+	// Code flows follow the hierarchy from that caller to the precise cause.
+	for _, occurrence := range slices.Backward(cause.Occurrences) {
+		flow.AddLocation(toSarifThreadFlowLocation(occurrence, toSarifOccurrenceURI(occurrence.Filename), len(flow.Locations)))
+	}
+	flow.AddLocation(toSarifThreadFlowLocation(ftypes.Occurrence{
+		Filename: target,
+		Location: ftypes.Location{StartLine: cause.StartLine, EndLine: cause.EndLine},
+	}, toUri(target).String(), len(flow.Locations)))
+
+	return []*sarif.CodeFlow{sarif.NewCodeFlow().WithThreadFlows([]*sarif.ThreadFlow{flow})}
+}
+
+func toSarifOccurrenceURI(filename string) string {
+	filename = strings.ReplaceAll(filename, "\\", "/")
+	cleaned := clearURI(filename)
+	uri, err := url.Parse(cleaned)
+	// Remote module sources retain their URI syntax, including revision queries.
+	// A single-letter scheme is a Windows drive, not a remote source.
+	if err == nil && (cleaned != filename || len(uri.Scheme) > 1 ||
+		strings.HasPrefix(filename, "github.com/") || strings.HasPrefix(filename, "bitbucket.org/")) {
+		return uri.String()
+	}
+	// Local filenames are raw paths: #, ? and even valid percent escapes are literal.
+	return (&url.URL{Path: cleaned}).String()
+}
+
+func toSarifThreadFlowLocation(occurrence ftypes.Occurrence, artifactURI string, depth int) *sarif.ThreadFlowLocation {
+	filename := clearURI(occurrence.Filename)
+	message := filename
+	if occurrence.Resource != "" {
+		if filename == "" {
+			message = occurrence.Resource
+		} else {
+			message = fmt.Sprintf("%s (%s)", filename, occurrence.Resource)
+		}
+	}
+	loc := sarif.NewLocation().WithMessage(sarif.NewTextMessage(message))
+	if filename != "" {
+		start := max(1, occurrence.Location.StartLine)
+		end := max(start, occurrence.Location.EndLine)
+		loc = toSarifLocations([]location{{startLine: start, endLine: end}}, artifactURI, message)[0]
+	}
+	return sarif.NewThreadFlowLocation().WithNestingLevel(depth).WithLocation(loc)
 }
 
 func toSarifRuleName(class types.ResultClass) string {
