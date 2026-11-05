@@ -1,0 +1,12 @@
+- bucket: data-source
+  pairs:
+    - key: dhi alpine 3.24
+      value:
+        ID: "dhi"
+        Name: "Docker Hardened Images Advisories"
+        URL: "https://github.com/docker-hardened-images/advisories"
+    - key: dhi debian 13
+      value:
+        ID: "dhi"
+        Name: "Docker Hardened Images Advisories"
+        URL: "https://github.com/docker-hardened-images/advisories"
