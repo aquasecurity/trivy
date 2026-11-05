@@ -11,6 +11,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
+	"golang.org/x/mod/semver"
 )
 
 var (
@@ -52,7 +53,9 @@ func (echoSupplier) Name() string {
 func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchResult {
 	switch eco {
 	case ecosystem.Go:
-		if strings.Contains(pkgVer, "+echo.") && echoSemverSegmentRe.MatchString(pkgVer) {
+		if strings.Contains(pkgVer, "+echo.") &&
+			echoSemverSegmentRe.MatchString(pkgVer) &&
+			isValidGoSemVer(pkgVer) {
 			return library.Matched
 		}
 		return library.NoMatch
@@ -64,6 +67,10 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 		return library.Matched
 	}
 	return library.NoMatch
+}
+
+func isValidGoSemVer(ver string) bool {
+	return semver.IsValid(ver) || semver.IsValid("v"+ver)
 }
 
 // BucketPrefix returns the supplier-specific advisory bucket prefix.

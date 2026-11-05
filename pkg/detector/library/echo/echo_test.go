@@ -74,6 +74,20 @@ func TestEchoSupplier_Match(t *testing.T) {
 			want:    library.NoMatch,
 		},
 		{
+			name:    "go package with malformed core version",
+			eco:     ecosystem.Go,
+			pkgName: "golang.org/x/crypto",
+			pkgVer:  "v0.26.0.1+echo.1",
+			want:    library.NoMatch,
+		},
+		{
+			name:    "go package with empty trailing metadata identifier",
+			eco:     ecosystem.Go,
+			pkgName: "golang.org/x/crypto",
+			pkgVer:  "v0.26.0+echo.1.",
+			want:    library.NoMatch,
+		},
+		{
 			name:    "go package with zero-padded Echo revision",
 			eco:     ecosystem.Go,
 			pkgName: "golang.org/x/crypto",
