@@ -98,6 +98,14 @@ func TestParse(t *testing.T) {
 			wantDeps:  wantDeps,
 		},
 		{
+			// docker run --rm -v "$PWD/testdata":/out -e GOOS=linux -e GOARCH=amd64 golang:1.27.3@sha256:c292963ad0e5f51e843c726edc204a4e4c26a859ba1e4d736d91028aa3633048 sh -c '
+			//   mkdir /src && cd /src
+			//   go mod init github.com/ebati/trivy-mod-parse
+			//   printf "package main\n\nimport (\n\t\"github.com/davecgh/go-spew/spew\"\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() { spew.Dump() }\n" > main.go
+			//   go mod edit -replace github.com/go-sql-driver/mysql=github.com/go-sql-driver/mysql@v1.5.0
+			//   go get github.com/davecgh/go-spew@v1.1.1
+			//   go mod tidy
+			//   go build -trimpath -ldflags="-s -w" -o /out/replace.elf'
 			name:      "with replace directive",
 			inputFile: "testdata/replace.elf",
 			wantPkgs: []ftypes.Package{
@@ -108,20 +116,32 @@ func TestParse(t *testing.T) {
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "stdlib@v1.16.4",
+					ID:           "stdlib@v1.27.3",
 					Name:         "stdlib",
-					Version:      "v1.16.4",
+					Version:      "v1.27.3",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
 					ID:      "github.com/davecgh/go-spew@v1.1.1",
 					Name:    "github.com/davecgh/go-spew",
 					Version: "v1.1.1",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha256:be3f63feed5baa7bc211f24ec1486d94e011aacdfeae41d8635de36164d4f7b7",
+							Source: digest.SourceGoModuleH1,
+						},
+					},
 				},
 				{
 					ID:      "github.com/go-sql-driver/mysql@v1.5.0",
 					Name:    "github.com/go-sql-driver/mysql",
 					Version: "v1.5.0",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha256:a33c9960d416df1dc7b6a4f58e2adad3b0cdd8f02bc76bfbfe637aea019c1ceb",
+							Source: digest.SourceGoModuleH1,
+						},
+					},
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -130,7 +150,7 @@ func TestParse(t *testing.T) {
 					DependsOn: []string{
 						"github.com/davecgh/go-spew@v1.1.1",
 						"github.com/go-sql-driver/mysql@v1.5.0",
-						"stdlib@v1.16.4",
+						"stdlib@v1.27.3",
 					},
 				},
 			},
