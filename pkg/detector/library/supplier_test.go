@@ -115,6 +115,15 @@ func Test_lookupSupplier(t *testing.T) {
 			wantDefaultComparer: false,
 		},
 		{
+			name:                "echo go package returns supplier prefix and build-aware comparer",
+			eco:                 ecosystem.Go,
+			pkgName:             "golang.org/x/net",
+			pkgVer:              "v0.55.0+echo.1",
+			wantMatch:           library.Matched,
+			wantPrefix:          "echo go::",
+			wantDefaultComparer: false,
+		},
+		{
 			name:      "non-supplier pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
@@ -148,6 +157,8 @@ func Test_lookupSupplier(t *testing.T) {
 				case ecosystem.Npm:
 					assert.Equal(t, npm.NewComparer(npm.WithBuildMetadata()), comparer)
 				case ecosystem.NuGet:
+					assert.Equal(t, compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)), comparer)
+				case ecosystem.Go:
 					assert.Equal(t, compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)), comparer)
 				}
 			}

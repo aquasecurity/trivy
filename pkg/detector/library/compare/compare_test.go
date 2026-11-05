@@ -178,3 +178,86 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 		})
 	}
 }
+
+func TestGenericComparer_BuildMetadataOrder(t *testing.T) {
+	comparer := compare.NewGenericComparer(
+		version.WithBuildMetadataOrder(version.BuildMetadataOrderNodeSemver),
+	)
+
+	tests := []struct {
+		name     string
+		version  string
+		advisory types.Advisory
+		want     bool
+	}{
+		{
+			name:    "plain version is not equal to the patched Echo build",
+			version: "v0.55.0",
+			advisory: types.Advisory{
+				VulnerableVersions: []string{"<0.56.0"},
+				PatchedVersions:    []string{"0.55.0+echo.1"},
+			},
+			want: true,
+		},
+		{
+			name:    "patched Echo build satisfies patched version",
+			version: "v0.55.0+echo.1",
+			advisory: types.Advisory{
+				VulnerableVersions: []string{"<0.56.0"},
+				PatchedVersions:    []string{"0.55.0+echo.1"},
+			},
+			want: false,
+		},
+		{
+			name:    "plain version is below the Echo fixed range",
+			version: "v0.55.0",
+			advisory: types.Advisory{
+				VulnerableVersions: []string{"<0.55.0+echo.1"},
+				PatchedVersions:    []string{"0.55.0+echo.1"},
+			},
+			want: true,
+		},
+		{
+			name:    "newer Echo build is outside the vulnerable range",
+			version: "v0.55.0+echo.2",
+			advisory: types.Advisory{
+				VulnerableVersions: []string{"<0.55.0+echo.1"},
+				PatchedVersions:    []string{"0.55.0+echo.1"},
+			},
+			want: false,
+		},
+		{
+			name:    "Echo build with later metadata segments is outside the vulnerable range",
+			version: "v0.55.0+echo.1.extra.1",
+			advisory: types.Advisory{
+				VulnerableVersions: []string{"<0.55.0+echo.1"},
+				PatchedVersions:    []string{"0.55.0+echo.1"},
+			},
+			want: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, comparer.IsVulnerable(tt.version, tt.advisory))
+		})
+	}
+}
+
+func TestGenericComparer_BuildMetadataOrderIsOptIn(t *testing.T) {
+	advisory := types.Advisory{
+		VulnerableVersions: []string{"<0.56.0"},
+		PatchedVersions:    []string{"0.55.0+echo.1"},
+	}
+
+	// The zero value keeps the existing SemVer behavior, where build metadata
+	// does not participate in precedence.
+	assert.False(t, (compare.GenericComparer{}).IsVulnerable("v0.55.0", advisory))
+}
+
+func TestGenericComparer_RemainsComparable(t *testing.T) {
+	comparers := map[compare.GenericComparer]bool{
+		{}: true,
+	}
+	assert.True(t, comparers[compare.GenericComparer{}])
+}

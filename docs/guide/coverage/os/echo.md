@@ -37,6 +37,7 @@ Trivy identifies them by the version suffix and uses Echo's own security advisor
 | [Java](../language/java.md)      | `+echo.N`      | `org.springframework:spring-core` `6.1.21+echo.1`          |
 | [Node.js](../language/nodejs.md) | `+echo.N`      | `nanoid` `3.3.6+echo.2`                                   |
 | [.NET](../language/dotnet.md)    | `+echo.N`      | `System.Security.Cryptography.Xml` `8.0.0+echo.1`         |
+| [Go](../language/golang.md)      | `+echo.N`      | `golang.org/x/net` `v0.22.0+echo.1`                       |
 
 Packages without the Echo version suffix, and packages from unsupported ecosystems, are scanned against the upstream advisories as usual.
 
