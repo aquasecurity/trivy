@@ -1,6 +1,7 @@
 package alpine
 
 import (
+	"cmp"
 	"context"
 	"strings"
 	"time"
@@ -99,7 +100,12 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, repo *ftypes.Reposit
 			return nil, xerrors.Errorf("failed to get alpine advisories: %w", err)
 		}
 
-		sourceVersion, err := version.NewVersion(utils.FormatSrcVersion(pkg))
+		// A package with no `o:` (origin) line has no source name/version at all (e.g. images
+		// whose packages aren't built with abuild, such as Docker Hardened Images). srcName
+		// above already falls back to the binary Name in that case; give the version the same
+		// fallback so the pair stays consistent, instead of comparing against an empty string
+		// that go-apk-version parses as lower than every advisory's fixed version.
+		sourceVersion, err := version.NewVersion(cmp.Or(utils.FormatSrcVersion(pkg), utils.FormatVersion(pkg)))
 		if err != nil {
 			log.DebugContext(ctx, "Failed to parse the installed package version", log.Err(err))
 			continue
