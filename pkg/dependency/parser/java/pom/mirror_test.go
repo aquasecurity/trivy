@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_mirror_matches(t *testing.T) {
@@ -668,14 +669,18 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 	// can only be observed end-to-end through HTTP: that mirrorFor is applied to the
 	// fetch loop, that mirror credentials reach the remote request as Basic Auth, that
 	// a settings.xml -> trivy.yaml chain routes the fetch through to the final mirror,
-	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, and that a
-	// 429 is returned only when every mirror is rate-limited.
+	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, that a
+	// 429 is returned only when every mirror is rate-limited, that a mirror is not
+	// skipped because a repository with a disabled policy was routed to it first, and that
+	// a POM not found in a mirror is not requested from it again.
 	tests := []struct {
 		name            string
 		mirrorPatterns  []string
 		mirrorWithCreds bool
 		wantBasicAuth   string
 		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
+		snapshotsRepo   bool                // put a snapshot-only repository before the release repository
+		refetch         bool                // fetch the same POM again after the first fetch
 		wantHits        map[string]int      // expected request count per server role
 		wantErr         string              // non-empty: fetch must fail with an error containing this
 	}{
@@ -703,6 +708,14 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"dead": 1, "chain": 1},
 		},
 		{
+			// The POM is fetched twice; the mirror that 404'd the first time is not requested again.
+			name:           "trivy.yaml fallback: not found POM is not requested again",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"dead", "chain"}},
+			refetch:        true,
+			wantHits:       map[string]int{"dead": 1, "chain": 2},
+		},
+		{
 			// The first mirror returns 429; the fetch skips it and succeeds on the second.
 			name:           "trivy.yaml fallback: first mirror 429s, second one serves",
 			mirrorPatterns: []string{"*"},
@@ -716,6 +729,14 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			configMirrors:  map[string][]string{"mirror": {"limited"}},
 			wantHits:       map[string]int{"limited": 1},
 			wantErr:        "429",
+		},
+		{
+			// Both repositories are routed to the same mirror. The snapshot-only repository
+			// is skipped for the release POM, so the mirror is still requested for central.
+			name:           "snapshot-only repository routed to the same mirror doesn't hide it",
+			mirrorPatterns: []string{"*"},
+			snapshotsRepo:  true,
+			wantHits:       map[string]int{"mirror": 1},
 		},
 	}
 
@@ -745,11 +766,12 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":     newServer("repo1", http.StatusOK),
+				"mirror":    newServer("mirror", http.StatusOK),
+				"chain":     newServer("chain", http.StatusOK),
+				"dead":      newServer("dead", http.StatusNotFound),
+				"limited":   newServer("limited", http.StatusTooManyRequests),
+				"snapshots": newServer("snapshots", http.StatusOK),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -774,21 +796,34 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			origURL, err := url.Parse(servers["repo1"].URL)
 			require.NoError(t, err)
-			pomRepo := repository{id: "central", url: *origURL, releaseEnabled: true}
+			var pomRepos []repository
+			if tt.snapshotsRepo {
+				snapshotsURL, err := url.Parse(servers["snapshots"].URL)
+				require.NoError(t, err)
+				pomRepos = append(pomRepos, repository{id: "snapshots", url: *snapshotsURL, snapshotEnabled: true})
+			}
+			pomRepos = append(pomRepos, repository{id: "central", url: *origURL, releaseEnabled: true})
 
 			p := &Parser{
-				logger:     log.WithPrefix("pom"),
-				mirrors:    resolved,
-				httpClient: http.DefaultClient,
+				logger:       log.WithPrefix("pom"),
+				mirrors:      resolved,
+				httpClient:   http.DefaultClient,
+				notFoundPOMs: set.New[string](),
 			}
 
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
-			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
-			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, got)
+			fetch := func() {
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, pomRepos)
+				if tt.wantErr != "" {
+					require.ErrorContains(t, err, tt.wantErr)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, got)
+				}
+			}
+			fetch()
+			if tt.refetch {
+				fetch()
 			}
 
 			for role := range servers {

@@ -1,0 +1,57 @@
+Repository 3 (declared in the parent POM, disabled by ID in the child POM): must not be used.
+
+-- org/example/example-api5/1.0.0/example-api5-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api5</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from repo3</name>
+        </license>
+    </licenses>
+</project>
+
+-- org/example/example-disabled-ancestor/1.0.0/example-disabled-ancestor-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-disabled-ancestor</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-api7</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+
+-- org/example/example-api7/1.0.0/example-api7-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api7</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from repo3</name>
+        </license>
+    </licenses>
+</project>
