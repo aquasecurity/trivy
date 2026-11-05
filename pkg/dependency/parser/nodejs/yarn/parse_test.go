@@ -77,6 +77,41 @@ func TestParsePattern(t *testing.T) {
 			expactVersion:  "//xxxx:x-oauth-basic@github.com/tomoyamachi/jquery",
 		},
 		{
+			name:           "workspace protocol root",
+			target:         `"app@workspace:.":`,
+			expectName:     "app",
+			expectProtocol: "workspace",
+			expactVersion:  ".",
+		},
+		{
+			name:           "workspace protocol wildcard",
+			target:         `"a@workspace:*":`,
+			expectName:     "a",
+			expectProtocol: "workspace",
+			expactVersion:  "*",
+		},
+		{
+			name:           "workspace protocol relative path",
+			target:         `"b@workspace:packages/b":`,
+			expectName:     "b",
+			expectProtocol: "workspace",
+			expactVersion:  "packages/b",
+		},
+		{
+			name:           "patch protocol",
+			target:         `"fsevents@patch:fsevents@~2.1.2#builtin<compat/fsevents>":`,
+			expectName:     "fsevents",
+			expectProtocol: "patch",
+			expactVersion:  "fsevents@~2.1.2#builtin<compat/fsevents>",
+		},
+		{
+			name:           "patch protocol with parameters",
+			target:         `"fsevents@patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>::version=2.1.3&hash=87eb42":`,
+			expectName:     "fsevents",
+			expectProtocol: "patch",
+			expactVersion:  "fsevents@npm%3A2.1.3#builtin<compat/fsevents>::version=2.1.3&hash=87eb42",
+		},
+		{
 			target:   `normal line`,
 			occurErr: true,
 		},
@@ -158,6 +193,33 @@ func TestParsePackagePatterns(t *testing.T) {
 			},
 		},
 		{
+			name:           "workspace protocol",
+			target:         `"app@workspace:.":`,
+			expectName:     "app",
+			expectProtocol: "workspace",
+			expactPatterns: []string{
+				"app@.",
+			},
+		},
+		{
+			name:           "workspace protocol wildcard",
+			target:         `"a@workspace:*":`,
+			expectName:     "a",
+			expectProtocol: "workspace",
+			expactPatterns: []string{
+				"a@*",
+			},
+		},
+		{
+			name:           "patch protocol",
+			target:         `"fsevents@patch:fsevents@~2.1.2#builtin<compat/fsevents>":`,
+			expectName:     "fsevents",
+			expectProtocol: "patch",
+			expactPatterns: []string{
+				"fsevents@fsevents@~2.1.2#builtin<compat/fsevents>",
+			},
+		},
+		{
 			target:   `normal line`,
 			occurErr: true,
 		},
@@ -229,6 +291,24 @@ func TestGetDependency(t *testing.T) {
 			target:        `    ms: "npm:2.1.2"`,
 			expectName:    "ms",
 			expactVersion: "2.1.2",
+		},
+		{
+			name:          "workspace protocol dependency",
+			target:        `    a: "workspace:*"`,
+			expectName:    "",
+			expactVersion: "",
+		},
+		{
+			name:          "patch protocol dependency",
+			target:        `    fsevents: "patch:fsevents@~2.1.2#builtin<compat/fsevents>"`,
+			expectName:    "",
+			expactVersion: "",
+		},
+		{
+			name:          "scoped package with protocol",
+			target:        `    "@types/node": "npm:18.11.0"`,
+			expectName:    "@types/node",
+			expactVersion: "18.11.0",
 		},
 	}
 

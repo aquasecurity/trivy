@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1081,6 +1082,494 @@ func Test_yarnLibraryAnalyzer_Required(t *testing.T) {
 			a := yarnAnalyzer{}
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func Test_yarnAnalyzer_walkDependencies(t *testing.T) {
+	tests := []struct {
+		name       string
+		parent     types.Package
+		pkgs       map[string]types.Package
+		directDeps map[string]string
+		patterns   map[string][]string
+		dev        bool
+		wantErr    bool
+		wantPkgs   map[string]types.Package
+		wantParent types.Package
+	}{
+		{
+			name: "workspace protocol range with asterisk (workspace:*)",
+			parent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+			},
+			pkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+				},
+			},
+			directDeps: map[string]string{
+				"a": "workspace:*",
+			},
+			wantPkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+				DependsOn:    []string{"a@1.0.0"},
+			},
+		},
+		{
+			name: "workspace protocol with leading v in version",
+			parent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+			},
+			pkgs: map[string]types.Package{
+				"a@v1.0.0": {
+					ID:           "a@v1.0.0",
+					Name:         "a",
+					Version:      "v1.0.0",
+					Relationship: types.RelationshipWorkspace,
+				},
+			},
+			directDeps: map[string]string{
+				"a": "workspace:*",
+			},
+			wantPkgs: map[string]types.Package{
+				"a@v1.0.0": {
+					ID:           "a@v1.0.0",
+					Name:         "a",
+					Version:      "v1.0.0",
+					Relationship: types.RelationshipWorkspace,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+				DependsOn:    []string{"a@v1.0.0"},
+			},
+		},
+		{
+			name: "workspace protocol with caret (workspace:^)",
+			parent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+			},
+			pkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+				},
+			},
+			directDeps: map[string]string{
+				"a": "workspace:^",
+			},
+			wantPkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+				DependsOn:    []string{"a@1.0.0"},
+			},
+		},
+		{
+			name: "workspace protocol with path range (workspace:packages/a)",
+			parent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+			},
+			pkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+				},
+			},
+			directDeps: map[string]string{
+				"a": "workspace:packages/a",
+			},
+			wantPkgs: map[string]types.Package{
+				"a@1.0.0": {
+					ID:           "a@1.0.0",
+					Name:         "a",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipWorkspace,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "b@1.0.0",
+				Name:         "b",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipWorkspace,
+				DependsOn:    []string{"a@1.0.0"},
+			},
+		},
+		{
+			name: "Berry npm protocol with explicit version (npm:1.2.5)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"minimist": "npm:1.2.5",
+			},
+			patterns: map[string][]string{
+				"minimist@1.2.5": {"minimist@1.2.5"},
+			},
+			dev: true,
+			wantPkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipDirect,
+					Dev:          true,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"minimist@1.2.5"},
+			},
+		},
+		{
+			name: "Berry npm protocol with semver range (npm:^1.2.0)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"minimist": "npm:^1.2.0",
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipDirect,
+					Dev:          false,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"minimist@1.2.5"},
+			},
+		},
+		{
+			name: "npm alias with version range (npm:debug@^4.3)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"foo-debug@4.3.4": {
+					ID:           "foo-debug@4.3.4",
+					Name:         "foo-debug",
+					Version:      "4.3.4",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"foo-debug": "npm:debug@^4.3",
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"foo-debug@4.3.4": {
+					ID:           "foo-debug@4.3.4",
+					Name:         "debug",
+					Version:      "4.3.4",
+					Relationship: types.RelationshipDirect,
+					Dev:          false,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"foo-debug@4.3.4"},
+			},
+		},
+		{
+			name: "npm alias without version range (npm:ms)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"foo-ms@2.1.3": {
+					ID:           "foo-ms@2.1.3",
+					Name:         "foo-ms",
+					Version:      "2.1.3",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"foo-ms": "npm:ms",
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"foo-ms@2.1.3": {
+					ID:           "foo-ms@2.1.3",
+					Name:         "ms",
+					Version:      "2.1.3",
+					Relationship: types.RelationshipDirect,
+					Dev:          false,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"foo-ms@2.1.3"},
+			},
+		},
+		{
+			name: "URL protocol dependency does not fail resolution",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"foo@1.0.0": {
+					ID:           "foo@1.0.0",
+					Name:         "foo",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"foo": "https://github.com/foo/foo.git",
+			},
+			patterns: map[string][]string{
+				"foo@1.0.0": {"foo@https://github.com/foo/foo.git"},
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"foo@1.0.0": {
+					ID:           "foo@1.0.0",
+					Name:         "foo",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipDirect,
+					Dev:          false,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"foo@1.0.0"},
+			},
+		},
+		{
+			name: "URL protocol dependency with mismatched pattern does not fail analysis",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"foo@1.0.0": {
+					ID:           "foo@1.0.0",
+					Name:         "foo",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"foo": "https://github.com/different/foo.git",
+			},
+			patterns: map[string][]string{
+				"foo@1.0.0": {"foo@1.0.0"},
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"foo@1.0.0": {
+					ID:           "foo@1.0.0",
+					Name:         "foo",
+					Version:      "1.0.0",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+		},
+		{
+			name: "Berry patch protocol with npm source range (patch:fsevents@npm%3A2.1.3#...)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"fsevents@2.1.3": {
+					ID:           "fsevents@2.1.3",
+					Name:         "fsevents",
+					Version:      "2.1.3",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"fsevents": "patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>",
+			},
+			patterns: map[string][]string{
+				"fsevents@2.1.3": {"fsevents@patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>"},
+			},
+			dev: false,
+			wantPkgs: map[string]types.Package{
+				"fsevents@2.1.3": {
+					ID:           "fsevents@2.1.3",
+					Name:         "fsevents",
+					Version:      "2.1.3",
+					Relationship: types.RelationshipDirect,
+					Dev:          false,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"fsevents@2.1.3"},
+			},
+		},
+		{
+			name: "Berry patch protocol matching version range without lockfile pattern match (patch:minimist@^1.2.0#./minimist.patch)",
+			parent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+			},
+			pkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipUnknown,
+				},
+			},
+			directDeps: map[string]string{
+				"minimist": "patch:minimist@^1.2.0#./minimist.patch",
+			},
+			dev: true,
+			wantPkgs: map[string]types.Package{
+				"minimist@1.2.5": {
+					ID:           "minimist@1.2.5",
+					Name:         "minimist",
+					Version:      "1.2.5",
+					Relationship: types.RelationshipDirect,
+					Dev:          true,
+					Indirect:     false,
+				},
+			},
+			wantParent: types.Package{
+				ID:           "app@1.0.0",
+				Name:         "app",
+				Version:      "1.0.0",
+				Relationship: types.RelationshipRoot,
+				DependsOn:    []string{"minimist@1.2.5"},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a := yarnAnalyzer{
+				comparer: npm.Comparer{},
+			}
+			err := a.walkDependencies(&tt.parent, tt.pkgs, tt.directDeps, tt.patterns, tt.dev)
+			if tt.wantErr {
+				require.Error(t, err)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantPkgs, tt.pkgs)
+			assert.Equal(t, tt.wantParent, tt.parent)
 		})
 	}
 }
