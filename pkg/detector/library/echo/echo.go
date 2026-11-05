@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -20,7 +21,7 @@ func init() {
 	library.RegisterSupplier(echoSupplier{
 		pipComparer:   pep440.NewComparer(pep440.AllowLocalSpecifier()),
 		npmComparer:   npm.NewComparer(npm.WithBuildMetadata()),
-		nugetComparer: compare.NewGenericComparer(compare.WithBuildMetadata()),
+		nugetComparer: compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)),
 	})
 }
 

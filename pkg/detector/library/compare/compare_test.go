@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
@@ -131,6 +132,18 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
+			name:              "with WithBuildMetadata: build numbers compare numerically",
+			withBuildMetadata: true,
+			args: args{
+				ver: "8.0.0+echo.2",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.10"},
+					PatchedVersions:    []string{"8.0.0+echo.10"},
+				},
+			},
+			want: true,
+		},
+		{
 			name:              "with WithBuildMetadata: Echo patched version does not suppress release",
 			withBuildMetadata: true,
 			args: args{
@@ -159,7 +172,7 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			v := compare.GenericComparer{}
 			if tt.withBuildMetadata {
-				v = compare.NewGenericComparer(compare.WithBuildMetadata())
+				v = compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver))
 			}
 			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)

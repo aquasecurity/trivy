@@ -56,19 +56,20 @@ func IsVulnerable(pkgVer string, advisory dbTypes.Advisory, match matchVersion) 
 // GenericOption is a functional option for GenericComparer.
 type GenericOption func(*GenericComparer)
 
-// WithBuildMetadata makes build metadata significant when checking constraints.
-// SemVer ignores it for precedence (https://semver.org/#spec-item-10); with this
-// option versions are ordered following node-semver's compareBuild:
+// WithBuildMetadata makes build metadata significant when checking constraints,
+// ordered by the given strategy. SemVer ignores it for precedence
+// (https://semver.org/#spec-item-10); with version.BuildMetadataOrderNodeSemver
+// versions are ordered following node-semver's compareBuild:
 // "1.2.3" < "1.2.3+build.1" < "1.2.3+build.2" < "1.2.4".
-func WithBuildMetadata() GenericOption {
+func WithBuildMetadata(order version.BuildMetadataOrder) GenericOption {
 	return func(c *GenericComparer) {
-		c.withBuildMetadata = true
+		c.buildMetadataOrder = order
 	}
 }
 
 // GenericComparer represents a comparer for semver-like versioning
 type GenericComparer struct {
-	withBuildMetadata bool
+	buildMetadataOrder version.BuildMetadataOrder
 }
 
 // NewGenericComparer returns a new GenericComparer with the given options.
@@ -93,8 +94,8 @@ func (v GenericComparer) matchVersion(currentVersion, constraint string) (bool, 
 	}
 
 	var opts []version.ConstraintOption
-	if v.withBuildMetadata {
-		opts = append(opts, version.WithBuildMetadataOrder(version.BuildMetadataOrderNodeSemver))
+	if v.buildMetadataOrder != 0 {
+		opts = append(opts, version.WithBuildMetadataOrder(v.buildMetadataOrder))
 	}
 
 	c, err := version.NewConstraints(constraint, opts...)
