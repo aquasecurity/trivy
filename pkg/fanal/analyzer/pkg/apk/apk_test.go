@@ -3,6 +3,7 @@ package apk
 import (
 	"bufio"
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -615,6 +616,33 @@ func TestRequired(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestParseApkInfoVersionedDependencies(t *testing.T) {
+	for _, operator := range []string{"=", "<", ">", "<=", ">=", "~", ">~", "<~", "><"} {
+		for _, dependency := range []string{"python3", "python"} {
+			t.Run(dependency+operator, func(t *testing.T) {
+				input := "P:python3\nV:3.12.0-r0\np:python=3.12\n\n" +
+					"P:consumer\nV:1.0-r0\nD:" + dependency + operator + "3.12 !conflict" + operator + "1.0\n\n" +
+					"P:conflict\nV:1.0-r0\n\n"
+				a := alpinePkgAnalyzer{}
+				packages, _ := a.parseApkInfo(t.Context(), bufio.NewScanner(strings.NewReader(input)))
+				require.Len(t, packages, 3)
+				assert.Equal(t, []string{"python3@3.12.0-r0"}, packages[1].DependsOn)
+			})
+		}
+	}
+}
+
+func TestParseProvidesVersioned(t *testing.T) {
+	for _, operator := range []string{"=", "<", ">", "<=", ">=", "~", ">~", "<~", "><"} {
+		t.Run(operator, func(t *testing.T) {
+			a := alpinePkgAnalyzer{}
+			provides := make(map[string]string)
+			a.parseProvides("p:python"+operator+"3.12", "python3@3.12.0-r0", provides)
+			assert.Equal(t, map[string]string{"python": "python3@3.12.0-r0"}, provides)
 		})
 	}
 }
