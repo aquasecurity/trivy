@@ -154,8 +154,8 @@ github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11/go.m
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4 h1:QC8nsF3LvAGHUxkr5bvcekaUQPE9Zk4jyMugyg5Fxy0=
 github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4/go.mod h1:3naPe+Bp6wi3n4l5iBFCZgS0JG8vY6FT0H4NGhFJ+i4=
 github.com/aquasecurity/go-version v0.0.0-20201107203531-5e48ac5d022a/go.mod h1:9Beu8XsUNNfzml7WBf3QmyPToP1wm1Gj/Vc5UJKqTzU=
-github.com/aquasecurity/go-version v0.0.1 h1:4cNl516agK0TCn5F7mmYN+xVs1E3S45LkgZk3cbaW2E=
-github.com/aquasecurity/go-version v0.0.1/go.mod h1:s1UU6/v2hctXcOa3OLwfj5d9yoXHa3ahf+ipSwEvGT0=
+github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3 h1:hVZDaungF6r+e1UruVVvyR5HjKTX2y8D5zYm05HdnzE=
+github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3/go.mod h1:s1UU6/v2hctXcOa3OLwfj5d9yoXHa3ahf+ipSwEvGT0=
 github.com/aquasecurity/iamgo v0.0.10 h1:t/HG/MI1eSephztDc+Rzh/YfgEa+NqgYRSfr6pHdSCQ=
 github.com/aquasecurity/iamgo v0.0.10/go.mod h1:GI9IQJL2a+C+V2+i3vcwnNKuIJXZ+HAfqxZytwy+cPk=
 github.com/aquasecurity/jfather v0.0.8 h1:tUjPoLGdlkJU0qE7dSzd1MHk2nQFNPR0ZfF+6shaExE=
@@ -168,8 +168,8 @@ github.com/aquasecurity/tml v0.6.1 h1:y2ZlGSfrhnn7t4ZJ/0rotuH+v5Jgv6BDDO5jB6A9gw
 github.com/aquasecurity/tml v0.6.1/go.mod h1:OnYMWY5lvI9ejU7yH9LCberWaaTBW7hBFsITiIMY2yY=
 github.com/aquasecurity/trivy-checks v1.12.2-0.20261012053351-ac85645895ed h1:Xbjt/2tD9S177jE1DVGBS59uDMgeunwABk51V5a6alI=
 github.com/aquasecurity/trivy-checks v1.12.2-0.20261012053351-ac85645895ed/go.mod h1:yS945IM2wPjHf8SPXGctaBC9NdZEgUI9EUMIJLD/rcQ=
-github.com/aquasecurity/trivy-db v0.0.0-20261012084708-cbebf2ecd6df h1:i4nhZSJ8kL5fHz/ksCdLZQRxmAgHBHu7h8kUS4IqoG4=
-github.com/aquasecurity/trivy-db v0.0.0-20261012084708-cbebf2ecd6df/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
+github.com/aquasecurity/trivy-db v0.0.0-20261106085459-47cac51ea952 h1:duBwRao9RXaSdyvucxeOgw6jFWik8G8IDSeDh0kMPFM=
+github.com/aquasecurity/trivy-db v0.0.0-20261106085459-47cac51ea952/go.mod h1:iIEV2oGuZScvfyX2SMIn78iVMNnepgo0QuJJh/srgVI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48 h1:JVgBIuIYbwG+ekC5lUHUpGJboPYiCcxiz06RCtz8neI=
 github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48/go.mod h1:Ldya37FLi0e/5Cjq2T5Bty7cFkzUDwTcPeQua+2M8i8=
 github.com/aquasecurity/trivy-kubernetes v0.9.1 h1:bSErQcavKXDh7XMwbGX7Vy//jR5+xhe/bOgfn9G+9lQ=

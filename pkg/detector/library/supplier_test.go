@@ -6,6 +6,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -105,6 +106,15 @@ func Test_lookupSupplier(t *testing.T) {
 			wantDefaultComparer: false,
 		},
 		{
+			name:                "echo nuget package returns supplier prefix and build-aware comparer",
+			eco:                 ecosystem.NuGet,
+			pkgName:             "system.security.cryptography.xml",
+			pkgVer:              "8.0.0+echo.1",
+			wantMatch:           library.Matched,
+			wantPrefix:          "echo nuget::",
+			wantDefaultComparer: false,
+		},
+		{
 			name:      "non-supplier pip package returns no match",
 			eco:       ecosystem.Pip,
 			pkgName:   "requests",
@@ -137,6 +147,8 @@ func Test_lookupSupplier(t *testing.T) {
 					assert.Equal(t, pep440.NewComparer(pep440.AllowLocalSpecifier()), comparer)
 				case ecosystem.Npm:
 					assert.Equal(t, npm.NewComparer(npm.WithBuildMetadata()), comparer)
+				case ecosystem.NuGet:
+					assert.Equal(t, compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)), comparer)
 				}
 			}
 		})

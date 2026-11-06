@@ -46,6 +46,13 @@ func TestEchoSupplier_Match(t *testing.T) {
 			want:    library.Matched,
 		},
 		{
+			name:    "nuget package with +echo.1 suffix",
+			eco:     ecosystem.NuGet,
+			pkgName: "system.security.cryptography.xml",
+			pkgVer:  "8.0.0+echo.1",
+			want:    library.Matched,
+		},
+		{
 			name:    "go package is not supported",
 			eco:     ecosystem.Go,
 			pkgName: "golang.org/x/crypto",

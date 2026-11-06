@@ -18,13 +18,13 @@ require (
 	github.com/aquasecurity/go-gem-version v0.0.0-20201115065557-8eed6fe000ce
 	github.com/aquasecurity/go-npm-version v0.0.3-0.20261005070944-1f16ed76cf11
 	github.com/aquasecurity/go-pep440-version v0.0.2-0.20260224065243-f9bba28c51a4
-	github.com/aquasecurity/go-version v0.0.1
+	github.com/aquasecurity/go-version v0.0.2-0.20261021125215-0932f3a79fb3
 	github.com/aquasecurity/iamgo v0.0.10
 	github.com/aquasecurity/table v1.11.0
 	github.com/aquasecurity/testdocker v0.0.0-20260423080828-99e7cbfdbe56
 	github.com/aquasecurity/tml v0.6.1
 	github.com/aquasecurity/trivy-checks v1.12.2-0.20261012053351-ac85645895ed
-	github.com/aquasecurity/trivy-db v0.0.0-20261012084708-cbebf2ecd6df
+	github.com/aquasecurity/trivy-db v0.0.0-20261106085459-47cac51ea952
 	github.com/aquasecurity/trivy-java-db v0.0.0-20240109071736-184bd7481d48
 	github.com/aquasecurity/trivy-kubernetes v0.9.1
 	github.com/aws/aws-sdk-go-v2 v1.47.3

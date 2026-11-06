@@ -64,3 +64,25 @@
               - "3.3.6+echo.2"
             VulnerableVersions:
               - "<3.3.6+echo.2"
+- bucket: "echo nuget::Echo OSV"
+  pairs:
+    - bucket: "system.security.cryptography.xml"
+      pairs:
+        - key: CVE-2026-26171
+          value:
+            VendorIDs:
+              - GHSA-w3x6-4m5h-cxqf
+              - ECHO-08ee-db76-1049
+            PatchedVersions:
+              - "8.0.0+echo.1"
+            VulnerableVersions:
+              - "<8.0.0+echo.1"
+        - key: CVE-2026-96959
+          value:
+            VendorIDs:
+              - GHSA-c399-9853-6jmj
+              - ECHO-a9c4-3288-b534
+            PatchedVersions:
+              - "8.0.5"
+            VulnerableVersions:
+              - "<8.0.5"
