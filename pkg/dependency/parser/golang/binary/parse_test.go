@@ -1,7 +1,10 @@
 package binary_test
 
 import (
+	"debug/elf"
 	"os"
+	"path/filepath"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -368,6 +371,110 @@ func TestParser_ELFSymbolVersion(t *testing.T) {
 			p := binary.NewParser()
 			got := p.ELFSymbolVersion(f, tt.moduleName)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+// TestStrSymbols checks StrSymbols against the symbols of f.Symbols whose
+// names end in ".str".
+func TestStrSymbols(t *testing.T) {
+	for _, name := range []string{
+		"testdata/goexperiment",
+		"testdata/main-version-via-ldflags.elf",
+		"testdata/replace.elf",
+		"testdata/test.elf",
+	} {
+		t.Run(filepath.Base(name), func(t *testing.T) {
+			f, err := elf.Open(name)
+			require.NoError(t, err)
+			defer f.Close()
+
+			syms, err := f.Symbols()
+			require.NoError(t, err)
+			var want []elf.Symbol
+			for _, sym := range syms {
+				if strings.HasSuffix(sym.Name, ".str") {
+					want = append(want, sym)
+				}
+			}
+
+			got, err := binary.StrSymbols(f)
+			require.NoError(t, err)
+			assert.Equal(t, want, got)
+		})
+	}
+}
+
+func TestLookupStrName(t *testing.T) {
+	long := strings.Repeat("x", 100<<10) + ".version.str"
+	table := "\x00main.version.str\x00runtime.main\x00" + long + "\x00example.com/cmd.ver.str"
+	tests := []struct {
+		name   string
+		off    int
+		want   string
+		wantOk bool
+	}{
+		{
+			name:   "name ending in .str",
+			off:    strings.Index(table, "main.version.str"),
+			want:   "main.version.str",
+			wantOk: true,
+		},
+		{
+			name:   "tail of a name",
+			off:    strings.Index(table, "version.str"),
+			want:   "version.str",
+			wantOk: true,
+		},
+		{
+			name: "offset inside the .str suffix",
+			off:  strings.Index(table, "tr\x00"),
+		},
+		{
+			name: "name with another suffix",
+			off:  strings.Index(table, "runtime.main"),
+		},
+		{
+			name: "empty name",
+			off:  0,
+		},
+		{
+			name:   "name longer than the read buffer",
+			off:    strings.Index(table, long),
+			want:   long,
+			wantOk: true,
+		},
+		{
+			name: "name without a NUL terminator",
+			off:  strings.Index(table, "example.com"),
+		},
+		{
+			name: "offset past the table",
+			off:  len(table) + 1,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok, err := binary.LookupStrName(strings.NewReader(table), uint32(tt.off))
+			require.NoError(t, err)
+			assert.Equal(t, tt.wantOk, ok)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func BenchmarkParser_ELFSymbolVersion(b *testing.B) {
+	for _, name := range []string{"testdata/main-version-via-ldflags.elf", "testdata/replace.elf"} {
+		b.Run(filepath.Base(name), func(b *testing.B) {
+			f, err := os.Open(name)
+			require.NoError(b, err)
+			defer f.Close()
+
+			p := binary.NewParser()
+			b.ReportAllocs()
+			for b.Loop() {
+				p.ELFSymbolVersion(f, "github.com/aquasecurity/test")
+			}
 		})
 	}
 }
