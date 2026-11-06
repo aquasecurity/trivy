@@ -1850,6 +1850,32 @@ resource "test_resource" "this" {
 	assert.Equal(t, "test_value", attr.GetRawValue())
 }
 
+func TestManySubmodulesAreAllEvaluated(t *testing.T) {
+	const numModules = maxContextIterations + 8
+
+	var mainTF bytes.Buffer
+	for i := range numModules {
+		fmt.Fprintf(&mainTF, "module \"m%02d\" {\n  source = \"./modules/foo\"\n  name = \"m%02d\"\n}\n", i, i)
+	}
+
+	files := map[string]string{
+		"main.tf": mainTF.String(),
+		"modules/foo/main.tf": `
+variable "name" {}
+
+resource "test_resource" "this" {
+	name = var.name
+}
+`,
+	}
+
+	modules := parse(t, files)
+	require.Len(t, modules, numModules+1)
+
+	resources := modules.GetResourcesByType("test_resource")
+	require.Len(t, resources, numModules)
+}
+
 func TestPopulateContextWithBlockInstances(t *testing.T) {
 
 	tests := []struct {
