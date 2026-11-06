@@ -665,6 +665,90 @@ func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			// `resolutions` pins markdown-it to 14.3.0, so yarn.lock lists it under that version
+			// while lint-tool still asks for ~14.1.0. It is reached only through a dev dependency.
+			name: "package pinned by resolutions",
+			dir:  "testdata/resolutions",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Yarn,
+						FilePath: "yarn.lock",
+						Packages: types.Packages{
+							{
+								ID:           "app@1.0.0",
+								Name:         "app",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipRoot,
+								DependsOn: []string{
+									"debug@4.3.5",
+									"lint-tool@1.0.0",
+								},
+							},
+							{
+								ID:           "debug@4.3.5",
+								Name:         "debug",
+								Version:      "4.3.5",
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 17,
+										EndLine:   24,
+									},
+								},
+								DependsOn: []string{
+									"ms@2.1.2",
+								},
+							},
+							{
+								ID:           "lint-tool@1.0.0",
+								Name:         "lint-tool",
+								Version:      "1.0.0",
+								Relationship: types.RelationshipDirect,
+								Dev:          true,
+								Locations: []types.Location{
+									{
+										StartLine: 26,
+										EndLine:   33,
+									},
+								},
+								DependsOn: []string{
+									"markdown-it@14.3.0",
+								},
+							},
+							{
+								ID:           "markdown-it@14.3.0",
+								Name:         "markdown-it",
+								Version:      "14.3.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Dev:          true,
+								Locations: []types.Location{
+									{
+										StartLine: 35,
+										EndLine:   40,
+									},
+								},
+							},
+							{
+								ID:           "ms@2.1.2",
+								Name:         "ms",
+								Version:      "2.1.2",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 42,
+										EndLine:   47,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "monorepo",
 			dir:  "testdata/monorepo",
 			want: &analyzer.AnalysisResult{
