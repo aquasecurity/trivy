@@ -73,3 +73,10 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	}
 	return repos
 }
+
+// displayURL returns the URL without the userinfo, query and fragment, which may carry
+// credentials or a token. It is used for URLs shown at the default log level and in errors.
+func displayURL(u url.URL) string {
+	u.User, u.RawQuery, u.Fragment, u.ForceQuery = nil, "", "", false
+	return u.String()
+}

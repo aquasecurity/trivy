@@ -952,7 +952,11 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 
 	mavenMetadata, err := parseMavenMetadata(resp.Body)
 	if err != nil {
-		return "", xerrors.Errorf("failed to parse maven-metadata.xml file: %w", err)
+		// Invalid metadata does not block resolution: as for a non-200 response, the non-timestamped
+		// POM is requested from this repository, and if it is not there, the remaining candidates,
+		// which may serve valid metadata for the same artifact, are tried.
+		p.logger.Warn("Invalid maven-metadata.xml", log.String("url", displayURL(*req.URL)), log.Err(err))
+		return "", nil
 	}
 
 	var pomFileName string
@@ -993,6 +997,9 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 
 	content, err := parsePom(resp.Body, false)
 	if err != nil {
+		// An invalid POM is not retried against another repository: once a repository claims to
+		// have the artifact, Maven treats its (even broken) response as authoritative.
+		p.logger.Warn("Invalid POM", log.String("url", displayURL(*req.URL)), log.Err(err))
 		return nil, xerrors.Errorf("failed to parse the remote POM: %w", err)
 	}
 
