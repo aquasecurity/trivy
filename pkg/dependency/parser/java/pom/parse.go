@@ -845,10 +845,10 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 	}
 
 	seen := set.New[string]()
-	// A 429 only skips the rate-limited mirror; the last one is kept so it can be returned
-	// if no other mirror serves the POM. A rate-limited mirror leaves the result unknown,
+	// A 429 only skips the rate-limited mirror; all rate-limited targets are collected so they can
+	// be returned if no other mirror serves the POM. A rate-limited mirror leaves the result unknown,
 	// so the 429 wins over the "not found" that the remaining mirrors may have returned.
-	var lastRateLimitErr error
+	var rateLimitTargets []rateLimitTarget
 	// Try all remoteRepositories by following order:
 	// 1. remoteRepositories from settings.xml
 	// 2. remoteRepositories from pom.xml (passed as parameter)
@@ -874,11 +874,11 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			if snapshot {
 				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate.url, repoPaths)
 				if err != nil {
-					if _, ok := errors.AsType[*rateLimitError](err); ok {
-						lastRateLimitErr = err
+					if target, ok := errors.AsType[*rateLimitTarget](err); ok {
+						rateLimitTargets = append(rateLimitTargets, *target)
 						continue
 					}
-					return nil, xerrors.Errorf("fetch maven-metadata.xml error: %w", err)
+					return nil, wrapWithRateLimitTargets(xerrors.Errorf("fetch maven-metadata.xml error: %w", err), rateLimitTargets)
 				}
 				// Use file name from `maven-metadata.xml` if it exists
 				if pomFileName != "" {
@@ -887,19 +887,19 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			fetched, err := p.fetchPOMFromRemoteRepository(ctx, candidate.url, repoPaths)
 			if err != nil {
-				if _, ok := errors.AsType[*rateLimitError](err); ok {
-					lastRateLimitErr = err
+				if target, ok := errors.AsType[*rateLimitTarget](err); ok {
+					rateLimitTargets = append(rateLimitTargets, *target)
 					continue
 				}
-				return nil, xerrors.Errorf("fetch repository error: %w", err)
+				return nil, wrapWithRateLimitTargets(xerrors.Errorf("fetch repository error: %w", err), rateLimitTargets)
 			} else if fetched == nil {
 				continue
 			}
 			return fetched, nil
 		}
 	}
-	if lastRateLimitErr != nil {
-		return nil, lastRateLimitErr
+	if len(rateLimitTargets) > 0 {
+		return nil, newRateLimitError(rateLimitTargets)
 	}
 	return nil, xerrors.Errorf("the POM was not found in remote repositories")
 }
@@ -943,7 +943,7 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return "", newRateLimitError(req, resp)
+		return "", newRateLimitTarget(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -984,7 +984,7 @@ func (p *Parser) fetchPOMFromRemoteRepository(ctx context.Context, repoURL url.U
 	defer resp.Body.Close()
 
 	if resp.StatusCode == http.StatusTooManyRequests {
-		return nil, newRateLimitError(req, resp)
+		return nil, newRateLimitTarget(req, resp)
 	}
 	if resp.StatusCode != http.StatusOK {
 		p.logger.Debug("Failed to fetch", log.String("url", req.URL.Redacted()), log.Int("statusCode", resp.StatusCode))
@@ -1071,7 +1071,24 @@ func shouldReturnError(err error) bool {
 	return errors.As(err, &ue)
 }
 
-// rateLimitError wraps a 429 Too Many Requests response from a remote Maven repository.
+// rateLimitTarget records a 429 response from a single remote request.
+type rateLimitTarget struct {
+	url        string
+	retryAfter string
+}
+
+func (t *rateLimitTarget) Error() string {
+	return fmt.Sprintf("429 Too Many Requests for %s", t.url)
+}
+
+func newRateLimitTarget(req *http.Request, resp *http.Response) *rateLimitTarget {
+	return &rateLimitTarget{
+		url:        req.URL.Redacted(),
+		retryAfter: resp.Header.Get("Retry-After"),
+	}
+}
+
+// rateLimitError wraps 429 Too Many Requests responses from remote Maven repositories.
 // The wrapped *types.UserError is exposed via Unwrap so the top level still prints the
 // clean 429 message.
 type rateLimitError struct {
@@ -1081,20 +1098,39 @@ type rateLimitError struct {
 func (e *rateLimitError) Error() string { return e.err.Error() }
 func (e *rateLimitError) Unwrap() error { return e.err }
 
-// newRateLimitError builds a rateLimitError for a 429 response, including Retry-After.
-func newRateLimitError(req *http.Request, resp *http.Response) *rateLimitError {
-	var ra string
-	if v := resp.Header.Get("Retry-After"); v != "" {
-		ra = fmt.Sprintf(" Retry-After: %s.", v)
+// formatRateLimitTargets lists the rate-limited URLs with their Retry-After values, one per line.
+func formatRateLimitTargets(targets []rateLimitTarget) string {
+	var lines []string
+	for _, t := range targets {
+		line := fmt.Sprintf("  - %s", t.url)
+		if t.retryAfter != "" {
+			line += fmt.Sprintf(" (Retry-After: %s)", t.retryAfter)
+		}
+		lines = append(lines, line)
 	}
+	return strings.Join(lines, "\n")
+}
+
+// wrapWithRateLimitTargets appends the 429 responses collected before a later failure to that failure.
+// Unlike newRateLimitError, it keeps the failure itself in the error chain, so that e.g. a timeout
+// is neither hidden behind the *types.UserError nor loses the diagnostics.
+func wrapWithRateLimitTargets(err error, targets []rateLimitTarget) error {
+	if len(targets) == 0 {
+		return err
+	}
+	return fmt.Errorf("%w\nBefore that, remote Maven repositories returned 429 Too Many Requests for:\n%s",
+		err, formatRateLimitTargets(targets))
+}
+
+func newRateLimitError(targets []rateLimitTarget) *rateLimitError {
 	return &rateLimitError{
 		err: &types.UserError{
 			Message: fmt.Sprintf(
-				"remote Maven repository returned 429 Too Many Requests for %s.%s\n"+
-					"The repository blocks all subsequent requests from this IP until the block clears.\n"+
+				"remote Maven repositories returned 429 Too Many Requests for:\n%s\n"+
+					"The repositories block all subsequent requests from this IP until the block clears.\n"+
 					"To avoid this, populate the local Maven cache before scanning "+
 					"(e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).",
-				req.URL.Redacted(), ra,
+				formatRateLimitTargets(targets),
 			),
 		},
 	}

@@ -241,7 +241,7 @@ func TestPom_Parse(t *testing.T) {
 				w.Header().Set("Retry-After", "1800")
 				w.WriteHeader(http.StatusTooManyRequests)
 			}),
-			wantErr: "429 Too Many Requests for http://",
+			wantErr: "429 Too Many Requests for:\n  - http://",
 		},
 		{
 			name:      "snapshot repository returns 429 Too Many Requests on maven-metadata.xml",
@@ -250,7 +250,7 @@ func TestPom_Parse(t *testing.T) {
 				w.Header().Set("Retry-After", "1800")
 				w.WriteHeader(http.StatusTooManyRequests)
 			}),
-			wantErr: "429 Too Many Requests for http://",
+			wantErr: "429 Too Many Requests for:\n  - http://",
 		},
 		{
 			name:      "snapshot dependency",
