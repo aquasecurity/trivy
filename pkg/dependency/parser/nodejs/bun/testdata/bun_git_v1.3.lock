@@ -1,0 +1,14 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "dependencies": {
+        "kind-of": "github:jonschlinkert/kind-of#6.0.3",
+      },
+    },
+  },
+  "packages": {
+    "kind-of": ["kind-of@github:jonschlinkert/kind-of#668b595", {}, "jonschlinkert-kind-of-668b595"],
+  }
+}
