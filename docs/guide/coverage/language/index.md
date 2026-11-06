@@ -36,6 +36,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [.NET](dotnet.md)    | packages.lock.json                                                                         |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | packages.config                                                                            |     ✅     |     ✅      |       ✅        |       ✅        |
 |                      | .deps.json                                                                                 |     ✅     |     ✅      |       ✅        |       ✅        |
+|                      | Single-file executables (`PublishSingleFile`)                                              |     ✅     |     ✅      |       -        |       -        |
 |                      | *Packages.props[^9]                                                                        |     ✅     |     ✅      |       ✅        |       ✅        |
 | [Java](java.md)      | JAR/WAR/PAR/EAR[^3]                                                                        |     ✅     |     ✅      |       -        |       -        |
 |                      | pom.xml                                                                                    |     -     |     -      |       ✅        |       ✅        |
