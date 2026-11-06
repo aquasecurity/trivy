@@ -145,7 +145,8 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		for n, v := range importer.DevDependencies {
 			directDevDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
-		for n, v := range importer.Dependencies {
+		// Optional dependencies are installed in production too (`pnpm install --prod` keeps them).
+		for n, v := range lo.Assign(importer.Dependencies, importer.OptionalDependencies) {
 			directProdDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
 	}
