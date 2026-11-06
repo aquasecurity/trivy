@@ -83,6 +83,19 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			// Xcode writes the location as it was typed, so a trailing slash is kept.
+			name:      "location with a trailing slash",
+			inputFile: "testdata/trailing-slash-Package.resolved",
+			want: []ftypes.Package{
+				{
+					ID:        "github.com/sparkle-project/Sparkle@2.9.6",
+					Name:      "github.com/sparkle-project/Sparkle",
+					Version:   "2.9.6",
+					Locations: []ftypes.Location{{StartLine: 3, EndLine: 11}},
+				},
+			},
+		},
+		{
 			name:      "empty",
 			inputFile: "testdata/empty-Package.resolved",
 			want:      nil,
