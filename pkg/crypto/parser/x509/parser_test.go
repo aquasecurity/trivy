@@ -445,6 +445,14 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			name:  "certificate bundle with a malformed RSA-PSS key",
+			input: bytes.Join([][]byte{fixtures.certificatePEM, certificatePEM(fixtures.malformedPSSCertificate)}, nil),
+			want: []found{
+				pemCertificate,
+				certificateKey,
+			},
+		},
+		{
 			name:  "X25519 certificate PEM",
 			input: certificatePEM(fixtures.x25519Certificate),
 			want: []found{
@@ -813,6 +821,20 @@ func TestParseAssets(t *testing.T) {
 		Name: "DSA-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Family:    "DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+
+	rsaPSSAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method:     ftypes.CryptoMethodOID,
+			Value:      "1.2.840.113549.1.1.10",
+			Parameters: "key-size=2048",
+		},
+		Name: "RSA-PSS-2048",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "RSASSA-PSS",
 			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
@@ -1323,6 +1345,33 @@ func TestParseAssets(t *testing.T) {
 			},
 		},
 		{
+			// crypto/x509 does not parse an RSA-PSS key, so its size comes from the modulus
+			// in the encoded form.
+			name:  "RSA-PSS public key",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PUBLIC KEY", Bytes: fixtures.pssPKIXDER}),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindKey,
+						KeyType:  ftypes.CryptoKeyTypePublic,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.pssPKIXDER),
+						Name:     "RSA-PSS-2048 public key",
+						Key: &ftypes.CryptoKey{
+							Size: 2048,
+						},
+						Relationships: []ftypes.CryptoRelationship{{
+							Type:         ftypes.CryptoRelationshipUsedWith,
+							RelatedAsset: rsaPSSAlgorithm.Descriptor(),
+						}},
+					},
+					FilePath: parsedFilePath,
+					Format:   ftypes.CryptoKeyFormatPKIX,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(rsaPSSAlgorithm),
+			},
+		},
+		{
 			// A standalone key states the container it was found in, which the key of a
 			// certificate has no equivalent of.
 			name:  "public key",
@@ -1529,10 +1578,7 @@ func TestParseCertificatePathLength(t *testing.T) {
 	}
 }
 
-// TestParseUnknownSignatureAlgorithm covers RSASSA-PSS, which the catalog leaves out
-// because its variants share one OID. An algorithm outside the catalog is still described,
-// named by the OID the certificate carries.
-func TestParseUnknownSignatureAlgorithm(t *testing.T) {
+func TestParseRSAPSSSignature(t *testing.T) {
 	fixtures := newFixtures(t)
 
 	assets := parse(t, certificatePEM(fixtures.pssCertificate))
@@ -1544,9 +1590,10 @@ func TestParseUnknownSignatureAlgorithm(t *testing.T) {
 			Method: ftypes.CryptoMethodOID,
 			Value:  "1.2.840.113549.1.1.10",
 		},
-		Name: "1.2.840.113549.1.1.10",
+		Name: "RSA-PSS",
 		Algorithm: &ftypes.CryptoAlgorithm{
-			Primitive: ftypes.CryptoPrimitiveUnknown,
+			Family:    "RSASSA-PSS",
+			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
 	assert.Equal(t, signature, assets[1].CryptoAssetInfo)
@@ -1672,6 +1719,9 @@ type testFixtures struct {
 	// malformedKeyCertificate carries an X448 key whose SubjectPublicKeyInfo has an extra
 	// element, which crypto/x509 accepts for a key it does not decode.
 	malformedKeyCertificate *stdx509.Certificate
+	// malformedPSSCertificate carries an RSASSA-PSS key whose public value is not an
+	// RSAPublicKey.
+	malformedPSSCertificate *stdx509.Certificate
 	pathLenZero             *stdx509.Certificate
 	noCommonName            *stdx509.Certificate
 	otherCertificate        *stdx509.Certificate
@@ -1695,6 +1745,7 @@ type testFixtures struct {
 	dsaDER                  []byte
 	x25519PKCS8DER          []byte
 	x25519PKIXDER           []byte
+	pssPKIXDER              []byte
 	// malformedEd25519PKIXDER is an Ed25519 key with a public value of the wrong length.
 	malformedEd25519PKIXDER []byte
 	// malformedX25519PKIXDER is an X25519 key with a public value of the wrong length.
@@ -1815,7 +1866,6 @@ func newFixtures(t *testing.T) testFixtures {
 		NotAfter:     time.Unix(2, 0),
 	}, mldsaKey)
 
-	// A certificate signed with RSASSA-PSS, whose OID the catalog leaves out.
 	pssCertificate := newCertificate(t, &stdx509.Certificate{
 		SerialNumber:       big.NewInt(5),
 		Subject:            pkix.Name{CommonName: "pss.example.test"},
@@ -1892,6 +1942,10 @@ func newFixtures(t *testing.T) testFixtures {
 	// The signature no longer matches, which crypto/x509 does not check when parsing.
 	malformedKeyCertificate := withSubjectPublicKeyInfo(t, x448Certificate, malformedSPKI)
 
+	oidRSASSAPSS := asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}
+	pssPKIXDER := marshalSPKI(t, oidRSASSAPSS, stdx509.MarshalPKCS1PublicKey(&rsaKey.PublicKey))
+	malformedPSSCertificate := withSubjectPublicKeyInfo(t, otherCertificate, marshalSPKI(t, oidRSASSAPSS, []byte{1}))
+
 	unsupportedDER, err := asn1.Marshal(struct {
 		Value string
 	}{Value: "unsupported"})
@@ -1906,6 +1960,7 @@ func newFixtures(t *testing.T) testFixtures {
 		x448Certificate:         x448Certificate,
 		x25519Certificate:       parseCertificatePEM(t, x25519CertificatePEM),
 		malformedKeyCertificate: malformedKeyCertificate,
+		malformedPSSCertificate: malformedPSSCertificate,
 		pathLenZero:             pathLenZero,
 		noCommonName:            noCommonName,
 		otherCertificate:        otherCertificate,
@@ -1929,6 +1984,7 @@ func newFixtures(t *testing.T) testFixtures {
 		dsaDER:                  dsaDER,
 		x25519PKCS8DER:          x25519PKCS8DER,
 		x25519PKIXDER:           x25519PKIXDER,
+		pssPKIXDER:              pssPKIXDER,
 		malformedEd25519PKIXDER: marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 112}, []byte{1}),
 		malformedX25519PKIXDER:  marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 110}, []byte{1}),
 		csrDER:                  csrDER,

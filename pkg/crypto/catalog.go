@@ -37,9 +37,6 @@ type algorithm struct {
 // An OID with no family has no pattern to follow, because the vocabulary defines one per
 // family. Its name is built by the same rule as every other: the base name carries the
 // values of the parameters that distinguish the asset, which yields RSA-2048 and EC-P-256.
-//
-// RSA-PSS is absent on purpose: its variants share one OID and differ only in the
-// signature parameters, so identifying it needs parameter-aware handling.
 var algorithms = map[string]algorithm{
 	// Certificate signature algorithms.
 	"1.2.840.113549.1.1.4": {
@@ -122,6 +119,18 @@ var algorithms = map[string]algorithm{
 	"1.2.840.113549.1.1.1": {
 		name:      "RSA",
 		primitive: ftypes.CryptoPrimitiveUnknown,
+		parameterNames: []ftypes.CryptoAlgorithmParameterName{
+			ftypes.CryptoParameterKeySize,
+		},
+		strengthBasis: rsaStrengthBasis,
+	},
+	// RSASSA-PSS uses one OID for both the key and the signature algorithm. Its parameters
+	// other than the key size are not read, so keys of one size share one asset, and all
+	// signatures share one asset.
+	"1.2.840.113549.1.1.10": {
+		name:      "RSA-PSS",
+		family:    "RSASSA-PSS",
+		primitive: ftypes.CryptoPrimitiveSignature,
 		parameterNames: []ftypes.CryptoAlgorithmParameterName{
 			ftypes.CryptoParameterKeySize,
 		},

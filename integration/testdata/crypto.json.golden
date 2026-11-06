@@ -749,9 +749,11 @@
             "Method": "oid",
             "Value": "1.2.840.113549.1.1.10"
           },
-          "Name": "1.2.840.113549.1.1.10",
+          "Name": "RSA-PSS",
           "Algorithm": {
-            "Primitive": "unknown"
+            "Family": "RSASSA-PSS",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
           },
           "FilePath": "etc/ssl/certs/rsa-pss-sha1.pem",
           "Layer": {
@@ -766,9 +768,11 @@
             "Method": "oid",
             "Value": "1.2.840.113549.1.1.10"
           },
-          "Name": "1.2.840.113549.1.1.10",
+          "Name": "RSA-PSS",
           "Algorithm": {
-            "Primitive": "unknown"
+            "Family": "RSASSA-PSS",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
           },
           "FilePath": "etc/ssl/certs/rsa-pss-sha256.pem",
           "Layer": {

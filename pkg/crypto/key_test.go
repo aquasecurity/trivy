@@ -273,7 +273,9 @@ func TestDescribeKey(t *testing.T) {
 func TestDescribeRawPublicKey(t *testing.T) {
 	ed448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 113}, make([]byte, 57))
 	x448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 111}, make([]byte, 56))
-	rsaPSS := marshalSPKI(t, asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}, make([]byte, 270))
+	fixtures := newKeyFixtures(t)
+	rsaPSS := marshalSPKI(t, asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10},
+		stdx509.MarshalPKCS1PublicKey(fixtures.rsaPublic))
 
 	ed448Algorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
@@ -301,12 +303,14 @@ func TestDescribeRawPublicKey(t *testing.T) {
 	rsaPSSAlgorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
 		Identity: ftypes.CryptoIdentity{
-			Method: ftypes.CryptoMethodOID,
-			Value:  "1.2.840.113549.1.1.10",
+			Method:     ftypes.CryptoMethodOID,
+			Value:      "1.2.840.113549.1.1.10",
+			Parameters: "key-size=2048",
 		},
-		Name: "1.2.840.113549.1.1.10",
+		Name: "RSA-PSS-2048",
 		Algorithm: &ftypes.CryptoAlgorithm{
-			Primitive: ftypes.CryptoPrimitiveUnknown,
+			Family:    "RSASSA-PSS",
+			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
 
@@ -354,7 +358,6 @@ func TestDescribeRawPublicKey(t *testing.T) {
 			wantAlgorithm: x448Algorithm,
 		},
 		{
-			// The OID does not fix the size of an RSA-PSS key.
 			name:    "RSA-PSS public key",
 			spki:    rsaPSS,
 			keyType: ftypes.CryptoKeyTypePublic,
@@ -362,8 +365,8 @@ func TestDescribeRawPublicKey(t *testing.T) {
 				Kind:     ftypes.CryptoKindKey,
 				KeyType:  ftypes.CryptoKeyTypePublic,
 				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, rsaPSS),
-				Name:     "1.2.840.113549.1.1.10 public key",
-				Key:      &ftypes.CryptoKey{},
+				Name:     "RSA-PSS-2048 public key",
+				Key:      &ftypes.CryptoKey{Size: 2048},
 				Relationships: []ftypes.CryptoRelationship{{
 					Type:         ftypes.CryptoRelationshipUsedWith,
 					RelatedAsset: rsaPSSAlgorithm.Descriptor(),
@@ -496,6 +499,11 @@ func TestParseSubjectPublicKeyInfo(t *testing.T) {
 			name:    "X25519 key of the wrong length",
 			spki:    marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 110}, make([]byte, 31)),
 			wantErr: "248 bits instead of 256",
+		},
+		{
+			name:    "RSA-PSS key that is not an RSA public key",
+			spki:    marshalSPKI(t, asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}, make([]byte, 270)),
+			wantErr: "parse RSASSA-PSS public key",
 		},
 	}
 
