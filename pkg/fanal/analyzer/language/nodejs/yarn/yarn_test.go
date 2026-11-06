@@ -1,6 +1,7 @@
 package yarn
 
 import (
+	"fmt"
 	"os"
 	"testing"
 
@@ -9,6 +10,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/mapfs"
 )
 
 func Test_yarnLibraryAnalyzer_Analyze(t *testing.T) {
@@ -1082,5 +1084,115 @@ func Test_yarnLibraryAnalyzer_Required(t *testing.T) {
 			got := a.Required(tt.filePath, nil)
 			assert.Equal(t, tt.want, got)
 		})
+	}
+}
+
+func Test_yarnAnalyzer_DependencyProtocols(t *testing.T) {
+	tests := []struct {
+		name       string
+		constraint string
+		pattern    string
+		version    string
+		wantName   string
+		wantSkip   bool
+	}{
+		{name: "explicit npm version", constraint: "npm:1.2.5", wantName: "foo"},
+		{name: "explicit npm range", constraint: "npm:^1.2.0", wantName: "foo"},
+		{name: "scoped remap", constraint: "npm:@scope/pkg@^1.0.0", wantName: "@scope/pkg"},
+		{name: "yarn alias", constraint: "yarn:bar@^1.0.0", wantName: "bar"},
+		{name: "numeric yarn alias", constraint: "yarn:1.2.5", pattern: "1.2.5", wantName: "1.2.5"},
+		{name: "bare alias", constraint: "npm:bar", pattern: "bar", wantName: "bar"},
+		{name: "bare scoped alias", constraint: "npm:@scope/pkg", pattern: "@scope/pkg", wantName: "@scope/pkg"},
+		{name: "tag exact pattern", constraint: "latest", pattern: "latest", wantName: "foo"},
+		{name: "alias tag exact pattern", constraint: "npm:bar@latest", pattern: "bar@latest", wantName: "bar"},
+		{name: "tag without matching pattern", constraint: "latest", wantSkip: true},
+		{name: "alias tag without matching pattern", constraint: "npm:bar@latest", wantSkip: true},
+		{name: "bare alias without matching pattern", constraint: "npm:bar", wantSkip: true},
+		{name: "invalid version", constraint: "^1.0.0", version: "invalid", wantSkip: true},
+		{name: "nonmatching version", constraint: "^2.0.0", wantSkip: true},
+		{name: "https", constraint: "https://example.com/foo.tgz", wantSkip: true},
+		{name: "git", constraint: "git+ssh://git@example.com/foo.git", wantSkip: true},
+		{name: "file", constraint: "file:../foo", wantSkip: true},
+		{name: "link", constraint: "link:../foo", wantSkip: true},
+		{name: "patch", constraint: "patch:foo@npm%3A1.2.5#./foo.patch", wantSkip: true},
+		{name: "workspace cannot match registry package", constraint: "workspace:*", wantSkip: true},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
+			require.NoError(t, err)
+			pkg := types.Package{ID: "foo@1.2.5", Name: "foo", Version: "1.2.5"}
+			if tt.version != "" {
+				pkg.Version = tt.version
+			}
+			pkgs := map[string]types.Package{
+				pkg.ID:        pkg,
+				"other@1.0.0": {ID: "other@1.0.0", Name: "other", Version: "1.0.0"},
+			}
+			var patterns map[string][]string
+			if tt.pattern != "" {
+				patterns = map[string][]string{pkg.ID: {"foo@" + tt.pattern}}
+			}
+			parent := types.Package{}
+			err = a.(*yarnAnalyzer).walkDependencies(&parent, pkgs, map[string]string{
+				"foo": tt.constraint, "other": "1.0.0",
+			}, patterns, true)
+			require.NoError(t, err)
+			assert.True(t, pkgs["other@1.0.0"].Dev)
+			assert.Equal(t, types.RelationshipDirect, pkgs["other@1.0.0"].Relationship)
+			if tt.wantSkip {
+				assert.Equal(t, pkg, pkgs[pkg.ID])
+				assert.Equal(t, []string{"other@1.0.0"}, parent.DependsOn)
+			} else {
+				assert.Equal(t, tt.wantName, pkgs[pkg.ID].Name)
+				assert.True(t, pkgs[pkg.ID].Dev)
+				assert.Equal(t, types.RelationshipDirect, pkgs[pkg.ID].Relationship)
+				assert.ElementsMatch(t, []string{pkg.ID, "other@1.0.0"}, parent.DependsOn)
+			}
+		})
+	}
+}
+
+func Test_yarnAnalyzer_WorkspaceProtocols(t *testing.T) {
+	for _, constraint := range []string{"workspace:*", "workspace:^", "workspace:~", "workspace:packages/a"} {
+		for _, version := range []string{"1.0.0", "v1.0.0"} {
+			t.Run(constraint+"/"+version, func(t *testing.T) {
+				fsys := mapfs.New()
+				require.NoError(t, fsys.MkdirAll("packages/a", 0o755))
+				require.NoError(t, fsys.MkdirAll("packages/b", 0o755))
+				files := map[string]string{
+					"package.json":            `{"name":"root","version":"1.0.0","workspaces":["packages/*"],"devDependencies":{"minimist":"npm:1.2.5"}}`,
+					"packages/a/package.json": fmt.Sprintf(`{"name":"a","version":%q}`, version),
+					"packages/b/package.json": fmt.Sprintf(`{"name":"b","version":"1.0.0","dependencies":{"a":%q}}`, constraint),
+					"yarn.lock": `__metadata:
+  version: 8
+
+"minimist@npm:1.2.5":
+  version: 1.2.5
+  resolution: "minimist@npm:1.2.5"
+`,
+				}
+				for name, data := range files {
+					require.NoError(t, fsys.WriteVirtualFile(name, []byte(data), 0o644))
+				}
+				a, err := newYarnAnalyzer(analyzer.AnalyzerOptions{})
+				require.NoError(t, err)
+				got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{FS: fsys})
+				require.NoError(t, err)
+				require.Len(t, got.Applications, 1)
+				pkgs := make(map[string]types.Package)
+				for _, pkg := range got.Applications[0].Packages {
+					pkgs[pkg.ID] = pkg
+				}
+				require.Len(t, pkgs, 4)
+				workspace := pkgs["a@"+version]
+				assert.Equal(t, "a", workspace.Name)
+				assert.Equal(t, types.RelationshipWorkspace, workspace.Relationship)
+				assert.Equal(t, []string{workspace.ID}, pkgs["b@1.0.0"].DependsOn)
+				assert.Equal(t, "minimist", pkgs["minimist@1.2.5"].Name)
+				assert.True(t, pkgs["minimist@1.2.5"].Dev)
+				assert.Equal(t, types.RelationshipDirect, pkgs["minimist@1.2.5"].Relationship)
+			})
+		}
 	}
 }
