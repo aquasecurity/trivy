@@ -157,4 +157,40 @@ var (
 	}
 
 	multipleWsDeps = []ftypes.Dependency(nil)
+
+	gitV14Pkgs = []ftypes.Package{
+		{
+			ID:           "to-regex-range@github:micromatch/to-regex-range#1191a52",
+			Name:         "to-regex-range",
+			Version:      "github:micromatch/to-regex-range#1191a52",
+			Relationship: ftypes.RelationshipDirect,
+			Dev:          false,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 12,
+					EndLine:   12,
+				},
+			},
+		},
+		{
+			ID:           "is-number@7.0.0",
+			Name:         "is-number",
+			Version:      "7.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Dev:          false,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 13,
+					EndLine:   13,
+				},
+			},
+		},
+	}
+
+	gitV14Deps = []ftypes.Dependency{
+		{
+			ID:        "to-regex-range@github:micromatch/to-regex-range#1191a52",
+			DependsOn: []string{"is-number@7.0.0"},
+		},
+	}
 )

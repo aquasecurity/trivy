@@ -65,17 +65,32 @@ func (p *ParsedPackage) UnmarshalJSON(data []byte) error {
 		return nil
 	}
 
-	// Meta can be 2 or 3 array elements
-	// [pkg: string, info: BunLockFilePackageInfo]
-	// [pkg: string, info: BunLockFilePackageInfo, bunTag: string]
-	// [pkg: string, info: Pick<BunLockFileBasePackageInfo, "bin" | "binDir">]
-	// [pkg: string, registry: string, info: BunLockFilePackageInfo, integrity: string]
-	// cf.https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7745-L7755
+	// Package tuples:
+	// [pkg]
+	// [pkg, info]
+	// [pkg, info, bunTag]
+	// [pkg, registry, info, integrity]
+	// Bun >= 1.4 git packages are also 4 elements, but info is the second
+	// element: [id, info, tag, integrity]
+	// cf. https://github.com/oven-sh/bun/blob/61e03a275885b9b48f7a28f6dfbbbe1156eedca6/packages/bun-types/bun.d.ts#L7745-L7755
 	metaRaw := raw[1]
-	if len(raw) > 3 {
+	if len(raw) > 3 && !jsonValueIsObject(raw[1]) {
 		metaRaw = raw[2]
 	}
 	return json.Unmarshal(metaRaw, &p.Meta)
+}
+
+// jsonValueIsObject reports whether v is a JSON object, ignoring leading whitespace.
+func jsonValueIsObject(v jsontext.Value) bool {
+	for _, b := range v {
+		switch b {
+		case ' ', '\n', '\r', '\t':
+			continue
+		default:
+			return b == '{'
+		}
+	}
+	return false
 }
 
 func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package, []ftypes.Dependency, error) {
