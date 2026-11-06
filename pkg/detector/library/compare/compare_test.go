@@ -16,10 +16,10 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 		advisory types.Advisory
 	}
 	tests := []struct {
-		name              string
-		withBuildMetadata bool
-		args              args
-		want              bool
+		name               string
+		buildMetadataOrder version.BuildMetadataOrder
+		args               args
+		want               bool
 	}{
 		{
 			name: "happy path",
@@ -108,8 +108,7 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name:              "without WithBuildMetadata: build metadata ignored",
-			withBuildMetadata: false,
+			name: "BuildMetadataOrder unset: build metadata ignored",
 			args: args{
 				ver: "8.0.0+echo.1",
 				advisory: types.Advisory{
@@ -120,8 +119,8 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: false,
 		},
 		{
-			name:              "with WithBuildMetadata: build below the patched build",
-			withBuildMetadata: true,
+			name:               "BuildMetadataOrderNodeSemver: build below the patched build",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
 			args: args{
 				ver: "8.0.0+echo.1",
 				advisory: types.Advisory{
@@ -132,8 +131,8 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name:              "with WithBuildMetadata: build numbers compare numerically",
-			withBuildMetadata: true,
+			name:               "BuildMetadataOrderNodeSemver: build numbers compare numerically",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
 			args: args{
 				ver: "8.0.0+echo.2",
 				advisory: types.Advisory{
@@ -144,8 +143,8 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name:              "with WithBuildMetadata: Echo patched version does not suppress release",
-			withBuildMetadata: true,
+			name:               "BuildMetadataOrderNodeSemver: Echo patched version does not suppress release",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
 			args: args{
 				ver: "8.0.0",
 				advisory: types.Advisory{
@@ -156,8 +155,8 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			want: true,
 		},
 		{
-			name:              "with WithBuildMetadata: exact Echo patched version is suppressed",
-			withBuildMetadata: true,
+			name:               "BuildMetadataOrderNodeSemver: exact Echo patched version is suppressed",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
 			args: args{
 				ver: "8.0.0+echo.1",
 				advisory: types.Advisory{
@@ -171,8 +170,8 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v := compare.GenericComparer{}
-			if tt.withBuildMetadata {
-				v = compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver))
+			if tt.buildMetadataOrder != 0 {
+				v = compare.NewGenericComparer(compare.WithBuildMetadata(tt.buildMetadataOrder))
 			}
 			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
