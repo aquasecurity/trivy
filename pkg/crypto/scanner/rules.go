@@ -57,6 +57,14 @@ var rules = []rule{
 		match:    matchSmallECPrivateKey,
 		message:  smallECPrivateKeyMessage,
 	},
+	{
+		id:       "CRYPTO-0006",
+		title:    "MD5 certificate signature",
+		severity: dbTypes.SeverityHigh,
+		kind:     ftypes.CryptoKindCertificate,
+		match:    matchMD5Signature,
+		message:  md5SignatureMessage,
+	},
 }
 
 const (
@@ -85,6 +93,24 @@ var sha1SignatureOIDs = []string{
 func matchSHA1Signature(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
 	signature, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipSignedWith)
 	if !found || !slices.Contains(sha1SignatureOIDs, signature.Value) {
+		return types.CryptoEvidence{}, false
+	}
+	return types.CryptoEvidence{
+		SignatureAlgorithm:    crypto.AlgorithmName(signature.Value),
+		SignatureAlgorithmOID: signature.Value,
+	}, true
+}
+
+// md5SignatureOIDs are the signature algorithms that hash with MD5. RSASSA-PSS names its
+// hash in parameters that are not collected, so it is left out.
+var md5SignatureOIDs = []string{
+	"1.2.840.113549.1.1.4", // md5WithRSAEncryption, RFC 3279 section 2.2.1
+	"1.3.14.3.2.3",         // md5WithRSA under the OIW arc
+}
+
+func matchMD5Signature(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
+	signature, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipSignedWith)
+	if !found || !slices.Contains(md5SignatureOIDs, signature.Value) {
 		return types.CryptoEvidence{}, false
 	}
 	return types.CryptoEvidence{
@@ -183,6 +209,10 @@ func matchExpiredCertificate(asset ftypes.CryptoAsset, now time.Time) (types.Cry
 }
 
 func sha1SignatureMessage(e types.CryptoEvidence) string {
+	return fmt.Sprintf("Certificate is signed with %s", e.SignatureAlgorithm)
+}
+
+func md5SignatureMessage(e types.CryptoEvidence) string {
 	return fmt.Sprintf("Certificate is signed with %s", e.SignatureAlgorithm)
 }
 
