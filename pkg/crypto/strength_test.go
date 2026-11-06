@@ -79,9 +79,20 @@ func TestAssessStrength(t *testing.T) {
 			wantCategory: new(0),
 		},
 		{
-			// RSASSA-PSS is left out of the catalog.
+			name:          "RSA-PSS key",
+			oid:           "1.2.840.113549.1.1.10",
+			size:          2048,
+			wantClassical: new(112),
+			wantCategory:  new(0),
+		},
+		{
+			name:         "RSA-PSS signature algorithm",
+			oid:          "1.2.840.113549.1.1.10",
+			wantCategory: new(0),
+		},
+		{
 			name: "algorithm outside the catalog",
-			oid:  "1.2.840.113549.1.1.10",
+			oid:  "1.3.101.110",
 		},
 	}
 
