@@ -102,8 +102,9 @@ func initWriter(output io.Writer, report types.Report, option flag.Options) (Wri
 		if strings.HasPrefix(option.Template, "@") && strings.HasSuffix(option.Template, "sarif.tpl") {
 			log.Warn("Using `--template sarif.tpl` is deprecated. Please migrate to `--format sarif`. See https://github.com/aquasecurity/trivy/discussions/1571")
 			return &SarifWriter{
-				Output:  output,
-				Version: option.AppVersion,
+				Output:         output,
+				Version:        option.AppVersion,
+				ShowSuppressed: option.ShowSuppressed,
 			}, nil
 		}
 		writer, err := NewTemplateWriter(output, option.Template, option.AppVersion)
@@ -113,9 +114,10 @@ func initWriter(output io.Writer, report types.Report, option flag.Options) (Wri
 		return writer, nil
 	case types.FormatSarif:
 		return &SarifWriter{
-			Output:  output,
-			Version: option.AppVersion,
-			Target:  sarifTarget(report.ArtifactType, option.Target),
+			Output:         output,
+			Version:        option.AppVersion,
+			Target:         sarifTarget(report.ArtifactType, option.Target),
+			ShowSuppressed: option.ShowSuppressed,
 		}, nil
 	case types.FormatCosignVuln:
 		return predicate.NewVulnWriter(output, option.AppVersion), nil
