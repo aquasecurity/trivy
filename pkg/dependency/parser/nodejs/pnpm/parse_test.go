@@ -83,6 +83,24 @@ func TestParse(t *testing.T) {
 			want:     pnpmV9MultiVersion,
 			wantDeps: pnpmV9MultiVersionDeps,
 		},
+		{
+			name:     "v9 with npm aliases",
+			file:     "testdata/pnpm-lock_v9_alias.yaml",
+			want:     pnpmV9Alias,
+			wantDeps: pnpmV9AliasDeps,
+		},
+		{
+			name:     "v9 with workspace package from pnpm deploy",
+			file:     "testdata/pnpm-lock_v9_deploy.yaml",
+			want:     pnpmV9Deploy,
+			wantDeps: pnpmV9DeployDeps,
+		},
+		{
+			name:     "v9 with npm alias in snapshot dependencies",
+			file:     "testdata/pnpm-lock_v9_nested_alias.yaml",
+			want:     pnpmV9NestedAlias,
+			wantDeps: pnpmV9NestedAliasDeps,
+		},
 	}
 
 	for _, tt := range tests {
@@ -302,5 +320,69 @@ func Test_parseVersion(t *testing.T) {
 			require.Equal(t, tt.wantVer, gotVer)
 		})
 
+	}
+}
+
+func Test_depPath(t *testing.T) {
+	tests := []struct {
+		name      string
+		pkgName   string
+		reference string
+		want      string
+	}{
+		{
+			name:      "version",
+			pkgName:   "mkdirp",
+			reference: "0.5.1",
+			want:      "mkdirp@0.5.1",
+		},
+		{
+			name:      "version with peer deps",
+			pkgName:   "react-dom",
+			reference: "18.0.0(react@18.0.0)",
+			want:      "react-dom@18.0.0(react@18.0.0)",
+		},
+		{
+			name:      "file",
+			pkgName:   "shared",
+			reference: "file:../shared",
+			want:      "shared@file:../shared",
+		},
+		{
+			name:      "url",
+			pkgName:   "is-negative",
+			reference: "https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5",
+			want:      "is-negative@https://codeload.github.com/zkochan/is-negative/tar.gz/2fa0531ab04e300a24ef4fd7fb3a280eccb7ccc5",
+		},
+		{
+			name:      "alias",
+			pkgName:   "my-mkdirp",
+			reference: "mkdirp@0.5.1",
+			want:      "mkdirp@0.5.1",
+		},
+		{
+			name:      "alias with peer deps",
+			pkgName:   "my-react-dom",
+			reference: "react-dom@18.0.0(react@18.0.0)",
+			want:      "react-dom@18.0.0(react@18.0.0)",
+		},
+		{
+			name:      "alias to scoped package",
+			pkgName:   "my-xmldom",
+			reference: "@xmldom/xmldom@0.8.13",
+			want:      "@xmldom/xmldom@0.8.13",
+		},
+		{
+			name:      "injected workspace package",
+			pkgName:   "shared",
+			reference: "shared@file:///app/packages/shared",
+			want:      "shared@file:///app/packages/shared",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, depPath(tt.pkgName, tt.reference))
+		})
 	}
 }
