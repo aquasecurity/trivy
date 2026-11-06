@@ -1,0 +1,25 @@
+{
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-11-06T00:00:00Z",
+    "component": {
+      "bom-ref": "firmware-root",
+      "type": "firmware",
+      "name": "device-firmware",
+      "version": "1.0.0"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:composer/pear/core@1.13.1",
+      "type": "library",
+      "name": "pear/core",
+      "version": "1.13.1",
+      "purl": "pkg:composer/pear/core@1.13.1"
+    }
+  ],
+  "dependencies": []
+}
