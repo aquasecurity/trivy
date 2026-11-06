@@ -249,7 +249,9 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 	// so we need to iterate over the cloned `packages` map, but change the original `packages` map.
 	for pkgPath, pkg := range maps.Clone(packages) {
 		for linkPath, link := range links {
-			if !strings.HasPrefix(pkgPath, string(link.Resolved)) {
+			// "packages/ui" must not claim "packages/ui-kit"
+			rest, ok := strings.CutPrefix(pkgPath, string(link.Resolved))
+			if !ok || (rest != "" && !strings.HasPrefix(rest, "/")) {
 				continue
 			}
 			// The target doesn't have the "resolved" field, so we need to copy it from the link.
@@ -258,7 +260,7 @@ func (p *Parser) resolveLinks(packages map[string]Package) {
 			}
 
 			// Resolve the link package so all packages are located under "node_modules".
-			resolvedPath := strings.ReplaceAll(pkgPath, string(link.Resolved), linkPath)
+			resolvedPath := linkPath + rest
 			packages[resolvedPath] = pkg
 
 			// Delete the target package
