@@ -50,11 +50,8 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 				AsStringValue("TLS1_0", resource.Properties.GetMetadata()),
 			Queues: queues,
 			BlobProperties: storage.BlobProperties{
-				Metadata: resource.Properties.GetMetadata(),
-				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-					Metadata: resource.Properties.GetMetadata(),
-					Days:     resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy").GetMapValue("days").AsIntValue(0, resource.Properties.GetMetadata()),
-				},
+				Metadata:              resource.Properties.GetMetadata(),
+				DeleteRetentionPolicy: adaptDeleteRetentionPolicy(resource),
 			},
 			AccountReplicationType:          resource.Properties.GetMapValue("sku").GetMapValue("name").AsStringValue("", resource.Properties.GetMetadata()),
 			InfrastructureEncryptionEnabled: resource.Properties.GetMapValue("encryption").GetMapValue("requireInfrastructureEncryption").AsBoolValue(false, resource.Properties.GetMetadata()),
@@ -89,6 +86,88 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		accounts = append(accounts, account)
 	}
 	return accounts
+}
+
+// adaptDeleteRetentionPolicy reads blob soft delete from a nested blobServices
+// resource. ARM templates set it there, not on properties.blobServices.
+// A policy with enabled set to false keeps a zero day count so the check fails.
+func adaptDeleteRetentionPolicy(resource azure.Resource) storage.DeleteRetentionPolicy {
+	policy := blobDeleteRetentionPolicy(resource)
+	if policy.IsNull() {
+		return storage.DeleteRetentionPolicy{
+			Metadata: resource.Properties.GetMetadata(),
+			Days:     types.Int(0, resource.Properties.GetMetadata()),
+		}
+	}
+	return storage.DeleteRetentionPolicy{
+		Metadata: policy.GetMetadata(),
+		Days:     retentionDays(policy),
+	}
+}
+
+func blobDeleteRetentionPolicy(resource azure.Resource) azure.Value {
+	var disabled azure.Value
+	sawDisabled := false
+	for _, policy := range blobDeleteRetentionPolicies(resource) {
+		if retentionDays(policy).GreaterThan(0) {
+			return policy
+		}
+		if !sawDisabled {
+			disabled = policy
+			sawDisabled = true
+		}
+	}
+	if sawDisabled {
+		return disabled
+	}
+	return azure.NullValue
+}
+
+func blobDeleteRetentionPolicies(resource azure.Resource) []azure.Value {
+	var policies []azure.Value
+	for _, child := range resource.Resources {
+		if !isBlobService(child.Type.AsString()) {
+			continue
+		}
+		if policy := child.Properties.GetMapValue("deleteRetentionPolicy"); !policy.IsNull() {
+			policies = append(policies, policy)
+		}
+	}
+	if inline := resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy"); !inline.IsNull() {
+		policies = append(policies, inline)
+	}
+	return policies
+}
+
+func isBlobService(resourceType string) bool {
+	return resourceType == "blobServices" || strings.HasSuffix(resourceType, "/blobServices")
+}
+
+func retentionDays(policy azure.Value) types.IntValue {
+	enabled := policy.GetMapValue("enabled")
+	if softDeleteDisabled(enabled) {
+		return types.Int(0, enabled.GetMetadata())
+	}
+
+	days := policy.GetMapValue("days")
+	if days.IsNull() {
+		if enabled.AsBoolValue(false, enabled.GetMetadata()).IsTrue() {
+			return types.Int(7, enabled.GetMetadata())
+		}
+		return types.Int(0, policy.GetMetadata())
+	}
+	return days.AsIntValue(0, days.GetMetadata())
+}
+
+func softDeleteDisabled(enabled azure.Value) bool {
+	switch enabled.Kind {
+	case azure.KindBoolean:
+		return !enabled.AsBool()
+	case azure.KindString:
+		return strings.EqualFold(enabled.AsString(), "false")
+	default:
+		return false
+	}
 }
 
 func adaptNetworkRules(resource azure.Resource) []storage.NetworkRule {

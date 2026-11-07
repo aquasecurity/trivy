@@ -92,6 +92,96 @@ func TestAdapt(t *testing.T) {
 				}},
 			},
 		},
+		{
+			name: "nested blob service soft delete",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "properties": {},
+      "resources": [
+        {
+          "type": "blobServices",
+          "name": "default",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": true,
+              "days": 7
+            }
+          }
+        }
+      ]
+    }
+  ]
+}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{{
+					MinimumTLSVersion: types.StringTest("TLS1_0"),
+					EnforceHTTPS:      types.BoolTest(true),
+					NetworkRules: []storage.NetworkRule{{
+						Bypass:         []types.StringValue{types.StringTest("AzureServices")},
+						AllowByDefault: types.BoolTest(true),
+					}},
+					PublicNetworkAccess:             types.BoolTest(true),
+					AccountReplicationType:          types.StringTest(""),
+					InfrastructureEncryptionEnabled: types.BoolTest(false),
+					BlobProperties: storage.BlobProperties{
+						DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+							Days: types.IntTest(7),
+						},
+					},
+					CustomerManagedKey: storage.CustomerManagedKey{
+						KeyVaultKeyId:          types.StringTest(""),
+						UserAssignedIdentityId: types.StringTest(""),
+					},
+				}},
+			},
+		},
+		{
+			name: "nested blob service soft delete disabled",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "properties": {},
+      "resources": [
+        {
+          "type": "Microsoft.Storage/storageAccounts/blobServices",
+          "name": "default",
+          "properties": {
+            "deleteRetentionPolicy": {
+              "enabled": false,
+              "days": 7
+            }
+          }
+        }
+      ]
+    }
+  ]
+}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{{
+					MinimumTLSVersion: types.StringTest("TLS1_0"),
+					EnforceHTTPS:      types.BoolTest(true),
+					NetworkRules: []storage.NetworkRule{{
+						Bypass:         []types.StringValue{types.StringTest("AzureServices")},
+						AllowByDefault: types.BoolTest(true),
+					}},
+					PublicNetworkAccess:             types.BoolTest(true),
+					AccountReplicationType:          types.StringTest(""),
+					InfrastructureEncryptionEnabled: types.BoolTest(false),
+					BlobProperties: storage.BlobProperties{
+						DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+							Days: types.IntTest(0),
+						},
+					},
+					CustomerManagedKey: storage.CustomerManagedKey{
+						KeyVaultKeyId:          types.StringTest(""),
+						UserAssignedIdentityId: types.StringTest(""),
+					},
+				}},
+			},
+		},
 	}
 
 	for _, tt := range tests {
