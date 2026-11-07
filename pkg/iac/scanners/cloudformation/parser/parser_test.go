@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"fmt"
 	"os"
 	"path/filepath"
 	"strings"
@@ -763,6 +764,87 @@ Resources:
 		t.Run(tt.name, func(t *testing.T) {
 			fsys := testutil.CreateFS(map[string]string{
 				"main.yaml": tt.src,
+			})
+
+			files, err := New().ParseFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+			require.Len(t, files, 1)
+
+			res := files[0].GetResourceByLogicalID("TestBucket")
+			require.NotNil(t, res)
+
+			assert.Equal(t, tt.expected, res.GetStringProperty("BucketName").Value())
+		})
+	}
+}
+
+func Test_ConditionWithLogicalOperators(t *testing.T) {
+	tmpl := `AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Env:
+    Type: String
+    Default: %s
+  Tier:
+    Type: String
+    Default: %s
+Conditions:
+  Combined: !%s
+    - !Equals [!Ref Env, prod]
+    - !Equals [!Ref Tier, private]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [Combined, matched, not-matched]`
+
+	tests := []struct {
+		name     string
+		op       string
+		env      string
+		tier     string
+		expected string
+	}{
+		{
+			name:     "Fn::And with both operands false",
+			op:       "And",
+			env:      "dev",
+			tier:     "public",
+			expected: "not-matched",
+		},
+		{
+			name:     "Fn::And with one operand false",
+			op:       "And",
+			env:      "prod",
+			tier:     "public",
+			expected: "not-matched",
+		},
+		{
+			name:     "Fn::And with both operands true",
+			op:       "And",
+			env:      "prod",
+			tier:     "private",
+			expected: "matched",
+		},
+		{
+			name:     "Fn::Or with both operands false",
+			op:       "Or",
+			env:      "dev",
+			tier:     "public",
+			expected: "not-matched",
+		},
+		{
+			name:     "Fn::Or with one operand true",
+			op:       "Or",
+			env:      "prod",
+			tier:     "public",
+			expected: "matched",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(map[string]string{
+				"main.yaml": fmt.Sprintf(tmpl, tt.env, tt.tier, tt.op),
 			})
 
 			files, err := New().ParseFS(t.Context(), fsys, ".")
