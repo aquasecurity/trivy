@@ -21,7 +21,9 @@ var (
 	echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
 
 	// echoSemverSegmentRe requires the numeric Echo revision to be a complete
-	// SemVer build identifier. Additional metadata identifiers remain valid.
+	// SemVer build identifier. Additional metadata identifiers remain valid,
+	// but a "-" joined identifier (e.g. "+echo.1-extra") is rejected, unlike
+	// echoLocalSegmentRe used by the other Echo ecosystems.
 	echoSemverSegmentRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
 )
 
@@ -70,6 +72,9 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 	return library.NoMatch
 }
 
+// isValidGoSemVer gates the lenient go-version comparer used below: without
+// it, a malformed version that merely contains a "+echo." substring would
+// still be routed to the Echo bucket instead of the upstream advisory.
 func isValidGoSemVer(ver string) bool {
 	return semver.IsValid(ver) || semver.IsValid("v"+ver)
 }

@@ -104,10 +104,17 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:             "Echo versions",
-			file:             "testdata/echo/go.mod",
+			file:             "testdata/echo/gomod",
 			replace:          true,
 			wantPkgs:         GoModEcho,
 			wantDeps:         GoModEchoDeps,
+			wantSkipIndirect: false,
+		},
+		{
+			name:             "Echo marker only in retract",
+			file:             "testdata/echo-retract-only/gomod",
+			wantPkgs:         GoModEchoRetractOnly,
+			wantDeps:         GoModEchoRetractOnlyDeps,
 			wantSkipIndirect: false,
 		},
 		{
@@ -181,8 +188,23 @@ func TestFixEchoVersion(t *testing.T) {
 			want:    "v1.2.3+echo.1.extra.1",
 		},
 		{
+			name:    "multiple Echo metadata segments",
+			version: "v1.2.3+echo.1.echo.2",
+			want:    "v1.2.3+echo.1.echo.2",
+		},
+		{
+			name:    "multiple build metadata delimiters",
+			version: "v1.2.3+echo.1+echo.2",
+			wantErr: true,
+		},
+		{
 			name:    "Echo revision joined to another identifier",
 			version: "v1.2.3+echo.1-extra.1",
+			want:    "v1.2.3",
+		},
+		{
+			name:    "negative Echo revision",
+			version: "v1.2.3+echo.-1",
 			want:    "v1.2.3",
 		},
 		{

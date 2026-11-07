@@ -34,9 +34,9 @@ var (
 	// Example: gopkg.in/pkg.v3 -> github.com/go-pkg/pkg
 	VCSUrlGoPkgInRegexWithoutUser = regexp.MustCompile(`^gopkg\.in/([^.]+)\..*$`)
 
-	// echoVersionRe matches Echo's non-zero-padded numeric build metadata
+	// echoVersionRegex matches Echo's non-zero-padded numeric build metadata
 	// segment, optionally followed by additional metadata identifiers.
-	echoVersionRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
+	echoVersionRegex = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
 )
 
 type Parser struct {
@@ -203,6 +203,11 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 // parseModFile parses go.mod and keeps Echo versions (e.g. v0.55.0+echo.1
 // and v0.55.0+echo.1.extra.1), which modfile.Parse otherwise strips as
 // build metadata.
+//
+// The first parse uses a nil VersionFixer, which silently canonicalizes an
+// Echo version and loses its build metadata. The original suffix therefore
+// can't be recovered by patching the parsed file, so a second parse with a
+// custom VersionFixer is required to preserve it.
 func parseModFile(data []byte) (*modfile.File, error) {
 	f, err := modfile.Parse("go.mod", data, nil)
 	// The default parse validates every version, so its error is returned as is.
@@ -211,8 +216,9 @@ func parseModFile(data []byte) (*modfile.File, error) {
 		return f, err
 	}
 
-	// A VersionFixer also applies to retract directives, which Trivy doesn't use
-	// and which may contain version queries, so blank them out before re-parsing.
+	// A VersionFixer also applies to retract directives, which Trivy doesn't
+	// use and which may contain version queries. Intentionally blank every
+	// retract directive before re-parsing, not only those containing "+echo.".
 	data = bytes.Clone(data)
 	for _, r := range f.Retract {
 		for i := r.Syntax.Start.Byte; i < r.Syntax.End.Byte; i++ {
@@ -225,7 +231,7 @@ func parseModFile(data []byte) (*modfile.File, error) {
 // fixEchoVersion keeps Echo versions and canonicalizes all others,
 // matching what modfile.Parse does with a nil VersionFixer.
 func fixEchoVersion(path, version string) (string, error) {
-	if echoVersionRe.MatchString(version) && semver.IsValid(version) {
+	if echoVersionRegex.MatchString(version) && semver.IsValid(version) {
 		return version, nil
 	}
 

@@ -60,6 +60,13 @@ func TestEchoSupplier_Match(t *testing.T) {
 			want:    library.Matched,
 		},
 		{
+			name:    "go package without v prefix",
+			eco:     ecosystem.Go,
+			pkgName: "golang.org/x/crypto",
+			pkgVer:  "0.26.0+echo.1",
+			want:    library.Matched,
+		},
+		{
 			name:    "go package with later metadata identifiers",
 			eco:     ecosystem.Go,
 			pkgName: "golang.org/x/crypto",

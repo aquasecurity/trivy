@@ -465,6 +465,27 @@ var (
 		},
 	}
 
+	GoModEchoRetractOnly = []ftypes.Package{
+		{
+			ID:           "example.com/retract-only",
+			Name:         "example.com/retract-only",
+			Relationship: ftypes.RelationshipRoot,
+		},
+		{
+			ID:           "example.com/ordinary@v1.2.3",
+			Name:         "example.com/ordinary",
+			Version:      "v1.2.3",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+
+	GoModEchoRetractOnlyDeps = ftypes.Dependencies{
+		{
+			ID:        "example.com/retract-only",
+			DependsOn: []string{"example.com/ordinary@v1.2.3"},
+		},
+	}
+
 	// execute go mod tidy in go116 folder
 	GoMod116 = []ftypes.Package{
 		{
