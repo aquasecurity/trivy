@@ -274,6 +274,11 @@ func readReport(t *testing.T, filePath string) types.Report {
 	// We don't compare history because the nano-seconds in "created" don't match
 	report.Metadata.ImageConfig.History = nil
 
+	// We don't compare DB metadata because the test DBs are created with the current time
+	report.Trivy.VulnerabilityDB = nil
+	report.Trivy.JavaDB = nil
+	report.Trivy.CheckBundle = nil
+
 	// We don't compare repo digests because archives don't contain them
 	report.Metadata.RepoDigests = nil
 	for i := range report.Metadata.Layers {

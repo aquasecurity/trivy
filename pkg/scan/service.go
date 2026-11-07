@@ -16,7 +16,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/uuid"
-	"github.com/aquasecurity/trivy/pkg/version/app"
+	"github.com/aquasecurity/trivy/pkg/version"
 )
 
 // Service is the main service that coordinates security scanning operations.
@@ -86,15 +86,12 @@ func (s Service) ScanArtifact(ctx context.Context, options types.ScanOptions) (t
 
 	r := types.Report{
 		SchemaVersion: report.SchemaVersion,
-		Trivy: types.TrivyInfo{
-			Version: app.Version(),
-			Server:  scanResponse.ServerInfo,
-		},
-		ReportID:     reportID.String(),
-		CreatedAt:    clock.Now(ctx),
-		ArtifactID:   s.generateArtifactID(artifactInfo),
-		ArtifactName: artifactInfo.Name,
-		ArtifactType: artifactInfo.Type,
+		Trivy:         buildTrivyInfo(options, scanResponse.ServerInfo),
+		ReportID:      reportID.String(),
+		CreatedAt:     clock.Now(ctx),
+		ArtifactID:    s.generateArtifactID(artifactInfo),
+		ArtifactName:  artifactInfo.Name,
+		ArtifactType:  artifactInfo.Type,
 		Metadata: types.Metadata{
 			OS: ptros,
 
@@ -182,5 +179,19 @@ func (s Service) generateArtifactID(artifactInfo artifact.Reference) string {
 	default:
 		// Empty string for other types
 		return ""
+	}
+}
+
+// buildTrivyInfo returns the Trivy version and the metadata of the local databases.
+// In client/server mode, the vulnerability DB is managed by the server and reported in serverInfo,
+// while the Java DB and the check bundle are still managed on the client side.
+func buildTrivyInfo(options types.ScanOptions, serverInfo types.VersionInfo) types.TrivyInfo {
+	var opts []version.VersionOption
+	if options.IsRemote {
+		opts = append(opts, version.Client())
+	}
+	return types.TrivyInfo{
+		VersionInfo: version.NewVersionInfo(options.CacheDir, opts...),
+		Server:      serverInfo,
 	}
 }
