@@ -34,7 +34,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeGoMod, newGoModAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 var (
 	requiredFiles = []string{
