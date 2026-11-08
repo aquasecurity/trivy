@@ -567,6 +567,28 @@ var builtinRules = []Rule{
 		Regex:    MustCompile(`['\"]?eyJrIjoi(?i)[a-z0-9\-_=]{72,92}['\"]?`),
 		Keywords: []string{"eyJrIjoi"},
 	},
+	// Grafana replaced legacy API keys with service account tokens
+	// (`glsa_<32 alphanumerics>_<8 hex>`) and Cloud access policy tokens
+	// (`glc_<base64>`). Both prefixes are distinct literals, so these rules
+	// never overlap with each other or with the legacy `eyJrIjoi` rule above.
+	{
+		ID:              "grafana-service-account-token",
+		Category:        CategoryGrafana,
+		Title:           "Grafana Service Account Token",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>glsa_[A-Za-z0-9]{32}_[0-9a-fA-F]{8}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"glsa_"},
+	},
+	{
+		ID:              "grafana-cloud-api-token",
+		Category:        CategoryGrafana,
+		Title:           "Grafana Cloud API Token",
+		Severity:        "MEDIUM",
+		Regex:           MustCompileWithoutWordPrefix(`?P<secret>glc_[A-Za-z0-9+/=]{32,400}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"glc_"},
+	},
 	{
 		ID:       "hashicorp-tf-api-token",
 		Category: CategoryHashiCorp,
