@@ -1334,6 +1334,45 @@ func TestSecretScanner(t *testing.T) {
 	wantFindingOpenAIServiceAPIKey := openAIFinding("openai-service-api-key", "OpenAI Service API Key", "HIGH", 68)
 	wantFindingOpenAIRealtimeClientSecret := openAIFinding("openai-realtime-client-secret", "OpenAI Realtime Client Secret", "MEDIUM", 35)
 
+	anthropicFinding := func(ruleID, title, severity, masked string, offset int) types.SecretFinding {
+		return types.SecretFinding{
+			RuleID:    ruleID,
+			Category:  secret.CategoryAnthropic,
+			Title:     title,
+			Severity:  severity,
+			StartLine: 1,
+			EndLine:   1,
+			Match:     masked,
+			Code: types.Code{
+				Lines: []types.Line{
+					{
+						Number:      1,
+						Content:     masked,
+						Highlighted: masked,
+						IsCause:     true,
+						FirstCause:  true,
+						LastCause:   true,
+					},
+					{
+						Number:      2,
+						Content:     "",
+						Highlighted: "",
+						IsCause:     false,
+						FirstCause:  false,
+						LastCause:   false,
+					},
+				},
+			},
+			Offset: offset,
+		}
+	}
+	wantFindingAnthropicAPIKey := anthropicFinding("anthropic-api-key", "Anthropic API Key", "CRITICAL",
+		`ANTHROPIC_API_KEY="`+strings.Repeat("*", 108)+`"`, 19)
+	wantFindingAnthropicAdminAPIKey := anthropicFinding("anthropic-admin-api-key", "Anthropic Admin API Key", "CRITICAL",
+		`ANTHROPIC_ADMIN_KEY="`+strings.Repeat("*", 110)+`"`, 21)
+	wantFindingAnthropicOAuthToken := anthropicFinding("anthropic-oauth-token", "Anthropic OAuth Token", "HIGH",
+		`CLAUDE_CODE_OAUTH_TOKEN=`+strings.Repeat("*", 108), 24)
+
 	wantFindingMavenSettingsPassword := types.SecretFinding{
 		RuleID:    "maven-settings-password",
 		Category:  secret.CategoryMaven,
@@ -1620,6 +1659,41 @@ func TestSecretScanner(t *testing.T) {
 					wantFindingGrafanaQuoted,
 				},
 			},
+		},
+		{
+			name:          "find Anthropic API key",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "anthropic-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "anthropic-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingAnthropicAPIKey},
+			},
+		},
+		{
+			name:          "find Anthropic admin API key",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "anthropic-admin-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "anthropic-admin-api-key.txt"),
+				Findings: []types.SecretFinding{wantFindingAnthropicAdminAPIKey},
+			},
+		},
+		{
+			name:          "find Anthropic OAuth token",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "anthropic-oauth-token.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "anthropic-oauth-token.txt"),
+				Findings: []types.SecretFinding{wantFindingAnthropicOAuthToken},
+			},
+		},
+		{
+			// Short bodies, doc placeholders, and unknown `sk-ant-` prefixes
+			// must all be ignored.
+			name:          "invalid Anthropic tokens",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "anthropic-invalid.txt"),
+			want:          types.Secret{},
 		},
 		{
 			name:          "find JWT token",
