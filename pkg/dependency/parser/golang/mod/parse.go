@@ -210,10 +210,13 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 // custom VersionFixer is required to preserve it.
 func parseModFile(data []byte) (*modfile.File, error) {
 	f, err := modfile.Parse("go.mod", data, nil)
-	// The default parse validates every version, so its error is returned as is.
+	if err != nil {
+		return nil, err
+	}
+
 	// Only files with Echo versions need the second parse below.
-	if err != nil || !bytes.Contains(data, []byte("+echo.")) {
-		return f, err
+	if !bytes.Contains(data, []byte("+echo.")) {
+		return f, nil
 	}
 
 	// A VersionFixer also applies to retract directives, which Trivy doesn't
@@ -225,13 +228,20 @@ func parseModFile(data []byte) (*modfile.File, error) {
 			data[i] = ' '
 		}
 	}
-	return modfile.Parse("go.mod", data, fixEchoVersion)
+	return modfile.Parse("go.mod", data, versionFixer)
 }
 
-// fixEchoVersion keeps Echo versions and canonicalizes all others,
-// matching what modfile.Parse does with a nil VersionFixer.
-func fixEchoVersion(path, version string) (string, error) {
-	if echoVersionRegex.MatchString(version) && semver.IsValid(version) {
+// isEchoVersion reports whether version has Echo's non-zero-padded "+echo.N"
+// build-metadata segment.
+func isEchoVersion(version string) bool {
+	return echoVersionRegex.MatchString(version)
+}
+
+// versionFixer keeps versions recognized by a vendor (currently only Echo) that are
+// otherwise valid SemVer, and canonicalizes all others, matching what modfile.Parse
+// does with a nil VersionFixer.
+func versionFixer(path, version string) (string, error) {
+	if semver.IsValid(version) && isEchoVersion(version) {
 		return version, nil
 	}
 

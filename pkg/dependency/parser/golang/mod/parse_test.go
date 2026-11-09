@@ -150,7 +150,7 @@ func TestParse(t *testing.T) {
 	}
 }
 
-func TestFixEchoVersion(t *testing.T) {
+func TestVersionFixer(t *testing.T) {
 	tests := []struct {
 		name    string
 		version string
@@ -231,7 +231,7 @@ func TestFixEchoVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := fixEchoVersion("example.com/module", tt.version)
+			got, err := versionFixer("example.com/module", tt.version)
 			if tt.wantErr {
 				require.ErrorContains(t, err, "must be of the form v1.2.3")
 				return
