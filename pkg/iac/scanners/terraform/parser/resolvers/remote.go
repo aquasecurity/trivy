@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/go-getter"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
 
 type remoteResolver struct {
@@ -70,10 +71,15 @@ func (r *remoteResolver) Resolve(ctx context.Context, _ fs.FS, opt Options) (Res
 }
 
 func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) error {
-	_ = os.RemoveAll(dst)
-	if err := os.MkdirAll(filepath.Dir(dst), 0o750); err != nil {
+	tmpDir, err := xos.MkdirTemp(filepath.Dir(dst), ".download-*")
+	if err != nil {
 		return err
 	}
+	defer os.RemoveAll(tmpDir)
+
+	// go-getter updates an existing git or Mercurial checkout instead of
+	// cloning it, so the download target must not exist yet.
+	tmpDst := filepath.Join(tmpDir, "module")
 
 	// Use a copy of the default getters with the file getter overridden to
 	// copy files, so that concurrent download calls don't write to the
@@ -87,7 +93,7 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 	client := &getter.Client{
 		Ctx:     ctx,
 		Src:     opt.Source,
-		Dst:     dst,
+		Dst:     tmpDst,
 		Pwd:     opt.WorkingDir,
 		Getters: getters,
 		Mode:    getter.ClientModeAny,
@@ -102,6 +108,14 @@ func (r *remoteResolver) download(ctx context.Context, opt Options, dst string) 
 
 	if err := client.Get(); err != nil {
 		return fmt.Errorf("failed to download: %w", err)
+	}
+
+	if err := os.Rename(tmpDst, dst); err != nil {
+		// Another scan has cached the same module in the meantime.
+		if info, statErr := os.Stat(dst); statErr == nil && info.IsDir() {
+			return nil
+		}
+		return fmt.Errorf("failed to cache module: %w", err)
 	}
 
 	return nil
