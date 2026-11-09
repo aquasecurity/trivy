@@ -83,6 +83,24 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "ssh locations",
+			inputFile: "testdata/ssh-Package.resolved",
+			want: []ftypes.Package{
+				{
+					ID:        "github.com/Alamofire/Alamofire@5.7.1",
+					Name:      "github.com/Alamofire/Alamofire",
+					Version:   "5.7.1",
+					Locations: []ftypes.Location{{StartLine: 3, EndLine: 11}},
+				},
+				{
+					ID:        "github.com/apple/swift-nio@2.65.0",
+					Name:      "github.com/apple/swift-nio",
+					Version:   "2.65.0",
+					Locations: []ftypes.Location{{StartLine: 12, EndLine: 20}},
+				},
+			},
+		},
+		{
 			name:      "empty",
 			inputFile: "testdata/empty-Package.resolved",
 			want:      nil,

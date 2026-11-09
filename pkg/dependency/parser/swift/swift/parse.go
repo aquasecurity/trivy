@@ -73,5 +73,17 @@ func pkgName(pin Pin, lockVersion int) string {
 	// Remove `https://` and `.git` to fit the same format
 	name = strings.TrimPrefix(name, "https://")
 	name = strings.TrimSuffix(name, ".git")
+
+	// Packages added over SSH use `ssh://git@github.com/<author>/<package>.git`
+	// or the SCP-like `git@github.com:<author>/<package>.git` format.
+	// Convert them to the same format as HTTPS locations.
+	if rest, ok := strings.CutPrefix(name, "ssh://"); ok {
+		name = rest
+	} else if host, path, ok := strings.Cut(name, ":"); ok && !strings.Contains(host, "/") && !strings.HasPrefix(path, "/") {
+		name = host + "/" + path
+	}
+	if user, rest, ok := strings.Cut(name, "@"); ok && !strings.Contains(user, "/") {
+		name = rest
+	}
 	return name
 }
