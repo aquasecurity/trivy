@@ -122,13 +122,13 @@ Trivy runs built-in checks to find weak cryptographic assets and reports the fin
 | `CRYPTO-0003` | Weak elliptic curve | algorithm | the classical security level of an EC algorithm is below 112 bits | HIGH |
 | `CRYPTO-0004` | Expired certificate | certificate | `NotAfter` is before the time of the scan | MEDIUM |
 | `CRYPTO-0005` | Small EC private key | key | the public point of a P-256, P-384 or P-521 key equals k*G for k from 1 to 255, so the private key can be guessed | CRITICAL |
-| `CRYPTO-0006` | MD5 certificate signature | certificate | the signature uses MD5 | HIGH |
+| `CRYPTO-0006` | Broken signature hash | certificate | the signature uses MD2, MD4 or MD5 | HIGH |
 
-A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1.
+A key of unknown size or a curve without a security level gives no finding. Certificates in system trust stores are checked too, including old roots signed with SHA-1, MD2 or MD5.
 
 A small RSA key or a small EC private key gets the finding on its key asset. The weak curve finding points to the algorithm asset, which is reported once per file, so several keys on one weak curve in a file give one finding.
 
-A certificate signed with RSA-PSS gives no SHA-1 or MD5 finding, because Trivy does not read the hash from the RSA-PSS parameters.
+A certificate signed with RSA-PSS gives no SHA-1, MD2, MD4 or MD5 finding, because Trivy does not read the hash from the RSA-PSS parameters.
 
 Every entry of `CryptoAssets` in JSON output has an `AssetID`, and a finding refers to its asset by this ID. The ID depends on the asset identity, the file path and the format. Two scans of one image with the same Trivy version give the same IDs. `Evidence` holds the values the check was evaluated on.
 

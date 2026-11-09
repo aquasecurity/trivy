@@ -153,8 +153,8 @@ func sha1Finding(asset ftypes.CryptoAsset, name, oid string) types.CryptoFinding
 		})
 }
 
-func md5Finding(asset ftypes.CryptoAsset, name, oid string) types.CryptoFinding {
-	return finding("CRYPTO-0006", "MD5 certificate signature", "HIGH", asset,
+func brokenHashFinding(asset ftypes.CryptoAsset, name, oid string) types.CryptoFinding {
+	return finding("CRYPTO-0006", "Broken signature hash", "HIGH", asset,
 		types.CryptoEvidence{
 			SignatureAlgorithm:    name,
 			SignatureAlgorithmOID: oid,
@@ -218,17 +218,24 @@ func TestScan(t *testing.T) {
 			},
 		},
 		{
-			name:   "MD5 with RSA",
-			assets: []ftypes.CryptoAsset{certificate("cert.pem", "1.2.840.113549.1.1.4", valid)},
+			name:   "MD2 with RSA",
+			assets: []ftypes.CryptoAsset{certificate("cert.pem", "1.2.840.113549.1.1.2", valid)},
 			want: []types.CryptoFinding{
-				md5Finding(certificate("cert.pem", "1.2.840.113549.1.1.4", valid), "RSA-PKCS1-1.5-MD5", "1.2.840.113549.1.1.4"),
+				brokenHashFinding(certificate("cert.pem", "1.2.840.113549.1.1.2", valid), "RSA-PKCS1-1.5-MD2", "1.2.840.113549.1.1.2"),
 			},
 		},
 		{
-			name:   "MD5 with RSA under the OIW arc",
-			assets: []ftypes.CryptoAsset{certificate("cert.pem", "1.3.14.3.2.3", valid)},
+			name:   "MD4 with RSA",
+			assets: []ftypes.CryptoAsset{certificate("cert.pem", "1.2.840.113549.1.1.3", valid)},
 			want: []types.CryptoFinding{
-				md5Finding(certificate("cert.pem", "1.3.14.3.2.3", valid), "RSA-PKCS1-1.5-MD5", "1.3.14.3.2.3"),
+				brokenHashFinding(certificate("cert.pem", "1.2.840.113549.1.1.3", valid), "RSA-PKCS1-1.5-MD4", "1.2.840.113549.1.1.3"),
+			},
+		},
+		{
+			name:   "MD5 with RSA",
+			assets: []ftypes.CryptoAsset{certificate("cert.pem", "1.2.840.113549.1.1.4", valid)},
+			want: []types.CryptoFinding{
+				brokenHashFinding(certificate("cert.pem", "1.2.840.113549.1.1.4", valid), "RSA-PKCS1-1.5-MD5", "1.2.840.113549.1.1.4"),
 			},
 		},
 		{
@@ -431,7 +438,7 @@ func TestMessage(t *testing.T) {
 			want: "Private key of this P-256 key is at most 255 and can be recovered",
 		},
 		{
-			name: "MD5 signature",
+			name: "broken signature hash",
 			finding: types.CryptoFinding{
 				RuleID:   "CRYPTO-0006",
 				Evidence: types.CryptoEvidence{SignatureAlgorithm: "RSA-PKCS1-1.5-MD5"},
