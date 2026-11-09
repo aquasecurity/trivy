@@ -9002,7 +9002,7 @@ Moreover, when scanning the Trivy project, which happens to use Docker, Docker's
 <p>Detecting the version of Go used in the project can be tricky.
 The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment.
 Since this strategy is not fully deterministic and accurate, it is enabled only in <a href="../../../scanner/vulnerability/#detection-priority">--detection-priority comprehensive</a> mode.
-When enabled, Trivy detects stdlib version as the minimum between the <code>go</code> and the <code>toolchain</code> directives in the <code>go.mod</code> file.
+When enabled, Trivy detects the stdlib version from the <code>toolchain</code> directive in the <code>go.mod</code> file, or from the <code>go</code> directive when there is no <code>toolchain</code> directive.
 To obtain reproducible scan results Trivy doesn't check the locally installed version of <code>Go</code>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
