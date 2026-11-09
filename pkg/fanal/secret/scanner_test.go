@@ -1468,6 +1468,192 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			name:          "find aws access key IDs next to punctuation",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "aws-access-key-id-punctuation.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "aws-access-key-id-punctuation.txt"),
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 2,
+						EndLine:   2,
+						Match:     `const c={accessKeyId:"********************"};console.log(c)`,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      1,
+									Content:     `const value = "********************";`,
+									Highlighted: `const value = "********************";`,
+								},
+								{
+									Number:      2,
+									Content:     `const c={accessKeyId:"********************"};console.log(c)`,
+									Highlighted: `const c={accessKeyId:"********************"};console.log(c)`,
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      3,
+									Content:     `{"sourcesContent":["const k = \"********************\";\n"]}`,
+									Highlighted: `{"sourcesContent":["const k = \"********************\";\n"]}`,
+								},
+							},
+						},
+						Offset: 60,
+					},
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 1,
+						EndLine:   1,
+						Match:     `const value = "********************";`,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      1,
+									Content:     `const value = "********************";`,
+									Highlighted: `const value = "********************";`,
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      2,
+									Content:     `const c={accessKeyId:"********************"};console.log(c)`,
+									Highlighted: `const c={accessKeyId:"********************"};console.log(c)`,
+								},
+							},
+						},
+						Offset: 15,
+					},
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 4,
+						EndLine:   4,
+						Match:     `keys="********************,********************"`,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      2,
+									Content:     `const c={accessKeyId:"********************"};console.log(c)`,
+									Highlighted: `const c={accessKeyId:"********************"};console.log(c)`,
+								},
+								{
+									Number:      3,
+									Content:     `{"sourcesContent":["const k = \"********************\";\n"]}`,
+									Highlighted: `{"sourcesContent":["const k = \"********************\";\n"]}`,
+								},
+								{
+									Number:      4,
+									Content:     `keys="********************,********************"`,
+									Highlighted: `keys="********************,********************"`,
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      5,
+									Content:     "too long: AKIA0123456789ABCDEFX",
+									Highlighted: "too long: AKIA0123456789ABCDEFX",
+								},
+							},
+						},
+						Offset: 165,
+					},
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 4,
+						EndLine:   4,
+						Match:     `keys="********************,********************"`,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      2,
+									Content:     `const c={accessKeyId:"********************"};console.log(c)`,
+									Highlighted: `const c={accessKeyId:"********************"};console.log(c)`,
+								},
+								{
+									Number:      3,
+									Content:     `{"sourcesContent":["const k = \"********************\";\n"]}`,
+									Highlighted: `{"sourcesContent":["const k = \"********************\";\n"]}`,
+								},
+								{
+									Number:      4,
+									Content:     `keys="********************,********************"`,
+									Highlighted: `keys="********************,********************"`,
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      5,
+									Content:     "too long: AKIA0123456789ABCDEFX",
+									Highlighted: "too long: AKIA0123456789ABCDEFX",
+								},
+							},
+						},
+						Offset: 186,
+					},
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 3,
+						EndLine:   3,
+						Match:     `{"sourcesContent":["const k = \"********************\";\n"]}`,
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      1,
+									Content:     `const value = "********************";`,
+									Highlighted: `const value = "********************";`,
+								},
+								{
+									Number:      2,
+									Content:     `const c={accessKeyId:"********************"};console.log(c)`,
+									Highlighted: `const c={accessKeyId:"********************"};console.log(c)`,
+								},
+								{
+									Number:      3,
+									Content:     `{"sourcesContent":["const k = \"********************\";\n"]}`,
+									Highlighted: `{"sourcesContent":["const k = \"********************\";\n"]}`,
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number:      4,
+									Content:     `keys="********************,********************"`,
+									Highlighted: `keys="********************,********************"`,
+								},
+							},
+						},
+						Offset: 130,
+					},
+				},
+			},
+		},
+		{
+			name:          "skip aws access key IDs in signed requests",
+			configPath:    filepath.Join("testdata", "skip-test.yaml"),
+			inputFilePath: filepath.Join("testdata", "aws-access-key-id-signed-requests.txt"),
+			want:          types.Secret{},
+		},
+		{
 			name:          "find secrets in CRLF line endings file",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "crlf-line-endings.txt"),
