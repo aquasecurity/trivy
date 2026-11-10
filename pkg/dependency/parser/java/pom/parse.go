@@ -16,7 +16,6 @@ import (
 	"sort"
 	"strconv"
 	"strings"
-	"sync"
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/mitchellh/hashstructure/v2"
@@ -922,9 +921,9 @@ func (p *Parser) remoteRepoRequest(ctx context.Context, repoURL url.URL, paths [
 	return req, nil
 }
 
-// rejectedCredentialsRepos holds a Once per repository (by mirrorKey) that rejected the credentials.
+// rejectedCredentialsRepos holds the repositories (by mirrorKey) already warned about.
 // It is package-level because a parser is created per pom.xml, and lives as long as the process.
-var rejectedCredentialsRepos xsync.Map[string, *sync.Once]
+var rejectedCredentialsRepos xsync.Map[string, struct{}]
 
 // logUnexpectedStatus logs a response other than 200 and 429.
 // A 401/403 to a request with credentials is additionally warned about, once per repository.
@@ -934,11 +933,10 @@ func (p *Parser) logUnexpectedStatus(repo repository, reqURL *url.URL, statusCod
 	if !repo.hasCredentials() || (statusCode != http.StatusUnauthorized && statusCode != http.StatusForbidden) {
 		return
 	}
-	once, _ := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), &sync.Once{})
-	once.Do(func() {
+	if _, warned := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), struct{}{}); !warned {
 		p.logger.Warn("Maven repository rejected the configured credentials",
 			log.String("id", repo.id), log.String("url", displayURL(repo.url)), log.Int("statusCode", statusCode))
-	})
+	}
 }
 
 // fetchPomFileNameFromMavenMetadata fetches `maven-metadata.xml` file to detect file name of pom file.
