@@ -12,6 +12,8 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func Test_mirror_matches(t *testing.T) {
@@ -806,7 +808,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			// The package-level warning state is not reset: each case has its own servers.
 			var logs bytes.Buffer
-			logger := slog.New(slog.NewTextHandler(&logs, &slog.HandlerOptions{Level: slog.LevelWarn}))
+			logger := log.New(log.NewHandler(&logs, &log.Options{Level: slog.LevelWarn}))
 
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			// One parser per pom.xml.

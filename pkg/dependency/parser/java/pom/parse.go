@@ -936,11 +936,8 @@ func (p *Parser) logUnexpectedStatus(repo repository, reqURL *url.URL, statusCod
 	}
 	once, _ := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), &sync.Once{})
 	once.Do(func() {
-		// Drop the userinfo, and the query and fragment as they may carry a token.
-		repoURL := repo.url
-		repoURL.User, repoURL.RawQuery, repoURL.Fragment, repoURL.ForceQuery = nil, "", "", false
 		p.logger.Warn("Maven repository rejected the configured credentials",
-			log.String("id", repo.id), log.String("url", repoURL.String()), log.Int("statusCode", statusCode))
+			log.String("id", repo.id), log.String("url", displayURL(repo.url)), log.Int("statusCode", statusCode))
 	})
 }
 
