@@ -1,0 +1,7 @@
+module example.com/retract-only
+
+go 1.22.0
+
+require example.com/ordinary v1.2.3+build.1
+
+retract v1.0.0+echo.1

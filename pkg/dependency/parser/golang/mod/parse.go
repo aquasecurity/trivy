@@ -1,6 +1,7 @@
 package mod
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	goversion "go/version"
@@ -12,6 +13,8 @@ import (
 
 	"github.com/samber/lo"
 	"golang.org/x/mod/modfile"
+	"golang.org/x/mod/module"
+	"golang.org/x/mod/semver"
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
@@ -30,6 +33,10 @@ var (
 	// gopkg.in without user segment
 	// Example: gopkg.in/pkg.v3 -> github.com/go-pkg/pkg
 	VCSUrlGoPkgInRegexWithoutUser = regexp.MustCompile(`^gopkg\.in/([^.]+)\..*$`)
+
+	// echoVersionRegex matches Echo's non-zero-padded numeric build metadata
+	// segment, optionally followed by additional metadata identifiers.
+	echoVersionRegex = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
 )
 
 type Parser struct {
@@ -82,7 +89,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, false, xerrors.Errorf("file read error: %w", err)
 	}
 
-	modFileParsed, err := modfile.Parse("go.mod", goModData, nil)
+	modFileParsed, err := parseModFile(goModData)
 	if err != nil {
 		return nil, nil, false, xerrors.Errorf("go.mod parse error: %w", err)
 	}
@@ -191,6 +198,57 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	sort.Sort(ftypes.Packages(pkgSlice))
 
 	return pkgSlice, deps, skipIndirect, nil
+}
+
+// parseModFile parses go.mod and keeps Echo versions (e.g. v0.55.0+echo.1
+// and v0.55.0+echo.1.extra.1), which modfile.Parse otherwise strips as
+// build metadata.
+//
+// The first parse uses a nil VersionFixer, which silently canonicalizes an
+// Echo version and loses its build metadata. The original suffix therefore
+// can't be recovered by patching the parsed file, so a second parse with a
+// custom VersionFixer is required to preserve it.
+func parseModFile(data []byte) (*modfile.File, error) {
+	f, err := modfile.Parse("go.mod", data, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	// Only files with Echo versions need the second parse below.
+	if !bytes.Contains(data, []byte("+echo.")) {
+		return f, nil
+	}
+
+	// A VersionFixer also applies to retract directives, which Trivy doesn't
+	// use and which may contain version queries. Intentionally blank every
+	// retract directive before re-parsing, not only those containing "+echo.".
+	data = bytes.Clone(data)
+	for _, r := range f.Retract {
+		for i := r.Syntax.Start.Byte; i < r.Syntax.End.Byte; i++ {
+			data[i] = ' '
+		}
+	}
+	return modfile.Parse("go.mod", data, versionFixer)
+}
+
+// isEchoVersion reports whether version has Echo's non-zero-padded "+echo.N"
+// build-metadata segment.
+func isEchoVersion(version string) bool {
+	return echoVersionRegex.MatchString(version)
+}
+
+// versionFixer keeps versions recognized by a vendor (currently only Echo) that are
+// otherwise valid SemVer, and canonicalizes all others, matching what modfile.Parse
+// does with a nil VersionFixer.
+func versionFixer(path, version string) (string, error) {
+	if semver.IsValid(version) && isEchoVersion(version) {
+		return version, nil
+	}
+
+	if canonical := module.CanonicalVersion(version); canonical != "" {
+		return canonical, nil
+	}
+	return "", xerrors.Errorf("invalid version %q of %s: must be of the form v1.2.3", version, path)
 }
 
 // lessThan checks if the Go version is less than `<majorVer>.<minorVer>`
