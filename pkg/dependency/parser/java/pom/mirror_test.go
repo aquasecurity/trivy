@@ -722,8 +722,8 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// Multiple mirrors are rate-limited; all are queried and the 429 is returned.
 			name:           "multiple mirrors rate-limited: all are queried and 429 is returned",
 			mirrorPatterns: []string{"*"},
-			configMirrors:  map[string][]string{"mirror": {"limited", "limited2"}},
-			wantHits:       map[string]int{"limited": 1, "limited2": 1},
+			configMirrors:  map[string][]string{"mirror": {"limited", "limit2"}},
+			wantHits:       map[string]int{"limited": 1, "limit2": 1},
 			wantErr:        `429 Too Many Requests for:\n  - http://.*/example-api-1\.0\.0\.pom\n  - http://.*/example-api-1\.0\.0\.pom`,
 		},
 		{
@@ -744,8 +744,8 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			// newServer registers an HTTP server for a role. status 200 serves the POM;
 			// any other status (e.g. 404 or 429) makes the fetch fall back to the next candidate.
-			// A non-empty body is served instead of the POM.
-			newServer := func(role string, status int, body ...string) *httptest.Server {
+			// A non-empty body overrides the served POM.
+			newServer := func(role string, status int, body string) *httptest.Server {
 				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					hits[role]++
 					if u, _, ok := r.BasicAuth(); ok {
@@ -755,7 +755,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 						w.WriteHeader(status)
 						return
 					}
-					_, _ = w.Write([]byte(cmp.Or(strings.Join(body, ""), minimalPOM)))
+					_, _ = w.Write([]byte(cmp.Or(body, minimalPOM)))
 				}))
 				t.Cleanup(s.Close)
 				return s
@@ -764,13 +764,13 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":    newServer("repo1", http.StatusOK),
-				"mirror":   newServer("mirror", http.StatusOK),
-				"chain":    newServer("chain", http.StatusOK),
-				"dead":     newServer("dead", http.StatusNotFound),
-				"limited":  newServer("limited", http.StatusTooManyRequests),
-				"limited2": newServer("limited2", http.StatusTooManyRequests),
-				"broken":   newServer("broken", http.StatusOK, "not a pom"),
+				"repo1":   newServer("repo1", http.StatusOK, ""),
+				"mirror":  newServer("mirror", http.StatusOK, ""),
+				"chain":   newServer("chain", http.StatusOK, ""),
+				"dead":    newServer("dead", http.StatusNotFound, ""),
+				"limited": newServer("limited", http.StatusTooManyRequests, ""),
+				"broken":  newServer("broken", http.StatusOK, "not a pom"),
+				"limit2":  newServer("limit2", http.StatusTooManyRequests, ""),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.

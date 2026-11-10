@@ -1083,7 +1083,7 @@ func (t *rateLimitTarget) Error() string {
 
 func newRateLimitTarget(req *http.Request, resp *http.Response) *rateLimitTarget {
 	return &rateLimitTarget{
-		url:        req.URL.Redacted(),
+		url:        displayURL(*req.URL),
 		retryAfter: resp.Header.Get("Retry-After"),
 	}
 }
