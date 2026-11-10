@@ -934,7 +934,7 @@ func (p *Parser) logUnexpectedStatus(repo repository, reqURL *url.URL, statusCod
 		return
 	}
 	if _, warned := rejectedCredentialsRepos.LoadOrStore(mirrorKey(repo.url), struct{}{}); !warned {
-		p.logger.Warn("Maven repository rejected the configured credentials",
+		p.logger.Warn("Maven repository denied access with the configured credentials",
 			log.String("id", repo.id), log.String("url", displayURL(repo.url)), log.Int("statusCode", statusCode))
 	}
 }

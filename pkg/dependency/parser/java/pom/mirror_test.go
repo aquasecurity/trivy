@@ -953,7 +953,7 @@ func (m fetchMirrorSetup) resolve(t *testing.T, srv *fetchServers) (mirrors, []r
 // and that no credentials were logged.
 func assertRejectedCredentialsWarnings(t *testing.T, logs string, wantStatuses []int) {
 	t.Helper()
-	require.Equal(t, len(wantStatuses), strings.Count(logs, "rejected the configured credentials"), logs)
+	require.Equal(t, len(wantStatuses), strings.Count(logs, "denied access with the configured credentials"), logs)
 	for _, status := range wantStatuses {
 		require.Contains(t, logs, fmt.Sprintf("statusCode=%d", status))
 	}
