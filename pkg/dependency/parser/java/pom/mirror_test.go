@@ -803,10 +803,10 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			resetRejectedCredentialsRepos(t)
 			srv := startFetchServers(t)
 			resolved, repos := tt.mirrors.resolve(t, srv)
 
-			// The package-level warning state is not reset: each case has its own servers.
 			var logs bytes.Buffer
 			logger := log.New(log.NewHandler(&logs, &log.Options{Level: slog.LevelWarn}))
 
@@ -947,6 +947,16 @@ func (m fetchMirrorSetup) resolve(t *testing.T, srv *fetchServers) (mirrors, []r
 		}
 	}
 	return resolveMirrors(settingsMirrors, srvCreds, configFileMirrors), repos
+}
+
+// resetRejectedCredentialsRepos clears the package-level warning state, which is keyed by
+// host:port, so that a port reused by the OS for a later case does not suppress its warning.
+func resetRejectedCredentialsRepos(t *testing.T) {
+	t.Helper()
+	rejectedCredentialsRepos.Range(func(key string, _ struct{}) bool {
+		rejectedCredentialsRepos.Delete(key)
+		return true
+	})
 }
 
 // assertRejectedCredentialsWarnings checks for exactly one warning per status code
