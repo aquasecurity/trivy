@@ -4,10 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io/fs"
+	"os"
 	"path"
 	"slices"
 	"strings"
 
+	"github.com/hashicorp/hcl/v2/hclparse"
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
@@ -17,33 +20,52 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
+const rootModuleName = "root"
+
 // moduleConfig is a module loaded once per module call and shared by all its instances.
 type moduleConfig struct {
+	name     string // call name, "root" for the root module
 	key      string // call path without instance keys, as in modules.json
-	parser   *Parser
+	path     string // directory of the module in fsys
+	fsys     fs.FS
+	source   string // source prefix of metadata ranges
+	files    []sourceFile
+	logger   *log.Logger
 	children map[string]*moduleConfig // by call name
+}
+
+// rootConfig returns the root module made of the parsed files.
+func (p *Parser) rootConfig() *moduleConfig {
+	return &moduleConfig{
+		name:   rootModuleName,
+		path:   p.modulePath,
+		fsys:   p.moduleFS,
+		source: p.moduleSource,
+		files:  p.files,
+		logger: p.logger,
+	}
 }
 
 // loadModuleTree loads the root module and all modules below it.
 func (p *Parser) loadModuleTree(ctx context.Context, workingDir string) *moduleConfig {
-	root := &moduleConfig{parser: p}
-	root.loadChildren(ctx, workingDir, []string{p.moduleID()})
+	p.modulesMetadata = make(map[string]*ModulesMetadata)
+	root := p.rootConfig()
+	p.loadChildren(ctx, root, workingDir, []string{root.id()})
 	return root
 }
 
 // loadChildren loads the modules called by the module and their children.
 // ancestors holds the IDs of the module and its parents, and a call of any of them is not loaded.
-func (c *moduleConfig) loadChildren(ctx context.Context, workingDir string, ancestors []string) {
-	p := c.parser
+func (p *Parser) loadChildren(ctx context.Context, c *moduleConfig, workingDir string, ancestors []string) {
 	c.children = make(map[string]*moduleConfig)
-	if len(p.files) == 0 {
+	if len(c.files) == 0 {
 		return
 	}
 
-	metadata := p.loadModulesMetadata()
-	evalCtx := newModuleContext(p.moduleFS, p.projectRoot, p.modulePath, workingDir, p.workspaceName)
+	metadata := p.loadModulesMetadata(c)
+	evalCtx := newModuleContext(c.fsys, p.projectRoot, c.path, workingDir, p.workspaceName)
 
-	for _, call := range p.moduleCalls(evalCtx) {
+	for _, call := range c.moduleCalls(evalCtx) {
 		name := call.Label()
 		if _, exists := c.children[name]; exists {
 			continue
@@ -54,44 +76,64 @@ func (c *moduleConfig) loadChildren(ctx context.Context, workingDir string, ance
 			key = c.key + "." + name
 		}
 
-		mp, err := p.loadModule(ctx, call, key, metadata)
+		child, err := p.loadModule(ctx, c, call, key, metadata)
 		if err != nil {
-			p.logger.Error("Failed to load module. Maybe try 'terraform init'?",
+			c.logger.Error("Failed to load module. Maybe try 'terraform init'?",
 				log.String("loc", call.GetMetadata().Range().String()), log.Err(err))
 			continue
 		}
 
-		id := mp.moduleID()
+		id := child.id()
 		if slices.Contains(ancestors, id) {
-			p.logger.Error("Module includes itself",
-				log.String("loc", call.GetMetadata().Range().String()), log.FilePath(mp.modulePath))
+			c.logger.Error("Module includes itself",
+				log.String("loc", call.GetMetadata().Range().String()), log.FilePath(child.path))
 			continue
 		}
 
-		p.logger.Debug("Loaded module", log.String("name", name), log.FilePath(mp.modulePath))
-		child := &moduleConfig{key: key, parser: mp}
+		c.logger.Debug("Loaded module", log.String("name", name), log.FilePath(child.path))
 		c.children[name] = child
-		child.loadChildren(ctx, workingDir, append(slices.Clip(ancestors), id))
+		p.loadChildren(ctx, child, workingDir, append(slices.Clip(ancestors), id))
 	}
 }
 
-// moduleID identifies the directory of the module and its filesystem.
-func (p *Parser) moduleID() string {
-	return types.CreateFSKey(p.moduleFS) + ":" + path.Clean(p.modulePath)
+// loadModulesMetadata reads .terraform/modules/modules.json of the project from the module filesystem,
+// once per filesystem. It returns nil if the file is missing or cannot be read.
+func (p *Parser) loadModulesMetadata(c *moduleConfig) *ModulesMetadata {
+	fsKey := types.CreateFSKey(c.fsys)
+	if metadata, loaded := p.modulesMetadata[fsKey]; loaded {
+		return metadata
+	}
+
+	metadata, metadataPath, err := loadModuleMetadata(c.fsys, p.projectRoot)
+	if err != nil && !errors.Is(err, os.ErrNotExist) {
+		c.logger.Error("Error loading module metadata", log.Err(err))
+	} else if err == nil {
+		c.logger.Debug("Loaded module metadata for modules",
+			log.FilePath(metadataPath),
+			log.Int("count", len(metadata.Modules)),
+		)
+	}
+	p.modulesMetadata[fsKey] = metadata
+	return metadata
+}
+
+// id identifies the directory of the module and its filesystem.
+func (c *moduleConfig) id() string {
+	return types.CreateFSKey(c.fsys) + ":" + path.Clean(c.path)
 }
 
 // moduleCalls returns the module blocks of the parsed files, evaluated in ctx.
 // Files whose blocks cannot be read are skipped.
-func (p *Parser) moduleCalls(ctx *tfcontext.Context) terraform.Blocks {
+func (c *moduleConfig) moduleCalls(ctx *tfcontext.Context) terraform.Blocks {
 	var calls terraform.Blocks
-	for _, file := range p.files {
+	for _, file := range c.files {
 		hclBlocks, err := loadBlocksFromFile(file)
 		if err != nil {
 			continue
 		}
 		for _, hclBlock := range hclBlocks {
 			if hclBlock.Type == "module" {
-				calls = append(calls, terraform.NewBlock(hclBlock, ctx, nil, nil, p.moduleSource, p.moduleFS))
+				calls = append(calls, terraform.NewBlock(hclBlock, ctx, nil, nil, c.source, c.fsys))
 			}
 		}
 	}
@@ -103,8 +145,8 @@ func moduleCallName(key string) string {
 	return "module." + strings.ReplaceAll(key, ".", ".module.")
 }
 
-// loadModule finds the source of the module call and parses the module.
-func (p *Parser) loadModule(ctx context.Context, b *terraform.Block, key string, metadata *ModulesMetadata) (*Parser, error) {
+// loadModule finds the source of the module call in the parent module and parses the module.
+func (p *Parser) loadModule(ctx context.Context, parent *moduleConfig, b *terraform.Block, key string, metadata *ModulesMetadata) (*moduleConfig, error) {
 	if b.Label() == "" {
 		return nil, errors.New("module without label")
 	}
@@ -121,24 +163,24 @@ func (p *Parser) loadModule(ctx context.Context, b *terraform.Block, key string,
 
 	if metadata != nil {
 		// if we have module metadata we can parse all the modules as they'll be cached locally!
-		mp, err := p.loadModuleFromTerraformCache(ctx, b, key, source, metadata)
+		c, err := p.loadModuleFromTerraformCache(parent, b, key, source, metadata)
 		if err == nil {
-			p.logger.Debug("Using module from Terraform cache .terraform/modules",
+			parent.logger.Debug("Using module from Terraform cache .terraform/modules",
 				log.String("source", source))
-			return mp, nil
+			return c, nil
 		}
 
-		p.logger.Debug("Failed to load module from .terraform cache",
+		parent.logger.Debug("Failed to load module from .terraform cache",
 			log.String("module_source", source),
 			log.Err(err),
 		)
 	}
 
 	// we don't have the module installed via 'terraform init' so we need to grab it...
-	return p.loadExternalModule(ctx, b, key, source)
+	return p.loadExternalModule(ctx, parent, b, key, source)
 }
 
-func (p *Parser) loadModuleFromTerraformCache(ctx context.Context, b *terraform.Block, key, source string, metadata *ModulesMetadata) (*Parser, error) {
+func (p *Parser) loadModuleFromTerraformCache(parent *moduleConfig, b *terraform.Block, key, source string, metadata *ModulesMetadata) (*moduleConfig, error) {
 	var modulePath string
 	for _, module := range metadata.Modules {
 		if module.Key == key {
@@ -154,21 +196,21 @@ func (p *Parser) loadModuleFromTerraformCache(ctx context.Context, b *terraform.
 		source = ""
 	}
 
-	p.logger.Debug("Module resolved using modules.json",
+	parent.logger.Debug("Module resolved using modules.json",
 		log.String("block", moduleCallName(key)),
 		log.String("source", source),
 		log.String("modulePath", modulePath),
 	)
-	moduleParser := p.newModuleParser(p.moduleFS, source, modulePath, b.Label())
-	if err := moduleParser.ParseFS(ctx, modulePath); err != nil {
+	c, err := p.parseModule(b.Label(), key, parent.fsys, source, modulePath)
+	if err != nil {
 		return nil, fmt.Errorf("parse module filesystem: %w", err)
 	}
-	return moduleParser, nil
+	return c, nil
 }
 
-func (p *Parser) loadExternalModule(ctx context.Context, b *terraform.Block, key, source string) (*Parser, error) {
+func (p *Parser) loadExternalModule(ctx context.Context, parent *moduleConfig, b *terraform.Block, key, source string) (*moduleConfig, error) {
 
-	p.logger.Debug("Locating non-initialized module", log.String("source", source))
+	parent.logger.Debug("Locating non-initialized module", log.String("source", source))
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
 	opt := resolvers.Options{
@@ -178,26 +220,41 @@ func (p *Parser) loadExternalModule(ctx context.Context, b *terraform.Block, key
 		OriginalVersion: version,
 		WorkingDir:      p.projectRoot,
 		Name:            moduleCallName(key),
-		ModulePath:      p.modulePath,
-		Logger:          p.logger.With(log.Prefix("module resolver")),
+		ModulePath:      parent.path,
+		Logger:          parent.logger.With(log.Prefix("module resolver")),
 		AllowDownloads:  p.allowDownloads,
 		SkipCache:       p.skipCachedModules,
 	}
 
-	res, err := resolvers.Resolve(ctx, p.moduleFS, opt)
+	res, err := resolvers.Resolve(ctx, parent.fsys, opt)
 	if err != nil {
 		return nil, err
 	}
-	prefix := path.Join(p.moduleSource, res.SourcePrefix)
-	p.logger.Debug("Module resolved",
+	prefix := path.Join(parent.source, res.SourcePrefix)
+	parent.logger.Debug("Module resolved",
 		log.String("block", moduleCallName(key)),
 		log.String("source", source),
 		log.String("prefix", prefix),
 		log.FilePath(res.Dir),
 	)
-	moduleParser := p.newModuleParser(res.FS, prefix, res.Dir, b.Label())
-	if err := moduleParser.ParseFS(ctx, res.Dir); err != nil {
+	return p.parseModule(b.Label(), key, res.FS, prefix, res.Dir)
+}
+
+// parseModule parses the module in dir of fsys.
+func (p *Parser) parseModule(name, key string, fsys fs.FS, source, dir string) (*moduleConfig, error) {
+	c := &moduleConfig{
+		name:   name,
+		key:    key,
+		path:   dir,
+		fsys:   fsys,
+		source: source,
+		logger: p.moduleLogger(name),
+	}
+
+	files, err := p.parseDir(fsys, dir, hclparse.NewParser(), c.logger)
+	if err != nil {
 		return nil, err
 	}
-	return moduleParser, nil
+	c.files = files
+	return c, nil
 }

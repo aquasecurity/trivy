@@ -34,7 +34,6 @@ type sourceFile struct {
 // Parser is a tool for parsing terraform templates at a given file system location
 type Parser struct {
 	projectRoot       string
-	moduleName        string
 	modulePath        string
 	moduleSource      string
 	moduleFS          fs.FS
@@ -44,11 +43,12 @@ type Parser struct {
 	stopOnHCLError    bool
 	workspaceName     string
 	underlying        *hclparse.Parser
-	options           []Option
+	baseLogger        *log.Logger // without the module attribute
 	logger            *log.Logger
 	allowDownloads    bool
 	skipCachedModules bool
 	fsMap             map[string]fs.FS
+	modulesMetadata   map[string]*ModulesMetadata // by filesystem key, nil if modules.json cannot be read
 	configsFS         fs.FS
 	skipFiles         []string
 	skipDirs          []string
@@ -62,8 +62,6 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	p := &Parser{
 		workspaceName:  "default",
 		underlying:     hclparse.NewParser(),
-		options:        opts,
-		moduleName:     "root",
 		allowDownloads: true,
 		moduleFS:       moduleFS,
 		moduleSource:   moduleSource,
@@ -77,28 +75,15 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	}
 
 	// Scope the logger to the parser
-	p.logger = p.logger.With(log.Prefix("terraform parser")).With("module", "root")
+	p.baseLogger = p.logger.With(log.Prefix("terraform parser"))
+	p.logger = p.moduleLogger(rootModuleName)
 
 	return p
 }
 
-func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, moduleName string) *Parser {
-	mp := New(moduleFS, moduleSource)
-	mp.modulePath = modulePath
-	mp.moduleName = moduleName
-	mp.logger = p.logger
-	mp.projectRoot = p.projectRoot
-	mp.skipFiles = p.skipFiles
-	mp.skipDirs = p.skipDirs
-	mp.options = p.options
-	for _, option := range p.options {
-		option(mp)
-	}
-
-	// The options above can reset the logger, so set the logging prefix after the
-	// options.
-	mp.logger = mp.logger.With(log.Prefix("terraform parser")).With("module", moduleName)
-	return mp
+// moduleLogger returns the logger of the module with the given call name.
+func (p *Parser) moduleLogger(name string) *log.Logger {
+	return p.baseLogger.With("module", name)
 }
 
 func (p *Parser) Files() map[string]*hcl.File {
@@ -106,22 +91,8 @@ func (p *Parser) Files() map[string]*hcl.File {
 }
 
 func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-
-	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
-	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
-	if !isJSON && !isHCL {
-		return nil
-	}
-
-	p.logger.Debug("Parsing", log.FilePath(fullPath))
-	f, err := p.moduleFS.Open(filepath.ToSlash(fullPath))
-	if err != nil {
-		return err
-	}
-	defer func() { _ = f.Close() }()
-
-	data, err := io.ReadAll(f)
-	if err != nil {
+	file, err := parseFile(p.moduleFS, fullPath, p.underlying, p.logger)
+	if file == nil {
 		return err
 	}
 
@@ -130,29 +101,12 @@ func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
 		p.projectRoot = dir
 		p.modulePath = dir
 	}
-
-	var file *hcl.File
-	var diag hcl.Diagnostics
-
-	if isHCL {
-		file, diag = p.underlying.ParseHCL(data, fullPath)
-	} else {
-		file, diag = p.underlying.ParseJSON(data, fullPath)
-	}
-	if diag != nil && diag.HasErrors() {
-		return diag
-	}
-	p.files = append(p.files, sourceFile{
-		file: file,
-		path: fullPath,
-	})
-
-	p.logger.Debug("Added file", log.FilePath(fullPath))
+	p.files = append(p.files, *file)
 	return nil
 }
 
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
-func (p *Parser) ParseFS(ctx context.Context, dir string) error {
+func (p *Parser) ParseFS(_ context.Context, dir string) error {
 	if p.moduleFS == nil {
 		return errors.New("module filesystem is nil, nothing to parse")
 	}
@@ -164,11 +118,20 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 		p.modulePath = dir
 	}
 
+	files, err := p.parseDir(p.moduleFS, dir, p.underlying, p.logger)
+	p.files = append(p.files, files...)
+	return err
+}
+
+// parseDir parses the Terraform files of dir in name order.
+// A file that fails to parse is logged and skipped, unless stopOnHCLError is set.
+func (p *Parser) parseDir(fsys fs.FS, dir string, hclParser *hclparse.Parser, logger *log.Logger) ([]sourceFile, error) {
+	dir = path.Clean(dir)
 	slashed := filepath.ToSlash(dir)
-	p.logger.Debug("Parsing FS", log.FilePath(slashed))
-	fileInfos, err := fs.ReadDir(p.moduleFS, slashed)
+	logger.Debug("Parsing FS", log.FilePath(slashed))
+	fileInfos, err := fs.ReadDir(fsys, slashed)
 	if err != nil {
-		return fmt.Errorf("read dir: %w", err)
+		return nil, fmt.Errorf("read dir: %w", err)
 	}
 
 	skipPaths := utils.CleanSkipPaths(slices.Concat(p.skipFiles, p.skipDirs))
@@ -180,36 +143,77 @@ func (p *Parser) ParseFS(ctx context.Context, dir string) error {
 			continue
 		}
 		if utils.SkipPath(realPath, skipPaths) {
-			p.logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", skipPaths))
+			logger.Debug("Skipping path based on input glob", log.FilePath(realPath), log.Any("glob", skipPaths))
 			continue
 		}
 		paths = append(paths, realPath)
 	}
 	sort.Strings(paths)
+
+	var files []sourceFile
 	for _, path := range paths {
-		var err error
-		if err = p.ParseFile(ctx, path); err == nil {
+		file, err := parseFile(fsys, path, hclParser, logger)
+		if err == nil {
+			if file != nil {
+				files = append(files, *file)
+			}
 			continue
 		}
 
 		if p.stopOnHCLError {
-			return err
+			return files, err
 		}
 		if diags, ok := errors.AsType[hcl.Diagnostics](err); ok {
-			errc := p.showParseErrors(p.moduleFS, path, diags)
+			errc := showParseErrors(logger, fsys, path, diags)
 			if errc == nil {
 				continue
 			}
-			p.logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
+			logger.Error("Failed to get the causes of the parsing error", log.Err(errc))
 		}
-		p.logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
-		continue
+		logger.Error("Error parsing file", log.FilePath(path), log.Err(err))
 	}
 
-	return nil
+	return files, nil
 }
 
-func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
+// parseFile parses a Terraform file in HCL or JSON syntax.
+// It returns nil for a file of another type.
+func parseFile(fsys fs.FS, fullPath string, hclParser *hclparse.Parser, logger *log.Logger) (*sourceFile, error) {
+	isJSON := strings.HasSuffix(fullPath, ".tf.json") || strings.HasSuffix(fullPath, ".tofu.json")
+	isHCL := strings.HasSuffix(fullPath, ".tf") || strings.HasSuffix(fullPath, ".tofu")
+	if !isJSON && !isHCL {
+		return nil, nil
+	}
+
+	logger.Debug("Parsing", log.FilePath(fullPath))
+	f, err := fsys.Open(filepath.ToSlash(fullPath))
+	if err != nil {
+		return nil, err
+	}
+	defer func() { _ = f.Close() }()
+
+	data, err := io.ReadAll(f)
+	if err != nil {
+		return nil, err
+	}
+
+	var file *hcl.File
+	var diag hcl.Diagnostics
+
+	if isHCL {
+		file, diag = hclParser.ParseHCL(data, fullPath)
+	} else {
+		file, diag = hclParser.ParseJSON(data, fullPath)
+	}
+	if diag != nil && diag.HasErrors() {
+		return nil, diag
+	}
+
+	logger.Debug("Added file", log.FilePath(fullPath))
+	return &sourceFile{file: file, path: fullPath}, nil
+}
+
+func showParseErrors(logger *log.Logger, fsys fs.FS, filePath string, diags hcl.Diagnostics) error {
 	file, err := fsys.Open(filePath)
 	if err != nil {
 		return fmt.Errorf("failed to read file: %w", err)
@@ -224,7 +228,7 @@ func (p *Parser) showParseErrors(fsys fs.FS, filePath string, diags hcl.Diagnost
 			}
 
 			cause := strings.Join(lines, "\n")
-			p.logger.Error("Error parsing file", log.FilePath(filePath),
+			logger.Error("Error parsing file", log.FilePath(filePath),
 				log.String("cause", cause), log.Err(diag))
 		}
 	}
@@ -264,7 +268,7 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 	}
 
 	root := p.loadModuleTree(ctx, workingDir)
-	return root.newInstanceEvaluator(nil)
+	return p.newInstanceEvaluator(root, nil)
 }
 
 // workingDir returns the value of path.cwd.
@@ -277,20 +281,19 @@ func (p *Parser) workingDir() (string, error) {
 
 // newInstanceEvaluator creates the evaluator of one instance of the module.
 // moduleBlock is the module block of the instance, or nil for the root module.
-func (c *moduleConfig) newInstanceEvaluator(moduleBlock *terraform.Block) (*evaluator, error) {
-	p := c.parser
-	p.logger.Debug("Loading module", log.String("module", p.moduleName))
+func (p *Parser) newInstanceEvaluator(c *moduleConfig, moduleBlock *terraform.Block) (*evaluator, error) {
+	c.logger.Debug("Loading module", log.String("module", c.name))
 
-	if len(p.files) == 0 {
-		p.logger.Info("No files found, nothing to do.")
+	if len(c.files) == 0 {
+		c.logger.Info("No files found, nothing to do.")
 		return nil, ErrNoFiles
 	}
 
-	blocks, ignores, err := p.readBlocks(p.files, moduleBlock)
+	blocks, ignores, err := p.readBlocks(c, moduleBlock)
 	if err != nil {
 		return nil, err
 	}
-	p.logger.Debug("Read block(s) and ignore(s)",
+	c.logger.Debug("Read block(s) and ignore(s)",
 		log.Int("blocks", len(blocks)), log.Int("ignores", len(ignores)))
 
 	var inputVars map[string]cty.Value
@@ -298,17 +301,17 @@ func (c *moduleConfig) newInstanceEvaluator(moduleBlock *terraform.Block) (*eval
 	switch {
 	case moduleBlock != nil:
 		inputVars = moduleBlock.Values().AsValueMap()
-		p.logger.Debug("Added input variables from module definition",
+		c.logger.Debug("Added input variables from module definition",
 			log.Int("count", len(inputVars)))
 	case len(p.tfvars) > 0:
 		inputVars = p.tfvars
-		p.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
+		c.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
 	default:
 		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
 			return nil, err
 		}
-		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
+		c.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
 		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
@@ -317,20 +320,9 @@ func (c *moduleConfig) newInstanceEvaluator(moduleBlock *terraform.Block) (*eval
 		return nil, err
 	}
 
-	p.logger.Debug("Working directory for module evaluation", log.FilePath(workingDir))
-	return newEvaluator(
-		p.moduleFS,
-		c,
-		p.projectRoot,
-		p.modulePath,
-		workingDir,
-		p.moduleName,
-		blocks,
-		inputVars,
-		p.workspaceName,
-		ignores,
-		p.logger.With(log.Prefix("terraform evaluator")),
-	), nil
+	c.logger.Debug("Working directory for module evaluation", log.FilePath(workingDir))
+	return newEvaluator(p, c, workingDir, blocks, inputVars, ignores,
+		c.logger.With(log.Prefix("terraform evaluator"))), nil
 }
 
 func missingVariableValues(blocks terraform.Blocks, inputVars map[string]cty.Value) []*terraform.Block {
@@ -406,26 +398,26 @@ func (p *Parser) GetFilesystemMap() map[string]fs.FS {
 
 // readBlocks creates the blocks of one module instance from the parsed files.
 // moduleBlock is the module block of the instance, or nil for the root module.
-func (p *Parser) readBlocks(files []sourceFile, moduleBlock *terraform.Block) (terraform.Blocks, ignore.Rules, error) {
+func (p *Parser) readBlocks(c *moduleConfig, moduleBlock *terraform.Block) (terraform.Blocks, ignore.Rules, error) {
 	var blocks terraform.Blocks
 	var ignores ignore.Rules
 	moduleCtx := tfcontext.NewContext(&hcl.EvalContext{}, nil)
-	for _, file := range files {
+	for _, file := range c.files {
 		fileBlocks, err := loadBlocksFromFile(file)
 		if err != nil {
 			if p.stopOnHCLError {
 				return nil, nil, err
 			}
-			p.logger.Error("Encountered HCL parse error", log.FilePath(file.path), log.Err(err))
+			c.logger.Error("Encountered HCL parse error", log.FilePath(file.path), log.Err(err))
 			continue
 		}
 		for _, fileBlock := range fileBlocks {
-			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, moduleBlock, nil, p.moduleSource, p.moduleFS))
+			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, moduleBlock, nil, c.source, c.fsys))
 		}
 		fileIgnores := ignore.Parse(
 			string(file.file.Bytes),
 			file.path,
-			p.moduleSource,
+			c.source,
 			&ignore.StringMatchParser{
 				SectionKey: "ws",
 			},

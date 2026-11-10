@@ -35,24 +35,21 @@ type evaluator struct {
 	modulePath      string
 	moduleName      string
 	ignores         ignore.Rules
+	parser          *Parser
 	config          *moduleConfig
 }
 
 func newEvaluator(
-	target fs.FS,
+	parser *Parser,
 	config *moduleConfig,
-	projectRootPath string,
-	modulePath string,
 	workingDir string,
-	moduleName string,
 	blocks terraform.Blocks,
 	inputVars map[string]cty.Value,
-	workspace string,
 	ignores ignore.Rules,
 	logger *log.Logger,
 ) *evaluator {
 
-	ctx := newModuleContext(target, projectRootPath, modulePath, workingDir, workspace)
+	ctx := newModuleContext(config.fsys, parser.projectRoot, config.path, workingDir, parser.workspaceName)
 
 	// each block gets its own scope to define variables in
 	for _, b := range blocks {
@@ -60,11 +57,12 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:      target,
+		filesystem:      config.fsys,
+		parser:          parser,
 		config:          config,
-		modulePath:      modulePath,
-		moduleName:      moduleName,
-		projectRootPath: projectRootPath,
+		modulePath:      config.path,
+		moduleName:      config.name,
+		projectRootPath: parser.projectRoot,
 		ctx:             ctx,
 		blocks:          blocks,
 		inputVars:       inputVars,
@@ -218,7 +216,7 @@ func (e *evaluator) loadSubmodules() []*submodule {
 			continue
 		}
 
-		eval, err := config.newInstanceEvaluator(b)
+		eval, err := e.parser.newInstanceEvaluator(config, b)
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {

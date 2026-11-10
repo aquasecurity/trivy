@@ -38,7 +38,7 @@ module "b" {
 	var walk func(c *moduleConfig)
 	walk = func(c *moduleConfig) {
 		for _, child := range c.children {
-			got[child.key] = child.parser.modulePath
+			got[child.key] = child.path
 			walk(child)
 		}
 	}
