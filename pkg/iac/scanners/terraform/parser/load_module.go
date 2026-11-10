@@ -4,61 +4,107 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"io/fs"
 	"path"
+	"slices"
 	"strings"
 
 	"github.com/zclconf/go-cty/cty"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/terraform/parser/resolvers"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	tfcontext "github.com/aquasecurity/trivy/pkg/iac/terraform/context"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
-type ModuleDefinition struct {
-	Name       string
-	Path       string
-	FileSystem fs.FS
-	Definition *terraform.Block
-	Parser     *Parser
-	External   bool
+// moduleConfig is a module loaded once per module call and shared by all its instances.
+type moduleConfig struct {
+	key      string // call path without instance keys, as in modules.json
+	parser   *Parser
+	children map[string]*moduleConfig // by call name
 }
 
-func (d *ModuleDefinition) inputVars() map[string]cty.Value {
-	inputs := d.Definition.NullableValues().AsValueMap()
-	if inputs == nil {
-		return make(map[string]cty.Value)
+// loadModuleTree loads the root module and all modules below it.
+func (p *Parser) loadModuleTree(ctx context.Context, workingDir string) *moduleConfig {
+	root := &moduleConfig{parser: p}
+	root.loadChildren(ctx, workingDir, []string{p.moduleID()})
+	return root
+}
+
+// loadChildren loads the modules called by the module and their children.
+// ancestors holds the IDs of the module and its parents, and a call of any of them is not loaded.
+func (c *moduleConfig) loadChildren(ctx context.Context, workingDir string, ancestors []string) {
+	p := c.parser
+	c.children = make(map[string]*moduleConfig)
+	if len(p.files) == 0 {
+		return
 	}
-	return inputs
-}
 
-// loadModules reads all module blocks and loads them
-func (e *evaluator) loadModules(ctx context.Context) []*ModuleDefinition {
-	var moduleDefinitions []*ModuleDefinition
+	metadata := p.loadModulesMetadata()
+	evalCtx := newModuleContext(p.moduleFS, p.projectRoot, p.modulePath, workingDir, p.workspaceName)
 
-	expanded := e.expandBlocks(e.blocks.OfType("module"))
-
-	for _, moduleBlock := range expanded {
-		if moduleBlock.Label() == "" {
+	for _, call := range p.moduleCalls(evalCtx) {
+		name := call.Label()
+		if _, exists := c.children[name]; exists {
 			continue
 		}
-		moduleDefinition, err := e.loadModule(ctx, moduleBlock)
+
+		key := name
+		if c.key != "" {
+			key = c.key + "." + name
+		}
+
+		mp, err := p.loadModule(ctx, call, key, metadata)
 		if err != nil {
-			rng := moduleBlock.GetMetadata().Range()
-			e.logger.Error("Failed to load module. Maybe try 'terraform init'?",
-				log.String("loc", rng.String()), log.Err(err))
+			p.logger.Error("Failed to load module. Maybe try 'terraform init'?",
+				log.String("loc", call.GetMetadata().Range().String()), log.Err(err))
 			continue
 		}
 
-		e.logger.Debug("Loaded module", log.String("name", moduleDefinition.Name), log.FilePath(moduleDefinition.Path))
-		moduleDefinitions = append(moduleDefinitions, moduleDefinition)
-	}
+		id := mp.moduleID()
+		if slices.Contains(ancestors, id) {
+			p.logger.Error("Module includes itself",
+				log.String("loc", call.GetMetadata().Range().String()), log.FilePath(mp.modulePath))
+			continue
+		}
 
-	return moduleDefinitions
+		p.logger.Debug("Loaded module", log.String("name", name), log.FilePath(mp.modulePath))
+		child := &moduleConfig{key: key, parser: mp}
+		c.children[name] = child
+		child.loadChildren(ctx, workingDir, append(slices.Clip(ancestors), id))
+	}
 }
 
-// takes in a module "x" {} block and loads resources etc. into e.moduleBlocks - additionally returns variables to add to ["module.x.*"] variables
-func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*ModuleDefinition, error) {
+// moduleID identifies the directory of the module and its filesystem.
+func (p *Parser) moduleID() string {
+	return types.CreateFSKey(p.moduleFS) + ":" + path.Clean(p.modulePath)
+}
+
+// moduleCalls returns the module blocks of the parsed files, evaluated in ctx.
+// Files whose blocks cannot be read are skipped.
+func (p *Parser) moduleCalls(ctx *tfcontext.Context) terraform.Blocks {
+	var calls terraform.Blocks
+	for _, file := range p.files {
+		hclBlocks, err := loadBlocksFromFile(file)
+		if err != nil {
+			continue
+		}
+		for _, hclBlock := range hclBlocks {
+			if hclBlock.Type == "module" {
+				calls = append(calls, terraform.NewBlock(hclBlock, ctx, nil, nil, p.moduleSource, p.moduleFS))
+			}
+		}
+	}
+	return calls
+}
+
+// moduleCallName returns the full name of the module call with the given key, such as module.a.module.b.
+func moduleCallName(key string) string {
+	return "module." + strings.ReplaceAll(key, ".", ".module.")
+}
+
+// loadModule finds the source of the module call and parses the module.
+func (p *Parser) loadModule(ctx context.Context, b *terraform.Block, key string, metadata *ModulesMetadata) (*Parser, error) {
 	if b.Label() == "" {
 		return nil, errors.New("module without label")
 	}
@@ -73,64 +119,56 @@ func (e *evaluator) loadModule(ctx context.Context, b *terraform.Block) (*Module
 		return nil, errors.New("source is empty")
 	}
 
-	if e.moduleMetadata != nil {
+	if metadata != nil {
 		// if we have module metadata we can parse all the modules as they'll be cached locally!
-		def, err := e.loadModuleFromTerraformCache(ctx, b, source)
+		mp, err := p.loadModuleFromTerraformCache(ctx, b, key, source, metadata)
 		if err == nil {
-			e.logger.Debug("Using module from Terraform cache .terraform/modules",
+			p.logger.Debug("Using module from Terraform cache .terraform/modules",
 				log.String("source", source))
-			return def, nil
+			return mp, nil
 		}
 
-		e.logger.Debug("Failed to load module from .terraform cache",
+		p.logger.Debug("Failed to load module from .terraform cache",
 			log.String("module_source", source),
 			log.Err(err),
 		)
 	}
 
 	// we don't have the module installed via 'terraform init' so we need to grab it...
-	return e.loadExternalModule(ctx, b, source)
+	return p.loadExternalModule(ctx, b, key, source)
 }
 
-func (e *evaluator) loadModuleFromTerraformCache(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
+func (p *Parser) loadModuleFromTerraformCache(ctx context.Context, b *terraform.Block, key, source string, metadata *ModulesMetadata) (*Parser, error) {
 	var modulePath string
-	moduleKey := b.ModuleKey()
-	for _, module := range e.moduleMetadata.Modules {
-		if module.Key == moduleKey {
-			modulePath = path.Clean(path.Join(e.projectRootPath, module.Dir))
+	for _, module := range metadata.Modules {
+		if module.Key == key {
+			modulePath = path.Clean(path.Join(p.projectRoot, module.Dir))
 			break
 		}
 	}
 	if modulePath == "" {
-		return nil, fmt.Errorf("resolve module with key %q from .terraform/modules", moduleKey)
+		return nil, fmt.Errorf("resolve module with key %q from .terraform/modules", key)
 	}
 
 	if strings.HasPrefix(source, ".") {
 		source = ""
 	}
 
-	e.logger.Debug("Module resolved using modules.json",
-		log.String("block", b.FullName()),
+	p.logger.Debug("Module resolved using modules.json",
+		log.String("block", moduleCallName(key)),
 		log.String("source", source),
 		log.String("modulePath", modulePath),
 	)
-	moduleParser := e.parentParser.newModuleParser(e.filesystem, source, modulePath, b.Label(), b)
+	moduleParser := p.newModuleParser(p.moduleFS, source, modulePath, b.Label())
 	if err := moduleParser.ParseFS(ctx, modulePath); err != nil {
 		return nil, fmt.Errorf("parse module filesystem: %w", err)
 	}
-
-	return &ModuleDefinition{
-		Name:       b.Label(),
-		Path:       modulePath,
-		Definition: b,
-		Parser:     moduleParser,
-		FileSystem: e.filesystem,
-	}, nil
+	return moduleParser, nil
 }
 
-func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, source string) (*ModuleDefinition, error) {
+func (p *Parser) loadExternalModule(ctx context.Context, b *terraform.Block, key, source string) (*Parser, error) {
 
-	e.logger.Debug("Locating non-initialized module", log.String("source", source))
+	p.logger.Debug("Locating non-initialized module", log.String("source", source))
 
 	version := b.GetAttribute("version").AsStringValueOrDefault("", b).Value()
 	opt := resolvers.Options{
@@ -138,35 +176,28 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		OriginalSource:  source,
 		Version:         version,
 		OriginalVersion: version,
-		WorkingDir:      e.projectRootPath,
-		Name:            b.FullName(),
-		ModulePath:      e.modulePath,
-		Logger:          e.logger.With(log.Prefix("module resolver")),
-		AllowDownloads:  e.allowDownloads,
-		SkipCache:       e.skipCachedModules,
+		WorkingDir:      p.projectRoot,
+		Name:            moduleCallName(key),
+		ModulePath:      p.modulePath,
+		Logger:          p.logger.With(log.Prefix("module resolver")),
+		AllowDownloads:  p.allowDownloads,
+		SkipCache:       p.skipCachedModules,
 	}
 
-	res, err := resolvers.Resolve(ctx, e.filesystem, opt)
+	res, err := resolvers.Resolve(ctx, p.moduleFS, opt)
 	if err != nil {
 		return nil, err
 	}
-	prefix := path.Join(e.parentParser.moduleSource, res.SourcePrefix)
-	e.logger.Debug("Module resolved",
-		log.String("block", b.FullName()),
+	prefix := path.Join(p.moduleSource, res.SourcePrefix)
+	p.logger.Debug("Module resolved",
+		log.String("block", moduleCallName(key)),
 		log.String("source", source),
 		log.String("prefix", prefix),
 		log.FilePath(res.Dir),
 	)
-	moduleParser := e.parentParser.newModuleParser(res.FS, prefix, res.Dir, b.Label(), b)
+	moduleParser := p.newModuleParser(res.FS, prefix, res.Dir, b.Label())
 	if err := moduleParser.ParseFS(ctx, res.Dir); err != nil {
 		return nil, err
 	}
-	return &ModuleDefinition{
-		Name:       b.Label(),
-		Path:       res.Dir,
-		Definition: b,
-		Parser:     moduleParser,
-		FileSystem: res.FS,
-		External:   true,
-	}, nil
+	return moduleParser, nil
 }

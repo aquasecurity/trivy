@@ -38,14 +38,12 @@ type Parser struct {
 	modulePath        string
 	moduleSource      string
 	moduleFS          fs.FS
-	moduleBlock       *terraform.Block
 	files             []sourceFile
 	tfvarsPaths       []string
 	tfvars            map[string]cty.Value
 	stopOnHCLError    bool
 	workspaceName     string
 	underlying        *hclparse.Parser
-	children          []*Parser
 	options           []Option
 	logger            *log.Logger
 	allowDownloads    bool
@@ -84,17 +82,15 @@ func New(moduleFS fs.FS, moduleSource string, opts ...Option) *Parser {
 	return p
 }
 
-func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, moduleName string, moduleBlock *terraform.Block) *Parser {
+func (p *Parser) newModuleParser(moduleFS fs.FS, moduleSource, modulePath, moduleName string) *Parser {
 	mp := New(moduleFS, moduleSource)
 	mp.modulePath = modulePath
-	mp.moduleBlock = moduleBlock
 	mp.moduleName = moduleName
 	mp.logger = p.logger
 	mp.projectRoot = p.projectRoot
 	mp.skipFiles = p.skipFiles
 	mp.skipDirs = p.skipDirs
 	mp.options = p.options
-	p.children = append(p.children, mp)
 	for _, option := range p.options {
 		option(mp)
 	}
@@ -255,7 +251,34 @@ func readLinesFromFile(f io.Reader, from, to int) ([]string, error) {
 
 var ErrNoFiles = errors.New("no files found")
 
-func (p *Parser) Load(_ context.Context) (*evaluator, error) {
+// Load loads the module tree and creates the evaluator of the root module.
+func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
+	if len(p.files) == 0 {
+		p.logger.Info("No files found, nothing to do.")
+		return nil, ErrNoFiles
+	}
+
+	workingDir, err := p.workingDir()
+	if err != nil {
+		return nil, err
+	}
+
+	root := p.loadModuleTree(ctx, workingDir)
+	return root.newInstanceEvaluator(nil)
+}
+
+// workingDir returns the value of path.cwd.
+func (p *Parser) workingDir() (string, error) {
+	if p.cwd != "" {
+		return p.cwd, nil
+	}
+	return os.Getwd()
+}
+
+// newInstanceEvaluator creates the evaluator of one instance of the module.
+// moduleBlock is the module block of the instance, or nil for the root module.
+func (c *moduleConfig) newInstanceEvaluator(moduleBlock *terraform.Block) (*evaluator, error) {
+	p := c.parser
 	p.logger.Debug("Loading module", log.String("module", p.moduleName))
 
 	if len(p.files) == 0 {
@@ -263,7 +286,7 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 		return nil, ErrNoFiles
 	}
 
-	blocks, ignores, err := p.readBlocks(p.files)
+	blocks, ignores, err := p.readBlocks(p.files, moduleBlock)
 	if err != nil {
 		return nil, err
 	}
@@ -273,8 +296,8 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 	var inputVars map[string]cty.Value
 
 	switch {
-	case p.moduleBlock != nil:
-		inputVars = p.moduleBlock.Values().AsValueMap()
+	case moduleBlock != nil:
+		inputVars = moduleBlock.Values().AsValueMap()
 		p.logger.Debug("Added input variables from module definition",
 			log.Int("count", len(inputVars)))
 	case len(p.tfvars) > 0:
@@ -289,43 +312,24 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
-	modulesMetadata, metadataPath, err := loadModuleMetadata(p.moduleFS, p.projectRoot)
-
-	if err != nil && !errors.Is(err, os.ErrNotExist) {
-		p.logger.Error("Error loading module metadata", log.Err(err))
-	} else if err == nil {
-		p.logger.Debug("Loaded module metadata for modules",
-			log.FilePath(metadataPath),
-			log.Int("count", len(modulesMetadata.Modules)),
-		)
-	}
-
-	var workingDir string
-	if p.cwd != "" {
-		workingDir = p.cwd
-	} else {
-		workingDir, err = os.Getwd()
-		if err != nil {
-			return nil, err
-		}
+	workingDir, err := p.workingDir()
+	if err != nil {
+		return nil, err
 	}
 
 	p.logger.Debug("Working directory for module evaluation", log.FilePath(workingDir))
 	return newEvaluator(
 		p.moduleFS,
-		p,
+		c,
 		p.projectRoot,
 		p.modulePath,
 		workingDir,
 		p.moduleName,
 		blocks,
 		inputVars,
-		modulesMetadata,
 		p.workspaceName,
 		ignores,
 		p.logger.With(log.Prefix("terraform evaluator")),
-		p.allowDownloads,
-		p.skipCachedModules,
 	), nil
 }
 
@@ -400,7 +404,9 @@ func (p *Parser) GetFilesystemMap() map[string]fs.FS {
 	return p.fsMap
 }
 
-func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules, error) {
+// readBlocks creates the blocks of one module instance from the parsed files.
+// moduleBlock is the module block of the instance, or nil for the root module.
+func (p *Parser) readBlocks(files []sourceFile, moduleBlock *terraform.Block) (terraform.Blocks, ignore.Rules, error) {
 	var blocks terraform.Blocks
 	var ignores ignore.Rules
 	moduleCtx := tfcontext.NewContext(&hcl.EvalContext{}, nil)
@@ -414,7 +420,7 @@ func (p *Parser) readBlocks(files []sourceFile) (terraform.Blocks, ignore.Rules,
 			continue
 		}
 		for _, fileBlock := range fileBlocks {
-			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, p.moduleBlock, nil, p.moduleSource, p.moduleFS))
+			blocks = append(blocks, terraform.NewBlock(fileBlock, moduleCtx, moduleBlock, nil, p.moduleSource, p.moduleFS))
 		}
 		fileIgnores := ignore.Parse(
 			string(file.file.Bytes),

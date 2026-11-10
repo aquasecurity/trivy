@@ -26,7 +26,7 @@ func (p *Parser) FindRootModules(ctx context.Context, dirs []string) ([]string, 
 		}
 	}
 
-	blocks, _, err := p.readBlocks(p.files)
+	blocks, _, err := p.readBlocks(p.files, nil)
 	if err != nil {
 		return nil, err
 	}
