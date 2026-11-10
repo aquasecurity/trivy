@@ -28,8 +28,10 @@ var (
 	oidEnvelopedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 3}
 	oidEncryptedDataContentType = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 7, 6}
 
-	oidCertBag         = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 3}
-	oidSafeContentsBag = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 6}
+	oidKeyBag              = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 1}
+	oidPKCS8ShroudedKeyBag = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 2}
+	oidCertBag             = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 3}
+	oidSafeContentsBag     = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 6}
 
 	oidX509Certificate = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 22, 1}
 )
@@ -61,10 +63,11 @@ type certBag struct {
 	Data []byte `asn1:"tag:0,explicit"`
 }
 
-// Parse describes the unencrypted certificates of a PKCS#12 keystore as assets.
+// Parse describes the certificates and private keys stored in the unencrypted contents of a
+// PKCS#12 keystore as assets.
 //
 // Content that is not a PKCS#12 file in DER gives ErrNotPKCS12. Material that cannot be read
-// is logged and skipped. Any other error means a parsed certificate could not be described.
+// is logged and skipped. Any other error means a parsed object could not be described.
 func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.CryptoAsset, error) {
 	var p pfx
 	if err := unmarshal(content, &p); err != nil || p.Version != 3 {
@@ -72,13 +75,13 @@ func Parse(ctx context.Context, filePath string, content []byte) ([]ftypes.Crypt
 	}
 	ctx = log.WithContextPrefix(ctx, "pkcs12")
 	ctx = log.WithContextAttrs(ctx, log.FilePath(filePath))
-	return x509.ParseCertificates(ctx, filePath, certificates(ctx, p), ftypes.CryptoKeystorePKCS12)
+	return x509.ParseKeystoreObjects(ctx, filePath, objects(ctx, p), ftypes.CryptoKeystorePKCS12)
 }
 
-// certificates yields the DER of each certificate stored in an unencrypted content of the
+// objects yields each certificate and private key stored in an unencrypted content of the
 // authenticated safe of p.
-func certificates(ctx context.Context, p pfx) iter.Seq[[]byte] {
-	return func(yield func([]byte) bool) {
+func objects(ctx context.Context, p pfx) iter.Seq[x509.KeystoreObject] {
+	return func(yield func(x509.KeystoreObject) bool) {
 		rest, ok := authenticatedSafe(ctx, p)
 		if !ok {
 			return
@@ -139,16 +142,16 @@ func authenticatedSafe(ctx context.Context, p pfx) ([]byte, bool) {
 	return contentInfos, true
 }
 
-// walker reads the certificates of one keystore and passes each to yield. The bags of the
-// whole keystore share one budget.
+// walker reads the objects of one keystore and passes each to yield. The bags of the whole
+// keystore share one budget.
 type walker struct {
 	ctx    context.Context
 	budget int
-	yield  func([]byte) bool
+	yield  func(x509.KeystoreObject) bool
 }
 
-// walk yields the certificates of a safe contents structure and of the safe contents nested
-// in it. It reports false when the walk has to stop, because yield asks to stop or the
+// walk yields the objects of a safe contents structure and of the safe contents nested in
+// it. It reports false when the walk has to stop, because yield asks to stop or the
 // budget runs out.
 func (w *walker) walk(der []byte, depth int) bool {
 	if depth > maxDepth {
@@ -182,7 +185,17 @@ func (w *walker) walk(der []byte, depth int) bool {
 				log.DebugContext(w.ctx, "Unsupported PKCS#12 certificate type", log.String("cert_type", cert.ID.String()))
 				continue
 			}
-			if !w.yield(cert.Data) {
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystoreCertificate, DER: cert.Data}) {
+				return false
+			}
+		case bag.ID.Equal(oidKeyBag):
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystorePrivateKey, DER: bag.Value.Bytes}) {
+				return false
+			}
+		case bag.ID.Equal(oidPKCS8ShroudedKeyBag):
+			// The bag holds an EncryptedPrivateKeyInfo, which stays in plain data content
+			// even when the certificates are encrypted.
+			if !w.yield(x509.KeystoreObject{Kind: x509.KeystoreEncryptedPrivateKey, DER: bag.Value.Bytes}) {
 				return false
 			}
 		case bag.ID.Equal(oidSafeContentsBag):

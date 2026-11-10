@@ -334,7 +334,7 @@ func TestClientServer(t *testing.T) {
 			args: csArgs{
 				Format:   types.FormatCycloneDX,
 				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+				Input:    "testdata/fixtures/images/crypto-v3.tar.gz",
 			},
 			golden: goldenCryptoCDX,
 		},
@@ -343,7 +343,7 @@ func TestClientServer(t *testing.T) {
 			args: csArgs{
 				Format:   types.FormatJSON,
 				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+				Input:    "testdata/fixtures/images/crypto-v3.tar.gz",
 			},
 			golden: goldenCryptoJSON,
 		},

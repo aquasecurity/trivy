@@ -5,6 +5,9 @@ import (
 	"regexp"
 	"strings"
 
+	"golang.org/x/mod/semver"
+
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-db/pkg/ecosystem"
 	"github.com/aquasecurity/trivy/pkg/detector/library"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
@@ -12,23 +15,35 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
 )
 
-// echoLocalSegmentRe matches the "+echo.N" version segment,
-// e.g. "+echo.1" in "2.14.2+echo.1" or "2.14.2+echo.1.post1".
-var echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
+var (
+	// echoLocalSegmentRe matches the "+echo.N" version segment used by the
+	// existing Echo ecosystems.
+	echoLocalSegmentRe = regexp.MustCompile(`\+echo\.\d+([._-]|$)`)
+
+	// echoSemverSegmentRe requires the numeric Echo revision to be a complete
+	// SemVer build identifier. Additional metadata identifiers remain valid,
+	// but a "-" joined identifier (e.g. "+echo.1-extra") is rejected, unlike
+	// echoLocalSegmentRe used by the other Echo ecosystems.
+	echoSemverSegmentRe = regexp.MustCompile(`\+echo\.(0|[1-9]\d*)(\.|$)`)
+)
 
 func init() {
 	library.RegisterSupplier(echoSupplier{
-		pipComparer: pep440.NewComparer(pep440.AllowLocalSpecifier()),
-		npmComparer: npm.NewComparer(npm.WithBuildMetadata()),
+		pipComparer:   pep440.NewComparer(pep440.AllowLocalSpecifier()),
+		npmComparer:   npm.NewComparer(npm.WithBuildMetadata()),
+		nugetComparer: compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)),
+		goComparer:    compare.NewGenericComparer(compare.WithBuildMetadata(version.BuildMetadataOrderNodeSemver)),
 	})
 }
 
 // echoSupplier matches language packages patched by Echo.
-// Echo provides patched versions of Python (pip), Java (maven), and JavaScript
-// (npm) packages identified by a "+echo.N" version segment.
+// Echo provides patched versions of Python (pip), Java (maven), JavaScript
+// (npm), .NET (NuGet), and Go packages identified by a "+echo.N" version segment.
 type echoSupplier struct {
-	pipComparer compare.Comparer
-	npmComparer compare.Comparer
+	pipComparer   compare.Comparer
+	npmComparer   compare.Comparer
+	nugetComparer compare.Comparer
+	goComparer    compare.Comparer
 }
 
 func (echoSupplier) Name() string {
@@ -40,7 +55,14 @@ func (echoSupplier) Name() string {
 // string, where N is a numeric revision (e.g. "2.14.2+echo.1" or "2.14.2+echo.1.post1").
 func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchResult {
 	switch eco {
-	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm:
+	case ecosystem.Go:
+		if strings.Contains(pkgVer, "+echo.") &&
+			echoSemverSegmentRe.MatchString(pkgVer) &&
+			isValidGoSemVer(pkgVer) {
+			return library.Matched
+		}
+		return library.NoMatch
+	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm, ecosystem.NuGet:
 	default:
 		return library.NoMatch
 	}
@@ -50,13 +72,20 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 	return library.NoMatch
 }
 
+// isValidGoSemVer gates the lenient go-version comparer used below: without
+// it, a malformed version that merely contains a "+echo." substring would
+// still be routed to the Echo bucket instead of the upstream advisory.
+func isValidGoSemVer(ver string) bool {
+	return semver.IsValid(ver) || semver.IsValid("v"+ver)
+}
+
 // BucketPrefix returns the supplier-specific advisory bucket prefix.
 func (e echoSupplier) BucketPrefix(eco ecosystem.Type) string {
 	return fmt.Sprintf("%s %s::", e.Name(), eco)
 }
 
 // Comparer returns a version comparer for the given ecosystem.
-// pip and npm get comparers that keep the "+echo.N" suffix significant, since
+// pip, npm, NuGet, and Go get comparers that keep the "+echo.N" suffix significant,
 // PEP 440 local versions and SemVer build metadata are otherwise ignored;
 // Maven's default comparer already orders it correctly.
 func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
@@ -65,6 +94,10 @@ func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Compa
 		return e.pipComparer
 	case ecosystem.Npm:
 		return e.npmComparer
+	case ecosystem.NuGet:
+		return e.nugetComparer
+	case ecosystem.Go:
+		return e.goComparer
 	default:
 		return defaultComparer
 	}

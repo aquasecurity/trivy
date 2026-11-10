@@ -21,7 +21,7 @@ func init() {
 	handler.RegisterPostHandlerInit(types.UnpackagedPostHandler, NewUnpackagedHandler)
 }
 
-const version = 1
+const version = 2
 
 type unpackagedHook struct {
 	logger *log.Logger

@@ -404,7 +404,7 @@ func TestTar(t *testing.T) {
 			args: args{
 				Format:   types.FormatCycloneDX,
 				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+				Input:    "testdata/fixtures/images/crypto-v3.tar.gz",
 				// Findings do not affect the exit code of CycloneDX output.
 				ExitCode: 1,
 			},
@@ -415,7 +415,7 @@ func TestTar(t *testing.T) {
 			args: args{
 				Format:   types.FormatJSON,
 				Scanners: []string{"crypto"},
-				Input:    "testdata/fixtures/images/crypto-v2.tar.gz",
+				Input:    "testdata/fixtures/images/crypto-v3.tar.gz",
 			},
 			golden: goldenCryptoJSON,
 		},

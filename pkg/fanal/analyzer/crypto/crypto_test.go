@@ -116,9 +116,30 @@ func Test_cryptoAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
-			name:     "Java keystore",
+			name:     "JKS trust store",
 			filePath: "usr/lib/jvm/java-11/lib/security/cacerts",
-			content:  []byte{0xFE, 0xED, 0xFE, 0xED, 0x00, 0x00, 0x00, 0x02},
+			content:  fixtures.jksTruststore,
+			want: []assetSummary{
+				{
+					kind:     ftypes.CryptoKindCertificate,
+					name:     "jks-cacerts.example.test",
+					encoding: ftypes.CryptoEncodingDER,
+					keystore: ftypes.CryptoKeystoreJKS,
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "ECDSA-SHA-384",
+				},
+				{
+					kind:    ftypes.CryptoKindKey,
+					keyType: ftypes.CryptoKeyTypePublic,
+					name:    "EC-P-256 public key",
+				},
+				{
+					kind: ftypes.CryptoKindAlgorithm,
+					name: "EC-P-256",
+				},
+			},
 		},
 		{
 			name:     "Java cryptography extension keystore",
@@ -287,6 +308,7 @@ type analyzerFixtures struct {
 	certificatePEM        []byte
 	certificateRequestPEM []byte
 	truststore            []byte
+	jksTruststore         []byte
 }
 
 func newAnalyzerFixtures(t *testing.T) analyzerFixtures {
@@ -300,7 +322,7 @@ func newAnalyzerFixtures(t *testing.T) analyzerFixtures {
 	}, rsaKey)
 	require.NoError(t, err)
 
-	// The trust store is generated from this directory.
+	// The trust stores are generated from this directory.
 	//
 	//	docker run --rm -v "$PWD/testdata:/out" -w /tmp eclipse-temurin:21.0.12.1_1-jdk-alpine-3.24 sh -euc '
 	//	keytool -genkeypair -alias cacerts -keyalg EC -groupname secp256r1 -dname CN=cacerts.example.test -validity 36500 -keystore key.p12 -storepass changeit
@@ -308,13 +330,23 @@ func newAnalyzerFixtures(t *testing.T) analyzerFixtures {
 	//	keytool -importcert -noprompt -alias cacerts -file cacerts.pem -keystore /out/cacerts -storepass changeit -J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE -J-Dkeystore.pkcs12.macAlgorithm=NONE
 	//	chmod 644 /out/cacerts
 	//	'
+	//
+	//	docker run --rm -v "$PWD/testdata:/out" -w /tmp eclipse-temurin:21.0.12.1_1-jdk-alpine-3.24 sh -euc '
+	//	keytool -genkeypair -alias cacerts -keyalg EC -groupname secp256r1 -dname CN=jks-cacerts.example.test -validity 36500 -keystore key.p12 -storepass changeit
+	//	keytool -exportcert -rfc -alias cacerts -keystore key.p12 -storepass changeit -file cacerts.pem
+	//	keytool -importcert -noprompt -alias cacerts -file cacerts.pem -storetype JKS -keystore /out/cacerts.jks -storepass changeit
+	//	chmod 644 /out/cacerts.jks
+	//	'
 	truststore, err := os.ReadFile("testdata/cacerts")
+	require.NoError(t, err)
+	jksTruststore, err := os.ReadFile("testdata/cacerts.jks")
 	require.NoError(t, err)
 
 	return analyzerFixtures{
 		certificatePEM:        encodePEM("CERTIFICATE", createCertificate(t, rsaKey)),
 		certificateRequestPEM: encodePEM("CERTIFICATE REQUEST", certificateRequestDER),
 		truststore:            truststore,
+		jksTruststore:         jksTruststore,
 	}
 }
 

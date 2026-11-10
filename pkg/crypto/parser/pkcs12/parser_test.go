@@ -25,14 +25,26 @@ import (
 // parsedFilePath is the path every keystore is parsed from.
 const parsedFilePath = "keystore.p12"
 
+// encryptedKeyName is the name of every encrypted private key.
+const encryptedKeyName = "Encrypted PKCS#8 private key"
+
 var (
 	oidSecretBag       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 5}
 	oidSDSICertificate = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 22, 2}
+	oidPBES2           = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
 )
+
+// encryptedPrivateKeyInfo is a PKCS#8 EncryptedPrivateKeyInfo, as defined in RFC 5208.
+type encryptedPrivateKeyInfo struct {
+	Algorithm     pkix.AlgorithmIdentifier
+	EncryptedData []byte
+}
 
 func TestParse(t *testing.T) {
 	certificate := newCertificate(t, "example.test")
 	other := newCertificate(t, "other.example.test")
+	encryptedKey := newEncryptedKey(t, []byte{0x01})
+	otherEncryptedKey := newEncryptedKey(t, []byte{0x02})
 
 	ecKey, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
 	require.NoError(t, err)
@@ -52,7 +64,7 @@ func TestParse(t *testing.T) {
 		{
 			name:    "OpenSSL keystore without a password",
 			content: fixture(t, "openssl-no-password.p12"),
-			want:    []string{"openssl-leaf.example.test", "openssl-ca.example.test"},
+			want:    []string{"openssl-leaf.example.test", "openssl-ca.example.test", "EC-P-256 private key"},
 		},
 		{
 			name:    "keytool trust store without a password",
@@ -62,6 +74,7 @@ func TestParse(t *testing.T) {
 		{
 			name:    "keytool keystore with a password",
 			content: fixture(t, "keytool-password.p12"),
+			want:    []string{encryptedKeyName},
 		},
 		{
 			name:    "certificate",
@@ -74,6 +87,62 @@ func TestParse(t *testing.T) {
 				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
 				dataContent(t, safeContents(t, newCertBag(t, pkcs12.OIDX509Certificate, certificate))),
 			),
+			want: []string{"example.test"},
+		},
+		{
+			name: "private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newKeyBag(t, pkcs8Key),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
+			want: []string{"EC-P-256 private key", "example.test"},
+		},
+		{
+			name: "repeated private key",
+			content: keystore(t,
+				dataContent(t, safeContents(t, newKeyBag(t, pkcs8Key))),
+				dataContent(t, safeContents(t, newKeyBag(t, pkcs8Key))),
+			),
+			want: []string{"EC-P-256 private key"},
+		},
+		{
+			name: "malformed private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newKeyBag(t, marshal(t, 1)),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
+			want: []string{"example.test"},
+		},
+		{
+			name: "encrypted private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newShroudedKeyBag(t, encryptedKey),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
+			want: []string{encryptedKeyName, "example.test"},
+		},
+		{
+			name: "repeated encrypted private key",
+			content: keystore(t,
+				dataContent(t, safeContents(t, newShroudedKeyBag(t, encryptedKey))),
+				dataContent(t, safeContents(t, newShroudedKeyBag(t, encryptedKey))),
+			),
+			want: []string{encryptedKeyName},
+		},
+		{
+			name: "two encrypted private keys",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newShroudedKeyBag(t, encryptedKey),
+				newShroudedKeyBag(t, otherEncryptedKey),
+			))),
+			want: []string{encryptedKeyName, encryptedKeyName},
+		},
+		{
+			name: "malformed encrypted private key",
+			content: keystore(t, dataContent(t, safeContents(t,
+				newShroudedKeyBag(t, marshal(t, 1)),
+				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
+			))),
 			want: []string{"example.test"},
 		},
 		{
@@ -257,25 +326,28 @@ func TestParse(t *testing.T) {
 				return
 			}
 			require.NoError(t, err)
-			assert.Equal(t, tt.want, certificateNames(t, assets))
+			assert.Equal(t, tt.want, assetNames(t, assets))
 		})
 	}
 }
 
-// certificateNames checks that every asset is valid and not a private key, and returns the
-// names of the certificates among them.
-func certificateNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
+// assetNames checks that every asset is valid, and returns the names of the certificates and
+// private keys among them.
+func assetNames(t *testing.T, assets []ftypes.CryptoAsset) []string {
 	t.Helper()
 
 	var names []string
 	for i, asset := range assets {
 		require.NoErrorf(t, asset.Validate(), "asset %d", i)
 		assert.Equalf(t, parsedFilePath, asset.FilePath, "asset %d", i)
-		assert.NotEqualf(t, ftypes.CryptoKeyTypePrivate, asset.KeyType, "asset %d", i)
-		if asset.Kind != ftypes.CryptoKindCertificate {
+		switch {
+		case asset.Kind == ftypes.CryptoKindCertificate:
+		case asset.KeyType == ftypes.CryptoKeyTypePrivate:
+			assert.Equalf(t, asset.Name == encryptedKeyName, asset.Key.Encrypted, "asset %d", i)
+			assert.Equalf(t, ftypes.CryptoKeyFormatPKCS8, asset.Format, "asset %d", i)
+		default:
 			continue
 		}
-		assert.Equalf(t, ftypes.CryptoEncodingDER, asset.Encoding, "asset %d", i)
 		assert.Equalf(t, ftypes.CryptoKeystorePKCS12, asset.Keystore, "asset %d", i)
 		names = append(names, asset.Name)
 	}
@@ -345,6 +417,33 @@ func newCertBag(t *testing.T, certType asn1.ObjectIdentifier, der []byte) pkcs12
 			Data: der,
 		})),
 	}
+}
+
+func newKeyBag(t *testing.T, der []byte) pkcs12.SafeBag {
+	t.Helper()
+
+	return pkcs12.SafeBag{
+		ID:    pkcs12.OIDKeyBag,
+		Value: explicit(der),
+	}
+}
+
+func newShroudedKeyBag(t *testing.T, der []byte) pkcs12.SafeBag {
+	t.Helper()
+
+	return pkcs12.SafeBag{
+		ID:    pkcs12.OIDPKCS8ShroudedKeyBag,
+		Value: explicit(der),
+	}
+}
+
+func newEncryptedKey(t *testing.T, data []byte) []byte {
+	t.Helper()
+
+	return marshal(t, encryptedPrivateKeyInfo{
+		Algorithm:     pkix.AlgorithmIdentifier{Algorithm: oidPBES2},
+		EncryptedData: data,
+	})
 }
 
 func secretBags(t *testing.T, n int) []pkcs12.SafeBag {

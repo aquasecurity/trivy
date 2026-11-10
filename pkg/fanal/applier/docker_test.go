@@ -9,7 +9,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
-	"github.com/aquasecurity/trivy/pkg/crypto"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1616,10 +1615,6 @@ func TestApplyLayers(t *testing.T) {
 							Digest: "sha256:24df0d4e20c0f42d3703bf1f1db2bdd77346c7956f74f423603d651e8e5ae8a7",
 							DiffID: "sha256:aad63a9339440e7c3e1fff2b988991b9bfb81280042fa7f39a5e327023056819",
 						}
-						asset.Relationships = []types.CryptoRelationship{{
-							Type:         types.CryptoRelationshipCorrespondsTo,
-							RelatedAsset: cryptotest.PublicKeyAsset().Descriptor(),
-						}}
 					})),
 					cryptotest.PublicKeyAsset(cryptotest.WithMutate(func(asset *types.CryptoAsset) {
 						asset.FilePath = "etc/ssl/certs/server.pem"
@@ -1824,7 +1819,7 @@ func TestApplyLayers(t *testing.T) {
 				}
 				return got.CustomResources[i].FilePath < got.CustomResources[j].FilePath
 			})
-			crypto.AssignIDs(tt.want.CryptoAssets)
+			tt.want.CryptoAssets.Finalize()
 			assert.Equal(t, tt.want, got, tt.name)
 		})
 	}

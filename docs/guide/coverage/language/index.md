@@ -23,6 +23,7 @@ On the other hand, when the target is a post-build artifact, like a container im
 | [Python](python.md)  | Pipfile.lock                                                                               |     -     |     -      |       ✅        |       ✅        |
 |                      | poetry.lock                                                                                |     -     |     -      |       ✅        |       ✅        |
 |                      | uv.lock                                                                                    |     -     |     -      |       ✅        |       ✅        |
+|                      | pylock.toml                                                                                |     -     |     -      |       ✅        |       ✅        |
 |                      | requirements.txt                                                                           |     -     |     -      |       ✅        |       ✅        |
 |                      | egg package[^1]                                                                            |     ✅     |     ✅      |       -        |       -        |
 |                      | wheel package[^2]                                                                          |     ✅     |     ✅      |       -        |       -        |

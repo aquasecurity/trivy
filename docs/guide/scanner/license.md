@@ -338,6 +338,7 @@ license:
   - CC0-1.0
   - Unlicense
   - 0BSD
+  - MIT-0
   
   permissive: []
 ```

@@ -129,6 +129,10 @@ var (
 		FormatSPDXJSON,
 		FormatGitHub,
 	}
+	CryptoFindingsFormats = []Format{
+		FormatJSON,
+		FormatTable,
+	}
 	SupportedCompliances = []string{
 		ComplianceK8sNsa10,
 		ComplianceK8sCIS123,

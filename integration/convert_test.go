@@ -96,11 +96,14 @@ func TestConvertCrypto(t *testing.T) {
 		name   string
 		format types.Format
 		golden string
+		args   []string
 	}{
 		{
 			name:   "cyclonedx",
 			format: types.FormatCycloneDX,
 			golden: goldenCryptoCDX,
+			// Fails if the findings of the JSON input are not dropped before the exit code check
+			args: []string{"--exit-code", "1"},
 		},
 		{
 			name:   "json",
@@ -120,6 +123,7 @@ func TestConvertCrypto(t *testing.T) {
 				"--format",
 				string(tt.format),
 			}
+			osArgs = append(osArgs, tt.args...)
 
 			runTest(t, osArgs, tt.golden, tt.format, runOptions{
 				fakeUUID: "3ff14136-e09f-4df9-80ea-%012d",

@@ -29,6 +29,30 @@
         {
           "algorithm": "SHA512",
           "checksumValue": "bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"
+        },
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb"
+        }
+      ],
+      "annotations": [
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2022-09-12T17:02:46Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: file-content:sha512:bf690311ee7b95e713ba568322e3533f2dd1cb880b189e99d4edef13592b81764daec43e2c54c61d5c558dc5cfb35ecb85b65519e74026ff17675b6f8f916f4a"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2022-09-12T17:02:46Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: sha1:76d1e0e3a5e0f8b9e4d3c2b1a0987654321fedcb"
+        },
+        {
+          "annotator": "Tool: trivy-dev",
+          "annotationDate": "2022-09-12T17:02:46Z",
+          "annotationType": "OTHER",
+          "comment": "SourcedDigest: java-archive:sha1:a94a8fe5ccb19ba61c4c0873d391e987982fbbd3"
         }
       ]
     }
