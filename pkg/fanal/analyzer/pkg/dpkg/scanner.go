@@ -7,6 +7,9 @@ import (
 	"net/textproto"
 )
 
+// maxStanzaSize is far above real stanzas, which take up to a few hundred KiB.
+const maxStanzaSize = 4 << 20
+
 type dpkgScanner struct {
 	*bufio.Scanner
 }
@@ -14,10 +17,8 @@ type dpkgScanner struct {
 // NewScanner returns a new scanner that splits on empty lines.
 func NewScanner(r io.Reader) *dpkgScanner {
 	s := bufio.NewScanner(r)
-	// Package data may exceed default buffer size
-	// Increase the buffer default size by 2 times
 	buf := make([]byte, 0, 128*1024)
-	s.Buffer(buf, 128*1024)
+	s.Buffer(buf, maxStanzaSize)
 
 	s.Split(emptyLineSplit)
 	return &dpkgScanner{Scanner: s}
