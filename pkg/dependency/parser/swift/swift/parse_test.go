@@ -96,6 +96,19 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			// Swift Package Manager keeps every slash of `.package(url: ".../Sparkle//")`.
+			name:      "location with trailing slashes",
+			inputFile: "testdata/trailing-slashes-Package.resolved",
+			want: []ftypes.Package{
+				{
+					ID:        "github.com/sparkle-project/Sparkle@2.9.6",
+					Name:      "github.com/sparkle-project/Sparkle",
+					Version:   "2.9.6",
+					Locations: []ftypes.Location{{StartLine: 3, EndLine: 11}},
+				},
+			},
+		},
+		{
 			name:      "empty",
 			inputFile: "testdata/empty-Package.resolved",
 			want:      nil,

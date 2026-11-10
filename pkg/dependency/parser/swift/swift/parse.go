@@ -70,10 +70,10 @@ func pkgName(pin Pin, lockVersion int) string {
 	}
 	// Swift uses `https://github.com/<author>/<package>.git format
 	// `.git` suffix can be omitted (take a look happy test)
-	// A trailing slash can be kept too, as in `https://github.com/<author>/<package>/`
-	// Remove `https://`, a trailing `/` and `.git` to fit the same format
+	// Trailing slashes can be kept too, as in `https://github.com/<author>/<package>/` or `.../<package>//`
+	// Remove `https://`, every trailing `/` and `.git` to fit the same format
 	name = strings.TrimPrefix(name, "https://")
-	name = strings.TrimSuffix(name, "/")
+	name = strings.TrimRight(name, "/")
 	name = strings.TrimSuffix(name, ".git")
 	return name
 }
