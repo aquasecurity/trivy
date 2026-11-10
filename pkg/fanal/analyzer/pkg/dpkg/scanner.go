@@ -11,13 +11,17 @@ type dpkgScanner struct {
 	*bufio.Scanner
 }
 
+// maxScannerBuffer is the maximum size of a single package stanza the scanner can read.
+// Some packages have very large stanzas (e.g. OpenSearch's `Conffiles` field is ~350 KiB),
+// so the ceiling is set generously to avoid a "token too long" error.
+const maxScannerBuffer = 10 * 1024 * 1024
+
 // NewScanner returns a new scanner that splits on empty lines.
 func NewScanner(r io.Reader) *dpkgScanner {
 	s := bufio.NewScanner(r)
 	// Package data may exceed default buffer size
-	// Increase the buffer default size by 2 times
-	buf := make([]byte, 0, 128*1024)
-	s.Buffer(buf, 128*1024)
+	buf := make([]byte, 0, maxScannerBuffer)
+	s.Buffer(buf, maxScannerBuffer)
 
 	s.Split(emptyLineSplit)
 	return &dpkgScanner{Scanner: s}
