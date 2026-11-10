@@ -798,3 +798,59 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 		})
 	}
 }
+
+// Repositories with different release and snapshot policies can share one mirror.
+// The mirror is requested for an artifact that only the second repository accepts.
+func Test_fetchPOMFromRemoteRepositories_mirrorPolicy(t *testing.T) {
+	releasesURL, err := url.Parse("https://releases.example.com/maven2/")
+	require.NoError(t, err)
+	snapshotsURL, err := url.Parse("https://snapshots.example.com/maven2/")
+	require.NoError(t, err)
+	releasesRepo := repository{id: "releases", url: *releasesURL, releaseEnabled: true}
+	snapshotsRepo := repository{id: "snapshots", url: *snapshotsURL, snapshotEnabled: true}
+
+	tests := []struct {
+		name     string
+		repos    []repository
+		snapshot bool
+		version  string
+		wantHits int
+	}{
+		{
+			name:     "snapshot artifact, release-only repository first",
+			repos:    []repository{releasesRepo, snapshotsRepo},
+			snapshot: true,
+			version:  "1.0.0-SNAPSHOT",
+			wantHits: 2, // maven-metadata.xml and the POM
+		},
+		{
+			name:     "release artifact, snapshot-only repository first",
+			repos:    []repository{snapshotsRepo, releasesRepo},
+			version:  "1.0.0",
+			wantHits: 1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var hits int
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, _ *http.Request) {
+				hits++
+				_, _ = w.Write([]byte(`<project><artifactId>example-api</artifactId></project>`))
+			}))
+			t.Cleanup(srv.Close)
+
+			p := &Parser{
+				logger:     log.WithPrefix("pom"),
+				mirrors:    resolveMirrors([]Mirror{{ID: "m1", URL: srv.URL, MirrorOf: "*"}}, nil, nil),
+				httpClient: http.DefaultClient,
+			}
+
+			paths := []string{"com", "example", "example-api", tt.version, "example-api-" + tt.version + ".pom"}
+			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, tt.repos)
+			require.NoError(t, err)
+			require.NotNil(t, got)
+			require.Equal(t, tt.wantHits, hits)
+		})
+	}
+}
