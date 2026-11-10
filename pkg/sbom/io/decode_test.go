@@ -123,6 +123,20 @@ var (
 		},
 		Licenses: []string{"MIT"},
 	}
+
+	orphanedComposerComponent = &core.Component{
+		Type:    core.TypeLibrary,
+		Name:    "pear/log",
+		Version: "1.13.1",
+		PkgIdentifier: ftypes.PkgIdentifier{
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeComposer,
+				Namespace: "pear",
+				Name:      "log",
+				Version:   "1.13.1",
+			},
+		},
+	}
 )
 
 func TestDecoder_Decode_OSPackages(t *testing.T) {
@@ -293,7 +307,7 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 			},
 		},
 		{
-			name: "multiple OS package types should return error",
+			name: "multiple OS package types keep one type and still scan language packages",
 			setupBOM: func() *core.BOM {
 				bom := core.NewBOM(core.Options{})
 				bom.SerialNumber = "test-multiple-os-types"
@@ -305,9 +319,49 @@ func TestDecoder_Decode_OSPackages(t *testing.T) {
 				// Add RPM package
 				bom.AddComponent(rpmTestComponent)
 
+				// Add orphan language package (must remain scannable)
+				bom.AddComponent(orphanedComposerComponent)
+
 				return bom
 			},
-			wantErr: "multiple types of OS packages in SBOM are not supported",
+			wantSBOM: types.SBOM{
+				Metadata: types.Metadata{
+					OS: nil,
+				},
+				Packages: []ftypes.PackageInfo{
+					{
+						Packages: ftypes.Packages{
+							{
+								ID:         "apk-tools@2.14.10-r4",
+								Name:       "apk-tools",
+								Version:    "2.14.10-r4",
+								Arch:       "aarch64",
+								SrcName:    "apk-tools",
+								SrcVersion: "2.14.10-r4",
+								Licenses:   []string{"GPL-2.0-only"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: apkToolsComponent.PkgIdentifier.PURL,
+								},
+							},
+						},
+					},
+				},
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.Composer,
+						Packages: ftypes.Packages{
+							{
+								ID:      "pear/log@1.13.1",
+								Name:    "pear/log",
+								Version: "1.13.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: orphanedComposerComponent.PkgIdentifier.PURL,
+								},
+							},
+						},
+					},
+				},
+			},
 		},
 		{
 			name: "empty BOM should have no packages",
