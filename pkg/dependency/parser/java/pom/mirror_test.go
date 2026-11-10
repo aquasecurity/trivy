@@ -3,7 +3,6 @@ package pom
 import (
 	"bytes"
 	"fmt"
-	"log/slog"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -789,7 +788,7 @@ func Test_fetchPOMFromRemoteRepositories_rejectedCredentials(t *testing.T) {
 				pomRepos = append(pomRepos, pomRepository{ID: fmt.Sprintf("repo-%d", i), URL: repoURL})
 			}
 			var logs bytes.Buffer
-			logger := log.New(log.NewHandler(&logs, &log.Options{Level: slog.LevelWarn}))
+			logger := log.New(log.NewHandler(&logs, &log.Options{Level: log.LevelWarn}))
 			repos := resolvePomRepos(servers, pomRepos)
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			for range tt.parsers {
