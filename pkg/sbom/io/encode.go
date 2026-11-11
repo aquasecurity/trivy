@@ -476,6 +476,10 @@ func (*Encoder) component(result types.Result, pkg ftypes.Package) *core.Compone
 			Name:  core.PropertyLayerDiffID,
 			Value: pkg.Layer.DiffID,
 		},
+		{
+			Name:  core.PropertyRepositoryClass,
+			Value: string(pkg.Repository.Class),
+		},
 	}
 
 	// Fill Red Hat specific properties
