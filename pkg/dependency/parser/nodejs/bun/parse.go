@@ -6,6 +6,7 @@ import (
 	"encoding/json/v2"
 	"fmt"
 	"io"
+	"slices"
 	"sort"
 	"strings"
 
@@ -285,8 +286,7 @@ func splitPath(pkgPath string) []string {
 // (e.g. "express/debug" and "send/debug"), as the npm parser does.
 func mergePackages(pkgs map[string]ftypes.Package, deps map[string][]string) ([]ftypes.Package, []ftypes.Dependency) {
 	merged := make(map[string]ftypes.Package, len(pkgs))
-	dependsOn := make(map[string]set.Set[string])
-	for pkgPath, pkg := range pkgs {
+	for _, pkg := range pkgs {
 		if savedPkg, ok := merged[pkg.ID]; ok {
 			savedPkg.Dev = savedPkg.Dev && pkg.Dev
 			if savedPkg.Relationship == ftypes.RelationshipIndirect && pkg.Relationship == ftypes.RelationshipDirect {
@@ -297,21 +297,21 @@ func mergePackages(pkgs map[string]ftypes.Package, deps map[string][]string) ([]
 			pkg = savedPkg
 		}
 		merged[pkg.ID] = pkg
-
-		for _, depPath := range deps[pkgPath] {
-			if _, ok := dependsOn[pkg.ID]; !ok {
-				dependsOn[pkg.ID] = set.New[string]()
-			}
-			dependsOn[pkg.ID].Append(pkgs[depPath].ID)
-		}
 	}
 
-	depSlice := lo.MapToSlice(dependsOn, func(id string, depIDs set.Set[string]) ftypes.Dependency {
-		ids := depIDs.Items()
-		sort.Strings(ids)
+	// Copies of a package may resolve their dependencies to different paths, so the dependencies of all copies are combined.
+	dependsOn := make(map[string][]string)
+	for pkgPath, depPaths := range deps {
+		pkgID := pkgs[pkgPath].ID
+		for _, depPath := range depPaths {
+			dependsOn[pkgID] = append(dependsOn[pkgID], pkgs[depPath].ID)
+		}
+	}
+	depSlice := lo.MapToSlice(dependsOn, func(id string, depIDs []string) ftypes.Dependency {
+		slices.Sort(depIDs)
 		return ftypes.Dependency{
 			ID:        id,
-			DependsOn: ids,
+			DependsOn: slices.Compact(depIDs),
 		}
 	})
 	return lo.Values(merged), depSlice
