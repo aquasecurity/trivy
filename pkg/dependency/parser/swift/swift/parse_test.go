@@ -83,23 +83,17 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
-			// Xcode writes the location as it was typed, so a trailing slash is kept.
-			name:      "location with a trailing slash",
+			// Xcode and Swift Package Manager write a location as it was typed, so one
+			// or more trailing slashes are kept, as in `.../Sparkle/` or `.../swift-numerics//`.
+			name:      "location with trailing slashes",
 			inputFile: "testdata/trailing-slash-Package.resolved",
 			want: []ftypes.Package{
 				{
-					ID:        "github.com/sparkle-project/Sparkle@2.9.6",
-					Name:      "github.com/sparkle-project/Sparkle",
-					Version:   "2.9.6",
-					Locations: []ftypes.Location{{StartLine: 3, EndLine: 11}},
+					ID:        "github.com/apple/swift-numerics@1.1.1",
+					Name:      "github.com/apple/swift-numerics",
+					Version:   "1.1.1",
+					Locations: []ftypes.Location{{StartLine: 12, EndLine: 20}},
 				},
-			},
-		},
-		{
-			// Swift Package Manager keeps every slash of `.package(url: ".../Sparkle//")`.
-			name:      "location with trailing slashes",
-			inputFile: "testdata/trailing-slashes-Package.resolved",
-			want: []ftypes.Package{
 				{
 					ID:        "github.com/sparkle-project/Sparkle@2.9.6",
 					Name:      "github.com/sparkle-project/Sparkle",
