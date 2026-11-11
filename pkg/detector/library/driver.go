@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/composer"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -35,7 +36,7 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 		comparer = compare.GenericComparer{}
 	case ftypes.Composer, ftypes.ComposerVendor:
 		eco = ecosystem.Composer
-		comparer = compare.GenericComparer{}
+		comparer = composer.Comparer{}
 	case ftypes.GoBinary, ftypes.GoModule:
 		eco = ecosystem.Go
 		comparer = compare.GenericComparer{}
