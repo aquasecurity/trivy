@@ -5,13 +5,13 @@ explicitly listed members in [workspace].members.
 
 Structure:
 - Root Cargo.toml: defines members = ["member", "member2"]
-- member/Cargo.toml: depends on gdb-command and member2 (via path)
-- member2/Cargo.toml: uses { workspace = true } for regex and tantivy-fst (git dependency without version), and has tempfile as dev-dependency
+- member/Cargo.toml: depends on gdb-command, member2 (via path with version) and rand_core 0.5 renamed via `package`
+- member2/Cargo.toml: uses { workspace = true } for regex and tantivy-fst (git dependency without version), depends on rand_core 0.6 and rand_core 0.4 renamed via `package`, and has tempfile as dev-dependency
 
 Expected behavior:
 - Virtual workspace root should have RelationshipRoot
 - member and member2 should have RelationshipWorkspace (with member -> member2 preserved)
-- gdb-command, regex, and tantivy-fst should have RelationshipDirect
+- gdb-command, regex, tantivy-fst and all rand_core versions should have RelationshipDirect
 - Transitive dependencies should have RelationshipIndirect
 - Dev dependencies of workspace members (tempfile) should be excluded
 
@@ -51,12 +51,15 @@ version = "0.1.0"
 dependencies = [
  "gdb-command",
  "member2",
+ "rand_core 0.5.1",
 ]
 
 [[package]]
 name = "member2"
 version = "0.1.0"
 dependencies = [
+ "rand_core 0.4.3",
+ "rand_core 0.6.4",
  "regex",
  "tantivy-fst",
  "tempfile",
@@ -67,6 +70,24 @@ name = "memchr"
 version = "2.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "f665ee40bc4a3c5590afb1e9677db74a508659dfd71e126420da8274909a0167"
+
+[[package]]
+name = "rand_core"
+version = "0.4.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e5937858e6fd18cd595d558f90bb5de3b72ae23f9e3763af0e805949b04ef60"
+
+[[package]]
+name = "rand_core"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
+
+[[package]]
+name = "rand_core"
+version = "0.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ec0be4795e2f6a28069bec0b5ff3e2ac9bafc99e6a9a7dc3547996c5c816922c"
 
 [[package]]
 name = "regex"
@@ -136,7 +157,8 @@ edition = "2021"
 
 [dependencies]
 gdb-command = "0.7"
-member2 = { path = "../member2" }
+member2 = { path = "../member2", version = "0.1.0" }
+rand_core05 = { package = "rand_core", version = "0.5" }
 -- member2/Cargo.toml --
 [package]
 edition = "2021"
@@ -144,6 +166,8 @@ name = "member2"
 version = "0.1.0"
 
 [dependencies]
+rand_core = "0.6"
+rand_core04 = { package = "rand_core", version = "0.4" }
 regex = { workspace = true}
 tantivy-fst = { workspace = true }
 

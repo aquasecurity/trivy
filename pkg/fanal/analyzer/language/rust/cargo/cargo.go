@@ -135,9 +135,9 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
-	for name, constraint := range directDeps {
+	for _, dep := range directDeps {
 		for _, pkg := range app.Packages {
-			if pkg.Name != name {
+			if pkg.Name != dep.Name {
 				continue
 			}
 
@@ -147,11 +147,11 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 			}
 
 			// Without a version constraint (git/path), pick the candidate from Cargo.lock
-			if constraint == "" && !lockDeps.Contains(pkg.ID) {
+			if dep.Constraint == "" && !lockDeps.Contains(pkg.ID) {
 				continue
 			}
 
-			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
+			if match, err := a.matchVersion(pkg.Version, dep.Constraint); err != nil {
 				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
 				continue
 			} else if match {
@@ -231,9 +231,15 @@ type cargoTomlWorkspace struct {
 
 type Dependencies map[string]any
 
+// cargoDependency is a dependency declared in Cargo.toml: the actual package name and its version constraint.
+type cargoDependency struct {
+	Name       string
+	Constraint string
+}
+
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
-func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
+func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]cargoDependency, error) {
 	rootPkg, dependencies, members, rootWorkspaceVersion, err := a.parseCargoTOML(fsys, filePath, "")
 	if err != nil {
 		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
@@ -272,17 +278,23 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 		}
 	}
 
-	deps := make(map[string]string)
+	deps := make(map[string]cargoDependency)
 	for name, value := range dependencies {
 		switch ver := value.(type) {
 		case string:
 			// e.g. regex = "1.5"
-			deps[name] = ver
+			deps[name] = cargoDependency{Name: name, Constraint: ver}
 		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
 			// or tantivy-fst = { git = "..." } / local = { path = "..." } without a version
 			constraint, _ := ver["version"].(string)
-			deps[name] = constraint
+			// A renamed dependency (e.g. rc = { package = "rand_core" }) is keyed by its alias,
+			// so several versions of the same crate can be declared side by side.
+			pkgName, ok := ver["package"].(string)
+			if !ok {
+				pkgName = name
+			}
+			deps[name] = cargoDependency{Name: pkgName, Constraint: constraint}
 		}
 	}
 
