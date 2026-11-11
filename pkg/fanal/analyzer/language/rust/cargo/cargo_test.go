@@ -899,13 +899,30 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Locations: []types.Location{
 									{
 										StartLine: 5,
-										EndLine:   13,
+										EndLine:   14,
 									},
 								},
 								DependsOn: []string{
+									"fst-consumer@1.0.0",
 									"local@0.1.0",
 									"log@0.4.34",
 									"tantivy-fst@0.5.0",
+								},
+							},
+							{
+								ID:           "fst-consumer@1.0.0",
+								Name:         "fst-consumer",
+								Version:      "1.0.0",
+								Indirect:     false,
+								Relationship: types.RelationshipDirect,
+								Locations: []types.Location{
+									{
+										StartLine: 28,
+										EndLine:   35,
+									},
+								},
+								DependsOn: []string{
+									"tantivy-fst@0.3.0",
 								},
 							},
 							{
@@ -916,8 +933,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
-										StartLine: 33,
-										EndLine:   38,
+										StartLine: 43,
+										EndLine:   48,
 									},
 								},
 								DependsOn: []string{
@@ -932,8 +949,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
-										StartLine: 40,
-										EndLine:   44,
+										StartLine: 50,
+										EndLine:   54,
 									},
 								},
 							},
@@ -945,8 +962,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipDirect,
 								Locations: []types.Location{
 									{
-										StartLine: 69,
-										EndLine:   77,
+										StartLine: 85,
+										EndLine:   93,
 									},
 								},
 								DependsOn: []string{
@@ -963,8 +980,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 15,
-										EndLine:   19,
+										StartLine: 16,
+										EndLine:   20,
 									},
 								},
 							},
@@ -976,8 +993,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 27,
-										EndLine:   31,
+										StartLine: 37,
+										EndLine:   41,
 									},
 								},
 							},
@@ -989,8 +1006,21 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 57,
-										EndLine:   61,
+										StartLine: 67,
+										EndLine:   71,
+									},
+								},
+							},
+							{
+								ID:           "tantivy-fst@0.3.0",
+								Name:         "tantivy-fst",
+								Version:      "0.3.0",
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 73,
+										EndLine:   77,
 									},
 								},
 							},
@@ -1002,8 +1032,8 @@ func Test_cargoAnalyzer_Analyze(t *testing.T) {
 								Relationship: types.RelationshipIndirect,
 								Locations: []types.Location{
 									{
-										StartLine: 79,
-										EndLine:   83,
+										StartLine: 95,
+										EndLine:   99,
 									},
 								},
 							},
