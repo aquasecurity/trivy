@@ -101,14 +101,14 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	prodDirectDeps, devDirectDeps := resolveDirectDependencies(lockFile.Workspaces, wsPaths, pkgs)
 
 	for pkgPath, pkg := range pkgs {
-		switch {
-		case pkg.Relationship == ftypes.RelationshipWorkspace:
-			// Workspaces are always prod deps.
-			pkg.Dev = false
-		case prodDirectDeps.Contains(pkgPath) || devDirectDeps.Contains(pkgPath):
-			pkg.Relationship = ftypes.RelationshipDirect
+		// A workspace member stays a workspace even when another workspace depends on it.
+		if pkg.Relationship == ftypes.RelationshipWorkspace {
+			continue
 		}
-		pkgs[pkgPath] = pkg
+		if prodDirectDeps.Contains(pkgPath) || devDirectDeps.Contains(pkgPath) {
+			pkg.Relationship = ftypes.RelationshipDirect
+			pkgs[pkgPath] = pkg
+		}
 	}
 
 	for pkgPath := range prodDirectDeps.Iter() {
@@ -163,7 +163,7 @@ func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, ma
 			Name:         name,
 			Version:      pkgVersion,
 			Relationship: relationship,
-			Dev:          true, // Mark all dependencies as Dev. We will handle them later.
+			Dev:          lo.Ternary(relationship == ftypes.RelationshipWorkspace, false, true), // Workspaces are always prod deps. Other dependencies are handled later.
 			Locations:    []ftypes.Location{ftypes.Location(parsed.Location)},
 		}
 

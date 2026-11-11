@@ -26,6 +26,9 @@
     "packages/b": {
       "name": "b",
       "version": "1.0.0",
+      "dependencies": {
+        "a": "workspace:*",
+      },
       "devDependencies": {
         "minimist": "0.0.10",
       },
