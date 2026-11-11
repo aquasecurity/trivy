@@ -87,6 +87,39 @@ func TestParser_Parse(t *testing.T) {
 			inputFile: "testdata/empty-Package.resolved",
 			want:      nil,
 		},
+		{
+			// https://github.com/aquasecurity/trivy/issues/11608
+			// Xcode stores the URL exactly as typed in Package.swift, so it can
+			// end with one or more trailing slashes.
+			name:      "happy path v2 with trailing slashes in location",
+			inputFile: "testdata/trailing-slash-v2-Package.resolved",
+			want: []ftypes.Package{
+				{
+					ID:        "github.com/apple/swift-atomics@1.2.0",
+					Name:      "github.com/apple/swift-atomics",
+					Version:   "1.2.0",
+					Locations: []ftypes.Location{{StartLine: 12, EndLine: 20}},
+				},
+				{
+					ID:        "github.com/sparkle-project/Sparkle@2.10.1",
+					Name:      "github.com/sparkle-project/Sparkle",
+					Version:   "2.10.1",
+					Locations: []ftypes.Location{{StartLine: 3, EndLine: 11}},
+				},
+			},
+		},
+		{
+			name:      "happy path v1 with a trailing slash in repositoryURL",
+			inputFile: "testdata/trailing-slash-v1-Package.resolved",
+			want: []ftypes.Package{
+				{
+					ID:        "github.com/sparkle-project/Sparkle@2.10.1",
+					Name:      "github.com/sparkle-project/Sparkle",
+					Version:   "2.10.1",
+					Locations: []ftypes.Location{{StartLine: 4, EndLine: 12}},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {

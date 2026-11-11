@@ -72,6 +72,12 @@ func pkgName(pin Pin, lockVersion int) string {
 	// `.git` suffix can be omitted (take a look happy test)
 	// Remove `https://` and `.git` to fit the same format
 	name = strings.TrimPrefix(name, "https://")
+	// Xcode stores the URL exactly as typed in Package.swift, so it can end
+	// with one or more trailing slashes. A trailing slash survives the `.git`
+	// trim and turns the last purl name segment empty
+	// (https://github.com/aquasecurity/trivy/issues/11608).
+	name = strings.TrimRight(name, "/")
 	name = strings.TrimSuffix(name, ".git")
+	name = strings.TrimRight(name, "/")
 	return name
 }
