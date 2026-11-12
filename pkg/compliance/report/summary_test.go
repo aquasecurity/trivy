@@ -155,6 +155,76 @@ func TestBuildSummary(t *testing.T) {
 				},
 			},
 		},
+		{
+			name:       "passed misconfigurations are not failures",
+			reportType: "summary",
+			input: &report.ComplianceReport{
+				ID:    "1234",
+				Title: "NSA",
+				Results: []*report.ControlCheckResult{
+					{
+						ID:       "1.0",
+						Name:     "Non-root containers",
+						Severity: "MEDIUM",
+						Results: types.Results{
+							{
+								MisconfSummary: &types.MisconfSummary{Successes: 1},
+								Misconfigurations: []types.DetectedMisconfiguration{
+									{
+										AVDID:  "AVD-KSV012",
+										Status: types.MisconfStatusPassed,
+									},
+								},
+							},
+							{
+								MisconfSummary: &types.MisconfSummary{Failures: 1},
+								Misconfigurations: []types.DetectedMisconfiguration{
+									{
+										AVDID:  "AVD-KSV012",
+										Status: types.MisconfStatusFailure,
+									},
+								},
+							},
+						},
+					},
+					{
+						ID:       "1.1",
+						Name:     "Immutable container file systems",
+						Severity: "LOW",
+						Results: types.Results{
+							{
+								MisconfSummary: &types.MisconfSummary{Successes: 1},
+								Misconfigurations: []types.DetectedMisconfiguration{
+									{
+										AVDID:  "AVD-KSV013",
+										Status: types.MisconfStatusPassed,
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+			want: &report.SummaryReport{
+				SchemaVersion: 0,
+				ID:            "1234",
+				Title:         "NSA",
+				SummaryControls: []report.ControlCheckSummary{
+					{
+						ID:        "1.0",
+						Name:      "Non-root containers",
+						Severity:  "MEDIUM",
+						TotalFail: new(1),
+					},
+					{
+						ID:        "1.1",
+						Name:      "Immutable container file systems",
+						Severity:  "LOW",
+						TotalFail: new(0),
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
