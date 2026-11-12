@@ -61,3 +61,63 @@ func TestAdapt(t *testing.T) {
 
 	testutil.AssertDefsecEqual(t, want, got)
 }
+
+func TestAdaptLogging(t *testing.T) {
+	for _, tc := range []struct {
+		name          string
+		configuration string
+		enabled       bool
+		target        string
+	}{
+		{name: "absent"},
+		{
+			name: "enabled",
+			configuration: `      logging:
+        target_bucket: audit-bucket
+        target_prefix: state/
+`,
+			enabled: true,
+			target:  "audit-bucket",
+		},
+		{
+			name: "templated",
+			configuration: `      logging:
+        target_bucket: "{{ audit_bucket }}"
+`,
+			enabled: true,
+			target:  "audit-bucket",
+		},
+		{
+			name: "unresolved template",
+			configuration: `      logging:
+        target_bucket: "{{ undefined_var }}"
+`,
+			enabled: true,
+			target:  "{{ undefined_var }}",
+		},
+		{
+			name: "disabled",
+			configuration: `      logging:
+        target_bucket: ""
+`,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			fsys := fstest.MapFS{"playbook.yaml": {Data: []byte(`---
+- hosts: localhost
+  vars:
+    audit_bucket: audit-bucket
+  tasks:
+  - amazon.aws.s3_bucket:
+      name: state-bucket
+` + tc.configuration)}}
+			project, err := parser.New(fsys, ".").Parse()
+			require.NoError(t, err)
+
+			got := Adapt(project.ListTasks()).Buckets[0].Logging
+
+			require.Equal(t, tc.enabled, got.Enabled.Value())
+			require.Equal(t, tc.target, got.TargetBucket.Value())
+		})
+	}
+}
