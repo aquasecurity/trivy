@@ -37,3 +37,11 @@ Trivy is integrated into Zora as a vulnerability scanner plugin.
 Trivy is integrated into Helmper as a vulnerability scanner in combination with Copacetic to fix detected vulnerabilities.
 
 👉 Get it at: <https://github.com/ChristofferNissen/helmper>
+
+## KestreLynx (Community)
+
+[KestreLynx](https://github.com/kitsunetrail/kestrelynx) is open-source software that creates remediation pull requests on GitHub to update image tags and dependency files.
+
+Using Trivy, it scans the images used by running Docker and Kubernetes containers. Before creating a remediation pull request, it rescans images with `trivy image` and language-package dependency files with `trivy fs` under the same conditions before and after the update, and compares resolved, remaining, and newly introduced findings.
+
+👉 Get it at: <https://github.com/kitsunetrail/kestrelynx>
