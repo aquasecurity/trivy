@@ -20,9 +20,19 @@ type Lock struct {
 	Packages []Package `toml:"package"`
 }
 
-func (l Lock) packages() map[string]Package {
-	return lo.SliceToMap(l.Packages, func(pkg Package) (string, Package) {
-		return pkg.Name, pkg
+// packages groups the packages by name. A lockfile with a forked resolution
+// contains several versions of the same package, e.g. one per Python version.
+func (l Lock) packages() map[string][]Package {
+	return lo.GroupBy(l.Packages, func(pkg Package) string {
+		return pkg.Name
+	})
+}
+
+// resolve returns the locked packages a dependency refers to.
+// uv records the version of a dependency when several versions of the package are locked.
+func resolve(dep Dependency, packages map[string][]Package) []Package {
+	return lo.Filter(packages[dep.Name], func(pkg Package, _ int) bool {
+		return dep.Version == "" || pkg.Version == dep.Version
 	})
 }
 
@@ -30,30 +40,33 @@ type Manifest struct {
 	Members []string `toml:"members"`
 }
 
-// prodDeps returns the names of all production dependencies: every package reachable from
+// prodDeps returns the IDs of all production dependencies: every package reachable from
 // the root package or a workspace member by following non-dev dependencies.
-func prodDeps(root string, workspaces set.Set[string], packages map[string]Package) set.Set[string] {
+func prodDeps(root string, workspaces set.Set[string], packages map[string][]Package) set.Set[string] {
 	visited := set.New[string]()
 	if root != "" {
-		walkPackageDeps(root, packages, visited)
+		for _, pkg := range packages[root] {
+			walkPackageDeps(pkg, packages, visited)
+		}
 	}
 	for name := range workspaces.Iter() {
-		walkPackageDeps(name, packages, visited)
+		for _, pkg := range packages[name] {
+			walkPackageDeps(pkg, packages, visited)
+		}
 	}
 	return visited
 }
 
-func walkPackageDeps(name string, packages map[string]Package, visited set.Set[string]) {
-	if visited.Contains(name) {
+func walkPackageDeps(pkg Package, packages map[string][]Package, visited set.Set[string]) {
+	pkgID := packageID(pkg.Name, pkg.Version)
+	if visited.Contains(pkgID) {
 		return
 	}
-	pkg, exists := packages[name]
-	if !exists {
-		return
-	}
-	visited.Append(name)
-	for depName := range pkg.nonDevDeps().Iter() {
-		walkPackageDeps(depName, packages, visited)
+	visited.Append(pkgID)
+	for _, dep := range pkg.nonDevDeps() {
+		for _, depPkg := range resolve(dep, packages) {
+			walkPackageDeps(depPkg, packages, visited)
+		}
 	}
 }
 
@@ -73,10 +86,10 @@ func (l Lock) rootAndWorkspaces() (root string, workspaces, directDeps set.Set[s
 				return "", nil, nil, xerrors.New("uv lockfile must contain 1 root package")
 			}
 			root = pkg.Name
-			directDeps.Append(pkg.directDeps().Items()...)
+			directDeps.Append(pkg.directDeps().names().Items()...)
 		case slices.Contains(l.Manifest.Members, pkg.Name):
 			workspaces.Append(pkg.Name)
-			directDeps.Append(pkg.directDeps().Items()...)
+			directDeps.Append(pkg.directDeps().names().Items()...)
 		}
 	}
 
@@ -92,32 +105,28 @@ type Package struct {
 	OptionalDependencies map[string]Dependencies `toml:"optional-dependencies"`
 }
 
-func (p Package) directDeps() set.Set[string] {
+func (p Package) directDeps() Dependencies {
 	deps := p.nonDevDeps()
 	for _, groupDeps := range p.DevDependencies {
-		deps.Append(groupDeps.toSet().Items()...)
+		deps = append(deps, groupDeps...)
 	}
 	return deps
 }
 
-func (p Package) nonDevDeps() set.Set[string] {
-	deps := p.Dependencies.toSet()
+func (p Package) nonDevDeps() Dependencies {
+	deps := slices.Clone(p.Dependencies)
 	for _, groupDeps := range p.OptionalDependencies {
-		deps.Append(groupDeps.toSet().Items()...)
+		deps = append(deps, groupDeps...)
 	}
 	return deps
 }
 
-type Dependencies []struct {
-	Name string `toml:"name"`
-}
+type Dependencies []Dependency
 
-func (d Dependencies) toSet() set.Set[string] {
-	deps := set.New[string]()
-	for _, dep := range d {
-		deps.Append(dep.Name)
-	}
-	return deps
+func (d Dependencies) names() set.Set[string] {
+	return set.New(lo.Map(d, func(dep Dependency, _ int) string {
+		return dep.Name
+	})...)
 }
 
 // https://github.com/astral-sh/uv/blob/f7d647e81d7e1e3be189324b06024ed2057168e6/crates/uv-resolver/src/lock/mod.rs#L572-L579
@@ -131,7 +140,8 @@ type Source struct {
 }
 
 type Dependency struct {
-	Name string `toml:"name"`
+	Name    string `toml:"name"`
+	Version string `toml:"version"`
 }
 
 type Parser struct{}
@@ -179,29 +189,30 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Name:         pkg.Name,
 			Version:      pkg.Version,
 			Relationship: relationship,
-			Dev:          !prodDeps.Contains(pkg.Name),
+			Dev:          !prodDeps.Contains(pkgID),
 		})
 
-		depNames := pkg.directDeps()
+		dependsOn := set.New[string]()
+		for _, dep := range pkg.directDeps() {
+			for _, depPkg := range resolve(dep, packages) {
+				dependsOn.Append(packageID(depPkg.Name, depPkg.Version))
+			}
+		}
 		// The root package depends on every workspace member
 		if pkg.Name == root {
-			depNames.Append(workspaces.Items()...)
-		}
-
-		dependsOn := make([]string, 0, depNames.Size())
-		for depName := range depNames.Iter() {
-			depPkg, exists := packages[depName]
-			if !exists {
-				continue
+			for name := range workspaces.Iter() {
+				for _, member := range packages[name] {
+					dependsOn.Append(packageID(member.Name, member.Version))
+				}
 			}
-			dependsOn = append(dependsOn, packageID(depName, depPkg.Version))
 		}
 
-		if len(dependsOn) > 0 {
-			sort.Strings(dependsOn)
+		if dependsOn.Size() > 0 {
+			dependsOnIDs := dependsOn.Items()
+			sort.Strings(dependsOnIDs)
 			deps = append(deps, ftypes.Dependency{
 				ID:        pkgID,
-				DependsOn: dependsOn,
+				DependsOn: dependsOnIDs,
 			})
 		}
 	}
