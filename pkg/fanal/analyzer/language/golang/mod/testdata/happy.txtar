@@ -14,6 +14,10 @@ replace github.com/aquasecurity/go-dep-parser => github.com/aquasecurity/go-dep-
 -- go.sum --
 github.com/BurntSushi/toml v0.3.1 h1:WXkYYl6Yr3qBf1K79EBnL4mak0OimBfB0XUf9Vl28OQ=
 github.com/BurntSushi/toml v0.3.1/go.mod h1:xHWCNGjB5oqiDr8zfno3MHue2Ht5sIBksp03qcyfWMU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3 h1:zYNhYU4HUqJq+Lqhwf68gvd+v0cKqM2XOmggtHYLkoU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20211110174639-8257534ffed3/go.mod h1:Zc7Eo6tFl9l4XcqsWeabD7jHnXRBK/LdgZuu9GTSVLU=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237 h1:FX5MaNimz5xK6LYbp+mI23i2m6OmoKaHAEgRVehLDs8=
+github.com/aquasecurity/go-dep-parser v0.0.0-20220406074731-71021a481237/go.mod h1:MewgJXyrz9PgCHh8zunRNY4BY72ltNYWeTYAt1paaLc=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d h1:U+s90UTSYgptZMwQh2aRr3LuazLJIa+Pg3Kc1ylSYVY=
 github.com/cpuguy83/go-md2man/v2 v2.0.0-20190314233015-f79a8a8ca69d/go.mod h1:maD7wRr/U5Z6m/iR4s+kqSMx2CaBsrgA7czyZG/E6dU=
 github.com/davecgh/go-spew v1.1.0 h1:ZDRjVQ15GmhC3fiQ8ni8+OwkZQO4DARzQgrnXU1Liz8=
