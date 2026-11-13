@@ -678,6 +678,22 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								CodeFlows: []*sarif.CodeFlow{
+									sarif.NewCodeFlow().WithThreadFlows([]*sarif.ThreadFlow{
+										sarif.NewThreadFlow().WithLocations([]*sarif.ThreadFlowLocation{
+											sarif.NewThreadFlowLocation().WithNestingLevel(0).WithLocation(
+												sarif.NewLocation().WithMessage(sarif.NewTextMessage("github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf (google_project_iam_member.workload_identity_sa_bindings[\"roles/storage.admin\"])")).
+													WithPhysicalLocation(sarif.NewPhysicalLocation().
+														WithArtifactLocation(sarif.NewSimpleArtifactLocation("github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf").WithUriBaseId("ROOTPATH")).
+														WithRegion(sarif.NewRegion().WithStartLine(87).WithEndLine(93).WithStartColumn(1).WithEndColumn(1)))),
+											sarif.NewThreadFlowLocation().WithNestingLevel(1).WithLocation(
+												sarif.NewLocation().WithMessage(sarif.NewTextMessage("github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf")).
+													WithPhysicalLocation(sarif.NewPhysicalLocation().
+														WithArtifactLocation(sarif.NewSimpleArtifactLocation("github.com/terraform-google-modules/terraform-google-kubernetes-engine?ref=c4809044b52b91505bfba5ef9f25526aa0361788/modules/workload-identity/main.tf").WithUriBaseId("ROOTPATH")).
+														WithRegion(sarif.NewRegion().WithStartLine(91).WithEndLine(91).WithStartColumn(1).WithEndColumn(1)))),
+										}),
+									}),
+								},
 								Locations: []*sarif.Location{
 									{
 										PhysicalLocation: sarif.NewPhysicalLocation().
@@ -704,6 +720,22 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   *sarif.NewTextMessage("Artifact: github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf\nType: terraform\nVulnerability AVD-GCP-0007\nSeverity: HIGH\nMessage: Service account is granted a privileged role.\nLink: [AVD-GCP-0007](https://avd.aquasec.com/misconfig/avd-gcp-0007)"),
+								CodeFlows: []*sarif.CodeFlow{
+									sarif.NewCodeFlow().WithThreadFlows([]*sarif.ThreadFlow{
+										sarif.NewThreadFlow().WithLocations([]*sarif.ThreadFlowLocation{
+											sarif.NewThreadFlowLocation().WithNestingLevel(0).WithLocation(
+												sarif.NewLocation().WithMessage(sarif.NewTextMessage("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf (google_project_iam_member.workload_identity_sa_bindings[\"roles/storage.admin\"])")).
+													WithPhysicalLocation(sarif.NewPhysicalLocation().
+														WithArtifactLocation(sarif.NewSimpleArtifactLocation("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf").WithUriBaseId("ROOTPATH")).
+														WithRegion(sarif.NewRegion().WithStartLine(87).WithEndLine(93).WithStartColumn(1).WithEndColumn(1)))),
+											sarif.NewThreadFlowLocation().WithNestingLevel(1).WithLocation(
+												sarif.NewLocation().WithMessage(sarif.NewTextMessage("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf")).
+													WithPhysicalLocation(sarif.NewPhysicalLocation().
+														WithArtifactLocation(sarif.NewSimpleArtifactLocation("github.com/terraform-aws-modules/terraform-aws-s3-bucket/tree/v4.2.0/main.tf").WithUriBaseId("ROOTPATH")).
+														WithRegion(sarif.NewRegion().WithStartLine(91).WithEndLine(91).WithStartColumn(1).WithEndColumn(1)))),
+										}),
+									}),
+								},
 								Locations: []*sarif.Location{
 									{
 										PhysicalLocation: sarif.NewPhysicalLocation().
