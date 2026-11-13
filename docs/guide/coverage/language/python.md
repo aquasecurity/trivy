@@ -164,8 +164,26 @@ Trivy looks for `*.egg-info`, `*.egg-info/METADATA`, `*.egg-info/PKG-INFO`, `*.e
 ### Wheel
 Trivy looks for `.dist-info/METADATA` to identify Python packages.
 
+#### Rust crates in wheels
+Wheels can ship SBOMs for the non-Python code they bundle in `.dist-info/sboms/` ([PEP 770][pep-770]).
+For example, wheels built with [maturin](https://www.maturin.rs/) 1.12 or later, such as `cryptography`, `orjson` and `pydantic-core`, list the Rust crates compiled into the extension module.
+
+Trivy reads the CycloneDX JSON files (`*.json`) in this directory and reports the Rust crates as a separate `cargo` result for each SBOM file.
+The result of the Python package itself is not changed.
+
+The following components are not reported:
+
+- Build dependencies (`scope: excluded`)
+- The crates of the wheel's own Cargo workspace (PURL with `download_url=file://...`)
+- Components other than Rust crates, such as the system libraries recorded by `auditwheel`
+
+!!! note
+    These SBOMs are generated for all build targets and do not tell which crates end up in the binary.
+    Crates used only on other platforms and procedural macros can therefore be reported too.
+
 [^1]: Trivy checks `python`, `python3`, `python2` and `python.exe` file names.
 [^2]: Also `pylock.<identifier>.toml` per [PEP 751][pep-751].
 
+[pep-770]: https://peps.python.org/pep-0770/
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
 [detection-priority]: ../../scanner/vulnerability.md#detection-priority

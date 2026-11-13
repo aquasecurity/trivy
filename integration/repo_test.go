@@ -322,6 +322,16 @@ func TestRepository(t *testing.T) {
 			golden: goldenCargoLock,
 		},
 		{
+			name: "PEP 770 SBOM in dist-info",
+			args: repoTestArgs{
+				command:     "rootfs",
+				scanner:     types.VulnerabilityScanner,
+				listAllPkgs: true,
+				input:       "testdata/fixtures/repo/python-pep770",
+			},
+			golden: goldenPythonPEP770,
+		},
+		{
 			name: "installed.json",
 			args: repoTestArgs{
 				command:     "rootfs",

@@ -39,6 +39,10 @@ Scan `Cargo.lock` and `Cargo.toml` together also removes developer dependencies.
 Trivy scans binaries built with [cargo-auditable](https://github.com/rust-secure-code/cargo-auditable).
 If such a binary exists, Trivy will identify it as being built with cargo-audit and scan it.
 
+### Python wheels
+Trivy also reports the Rust crates listed in the SBOMs shipped with Python wheels.
+See [here](./python.md#rust-crates-in-wheels) for the detail.
+
 [^1]: When you scan Cargo.lock and Cargo.toml together.
 
 [dependency-graph]: ../../configuration/reporting.md#show-origins-of-vulnerable-dependencies
