@@ -27,6 +27,22 @@ func TestParameters_UnmarshalJSON(t *testing.T) {
 			},
 		},
 		{
+			name: "original format, value containing equals sign",
+			source: `[
+				"DBPassword=abc==",
+				"Tags=env=prod"
+			]`,
+			expected: map[string]any{
+				"DBPassword": "abc==",
+				"Tags":       "env=prod",
+			},
+		},
+		{
+			name:    "original format, missing equals sign",
+			source:  `["Key1"]`,
+			wantErr: true,
+		},
+		{
 			name: "CloudFormation like format",
 			source: `[
 				{
