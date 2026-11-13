@@ -230,3 +230,48 @@ func TestParse(t *testing.T) {
 		})
 	}
 }
+
+func TestLicenses(t *testing.T) {
+	tests := []struct {
+		name string
+		val  any
+		want []string
+	}{
+		{
+			name: "string",
+			val:  "MIT",
+			want: []string{"MIT"},
+		},
+		{
+			name: "array with one license",
+			val:  []any{"MIT"},
+			want: []string{"MIT"},
+		},
+		{
+			// https://getcomposer.org/doc/04-schema.md#license
+			name: "array is a disjunctive license",
+			val:  []any{"BSD-3-Clause", "GPL-2.0-only", "GPL-3.0-only"},
+			want: []string{"BSD-3-Clause OR GPL-2.0-only OR GPL-3.0-only"},
+		},
+		{
+			name: "array with an expression",
+			val:  []any{"MIT", "GPL-2.0-only WITH Classpath-exception-2.0"},
+			want: []string{"MIT OR (GPL-2.0-only WITH Classpath-exception-2.0)"},
+		},
+		{
+			name: "array with an empty license",
+			val:  []any{"MIT", ""},
+			want: []string{"MIT"},
+		},
+		{
+			name: "no license",
+			val:  nil,
+			want: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equal(t, tt.want, licenses(tt.val))
+		})
+	}
+}

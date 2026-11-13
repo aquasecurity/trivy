@@ -16,7 +16,7 @@ func init() {
 }
 
 const (
-	composerInstalledAnalyzerVersion = 1
+	composerInstalledAnalyzerVersion = 2
 )
 
 // composerVendorAnalyzer analyzes 'installed.json'
