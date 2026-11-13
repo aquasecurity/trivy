@@ -1334,6 +1334,43 @@ func TestSecretScanner(t *testing.T) {
 	wantFindingOpenAIServiceAPIKey := openAIFinding("openai-service-api-key", "OpenAI Service API Key", "HIGH", 68)
 	wantFindingOpenAIRealtimeClientSecret := openAIFinding("openai-realtime-client-secret", "OpenAI Realtime Client Secret", "MEDIUM", 35)
 
+	grafanaTokenFinding := func(ruleID, title, masked string, offset int) types.SecretFinding {
+		return types.SecretFinding{
+			RuleID:    ruleID,
+			Category:  secret.CategoryGrafana,
+			Title:     title,
+			Severity:  "MEDIUM",
+			StartLine: 1,
+			EndLine:   1,
+			Match:     masked,
+			Code: types.Code{
+				Lines: []types.Line{
+					{
+						Number:      1,
+						Content:     masked,
+						Highlighted: masked,
+						IsCause:     true,
+						FirstCause:  true,
+						LastCause:   true,
+					},
+					{
+						Number:      2,
+						Content:     "",
+						Highlighted: "",
+						IsCause:     false,
+						FirstCause:  false,
+						LastCause:   false,
+					},
+				},
+			},
+			Offset: offset,
+		}
+	}
+	wantFindingGrafanaServiceAccountToken := grafanaTokenFinding("grafana-service-account-token", "Grafana Service Account Token",
+		`GRAFANA_SA_TOKEN="`+strings.Repeat("*", 46)+`"`, 18)
+	wantFindingGrafanaCloudAPIToken := grafanaTokenFinding("grafana-cloud-api-token", "Grafana Cloud API Token",
+		`GRAFANA_CLOUD_TOKEN=`+strings.Repeat("*", 99), 20)
+
 	wantFindingMavenSettingsPassword := types.SecretFinding{
 		RuleID:    "maven-settings-password",
 		Category:  secret.CategoryMaven,
@@ -1620,6 +1657,32 @@ func TestSecretScanner(t *testing.T) {
 					wantFindingGrafanaQuoted,
 				},
 			},
+		},
+		{
+			name:          "find Grafana service account token",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "grafana-service-account-token.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "grafana-service-account-token.txt"),
+				Findings: []types.SecretFinding{wantFindingGrafanaServiceAccountToken},
+			},
+		},
+		{
+			name:          "find Grafana Cloud API token",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "grafana-cloud-api-token.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "grafana-cloud-api-token.txt"),
+				Findings: []types.SecretFinding{wantFindingGrafanaCloudAPIToken},
+			},
+		},
+		{
+			// Short bodies, a service account token without the hex suffix,
+			// and doc placeholders must all be ignored.
+			name:          "invalid Grafana tokens",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "grafana-tokens-invalid.txt"),
+			want:          types.Secret{},
 		},
 		{
 			name:          "find JWT token",
