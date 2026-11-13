@@ -73,3 +73,10 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	}
 	return repos
 }
+
+// displayURL returns the URL without the userinfo, query and fragment, which may carry
+// credentials or a token.
+func displayURL(u url.URL) string {
+	u.User, u.RawQuery, u.Fragment, u.ForceQuery = nil, "", "", false
+	return u.String()
+}
