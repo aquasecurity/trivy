@@ -1,6 +1,7 @@
 package pom
 
 import (
+	"cmp"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -717,6 +718,23 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"limited": 1},
 			wantErr:        "429",
 		},
+		{
+			// Multiple mirrors are rate-limited; all are queried and the 429 is returned.
+			name:           "multiple mirrors rate-limited: all are queried and 429 is returned",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"limited", "limit2"}},
+			wantHits:       map[string]int{"limited": 1, "limit2": 1},
+			wantErr:        `429 Too Many Requests for:\n  - http://.*/example-api-1\.0\.0\.pom\n  - http://.*/example-api-1\.0\.0\.pom`,
+		},
+		{
+			// The first mirror returns 429, the second one serves a broken POM: the failure
+			// is returned together with the 429, which is not lost.
+			name:           "429 followed by a failure: both are reported",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"limited", "broken"}},
+			wantHits:       map[string]int{"limited": 1, "broken": 1},
+			wantErr:        `(?s)failed to parse the remote POM.*429 Too Many Requests for:\n  - http://\S+/example-api-1\.0\.0\.pom$`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -726,7 +744,8 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			// newServer registers an HTTP server for a role. status 200 serves the POM;
 			// any other status (e.g. 404 or 429) makes the fetch fall back to the next candidate.
-			newServer := func(role string, status int) *httptest.Server {
+			// A non-empty body overrides the served POM.
+			newServer := func(role string, status int, body string) *httptest.Server {
 				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					hits[role]++
 					if u, _, ok := r.BasicAuth(); ok {
@@ -736,7 +755,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 						w.WriteHeader(status)
 						return
 					}
-					_, _ = w.Write([]byte(minimalPOM))
+					_, _ = w.Write([]byte(cmp.Or(body, minimalPOM)))
 				}))
 				t.Cleanup(s.Close)
 				return s
@@ -745,11 +764,13 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":   newServer("repo1", http.StatusOK, ""),
+				"mirror":  newServer("mirror", http.StatusOK, ""),
+				"chain":   newServer("chain", http.StatusOK, ""),
+				"dead":    newServer("dead", http.StatusNotFound, ""),
+				"limited": newServer("limited", http.StatusTooManyRequests, ""),
+				"broken":  newServer("broken", http.StatusOK, "not a pom"),
+				"limit2":  newServer("limit2", http.StatusTooManyRequests, ""),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -785,7 +806,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
 			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
+				require.Regexp(t, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, got)
