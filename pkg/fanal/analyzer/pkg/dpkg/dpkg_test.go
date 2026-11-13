@@ -1,7 +1,9 @@
 package dpkg
 
 import (
+	"errors"
 	"sort"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -1697,4 +1699,83 @@ func Test_dpkgAnalyzer_Required(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_dpkgAnalyzer_parseDpkgStatus_largeStanza(t *testing.T) {
+	// A single stanza larger than the old 128 KiB scanner buffer limit
+	// (e.g. a long `Conffiles` field) must not drop every package in the file.
+	// cf. https://github.com/aquasecurity/trivy/issues/11604
+	largeValue := strings.Repeat("a", 350*1024) // ~350 KiB
+	status := "Package: pkg-a\n" +
+		"Status: install ok installed\n" +
+		"Version: 1.0.0\n" +
+		"Architecture: amd64\n" +
+		"Maintainer: Example <dev@example.com>\n" +
+		"\n" +
+		"Package: pkg-large\n" +
+		"Status: install ok installed\n" +
+		"Version: 2.0.0\n" +
+		"Architecture: amd64\n" +
+		"Maintainer: Example <dev@example.com>\n" +
+		"Description: " + largeValue + "\n" +
+		"\n" +
+		"Package: pkg-b\n" +
+		"Status: install ok installed\n" +
+		"Version: 3.0.0\n" +
+		"Architecture: amd64\n" +
+		"Maintainer: Example <dev@example.com>\n"
+
+	a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
+	require.NoError(t, err)
+	da, ok := a.(*dpkgAnalyzer)
+	require.True(t, ok)
+
+	infos, err := da.parseDpkgStatus(statusFile, strings.NewReader(status), nil)
+	require.NoError(t, err)
+	require.Len(t, infos, 1)
+
+	var names []string
+	for _, pkg := range infos[0].Packages {
+		names = append(names, pkg.Name)
+	}
+	sort.Strings(names)
+	assert.Equal(t, []string{"pkg-a", "pkg-b", "pkg-large"}, names)
+}
+
+// errReader returns its data first and then fails with err.
+type errReader struct {
+	data []byte
+	err  error
+}
+
+func (r *errReader) Read(p []byte) (int, error) {
+	if len(r.data) == 0 {
+		return 0, r.err
+	}
+	n := copy(p, r.data)
+	r.data = r.data[n:]
+	return n, nil
+}
+
+func Test_dpkgAnalyzer_parseDpkgStatus_partialReadError(t *testing.T) {
+	// If the file cannot be read to the end, the packages parsed so far
+	// should be kept instead of discarding everything.
+	status := "Package: pkg-first\n" +
+		"Status: install ok installed\n" +
+		"Version: 1.0.0\n" +
+		"Architecture: amd64\n" +
+		"Maintainer: Example <dev@example.com>\n" +
+		"\n"
+	r := &errReader{data: []byte(status), err: errors.New("read error")}
+
+	a, err := newDpkgAnalyzer(analyzer.AnalyzerOptions{})
+	require.NoError(t, err)
+	da, ok := a.(*dpkgAnalyzer)
+	require.True(t, ok)
+
+	infos, err := da.parseDpkgStatus(statusFile, r, nil)
+	require.NoError(t, err)
+	require.Len(t, infos, 1)
+	require.Len(t, infos[0].Packages, 1)
+	assert.Equal(t, "pkg-first", infos[0].Packages[0].Name)
 }
