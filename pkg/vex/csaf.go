@@ -105,7 +105,7 @@ func (v *CSAF) matchRelationship(fullProductID csaf.ProductID, product, subProdu
 				continue
 			}
 			for _, subProductPURL := range rel.SubProducts {
-				if subProductPURL.Match(subProduct.PkgIdentifier.PURL) {
+				if subProduct != nil && subProductPURL.Match(subProduct.PkgIdentifier.PURL) {
 					return category, true
 				}
 			}
