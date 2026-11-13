@@ -223,7 +223,8 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 		}
 
 		// skip if check isn't relevant to what is being scanned
-		if !isPolicyApplicable(sourceType, staticMeta, inputs...) {
+		checkInputs := applicableInputs(sourceType, staticMeta, inputs)
+		if len(checkInputs) == 0 {
 			continue
 		}
 
@@ -237,7 +238,7 @@ func (s *Scanner) ScanInput(ctx context.Context, sourceType types.Source, inputs
 			}
 			usedRules.Append(ruleName)
 			if isEnforcedRule(ruleName) {
-				ruleResults, err := s.applyRule(ctx, namespace, ruleName, inputs)
+				ruleResults, err := s.applyRule(ctx, namespace, ruleName, checkInputs)
 				if err != nil {
 					s.logger.Error(
 						"Error occurred while applying rule from check",
@@ -304,39 +305,48 @@ var sourcesWithExplicitSelectors = []types.Source{
 	types.SourceTerraformRaw,
 }
 
-func isPolicyApplicable(sourceType types.Source, staticMetadata *StaticMetadata, inputs ...Input) bool {
+// applicableInputs returns the inputs the check should be applied to.
+// The result is empty if the check isn't relevant to what is being scanned.
+func applicableInputs(sourceType types.Source, staticMetadata *StaticMetadata, inputs []Input) []Input {
 	if len(staticMetadata.InputOptions.Selectors) == 0 &&
 		slices.Contains(sourcesWithExplicitSelectors, sourceType) {
-		return false
+		return nil
 	}
 
 	if len(staticMetadata.InputOptions.Selectors) == 0 { // check always applies if no selectors
-		return true
+		return inputs
 	}
 
 	for _, selector := range staticMetadata.InputOptions.Selectors {
 		if selector.Type != string(sourceType) {
-			return false
+			return nil
 		}
 	}
 
 	if !isPolicyWithSubtype(sourceType) {
-		return true
+		return inputs
 	}
 
-	for _, input := range inputs {
-		if ii, ok := input.Contents.(map[string]any); ok {
-			for provider := range ii {
-				if !supportedProviders.Contains(provider) {
-					continue
-				}
+	return lo.Filter(inputs, func(input Input, _ int) bool {
+		return inputMatchesSubtype(input, staticMetadata.InputOptions.Selectors)
+	})
+}
 
-				// check metadata for subtype
-				for _, s := range staticMetadata.InputOptions.Selectors {
-					if checkSubtype(ii, provider, s.Subtypes) {
-						return true
-					}
-				}
+func inputMatchesSubtype(input Input, selectors []Selector) bool {
+	ii, ok := input.Contents.(map[string]any)
+	if !ok {
+		return false
+	}
+
+	for provider := range ii {
+		if !supportedProviders.Contains(provider) {
+			continue
+		}
+
+		// check metadata for subtype
+		for _, s := range selectors {
+			if checkSubtype(ii, provider, s.Subtypes) {
+				return true
 			}
 		}
 	}
