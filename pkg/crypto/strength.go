@@ -87,9 +87,10 @@ var (
 	}
 )
 
-// mldsaStrengthBasis is the basis of an ML-DSA parameter set, which FIPS 204 assigns a NIST
-// category without a classical strength to translate it into.
-func mldsaStrengthBasis(category int) strengthBasis {
+// postQuantumStrengthBasis is the basis of an ML-KEM, ML-DSA or SLH-DSA parameter set, which
+// FIPS 203, FIPS 204 and FIPS 205 assign a NIST category without a classical strength to
+// translate it into.
+func postQuantumStrengthBasis(category int) strengthBasis {
 	return strengthBasis{
 		nistCategory: new(category),
 	}

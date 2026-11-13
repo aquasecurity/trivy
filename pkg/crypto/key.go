@@ -60,10 +60,43 @@ func DescribeRawPublicKey(
 // RFC 7748 for X25519 and X448.
 // See https://www.rfc-editor.org/rfc/rfc8032#section-5.2
 // See https://www.rfc-editor.org/rfc/rfc7748#section-5
+//
+// ML-KEM and SLH-DSA keys are too: RFC 9935 section 4 carries the 800, 1184 or 1568 octet
+// encapsulation key of FIPS 203 in the subjectPublicKey, and RFC 9909 section 5 carries the
+// 2n octet public key of FIPS 205, for both SLH-DSA and HashSLH-DSA OIDs.
+// See https://www.rfc-editor.org/rfc/rfc9935#section-4
+// See https://www.rfc-editor.org/rfc/rfc9909#section-5
 var fixedKeySizes = map[string]int{
-	"1.3.101.110": 256, // X25519
-	"1.3.101.111": 448, // X448
-	"1.3.101.113": 456, // Ed448
+	"1.3.101.110":             256,      // X25519
+	"1.3.101.111":             448,      // X448
+	"1.3.101.113":             456,      // Ed448
+	"2.16.840.1.101.3.4.4.1":  800 * 8,  // ML-KEM-512
+	"2.16.840.1.101.3.4.4.2":  1184 * 8, // ML-KEM-768
+	"2.16.840.1.101.3.4.4.3":  1568 * 8, // ML-KEM-1024
+	"2.16.840.1.101.3.4.3.20": 32 * 8,   // SLH-DSA-SHA2-128s
+	"2.16.840.1.101.3.4.3.21": 32 * 8,   // SLH-DSA-SHA2-128f
+	"2.16.840.1.101.3.4.3.22": 48 * 8,   // SLH-DSA-SHA2-192s
+	"2.16.840.1.101.3.4.3.23": 48 * 8,   // SLH-DSA-SHA2-192f
+	"2.16.840.1.101.3.4.3.24": 64 * 8,   // SLH-DSA-SHA2-256s
+	"2.16.840.1.101.3.4.3.25": 64 * 8,   // SLH-DSA-SHA2-256f
+	"2.16.840.1.101.3.4.3.26": 32 * 8,   // SLH-DSA-SHAKE-128s
+	"2.16.840.1.101.3.4.3.27": 32 * 8,   // SLH-DSA-SHAKE-128f
+	"2.16.840.1.101.3.4.3.28": 48 * 8,   // SLH-DSA-SHAKE-192s
+	"2.16.840.1.101.3.4.3.29": 48 * 8,   // SLH-DSA-SHAKE-192f
+	"2.16.840.1.101.3.4.3.30": 64 * 8,   // SLH-DSA-SHAKE-256s
+	"2.16.840.1.101.3.4.3.31": 64 * 8,   // SLH-DSA-SHAKE-256f
+	"2.16.840.1.101.3.4.3.35": 32 * 8,   // HashSLH-DSA-SHA2-128s
+	"2.16.840.1.101.3.4.3.36": 32 * 8,   // HashSLH-DSA-SHA2-128f
+	"2.16.840.1.101.3.4.3.37": 48 * 8,   // HashSLH-DSA-SHA2-192s
+	"2.16.840.1.101.3.4.3.38": 48 * 8,   // HashSLH-DSA-SHA2-192f
+	"2.16.840.1.101.3.4.3.39": 64 * 8,   // HashSLH-DSA-SHA2-256s
+	"2.16.840.1.101.3.4.3.40": 64 * 8,   // HashSLH-DSA-SHA2-256f
+	"2.16.840.1.101.3.4.3.41": 32 * 8,   // HashSLH-DSA-SHAKE-128s
+	"2.16.840.1.101.3.4.3.42": 32 * 8,   // HashSLH-DSA-SHAKE-128f
+	"2.16.840.1.101.3.4.3.43": 48 * 8,   // HashSLH-DSA-SHAKE-192s
+	"2.16.840.1.101.3.4.3.44": 48 * 8,   // HashSLH-DSA-SHAKE-192f
+	"2.16.840.1.101.3.4.3.45": 64 * 8,   // HashSLH-DSA-SHAKE-256s
+	"2.16.840.1.101.3.4.3.46": 64 * 8,   // HashSLH-DSA-SHAKE-256f
 }
 
 // describeKeyAsset describes a public or private key whose identity is the digest of the

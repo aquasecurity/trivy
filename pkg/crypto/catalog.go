@@ -172,19 +172,190 @@ var algorithms = map[string]algorithm{
 		name:          "ML-DSA-44",
 		family:        "ML-DSA",
 		primitive:     ftypes.CryptoPrimitiveSignature,
-		strengthBasis: mldsaStrengthBasis(2),
+		strengthBasis: postQuantumStrengthBasis(2),
 	},
 	"2.16.840.1.101.3.4.3.18": {
 		name:          "ML-DSA-65",
 		family:        "ML-DSA",
 		primitive:     ftypes.CryptoPrimitiveSignature,
-		strengthBasis: mldsaStrengthBasis(3),
+		strengthBasis: postQuantumStrengthBasis(3),
 	},
 	"2.16.840.1.101.3.4.3.19": {
 		name:          "ML-DSA-87",
 		family:        "ML-DSA",
 		primitive:     ftypes.CryptoPrimitiveSignature,
-		strengthBasis: mldsaStrengthBasis(5),
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+
+	// ML-KEM has an OID per parameter set, and FIPS 203 section 8 assigns each a NIST category.
+	// See https://www.rfc-editor.org/rfc/rfc9935#section-3
+	"2.16.840.1.101.3.4.4.1": {
+		name:          "ML-KEM-512",
+		family:        "ML-KEM",
+		primitive:     ftypes.CryptoPrimitiveKEM,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.4.2": {
+		name:          "ML-KEM-768",
+		family:        "ML-KEM",
+		primitive:     ftypes.CryptoPrimitiveKEM,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.4.3": {
+		name:          "ML-KEM-1024",
+		family:        "ML-KEM",
+		primitive:     ftypes.CryptoPrimitiveKEM,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+
+	// SLH-DSA has an OID per parameter set, each used as both the key and the signature
+	// algorithm, and FIPS 205 section 11 assigns each a NIST category. Unlike HashML-DSA,
+	// HashSLH-DSA is allowed in X.509, so its OIDs are listed too, named with the pre-hash
+	// function the OID fixes.
+	// See https://www.rfc-editor.org/rfc/rfc9909#section-3
+	"2.16.840.1.101.3.4.3.20": {
+		name:          "SLH-DSA-SHA2-128s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.21": {
+		name:          "SLH-DSA-SHA2-128f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.22": {
+		name:          "SLH-DSA-SHA2-192s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.23": {
+		name:          "SLH-DSA-SHA2-192f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.24": {
+		name:          "SLH-DSA-SHA2-256s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.25": {
+		name:          "SLH-DSA-SHA2-256f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.26": {
+		name:          "SLH-DSA-SHAKE-128s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.27": {
+		name:          "SLH-DSA-SHAKE-128f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.28": {
+		name:          "SLH-DSA-SHAKE-192s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.29": {
+		name:          "SLH-DSA-SHAKE-192f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.30": {
+		name:          "SLH-DSA-SHAKE-256s",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.31": {
+		name:          "SLH-DSA-SHAKE-256f",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.35": {
+		name:          "HashSLH-DSA-SHA2-128s-SHA-256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.36": {
+		name:          "HashSLH-DSA-SHA2-128f-SHA-256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.37": {
+		name:          "HashSLH-DSA-SHA2-192s-SHA-512",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.38": {
+		name:          "HashSLH-DSA-SHA2-192f-SHA-512",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.39": {
+		name:          "HashSLH-DSA-SHA2-256s-SHA-512",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.40": {
+		name:          "HashSLH-DSA-SHA2-256f-SHA-512",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.41": {
+		name:          "HashSLH-DSA-SHAKE-128s-SHAKE128",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.42": {
+		name:          "HashSLH-DSA-SHAKE-128f-SHAKE128",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(1),
+	},
+	"2.16.840.1.101.3.4.3.43": {
+		name:          "HashSLH-DSA-SHAKE-192s-SHAKE256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.44": {
+		name:          "HashSLH-DSA-SHAKE-192f-SHAKE256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(3),
+	},
+	"2.16.840.1.101.3.4.3.45": {
+		name:          "HashSLH-DSA-SHAKE-256s-SHAKE256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
+	},
+	"2.16.840.1.101.3.4.3.46": {
+		name:          "HashSLH-DSA-SHAKE-256f-SHAKE256",
+		family:        "SLH-DSA",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: postQuantumStrengthBasis(5),
 	},
 }
 

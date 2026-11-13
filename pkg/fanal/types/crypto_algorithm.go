@@ -10,6 +10,8 @@ const (
 	CryptoPrimitiveSignature CryptoPrimitive = "signature"
 	// CryptoPrimitivePKE identifies a public-key encryption algorithm.
 	CryptoPrimitivePKE CryptoPrimitive = "pke"
+	// CryptoPrimitiveKEM identifies a key encapsulation mechanism.
+	CryptoPrimitiveKEM CryptoPrimitive = "kem"
 )
 
 // CryptoAlgorithm contains algorithm-specific metadata.
