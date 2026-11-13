@@ -201,6 +201,12 @@ func (a pipLibraryAnalyzer) findSitePackagesDir(libDir string) (string, error) {
 			return dir, nil
 		}
 	}
+
+	// On Windows, `site-packages` is placed directly in the `Lib` dir
+	// e.g. venv\Lib\site-packages
+	if dir := filepath.Join(libDir, "site-packages"); fsutils.DirExists(dir) {
+		return dir, nil
+	}
 	return "", nil
 }
 

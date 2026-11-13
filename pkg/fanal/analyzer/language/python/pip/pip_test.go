@@ -98,6 +98,18 @@ func Test_pipAnalyzer_Analyze(t *testing.T) {
 			want:          resultWithLicenses,
 		},
 		{
+			name: "happy path with licenses from venv without python dir",
+			dir:  filepath.Join("testdata", "happy"),
+			venv: filepath.Join("testdata", "libs", "common-dir"),
+			want: resultWithLicenses,
+		},
+		{
+			name:          "happy path with licenses from venv Scripts dir",
+			dir:           filepath.Join("testdata", "happy"),
+			pythonExecDir: filepath.Join("testdata", "libs", "common-dir", "Scripts"),
+			want:          resultWithLicenses,
+		},
+		{
 			name:          "happy path with licenses from common dir",
 			dir:           filepath.Join("testdata", "happy"),
 			pythonExecDir: filepath.Join("testdata", "libs", "common-dir", "foo", "bar"),
