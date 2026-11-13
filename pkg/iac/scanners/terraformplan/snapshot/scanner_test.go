@@ -52,7 +52,7 @@ func Test_ScanFS(t *testing.T) {
 				rego.WithEmbeddedLibraries(false),
 				rego.WithEmbeddedPolicies(false),
 				rego.WithMaxAllowedErrors(0),
-				tfscanner.ScannerWithSkipCachedModules(true),
+				tfscanner.ScannerWithModuleCacheDir(t.TempDir()),
 			)
 
 			results, err := scanner.ScanFS(t.Context(), fs, path.Join(tc.dir, "tfplan"))

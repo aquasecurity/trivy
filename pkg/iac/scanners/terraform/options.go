@@ -69,10 +69,10 @@ func ScannerWithDownloadsAllowed(allowed bool) options.ScannerOption {
 	}
 }
 
-func ScannerWithSkipCachedModules(b bool) options.ScannerOption {
+func ScannerWithModuleCacheDir(dir string) options.ScannerOption {
 	return func(s options.ConfigurableScanner) {
 		if tf, ok := s.(ConfigurableTerraformScanner); ok {
-			tf.AddParserOptions(parser.OptionWithSkipCachedModules(b))
+			tf.AddParserOptions(parser.OptionWithModuleCacheDir(dir))
 		}
 	}
 }

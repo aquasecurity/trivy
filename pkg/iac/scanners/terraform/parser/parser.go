@@ -33,27 +33,27 @@ type sourceFile struct {
 
 // Parser is a tool for parsing terraform templates at a given file system location
 type Parser struct {
-	projectRoot       string
-	moduleName        string
-	modulePath        string
-	moduleSource      string
-	moduleFS          fs.FS
-	moduleBlock       *terraform.Block
-	files             []sourceFile
-	tfvarsPaths       []string
-	tfvars            map[string]cty.Value
-	stopOnHCLError    bool
-	workspaceName     string
-	underlying        *hclparse.Parser
-	children          []*Parser
-	options           []Option
-	logger            *log.Logger
-	allowDownloads    bool
-	skipCachedModules bool
-	fsMap             map[string]fs.FS
-	configsFS         fs.FS
-	skipFiles         []string
-	skipDirs          []string
+	projectRoot    string
+	moduleName     string
+	modulePath     string
+	moduleSource   string
+	moduleFS       fs.FS
+	moduleBlock    *terraform.Block
+	files          []sourceFile
+	tfvarsPaths    []string
+	tfvars         map[string]cty.Value
+	stopOnHCLError bool
+	workspaceName  string
+	underlying     *hclparse.Parser
+	children       []*Parser
+	options        []Option
+	logger         *log.Logger
+	allowDownloads bool
+	moduleCacheDir string
+	fsMap          map[string]fs.FS
+	configsFS      fs.FS
+	skipFiles      []string
+	skipDirs       []string
 	// cwd is optional, if left to empty string, 'os.Getwd'
 	// will be used for populating 'path.cwd' in terraform.
 	cwd string
@@ -325,7 +325,7 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 		ignores,
 		p.logger.With(log.Prefix("terraform evaluator")),
 		p.allowDownloads,
-		p.skipCachedModules,
+		p.moduleCacheDir,
 	), nil
 }
 
