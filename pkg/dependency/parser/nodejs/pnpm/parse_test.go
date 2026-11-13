@@ -83,6 +83,12 @@ func TestParse(t *testing.T) {
 			want:     pnpmV9MultiVersion,
 			wantDeps: pnpmV9MultiVersionDeps,
 		},
+		{
+			name:     "v9 with optional dependencies",
+			file:     "testdata/pnpm-lock_v9_optional.yaml",
+			want:     pnpmV9Optional,
+			wantDeps: pnpmV9OptionalDeps,
+		},
 	}
 
 	for _, tt := range tests {
