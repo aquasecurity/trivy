@@ -1,6 +1,7 @@
 package packaging
 
 import (
+	"bytes"
 	"io/fs"
 	"path"
 	"slices"
@@ -35,15 +36,13 @@ func (a packagingAnalyzer) sbomApps(fsys fs.FS, distInfoDir string) []types.Appl
 			continue
 		}
 		sbomPath := path.Join(sbomDir, entry.Name())
-		f, err := fsys.Open(sbomPath)
-		if err != nil {
-			a.logger.Warn("Unable to open PEP 770 SBOM", log.FilePath(sbomPath), log.Err(err))
-			continue
+		var bom *cdx.BOM
+		data, err := fs.ReadFile(fsys, sbomPath)
+		if err == nil {
+			bom, err = cyclonedx.DecodeJSON(bytes.NewReader(data))
 		}
-		bom, err := cyclonedx.DecodeJSON(f)
-		_ = f.Close()
 		if err != nil {
-			a.logger.Warn("Unable to parse PEP 770 SBOM", log.FilePath(sbomPath), log.Err(err))
+			a.logger.Warn("Unable to read PEP 770 SBOM", log.FilePath(sbomPath), log.Err(err))
 			continue
 		}
 
@@ -68,7 +67,7 @@ func cargoPackages(bom *cdx.BOM, sbomPath string) types.Packages {
 			continue
 		}
 		p, err := purl.FromString(c.PackageURL)
-		if err != nil || p.Type != packageurl.TypeCargo {
+		if err != nil || p.Type != packageurl.TypeCargo || p.Version == "" {
 			continue
 		}
 		// The crates of the wheel's own workspace are not published to crates.io,
@@ -101,7 +100,8 @@ func cargoPackages(bom *cdx.BOM, sbomPath string) types.Packages {
 		pkgs[i].DependsOn = slices.Compact(deps)
 	}
 	sort.Sort(pkgs)
-	return pkgs
+	// Cargo can resolve the same name and version from more than one source.
+	return slices.CompactFunc(pkgs, func(a, b types.Package) bool { return a.ID == b.ID })
 }
 
 func licenses(c cdx.Component) []string {

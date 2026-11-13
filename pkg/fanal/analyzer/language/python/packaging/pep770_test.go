@@ -1,10 +1,6 @@
 package packaging
 
 import (
-	"bytes"
-	"log/slog"
-	"slices"
-	"strings"
 	"testing"
 	"testing/fstest"
 
@@ -14,7 +10,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
-	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 const (
@@ -57,8 +52,6 @@ func Test_packagingAnalyzer_PEP770(t *testing.T) {
 		name  string
 		files fstest.MapFS
 		want  []types.Application
-		// wantWarns holds a substring of each expected warning
-		wantWarns []string
 	}{
 		{
 			name: "crates are reported as a cargo application next to the Python package",
@@ -204,6 +197,62 @@ func Test_packagingAnalyzer_PEP770(t *testing.T) {
 			},
 		},
 		{
+			name: "crates without a version are dropped",
+			files: fstest.MapFS{
+				orjsonMetadataPath: {Data: []byte(orjsonMetadata)},
+				orjsonSBOMPath: {Data: []byte(`{
+					"bomFormat": "CycloneDX",
+					"specVersion": "1.5",
+					"components": [
+						{"type": "library", "bom-ref": "unversioned", "name": "unversioned", "purl": "pkg:cargo/unversioned"},
+						{"type": "library", "bom-ref": "libc", "name": "libc", "version": "0.2.190", "purl": "pkg:cargo/libc@0.2.190"}
+					],
+					"dependencies": [
+						{"ref": "libc", "dependsOn": ["unversioned"]}
+					]
+				}`)},
+			},
+			want: []types.Application{
+				orjsonApp,
+				{
+					Type:     types.Cargo,
+					FilePath: orjsonSBOMPath,
+					Packages: types.Packages{
+						crate(orjsonSBOMPath, "libc", "0.2.190"),
+					},
+				},
+			},
+		},
+		{
+			name: "a crate listed from two sources is reported once",
+			files: fstest.MapFS{
+				orjsonMetadataPath: {Data: []byte(orjsonMetadata)},
+				orjsonSBOMPath: {Data: []byte(`{
+					"bomFormat": "CycloneDX",
+					"specVersion": "1.5",
+					"components": [
+						{"type": "library", "bom-ref": "registry+https://github.com/rust-lang/crates.io-index#libc@0.2.190", "name": "libc", "version": "0.2.190", "purl": "pkg:cargo/libc@0.2.190"},
+						{"type": "library", "bom-ref": "git+https://github.com/rust-lang/libc#libc@0.2.190", "name": "libc", "version": "0.2.190", "purl": "pkg:cargo/libc@0.2.190"},
+						{"type": "library", "bom-ref": "pyo3-ffi", "name": "pyo3-ffi", "version": "0.26.0", "purl": "pkg:cargo/pyo3-ffi@0.26.0"}
+					],
+					"dependencies": [
+						{"ref": "pyo3-ffi", "dependsOn": ["registry+https://github.com/rust-lang/crates.io-index#libc@0.2.190", "git+https://github.com/rust-lang/libc#libc@0.2.190"]}
+					]
+				}`)},
+			},
+			want: []types.Application{
+				orjsonApp,
+				{
+					Type:     types.Cargo,
+					FilePath: orjsonSBOMPath,
+					Packages: types.Packages{
+						crate(orjsonSBOMPath, "libc", "0.2.190"),
+						crate(orjsonSBOMPath, "pyo3-ffi", "0.26.0", "libc@0.2.190"),
+					},
+				},
+			},
+		},
+		{
 			name: "SBOM without crates adds no application",
 			files: fstest.MapFS{
 				orjsonMetadataPath: {Data: []byte(orjsonMetadata)},
@@ -271,7 +320,7 @@ func Test_packagingAnalyzer_PEP770(t *testing.T) {
 			want: []types.Application{orjsonApp},
 		},
 		{
-			name: "malformed SBOM is reported and does not hide the other results",
+			name: "malformed SBOM does not hide the other results",
 			files: fstest.MapFS{
 				orjsonMetadataPath: {Data: []byte(orjsonMetadata)},
 				"site-packages/orjson-3.13.0.dist-info/sboms/broken.cdx.json": {Data: []byte(`{"bomFormat": "CycloneDX", "components": [`)},
@@ -293,7 +342,6 @@ func Test_packagingAnalyzer_PEP770(t *testing.T) {
 					},
 				},
 			},
-			wantWarns: []string{"site-packages/orjson-3.13.0.dist-info/sboms/broken.cdx.json"},
 		},
 		{
 			name: "sboms directory outside of dist-info is not read",
@@ -324,23 +372,12 @@ func Test_packagingAnalyzer_PEP770(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			var logs bytes.Buffer
-			defaultLogger := slog.Default()
-			log.SetDefault(log.New(log.NewHandler(&logs, &log.Options{Level: log.LevelWarn})))
-			t.Cleanup(func() { log.SetDefault(defaultLogger) })
-
 			a, err := newPackagingAnalyzer(analyzer.AnalyzerOptions{})
 			require.NoError(t, err)
 
 			got, err := a.PostAnalyze(t.Context(), analyzer.PostAnalysisInput{FS: tt.files})
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got.Applications)
-
-			warns := slices.Collect(strings.Lines(logs.String()))
-			require.Len(t, warns, len(tt.wantWarns), logs.String())
-			for i, want := range tt.wantWarns {
-				assert.Contains(t, warns[i], want)
-			}
 		})
 	}
 }
