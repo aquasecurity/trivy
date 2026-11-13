@@ -74,6 +74,7 @@ var (
 	CategoryAzure                = types.SecretRuleCategory("Azure")
 	CategoryMaven                = types.SecretRuleCategory("Maven")
 	CategoryOpenAI               = types.SecretRuleCategory("OpenAI")
+	CategoryAnthropic            = types.SecretRuleCategory("Anthropic")
 )
 
 // Reusable regex patterns
@@ -1061,5 +1062,38 @@ var builtinRules = []Rule{
 		Regex:           MustCompileWithBoundaries(`?P<secret>ek_[a-f0-9]{32}`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"ek_"},
+	},
+	// Anthropic credentials carry distinct literal prefixes, so each rule keys
+	// on its own prefix and the rules never overlap with each other or with
+	// other vendors reusing the `sk-` prefix (e.g. OpenAI `sk-proj-`). The
+	// base64url body of a real key is around 95 characters; the {32,120}
+	// range tolerates future length changes while the 32-character minimum
+	// keeps doc placeholders such as `sk-ant-api03-...` from matching.
+	{
+		ID:              "anthropic-api-key",
+		Category:        CategoryAnthropic,
+		Title:           "Anthropic API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithBoundaries(`?P<secret>sk-ant-api03-[A-Za-z0-9_-]{32,120}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sk-ant-api03-"},
+	},
+	{
+		ID:              "anthropic-admin-api-key",
+		Category:        CategoryAnthropic,
+		Title:           "Anthropic Admin API Key",
+		Severity:        "CRITICAL",
+		Regex:           MustCompileWithBoundaries(`?P<secret>sk-ant-admin01-[A-Za-z0-9_-]{32,120}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sk-ant-admin01-"},
+	},
+	{
+		ID:              "anthropic-oauth-token",
+		Category:        CategoryAnthropic,
+		Title:           "Anthropic OAuth Token",
+		Severity:        "HIGH",
+		Regex:           MustCompileWithBoundaries(`?P<secret>sk-ant-oat01-[A-Za-z0-9_-]{32,120}`),
+		SecretGroupName: "secret",
+		Keywords:        []string{"sk-ant-oat01-"},
 	},
 }
