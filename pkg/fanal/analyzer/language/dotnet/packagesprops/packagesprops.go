@@ -18,7 +18,7 @@ func init() {
 }
 
 const (
-	version             = 1
+	version             = 2
 	packagesPropsSuffix = "packages.props" // https://github.com/dotnet/roslyn-tools/blob/b4c5220f5dfc4278847b6d38eff91cc1188f8066/src/RoslynInsertionTool/RoslynInsertionTool/CoreXT.cs#L39-L40
 )
 
