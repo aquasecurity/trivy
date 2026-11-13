@@ -30,6 +30,11 @@ func TestPublicKeyObjectMalformed(t *testing.T) {
 			name: "Ed448",
 			oid:  asn1.ObjectIdentifier{1, 3, 101, 113},
 		},
+		{
+			// crypto/x509 does not decode RSASSA-PSS, and its key is an RSAPublicKey.
+			name: "RSASSA-PSS",
+			oid:  asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10},
+		},
 	}
 
 	for _, tt := range tests {

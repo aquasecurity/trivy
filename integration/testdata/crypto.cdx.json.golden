@@ -235,7 +235,7 @@
     {
       "bom-ref": "crypto:algorithm:oid:1.2.840.113549.1.1.10",
       "type": "cryptographic-asset",
-      "name": "1.2.840.113549.1.1.10",
+      "name": "RSA-PSS",
       "evidence": {
         "occurrences": [
           {
@@ -251,7 +251,9 @@
       "cryptoProperties": {
         "assetType": "algorithm",
         "algorithmProperties": {
-          "primitive": "unknown"
+          "primitive": "signature",
+          "algorithmFamily": "RSASSA-PSS",
+          "nistQuantumSecurityLevel": 0
         },
         "oid": "1.2.840.113549.1.1.10"
       }
