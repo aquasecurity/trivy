@@ -14,6 +14,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/azure"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/bottlerocket"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/chainguard"
+	"github.com/aquasecurity/trivy/pkg/detector/ospkg/cleanstart"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/coreos"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/debian"
 	"github.com/aquasecurity/trivy/pkg/detector/ospkg/driver"
@@ -64,6 +65,7 @@ var (
 		ftypes.Photon:             photon.NewScanner(),
 		ftypes.Wolfi:              wolfi.NewScanner(),
 		ftypes.Chainguard:         chainguard.NewScanner(),
+		ftypes.CleanStart:         cleanstart.NewScanner(),
 		ftypes.Echo:               echo.NewScanner(),
 		ftypes.MinimOS:            minimos.NewScanner(),
 		ftypes.CoreOS:             coreos.NewScanner(),
