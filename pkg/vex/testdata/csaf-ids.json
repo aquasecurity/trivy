@@ -1,0 +1,157 @@
+{
+  "document": {
+    "category": "csaf_vex",
+    "csaf_version": "2.0",
+    "notes": [
+      {
+        "category": "summary",
+        "text": "Example Company VEX document. Unofficial content for demonstration purposes only.",
+        "title": "Author comment"
+      }
+    ],
+    "publisher": {
+      "category": "vendor",
+      "name": "Example Company ProductCERT",
+      "namespace": "https://psirt.example.com"
+    },
+    "title": "CSAF with non-CVE vulnerability IDs",
+    "tracking": {
+      "current_release_date": "2022-03-03T11:00:00.000Z",
+      "generator": {
+        "date": "2022-03-03T11:00:00.000Z",
+        "engine": {
+          "name": "Secvisogram",
+          "version": "1.11.0"
+        }
+      },
+      "id": "2022-EVD-UC-01-A-001",
+      "initial_release_date": "2022-03-03T11:00:00.000Z",
+      "revision_history": [
+        {
+          "date": "2022-03-03T11:00:00.000Z",
+          "number": "1",
+          "summary": "Initial version."
+        }
+      ],
+      "status": "final",
+      "version": "1"
+    }
+  },
+  "product_tree": {
+    "branches": [
+      {
+        "branches": [
+          {
+            "branches": [
+              {
+                "category": "product_version",
+                "name": "v4.0.0",
+                "product": {
+                  "name": "go-transitive v4.0.0",
+                  "product_id": "go-transitive-v4.0.0",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/go-transitive@v4.0.0"
+                  }
+                }
+              },
+              {
+                "category": "product_version",
+                "name": "v9.9.9",
+                "product": {
+                  "name": "other v9.9.9",
+                  "product_id": "other-v9.9.9",
+                  "product_identification_helper": {
+                    "purl": "pkg:golang/github.com/aquasecurity/other@v9.9.9"
+                  }
+                }
+              }
+            ],
+            "category": "product_name",
+            "name": "go-transitive"
+          }
+        ],
+        "category": "vendor",
+        "name": "foo"
+      }
+    ]
+  },
+  "vulnerabilities": [
+    null,
+    {
+      "ids": [
+        {
+          "system_name": "SUSE",
+          "text": "SUSE-SU-2026:0001-1"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    },
+    {
+      "ids": [
+        {
+          "system_name": "SUSE",
+          "text": "SUSE-SU-2026:0002-1"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "other-v9.9.9"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    },
+    {
+      "ids": [
+        {
+          "system_name": "SUSE",
+          "text": "SUSE-SU-2026:0002-1"
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    },
+    {
+      "ids": [
+        {
+          "system_name": "SUSE",
+          "text": ""
+        }
+      ],
+      "product_status": {
+        "known_not_affected": [
+          "go-transitive-v4.0.0"
+        ]
+      },
+      "threats": [
+        {
+          "category": "impact",
+          "details": "vulnerable_code_not_in_execute_path"
+        }
+      ]
+    }
+  ]
+}
