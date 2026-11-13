@@ -12,7 +12,7 @@ import (
 
 type CycloneDX struct {
 	sbom       *core.BOM
-	statements map[string]Statement
+	statements map[string][]Statement
 	logger     *log.Logger
 }
 
@@ -23,18 +23,22 @@ type Statement struct {
 }
 
 func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
-	statements := make(map[string]Statement)
+	statements := make(map[string][]Statement)
 	for _, vuln := range lo.FromPtr(vex.Vulnerabilities) {
 		affects := xslices.Map(lo.FromPtr(vuln.Affects), func(item cdx.Affects) string {
 			return item.Ref
 		})
 
+		// A CycloneDX document can contain several vulnerability objects
+		// sharing the same ID, e.g. to analyze the same vulnerability
+		// per component. Keep all of them so no statement is lost.
+		// cf. https://github.com/aquasecurity/trivy/issues/11396
 		analysis := lo.FromPtr(vuln.Analysis)
-		statements[vuln.ID] = Statement{
+		statements[vuln.ID] = append(statements[vuln.ID], Statement{
 			Affects:       affects,
 			Status:        cdxStatus(analysis.State),
 			Justification: string(analysis.Justification),
-		}
+		})
 	}
 	return &CycloneDX{
 		sbom:       sbom,
@@ -44,30 +48,33 @@ func newCycloneDX(sbom *core.BOM, vex *cdx.BOM) *CycloneDX {
 }
 
 func (v *CycloneDX) NotAffected(vuln types.DetectedVulnerability, product, _ *core.Component) (types.ModifiedFinding, bool) {
-	stmt, ok := v.statements[vuln.VulnerabilityID]
+	stmts, ok := v.statements[vuln.VulnerabilityID]
 	if !ok {
 		return types.ModifiedFinding{}, false
 	}
 
-	for _, affect := range stmt.Affects {
-		if stmt.Status != types.FindingStatusNotAffected && stmt.Status != types.FindingStatusFixed {
-			continue
-		}
+	// Take the first statement that applies to the product in document order
+	for _, stmt := range stmts {
+		for _, affect := range stmt.Affects {
+			if stmt.Status != types.FindingStatusNotAffected && stmt.Status != types.FindingStatusFixed {
+				continue
+			}
 
-		// Affect must be BOM-Link at the moment
-		link, err := cdx.ParseBOMLink(affect)
-		if err != nil {
-			v.logger.Warn("Unable to parse BOM-Link", log.String("affect", affect))
-			continue
-		}
-		if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
-			v.logger.Warn("URN doesn't match with SBOM",
-				log.String("serial number", link.SerialNumber()),
-				log.Int("version", link.Version()))
-			continue
-		}
-		if product.PkgIdentifier.Match(link.Reference()) {
-			return types.NewModifiedFinding(vuln, stmt.Status, stmt.Justification, "CycloneDX VEX"), true
+			// Affect must be BOM-Link at the moment
+			link, err := cdx.ParseBOMLink(affect)
+			if err != nil {
+				v.logger.Warn("Unable to parse BOM-Link", log.String("affect", affect))
+				continue
+			}
+			if v.sbom.SerialNumber != link.SerialNumber() || v.sbom.Version != link.Version() {
+				v.logger.Warn("URN doesn't match with SBOM",
+					log.String("serial number", link.SerialNumber()),
+					log.Int("version", link.Version()))
+				continue
+			}
+			if product.PkgIdentifier.Match(link.Reference()) {
+				return types.NewModifiedFinding(vuln, stmt.Status, stmt.Justification, "CycloneDX VEX"), true
+			}
 		}
 	}
 	return types.ModifiedFinding{}, false

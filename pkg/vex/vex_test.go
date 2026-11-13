@@ -52,6 +52,21 @@ var (
 			},
 		},
 	}
+	springPackage261 = ftypes.Package{
+		ID:      "org.springframework.boot:spring-boot:2.6.1",
+		Name:    "org.springframework.boot:spring-boot",
+		Version: "2.6.1",
+		Identifier: ftypes.PkgIdentifier{
+			UID:    "09",
+			BOMRef: "pkg:maven/org.springframework.boot/spring-boot@2.6.1",
+			PURL: &packageurl.PackageURL{
+				Type:      packageurl.TypeMaven,
+				Namespace: "org.springframework.boot",
+				Name:      "spring-boot",
+				Version:   "2.6.1",
+			},
+		},
+	}
 	bashPackage = ftypes.Package{
 		ID:      "bash@5.3",
 		Name:    "bash",
@@ -191,6 +206,13 @@ var (
 		InstalledVersion: goDirectPackage1.Version,
 		PkgIdentifier:    goDirectPackage1.Identifier,
 	}
+	// CVE-2021-44228 detected on spring-boot@2.6.1
+	vuln7 = types.DetectedVulnerability{
+		VulnerabilityID:  "CVE-2021-44228",
+		PkgName:          springPackage261.Name,
+		InstalledVersion: springPackage261.Version,
+		PkgIdentifier:    springPackage261.Identifier,
+	}
 )
 
 func TestMain(m *testing.M) {
@@ -201,6 +223,7 @@ func TestMain(m *testing.M) {
 func TestFilter(t *testing.T) {
 	uuid.SetFakeUUID(t, "3ff14136-e09f-4df9-80ea-%012d")
 	testCycloneDXSBOM := createCycloneDXBOMWithSpringComponent()
+	testCycloneDXSBOMWithTwoVersions := createCycloneDXBOMWithTwoSpringVersions()
 
 	// Set up an OCI registry serving a VEX attestation for the `--vex oci` case.
 	registryHost, subjectDigest := setUpRegistry(t)
@@ -430,6 +453,47 @@ func TestFilter(t *testing.T) {
 						Vulnerabilities:  []types.DetectedVulnerability{},
 						ModifiedFindings: []types.ModifiedFinding{modifiedFinding(vuln1, codeNotReachable, "CycloneDX VEX")},
 					}),
+				},
+			},
+		},
+		{
+			name: "CycloneDX SBOM with CycloneDX VEX, multiple vulnerability objects sharing an ID",
+			args: args{
+				// The same CVE is analyzed in two separate vulnerability objects,
+				// each applying to a different version of the component.
+				// https://github.com/CycloneDX/specification supports this shape.
+				report: &types.Report{
+					ArtifactType: ftypes.TypeCycloneDX,
+					BOM:          testCycloneDXSBOMWithTwoVersions,
+					Results: []types.Result{
+						springVersionsResult(types.Result{
+							Vulnerabilities: []types.DetectedVulnerability{
+								vuln1, // filtered by VEX
+								vuln7, // filtered by VEX
+							},
+						}, springPackage, springPackage261),
+					},
+				},
+				opts: vex.Options{
+					Sources: []vex.Source{
+						{
+							Type:     vex.TypeFile,
+							FilePath: "testdata/cyclonedx-multiple.json",
+						},
+					},
+				},
+			},
+			want: &types.Report{
+				ArtifactType: ftypes.TypeCycloneDX,
+				BOM:          testCycloneDXSBOMWithTwoVersions,
+				Results: []types.Result{
+					springVersionsResult(types.Result{
+						Vulnerabilities: []types.DetectedVulnerability{},
+						ModifiedFindings: []types.ModifiedFinding{
+							modifiedFinding(vuln1, codeNotReachable, "CycloneDX VEX"),
+							modifiedFinding(vuln7, vulnerableCodeNotInExecutePath, "CycloneDX VEX"),
+						},
+					}, springPackage, springPackage261),
 				},
 			},
 		},
@@ -843,6 +907,27 @@ func createCycloneDXBOMWithSpringComponent() *core.BOM {
 	return bom
 }
 
+func createCycloneDXBOMWithTwoSpringVersions() *core.BOM {
+	bom := core.NewBOM(core.Options{})
+	bom.SerialNumber = "urn:uuid:3e671687-395b-41f5-a30f-a58921a69b79"
+	bom.Version = 1
+	for _, pkg := range []ftypes.Package{springPackage, springPackage261} {
+		pkgIdentifier := ftypes.PkgIdentifier{
+			// Components got from scanned SBOM files don't have UID
+			BOMRef: pkg.Identifier.BOMRef,
+			PURL:   pkg.Identifier.PURL,
+		}
+		bom.AddComponent(&core.Component{
+			Type:          core.TypeLibrary,
+			Name:          pkg.Identifier.PURL.Name,
+			Group:         pkg.Identifier.PURL.Namespace,
+			Version:       pkg.Version,
+			PkgIdentifier: pkgIdentifier,
+		})
+	}
+	return bom
+}
+
 func fsReport(results types.Results) *types.Report {
 	return &types.Report{
 		ArtifactName: ".",
@@ -852,9 +937,14 @@ func fsReport(results types.Results) *types.Report {
 }
 
 func springResult(result types.Result) types.Result {
+	return springVersionsResult(result, springPackage)
+}
+
+// springVersionsResult wraps the result with the given spring package versions
+func springVersionsResult(result types.Result, pkgs ...ftypes.Package) types.Result {
 	result.Type = ftypes.Jar
 	result.Class = types.ClassLangPkg
-	result.Packages = []ftypes.Package{springPackage}
+	result.Packages = pkgs
 	return result
 }
 
