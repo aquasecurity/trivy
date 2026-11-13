@@ -33,6 +33,10 @@ const (
 
 	columnKind = "utf16CodeUnits"
 
+	// GitHub code scanning rejects SARIF files with more than 20 tags per rule
+	// https://docs.github.com/en/code-security/reference/code-scanning/sarif-files/sarif-support#validating-your-sarif-file
+	maxSarifTags = 20
+
 	builtinRulesUrl = "https://github.com/aquasecurity/trivy/blob/main/pkg/fanal/secret/builtin-rules.go" // list all secrets
 )
 
@@ -66,6 +70,7 @@ type sarifData struct {
 	message          string
 	cvssScore        string
 	cvssData         map[string]any
+	cweIDs           []string
 	locations        []location
 }
 
@@ -87,7 +92,7 @@ func (sw *SarifWriter) addSarifRule(data *sarifData) {
 		WithDefaultConfiguration(&sarif.ReportingConfiguration{
 			Level: toSarifErrorLevel(data.severity),
 		}).
-		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData))
+		WithProperties(toProperties(data.title, data.severity, data.cvssScore, data.cvssData, data.cweIDs))
 	if data.url != nil && data.url.String() != "" {
 		r.WithHelpURI(data.url.String())
 	}
@@ -163,6 +168,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				severity:         vuln.Severity,
 				cvssScore:        cvssScore,
 				cvssData:         cvssData,
+				cweIDs:           vuln.CweIDs,
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
 				artifactLocation: toUri(path),
@@ -459,13 +465,13 @@ func severityToScore(severity string) string {
 	}
 }
 
-func toProperties(title, severity, cvssScore string, cvssData map[string]any) sarif.Properties {
+func toProperties(title, severity, cvssScore string, cvssData map[string]any, cweIDs []string) sarif.Properties {
+	tags := append([]string{title, "security", severity}, cweIDs...)
+	if len(tags) > maxSarifTags {
+		tags = tags[:maxSarifTags]
+	}
 	properties := sarif.Properties{
-		"tags": []string{
-			title,
-			"security",
-			severity,
-		},
+		"tags":              tags,
 		"precision":         "very-high",
 		"security-severity": cvssScore,
 	}
