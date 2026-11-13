@@ -9,7 +9,6 @@ import (
 	"slices"
 
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
@@ -34,6 +33,7 @@ type evaluator struct {
 	projectRootPath string // root of the current scan
 	modulePath      string
 	moduleName      string
+	workingDir      string
 	ignores         ignore.Rules
 	parser          *Parser
 	config          *moduleConfig
@@ -62,6 +62,7 @@ func newEvaluator(
 		config:          config,
 		modulePath:      config.path,
 		moduleName:      config.name,
+		workingDir:      workingDir,
 		projectRootPath: parser.projectRoot,
 		ctx:             ctx,
 		blocks:          blocks,
@@ -216,7 +217,7 @@ func (e *evaluator) loadSubmodules() []*submodule {
 			continue
 		}
 
-		eval, err := e.parser.newInstanceEvaluator(config, b)
+		eval, err := e.parser.newInstanceEvaluator(config, b, b.Values().AsValueMap(), e.workingDir)
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {
@@ -481,50 +482,6 @@ func (e *evaluator) copyVariables(from, to *terraform.Block) {
 	rootCtx.Set(srcValue, fromBase, toRel)
 }
 
-func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
-	if b.Label() == "" {
-		return cty.NilVal, errors.New("empty label - cannot resolve")
-	}
-
-	attributes := b.Attributes()
-
-	var valType cty.Type
-	var defaults *typeexpr.Defaults
-	if typeAttr, exists := attributes["type"]; exists {
-		ty, def, err := typeAttr.DecodeVarType()
-		if err != nil {
-			return cty.NilVal, err
-		}
-		valType = ty
-		defaults = def
-	}
-
-	var val cty.Value
-
-	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
-		val = override
-	} else if def, exists := attributes["default"]; exists {
-		val = def.NullableValue()
-	} else {
-		return cty.NilVal, errors.New("no value found")
-	}
-
-	if valType != cty.NilType {
-		if defaults != nil {
-			val = defaults.Apply(val)
-		}
-
-		typedVal, err := convert.Convert(val, valType)
-		if err != nil {
-			return cty.NilVal, err
-		}
-		return typedVal, nil
-	}
-
-	return val, nil
-
-}
-
 func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 	if b.Label() == "" {
 		return cty.NilVal, errors.New("empty label - cannot resolve")
@@ -546,7 +503,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	for _, b := range blocksOfType {
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
-			val, err := e.evaluateVariable(b)
+			val, err := variableValue(b, e.inputVars)
 			if err != nil {
 				continue
 			}

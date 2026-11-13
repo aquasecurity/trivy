@@ -47,25 +47,31 @@ func (p *Parser) rootConfig() *moduleConfig {
 }
 
 // loadModuleTree loads the root module and all modules below it.
-func (p *Parser) loadModuleTree(ctx context.Context, workingDir string) *moduleConfig {
+// inputs holds the values of the root module variables.
+func (p *Parser) loadModuleTree(ctx context.Context, workingDir string, inputs map[string]cty.Value) *moduleConfig {
 	p.modulesMetadata = make(map[string]*ModulesMetadata)
 	root := p.rootConfig()
-	p.loadChildren(ctx, root, workingDir, []string{root.id()})
+	p.loadChildren(ctx, root, workingDir, inputs, []string{root.id()})
 	return root
 }
 
 // loadChildren loads the modules called by the module and their children.
-// ancestors holds the IDs of the module and its parents, and a call of any of them is not loaded.
-func (p *Parser) loadChildren(ctx context.Context, c *moduleConfig, workingDir string, ancestors []string) {
+// inputs holds the values of the module variables. ancestors holds the IDs of the module
+// and its parents, and a call of any of them is not loaded.
+func (p *Parser) loadChildren(ctx context.Context, c *moduleConfig, workingDir string, inputs map[string]cty.Value, ancestors []string) {
 	c.children = make(map[string]*moduleConfig)
-	if len(c.files) == 0 {
+
+	evalCtx := newModuleContext(c.fsys, p.projectRoot, c.path, workingDir, p.workspaceName)
+	blocks := c.blocksOfType(evalCtx, "variable", "locals", "module")
+	calls := blocks.OfType("module")
+	if len(calls) == 0 {
 		return
 	}
 
 	metadata := p.loadModulesMetadata(c)
-	evalCtx := newModuleContext(c.fsys, p.projectRoot, c.path, workingDir, p.workspaceName)
+	setStaticValues(evalCtx, blocks, inputs)
 
-	for _, call := range c.moduleCalls(evalCtx) {
+	for _, call := range calls {
 		name := call.Label()
 		if _, exists := c.children[name]; exists {
 			continue
@@ -78,8 +84,11 @@ func (p *Parser) loadChildren(ctx context.Context, c *moduleConfig, workingDir s
 
 		child, err := p.loadModule(ctx, c, call, key, metadata)
 		if err != nil {
-			c.logger.Error("Failed to load module. Maybe try 'terraform init'?",
-				log.String("loc", call.GetMetadata().Range().String()), log.Err(err))
+			msg := "Failed to load module. Maybe try 'terraform init'?"
+			if errors.Is(err, errUnknownSource) {
+				msg = "Failed to load module"
+			}
+			c.logger.Error(msg, log.String("loc", call.GetMetadata().Range().String()), log.Err(err))
 			continue
 		}
 
@@ -92,7 +101,8 @@ func (p *Parser) loadChildren(ctx context.Context, c *moduleConfig, workingDir s
 
 		c.logger.Debug("Loaded module", log.String("name", name), log.FilePath(child.path))
 		c.children[name] = child
-		p.loadChildren(ctx, child, workingDir, append(slices.Clip(ancestors), id))
+		// Values keeps unknown arguments unknown instead of turning them into null.
+		p.loadChildren(ctx, child, workingDir, call.Values().AsValueMap(), append(slices.Clip(ancestors), id))
 	}
 }
 
@@ -122,28 +132,31 @@ func (c *moduleConfig) id() string {
 	return types.CreateFSKey(c.fsys) + ":" + path.Clean(c.path)
 }
 
-// moduleCalls returns the module blocks of the parsed files, evaluated in ctx.
+// blocksOfType creates the blocks of the given types from the parsed files, with ctx as their evaluation context.
 // Files whose blocks cannot be read are skipped.
-func (c *moduleConfig) moduleCalls(ctx *tfcontext.Context) terraform.Blocks {
-	var calls terraform.Blocks
+func (c *moduleConfig) blocksOfType(ctx *tfcontext.Context, types ...string) terraform.Blocks {
+	var blocks terraform.Blocks
 	for _, file := range c.files {
 		hclBlocks, err := loadBlocksFromFile(file)
 		if err != nil {
 			continue
 		}
 		for _, hclBlock := range hclBlocks {
-			if hclBlock.Type == "module" {
-				calls = append(calls, terraform.NewBlock(hclBlock, ctx, nil, nil, c.source, c.fsys))
+			if slices.Contains(types, hclBlock.Type) {
+				blocks = append(blocks, terraform.NewBlock(hclBlock, ctx, nil, nil, c.source, c.fsys))
 			}
 		}
 	}
-	return calls
+	return blocks
 }
 
 // moduleCallName returns the full name of the module call with the given key, such as module.a.module.b.
 func moduleCallName(key string) string {
 	return "module." + strings.ReplaceAll(key, ".", ".module.")
 }
+
+// errUnknownSource means that the source of a module call depends on values that are not static.
+var errUnknownSource = errors.New("source is not known statically")
 
 // loadModule finds the source of the module call in the parent module and parses the module.
 func (p *Parser) loadModule(ctx context.Context, parent *moduleConfig, b *terraform.Block, key string, metadata *ModulesMetadata) (*moduleConfig, error) {
@@ -152,7 +165,10 @@ func (p *Parser) loadModule(ctx context.Context, parent *moduleConfig, b *terraf
 	}
 
 	sourceVal := b.GetAttribute("source").Value()
-	if !sourceVal.IsKnown() || sourceVal.Type() != cty.String {
+	if !sourceVal.IsKnown() {
+		return nil, errUnknownSource
+	}
+	if sourceVal.Type() != cty.String {
 		return nil, errors.New("source is not a string")
 	}
 
