@@ -9,7 +9,6 @@ import (
 	"slices"
 
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
@@ -26,17 +25,14 @@ const (
 )
 
 type evaluator struct {
-	logger          *log.Logger
-	filesystem      fs.FS
-	ctx             *tfcontext.Context
-	blocks          terraform.Blocks
-	inputVars       map[string]cty.Value
-	projectRootPath string // root of the current scan
-	modulePath      string
-	moduleName      string
-	ignores         ignore.Rules
-	parser          *Parser
-	config          *moduleConfig
+	logger     *log.Logger
+	ctx        *tfcontext.Context
+	blocks     terraform.Blocks
+	inputVars  map[string]cty.Value
+	workingDir string
+	ignores    ignore.Rules
+	parser     *Parser
+	config     *moduleConfig
 }
 
 func newEvaluator(
@@ -57,17 +53,14 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:      config.fsys,
-		parser:          parser,
-		config:          config,
-		modulePath:      config.path,
-		moduleName:      config.name,
-		projectRootPath: parser.projectRoot,
-		ctx:             ctx,
-		blocks:          blocks,
-		inputVars:       inputVars,
-		ignores:         ignores,
-		logger:          logger,
+		parser:     parser,
+		config:     config,
+		workingDir: workingDir,
+		ctx:        ctx,
+		blocks:     blocks,
+		inputVars:  inputVars,
+		ignores:    ignores,
+		logger:     logger,
 	}
 }
 
@@ -120,11 +113,11 @@ func (e *evaluator) exportOutputs() cty.Value {
 
 func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[string]fs.FS) {
 
-	e.logger.Debug("Starting module evaluation...", log.String("path", e.modulePath))
+	e.logger.Debug("Starting module evaluation...", log.String("path", e.config.path))
 
-	fsKey := types.CreateFSKey(e.filesystem)
+	fsKey := types.CreateFSKey(e.config.fsys)
 	fsMap := map[string]fs.FS{
-		fsKey: e.filesystem,
+		fsKey: e.config.fsys,
 	}
 
 	e.evaluateSteps()
@@ -146,7 +139,7 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 
 	// rootModule is initialized here, but not fully evaluated until all submodules are evaluated.
 	// Initializing it up front to keep the module hierarchy of parents correct.
-	rootModule := terraform.NewModule(e.projectRootPath, e.modulePath, e.blocks, e.ignores)
+	rootModule := terraform.NewModule(e.parser.projectRoot, e.config.path, e.blocks, e.ignores)
 	submodules := e.evaluateSubmodules(ctx, rootModule, fsMap)
 
 	e.logger.Debug("Starting post-submodules evaluation...")
@@ -216,7 +209,7 @@ func (e *evaluator) loadSubmodules() []*submodule {
 			continue
 		}
 
-		eval, err := e.parser.newInstanceEvaluator(config, b)
+		eval, err := e.parser.newInstanceEvaluator(config, b, b.Values().AsValueMap(), e.workingDir)
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {
@@ -481,50 +474,6 @@ func (e *evaluator) copyVariables(from, to *terraform.Block) {
 	rootCtx.Set(srcValue, fromBase, toRel)
 }
 
-func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
-	if b.Label() == "" {
-		return cty.NilVal, errors.New("empty label - cannot resolve")
-	}
-
-	attributes := b.Attributes()
-
-	var valType cty.Type
-	var defaults *typeexpr.Defaults
-	if typeAttr, exists := attributes["type"]; exists {
-		ty, def, err := typeAttr.DecodeVarType()
-		if err != nil {
-			return cty.NilVal, err
-		}
-		valType = ty
-		defaults = def
-	}
-
-	var val cty.Value
-
-	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
-		val = override
-	} else if def, exists := attributes["default"]; exists {
-		val = def.NullableValue()
-	} else {
-		return cty.NilVal, errors.New("no value found")
-	}
-
-	if valType != cty.NilType {
-		if defaults != nil {
-			val = defaults.Apply(val)
-		}
-
-		typedVal, err := convert.Convert(val, valType)
-		if err != nil {
-			return cty.NilVal, err
-		}
-		return typedVal, nil
-	}
-
-	return val, nil
-
-}
-
 func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 	if b.Label() == "" {
 		return cty.NilVal, errors.New("empty label - cannot resolve")
@@ -546,7 +495,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	for _, b := range blocksOfType {
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
-			val, err := e.evaluateVariable(b)
+			val, err := variableValue(b, e.inputVars)
 			if err != nil {
 				continue
 			}

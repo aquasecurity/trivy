@@ -90,21 +90,6 @@ func (p *Parser) Files() map[string]*hcl.File {
 	return p.underlying.Files()
 }
 
-func (p *Parser) ParseFile(_ context.Context, fullPath string) error {
-	file, err := parseFile(p.moduleFS, fullPath, p.underlying, p.logger)
-	if file == nil {
-		return err
-	}
-
-	if dir := path.Dir(fullPath); p.projectRoot == "" {
-		p.logger.Debug("Setting project/module root", log.FilePath(dir))
-		p.projectRoot = dir
-		p.modulePath = dir
-	}
-	p.files = append(p.files, *file)
-	return nil
-}
-
 // ParseFS parses a root module, where it exists at the root of the provided filesystem
 func (p *Parser) ParseFS(_ context.Context, dir string) error {
 	if p.moduleFS == nil {
@@ -267,8 +252,22 @@ func (p *Parser) Load(ctx context.Context) (*evaluator, error) {
 		return nil, err
 	}
 
-	root := p.loadModuleTree(ctx, workingDir)
-	return p.newInstanceEvaluator(root, nil)
+	inputVars, err := p.rootInputVars()
+	if err != nil {
+		return nil, err
+	}
+
+	root := p.loadModuleTree(ctx, workingDir, inputVars)
+	return p.newInstanceEvaluator(root, nil, inputVars, workingDir)
+}
+
+// rootInputVars returns the values of the root module variables from the options,
+// or from tfvars files and TF_VAR_ environment variables.
+func (p *Parser) rootInputVars() (map[string]cty.Value, error) {
+	if len(p.tfvars) > 0 {
+		return p.tfvars, nil
+	}
+	return loadTFVars(p.configsFS, p.tfvarsPaths)
 }
 
 // workingDir returns the value of path.cwd.
@@ -281,7 +280,7 @@ func (p *Parser) workingDir() (string, error) {
 
 // newInstanceEvaluator creates the evaluator of one instance of the module.
 // moduleBlock is the module block of the instance, or nil for the root module.
-func (p *Parser) newInstanceEvaluator(c *moduleConfig, moduleBlock *terraform.Block) (*evaluator, error) {
+func (p *Parser) newInstanceEvaluator(c *moduleConfig, moduleBlock *terraform.Block, inputVars map[string]cty.Value, workingDir string) (*evaluator, error) {
 	c.logger.Debug("Loading module", log.String("module", c.name))
 
 	if len(c.files) == 0 {
@@ -296,28 +295,9 @@ func (p *Parser) newInstanceEvaluator(c *moduleConfig, moduleBlock *terraform.Bl
 	c.logger.Debug("Read block(s) and ignore(s)",
 		log.Int("blocks", len(blocks)), log.Int("ignores", len(ignores)))
 
-	var inputVars map[string]cty.Value
-
-	switch {
-	case moduleBlock != nil:
-		inputVars = moduleBlock.Values().AsValueMap()
-		c.logger.Debug("Added input variables from module definition",
-			log.Int("count", len(inputVars)))
-	case len(p.tfvars) > 0:
-		inputVars = p.tfvars
-		c.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
-	default:
-		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
-		if err != nil {
-			return nil, err
-		}
-		c.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
+	c.logger.Debug("Added input variables", log.Int("count", len(inputVars)))
+	if moduleBlock == nil && len(p.tfvars) == 0 {
 		p.setFallbackValuesForMissingVars(inputVars, blocks)
-	}
-
-	workingDir, err := p.workingDir()
-	if err != nil {
-		return nil, err
 	}
 
 	c.logger.Debug("Working directory for module evaluation", log.FilePath(workingDir))
