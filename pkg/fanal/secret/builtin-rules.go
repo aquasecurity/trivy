@@ -87,6 +87,12 @@ const (
 	aws = `aws_?`
 )
 
+// endAccessKeyID matches what may follow an access key ID: a quote (may be escaped),
+// a backtick, a period, a comma, a whitespace or the end of the text.
+// Other characters are not allowed, e.g. `/` follows the access key ID in SigV4 pre-signed URLs:
+// X-Amz-Credential=<access key ID>/20261102/us-east-1/s3/aws4_request
+const endAccessKeyID = "(?:[\"'`\\\\.,]|\\s|$)"
+
 // This function is exported for trivy-plugin-aqua purposes only
 func GetBuiltinRules() []Rule {
 	return builtinRules
@@ -108,7 +114,7 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Access Key ID",
-		Regex:           MustCompileWithoutWordPrefix(fmt.Sprintf(`(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, quote, endSecret)),
+		Regex:           MustCompileWithoutWordPrefix(fmt.Sprintf(`(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s`, endAccessKeyID)),
 		SecretGroupName: "secret",
 		Keywords:        []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
 	},

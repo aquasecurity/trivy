@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"os"
 	"path/filepath"
+	"slices"
 	"strings"
 	"testing"
 
@@ -2616,6 +2617,89 @@ func TestIsSkippedSlashConversion(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			g := secret.Global{SkipPatterns: tt.patterns}
 			assert.Equal(t, tt.want, g.IsSkipped(tt.path))
+		})
+	}
+}
+
+func TestAWSAccessKeyIDRule(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  bool
+	}{
+		{
+			name:  "env file",
+			input: `AWS_ACCESS_KEY_ID=AKIAQZXJLKFPWMVBNTYU`,
+			want:  true,
+		},
+		{
+			name:  "end of sentence",
+			input: `The key is AKIAQZXJLKFPWMVBNTYU. Rotate it.`,
+			want:  true,
+		},
+		{
+			name:  "minified object literal",
+			input: `e.exports={apiKey:"AKIAQZXJLKFPWMVBNTYU",region:"us-east-1"}`,
+			want:  true,
+		},
+		{
+			name:  "single-line statement",
+			input: `const AWS_KEY="AKIAQZXJLKFPWMVBNTYU";export{AWS_KEY};`,
+			want:  true,
+		},
+		{
+			name:  "template literal",
+			input: "const k=`AKIAQZXJLKFPWMVBNTYU`;",
+			want:  true,
+		},
+		{
+			name:  "source map with escaped quotes",
+			input: `{"sourcesContent":["const k=\"AKIAQZXJLKFPWMVBNTYU\"\n"],"mappings":""}`,
+			want:  true,
+		},
+		{
+			name:  "compact JSON",
+			input: `{"access_key":"AKIAQZXJLKFPWMVBNTYU","secret_key":"x"}`,
+			want:  true,
+		},
+		{
+			name:  "nested compact JSON",
+			input: `{"Variables":{"ACCESS_KEY_ID":"AKIAQZXJLKFPWMVBNTYU"}}`,
+			want:  true,
+		},
+		{
+			name:  "SigV4 pre-signed URL",
+			input: `https://bucket.s3.amazonaws.com/obj?X-Amz-Credential=AKIAQZXJLKFPWMVBNTYU/20261102/us-east-1/s3/aws4_request`,
+			want:  false,
+		},
+		{
+			name:  "URL-encoded SigV4 pre-signed URL",
+			input: `https://bucket.s3.amazonaws.com/obj?X-Amz-Credential=AKIAQZXJLKFPWMVBNTYU%2F20261102%2Fus-east-1%2Fs3%2Faws4_request`,
+			want:  false,
+		},
+		{
+			name:  "part of a longer string",
+			input: `id="AKIAQZXJLKFPWMVBNTYUABCD"`,
+			want:  false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c, err := secret.ParseConfig(filepath.Join("testdata", "skip-test.yaml"))
+			require.NoError(t, err)
+
+			s := secret.NewScanner(c)
+			got := s.Scan(secret.ScanArgs{
+				FilePath: "test.txt",
+				Content:  strings.NewReader(tt.input),
+			})
+
+			var ruleIDs []string
+			for _, finding := range got.Findings {
+				ruleIDs = append(ruleIDs, finding.RuleID)
+			}
+			assert.Equal(t, tt.want, slices.Contains(ruleIDs, "aws-access-key-id"), "findings: %v", ruleIDs)
 		})
 	}
 }
