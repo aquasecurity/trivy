@@ -140,6 +140,219 @@ Resources:
 			},
 		},
 		{
+			name: "multiple resources and stages",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Api:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: demo
+  Items:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref Api
+  Users:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref Api
+  ItemsGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref Api
+      ResourceId: !Ref Items
+      HttpMethod: GET
+      AuthorizationType: NONE
+  UsersPost:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref Api
+      ResourceId: !Ref Users
+      HttpMethod: POST
+      AuthorizationType: AWS_IAM
+  Dev:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref Api
+      StageName: dev
+  Prod:
+    Type: AWS::ApiGateway::Stage
+    Properties:
+      RestApiId: !Ref Api
+      StageName: prod
+`,
+			expected: apigateway.APIGateway{
+				V1: v1.APIGateway{
+					APIs: []v1.API{
+						{
+							Name: types.StringTest("demo"),
+							Stages: []v1.Stage{
+								{Name: types.StringTest("dev")},
+								{Name: types.StringTest("prod")},
+							},
+							Resources: []v1.Resource{
+								{
+									Methods: []v1.Method{
+										{
+											HTTPMethod:        types.StringTest("GET"),
+											AuthorizationType: types.StringTest("NONE"),
+										},
+									},
+								},
+								{
+									Methods: []v1.Method{
+										{
+											HTTPMethod:        types.StringTest("POST"),
+											AuthorizationType: types.StringTest("AWS_IAM"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "root and child methods",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Api:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: demo
+  Proxy:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref Api
+      ParentId: !GetAtt Api.RootResourceId
+      PathPart: "{proxy+}"
+  RootAny:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref Api
+      ResourceId: !GetAtt Api.RootResourceId
+      HttpMethod: ANY
+      AuthorizationType: NONE
+  ProxyAny:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref Api
+      ResourceId: !Ref Proxy
+      HttpMethod: ANY
+      AuthorizationType: AWS_IAM
+`,
+			expected: apigateway.APIGateway{
+				V1: v1.APIGateway{
+					APIs: []v1.API{
+						{
+							Name: types.StringTest("demo"),
+							Resources: []v1.Resource{
+								{
+									Methods: []v1.Method{
+										{
+											HTTPMethod:        types.StringTest("ANY"),
+											AuthorizationType: types.StringTest("NONE"),
+										},
+									},
+								},
+								{
+									Methods: []v1.Method{
+										{
+											HTTPMethod:        types.StringTest("ANY"),
+											AuthorizationType: types.StringTest("AWS_IAM"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "root method only",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Api:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: demo
+  RootGet:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      RestApiId: !Ref Api
+      ResourceId: !GetAtt Api.RootResourceId
+      HttpMethod: GET
+      AuthorizationType: NONE
+`,
+			expected: apigateway.APIGateway{
+				V1: v1.APIGateway{
+					APIs: []v1.API{
+						{
+							Name: types.StringTest("demo"),
+							Resources: []v1.Resource{
+								{
+									Methods: []v1.Method{
+										{
+											HTTPMethod:        types.StringTest("GET"),
+											AuthorizationType: types.StringTest("NONE"),
+										},
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "v2 api with multiple stages",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Api:
+    Type: AWS::ApiGatewayV2::Api
+    Properties:
+      Name: demo
+      ProtocolType: HTTP
+  Dev:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref Api
+      StageName: dev
+      AccessLogSettings:
+        DestinationArn: dev-arn
+  Prod:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: !Ref Api
+      StageName: prod
+  Other:
+    Type: AWS::ApiGatewayV2::Stage
+    Properties:
+      ApiId: other-api
+      StageName: other
+`,
+			expected: apigateway.APIGateway{
+				V2: v2.APIGateway{
+					APIs: []v2.API{
+						{
+							Name:         types.StringTest("demo"),
+							ProtocolType: types.StringTest("HTTP"),
+							Stages: []v2.Stage{
+								{
+									Name: types.StringTest("dev"),
+									AccessLogging: v2.AccessLogging{
+										CloudwatchLogGroupARN: types.StringTest("dev-arn"),
+									},
+								},
+								{Name: types.StringTest("prod")},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "empty",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:

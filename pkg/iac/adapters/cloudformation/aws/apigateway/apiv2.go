@@ -25,8 +25,7 @@ func adaptAPIsV2(cfFile parser.FileContext) (apis []v2.API) {
 func getStages(apiId string, cfFile parser.FileContext) []v2.Stage {
 	var apiStages []v2.Stage
 
-	stageResources := cfFile.GetResourcesByType("AWS::ApiGatewayV2::Stage")
-	for _, r := range stageResources {
+	for _, r := range cfFile.GetResourcesByType("AWS::ApiGatewayV2::Stage") {
 		stageApiId := r.GetStringProperty("ApiId")
 		if stageApiId.Value() != apiId {
 			continue

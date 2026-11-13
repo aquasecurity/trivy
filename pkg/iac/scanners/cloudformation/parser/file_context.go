@@ -1,9 +1,11 @@
 package parser
 
 import (
+	"cmp"
 	"fmt"
 	"maps"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/samber/lo"
@@ -74,6 +76,9 @@ func (t *FileContext) GetResourcesByType(names ...string) []*Resource {
 			}
 		}
 	}
+	slices.SortFunc(resources, func(a, b *Resource) int {
+		return cmp.Compare(a.ID(), b.ID())
+	})
 	return resources
 }
 

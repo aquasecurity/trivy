@@ -114,6 +114,90 @@ resource "aws_api_gateway_rest_api" "example" {
 				},
 			},
 		},
+		{
+			name: "root and child methods",
+			terraform: `
+resource "aws_api_gateway_rest_api" "api" {
+  name = "demo"
+}
+
+resource "aws_api_gateway_resource" "proxy" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
+  path_part   = "{proxy+}"
+}
+
+resource "aws_api_gateway_method" "root_any" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_rest_api.api.root_resource_id
+  http_method   = "ANY"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_method" "proxy_any" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_resource.proxy.id
+  http_method   = "ANY"
+  authorization = "AWS_IAM"
+}
+`,
+			expected: []v1.API{
+				{
+					Name: String("demo"),
+					Resources: []v1.Resource{
+						{
+							Methods: []v1.Method{
+								{
+									HTTPMethod:        String("ANY"),
+									AuthorizationType: String("NONE"),
+									APIKeyRequired:    Bool(false),
+								},
+							},
+						},
+						{
+							Methods: []v1.Method{
+								{
+									HTTPMethod:        String("ANY"),
+									AuthorizationType: String("AWS_IAM"),
+									APIKeyRequired:    Bool(false),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "root method only",
+			terraform: `
+resource "aws_api_gateway_rest_api" "api" {
+  name = "demo"
+}
+
+resource "aws_api_gateway_method" "root_get" {
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  resource_id   = aws_api_gateway_rest_api.api.root_resource_id
+  http_method   = "GET"
+  authorization = "NONE"
+}
+`,
+			expected: []v1.API{
+				{
+					Name: String("demo"),
+					Resources: []v1.Resource{
+						{
+							Methods: []v1.Method{
+								{
+									HTTPMethod:        String("GET"),
+									AuthorizationType: String("NONE"),
+									APIKeyRequired:    Bool(false),
+								},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, test := range tests {
