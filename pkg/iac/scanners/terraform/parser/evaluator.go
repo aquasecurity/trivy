@@ -10,6 +10,7 @@ import (
 
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/ext/typeexpr"
+	"github.com/hashicorp/hcl/v2/hclsyntax"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
@@ -472,6 +473,28 @@ func (e *evaluator) copyVariables(from, to *terraform.Block) {
 	rootCtx.Set(srcValue, fromBase, toRel)
 }
 
+// parseTFVarForType parses a TF_VAR_ value as an HCL expression when the
+// variable has a complex type. Terraform only treats environment values as
+// literal strings for string, number, bool, and untyped variables.
+func parseTFVarForType(val cty.Value, valType cty.Type) (cty.Value, bool) {
+	if valType == cty.NilType || val.Type() != cty.String {
+		return cty.NilVal, false
+	}
+	if valType == cty.String || valType == cty.Number || valType == cty.Bool {
+		return cty.NilVal, false
+	}
+
+	expr, diags := hclsyntax.ParseExpression([]byte(val.AsString()), "<TF_VAR>", hcl.Pos{Line: 1, Column: 1})
+	if diags.HasErrors() {
+		return cty.NilVal, false
+	}
+	parsed, diags := expr.Value(&hcl.EvalContext{})
+	if diags.HasErrors() {
+		return cty.NilVal, false
+	}
+	return parsed, true
+}
+
 func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 	if b.Label() == "" {
 		return cty.NilVal, errors.New("empty label - cannot resolve")
@@ -494,6 +517,9 @@ func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
 
 	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
 		val = override
+		if parsed, ok := parseTFVarForType(override, valType); ok {
+			val = parsed
+		}
 	} else if def, exists := attributes["default"]; exists {
 		val = def.NullableValue()
 	} else {

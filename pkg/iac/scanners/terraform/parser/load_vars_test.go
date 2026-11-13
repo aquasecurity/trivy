@@ -43,3 +43,13 @@ func Test_TFVarsFile(t *testing.T) {
 		assert.True(t, vars["foo3"].Equals(cty.NumberIntVal(3)).True())
 	})
 }
+
+func Test_TFVarsFromEnv(t *testing.T) {
+	t.Setenv("TF_VAR_tags", `{env="prod"}`)
+	t.Setenv("TF_VAR_name", "plain")
+
+	vars, err := loadTFVars(testutil.CreateFS(map[string]string{}), nil)
+	require.NoError(t, err)
+	assert.Equal(t, `{env="prod"}`, vars["tags"].AsString())
+	assert.Equal(t, "plain", vars["name"].AsString())
+}

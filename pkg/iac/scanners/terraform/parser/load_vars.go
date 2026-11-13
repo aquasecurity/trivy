@@ -18,7 +18,7 @@ func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
 	combinedVars := make(map[string]cty.Value)
 
 	for _, env := range os.Environ() {
-		split := strings.Split(env, "=")
+		split := strings.SplitN(env, "=", 2)
 		key := split[0]
 		if !strings.HasPrefix(key, "TF_VAR_") {
 			continue
