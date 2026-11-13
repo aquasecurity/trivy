@@ -1,6 +1,7 @@
 package sam
 
 import (
+	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/apigateway"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/sam"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/cloudformation/parser"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -87,7 +88,7 @@ func getDomainConfiguration(r *parser.Resource) sam.DomainConfiguration {
 		domainConfig = sam.DomainConfiguration{
 			Metadata:       domain.Metadata(),
 			Name:           domain.GetStringProperty("DomainName"),
-			SecurityPolicy: domain.GetStringProperty("SecurityPolicy"),
+			SecurityPolicy: domain.GetStringProperty("SecurityPolicy", apigateway.DefaultSecurityPolicy),
 		}
 	}
 
