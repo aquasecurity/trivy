@@ -34,7 +34,7 @@ The report lists three kinds of assets, which are certificates, keys and algorit
 
 A private key is reported with its size and algorithm, but the report never carries key values. Trivy does not decrypt an encrypted key, so the report records only its format and a digest.
 
-A public key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. The size of an Ed448, X25519 or X448 key is fixed by the OID, and the size of an RSA-PSS key is read from the modulus. A private key of such an algorithm is not reported. An algorithm that Trivy does not recognize is named by its OID, such as `1.3.101.110` for X25519.
+A public key that Trivy cannot decode, such as an Ed448, X25519, X448 or RSA-PSS key, is described from the algorithm OID in its encoding. The size of an Ed448, X25519 or X448 key is fixed by the OID, and the size of an RSA-PSS key is read from the modulus. An RSA-PSS private key is described the same way as its public key, and a private key of the other algorithms is not reported. An algorithm that Trivy does not recognize is named by its OID, such as `1.3.101.110` for X25519.
 
 An asset is identified by its content. For a certificate this is the SHA-256 of the DER, for a key the SHA-256 of the `SubjectPublicKeyInfo`, and for an algorithm the OID with its parameters. In CycloneDX output the same asset found in several files and layers is reported once, with a list of the places it was found, and each place states the file path and the layer. In JSON output `CryptoAssets` has one entry per place.
 

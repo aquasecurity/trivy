@@ -207,6 +207,12 @@ func TestParse(t *testing.T) {
 		PrivateKey: invalidRSAKey,
 	})
 	require.NoError(t, err)
+	pssAlgorithm := pkix.AlgorithmIdentifier{Algorithm: cryptox509.OIDRSASSAPSS}
+	// crypto/x509 rejects a public exponent over 2^31-1 in an RSAPublicKey.
+	pssKeyWithLargeExponent := pkcs8PrivateKeyDER(t, pssAlgorithm, rsaPrivateKeyDER(t, func(k *cryptox509.PKCS1PrivateKey) {
+		k.E = 1 << 31
+	}))
+	pssKeyWithoutPKCS1 := pkcs8PrivateKeyDER(t, pssAlgorithm, fixtures.unsupportedDER)
 
 	pemCertificate := found{
 		kind:     ftypes.CryptoKindCertificate,
@@ -550,6 +556,14 @@ func TestParse(t *testing.T) {
 			name:  "invalid RSA key PKCS8 PEM",
 			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: invalidRSAKeyPKCS8}),
 			want:  []found{pemPKCS8PrivateKey},
+		},
+		{
+			name:  "RSA-PSS key with a large public exponent PKCS8 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pssKeyWithLargeExponent}),
+		},
+		{
+			name:  "RSA-PSS key without PKCS1 PKCS8 PEM",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: pssKeyWithoutPKCS1}),
 		},
 		{
 			name:  "RSA key without CRT values PKCS1 PEM",
@@ -1372,6 +1386,31 @@ func TestParseAssets(t *testing.T) {
 			},
 		},
 		{
+			name:  "RSA-PSS private key",
+			input: pem.EncodeToMemory(&pem.Block{Type: "PRIVATE KEY", Bytes: fixtures.pssPKCS8DER}),
+			want: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind:     ftypes.CryptoKindKey,
+						KeyType:  ftypes.CryptoKeyTypePrivate,
+						Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, fixtures.pssPKIXDER),
+						Name:     "RSA-PSS-2048 private key",
+						Key: &ftypes.CryptoKey{
+							Size: 2048,
+						},
+						Relationships: []ftypes.CryptoRelationship{{
+							Type:         ftypes.CryptoRelationshipUsedWith,
+							RelatedAsset: rsaPSSAlgorithm.Descriptor(),
+						}},
+					},
+					FilePath: parsedFilePath,
+					Format:   ftypes.CryptoKeyFormatPKCS8,
+					Encoding: ftypes.CryptoEncodingPEM,
+				},
+				at(rsaPSSAlgorithm),
+			},
+		},
+		{
 			// A standalone key states the container it was found in, which the key of a
 			// certificate has no equivalent of.
 			name:  "public key",
@@ -1618,6 +1657,12 @@ func TestParseIdentity(t *testing.T) {
 		assert.NotEqual(t, publicKey[0].KeyType, privateKey[0].KeyType)
 	})
 
+	t.Run("an RSA-PSS private key and its public counterpart are one key with the same parameters", func(t *testing.T) {
+		pssPublicKey := parse(t, fixtures.pssRestrictedPKIXDER)
+		pssPrivateKey := parse(t, fixtures.pssRestrictedPKCS8DER)
+		assert.Equal(t, pssPublicKey[0].Identity, pssPrivateKey[0].Identity)
+	})
+
 	t.Run("an encrypted container is identified on its own", func(t *testing.T) {
 		assert.NotEqual(t, publicKey[0].Identity.Method, encryptedKey[0].Identity.Method)
 		assert.NotEqual(t, publicKey[0].Identity.Value, encryptedKey[0].Identity.Value)
@@ -1746,6 +1791,11 @@ type testFixtures struct {
 	x25519PKCS8DER          []byte
 	x25519PKIXDER           []byte
 	pssPKIXDER              []byte
+	pssPKCS8DER             []byte
+	// pssRestrictedPKCS8DER and pssRestrictedPKIXDER carry one RSASSA-PSS key whose
+	// parameters name SHA-256 as its hash.
+	pssRestrictedPKCS8DER []byte
+	pssRestrictedPKIXDER  []byte
 	// malformedEd25519PKIXDER is an Ed25519 key with a public value of the wrong length.
 	malformedEd25519PKIXDER []byte
 	// malformedX25519PKIXDER is an X25519 key with a public value of the wrong length.
@@ -1945,6 +1995,14 @@ func newFixtures(t *testing.T) testFixtures {
 	oidRSASSAPSS := asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}
 	pssPKIXDER := marshalSPKI(t, oidRSASSAPSS, stdx509.MarshalPKCS1PublicKey(&rsaKey.PublicKey))
 	malformedPSSCertificate := withSubjectPublicKeyInfo(t, otherCertificate, marshalSPKI(t, oidRSASSAPSS, []byte{1}))
+	pssPKCS8DER, _ := pssKeyDER(t, rsaKey, asn1.RawValue{})
+	pssParameters, err := asn1.Marshal(struct {
+		Hash pkix.AlgorithmIdentifier `asn1:"explicit,tag:0"`
+	}{
+		Hash: pkix.AlgorithmIdentifier{Algorithm: asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 2, 1}}, // id-sha256
+	})
+	require.NoError(t, err)
+	pssRestrictedPKCS8DER, pssRestrictedPKIXDER := pssKeyDER(t, rsaKey, asn1.RawValue{FullBytes: pssParameters})
 
 	unsupportedDER, err := asn1.Marshal(struct {
 		Value string
@@ -1985,6 +2043,9 @@ func newFixtures(t *testing.T) testFixtures {
 		x25519PKCS8DER:          x25519PKCS8DER,
 		x25519PKIXDER:           x25519PKIXDER,
 		pssPKIXDER:              pssPKIXDER,
+		pssPKCS8DER:             pssPKCS8DER,
+		pssRestrictedPKCS8DER:   pssRestrictedPKCS8DER,
+		pssRestrictedPKIXDER:    pssRestrictedPKIXDER,
 		malformedEd25519PKIXDER: marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 112}, []byte{1}),
 		malformedX25519PKIXDER:  marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 110}, []byte{1}),
 		csrDER:                  csrDER,
@@ -2090,6 +2151,37 @@ func marshalSPKI(t *testing.T, oid asn1.ObjectIdentifier, publicKey []byte) []by
 	})
 	require.NoError(t, err)
 	return der
+}
+
+// pkcs8PrivateKeyDER encodes privateKey in PKCS#8 under the given algorithm.
+func pkcs8PrivateKeyDER(t *testing.T, algorithm pkix.AlgorithmIdentifier, privateKey []byte) []byte {
+	t.Helper()
+
+	der, err := asn1.Marshal(cryptox509.PKCS8PrivateKey{
+		Algo:       algorithm,
+		PrivateKey: privateKey,
+	})
+	require.NoError(t, err)
+	return der
+}
+
+// pssKeyDER encodes key as an RSASSA-PSS key with the given parameters, as a private key in
+// PKCS#8 and as a public key in SubjectPublicKeyInfo. crypto/x509 encodes neither.
+func pssKeyDER(t *testing.T, key *rsa.PrivateKey, parameters asn1.RawValue) (private, public []byte) {
+	t.Helper()
+
+	algorithm := pkix.AlgorithmIdentifier{Algorithm: cryptox509.OIDRSASSAPSS, Parameters: parameters}
+	private = pkcs8PrivateKeyDER(t, algorithm, stdx509.MarshalPKCS1PrivateKey(key))
+	publicKey := stdx509.MarshalPKCS1PublicKey(&key.PublicKey)
+	public, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        algorithm,
+		SubjectPublicKey: asn1.BitString{Bytes: publicKey, BitLength: len(publicKey) * 8},
+	})
+	require.NoError(t, err)
+	return private, public
 }
 
 // withSubjectPublicKeyInfo re-encodes a certificate with spki in place of its own and
