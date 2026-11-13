@@ -56,14 +56,11 @@ func DescribeRawPublicKey(
 }
 
 // fixedKeySizes holds the key size in bits for the algorithms whose OID fixes it. The size
-// is the length of the encoded key, defined by RFC 8032 as the parameter b for EdDSA and by
-// RFC 7748 for X25519 and X448.
+// is the length of the encoded key, defined by RFC 8032 as the parameter b for EdDSA, by
+// RFC 7748 for X25519 and X448, by FIPS 203 for ML-KEM and by FIPS 205 as 2n for SLH-DSA and
+// HashSLH-DSA.
 // See https://www.rfc-editor.org/rfc/rfc8032#section-5.2
 // See https://www.rfc-editor.org/rfc/rfc7748#section-5
-//
-// ML-KEM and SLH-DSA keys are too: RFC 9935 section 4 carries the 800, 1184 or 1568 octet
-// encapsulation key of FIPS 203 in the subjectPublicKey, and RFC 9909 section 5 carries the
-// 2n octet public key of FIPS 205, for both SLH-DSA and HashSLH-DSA OIDs.
 // See https://www.rfc-editor.org/rfc/rfc9935#section-4
 // See https://www.rfc-editor.org/rfc/rfc9909#section-5
 var fixedKeySizes = map[string]int{
@@ -85,18 +82,18 @@ var fixedKeySizes = map[string]int{
 	"2.16.840.1.101.3.4.3.29": 48 * 8,   // SLH-DSA-SHAKE-192f
 	"2.16.840.1.101.3.4.3.30": 64 * 8,   // SLH-DSA-SHAKE-256s
 	"2.16.840.1.101.3.4.3.31": 64 * 8,   // SLH-DSA-SHAKE-256f
-	"2.16.840.1.101.3.4.3.35": 32 * 8,   // HashSLH-DSA-SHA2-128s
-	"2.16.840.1.101.3.4.3.36": 32 * 8,   // HashSLH-DSA-SHA2-128f
-	"2.16.840.1.101.3.4.3.37": 48 * 8,   // HashSLH-DSA-SHA2-192s
-	"2.16.840.1.101.3.4.3.38": 48 * 8,   // HashSLH-DSA-SHA2-192f
-	"2.16.840.1.101.3.4.3.39": 64 * 8,   // HashSLH-DSA-SHA2-256s
-	"2.16.840.1.101.3.4.3.40": 64 * 8,   // HashSLH-DSA-SHA2-256f
-	"2.16.840.1.101.3.4.3.41": 32 * 8,   // HashSLH-DSA-SHAKE-128s
-	"2.16.840.1.101.3.4.3.42": 32 * 8,   // HashSLH-DSA-SHAKE-128f
-	"2.16.840.1.101.3.4.3.43": 48 * 8,   // HashSLH-DSA-SHAKE-192s
-	"2.16.840.1.101.3.4.3.44": 48 * 8,   // HashSLH-DSA-SHAKE-192f
-	"2.16.840.1.101.3.4.3.45": 64 * 8,   // HashSLH-DSA-SHAKE-256s
-	"2.16.840.1.101.3.4.3.46": 64 * 8,   // HashSLH-DSA-SHAKE-256f
+	"2.16.840.1.101.3.4.3.35": 32 * 8,   // HashSLH-DSA-SHA2-128s-SHA-256
+	"2.16.840.1.101.3.4.3.36": 32 * 8,   // HashSLH-DSA-SHA2-128f-SHA-256
+	"2.16.840.1.101.3.4.3.37": 48 * 8,   // HashSLH-DSA-SHA2-192s-SHA-512
+	"2.16.840.1.101.3.4.3.38": 48 * 8,   // HashSLH-DSA-SHA2-192f-SHA-512
+	"2.16.840.1.101.3.4.3.39": 64 * 8,   // HashSLH-DSA-SHA2-256s-SHA-512
+	"2.16.840.1.101.3.4.3.40": 64 * 8,   // HashSLH-DSA-SHA2-256f-SHA-512
+	"2.16.840.1.101.3.4.3.41": 32 * 8,   // HashSLH-DSA-SHAKE-128s-SHAKE128
+	"2.16.840.1.101.3.4.3.42": 32 * 8,   // HashSLH-DSA-SHAKE-128f-SHAKE128
+	"2.16.840.1.101.3.4.3.43": 48 * 8,   // HashSLH-DSA-SHAKE-192s-SHAKE256
+	"2.16.840.1.101.3.4.3.44": 48 * 8,   // HashSLH-DSA-SHAKE-192f-SHAKE256
+	"2.16.840.1.101.3.4.3.45": 64 * 8,   // HashSLH-DSA-SHAKE-256s-SHAKE256
+	"2.16.840.1.101.3.4.3.46": 64 * 8,   // HashSLH-DSA-SHAKE-256f-SHAKE256
 }
 
 // describeKeyAsset describes a public or private key whose identity is the digest of the

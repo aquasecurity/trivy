@@ -87,9 +87,8 @@ var (
 	}
 )
 
-// postQuantumStrengthBasis is the basis of an ML-KEM, ML-DSA or SLH-DSA parameter set, which
-// FIPS 203, FIPS 204 and FIPS 205 assign a NIST category without a classical strength to
-// translate it into.
+// postQuantumStrengthBasis is the basis of a parameter set whose standard assigns a NIST
+// category but no classical strength.
 func postQuantumStrengthBasis(category int) strengthBasis {
 	return strengthBasis{
 		nistCategory: new(category),

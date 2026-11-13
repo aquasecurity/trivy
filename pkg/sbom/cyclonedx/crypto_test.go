@@ -377,6 +377,49 @@ func TestMarshaler_MarshalCryptoAssets(t *testing.T) {
 			},
 		},
 		{
+			// FIPS 203 gives ML-KEM a NIST category and no classical strength, and its primitive is kem.
+			name: "ML-KEM algorithm",
+			assets: []ftypes.CryptoAsset{
+				{
+					CryptoAssetInfo: ftypes.CryptoAssetInfo{
+						Kind: ftypes.CryptoKindAlgorithm,
+						Identity: ftypes.CryptoIdentity{
+							Method: ftypes.CryptoMethodOID,
+							Value:  "2.16.840.1.101.3.4.4.2",
+						},
+						Name: "ML-KEM-768",
+						Algorithm: &ftypes.CryptoAlgorithm{
+							Family:                   "ML-KEM",
+							Primitive:                ftypes.CryptoPrimitiveKEM,
+							NISTQuantumSecurityLevel: new(3),
+						},
+					},
+					FilePath: "opt/app/mlkem.pem",
+				},
+			},
+			want: []cdx.Component{
+				{
+					BOMRef: "crypto:algorithm:oid:2.16.840.1.101.3.4.4.2",
+					Type:   cdx.ComponentTypeCryptographicAsset,
+					Name:   "ML-KEM-768",
+					CryptoProperties: &cdx.CryptoProperties{
+						AssetType: cdx.CryptoAssetTypeAlgorithm,
+						AlgorithmProperties: &cdx.CryptoAlgorithmProperties{
+							Primitive:                cdx.CryptoPrimitiveKEM,
+							AlgorithmFamily:          "ML-KEM",
+							NistQuantumSecurityLevel: new(3),
+						},
+						OID: "2.16.840.1.101.3.4.4.2",
+					},
+					Evidence: &cdx.Evidence{
+						Occurrences: &[]cdx.EvidenceOccurrence{
+							{Location: "opt/app/mlkem.pem"},
+						},
+					},
+				},
+			},
+		},
+		{
 			// FIPS 186 names a DSA parameter set by both L and N.
 			name: "DSA algorithm",
 			assets: []ftypes.CryptoAsset{
