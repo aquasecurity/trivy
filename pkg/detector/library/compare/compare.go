@@ -83,11 +83,11 @@ func NewGenericComparer(opts ...GenericOption) GenericComparer {
 
 // IsVulnerable checks if the package version is vulnerable to the advisory.
 func (v GenericComparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
-	return IsVulnerable(ver, advisory, v.matchVersion)
+	return IsVulnerable(ver, advisory, v.MatchVersion)
 }
 
-// matchVersion checks if the package version satisfies the given constraint.
-func (v GenericComparer) matchVersion(currentVersion, constraint string) (bool, error) {
+// MatchVersion checks if the package version satisfies the given constraint.
+func (v GenericComparer) MatchVersion(currentVersion, constraint string) (bool, error) {
 	ver, err := version.Parse(currentVersion)
 	if err != nil {
 		return false, xerrors.Errorf("version error (%s): %s", currentVersion, err)
