@@ -93,7 +93,7 @@ func ResolveIntrinsicFunc(property *Property) (*Property, bool) {
 func getIntrinsicTag(tag string) string {
 	tag = strings.TrimPrefix(tag, "!")
 	switch tag {
-	case "Ref", "Contains":
+	case "Ref", "Contains", "Condition":
 		return tag
 	default:
 		return fmt.Sprintf("Fn::%s", tag)
