@@ -108,9 +108,16 @@ var builtinRules = []Rule{
 		Category:        CategoryAWS,
 		Severity:        "CRITICAL",
 		Title:           "AWS Access Key ID",
-		Regex:           MustCompileWithoutWordPrefix(fmt.Sprintf(`(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})%s%s`, quote, endSecret)),
+		Regex:           MustCompile(`\b(?P<secret>(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16})\b`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"AKIA", "AGPA", "AIDA", "AROA", "AIPA", "ANPA", "ANVA", "ASIA"},
+		ExcludeBlock: ExcludeBlock{
+			Description: "Access key ID in pre-signed URLs and Authorization headers, which carry a signature instead of the secret key",
+			Regexes: []*Regexp{
+				MustCompile(`(?:Credential|AWSAccessKeyId)(?:=|%3D)[A-Z0-9]{20}`),
+				MustCompile(`AWS [A-Z0-9]{20}:`),
+			},
+		},
 	},
 	{
 		ID:              "aws-secret-access-key",
