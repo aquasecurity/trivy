@@ -129,12 +129,29 @@ func ignoreProtocol(protocol string) bool {
 	return false
 }
 
-func parseResults(patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
+func parseResults(pkgs ftypes.Packages, patternIDs map[string]string, dependsOn map[string][]string) (deps ftypes.Dependencies) {
+	// IDs of the packages of each name, for patterns no lock file entry lists.
+	idsByName := make(map[string][]string)
+	for _, pkg := range pkgs {
+		idsByName[pkg.Name] = append(idsByName[pkg.Name], pkg.ID)
+	}
+
 	// find dependencies by patterns
 	for pkgID, depPatterns := range dependsOn {
-		depIDs := xslices.Map(depPatterns, func(pattern string) string {
-			return patternIDs[pattern]
-		})
+		var depIDs []string
+		for _, pattern := range depPatterns {
+			if id, ok := patternIDs[pattern]; ok {
+				depIDs = append(depIDs, id)
+				continue
+			}
+			// A `resolutions` field in package.json forces one version of a package on every
+			// dependent. yarn.lock then lists that package under the forced version, while each
+			// dependent still names the range it asked for, so the range matches no entry.
+			// The forced version is the only entry with that name.
+			if ids := idsByName[patternName(pattern)]; len(ids) == 1 {
+				depIDs = append(depIDs, ids[0])
+			}
+		}
 		deps = append(deps, ftypes.Dependency{
 			ID:        pkgID,
 			DependsOn: depIDs,
@@ -329,11 +346,24 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 
 	// Replace dependency patterns with package IDs
 	// e.g. ajv@^6.5.5 => ajv@6.10.0
-	deps := parseResults(patternIDs, dependsOn)
+	deps := parseResults(pkgs, patternIDs, dependsOn)
 
 	sort.Sort(pkgs)
 	sort.Sort(deps)
 	return pkgs, deps, pkgIDPatterns, nil
+}
+
+// patternName returns the package name of a pattern built by packageID. The name ends at the first
+// "@" after its first character, which a scoped name starts with; the range may hold another "@"
+// when it is an alias, such as "string-width-cjs@string-width@^4.2.0".
+func patternName(pattern string) string {
+	if pattern == "" {
+		return ""
+	}
+	if i := strings.Index(pattern[1:], "@"); i >= 0 {
+		return pattern[:i+1]
+	}
+	return pattern
 }
 
 func packageID(name, version string) string {
