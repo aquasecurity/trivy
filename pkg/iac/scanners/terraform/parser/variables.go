@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"errors"
 	"fmt"
 	"io/fs"
 	"maps"
@@ -9,9 +10,13 @@ import (
 	"strings"
 
 	"github.com/hashicorp/hcl/v2"
+	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 )
 
 func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
@@ -79,4 +84,50 @@ func loadTFVarsFile(srcFS fs.FS, filename string) (map[string]cty.Value, error) 
 	}
 
 	return inputVars, nil
+}
+
+// variableValue returns the value of the variable from inputs or from its default,
+// converted to the variable type.
+func variableValue(b *terraform.Block, inputs map[string]cty.Value) (cty.Value, error) {
+	if b.Label() == "" {
+		return cty.NilVal, errors.New("empty label - cannot resolve")
+	}
+
+	attributes := b.Attributes()
+
+	var valType cty.Type
+	var defaults *typeexpr.Defaults
+	if typeAttr, exists := attributes["type"]; exists {
+		ty, def, err := typeAttr.DecodeVarType()
+		if err != nil {
+			return cty.NilVal, err
+		}
+		valType = ty
+		defaults = def
+	}
+
+	var val cty.Value
+
+	if override, exists := inputs[b.Label()]; exists && override.Type() != cty.NilType {
+		val = override
+	} else if def, exists := attributes["default"]; exists {
+		val = def.NullableValue()
+	} else {
+		return cty.NilVal, errors.New("no value found")
+	}
+
+	if valType != cty.NilType {
+		if defaults != nil {
+			val = defaults.Apply(val)
+		}
+
+		typedVal, err := convert.Convert(val, valType)
+		if err != nil {
+			return cty.NilVal, err
+		}
+		return typedVal, nil
+	}
+
+	return val, nil
+
 }
