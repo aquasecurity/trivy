@@ -214,7 +214,7 @@ func (a CryptoAssetInfo) validateKey() error {
 
 func (a CryptoAssetInfo) validateAlgorithm() error {
 	switch a.Algorithm.Primitive {
-	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE:
+	case CryptoPrimitiveUnknown, CryptoPrimitiveSignature, CryptoPrimitivePKE, CryptoPrimitiveKEM:
 	default:
 		return xerrors.Errorf("unknown algorithm primitive %q", a.Algorithm.Primitive)
 	}
