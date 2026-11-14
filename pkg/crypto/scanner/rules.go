@@ -22,8 +22,8 @@ var rules = []rule{
 		title:    "SHA-1 certificate signature",
 		severity: dbTypes.SeverityMedium,
 		kind:     ftypes.CryptoKindCertificate,
-		match:    matchSHA1Signature,
-		message:  sha1SignatureMessage,
+		match:    matchSignatureHash(sha1SignatureOIDs),
+		message:  signatureMessage,
 	},
 	{
 		id:       "CRYPTO-0002",
@@ -57,6 +57,14 @@ var rules = []rule{
 		match:    matchSmallECPrivateKey,
 		message:  smallECPrivateKeyMessage,
 	},
+	{
+		id:       "CRYPTO-0006",
+		title:    "Broken signature hash",
+		severity: dbTypes.SeverityHigh,
+		kind:     ftypes.CryptoKindCertificate,
+		match:    matchSignatureHash(brokenSignatureHashOIDs),
+		message:  signatureMessage,
+	},
 }
 
 const (
@@ -82,15 +90,25 @@ var sha1SignatureOIDs = []string{
 	"1.2.840.10045.4.1",    // ecdsa-with-SHA1, RFC 3279 section 2.2.3
 }
 
-func matchSHA1Signature(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
-	signature, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipSignedWith)
-	if !found || !slices.Contains(sha1SignatureOIDs, signature.Value) {
-		return types.CryptoEvidence{}, false
+func matchSignatureHash(oids []string) func(ftypes.CryptoAsset, time.Time) (types.CryptoEvidence, bool) {
+	return func(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
+		signature, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipSignedWith)
+		if !found || !slices.Contains(oids, signature.Value) {
+			return types.CryptoEvidence{}, false
+		}
+		return types.CryptoEvidence{
+			SignatureAlgorithm:    crypto.AlgorithmName(signature.Value),
+			SignatureAlgorithmOID: signature.Value,
+		}, true
 	}
-	return types.CryptoEvidence{
-		SignatureAlgorithm:    crypto.AlgorithmName(signature.Value),
-		SignatureAlgorithmOID: signature.Value,
-	}, true
+}
+
+// brokenSignatureHashOIDs are the signature algorithms that hash with MD2, MD4 or MD5.
+// RSASSA-PSS names its hash in parameters that are not collected, so it is left out.
+var brokenSignatureHashOIDs = []string{
+	"1.2.840.113549.1.1.2", // md2WithRSAEncryption, RFC 3279 section 2.2.1
+	"1.2.840.113549.1.1.3", // md4WithRSAEncryption, RFC 3279 section 2.2.1
+	"1.2.840.113549.1.1.4", // md5WithRSAEncryption, RFC 3279 section 2.2.1
 }
 
 func matchSmallRSAKey(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
@@ -182,7 +200,7 @@ func matchExpiredCertificate(asset ftypes.CryptoAsset, now time.Time) (types.Cry
 	}, true
 }
 
-func sha1SignatureMessage(e types.CryptoEvidence) string {
+func signatureMessage(e types.CryptoEvidence) string {
 	return fmt.Sprintf("Certificate is signed with %s", e.SignatureAlgorithm)
 }
 

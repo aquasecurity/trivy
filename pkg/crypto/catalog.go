@@ -42,6 +42,18 @@ type algorithm struct {
 // signature parameters, so identifying it needs parameter-aware handling.
 var algorithms = map[string]algorithm{
 	// Certificate signature algorithms.
+	"1.2.840.113549.1.1.2": {
+		name:          "RSA-PKCS1-1.5-MD2",
+		family:        "RSASSA-PKCS1",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: signatureStrengthBasis,
+	},
+	"1.2.840.113549.1.1.3": {
+		name:          "RSA-PKCS1-1.5-MD4",
+		family:        "RSASSA-PKCS1",
+		primitive:     ftypes.CryptoPrimitiveSignature,
+		strengthBasis: signatureStrengthBasis,
+	},
 	"1.2.840.113549.1.1.4": {
 		name:          "RSA-PKCS1-1.5-MD5",
 		family:        "RSASSA-PKCS1",
@@ -72,7 +84,7 @@ var algorithms = map[string]algorithm{
 		primitive:     ftypes.CryptoPrimitiveSignature,
 		strengthBasis: signatureStrengthBasis,
 	},
-	// The ISO arc carries a second OID for SHA-1 with RSA, which makecert.exe has been
+	// The OIW arc carries a second OID for SHA-1 with RSA, which makecert.exe has been
 	// known to produce. The two OIDs name one algorithm but stay two assets, because an
 	// algorithm is identified by the OID the certificate carries.
 	"1.3.14.3.2.29": {
