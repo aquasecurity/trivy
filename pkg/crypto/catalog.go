@@ -239,8 +239,7 @@ var algorithms = map[string]algorithm{
 	"2.16.840.1.101.3.4.3.46": slhdsa("HashSLH-DSA-SHAKE-256f-SHAKE256", 5),
 }
 
-// slhdsa describes an SLH-DSA or HashSLH-DSA parameter set, which differ only in the name
-// and the NIST category.
+// slhdsa describes an SLH-DSA or HashSLH-DSA parameter set by its name and NIST category.
 func slhdsa(name string, category int) algorithm {
 	return algorithm{
 		name:          name,
