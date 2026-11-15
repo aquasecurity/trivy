@@ -456,6 +456,124 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
+			name: "plain go package uses upstream advisory",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.22.0",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-45288",
+					PkgName:          "golang.org/x/net",
+					InstalledVersion: "v0.22.0",
+					FixedVersion:     "0.23.0",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Go",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago",
+					},
+				},
+			},
+		},
+		{
+			name: "echo go package below Echo fix",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.21.0+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2023-45288",
+					VendorIDs: []string{
+						"GHSA-4v7x-pqxf-cx7m",
+						"ECHO-326d-6f7d-c967",
+					},
+					PkgName:          "golang.org/x/net",
+					InstalledVersion: "v0.21.0+echo.1",
+					FixedVersion:     "v0.22.0+echo.1",
+					DataSource: &dbTypes.DataSource{
+						ID:   "echo-osv",
+						Name: "Echo OSV",
+						URL:  "https://advisory.echohq.com/osv/all.zip",
+					},
+				},
+			},
+		},
+		{
+			name: "zero-padded Go revision stays on the upstream advisory",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoBinary,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.22.0+echo.01",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-45288",
+					PkgName:          "golang.org/x/net",
+					InstalledVersion: "v0.22.0+echo.01",
+					FixedVersion:     "0.23.0",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Go",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Ago",
+					},
+				},
+			},
+		},
+		{
+			name: "echo go package at Echo fix",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.22.0+echo.1",
+			},
+			want: nil,
+		},
+		{
+			name: "echo go package above Echo fix",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoBinary,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.22.0+echo.2",
+			},
+			want: nil,
+		},
+		{
+			name: "echo go package with later metadata segments",
+			fixtures: []string{
+				"testdata/fixtures/echo-go.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.GoModule,
+			args: args{
+				pkgName: "golang.org/x/net",
+				pkgVer:  "v0.22.0+echo.1.extra.1",
+			},
+			want: nil,
+		},
+		{
 			name: "echo pip package",
 			fixtures: []string{
 				"testdata/fixtures/echo.yaml",

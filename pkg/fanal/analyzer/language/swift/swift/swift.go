@@ -18,7 +18,7 @@ func init() {
 }
 
 const (
-	version = 1
+	version = 2
 )
 
 // swiftLockAnalyzer analyzes Package.resolved files

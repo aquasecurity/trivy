@@ -286,6 +286,22 @@ func TestParse(t *testing.T) {
 			wantDeps: yarnV2DepsWithProtocolDeps,
 		},
 		{
+			name:     "yarn v2 with dependenciesMeta",
+			file:     "testdata/yarn_v2_with_dependencies_meta.lock",
+			want:     yarnV2WithDependenciesMeta,
+			wantDeps: yarnV2WithDependenciesMetaDeps,
+		},
+		{
+			name: "yarn v2 with a package name that starts with version",
+			file: "testdata/yarn_v2_with_version_name.lock",
+			want: yarnV2WithVersionName,
+		},
+		{
+			name: "yarn v2 with a bin name that starts with version",
+			file: "testdata/yarn_v2_with_version_bin.lock",
+			want: yarnV2WithVersionBin,
+		},
+		{
 			name: "yarn with git dependency",
 			file: "testdata/yarn_with_git.lock",
 		},

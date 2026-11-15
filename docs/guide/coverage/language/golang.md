@@ -87,7 +87,7 @@ Moreover, when scanning the Trivy project, which happens to use Docker, Docker's
 Detecting the version of Go used in the project can be tricky.
 The go.mod file include hints that allows Trivy to guess the Go version but it eventually depends on the Go tool version in the build environment.
 Since this strategy is not fully deterministic and accurate, it is enabled only in [--detection-priority comprehensive][detection-priority] mode.
-When enabled, Trivy detects stdlib version as the minimum between the `go` and the `toolchain` directives in the `go.mod` file.
+When enabled, Trivy detects the stdlib version from the `toolchain` directive in the `go.mod` file, or from the `go` directive when there is no `toolchain` directive.
 To obtain reproducible scan results Trivy doesn't check the locally installed version of `Go`.
 
 !!! note

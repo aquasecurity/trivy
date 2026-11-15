@@ -35,6 +35,24 @@ func TestParse(t *testing.T) {
 			want:     multipleWsPkgs,
 			wantDeps: multipleWsDeps,
 		},
+		{
+			name:     "nested, aliased and git packages",
+			file:     "testdata/bun_nested.lock",
+			want:     nestedPkgs,
+			wantDeps: nestedDeps,
+		},
+		{
+			name:     "nested scoped packages",
+			file:     "testdata/bun_nested_scoped.lock",
+			want:     nestedScopedPkgs,
+			wantDeps: nestedScopedDeps,
+		},
+		{
+			name:     "workspace with nested direct dependencies",
+			file:     "testdata/bun_workspace_nested.lock",
+			want:     workspaceNestedPkgs,
+			wantDeps: workspaceNestedDeps,
+		},
 	}
 
 	for _, tt := range tests {

@@ -289,6 +289,61 @@ spec:
 	assert.Equal(t, "KSV001", failure.Rule().ID)
 }
 
+func Test_CheckWithSubtypeAppliesOnlyToMatchingInputs(t *testing.T) {
+	fsys := buildFS(map[string]string{
+		"checks/limit_range.rego": `# METADATA
+# title: test check
+# scope: package
+# schemas:
+# - input: schema["kubernetes"]
+# custom:
+#   id: KSV039
+#   severity: LOW
+#   input:
+#     selector:
+#     - type: kubernetes
+#       subtypes:
+#         - kind: limitrange
+package builtin.kubernetes.KSV039
+
+import rego.v1
+
+deny contains res if {
+  not input.spec.limits
+  res := result.new("fail", input.spec)
+}
+`,
+		"test/a/service.yaml": `apiVersion: v1
+kind: Service
+metadata:
+  name: web
+spec:
+  selector:
+    app: web
+`,
+		"test/b/limits.yaml": `apiVersion: v1
+kind: LimitRange
+metadata:
+  name: defaults
+spec:
+  limits:
+    - type: Container
+`,
+	})
+
+	scanner := kubernetes.NewScanner(
+		rego.WithEmbeddedLibraries(true),
+		rego.WithPolicyDirs("checks"),
+		rego.WithPolicyFilesystem(fsys),
+	)
+	results, err := scanner.ScanFS(t.Context(), fsys, "test")
+	require.NoError(t, err)
+
+	assert.Empty(t, results.GetFailed())
+	require.Len(t, results.GetPassed(), 1)
+	assert.Equal(t, "test/b/limits.yaml", results.GetPassed()[0].Metadata().Range().GetFilename())
+}
+
 func assertLines(t *testing.T, content string, results scan.Results) {
 	lines := strings.Split(content, "\n")
 	for _, res := range results {
