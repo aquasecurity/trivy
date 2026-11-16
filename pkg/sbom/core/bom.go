@@ -1,6 +1,7 @@
 package core
 
 import (
+	"maps"
 	"slices"
 	"sort"
 
@@ -100,9 +101,9 @@ type BOM struct {
 	// This is used to ensure that each package URL is only represented once in the BOM.
 	purls map[string][]uuid.UUID
 
-	// bomRefs is a map of BOM-Refs preserved from the source SBOM to UUIDs.
-	// The same SBOM can be found in multiple places, so the same BOM-Ref can appear more than once.
-	bomRefs map[string][]uuid.UUID
+	// bomRefs counts components per BOM-Ref preserved from the source SBOM.
+	// A preserved BOM-Ref is only used when it is unique in the BOM.
+	bomRefs map[string]int
 
 	// parents is a map of parent components to their children
 	// This field is populated when Options.Parents is set to true.
@@ -320,7 +321,7 @@ func NewBOM(opts Options) *BOM {
 		relationships:      make(map[uuid.UUID][]Relationship),
 		vulnerabilities:    make(map[uuid.UUID][]Vulnerability),
 		purls:              make(map[string][]uuid.UUID),
-		bomRefs:            make(map[string][]uuid.UUID),
+		bomRefs:            make(map[string]int),
 		parents:            make(map[uuid.UUID][]uuid.UUID),
 		externalReferences: make([]ExternalReference, 0),
 		opts:               opts,
@@ -336,7 +337,7 @@ func (b *BOM) setupComponent(c *Component) {
 		b.purls[p] = append(b.purls[p], c.id)
 	}
 	if ref := c.PkgIdentifier.BOMRef; ref != "" {
-		b.bomRefs[ref] = append(b.bomRefs[ref], c.id)
+		b.bomRefs[ref]++
 	}
 	sort.Sort(c.Properties)
 }
@@ -443,9 +444,9 @@ func (b *BOM) Parents() map[uuid.UUID][]uuid.UUID {
 // bomRef returns BOMRef for CycloneDX
 // When multiple lock files have the same dependency with the same name and version, PURL in the BOM can conflict.
 // In that case, PURL cannot be used as a unique identifier, and UUIDv4 be used for BOMRef.
-// The same applies to a BOMRef preserved from the source SBOM when that SBOM is found in multiple places.
+// A BOMRef preserved from the source SBOM is used only if no other component has the same BOMRef.
 func (b *BOM) bomRef(c *Component) string {
-	if ref := c.PkgIdentifier.BOMRef; ref != "" && len(b.bomRefs[ref]) <= 1 {
+	if ref := c.PkgIdentifier.BOMRef; ref != "" && b.bomRefs[ref] <= 1 {
 		return ref
 	}
 	// Return the UUID of the component if the PURL is not present.
@@ -497,10 +498,7 @@ func (b *BOM) Clone() *BOM {
 			return slices.Clone(ids)
 		}),
 
-		// Deep copy BOM-Refs
-		bomRefs: lo.MapValues(b.bomRefs, func(ids []uuid.UUID, _ string) []uuid.UUID {
-			return slices.Clone(ids)
-		}),
+		bomRefs: maps.Clone(b.bomRefs),
 
 		// Deep copy parents
 		parents: lo.MapValues(b.parents, func(parentIds []uuid.UUID, _ uuid.UUID) []uuid.UUID {

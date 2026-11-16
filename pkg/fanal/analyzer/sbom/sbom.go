@@ -69,8 +69,7 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 			bom.Applications[i].FilePath = input.FilePath
 		}
 
-		// Applications with aggregatingTypes are merged into one, which drops Application.FilePath.
-		// Keep the SBOM file path in packages so that packages from different SBOM files stay distinguishable.
+		// Packages of aggregating types are merged across files, so keep the SBOM path on each package.
 		if !slices.Contains(ftypes.AggregatingTypes, app.Type) {
 			continue
 		}

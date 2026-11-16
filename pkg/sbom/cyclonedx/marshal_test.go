@@ -2198,21 +2198,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 								},
 								FilePath: "env2/site-packages/pip/_vendor/bom.cdx.json",
 							},
-							{
-								ID:      "urllib3@1.26.20",
-								Name:    "urllib3",
-								Version: "1.26.20",
-								Identifier: ftypes.PkgIdentifier{
-									UID: "3C4D5E6F708192A3",
-									PURL: &packageurl.PackageURL{
-										Type:    packageurl.TypePyPi,
-										Name:    "urllib3",
-										Version: "1.26.20",
-									},
-									BOMRef: "urllib3",
-								},
-								FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
-							},
 						},
 					},
 				},
@@ -2222,7 +2207,7 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 				BOMFormat:    "CycloneDX",
 				SpecVersion:  cdx.SpecVersion1_7,
 				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
-				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000005",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000004",
 				Version:      1,
 				Metadata: &cdx.Metadata{
 					Timestamp: "2021-08-25T12:20:30+00:00",
@@ -2294,27 +2279,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 							},
 						},
 					},
-					{
-						BOMRef:     "urllib3",
-						Type:       cdx.ComponentTypeLibrary,
-						Name:       "urllib3",
-						Version:    "1.26.20",
-						PackageURL: "pkg:pypi/urllib3@1.26.20",
-						Properties: &[]cdx.Property{
-							{
-								Name:  "aquasecurity:trivy:FilePath",
-								Value: "env1/site-packages/pip/_vendor/bom.cdx.json",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgID",
-								Value: "urllib3@1.26.20",
-							},
-							{
-								Name:  "aquasecurity:trivy:PkgType",
-								Value: "python-pkg",
-							},
-						},
-					},
 				},
 				Vulnerabilities: &[]cdx.Vulnerability{},
 				Dependencies: &[]cdx.Dependency{
@@ -2323,7 +2287,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 						Dependencies: &[]string{
 							"3ff14136-e09f-4df9-80ea-000000000002",
 							"3ff14136-e09f-4df9-80ea-000000000003",
-							"urllib3",
 						},
 					},
 					{
@@ -2332,10 +2295,6 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 					},
 					{
 						Ref:          "3ff14136-e09f-4df9-80ea-000000000003",
-						Dependencies: new([]string{}),
-					},
-					{
-						Ref:          "urllib3",
 						Dependencies: new([]string{}),
 					},
 				},
