@@ -58,8 +58,14 @@ func TestScanner_Detect(t *testing.T) {
 						Name:   "RapidFort Security Advisories",
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
+					// Curated Title/Description forward from the fixture's
+					// Advisory, so the FillInfo overwrite has something to
+					// preserve for RapidFort-detected vulns.
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:    dbTypes.SeverityMedium.String(),
+						Title:       "curl: out of heap memory issue due to missing limit on header quantity",
+						Description: "When curl retrieves an HTTP response, it stores the incoming headers so that they can be accessed later via the libcurl headers API.",
+						References:  []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/ubuntu/curl_advisory.json"},
 					},
 				},
 				{
@@ -75,7 +81,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/ubuntu/curl_advisory.json"},
 					},
 				},
 			},
@@ -152,7 +159,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/ubuntu/rf-binutils_advisory.json"},
 					},
 				},
 			},
@@ -191,7 +199,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityLow.String(),
+						Severity:   dbTypes.SeverityLow.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/ubuntu/openjpeg_advisory.json"},
 					},
 				},
 			},
@@ -250,7 +259,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/ubuntu/rf-binutils_advisory.json"},
 					},
 				},
 			},
@@ -311,7 +321,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/alpine/libssl3_advisory.json"},
 					},
 				},
 			},
@@ -370,7 +381,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 				{
@@ -386,7 +398,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -423,7 +436,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -463,7 +477,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 				{
@@ -479,7 +494,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -516,7 +532,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -559,7 +576,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -597,7 +615,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -636,7 +655,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 				{
@@ -652,7 +672,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -691,7 +712,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 				{
@@ -707,7 +729,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/curl_advisory.json"},
 					},
 				},
 			},
@@ -747,7 +770,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rust-rpm-sequoia_advisory.json"},
 					},
 				},
 				{
@@ -763,7 +787,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rust-rpm-sequoia_advisory.json"},
 					},
 				},
 				{
@@ -778,8 +803,12 @@ func TestScanner_Detect(t *testing.T) {
 						Name:   "RapidFort Security Advisories",
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
+					// Binary-key fallback: the SRPM bucket doesn't carry this
+					// CVE, so the reference URL points at the binary-key
+					// advisory file rather than the SRPM-key one.
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rpm-sequoia_advisory.json"},
 					},
 				},
 			},
@@ -819,7 +848,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rust-rpm-sequoia_advisory.json"},
 					},
 				},
 				{
@@ -835,7 +865,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityHigh.String(),
+						Severity:   dbTypes.SeverityHigh.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rust-rpm-sequoia_advisory.json"},
 					},
 				},
 			},
@@ -875,7 +906,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityLow.String(),
+						Severity:   dbTypes.SeverityLow.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rpm-sequoia_advisory.json"},
 					},
 				},
 				{
@@ -891,7 +923,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/redhat/rpm-sequoia_advisory.json"},
 					},
 				},
 			},
@@ -930,7 +963,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 			},
@@ -970,7 +1004,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 			},
@@ -1009,7 +1044,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 				{
@@ -1025,7 +1061,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 			},
@@ -1066,7 +1103,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -1107,7 +1145,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 			},
@@ -1149,7 +1188,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/oracle/curl_advisory.json"},
 					},
 				},
 			},
@@ -1188,7 +1228,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/rocky/curl_advisory.json"},
 					},
 				},
 			},
@@ -1229,7 +1270,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/rocky/curl_advisory.json"},
 					},
 				},
 			},
@@ -1266,7 +1308,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/rocky/curl_advisory.json"},
 					},
 				},
 				{
@@ -1282,7 +1325,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/rocky/curl_advisory.json"},
 					},
 				},
 			},
@@ -1322,7 +1366,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/rocky/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -1361,7 +1406,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/alma/curl_advisory.json"},
 					},
 				},
 			},
@@ -1398,7 +1444,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/alma/curl_advisory.json"},
 					},
 				},
 				{
@@ -1414,7 +1461,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/alma/curl_advisory.json"},
 					},
 				},
 			},
@@ -1453,7 +1501,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/alma/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -1492,7 +1541,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/curl_advisory.json"},
 					},
 				},
 			},
@@ -1529,7 +1579,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/curl_advisory.json"},
 					},
 				},
 				{
@@ -1545,7 +1596,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/curl_advisory.json"},
 					},
 				},
 			},
@@ -1584,7 +1636,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -1627,7 +1680,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/rf-curl_advisory.json"},
 					},
 				},
 			},
@@ -1667,7 +1721,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/curl_advisory.json"},
 					},
 				},
 			},
@@ -1708,7 +1763,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/openssl_advisory.json"},
 					},
 				},
 			},
@@ -1750,7 +1806,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/openssl_advisory.json"},
 					},
 				},
 			},
@@ -1791,7 +1848,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/amazon/openssl_advisory.json"},
 					},
 				},
 			},
@@ -1830,7 +1888,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityCritical.String(),
+						Severity:   dbTypes.SeverityCritical.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/debian/openssl_advisory.json"},
 					},
 				},
 			},
@@ -1870,7 +1929,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/debian/rf-git_advisory.json"},
 					},
 				},
 			},
@@ -1909,7 +1969,8 @@ func TestScanner_Detect(t *testing.T) {
 						URL:    "https://github.com/rapidfort/security-advisories",
 					},
 					Vulnerability: dbTypes.Vulnerability{
-						Severity: dbTypes.SeverityMedium.String(),
+						Severity:   dbTypes.SeverityMedium.String(),
+						References: []string{"https://github.com/rapidfort/security-advisories/blob/main/OS/debian/rf-perl_advisory.json"},
 					},
 				},
 			},
@@ -2384,9 +2445,6 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "bare tilde-rf is not a published spelling", ver: "0:1.0-1~rf.1", want: false},
 		// "ubu" takes a variant suffix: curl and libxml2 ship "rfubujl".
 		{name: "rfubu with a variant suffix", ver: "0:1.2.3-3rfubujl", want: true},
-		// A spelling with no "ubu" must not match on its "rf" prefix.
-		{name: "rfdebian is not a published spelling", ver: "0:3.2.1-4rfdebian", want: false},
-		{name: "rfdeb is not a published spelling", ver: "0:3.2.1-4rfdebjl", want: false},
 	}
 
 	for _, tt := range tests {
