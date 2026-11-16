@@ -40,7 +40,7 @@ require (
 	github.com/containerd/containerd/v2 v2.4.2
 	github.com/containerd/platforms v1.0.0-rc.5
 	github.com/distribution/reference v0.6.0
-	github.com/docker/cli v29.9.1+incompatible
+	github.com/docker/cli v29.9.3+incompatible
 	github.com/docker/go-units v0.5.0
 	github.com/fatih/color v1.19.0
 	github.com/go-git/go-git/v5 v5.19.3
@@ -77,7 +77,7 @@ require (
 	github.com/masahiro331/go-xfs-filesystem v0.0.0-20260422061116-d21e5e4481bb
 	github.com/mattn/go-shellwords v1.0.16
 	github.com/mitchellh/hashstructure/v2 v2.0.2
-	github.com/moby/buildkit v0.34.1
+	github.com/moby/buildkit v0.34.2
 	github.com/moby/docker-image-spec v1.3.1
 	github.com/moby/moby/api v1.56.1
 	github.com/moby/moby/client v0.6.2
@@ -314,7 +314,7 @@ require (
 	github.com/josephburnett/jd/v2 v2.3.0 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/kevinburke/ssh_config v1.2.0 // indirect
-	github.com/klauspost/compress v1.20.1 // indirect
+	github.com/klauspost/compress v1.20.2 // indirect
 	github.com/klauspost/pgzip v1.2.6 // indirect
 	github.com/knqyf263/labeler v0.0.0-20200423181506-7a6e545148c3 // indirect
 	github.com/lann/builder v0.0.0-20180802200727-47ae307949d0 // indirect
