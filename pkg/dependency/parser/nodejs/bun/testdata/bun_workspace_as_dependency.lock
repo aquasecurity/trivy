@@ -1,0 +1,26 @@
+{
+  "lockfileVersion": 2,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "edge-collision",
+      "dependencies": {
+        "debug": "2.6.9",
+      },
+    },
+    "packages/ms": {
+      "name": "ms",
+      "version": "2.0.0",
+      "devDependencies": {
+        "minimist": "1.2.8",
+      },
+    },
+  },
+  "packages": {
+    "debug": ["debug@2.6.9", "", { "dependencies": { "ms": "2.0.0" } }, "sha512-bC7ElrdJaJnPbAP+1EotYvqZsb3ecl5wi6Bfi6BJTUcNowp6cvspg0jXznRTKDjm/E7AdgFBVeAPVMNcKGsHMA=="],
+
+    "minimist": ["minimist@1.2.8", "", {}, "sha512-2yyAR8qBkN3YuheJanUpWC5U3bb5osDywNB8RzDVlDwDHbocAJveqqj1u8+SVD7jkWT4yvsHCpWqqWqAxb0zCA=="],
+
+    "ms": ["ms@workspace:packages/ms"],
+  }
+}

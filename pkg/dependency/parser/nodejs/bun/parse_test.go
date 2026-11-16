@@ -53,6 +53,12 @@ func TestParse(t *testing.T) {
 			want:     workspaceNestedPkgs,
 			wantDeps: workspaceNestedDeps,
 		},
+		{
+			name:     "workspace as a dependency of a package",
+			file:     "testdata/bun_workspace_as_dependency.lock",
+			want:     workspaceAsDependencyPkgs,
+			wantDeps: workspaceAsDependencyDeps,
+		},
 	}
 
 	for _, tt := range tests {
