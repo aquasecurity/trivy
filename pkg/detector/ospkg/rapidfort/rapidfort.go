@@ -256,7 +256,10 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		// Some advisory files key entries by the binary package name rather
 		// than the SRPM name, so fall back to the binary name when the two
-		// differ. SRPM entries win on collision.
+		// differ. The binary entry is dropped only when the SRPM entry
+		// actually matches the install — a CVE the SRPM lists but whose
+		// range does not cover the install must still let the binary entry
+		// through, so a wider binary range isn't silently suppressed.
 		if pkg.Name != srcName {
 			binAdvisories, err := vs.Get(db.GetParams{
 				Release: release,
@@ -266,15 +269,16 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", pkg.Name, err)
 			}
 			if len(binAdvisories) > 0 {
-				seen := set.New[string]()
+				srpmMatched := set.New[string]()
 				for _, adv := range advisories {
-					seen.Append(adv.VulnerabilityID)
+					if s.isVulnerable(ctx, installedVer, adv) {
+						srpmMatched.Append(adv.VulnerabilityID)
+					}
 				}
 				for _, adv := range binAdvisories {
-					if seen.Contains(adv.VulnerabilityID) {
+					if srpmMatched.Contains(adv.VulnerabilityID) {
 						continue
 					}
-					seen.Append(adv.VulnerabilityID)
 					advisories = append(advisories, adv)
 				}
 			}

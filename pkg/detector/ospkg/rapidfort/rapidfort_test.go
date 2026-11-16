@@ -768,8 +768,122 @@ func TestScanner_Detect(t *testing.T) {
 				},
 				{
 					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.5.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// Install inside the SRPM range, so the binary entry is
+					// correctly dropped.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
 					VulnerabilityID:  "CVE-2026-2625",
 					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.10.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// When both buckets list the same CVE but the SRPM range does
+			// not cover the install, the binary's wider range must still be
+			// evaluated. The fixture is picked so this one install exercises
+			// all four cases in the same pass: SRPM-only match, both-match
+			// with SRPM winning, SRPM-lists-but-misses so binary wins, and
+			// binary-only match.
+			name:   "RedHat: binary wider range catches install SRPM narrow range misses",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rpm-sequoia",
+						Version:    "1.7.0-1.el9",
+						SrcName:    "rust-rpm-sequoia",
+						SrcVersion: "1.7.0-1.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-0977",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "1.8.0-2.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-OVERLAP",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "1.9.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// Both buckets list this CVE but the SRPM match wins, so
+					// the FixedVersion is the SRPM entry's rather than the
+					// binary bucket's.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "2.0.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// SRPM lists the CVE but its range misses the install,
+					// so the binary wider range catches it instead.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2026-2625",
+					InstalledVersion: "1.7.0-1.el9",
 					FixedVersion:     "1.10.0-1.el9",
 					SeveritySource:   "rapidfort",
 					DataSource: &dbTypes.DataSource{
@@ -838,6 +952,22 @@ func TestScanner_Detect(t *testing.T) {
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 				},
+				{
+					PkgName:          "rust-rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.5.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
 			},
 		},
 		{
@@ -876,6 +1006,22 @@ func TestScanner_Detect(t *testing.T) {
 					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "2.0.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
 					},
 				},
 				{
