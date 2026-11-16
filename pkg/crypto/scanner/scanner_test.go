@@ -154,7 +154,7 @@ func sha1Finding(asset ftypes.CryptoAsset, name, oid string) types.CryptoFinding
 }
 
 func brokenHashFinding(asset ftypes.CryptoAsset, name, oid string) types.CryptoFinding {
-	return finding("CRYPTO-0006", "Broken signature hash", "HIGH", asset,
+	return finding("CRYPTO-0006", "MD2, MD4 or MD5 certificate signature", "HIGH", asset,
 		types.CryptoEvidence{
 			SignatureAlgorithm:    name,
 			SignatureAlgorithmOID: oid,

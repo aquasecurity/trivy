@@ -59,7 +59,7 @@ var rules = []rule{
 	},
 	{
 		id:       "CRYPTO-0006",
-		title:    "Broken signature hash",
+		title:    "MD2, MD4 or MD5 certificate signature",
 		severity: dbTypes.SeverityHigh,
 		kind:     ftypes.CryptoKindCertificate,
 		match:    matchSignatureHash(brokenSignatureHashOIDs),
@@ -90,6 +90,13 @@ var sha1SignatureOIDs = []string{
 	"1.2.840.10045.4.1",    // ecdsa-with-SHA1, RFC 3279 section 2.2.3
 }
 
+// brokenSignatureHashOIDs are the signature algorithms that hash with MD2, MD4 or MD5.
+var brokenSignatureHashOIDs = []string{
+	"1.2.840.113549.1.1.2", // md2WithRSAEncryption, RFC 3279 section 2.2.1
+	"1.2.840.113549.1.1.3", // md4WithRSAEncryption, RFC 2313 section 11
+	"1.2.840.113549.1.1.4", // md5WithRSAEncryption, RFC 3279 section 2.2.1
+}
+
 func matchSignatureHash(oids []string) func(ftypes.CryptoAsset, time.Time) (types.CryptoEvidence, bool) {
 	return func(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
 		signature, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipSignedWith)
@@ -101,14 +108,6 @@ func matchSignatureHash(oids []string) func(ftypes.CryptoAsset, time.Time) (type
 			SignatureAlgorithmOID: signature.Value,
 		}, true
 	}
-}
-
-// brokenSignatureHashOIDs are the signature algorithms that hash with MD2, MD4 or MD5.
-// RSASSA-PSS names its hash in parameters that are not collected, so it is left out.
-var brokenSignatureHashOIDs = []string{
-	"1.2.840.113549.1.1.2", // md2WithRSAEncryption, RFC 3279 section 2.2.1
-	"1.2.840.113549.1.1.3", // md4WithRSAEncryption, RFC 3279 section 2.2.1
-	"1.2.840.113549.1.1.4", // md5WithRSAEncryption, RFC 3279 section 2.2.1
 }
 
 func matchSmallRSAKey(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEvidence, bool) {
