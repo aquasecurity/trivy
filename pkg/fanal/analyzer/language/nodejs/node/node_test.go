@@ -53,7 +53,7 @@ func TestNodeAnalyzer_Required(t *testing.T) {
 func TestNodeAnalyzer_Metadata(t *testing.T) {
 	a := nodeAnalyzer{}
 	assert.Equal(t, analyzer.TypeNode, a.Type())
-	assert.Equal(t, 1, a.Version())
+	assert.Equal(t, 2, a.Version())
 }
 
 func TestHeaderParser_Parse(t *testing.T) {
