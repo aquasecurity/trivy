@@ -2157,6 +2157,191 @@ func TestMarshaler_MarshalReport(t *testing.T) {
 			},
 		},
 		{
+			name: "same BOM-Ref from multiple SBOM files",
+			inputReport: types.Report{
+				SchemaVersion: report.SchemaVersion,
+				ArtifactName:  "rootfs",
+				ArtifactType:  ftypes.TypeFilesystem,
+				Results: types.Results{
+					{
+						Target: "Python",
+						Class:  types.ClassLangPkg,
+						Type:   ftypes.PythonPkg,
+						Packages: []ftypes.Package{
+							{
+								ID:      "rich@14.1.0",
+								Name:    "rich",
+								Version: "14.1.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "1A2B3C4D5E6F7081",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "rich",
+										Version: "14.1.0",
+									},
+									BOMRef: "pkg:pypi/rich@14.1.0",
+								},
+								FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								ID:      "rich@14.1.0",
+								Name:    "rich",
+								Version: "14.1.0",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "2B3C4D5E6F708192",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "rich",
+										Version: "14.1.0",
+									},
+									BOMRef: "pkg:pypi/rich@14.1.0",
+								},
+								FilePath: "env2/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								ID:      "urllib3@1.26.20",
+								Name:    "urllib3",
+								Version: "1.26.20",
+								Identifier: ftypes.PkgIdentifier{
+									UID: "3C4D5E6F708192A3",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "urllib3",
+										Version: "1.26.20",
+									},
+									BOMRef: "urllib3",
+								},
+								FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+							},
+						},
+					},
+				},
+			},
+			want: &cdx.BOM{
+				XMLNS:        "http://cyclonedx.org/schema/bom/1.7",
+				BOMFormat:    "CycloneDX",
+				SpecVersion:  cdx.SpecVersion1_7,
+				JSONSchema:   "http://cyclonedx.org/schema/bom-1.7.schema.json",
+				SerialNumber: "urn:uuid:3ff14136-e09f-4df9-80ea-000000000005",
+				Version:      1,
+				Metadata: &cdx.Metadata{
+					Timestamp: "2021-08-25T12:20:30+00:00",
+					Tools: &cdx.ToolsChoice{
+						Components: &[]cdx.Component{
+							{
+								Type:    cdx.ComponentTypeApplication,
+								Name:    "trivy",
+								Group:   "aquasecurity",
+								Version: "dev",
+								Manufacturer: &cdx.OrganizationalEntity{
+									Name: "Aqua Security Software Ltd.",
+								},
+							},
+						},
+					},
+					Component: &cdx.Component{
+						Type:   cdx.ComponentTypeApplication,
+						Name:   "rootfs",
+						BOMRef: "3ff14136-e09f-4df9-80ea-000000000001",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:SchemaVersion",
+								Value: "2",
+							},
+						},
+					},
+				},
+				Components: &[]cdx.Component{
+					{
+						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000002",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "rich",
+						Version:    "14.1.0",
+						PackageURL: "pkg:pypi/rich@14.1.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "env1/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "rich@14.1.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "python-pkg",
+							},
+						},
+					},
+					{
+						BOMRef:     "3ff14136-e09f-4df9-80ea-000000000003",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "rich",
+						Version:    "14.1.0",
+						PackageURL: "pkg:pypi/rich@14.1.0",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "env2/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "rich@14.1.0",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "python-pkg",
+							},
+						},
+					},
+					{
+						BOMRef:     "urllib3",
+						Type:       cdx.ComponentTypeLibrary,
+						Name:       "urllib3",
+						Version:    "1.26.20",
+						PackageURL: "pkg:pypi/urllib3@1.26.20",
+						Properties: &[]cdx.Property{
+							{
+								Name:  "aquasecurity:trivy:FilePath",
+								Value: "env1/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgID",
+								Value: "urllib3@1.26.20",
+							},
+							{
+								Name:  "aquasecurity:trivy:PkgType",
+								Value: "python-pkg",
+							},
+						},
+					},
+				},
+				Vulnerabilities: &[]cdx.Vulnerability{},
+				Dependencies: &[]cdx.Dependency{
+					{
+						Ref: "3ff14136-e09f-4df9-80ea-000000000001",
+						Dependencies: &[]string{
+							"3ff14136-e09f-4df9-80ea-000000000002",
+							"3ff14136-e09f-4df9-80ea-000000000003",
+							"urllib3",
+						},
+					},
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000002",
+						Dependencies: new([]string{}),
+					},
+					{
+						Ref:          "3ff14136-e09f-4df9-80ea-000000000003",
+						Dependencies: new([]string{}),
+					},
+					{
+						Ref:          "urllib3",
+						Dependencies: new([]string{}),
+					},
+				},
+			},
+		},
+		{
 			name: "happy path empty",
 			inputReport: types.Report{
 				SchemaVersion: report.SchemaVersion,

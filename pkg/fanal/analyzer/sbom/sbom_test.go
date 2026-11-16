@@ -208,6 +208,70 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 										Version:   "1.36.0",
 									},
 								},
+								FilePath: "layers/sbom/launch/buildpacksio_lifecycle/launcher/sbom.spdx.json",
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
+			name:     "third party cdx file with aggregating type packages",
+			file:     "testdata/python-vendored.cdx.json",
+			filePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Cargo,
+						FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+						Packages: types.Packages{
+							{
+								ID:      "itoa@1.0.15",
+								Name:    "itoa",
+								Version: "1.0.15",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeCargo,
+										Name:    "itoa",
+										Version: "1.0.15",
+									},
+									BOMRef: "pkg:cargo/itoa@1.0.15",
+								},
+							},
+						},
+					},
+					{
+						Type:     types.PythonPkg,
+						FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+						Packages: types.Packages{
+							{
+								ID:      "certifi@2026.6.17",
+								Name:    "certifi",
+								Version: "2026.6.17",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "certifi",
+										Version: "2026.6.17",
+									},
+									BOMRef: "pkg:pypi/certifi@2026.6.17",
+								},
+								FilePath: "env1/site-packages/pip/_vendor/bom.cdx.json",
+							},
+							{
+								ID:      "idna@3.18",
+								Name:    "idna",
+								Version: "3.18",
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypePyPi,
+										Name:    "idna",
+										Version: "3.18",
+									},
+									BOMRef: "pkg:pypi/idna@3.18",
+								},
+								FilePath: "idna-3.18.dist-info/METADATA",
 							},
 						},
 					},

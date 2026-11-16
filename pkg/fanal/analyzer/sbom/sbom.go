@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 	"path"
+	"slices"
 	"strings"
 
 	"golang.org/x/xerrors"
@@ -66,6 +67,17 @@ func (a sbomAnalyzer) Analyze(ctx context.Context, input analyzer.AnalysisInput)
 	for i, app := range bom.Applications {
 		if app.FilePath == "" {
 			bom.Applications[i].FilePath = input.FilePath
+		}
+
+		// Applications with aggregatingTypes are merged into one, which drops Application.FilePath.
+		// Keep the SBOM file path in packages so that packages from different SBOM files stay distinguishable.
+		if !slices.Contains(ftypes.AggregatingTypes, app.Type) {
+			continue
+		}
+		for j, pkg := range app.Packages {
+			if pkg.FilePath == "" {
+				bom.Applications[i].Packages[j].FilePath = input.FilePath
+			}
 		}
 	}
 

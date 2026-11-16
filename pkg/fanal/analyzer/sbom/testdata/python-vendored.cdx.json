@@ -1,0 +1,35 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.4.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.4",
+  "version": 1,
+  "components": [
+    {
+      "bom-ref": "pkg:pypi/certifi@2026.6.17",
+      "name": "certifi",
+      "purl": "pkg:pypi/certifi@2026.6.17",
+      "type": "library",
+      "version": "2026.6.17"
+    },
+    {
+      "bom-ref": "pkg:pypi/idna@3.18",
+      "name": "idna",
+      "purl": "pkg:pypi/idna@3.18",
+      "type": "library",
+      "version": "3.18",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:FilePath",
+          "value": "idna-3.18.dist-info/METADATA"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:cargo/itoa@1.0.15",
+      "name": "itoa",
+      "purl": "pkg:cargo/itoa@1.0.15",
+      "type": "library",
+      "version": "1.0.15"
+    }
+  ]
+}
