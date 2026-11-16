@@ -2384,9 +2384,12 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "bare tilde-rf is not a published spelling", ver: "0:1.0-1~rf.1", want: false},
 		// "ubu" takes a variant suffix: curl and libxml2 ship "rfubujl".
 		{name: "rfubu with a variant suffix", ver: "0:1.2.3-3rfubujl", want: true},
-		// A spelling with no "ubu" must not match on its "rf" prefix.
-		{name: "rfdebian is not a published spelling", ver: "0:3.2.1-4rfdebian", want: false},
-		{name: "rfdeb is not a published spelling", ver: "0:3.2.1-4rfdebjl", want: false},
+		{name: "rfdebian with tilde-rf and bookworm tag", ver: "14.2.0-29rfdebian~rf.1+bookworm1", want: true},
+		{name: "rfdebian with tilde-rf trailer", ver: "2.4.9-7rfdebian~rf.1", want: true},
+		// The marker is the whole "rfdebian" word; a truncated prefix must
+		// not match.
+		{name: "rfdeb prefix without rfdebian", ver: "0:3.2.1-4rfdebjl", want: false},
+		{name: "debian revision starting with rf.", ver: "1:1.5.91-rf.1", want: true},
 	}
 
 	for _, tt := range tests {

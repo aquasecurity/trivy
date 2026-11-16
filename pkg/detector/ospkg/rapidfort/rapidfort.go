@@ -72,16 +72,17 @@ func parseDistTag(elem string) (tag, num string, ok bool) {
 // dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
 // RapidFort rebuild marker — the same signal the feed annotator writes as the
 // "rf" range identifier, so the routing decision here matches the DB build.
-// Four substring forms cover every rebuild spelling in the live feed; shapes
-// these forms do not match ("1surf1", "rfdebian") don't occur in real
-// OS/ubuntu or OS/debian data.
+// Six substring forms cover every rebuild spelling in the live feed.
 //
 //	"+rf"           Debian/Ubuntu revision suffix (e.g. "0:2.5.2-1build1+rf.1")
 //	"rfubu"         Ubuntu rebuilds — matches "rfubu", "rfubuntu", "rfubujl"
+//	"rfdebian"      Debian backport rebuilds (with or without a "~rf.N" trailer)
 //	".rf." / ".rf"  Debian bare-rf rebuild, mid-release or at the tail
+//	"-rf."          Debian revision that starts with rf (e.g. "1:X.Y.Z-rf.N")
 func dpkgHasRfMarker(ver string) bool {
 	return strings.Contains(ver, "+rf") || strings.Contains(ver, "rfubu") ||
-		strings.Contains(ver, ".rf.") || strings.HasSuffix(ver, ".rf")
+		strings.Contains(ver, "rfdebian") || strings.Contains(ver, ".rf.") ||
+		strings.Contains(ver, "-rf.") || strings.HasSuffix(ver, ".rf")
 }
 
 // getters is package-level because a getter is not tied to a scanner: the
