@@ -1648,10 +1648,49 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
-			name:          "skip aws access key IDs in signed requests",
+			name:          "skip aws access key IDs only in signed requests",
 			configPath:    filepath.Join("testdata", "skip-test.yaml"),
 			inputFilePath: filepath.Join("testdata", "aws-access-key-id-signed-requests.txt"),
-			want:          types.Secret{},
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "aws-access-key-id-signed-requests.txt"),
+				Findings: []types.SecretFinding{
+					{
+						RuleID:    "aws-access-key-id",
+						Category:  secret.CategoryAWS,
+						Title:     "AWS Access Key ID",
+						Severity:  "CRITICAL",
+						StartLine: 8,
+						EndLine:   8,
+						Match:     "AWSAccessKeyId=********************",
+						Code: types.Code{
+							Lines: []types.Line{
+								{
+									Number:      6,
+									Content:     `{"x-amz-credential": "ASIA0123456789ABCDEF/20261102/us-east-1/s3/aws4_request"}`,
+									Highlighted: `{"x-amz-credential": "ASIA0123456789ABCDEF/20261102/us-east-1/s3/aws4_request"}`,
+								},
+								{
+									Number:      7,
+									Content:     `<input type="hidden" name="X-Amz-Credential" value="AKIA0123456789ABCDEF/20261102/us-east-1/s3/aws4_`,
+									Highlighted: `<input type="hidden" name="X-Amz-Credential" value="AKIA0123456789ABCDEF/20261102/us-east-1/s3/aws4_`,
+								},
+								{
+									Number:      8,
+									Content:     "AWSAccessKeyId=********************",
+									Highlighted: "AWSAccessKeyId=********************",
+									IsCause:     true,
+									FirstCause:  true,
+									LastCause:   true,
+								},
+								{
+									Number: 9,
+								},
+							},
+						},
+						Offset: 876,
+					},
+				},
+			},
 		},
 		{
 			name:          "find secrets in CRLF line endings file",
