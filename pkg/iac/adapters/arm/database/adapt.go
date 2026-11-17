@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) database.Database {
@@ -14,9 +15,15 @@ func Adapt(deployment azure.Deployment) database.Database {
 	}
 }
 
+const mysqlServerType = "Microsoft.DBforMySQL/servers"
+
 func adaptMySQLServers(deployment azure.Deployment) (mysqlDbServers []database.MySQLServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforMySQL/servers") {
+	for _, resource := range deployment.GetResourcesByType(mysqlServerType) {
 		mysqlDbServers = append(mysqlDbServers, adaptMySQLServer(resource, deployment))
+	}
+	if rules := orphanFirewallRules(deployment, mysqlServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		mysqlDbServers = append(mysqlDbServers, database.MySQLServer{Metadata: metadata, Server: orphanServer(metadata, rules)})
 	}
 	return mysqlDbServers
 }

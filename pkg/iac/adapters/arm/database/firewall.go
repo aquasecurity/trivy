@@ -1,33 +1,47 @@
 package database
 
 import (
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const firewallRuleType = "firewallRules"
+
 // addFirewallRule collects the firewall rules of a database server from the
-// firewallRules property, child resources, and top-level "<server type>/firewallRules"
-// resources, e.g. "Microsoft.Sql/servers/firewallRules".
+// firewallRules property and from its firewallRules child resources, e.g.
+// "Microsoft.Sql/servers/firewallRules".
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules?pivots=deployment-language-arm-template
 func addFirewallRule(server azure.Resource, deployment azure.Deployment) []database.FirewallRule {
 	var rules []database.FirewallRule
 	for _, rule := range server.Properties.GetMapValue("firewallRules").AsMap() {
 		rules = append(rules, adaptFirewallRule(rule, rule.GetMetadata()))
 	}
+	return append(rules, adaptFirewallRuleResources(deployment.GetChildResources(server, firewallRuleType))...)
+}
 
-	ruleType := server.Type.AsString() + "/firewallRules"
-	for _, typ := range []string{"firewallRules", ruleType} {
-		for _, resource := range server.GetResourcesByType(typ) {
-			rules = append(rules, adaptFirewallRule(resource.Properties, resource.Metadata))
-		}
+// orphanFirewallRules returns the top-level firewall rules of serverType whose
+// server is unknown.
+func orphanFirewallRules(deployment azure.Deployment, serverType string) []database.FirewallRule {
+	return adaptFirewallRuleResources(deployment.GetOrphanResources(serverType, firewallRuleType))
+}
+
+// orphanServer holds firewall rules whose server is unknown. Its metadata is
+// unmanaged, so checks on servers skip it.
+func orphanServer(metadata iacTypes.Metadata, rules []database.FirewallRule) database.Server {
+	return database.Server{
+		Metadata:                  metadata,
+		EnableSSLEnforcement:      iacTypes.BoolDefault(false, metadata),
+		MinimumTLSVersion:         iacTypes.StringDefault("", metadata),
+		EnablePublicNetworkAccess: iacTypes.BoolDefault(false, metadata),
+		FirewallRules:             rules,
 	}
-	for _, resource := range deployment.GetResourcesByType(ruleType) {
-		if belongsToServer(resource, server) {
-			rules = append(rules, adaptFirewallRule(resource.Properties, resource.Metadata))
-		}
+}
+
+func adaptFirewallRuleResources(resources []azure.Resource) []database.FirewallRule {
+	var rules []database.FirewallRule
+	for _, resource := range resources {
+		rules = append(rules, adaptFirewallRule(resource.Properties, resource.Metadata))
 	}
 	return rules
 }
@@ -38,16 +52,4 @@ func adaptFirewallRule(properties azure.Value, metadata iacTypes.Metadata) datab
 		StartIP:  properties.GetMapValue("startIpAddress").AsStringValue("", metadata),
 		EndIP:    properties.GetMapValue("endIpAddress").AsStringValue("", metadata),
 	}
-}
-
-// belongsToServer reports whether a top-level firewall rule belongs to server.
-// The name of such a rule is "<server name>/<rule name>". When either name is an
-// expression, which the parser does not evaluate, the rule is kept.
-func belongsToServer(rule, server azure.Resource) bool {
-	ruleName, serverName := rule.Name.AsString(), server.Name.AsString()
-	if ruleName == "" || serverName == "" {
-		return true
-	}
-	parent, _, found := strings.Cut(ruleName, "/")
-	return !found || strings.EqualFold(parent, serverName)
 }

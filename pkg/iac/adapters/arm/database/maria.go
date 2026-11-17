@@ -3,11 +3,18 @@ package database
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const mariaDBServerType = "Microsoft.DBforMariaDB/servers"
+
 func adaptMariaDBServers(deployment azure.Deployment) (mariaDbServers []database.MariaDBServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforMariaDB/servers") {
+	for _, resource := range deployment.GetResourcesByType(mariaDBServerType) {
 		mariaDbServers = append(mariaDbServers, adaptMariaDBServer(resource, deployment))
+	}
+	if rules := orphanFirewallRules(deployment, mariaDBServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		mariaDbServers = append(mariaDbServers, database.MariaDBServer{Metadata: metadata, Server: orphanServer(metadata, rules)})
 	}
 	return mariaDbServers
 

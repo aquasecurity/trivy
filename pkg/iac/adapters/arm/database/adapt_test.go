@@ -3,8 +3,13 @@ package database
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -271,7 +276,7 @@ func TestAdapt(t *testing.T) {
 			},
 		},
 		{
-			name: "top-level firewall rule with an expression name goes to every server",
+			name: "top-level firewall rule with an expression name goes to the orphan server",
 			source: `{
   "parameters": {
     "serverName": {"type": "string", "defaultValue": "one"}
@@ -297,14 +302,47 @@ func TestAdapt(t *testing.T) {
 					{
 						Server: database.Server{
 							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
-							FirewallRules: []database.FirewallRule{
-								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
-							},
 						},
 					},
 					{
 						Server: database.Server{
 							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						},
+					},
+					{
+						Server: database.Server{
+							FirewallRules: []database.FirewallRule{
+								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "top-level firewall rule goes to the orphan server when the server name is an expression",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.DBforPostgreSQL/servers",
+      "name": "[parameters('serverName')]"
+    },
+    {
+      "type": "Microsoft.DBforPostgreSQL/servers/firewallRules",
+      "name": "pg/all",
+      "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+    }
+  ]
+}`,
+			expected: database.Database{
+				PostgreSQLServers: []database.PostgreSQLServer{
+					{
+						Server: database.Server{
+							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						},
+					},
+					{
+						Server: database.Server{
 							FirewallRules: []database.FirewallRule{
 								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
 							},
@@ -321,4 +359,28 @@ func TestAdapt(t *testing.T) {
 		})
 	}
 
+}
+
+func TestAdaptOrphanServerIsUnmanaged(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"test.json": `{
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "name": "[format('{0}/all', parameters('serverName'))]",
+      "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+    }
+  ]
+}`,
+	})
+	deployments, err := parser.New(fsys).ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+	require.Len(t, deployments, 1)
+
+	servers := Adapt(deployments[0]).MSSQLServers
+	require.Len(t, servers, 1)
+	assert.False(t, servers[0].Metadata.IsManaged())
+	assert.False(t, servers[0].Server.Metadata.IsManaged())
+	require.Len(t, servers[0].FirewallRules, 1)
+	assert.True(t, servers[0].FirewallRules[0].Metadata.IsManaged())
 }

@@ -6,9 +6,19 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const mssqlServerType = "Microsoft.Sql/servers"
+
 func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MSSQLServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Sql/servers") {
+	for _, resource := range deployment.GetResourcesByType(mssqlServerType) {
 		msSQlServers = append(msSQlServers, adaptMSSQLServer(resource, deployment))
+	}
+	if rules := orphanFirewallRules(deployment, mssqlServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		msSQlServers = append(msSQlServers, database.MSSQLServer{
+			Metadata:           metadata,
+			Server:             orphanServer(metadata, rules),
+			AdministratorLogin: iacTypes.StringDefault("", metadata),
+		})
 	}
 	return msSQlServers
 }
