@@ -21,7 +21,7 @@ func adaptMySQLServers(deployment azure.Deployment) (mysqlDbServers []database.M
 	return mysqlDbServers
 }
 
-func adaptMySQLServer(resource azure.Resource, _ azure.Deployment) database.MySQLServer {
+func adaptMySQLServer(resource azure.Resource, deployment azure.Deployment) database.MySQLServer {
 	return database.MySQLServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{
@@ -29,7 +29,7 @@ func adaptMySQLServer(resource azure.Resource, _ azure.Deployment) database.MySQ
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource),
+			FirewallRules:             addFirewallRule(resource, deployment),
 		},
 	}
 }

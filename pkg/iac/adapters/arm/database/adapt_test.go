@@ -182,6 +182,137 @@ func TestAdapt(t *testing.T) {
 				}},
 			},
 		},
+		{
+			name: "firewall rules as child resources",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "sql",
+      "resources": [
+        {
+          "type": "firewallRules",
+          "name": "all",
+          "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+        },
+        {
+          "type": "Microsoft.Sql/servers/firewallRules",
+          "name": "office",
+          "properties": {"startIpAddress": "10.0.0.1", "endIpAddress": "10.0.0.9"}
+        }
+      ]
+    }
+  ]
+}`,
+			expected: database.Database{
+				MSSQLServers: []database.MSSQLServer{{
+					Server: database.Server{
+						MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						FirewallRules: []database.FirewallRule{
+							{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
+							{StartIP: types.StringTest("10.0.0.1"), EndIP: types.StringTest("10.0.0.9")},
+						},
+					},
+				}},
+			},
+		},
+		{
+			name: "top-level firewall rules go to the server they name",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "one"
+    },
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "two"
+    },
+    {
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "name": "one/all",
+      "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+    },
+    {
+      "type": "Microsoft.DBforMySQL/servers",
+      "name": "mysql"
+    },
+    {
+      "type": "Microsoft.DBforMySQL/servers/firewallRules",
+      "name": "mysql/office",
+      "properties": {"startIpAddress": "10.0.0.1", "endIpAddress": "10.0.0.9"}
+    }
+  ]
+}`,
+			expected: database.Database{
+				MSSQLServers: []database.MSSQLServer{
+					{
+						Server: database.Server{
+							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+							FirewallRules: []database.FirewallRule{
+								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
+							},
+						},
+					},
+					{
+						Server: database.Server{
+							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						},
+					},
+				},
+				MySQLServers: []database.MySQLServer{{
+					Server: database.Server{
+						MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						FirewallRules: []database.FirewallRule{
+							{StartIP: types.StringTest("10.0.0.1"), EndIP: types.StringTest("10.0.0.9")},
+						},
+					},
+				}},
+			},
+		},
+		{
+			name: "top-level firewall rule with an expression name goes to every server",
+			source: `{
+  "parameters": {
+    "serverName": {"type": "string", "defaultValue": "one"}
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "one"
+    },
+    {
+      "type": "Microsoft.Sql/servers",
+      "name": "two"
+    },
+    {
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "name": "[concat(parameters('serverName'), '/all')]",
+      "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+    }
+  ]
+}`,
+			expected: database.Database{
+				MSSQLServers: []database.MSSQLServer{
+					{
+						Server: database.Server{
+							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+							FirewallRules: []database.FirewallRule{
+								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
+							},
+						},
+					},
+					{
+						Server: database.Server{
+							MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+							FirewallRules: []database.FirewallRule{
+								{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
