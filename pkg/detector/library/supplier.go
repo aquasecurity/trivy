@@ -23,16 +23,22 @@ const (
 	// Callers should confirm a Candidate before relying on it, and otherwise fall
 	// back to default (non-supplier) handling.
 	Candidate
+
+	// MatchedWithUpstream indicates the package definitely belongs to the
+	// supplier, but advisories from the default ecosystem bucket are also
+	// required. Supplier advisories override default advisories for the same
+	// vulnerability, matched by primary or vendor ID.
+	MatchedWithUpstream
 )
 
 // Supplier represents a third-party security supplier that provides patched packages
 // with their own vulnerability advisories. These suppliers (e.g., Seal Security)
 // offer patched versions of open source packages and maintain separate advisory
-// databases that should be used instead of the standard ecosystem advisories.
+// databases that can replace or augment the standard ecosystem advisories.
 //
-// When a package is identified as coming from a supplier, Trivy queries the
-// supplier-specific advisory bucket (e.g., "seal pip::") rather than the
-// standard ecosystem bucket (e.g., "pip::").
+// MatchResult determines whether Trivy queries only the supplier-specific
+// advisory bucket (e.g., "seal pip::") or merges it with the standard ecosystem
+// bucket (e.g., "pip::").
 type Supplier interface {
 	// Name returns the supplier identifier used in the advisory bucket prefix.
 	// For example, "seal" results in advisory queries to "seal pip::", "seal npm::", etc.
@@ -74,7 +80,8 @@ func DeregisterSupplier(name string) {
 
 // lookupSupplier finds the matching supplier for the given package.
 // If a supplier matches, it is returned together with its match result
-// (Matched or Candidate). If no supplier matches, it returns nil and NoMatch.
+// (Matched, MatchedWithUpstream, or Candidate). If no supplier matches, it
+// returns nil and NoMatch.
 func lookupSupplier(eco ecosystem.Type, pkgName, pkgVer string) (Supplier, MatchResult) {
 	for _, v := range suppliers {
 		if res := v.Match(eco, pkgName, pkgVer); res != NoMatch {

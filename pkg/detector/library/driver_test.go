@@ -669,7 +669,9 @@ func TestDriver_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name: "echo pip package ignores upstream advisories",
+			// Withdrawn Echo entries are not stored in the vulnerability DB, so
+			// they follow the same path as a package with no Echo advisory.
+			name: "echo pip package with no active Echo advisory falls back to upstream",
 			fixtures: []string{
 				"testdata/fixtures/pip.yaml",
 				"testdata/fixtures/echo.yaml",
@@ -680,7 +682,19 @@ func TestDriver_Detect(t *testing.T) {
 				pkgName: "Django",
 				pkgVer:  "4.2.1+echo.1",
 			},
-			want: nil,
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "Django",
+					InstalledVersion: "4.2.1+echo.1",
+					FixedVersion:     "4.2.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Pip",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+					},
+				},
+			},
 		},
 		{
 			name: "echo maven package below both fixes",
@@ -1018,6 +1032,73 @@ func TestDriver_Detect(t *testing.T) {
 				return cmp.Compare(a.VulnerabilityID, b.VulnerabilityID)
 			})
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestDriver_DetectEchoWithUpstream(t *testing.T) {
+	tests := []struct {
+		name    string
+		libType ftypes.LangType
+		pkgName string
+		pkgVer  string
+		wantIDs []string
+	}{
+		{
+			name:    "pip keeps unrelated upstream advisories with the upstream comparer",
+			libType: ftypes.PythonPkg,
+			pkgName: "echomergepip",
+			pkgVer:  "1.2.3+echo.1",
+			wantIDs: []string{"CVE-2026-10102", "CVE-2026-10103"},
+		},
+		{
+			name:    "maven keeps unrelated upstream advisory",
+			libType: ftypes.Jar,
+			pkgName: "com.example:echo-merge",
+			pkgVer:  "1.2.3+echo.1",
+			wantIDs: []string{"CVE-2026-10202"},
+		},
+		{
+			name:    "npm overrides an alias and uses the upstream comparer for unrelated advisories",
+			libType: ftypes.NodePkg,
+			pkgName: "echo-merge-npm",
+			pkgVer:  "1.2.3+echo.1",
+			wantIDs: []string{"CVE-2026-10302", "CVE-2026-10303"},
+		},
+		{
+			name:    "nuget keeps unrelated upstream advisories with the upstream comparer",
+			libType: ftypes.DotNetCore,
+			pkgName: "Echo.Merge.NuGet",
+			pkgVer:  "1.2.3+echo.1",
+			wantIDs: []string{"CVE-2026-10402", "CVE-2026-10403"},
+		},
+		{
+			name:    "go uses the upstream comparer for upstream advisories",
+			libType: ftypes.GoModule,
+			pkgName: "example.com/echo-merge",
+			pkgVer:  "v1.2.3+echo.1",
+			wantIDs: []string{"CVE-2026-10502", "CVE-2026-10503"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			_ = dbtest.InitDB(t, []string{"testdata/fixtures/echo-upstream.yaml"})
+			defer db.Close()
+
+			driver, ok := library.NewDriver(tt.libType)
+			require.True(t, ok)
+
+			got, err := driver.DetectVulnerabilities("", tt.pkgName, tt.pkgVer)
+			require.NoError(t, err)
+
+			var gotIDs []string
+			for _, vuln := range got {
+				gotIDs = append(gotIDs, vuln.VulnerabilityID)
+				require.NotNil(t, vuln.DataSource)
+				assert.Equal(t, dbTypes.SourceID("echo-upstream-test"), vuln.DataSource.ID)
+			}
+			assert.ElementsMatch(t, tt.wantIDs, gotIDs)
 		})
 	}
 }

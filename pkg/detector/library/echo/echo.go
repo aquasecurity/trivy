@@ -59,7 +59,7 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 		if strings.Contains(pkgVer, "+echo.") &&
 			echoSemverSegmentRe.MatchString(pkgVer) &&
 			isValidGoSemVer(pkgVer) {
-			return library.Matched
+			return library.MatchedWithUpstream
 		}
 		return library.NoMatch
 	case ecosystem.Pip, ecosystem.Maven, ecosystem.Npm, ecosystem.NuGet:
@@ -67,7 +67,7 @@ func (echoSupplier) Match(eco ecosystem.Type, _, pkgVer string) library.MatchRes
 		return library.NoMatch
 	}
 	if strings.Contains(pkgVer, "+echo.") && echoLocalSegmentRe.MatchString(pkgVer) {
-		return library.Matched
+		return library.MatchedWithUpstream
 	}
 	return library.NoMatch
 }
