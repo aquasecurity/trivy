@@ -9,6 +9,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 type regoResult struct {
@@ -140,7 +141,9 @@ func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespac
 				// A result that does not point to a scanned file cannot be shown or fixed.
 				if regoResult.GetMetadata().Range().GetLocalFilename() == "" {
 					s.logger.Debug("Skipping result without a file",
-						"rule", namespace+"."+rule)
+						"namespace", namespace, "rule", rule,
+						log.FilePath(input.Path),
+						"managed", regoResult.Managed)
 					continue
 				}
 				if regoResult.Message == "" {
