@@ -47,6 +47,10 @@
               - "1.2.4"
             VulnerableVersions:
               - "<1.2.4"
+        - key: CVE-2026-10203
+          value:
+            VulnerableVersions:
+              - "<=1.2.3"
 - bucket: "echo maven::Echo OSV"
   pairs:
     - bucket: "com.example:echo-merge"

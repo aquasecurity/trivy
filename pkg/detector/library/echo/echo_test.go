@@ -188,3 +188,33 @@ func TestEchoSupplier_Match(t *testing.T) {
 		})
 	}
 }
+
+func TestEchoSupplier_UpstreamVersion(t *testing.T) {
+	tests := []struct {
+		name    string
+		version string
+		want    string
+	}{
+		{
+			name:    "Echo revision",
+			version: "5.3.39+echo.1",
+			want:    "5.3.39",
+		},
+		{
+			name:    "later metadata segments",
+			version: "v0.22.0+echo.1.frontier.1",
+			want:    "v0.22.0",
+		},
+		{
+			name:    "plain upstream version",
+			version: "5.3.39",
+			want:    "5.3.39",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			require.Equal(t, tt.want, (echoSupplier{}).UpstreamVersion(tt.version))
+		})
+	}
+}

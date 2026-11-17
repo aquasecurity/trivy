@@ -27,7 +27,7 @@ const (
 	// MatchedWithUpstream indicates the package definitely belongs to the
 	// supplier, but advisories from the default ecosystem bucket are also
 	// required. Supplier advisories override default advisories for the same
-	// vulnerability, matched by primary or vendor ID.
+	// primary vulnerability ID.
 	MatchedWithUpstream
 )
 
@@ -57,6 +57,12 @@ type Supplier interface {
 	// The defaultComparer is provided so the supplier can return it unchanged
 	// when no custom comparison logic is needed.
 	Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer
+}
+
+// upstreamVersioner optionally maps a supplier version to the corresponding
+// upstream version used to evaluate default ecosystem advisories.
+type upstreamVersioner interface {
+	UpstreamVersion(pkgVer string) string
 }
 
 // suppliers is the list of registered suppliers. The first matching supplier wins.

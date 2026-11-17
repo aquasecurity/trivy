@@ -84,10 +84,17 @@ func (e echoSupplier) BucketPrefix(eco ecosystem.Type) string {
 	return fmt.Sprintf("%s %s::", e.Name(), eco)
 }
 
+// UpstreamVersion removes Echo's local/build metadata so upstream advisories
+// are evaluated against the upstream version from which the Echo build derives.
+func (echoSupplier) UpstreamVersion(pkgVer string) string {
+	upstreamVersion, _, _ := strings.Cut(pkgVer, "+echo.")
+	return upstreamVersion
+}
+
 // Comparer returns a version comparer for the given ecosystem.
 // pip, npm, NuGet, and Go get comparers that keep the "+echo.N" suffix significant,
 // PEP 440 local versions and SemVer build metadata are otherwise ignored;
-// Maven's default comparer already orders it correctly.
+// Maven's default comparer already orders Echo revisions correctly.
 func (e echoSupplier) Comparer(eco ecosystem.Type, defaultComparer compare.Comparer) compare.Comparer {
 	switch eco {
 	case ecosystem.Pip:
