@@ -3,9 +3,14 @@ package network
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -21,10 +26,12 @@ func TestAdapt(t *testing.T) {
   "resources": [
     {
       "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "nsg",
       "properties": {}
     },
 	{
 	  "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+	  "name": "nsg/rule",
 	  "properties": {}
 	},
 	{
@@ -56,10 +63,12 @@ func TestAdapt(t *testing.T) {
       }
     },
     {
-      "type": "Microsoft.Network/networkSecurityGroups"
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "nsg"
     },
     {
       "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "nsg/rule",
       "properties": {
         "access": "Allow",
         "direction": "Inbound",
@@ -233,7 +242,7 @@ func TestAdapt(t *testing.T) {
 			},
 		},
 		{
-			name: "top-level rule with an expression name goes to every group",
+			name: "top-level rule with an expression name goes to the orphan group",
 			source: `{
   "parameters": {
     "nsgName": {"type": "string", "defaultValue": "web"}
@@ -256,9 +265,35 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: network.Network{
 				SecurityGroups: []network.SecurityGroup{
+					{},
+					{},
 					{Rules: []network.SecurityGroupRule{
 						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
 					}},
+				},
+			},
+		},
+		{
+			name: "top-level rule goes to the orphan group when the group name is an expression",
+			source: `{
+  "parameters": {
+    "nsgName": {"type": "string", "defaultValue": "web"}
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[parameters('nsgName')]"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "web/https",
+      "properties": {"access": "Allow", "protocol": "Tcp"}
+    }
+  ]
+}`,
+			expected: network.Network{
+				SecurityGroups: []network.SecurityGroup{
+					{},
 					{Rules: []network.SecurityGroupRule{
 						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
 					}},
@@ -337,4 +372,27 @@ func TestAdapt(t *testing.T) {
 			adaptertest.AdaptAndCompare(t, tt.source, tt.expected, Adapt)
 		})
 	}
+}
+
+func TestAdaptOrphanSecurityGroupIsUnmanaged(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"test.json": `{
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "[format('{0}/ssh', parameters('nsgName'))]",
+      "properties": {"access": "Allow", "protocol": "Tcp"}
+    }
+  ]
+}`,
+	})
+	deployments, err := parser.New(fsys).ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+	require.Len(t, deployments, 1)
+
+	groups := Adapt(deployments[0]).SecurityGroups
+	require.Len(t, groups, 1)
+	assert.False(t, groups[0].Metadata.IsManaged())
+	require.Len(t, groups[0].Rules, 1)
+	assert.True(t, groups[0].Rules[0].Metadata.IsManaged())
 }

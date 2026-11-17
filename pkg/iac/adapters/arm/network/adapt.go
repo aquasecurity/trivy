@@ -1,15 +1,16 @@
 package network
 
 import (
-	"strings"
-
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
-const securityRuleType = "Microsoft.Network/networkSecurityGroups/securityRules"
+const (
+	securityGroupType = "Microsoft.Network/networkSecurityGroups"
+	securityRuleType  = "securityRules"
+)
 
 func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
 	return common.ParsePortRange(input, meta, common.WithWildcard())
@@ -24,49 +25,37 @@ func Adapt(deployment azure.Deployment) network.Network {
 }
 
 func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGroup) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups") {
+	for _, resource := range deployment.GetResourcesByType(securityGroupType) {
 		sgs = append(sgs, adaptSecurityGroup(resource, deployment))
+	}
+	if orphans := deployment.GetOrphanResources(securityGroupType, securityRuleType); len(orphans) > 0 {
+		// The group of these rules is unknown, so they go to a group with
+		// unmanaged metadata.
+		sgs = append(sgs, network.SecurityGroup{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Rules:    adaptSecurityRuleResources(orphans),
+		})
 	}
 	return sgs
 }
 
 func adaptSecurityGroup(resource azure.Resource, deployment azure.Deployment) network.SecurityGroup {
-	return network.SecurityGroup{
-		Metadata: resource.Metadata,
-		Rules:    adaptSecurityGroupRules(resource, deployment),
-	}
-}
-
-// adaptSecurityGroupRules collects the rules of a network security group from
-// all the places an ARM template can declare them: the securityRules property,
-// child resources, and top-level securityRules resources.
-func adaptSecurityGroupRules(group azure.Resource, deployment azure.Deployment) (rules []network.SecurityGroupRule) {
-	for _, rule := range group.Properties.GetMapValue("securityRules").AsList() {
+	var rules []network.SecurityGroupRule
+	for _, rule := range resource.Properties.GetMapValue("securityRules").AsList() {
 		rules = append(rules, adaptSecurityGroupRule(rule.GetMapValue("properties"), rule.GetMetadata()))
 	}
-	for _, typ := range []string{"securityRules", securityRuleType} {
-		for _, resource := range group.GetResourcesByType(typ) {
-			rules = append(rules, adaptSecurityGroupRule(resource.Properties, resource.Metadata))
-		}
+	return network.SecurityGroup{
+		Metadata: resource.Metadata,
+		Rules:    append(rules, adaptSecurityRuleResources(deployment.GetChildResources(resource, securityRuleType))...),
 	}
-	for _, resource := range deployment.GetResourcesByType(securityRuleType) {
-		if belongsToGroup(resource, group) {
-			rules = append(rules, adaptSecurityGroupRule(resource.Properties, resource.Metadata))
-		}
-	}
-	return rules
 }
 
-// belongsToGroup reports whether a top-level security rule belongs to group.
-// The name of such a rule is "<group name>/<rule name>". When either name is an
-// expression, which the parser does not evaluate, the rule is kept.
-func belongsToGroup(rule, group azure.Resource) bool {
-	ruleName, groupName := rule.Name.AsString(), group.Name.AsString()
-	if ruleName == "" || groupName == "" {
-		return true
+func adaptSecurityRuleResources(resources []azure.Resource) []network.SecurityGroupRule {
+	var rules []network.SecurityGroupRule
+	for _, resource := range resources {
+		rules = append(rules, adaptSecurityGroupRule(resource.Properties, resource.Metadata))
 	}
-	parent, _, found := strings.Cut(ruleName, "/")
-	return !found || strings.EqualFold(parent, groupName)
+	return rules
 }
 
 func adaptSecurityGroupRule(properties azure.Value, metadata iacTypes.Metadata) network.SecurityGroupRule {
