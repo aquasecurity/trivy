@@ -113,6 +113,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	sep := "/"
 	nestedMap := nested.Nested{}
 	secretsMap := make(map[string]ftypes.Secret)
+	var mergedSecretFindings int
 	var mergedLayer ftypes.ArtifactDetail
 
 	for _, layer := range layers {
@@ -159,7 +160,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 				DiffID:    layer.DiffID,
 				CreatedBy: layer.CreatedBy,
 			}
-			secretsMap = mergeSecrets(secretsMap, secret, l)
+			mergedSecretFindings += mergeSecrets(secretsMap, secret, l)
 		}
 
 		// Apply license files
@@ -219,6 +220,11 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 	for _, s := range secretsMap {
 		mergedLayer.Secrets = append(mergedLayer.Secrets, s)
+	}
+	if mergedSecretFindings > 0 {
+		log.WithPrefix(log.PrefixSecret).Warn("Secret findings from lower layers were merged with findings that have the same rule and masked match in upper layers. "+
+			"If a secret was replaced in place with another secret of the same length, the old secret from the lower layer is not reported. "+
+			"Use '--debug' to see the merged findings.", log.Int("merged_findings", mergedSecretFindings))
 	}
 
 	// Extract dpkg licenses
@@ -383,9 +389,13 @@ func aggregate(detail *ftypes.ArtifactDetail) {
 	detail.Applications = apps
 }
 
-// We must save secrets from all layers even though they are removed in the uppler layer.
-// If the secret was changed at the top level, we need to overwrite it.
-func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, layer ftypes.Layer) map[string]ftypes.Secret {
+// mergeSecrets keeps secrets from all layers, even when they are removed or overwritten in an upper layer,
+// because they are still present in the image.
+// A finding from a lower layer is merged into the upper-layer finding only when the upper version of the file
+// has a finding with the same rule and the same masked match, as it is most likely the same secret
+// (e.g. the file was copied up by chmod or the secret moved to another line).
+// It returns the number of merged findings.
+func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, layer ftypes.Layer) int {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
 		newSecret.Findings[i].Layer = layer
 	}
@@ -394,25 +404,33 @@ func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, 
 	if !ok {
 		// Add the new finding if its file doesn't exist before
 		secretsMap[newSecret.FilePath] = newSecret
-	} else {
-		// If the new finding has the same `RuleID` as the finding in the previous layers - use the new finding
-		for _, previousFinding := range secret.Findings { // secrets from previous layers
-			if !secretFindingsContains(newSecret.Findings, previousFinding) {
-				newSecret.Findings = append(newSecret.Findings, previousFinding)
-			}
-		}
-		secretsMap[newSecret.FilePath] = newSecret
+		return 0
 	}
-	return secretsMap
+
+	var merged int
+	for _, previousFinding := range secret.Findings { // secrets from previous layers
+		if secretFindingsContains(newSecret.Findings, previousFinding) {
+			merged++
+			log.WithPrefix(log.PrefixSecret).Debug("Secret finding is merged with the same finding in an upper layer",
+				log.FilePath(newSecret.FilePath), log.String("rule_id", previousFinding.RuleID),
+				log.String("lower_layer", previousFinding.Layer.DiffID), log.String("upper_layer", layer.DiffID))
+			continue
+		}
+		newSecret.Findings = append(newSecret.Findings, previousFinding)
+	}
+	secretsMap[newSecret.FilePath] = newSecret
+	return merged
 }
 
+// secretFindingsContains reports whether findings contain a finding with the same rule and masked match.
+// The masking keeps the length of the secret, so findings that differ only in the secret value
+// are considered equal when the secrets have the same length and the same surrounding text.
+// For binary files the match holds only the file path and the rule title,
+// so findings of the same rule are always considered equal.
 func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.SecretFinding) bool {
-	for _, f := range findings {
-		if f.RuleID == finding.RuleID {
-			return true
-		}
-	}
-	return false
+	return slices.ContainsFunc(findings, func(f ftypes.SecretFinding) bool {
+		return f.RuleID == finding.RuleID && f.Match == finding.Match
+	})
 }
 
 // purlMatchesOS checks if a package's PURL namespace matches the detected OS family.

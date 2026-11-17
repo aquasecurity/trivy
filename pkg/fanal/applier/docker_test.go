@@ -707,6 +707,27 @@ func TestApplyLayers(t *testing.T) {
 										},
 									},
 								},
+								{
+									RuleID:    "aws-access-key-id",
+									Category:  "AWS",
+									Severity:  "CRITICAL",
+									Title:     "AWS Access Key ID",
+									StartLine: 2,
+									EndLine:   2,
+									Match:     "OLD_AWS_ACCESS_KEY_ID=********************",
+									Code: types.Code{
+										Lines: []types.Line{
+											{
+												Number:      2,
+												Content:     "OLD_AWS_ACCESS_KEY_ID=********************",
+												IsCause:     true,
+												Highlighted: "OLD_AWS_ACCESS_KEY_ID=********************",
+												FirstCause:  true,
+												LastCause:   true,
+											},
+										},
+									},
+								},
 							},
 						},
 					},
@@ -753,7 +774,7 @@ func TestApplyLayers(t *testing.T) {
 									Code: types.Code{
 										Lines: []types.Line{
 											{
-												Number:      1,
+												Number:      2,
 												Content:     "AWS_ACCESS_KEY_ID=********************",
 												IsCause:     true,
 												Highlighted: "AWS_ACCESS_KEY_ID=********************",
@@ -825,10 +846,36 @@ func TestApplyLayers(t *testing.T) {
 								Code: types.Code{
 									Lines: []types.Line{
 										{
-											Number:      1,
+											Number:      2,
 											Content:     "AWS_ACCESS_KEY_ID=********************",
 											IsCause:     true,
 											Highlighted: "AWS_ACCESS_KEY_ID=********************",
+											FirstCause:  true,
+											LastCause:   true,
+										},
+									},
+								},
+							},
+							{
+								RuleID:    "aws-access-key-id",
+								Category:  "AWS",
+								Severity:  "CRITICAL",
+								Title:     "AWS Access Key ID",
+								StartLine: 2,
+								EndLine:   2,
+								Match:     "OLD_AWS_ACCESS_KEY_ID=********************",
+								Layer: types.Layer{
+									Digest:    "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+									DiffID:    "sha256:a187dde48cd289ac374ad8539930628314bc581a481cdb41409c9289419ddb72",
+									CreatedBy: "Line_1",
+								},
+								Code: types.Code{
+									Lines: []types.Line{
+										{
+											Number:      2,
+											Content:     "OLD_AWS_ACCESS_KEY_ID=********************",
+											IsCause:     true,
+											Highlighted: "OLD_AWS_ACCESS_KEY_ID=********************",
 											FirstCause:  true,
 											LastCause:   true,
 										},
