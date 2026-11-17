@@ -71,7 +71,7 @@ func TestAdapt(t *testing.T) {
 				}},
 				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
-						CustomData: types.StringTest("Zm9v"),
+						CustomData: types.StringTest("foo"),
 					},
 					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
 						DisablePasswordAuthentication: types.BoolTest(true),
@@ -79,7 +79,7 @@ func TestAdapt(t *testing.T) {
 				}},
 				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
-						CustomData: types.StringTest("Zm9v"),
+						CustomData: types.StringTest("foo"),
 					},
 				}},
 			},
@@ -92,7 +92,7 @@ func TestAdapt(t *testing.T) {
       "type": "Microsoft.Compute/virtualMachines",
       "properties": {
         "osProfile": {
-          "customData": "test",
+          "customData": "dGVzdA==",
           "linuxConfiguration": {
             "disablePasswordAuthentication": false
           },
@@ -124,6 +124,32 @@ func TestAdapt(t *testing.T) {
 				WindowsVirtualMachines: []compute.WindowsVirtualMachine{{
 					VirtualMachine: compute.VirtualMachine{
 						CustomData: types.StringTest("test"),
+					},
+				}},
+			},
+		},
+		{
+			name: "custom data that is not base64 is kept as written",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "properties": {
+        "osProfile": {
+          "customData": "export DATABASE_PASSWORD=\"SomeSortOfPassword\"",
+          "linuxConfiguration": {}
+        }
+      }
+    }
+  ]
+}`,
+			expected: compute.Compute{
+				LinuxVirtualMachines: []compute.LinuxVirtualMachine{{
+					VirtualMachine: compute.VirtualMachine{
+						CustomData: types.StringTest(`export DATABASE_PASSWORD="SomeSortOfPassword"`),
+					},
+					OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
+						DisablePasswordAuthentication: types.BoolTest(false),
 					},
 				}},
 			},
