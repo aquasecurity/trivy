@@ -9,6 +9,8 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
+const containerType = "Microsoft.Storage/storageAccounts/blobServices/containers"
+
 func Adapt(deployment azure.Deployment) storage.Storage {
 	return storage.Storage{
 		Accounts: adaptAccounts(deployment),
@@ -27,20 +29,12 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			})
 		}
 
-		var containers []storage.Container
-		for _, containerResource := range resource.GetResourcesByType("containerServices/containers") {
-			containers = append(containers, storage.Container{
-				Metadata:     containerResource.Metadata,
-				PublicAccess: containerResource.Properties.GetMapValue("publicAccess").AsStringValue("None", containerResource.Metadata),
-			})
-		}
-
 		account := storage.Account{
 			Metadata:     resource.Metadata,
 			NetworkRules: xslices.ZeroToNil(adaptNetworkRules(resource)),
 			// The default value is true since API version 2019-04-01.
 			EnforceHTTPS: resource.Properties.GetMapValue("supportsHttpsTrafficOnly").AsBoolValue(true, resource.Properties.GetMetadata()),
-			Containers:   containers,
+			Containers:   adaptContainers(resource, deployment),
 			QueueProperties: storage.QueueProperties{
 				Metadata:      resource.Properties.GetMetadata(),
 				EnableLogging: types.BoolDefault(false, resource.Properties.GetMetadata()),
@@ -89,6 +83,70 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		accounts = append(accounts, account)
 	}
 	return accounts
+}
+
+// adaptContainers collects the blob containers of a storage account, declared
+// as its children, as children of its blob service, or as top-level resources
+// named "<account name>/default/<container name>".
+func adaptContainers(account azure.Resource, deployment azure.Deployment) []storage.Container {
+	var containers []storage.Container
+	for _, typ := range []string{"containerServices/containers", "blobServices/containers", containerType} {
+		for _, resource := range account.GetResourcesByType(typ) {
+			containers = append(containers, adaptContainer(resource))
+		}
+	}
+	for _, service := range account.Resources {
+		if !isBlobService(service.Type.AsString()) {
+			continue
+		}
+		for _, typ := range []string{"containers", containerType} {
+			for _, resource := range service.GetResourcesByType(typ) {
+				containers = append(containers, adaptContainer(resource))
+			}
+		}
+	}
+	for _, resource := range deployment.GetResourcesByType(containerType) {
+		if belongsToAccount(resource, account) {
+			containers = append(containers, adaptContainer(resource))
+		}
+	}
+	return containers
+}
+
+func isBlobService(typ string) bool {
+	return typ == "blobServices" || typ == "Microsoft.Storage/storageAccounts/blobServices"
+}
+
+// adaptContainer maps the ARM publicAccess values None, Blob and Container to
+// the values the checks expect.
+// https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts/blobservices/containers?pivots=deployment-language-arm-template
+func adaptContainer(resource azure.Resource) storage.Container {
+	access := resource.Properties.GetMapValue("publicAccess")
+	publicAccess := types.StringDefault(storage.PublicAccessOff, resource.Metadata)
+	switch value := access.AsString(); {
+	case strings.EqualFold(value, "Blob"):
+		publicAccess = types.String(storage.PublicAccessBlob, access.GetMetadata())
+	case strings.EqualFold(value, "Container"):
+		publicAccess = types.String(storage.PublicAccessContainer, access.GetMetadata())
+	case strings.EqualFold(value, "None"):
+		publicAccess = types.String(storage.PublicAccessOff, access.GetMetadata())
+	}
+	return storage.Container{
+		Metadata:     resource.Metadata,
+		PublicAccess: publicAccess,
+	}
+}
+
+// belongsToAccount reports whether a top-level container belongs to account.
+// When either name is an expression, which the parser does not evaluate, the
+// container is kept.
+func belongsToAccount(container, account azure.Resource) bool {
+	containerName, accountName := container.Name.AsString(), account.Name.AsString()
+	if containerName == "" || accountName == "" {
+		return true
+	}
+	parent, _, found := strings.Cut(containerName, "/")
+	return !found || strings.EqualFold(parent, accountName)
 }
 
 func adaptNetworkRules(resource azure.Resource) []storage.NetworkRule {
