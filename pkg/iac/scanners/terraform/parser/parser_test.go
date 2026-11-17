@@ -3418,3 +3418,105 @@ resource "aws_s3_bucket" "test" {}`,
 	assert.Len(t, modules.GetResourcesByType("aws_security_group"), 1)
 	assert.Len(t, modules.GetResourcesByType("aws_s3_bucket"), 1)
 }
+
+func Test_TFVarComplexTypesParsedAsHCL(t *testing.T) {
+	t.Setenv("TF_VAR_tags", `{env="prod"}`)
+	t.Setenv("TF_VAR_zones", `["a", "b"]`)
+
+	fsys := testutil.CreateFS(map[string]string{
+		"code/test.tf": `
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
+variable "zones" {
+  type    = list(string)
+  default = []
+}
+
+resource "something" "blah" {
+  tags  = var.tags
+  zones = var.zones
+}
+`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	block := modules[0].GetResourcesByType("something")[0]
+
+	tags := block.GetAttribute("tags").Value()
+	require.False(t, tags.IsNull())
+	require.True(t, tags.Type().IsObjectType() || tags.Type().IsMapType(), "tags type: %s", tags.Type().FriendlyName())
+	var env cty.Value
+	if tags.Type().IsMapType() {
+		env = tags.Index(cty.StringVal("env"))
+	} else {
+		env = tags.GetAttr("env")
+	}
+	assert.Equal(t, "prod", env.AsString())
+	assert.True(t, block.GetAttribute("tags").IsResolvable())
+
+	zones := block.GetAttribute("zones").AsStringValueSliceOrEmpty()
+	require.Len(t, zones, 2)
+	assert.Equal(t, "a", zones[0].Value())
+	assert.Equal(t, "b", zones[1].Value())
+}
+
+func Test_TFVarPrimitiveKeptAsLiteralString(t *testing.T) {
+	t.Setenv("TF_VAR_name", `{env="prod"}`)
+
+	fsys := testutil.CreateFS(map[string]string{
+		"code/test.tf": `
+variable "name" {
+  type    = string
+  default = "def"
+}
+
+resource "something" "blah" {
+  name = var.name
+}
+`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	name := modules[0].GetResourcesByType("something")[0].GetAttribute("name")
+	assert.True(t, name.IsResolvable())
+	assert.Equal(t, `{env="prod"}`, name.Value().AsString())
+}
+
+func Test_TFVarNumberConvertsFromString(t *testing.T) {
+	t.Setenv("TF_VAR_replicas", "3")
+
+	fsys := testutil.CreateFS(map[string]string{
+		"code/test.tf": `
+variable "replicas" {
+  type    = number
+  default = 0
+}
+
+resource "something" "blah" {
+  replicas = var.replicas
+}
+`,
+	})
+
+	parser := New(fsys, "", OptionStopOnHCLError(true))
+	require.NoError(t, parser.ParseFS(t.Context(), "code"))
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	replicas := modules[0].GetResourcesByType("something")[0].GetAttribute("replicas").Value()
+	assert.True(t, replicas.Equals(cty.NumberIntVal(3)).True())
+}
