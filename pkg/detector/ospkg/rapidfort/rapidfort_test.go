@@ -2061,6 +2061,46 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// An "rfdebian" revision carries neither "+rf" nor "rfubu", so it
+			// reaches the rapidfort debian bucket only through the rfdebian
+			// marker.
+			name:   "Debian: rfdebian revision routes to the rapidfort debian bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-git",
+						Version:    "0:2.43.0-11rfdebian~rf.1",
+						SrcName:    "rf-git",
+						SrcVersion: "0:2.43.0-11rfdebian~rf.1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-git",
+					VulnerabilityID:  "CVE-2025-27614",
+					InstalledVersion: "0:2.43.0-11rfdebian~rf.1",
+					FixedVersion:     "0:2.48.2-0rfubu",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "debian",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			// A plain Debian revision for an rf-named package must NOT cross-match
 			// the rf bucket: it has no marker, so it routes to the versioned
 			// bucket, where this package has no advisory. The version has to
@@ -2520,8 +2560,8 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "ubuntu security revision", ver: "0:2.46-3ubuntu2", want: false},
 		{name: "empty version", ver: "", want: false},
 		{name: "debian security revision", ver: "0:1.26.2-3+deb13u1", want: false},
-		// None of the four published forms (+rf, rfubu, trailing .rf, .rf.
-		// mid-release) appear in these substrings, so an unpublished "rf"
+		// None of the published forms (+rf, rfubu, rfdebian, -rf., .rf.,
+		// trailing .rf) appear in these substrings, so an unpublished "rf"
 		// fragment stays unmatched and the package keeps its distro routing.
 		// A bare "~rf" is one such unpublished form — the dpkg feeds don't
 		// emit it, so a plain tilde-rf version must not route to the rf bucket.
@@ -2536,6 +2576,9 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		// not match.
 		{name: "rfdeb prefix without rfdebian", ver: "0:3.2.1-4rfdebjl", want: false},
 		{name: "debian revision starting with rf.", ver: "1:1.5.91-rf.1", want: true},
+		// "-rf." needs the dot: a revision that merely starts with "rf" is
+		// not a published spelling.
+		{name: "debian revision starting with rf without a dot", ver: "1:1.5.91-rf1", want: false},
 	}
 
 	for _, tt := range tests {
