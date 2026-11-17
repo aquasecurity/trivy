@@ -142,6 +142,130 @@ func TestAdapt(t *testing.T) {
 			},
 		},
 		{
+			name: "rules in the securityRules property",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "nsg",
+      "properties": {
+        "securityRules": [
+          {"name": "ssh", "properties": {"access": "Allow", "protocol": "Tcp"}},
+          {"name": "dns", "properties": {"access": "Deny", "protocol": "Udp"}}
+        ]
+      }
+    }
+  ]
+}`,
+			expected: network.Network{
+				SecurityGroups: []network.SecurityGroup{{
+					Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
+						{Protocol: types.StringTest("Udp")},
+					},
+				}},
+			},
+		},
+		{
+			name: "rules as child resources",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "nsg",
+      "resources": [
+        {
+          "type": "securityRules",
+          "name": "ssh",
+          "properties": {"access": "Allow", "protocol": "Tcp"}
+        },
+        {
+          "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+          "name": "dns",
+          "properties": {"access": "Allow", "protocol": "Udp"}
+        }
+      ]
+    }
+  ]
+}`,
+			expected: network.Network{
+				SecurityGroups: []network.SecurityGroup{{
+					Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Udp")},
+					},
+				}},
+			},
+		},
+		{
+			name: "top-level rules go to the group they name",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "web"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "db"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "web/https",
+      "properties": {"access": "Allow", "protocol": "Tcp"}
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "DB/sql",
+      "properties": {"access": "Allow", "protocol": "Udp"}
+    }
+  ]
+}`,
+			expected: network.Network{
+				SecurityGroups: []network.SecurityGroup{
+					{Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
+					}},
+					{Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Udp")},
+					}},
+				},
+			},
+		},
+		{
+			name: "top-level rule with an expression name goes to every group",
+			source: `{
+  "parameters": {
+    "nsgName": {"type": "string", "defaultValue": "web"}
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "web"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "db"
+    },
+    {
+      "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+      "name": "[concat(parameters('nsgName'), '/https')]",
+      "properties": {"access": "Allow", "protocol": "Tcp"}
+    }
+  ]
+}`,
+			expected: network.Network{
+				SecurityGroups: []network.SecurityGroup{
+					{Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
+					}},
+					{Rules: []network.SecurityGroupRule{
+						{Allow: types.BoolTest(true), Protocol: types.StringTest("Tcp")},
+					}},
+				},
+			},
+		},
+		{
 			name: "network interface with ip configurations",
 			source: `{
 			"resources": [
