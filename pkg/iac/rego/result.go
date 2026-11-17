@@ -137,6 +137,12 @@ func (s *Scanner) convertResults(resultSet rego.ResultSet, input Input, namespac
 				if regoResult.Filepath == "" && input.Path != "" {
 					regoResult.Filepath = input.Path
 				}
+				// A result that does not point to a scanned file cannot be shown or fixed.
+				if regoResult.GetMetadata().Range().GetLocalFilename() == "" {
+					s.logger.Debug("Skipping result without a file",
+						"rule", namespace+"."+rule)
+					continue
+				}
 				if regoResult.Message == "" {
 					regoResult.Message = fmt.Sprintf("Rego check rule: %s.%s", namespace, rule)
 				}

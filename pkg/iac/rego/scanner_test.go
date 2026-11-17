@@ -9,11 +9,13 @@ import (
 	"testing"
 	"testing/fstest"
 
+	"github.com/samber/lo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/rego"
+	"github.com/aquasecurity/trivy/pkg/iac/scan"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/options"
 	"github.com/aquasecurity/trivy/pkg/iac/severity"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
@@ -355,6 +357,85 @@ deny[res] {
 	assert.Equal(t, 123, results.GetFailed()[0].Metadata().Range().GetStartLine())
 	assert.Equal(t, 456, results.GetFailed()[0].Metadata().Range().GetEndLine())
 
+}
+
+func Test_RegoScanning_SkipsResultsWithoutFile(t *testing.T) {
+	check := `
+# METADATA
+# title: Custom policy
+# description: Custom policy for testing
+# scope: package
+# schemas:
+#   - input: schema["input"]
+# custom:
+#   id: BAR-0001
+#   provider: custom
+#   service: custom
+#   severity: LOW
+#   short_code: custom-policy
+#   recommended_action: Custom policy for testing
+
+package defsec.test
+
+deny[res] {
+	res := input.causes[_]
+}
+`
+
+	tests := []struct {
+		name     string
+		path     string
+		causes   []any
+		expected []string
+	}{
+		{
+			name: "unmanaged",
+			path: "/main.tf",
+			causes: []any{
+				map[string]any{"msg": "managed"},
+				map[string]any{"msg": "unmanaged", "managed": false},
+			},
+			expected: []string{"managed"},
+		},
+		{
+			name: "file from input",
+			path: "/main.tf",
+			causes: []any{
+				map[string]any{"msg": "without file"},
+			},
+			expected: []string{"without file"},
+		},
+		{
+			name: "no file in cause and input",
+			causes: []any{
+				map[string]any{"msg": "with file", "filepath": "/main.tf"},
+				map[string]any{"msg": "without file"},
+			},
+			expected: []string{"with file"},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			scanner := rego.NewScanner(
+				rego.WithPolicyReader(strings.NewReader(check)),
+			)
+			require.NoError(t, scanner.LoadPolicies(nil))
+
+			results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{
+				Path: tt.path,
+				Contents: map[string]any{
+					"causes": tt.causes,
+				},
+			})
+			require.NoError(t, err)
+
+			got := lo.Map(results.GetFailed(), func(res scan.Result, _ int) string {
+				return res.Description()
+			})
+			assert.Equal(t, tt.expected, got)
+		})
+	}
 }
 
 func Test_RegoScanning_WithStaticMetadata(t *testing.T) {
@@ -861,7 +942,7 @@ deny {
 
 	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{})
+	results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{Path: "/evil.lol"})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
@@ -913,7 +994,7 @@ deny {
 
 	require.NoError(t, scanner.LoadPolicies(srcFS))
 
-	results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{})
+	results, err := scanner.ScanInput(t.Context(), types.SourceJSON, rego.Input{Path: "/evil.lol"})
 	require.NoError(t, err)
 
 	assert.Len(t, results.GetFailed(), 1)
