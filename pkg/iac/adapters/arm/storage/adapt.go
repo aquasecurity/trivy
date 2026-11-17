@@ -9,7 +9,11 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
-const containerType = "Microsoft.Storage/storageAccounts/blobServices/containers"
+const (
+	accountType   = "Microsoft.Storage/storageAccounts"
+	containerType = "blobServices/containers"
+	queueType     = "queueServices/queues"
+)
 
 func Adapt(deployment azure.Deployment) storage.Storage {
 	return storage.Storage{
@@ -19,22 +23,13 @@ func Adapt(deployment azure.Deployment) storage.Storage {
 
 func adaptAccounts(deployment azure.Deployment) []storage.Account {
 	var accounts []storage.Account
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Storage/storageAccounts") {
-
-		var queues []storage.Queue
-		for _, queueResource := range resource.GetResourcesByType("queueServices/queues") {
-			queues = append(queues, storage.Queue{
-				Metadata: queueResource.Metadata,
-				Name:     queueResource.Name.AsStringValue("", queueResource.Metadata),
-			})
-		}
-
+	for _, resource := range deployment.GetResourcesByType(accountType) {
 		account := storage.Account{
 			Metadata:     resource.Metadata,
 			NetworkRules: xslices.ZeroToNil(adaptNetworkRules(resource)),
 			// The default value is true since API version 2019-04-01.
 			EnforceHTTPS: resource.Properties.GetMapValue("supportsHttpsTrafficOnly").AsBoolValue(true, resource.Properties.GetMetadata()),
-			Containers:   adaptContainers(resource, deployment),
+			Containers:   adaptContainers(deployment.GetChildResources(resource, containerType)),
 			QueueProperties: storage.QueueProperties{
 				Metadata:      resource.Properties.GetMetadata(),
 				EnableLogging: types.BoolDefault(false, resource.Properties.GetMetadata()),
@@ -42,7 +37,7 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			// The default interpretation is TLS 1.0 for this property.
 			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").
 				AsStringValue("TLS1_0", resource.Properties.GetMetadata()),
-			Queues: queues,
+			Queues: adaptQueues(deployment.GetChildResources(resource, queueType)),
 			BlobProperties: storage.BlobProperties{
 				Metadata: resource.Properties.GetMetadata(),
 				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
@@ -82,39 +77,64 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		)
 		accounts = append(accounts, account)
 	}
+
+	orphanContainers := deployment.GetOrphanResources(accountType, containerType)
+	orphanQueues := deployment.GetOrphanResources(accountType, queueType)
+	if len(orphanContainers) > 0 || len(orphanQueues) > 0 {
+		accounts = append(accounts, orphanAccount(adaptContainers(orphanContainers), adaptQueues(orphanQueues)))
+	}
 	return accounts
 }
 
-// adaptContainers collects the blob containers of a storage account, declared
-// as its children, as children of its blob service, or as top-level resources
-// named "<account name>/default/<container name>".
-func adaptContainers(account azure.Resource, deployment azure.Deployment) []storage.Container {
-	var containers []storage.Container
-	for _, typ := range []string{"containerServices/containers", "blobServices/containers", containerType} {
-		for _, resource := range account.GetResourcesByType(typ) {
-			containers = append(containers, adaptContainer(resource))
-		}
+// orphanAccount holds the containers and queues whose account is unknown.
+// Its metadata is unmanaged, so checks on accounts skip it.
+func orphanAccount(containers []storage.Container, queues []storage.Queue) storage.Account {
+	metadata := types.NewUnmanagedMetadata()
+	return storage.Account{
+		Metadata:     metadata,
+		EnforceHTTPS: types.BoolDefault(true, metadata),
+		Containers:   containers,
+		QueueProperties: storage.QueueProperties{
+			Metadata:      metadata,
+			EnableLogging: types.BoolDefault(false, metadata),
+		},
+		MinimumTLSVersion:   types.StringDefault("", metadata),
+		Queues:              queues,
+		PublicNetworkAccess: types.BoolDefault(false, metadata),
+		BlobProperties: storage.BlobProperties{
+			Metadata: metadata,
+			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+				Metadata: metadata,
+				Days:     types.IntDefault(0, metadata),
+			},
+		},
+		AccountReplicationType:          types.StringDefault("", metadata),
+		InfrastructureEncryptionEnabled: types.BoolDefault(false, metadata),
+		CustomerManagedKey: storage.CustomerManagedKey{
+			Metadata:               metadata,
+			KeyVaultKeyId:          types.StringDefault("", metadata),
+			UserAssignedIdentityId: types.StringDefault("", metadata),
+		},
 	}
-	for _, service := range account.Resources {
-		if !isBlobService(service.Type.AsString()) {
-			continue
-		}
-		for _, typ := range []string{"containers", containerType} {
-			for _, resource := range service.GetResourcesByType(typ) {
-				containers = append(containers, adaptContainer(resource))
-			}
-		}
-	}
-	for _, resource := range deployment.GetResourcesByType(containerType) {
-		if belongsToAccount(resource, account) {
-			containers = append(containers, adaptContainer(resource))
-		}
-	}
-	return containers
 }
 
-func isBlobService(typ string) bool {
-	return typ == "blobServices" || typ == "Microsoft.Storage/storageAccounts/blobServices"
+func adaptQueues(resources []azure.Resource) []storage.Queue {
+	var queues []storage.Queue
+	for _, resource := range resources {
+		queues = append(queues, storage.Queue{
+			Metadata: resource.Metadata,
+			Name:     resource.Name.AsStringValue("", resource.Metadata),
+		})
+	}
+	return queues
+}
+
+func adaptContainers(resources []azure.Resource) []storage.Container {
+	var containers []storage.Container
+	for _, resource := range resources {
+		containers = append(containers, adaptContainer(resource))
+	}
+	return containers
 }
 
 // adaptContainer maps the ARM publicAccess values None, Blob and Container to
@@ -135,18 +155,6 @@ func adaptContainer(resource azure.Resource) storage.Container {
 		Metadata:     resource.Metadata,
 		PublicAccess: publicAccess,
 	}
-}
-
-// belongsToAccount reports whether a top-level container belongs to account.
-// When either name is an expression, which the parser does not evaluate, the
-// container is kept.
-func belongsToAccount(container, account azure.Resource) bool {
-	containerName, accountName := container.Name.AsString(), account.Name.AsString()
-	if containerName == "" || accountName == "" {
-		return true
-	}
-	parent, _, found := strings.Cut(containerName, "/")
-	return !found || strings.EqualFold(parent, accountName)
 }
 
 func adaptNetworkRules(resource azure.Resource) []storage.NetworkRule {

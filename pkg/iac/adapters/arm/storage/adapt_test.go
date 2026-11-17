@@ -3,8 +3,13 @@ package storage
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
+	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure/arm/parser"
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -115,7 +120,7 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: storage.Storage{
-				Accounts: []storage.Account{accountWithContainers("off", "blob", "off", "container")},
+				Accounts: []storage.Account{accountWithContainers("off", "blob", "container", "off")},
 			},
 		},
 		{
@@ -153,11 +158,34 @@ func TestAdapt(t *testing.T) {
 			},
 		},
 		{
-			name: "top-level container with an expression name goes to every account",
+			name: "types match case-insensitively",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "sa",
+      "resources": [
+        {"type": "BlobServices", "name": "default", "resources": [
+          {"type": "Containers", "name": "public", "properties": {"publicAccess": "Container"}}
+        ]}
+      ]
+    },
+    {
+      "type": "microsoft.storage/storageaccounts/blobservices/containers",
+      "name": "SA/default/blobs",
+      "properties": {"publicAccess": "Blob"}
+    }
+  ]
+}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{accountWithContainers("container", "blob")},
+			},
+		},
+		{
+			name: "top-level container with an expression name goes to the orphan account",
 			source: `{
   "resources": [
     {"type": "Microsoft.Storage/storageAccounts", "name": "one"},
-    {"type": "Microsoft.Storage/storageAccounts", "name": "two"},
     {
       "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
       "name": "[format('{0}/default/public', 'one')]",
@@ -166,7 +194,47 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: storage.Storage{
-				Accounts: []storage.Account{accountWithContainers("container"), accountWithContainers("container")},
+				Accounts: []storage.Account{accountWithContainers(), orphanAccountWithContainers("container")},
+			},
+		},
+		{
+			name: "top-level container goes to the orphan account when the account name is an expression",
+			source: `{
+  "resources": [
+    {"type": "Microsoft.Storage/storageAccounts", "name": "[parameters('name')]"},
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "name": "one/default/public",
+      "properties": {"publicAccess": "Container"}
+    }
+  ]
+}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{accountWithContainers(), orphanAccountWithContainers("container")},
+			},
+		},
+		{
+			name: "queues as children of the queue service and at the top level",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "sa",
+      "resources": [
+        {"type": "queueServices", "name": "default", "resources": [
+          {"type": "queues", "name": "nested"}
+        ]}
+      ]
+    },
+    {"type": "Microsoft.Storage/storageAccounts/queueServices/queues", "name": "sa/default/top"},
+    {"type": "Microsoft.Storage/storageAccounts/queueServices/queues", "name": "other/default/orphan"}
+  ]
+}`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					accountWithQueues("nested", "sa/default/top"),
+					orphanAccountWithQueues("other/default/orphan"),
+				},
 			},
 		},
 	}
@@ -178,11 +246,89 @@ func TestAdapt(t *testing.T) {
 	}
 }
 
+func TestAdaptOrphanAccountIsUnmanaged(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"test.json": `{
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts/blobServices/containers",
+      "name": "[format('{0}/default/public', parameters('name'))]",
+      "properties": {"publicAccess": "Container"}
+    }
+  ]
+}`,
+	})
+	deployments, err := parser.New(fsys).ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+	require.Len(t, deployments, 1)
+
+	accounts := Adapt(deployments[0]).Accounts
+	require.Len(t, accounts, 1)
+	assert.False(t, accounts[0].Metadata.IsManaged())
+	require.Len(t, accounts[0].Containers, 1)
+	assert.True(t, accounts[0].Containers[0].Metadata.IsManaged())
+}
+
 func accountWithContainers(publicAccess ...string) storage.Account {
+	account := testAccount()
+	account.Containers = testContainers(publicAccess)
+	return account
+}
+
+func accountWithQueues(names ...string) storage.Account {
+	account := testAccount()
+	account.Queues = testQueues(names)
+	return account
+}
+
+func orphanAccountWithContainers(publicAccess ...string) storage.Account {
+	account := testOrphanAccount()
+	account.Containers = testContainers(publicAccess)
+	return account
+}
+
+func orphanAccountWithQueues(names ...string) storage.Account {
+	account := testOrphanAccount()
+	account.Queues = testQueues(names)
+	return account
+}
+
+func testContainers(publicAccess []string) []storage.Container {
 	var containers []storage.Container
 	for _, access := range publicAccess {
 		containers = append(containers, storage.Container{PublicAccess: types.StringTest(access)})
 	}
+	return containers
+}
+
+func testQueues(names []string) []storage.Queue {
+	var queues []storage.Queue
+	for _, name := range names {
+		queues = append(queues, storage.Queue{Name: types.StringTest(name)})
+	}
+	return queues
+}
+
+func testOrphanAccount() storage.Account {
+	return storage.Account{
+		EnforceHTTPS:                    types.BoolTest(true),
+		MinimumTLSVersion:               types.StringTest(""),
+		PublicNetworkAccess:             types.BoolTest(false),
+		AccountReplicationType:          types.StringTest(""),
+		InfrastructureEncryptionEnabled: types.BoolTest(false),
+		BlobProperties: storage.BlobProperties{
+			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+				Days: types.IntTest(0),
+			},
+		},
+		CustomerManagedKey: storage.CustomerManagedKey{
+			KeyVaultKeyId:          types.StringTest(""),
+			UserAssignedIdentityId: types.StringTest(""),
+		},
+	}
+}
+
+func testAccount() storage.Account {
 	return storage.Account{
 		MinimumTLSVersion: types.StringTest("TLS1_0"),
 		EnforceHTTPS:      types.BoolTest(true),
@@ -193,7 +339,6 @@ func accountWithContainers(publicAccess ...string) storage.Account {
 		PublicNetworkAccess:             types.BoolTest(true),
 		AccountReplicationType:          types.StringTest(""),
 		InfrastructureEncryptionEnabled: types.BoolTest(false),
-		Containers:                      containers,
 		BlobProperties: storage.BlobProperties{
 			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
 				Days: types.IntTest(0),
