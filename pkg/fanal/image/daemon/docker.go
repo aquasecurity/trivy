@@ -3,6 +3,7 @@ package daemon
 import (
 	"context"
 	"os"
+	"regexp"
 
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/moby/moby/client"
@@ -10,6 +11,9 @@ import (
 
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
+
+// bareImageID matches a short or full image ID without the "sha256:" prefix.
+var bareImageID = regexp.MustCompile(`^[a-f0-9]{12,64}$`)
 
 // DockerImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
@@ -49,6 +53,11 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 		inspect, err = c.ImageInspect(ctx, imageID)
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", imageID, err)
+		}
+		// The containerd image store refuses to export a bare image ID
+		// ("cannot specify 64-byte hexadecimal strings"), so use the full ID ("sha256:...").
+		if bareImageID.MatchString(imageID) {
+			imageID = inspect.ID
 		}
 	}
 
