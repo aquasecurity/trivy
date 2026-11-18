@@ -136,6 +136,7 @@ nav:
           - Others: guide/configuration/others.md
       - Supply Chain:
           - SBOM: guide/supply-chain/sbom.md
+          - Package Digests: guide/supply-chain/package-digests.md
           - Attestation:
               - SBOM: guide/supply-chain/attestation/sbom.md
               - Cosign Vulnerability Scan Record: guide/supply-chain/attestation/vuln.md

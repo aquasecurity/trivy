@@ -454,6 +454,23 @@ $ trivy image -f json -o results.json alpine:latest
 
 `VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
 
+The `Digests` field of each package in `Packages` holds the [package digests](../supply-chain/package-digests.md). The deprecated `Digest` field keeps the value that older Trivy versions reported. Digests from newer sources, such as `go-module-h1`, are only in `Digests`.
+
+```json
+{
+  "ID": "musl@1.1.14-r10",
+  "Name": "musl",
+  "Version": "1.1.14-r10",
+  "Digest": "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+  "Digests": [
+    {
+      "Digest": "sha1:d68b402f35f57750f49156b0cb4e886a2ad35d2d",
+      "Source": "apk-installed-db"
+    }
+  ]
+}
+```
+
 ### SARIF
 |     Scanner      | Supported |
 |:----------------:|:---------:|
