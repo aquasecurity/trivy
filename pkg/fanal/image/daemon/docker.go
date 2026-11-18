@@ -3,17 +3,14 @@ package daemon
 import (
 	"context"
 	"os"
-	"regexp"
 
+	"github.com/distribution/reference"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/moby/moby/client"
 	"golang.org/x/xerrors"
 
 	xos "github.com/aquasecurity/trivy/pkg/x/os"
 )
-
-// bareImageID matches a short or full image ID without the "sha256:" prefix.
-var bareImageID = regexp.MustCompile(`^[a-f0-9]{12,64}$`)
 
 // DockerImage implements v1.Image by extending daemon.Image.
 // The caller must call cleanup() to remove a temporary file.
@@ -54,11 +51,7 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", imageID, err)
 		}
-		// The containerd image store refuses to export a bare image ID
-		// ("cannot specify 64-byte hexadecimal strings"), so use the full ID ("sha256:...").
-		if bareImageID.MatchString(imageID) {
-			imageID = inspect.ID
-		}
+		imageID = normalizeImageID(imageID)
 	}
 
 	history, err := c.ImageHistory(ctx, imageID)
@@ -82,4 +75,16 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 		inspect: inspect.InspectResponse,
 		history: configHistory(history.Items),
 	}, cleanup, nil
+}
+
+// normalizeImageID turns a bare 64-hex image ID into "sha256:<hex>" the way the daemon does.
+// The containerd image store refuses to export a bare 64-hex ID
+// ("cannot specify 64-byte hexadecimal strings"), while inspect and history accept it.
+func normalizeImageID(s string) string {
+	if parsed, err := reference.ParseAnyReference(s); err == nil {
+		if _, named := parsed.(reference.Named); !named {
+			return parsed.String()
+		}
+	}
+	return s
 }
