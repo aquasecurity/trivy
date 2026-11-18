@@ -10,7 +10,6 @@ import (
 	"golang.org/x/xerrors"
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
-	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/compliance/spec"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/result"
@@ -257,7 +256,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 		return xerrors.New(`"--table-mode" can be used only with "--format table".`)
 	}
 
-	cs, err := loadComplianceTypes(f.Compliance.Value())
+	cs, err := loadComplianceTypes(f.Compliance.Value(), opts.CacheDir)
 	if err != nil {
 		return xerrors.Errorf("unable to load compliance spec: %w", err)
 	}
@@ -294,12 +293,12 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	return nil
 }
 
-func loadComplianceTypes(compliance string) (spec.ComplianceSpec, error) {
+func loadComplianceTypes(compliance string, cacheDir string) (spec.ComplianceSpec, error) {
 	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance: %v", compliance)
 	}
 
-	cs, err := spec.GetComplianceSpec(compliance, cache.DefaultDir())
+	cs, err := spec.GetComplianceSpec(compliance, cacheDir)
 	if err != nil {
 		return spec.ComplianceSpec{}, xerrors.Errorf("spec loading from file system error: %w", err)
 	}
