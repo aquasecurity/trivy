@@ -120,9 +120,11 @@ func orphanage(containers []storage.Container, queues []storage.Queue) storage.A
 func adaptQueues(resources []azure.Resource) []storage.Queue {
 	var queues []storage.Queue
 	for _, resource := range resources {
+		// A top-level queue is named "<account>/default/<queue>".
+		name := resource.Name.AsStringValue("", resource.Metadata)
 		queues = append(queues, storage.Queue{
 			Metadata: resource.Metadata,
-			Name:     resource.Name.AsStringValue("", resource.Metadata),
+			Name:     types.String(name.Value()[strings.LastIndex(name.Value(), "/")+1:], name.GetMetadata()),
 		})
 	}
 	return queues

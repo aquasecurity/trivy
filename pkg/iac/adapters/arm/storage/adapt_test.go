@@ -232,8 +232,8 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: storage.Storage{
 				Accounts: []storage.Account{
-					accountWithQueues("nested", "sa/default/top"),
-					orphanageWithQueues("other/default/orphan"),
+					accountWithQueues("nested", "top"),
+					orphanageWithQueues("orphan"),
 				},
 			},
 		},
