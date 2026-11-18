@@ -39,7 +39,7 @@ On the other hand, it uses `go.mod` for direct dependencies and `go.sum` for ind
 Go 1.17+ holds actually needed indirect dependencies in `go.mod`, and it reduces false detection.
 `go.sum` in Go 1.16 or less contains all indirect dependencies that are even not needed for compiling.
 If you want to have better detection, please consider updating the Go version in your project.
-See [go.sum](#gomod-gosum) for why `go.sum` is skipped in Go 1.17+ projects.
+See [go.sum](#gomod-gosum) for why Trivy does not take dependencies from `go.sum` in Go 1.17+ projects.
 
 !!! note
     The Go version doesn't mean your Go tool version, but the Go version in your go.mod.
@@ -62,7 +62,7 @@ See [go.sum](#gomod-gosum) for why `go.sum` is skipped in Go 1.17+ projects.
     ```
 
 ### go.sum { #gomod-gosum }
-Trivy skips `go.sum` in Go 1.17+ projects, because it lists more modules than the build uses.
+In Go 1.17+ projects, Trivy does not take dependencies from `go.sum`, because it lists more modules than the build uses. Trivy still reads `go.sum` for [module checksums](#module-checksums).
 
 A common extra entry is a module that another module needs to run its own tests. Go keeps such a module out of `go.mod` and never compiles it into your binary, so a vulnerability in it does not affect your project. Your own tests are a different case. Their dependencies are listed in `go.mod`, and Trivy reports them.
 
@@ -129,6 +129,24 @@ If unsuccessful, the version will be empty[^3].
 Trivy detects the Go version used to compile the binary and detects its vulnerabilities in the standard libraries.
 It possibly produces false positives.
 See [the caveat](#stdlib-vulnerabilities) for details.
+
+## Module Checksums
+Trivy records the h1 checksum of a Go module as a SHA-256 digest of the package with the `go-module-h1` source. For a replaced module, Trivy reports the replacement and its checksum. The h1 checksum is a SHA-256 hash over the list of the module files and their SHA-256 hashes, so it does not match the SHA-256 of the module zip file. See [go.sum files](https://go.dev/ref/mod#go-sum-files) for details.
+
+For Go modules, Trivy takes the checksum from the `go.sum` file next to `go.mod`. A module gets no checksum if `go.sum` has only its `/go.mod` line, because that line covers only the `go.mod` file of the module.
+
+For Go binaries, Trivy takes the checksum from the build info. A module replaced with a local directory has no checksum. The main module has a checksum only if the binary was built with `go install module@version`.
+
+Trivy does not verify the checksums against the [checksum database](https://go.dev/ref/mod#checksum-database) or the module contents.
+
+To compare a digest with the h1 form that Go uses, convert the hex value to base64 and add the `h1:` prefix. Then compare it with the line in `go.sum` or with the `Sum` field from `go mod download -json`.
+
+```
+$ echo 828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1 | xxd -r -p | base64
+go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
+$ go mod download -json golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1 | jq -r .Sum
+h1:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
+```
 
 ## Caveats
 
