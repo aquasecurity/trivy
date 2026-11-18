@@ -1023,6 +1023,24 @@ func TestPackageURL_LangType(t *testing.T) {
 			},
 			want: ftypes.EKS,
 		},
+		{
+			name: "openjdk generic runtime",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+			want: ftypes.JDK,
+		},
+		{
+			name: "unknown generic package",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "custom-binary",
+				Version: "1.0.0",
+			},
+			want: purl.TypeUnknown,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

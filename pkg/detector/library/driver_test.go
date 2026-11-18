@@ -995,6 +995,31 @@ func TestDriver_Detect(t *testing.T) {
 			},
 			want: nil,
 		},
+		{
+			name: "openjdk runtime package",
+			fixtures: []string{
+				"testdata/fixtures/openjdk.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.JDK,
+			args: args{
+				pkgName: "openjdk",
+				pkgVer:  "17.0.13+11",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-114938",
+					PkgName:          "openjdk",
+					InstalledVersion: "17.0.13+11",
+					FixedVersion:     "17.0.21.1+2",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.NVD,
+						Name: "National Vulnerability Database",
+						URL:  "https://nvd.nist.gov/vuln",
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -1020,4 +1045,10 @@ func TestDriver_Detect(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestNewDriver_JDK(t *testing.T) {
+	driver, ok := library.NewDriver(ftypes.JDK)
+	require.True(t, ok)
+	assert.Equal(t, "openjdk", driver.Type())
 }

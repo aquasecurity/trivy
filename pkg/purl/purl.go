@@ -180,6 +180,11 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Julia
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
+	case packageurl.TypeGeneric:
+		if p.Namespace == "" && p.Name == "openjdk" {
+			return ftypes.JDK
+		}
+		return TypeUnknown
 	case TypeK8s:
 		switch p.Namespace {
 		case NamespaceEKS:
