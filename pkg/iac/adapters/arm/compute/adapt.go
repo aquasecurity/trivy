@@ -95,8 +95,7 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 }
 
 // adaptCustomData decodes osProfile.customData, which ARM requires to be base64
-// encoded. A value that isn't valid base64 is kept as written, as in the
-// Terraform adapter.
+// encoded. A value that isn't valid base64 is kept as written.
 func adaptCustomData(resource azure.Resource) iacTypes.StringValue {
 	customData := resource.Properties.GetMapValue("osProfile").
 		GetMapValue("customData").AsStringValue("", resource.Metadata)
