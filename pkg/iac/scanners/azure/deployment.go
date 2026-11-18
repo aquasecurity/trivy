@@ -78,17 +78,14 @@ func (r *Resource) GetResourcesByType(t string) []Resource {
 	return resources
 }
 
-// GetChildResources returns the resources of childType that belong to parent.
-// It finds them in two places:
-//   - nested in parent at any depth;
-//   - in the top-level resources named "<parent name>/...", or nested in them.
-//
-// childType is either a full type or a type relative to the parent's, such as
-// "blobServices/containers" for a storage account. Types match
+// GetChildResources returns the resources of childType under parent. It
+// searches parent and the top-level resources named "<parent>/...", including
+// everything nested in them. childType is a full type or one relative to the
+// parent's type, such as "blobServices/containers". Types match
 // case-insensitively.
 //
-// The parser does not evaluate expressions, so a top-level resource is skipped
-// when its name or the parent's name is an expression.
+// GetChildResources skips a top-level resource when its name or the parent's
+// name is an expression, because the parser does not evaluate expressions.
 func (d *Deployment) GetChildResources(parent Resource, childType string) []Resource {
 	parentType := parent.Type.AsString()
 	fullType := qualifyType(parentType, childType)
