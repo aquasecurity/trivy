@@ -122,6 +122,7 @@ const (
 	Yarn           LangType = "yarn"
 	Pnpm           LangType = "pnpm"
 	Jar            LangType = "jar"
+	JDK            LangType = "jdk"
 	Pom            LangType = "pom"
 	Gradle         LangType = "gradle"
 	Sbt            LangType = "sbt"

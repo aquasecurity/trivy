@@ -79,6 +79,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "OpenJDK runtime",
+			typ:  ftypes.JDK,
+			pkg: ftypes.Package{
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
