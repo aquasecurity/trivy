@@ -45,6 +45,10 @@ type Option struct {
 	RepoCommit string
 	RepoTag    string
 
+	// RepoUsername and RepoPassword are used for HTTP basic auth when cloning remote git repositories
+	RepoUsername string
+	RepoPassword string
+
 	// For image scanning
 	ImageOption types.ImageOptions
 
