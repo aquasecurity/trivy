@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"testing"
 	"time"
@@ -707,9 +708,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 	fixedPublishedDate := time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)
 	fixedLastModifiedDate := time.Date(2009, 11, 10, 23, 0, 10, 0, time.UTC)
 	customJSON := `{"Field":"value","Number":1}`
-	customSecret := map[string]any{"Field": "value", "Number": float64(1), "List": []any{"a", true}}
-	customSecretValue, err := structpb.NewValue(customSecret)
-	require.NoError(t, err)
+	customSecretJSON := `{"Field":"value","Number":1}`
 
 	type args struct {
 		rpcResults []*scanner.Result
@@ -772,7 +771,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 								RuleId:   "aws-access-key-id",
 								Severity: "CRITICAL",
 								Layer:    &common.Layer{},
-								Custom:   customSecretValue,
+								Custom:   []byte(customSecretJSON),
 							},
 						},
 						CryptoAssets: []*common.CryptoAsset{
@@ -843,7 +842,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 						{
 							RuleID:   "aws-access-key-id",
 							Severity: "CRITICAL",
-							Custom:   customSecret,
+							Custom:   jsontext.Value(customSecretJSON),
 						},
 					},
 					CryptoAssets: []ftypes.CryptoAsset{
@@ -1974,9 +1973,6 @@ func TestConvertToRPCSecretFindings(t *testing.T) {
 		Field  string
 		Number int
 	}
-	customValue, err := structpb.NewValue(map[string]any{"Field": "value", "Number": 1})
-	require.NoError(t, err)
-
 	tests := []struct {
 		name     string
 		findings []ftypes.SecretFinding
@@ -2014,7 +2010,7 @@ func TestConvertToRPCSecretFindings(t *testing.T) {
 						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
 						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
 					},
-					Custom: customValue,
+					Custom: []byte(`{"Field":"value","Number":1}`),
 				},
 			},
 		},
@@ -2038,27 +2034,26 @@ func TestConvertSecretFindingsCustomRoundTrip(t *testing.T) {
 	tests := []struct {
 		name   string
 		custom any
-		want   any
+		want   string // JSON of the custom data in the report
 	}{
 		{
 			name:   "struct",
 			custom: customStruct{Field: "value", Number: 1},
-			want:   map[string]any{"Field": "value", "Number": float64(1)},
+			want:   `{"Field":"value","Number":1}`,
 		},
 		{
 			name:   "map with nested values",
 			custom: map[string]any{"List": []string{"a", "b"}, "Map": map[string]int{"c": 2}},
-			want:   map[string]any{"List": []any{"a", "b"}, "Map": map[string]any{"c": float64(2)}},
+			want:   `{"List":["a","b"],"Map":{"c":2}}`,
 		},
 		{
 			name:   "JSON string",
 			custom: `{"Field":"value","Number":1}`,
-			want:   `{"Field":"value","Number":1}`,
+			want:   `"{\"Field\":\"value\",\"Number\":1}"`,
 		},
 		{
 			name:   "without custom data",
 			custom: nil,
-			want:   nil,
 		},
 	}
 	for _, tt := range tests {
@@ -2069,7 +2064,12 @@ func TestConvertSecretFindingsCustomRoundTrip(t *testing.T) {
 			// Simulates the scan result returned from the server to the client (ConvertToRPCScanResponse -> ConvertFromRPCResults)
 			got := convertFromRPCSecretCustom(convertToRPCSecretCustom(onServer))
 
-			assert.Equal(t, tt.want, got)
+			if tt.want == "" {
+				assert.Nil(t, got)
+				return
+			}
+			require.IsType(t, jsontext.Value{}, got)
+			assert.JSONEq(t, tt.want, string(got.(jsontext.Value)))
 		})
 	}
 }
