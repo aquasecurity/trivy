@@ -26,8 +26,7 @@ func orphanFirewallRules(deployment azure.Deployment, serverType string) []datab
 	return adaptFirewallRuleResources(deployment.GetOrphanResources(serverType, firewallRuleType))
 }
 
-// orphanServer holds firewall rules whose server is unknown. Its metadata is
-// unmanaged, so checks on servers skip it.
+// orphanServer holds firewall rules whose server is unknown.
 func orphanServer(metadata iacTypes.Metadata, rules []database.FirewallRule) database.Server {
 	return database.Server{
 		Metadata:                  metadata,
