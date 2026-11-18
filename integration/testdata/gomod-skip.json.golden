@@ -19,7 +19,7 @@
           "PkgName": "github.com/docker/distribution",
           "PkgIdentifier": {
             "PURL": "pkg:golang/github.com/docker/distribution@v2.7.1%2Bincompatible",
-            "UID": "debd192c5b1bc1d2"
+            "UID": "580cad6355d0457e"
           },
           "InstalledVersion": "v2.7.1+incompatible",
           "FixedVersion": "v2.8.0",
@@ -46,7 +46,7 @@
           "PkgName": "github.com/open-policy-agent/opa",
           "PkgIdentifier": {
             "PURL": "pkg:golang/github.com/open-policy-agent/opa@v0.35.0",
-            "UID": "27f967c9d1c1a361"
+            "UID": "f9d9cbb6b2378b32"
           },
           "InstalledVersion": "v0.35.0",
           "FixedVersion": "0.37.0",
@@ -93,7 +93,7 @@
           "PkgName": "golang.org/x/text",
           "PkgIdentifier": {
             "PURL": "pkg:golang/golang.org/x/text@v0.3.6",
-            "UID": "b615a892755bf9c7"
+            "UID": "31d1eeb28dd2bab4"
           },
           "InstalledVersion": "v0.3.6",
           "FixedVersion": "0.3.7",
