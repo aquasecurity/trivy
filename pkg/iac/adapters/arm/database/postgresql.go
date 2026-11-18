@@ -19,7 +19,7 @@ func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.P
 		metadata := iacTypes.NewUnmanagedMetadata()
 		databases = append(databases, database.PostgreSQLServer{
 			Metadata: metadata,
-			Server:   orphanServer(metadata, rules),
+			Server:   orphanage(metadata, rules),
 			Config: database.PostgresSQLConfig{
 				Metadata:             metadata,
 				LogCheckpoints:       iacTypes.BoolDefault(false, metadata),

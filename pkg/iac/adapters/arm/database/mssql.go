@@ -16,7 +16,7 @@ func adaptMSSQLServers(deployment azure2.Deployment) (msSQlServers []database.MS
 		metadata := iacTypes.NewUnmanagedMetadata()
 		msSQlServers = append(msSQlServers, database.MSSQLServer{
 			Metadata:           metadata,
-			Server:             orphanServer(metadata, rules),
+			Server:             orphanage(metadata, rules),
 			AdministratorLogin: iacTypes.StringDefault("", metadata),
 		})
 	}

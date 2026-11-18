@@ -361,7 +361,7 @@ func TestAdapt(t *testing.T) {
 
 }
 
-func TestAdaptOrphanServerIsUnmanaged(t *testing.T) {
+func TestAdaptOrphanageIsUnmanaged(t *testing.T) {
 	fsys := testutil.CreateFS(map[string]string{
 		"test.json": `{
   "resources": [
