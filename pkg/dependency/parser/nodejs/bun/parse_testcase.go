@@ -1130,6 +1130,13 @@ var (
 		},
 	}
 
+	// docker run --rm -it oven/bun:1.4.2 sh
+	// mkdir -p /app/packages/ms && cd /app
+	// echo '{"name": "edge-collision", "workspaces": ["packages/*"], "dependencies": {"debug": "2.6.9"}}' > package.json
+	// echo '{"name": "ms", "version": "2.0.0", "devDependencies": {"minimist": "1.2.8"}}' > packages/ms/package.json
+	// bun install
+	// cat bun.lock
+	//
 	// "debug" depends on "ms", which bun links to the workspace "ms".
 	// The dev dependency of the workspace must stay a dev dependency.
 	workspaceAsDependencyPkgs = []ftypes.Package{

@@ -99,7 +99,7 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 	// e.g. "debug" or "send/debug" for a nested copy.
 	pkgs, depNames, wsPaths := p.parsePackages(lockFile)
 	deps := p.resolveDependencies(depNames, pkgs)
-	prodDirectDeps, devDirectDeps := resolveDirectDependencies(lockFile.Workspaces, wsPaths, pkgs, deps)
+	prodDirectDeps, devDirectDeps := resolveDirectDependencies(lockFile.Workspaces, wsPaths, pkgs)
 
 	for pkgPath, pkg := range pkgs {
 		// A workspace member stays a workspace even when another workspace depends on it.
@@ -147,9 +147,15 @@ func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, ma
 		// A workspace member is written as "<name>@workspace:<dir>",
 		// e.g. "a": ["a@workspace:packages/a"] for the workspace "packages/a".
 		if wsDir, ok := strings.CutPrefix(pkgVersion, "workspace:"); ok {
+			ws := lockFile.Workspaces[wsDir]
 			wsPaths[wsDir] = pkgPath
-			pkgVersion = lockFile.Workspaces[wsDir].Version
+			pkgVersion = ws.Version
 			relationship = ftypes.RelationshipWorkspace
+			// Since lockfileVersion 1 a workspace entry has no metadata, so its dependencies come from `workspaces`.
+			// Duplicates (e.g. a peer dependency that is also a dev dependency,
+			// or the dependencies in the metadata of lockfileVersion 0) are removed in mergePackages.
+			depNames[pkgPath] = slices.Concat(lo.Keys(ws.Dependencies), lo.Keys(ws.PeerDependencies),
+				lo.Keys(ws.OptionalDependencies), lo.Keys(ws.DevDependencies))
 		}
 		if pkgVersion != "" {
 			if _, err := semver.Parse(pkgVersion); err != nil {
@@ -169,7 +175,7 @@ func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, ma
 		}
 
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok && len(depMap) > 0 {
-			depNames[pkgPath] = lo.Keys(depMap)
+			depNames[pkgPath] = append(depNames[pkgPath], lo.Keys(depMap)...)
 		}
 	}
 	return pkgs, depNames, wsPaths
@@ -198,12 +204,11 @@ func (p *Parser) resolveDependencies(depNames map[string][]string, pkgs map[stri
 	return deps
 }
 
-// resolveDirectDependencies returns the install paths of the direct prod and dev dependencies of all workspaces,
-// and adds them to deps as the dependencies of their workspace.
+// resolveDirectDependencies returns the install paths of the direct prod and dev dependencies of all workspaces.
 // They are resolved from the install path of each workspace,
 // e.g. "lodash" of the workspace "packages/a" installed at "a" resolves to "a/lodash" if it exists.
 func resolveDirectDependencies(workspaces map[string]Workspace, wsPaths map[string]string,
-	pkgs map[string]ftypes.Package, deps map[string][]string) (set.Set[string], set.Set[string]) {
+	pkgs map[string]ftypes.Package) (set.Set[string], set.Set[string]) {
 	prodDirectDeps := set.New[string]()
 	devDirectDeps := set.New[string]()
 	for wsDir, ws := range workspaces {
@@ -216,16 +221,10 @@ func resolveDirectDependencies(workspaces map[string]Workspace, wsPaths map[stri
 			}
 			return depPaths
 		}
-		prodDeps := slices.Concat(resolve(ws.Dependencies), resolve(ws.PeerDependencies), resolve(ws.OptionalDependencies))
-		devDeps := resolve(ws.DevDependencies)
-		prodDirectDeps.Append(prodDeps...)
-		devDirectDeps.Append(devDeps...)
-
-		// The root workspace has no entry in `packages`, so there is no package to attach its dependencies to.
-		// Duplicates of the edges built from the metadata (lockfileVersion 0) are removed in mergePackages.
-		if wsPath := wsPaths[wsDir]; wsPath != "" {
-			deps[wsPath] = append(deps[wsPath], slices.Concat(prodDeps, devDeps)...)
-		}
+		prodDirectDeps.Append(resolve(ws.Dependencies)...)
+		prodDirectDeps.Append(resolve(ws.PeerDependencies)...)
+		prodDirectDeps.Append(resolve(ws.OptionalDependencies)...)
+		devDirectDeps.Append(resolve(ws.DevDependencies)...)
 	}
 	return prodDirectDeps, devDirectDeps
 }
