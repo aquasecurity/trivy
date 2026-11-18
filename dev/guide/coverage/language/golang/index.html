@@ -3702,6 +3702,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#module-checksums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Checksums
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8811,6 +8822,17 @@ You're not viewing the latest version of the documentation.
 </li>
       
         <li class="md-nav__item">
+  <a href="#module-checksums" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Module Checksums
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#caveats" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -8969,7 +8991,7 @@ On the other hand, it uses <code>go.mod</code> for direct dependencies and <code
 <p>Go 1.17+ holds actually needed indirect dependencies in <code>go.mod</code>, and it reduces false detection.
 <code>go.sum</code> in Go 1.16 or less contains all indirect dependencies that are even not needed for compiling.
 If you want to have better detection, please consider updating the Go version in your project.
-See <a href="#gomod-gosum">go.sum</a> for why <code>go.sum</code> is skipped in Go 1.17+ projects.</p>
+See <a href="#gomod-gosum">go.sum</a> for why Trivy does not take dependencies from <code>go.sum</code> in Go 1.17+ projects.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
 <p>The Go version doesn't mean your Go tool version, but the Go version in your go.mod.</p>
@@ -8987,7 +9009,7 @@ require (
 </code></pre></div>
 </div>
 <h3 id="gomod-gosum">go.sum<a class="headerlink" href="#gomod-gosum" title="Permanent link">&para;</a></h3>
-<p>Trivy skips <code>go.sum</code> in Go 1.17+ projects, because it lists more modules than the build uses.</p>
+<p>In Go 1.17+ projects, Trivy does not take dependencies from <code>go.sum</code>, because it lists more modules than the build uses. Trivy still reads <code>go.sum</code> for <a href="#module-checksums">module checksums</a>.</p>
 <p>A common extra entry is a module that another module needs to run its own tests. Go keeps such a module out of <code>go.mod</code> and never compiles it into your binary, so a vulnerability in it does not affect your project. Your own tests are a different case. Their dependencies are listed in <code>go.mod</code>, and Trivy reports them.</p>
 <p>To check whether a module is part of the build, list the dependencies of your packages.</p>
 <div class="highlight"><pre><span></span><code>$ go list -deps -f &#39;{{with .Module}}{{.Path}}{{end}}&#39; ./... | grep -Fx &#39;golang.org/x/mod&#39;
@@ -9037,6 +9059,17 @@ If unsuccessful, the version will be empty<sup id="fnref:3"><a class="footnote-r
 <p>Trivy detects the Go version used to compile the binary and detects its vulnerabilities in the standard libraries.
 It possibly produces false positives.
 See <a href="#stdlib-vulnerabilities">the caveat</a> for details.</p>
+<h2 id="module-checksums">Module Checksums<a class="headerlink" href="#module-checksums" title="Permanent link">&para;</a></h2>
+<p>Trivy records the h1 checksum of a Go module as a SHA-256 digest of the package with the <code>go-module-h1</code> source. For a replaced module, Trivy reports the replacement and its checksum. The h1 checksum is a SHA-256 hash over the list of the module files and their SHA-256 hashes, so it does not match the SHA-256 of the module zip file. See <a href="https://go.dev/ref/mod#go-sum-files">go.sum files</a> for details.</p>
+<p>For Go modules, Trivy takes the checksum from the <code>go.sum</code> file next to <code>go.mod</code>. A module gets no checksum if <code>go.sum</code> has only its <code>/go.mod</code> line, because that line covers only the <code>go.mod</code> file of the module.</p>
+<p>For Go binaries, Trivy takes the checksum from the build info. A module replaced with a local directory has no checksum. The main module has a checksum only if the binary was built with <code>go install module@version</code>.</p>
+<p>Trivy does not verify the checksums against the <a href="https://go.dev/ref/mod#checksum-database">checksum database</a> or the module contents.</p>
+<p>To compare a digest with the h1 form that Go uses, convert the hex value to base64 and add the <code>h1:</code> prefix. Then compare it with the line in <code>go.sum</code> or with the <code>Sum</code> field from <code>go mod download -json</code>.</p>
+<div class="highlight"><pre><span></span><code>$ echo 828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1 | xxd -r -p | base64
+go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
+$ go mod download -json golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1 | jq -r .Sum
+h1:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=
+</code></pre></div>
 <h2 id="caveats">Caveats<a class="headerlink" href="#caveats" title="Permanent link">&para;</a></h2>
 <h3 id="stdlib-vulnerabilities">Stdlib Vulnerabilities<a class="headerlink" href="#stdlib-vulnerabilities" title="Permanent link">&para;</a></h3>
 <p>Trivy does not know if or how you use stdlib functions, therefore it is possible that stdlib vulnerabilities are not applicable to your use case.
