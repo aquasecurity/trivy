@@ -30,7 +30,7 @@ func Parse(r io.Reader) ([]Entry, error) {
 			continue
 		}
 
-		ver, goMod := strings.CutSuffix(s[1], "/go.mod")
+		ver, isGoModSum := strings.CutSuffix(s[1], "/go.mod")
 		mod := module.Version{Path: s[0], Version: ver}
 		i, ok := index[mod]
 		if !ok {
@@ -39,7 +39,7 @@ func Parse(r io.Reader) ([]Entry, error) {
 			entries = append(entries, Entry{Module: mod})
 		}
 
-		if !goMod && len(s) >= 3 {
+		if !isGoModSum && len(s) >= 3 {
 			entries[i].ModuleSum = s[2]
 		}
 	}

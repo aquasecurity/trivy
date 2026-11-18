@@ -52,7 +52,7 @@ type gomodAnalyzer struct {
 	// root go.mod
 	modParser *mod.Parser
 
-	// go.mod/go.sum in dependencies
+	// go.mod in dependencies
 	leafModParser *mod.Parser
 
 	licenseClassifierConfidenceLevel float64
