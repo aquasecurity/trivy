@@ -8602,7 +8602,7 @@ You're not viewing the latest version of the documentation.
 <h1 id="signature-verification">Signature Verification<a class="headerlink" href="#signature-verification" title="Permanent link">&para;</a></h1>
 <p>All binaries and container images are signed by <a href="https://github.com/sigstore/cosign">Cosign</a>.</p>
 <h2 id="verifying-container-image">Verifying container image<a class="headerlink" href="#verifying-container-image" title="Permanent link">&para;</a></h2>
-<p>Use the following command for keyless <a href="https://docs.sigstore.dev/cosign/verify/">verification</a>:</p>
+<p>Use the following command for keyless <a href="https://docs.sigstore.dev/cosign/verifying/verify/">verification</a>:</p>
 <div class="highlight"><pre><span></span><code>cosign<span class="w"> </span>verify<span class="w"> </span>aquasec/trivy:&lt;version&gt;<span class="w"> </span><span class="se">\</span>
 --certificate-identity-regexp<span class="w"> </span><span class="s1">&#39;https://github\.com/aquasecurity/trivy/\.github/workflows/.+&#39;</span><span class="w"> </span><span class="se">\</span>
 --certificate-oidc-issuer<span class="w"> </span><span class="s2">&quot;https://token.actions.githubusercontent.com&quot;</span>
@@ -8617,7 +8617,7 @@ The following checks were performed on each of these signatures:
    ....
 </code></pre></div>
 <h2 id="verifying-release-assets">Verifying release assets<a class="headerlink" href="#verifying-release-assets" title="Permanent link">&para;</a></h2>
-<p>Since Trivy v0.68.1, GitHub Releases provide <a href="https://docs.sigstore.dev/cosign/bundle/">sigstore signature bundles</a>. Separate <code>.sig</code> and certificate (<code>.pem</code>) files are no longer published. Every release asset has a corresponding <code>.sigstore.json</code> bundle file.</p>
+<p>Since Trivy v0.68.1, GitHub Releases provide <a href="https://docs.sigstore.dev/about/bundle/">sigstore signature bundles</a>. Separate <code>.sig</code> and certificate (<code>.pem</code>) files are no longer published. Every release asset has a corresponding <code>.sigstore.json</code> bundle file.</p>
 <p>Download the release asset and its associated <code>.sigstore.json</code> bundle file from the <a href="https://github.com/aquasecurity/trivy/releases">GitHub Release</a>.</p>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
