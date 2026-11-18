@@ -2,16 +2,11 @@ package sum
 
 import (
 	"bufio"
-	"crypto/sha256"
-	"encoding/base64"
-	"encoding/hex"
 	"io"
 	"strings"
 
 	"golang.org/x/mod/module"
 	"golang.org/x/xerrors"
-
-	"github.com/aquasecurity/trivy/pkg/digest"
 )
 
 // Entry holds the go.sum lines of one module version.
@@ -53,20 +48,4 @@ func Parse(r io.Reader) ([]Entry, error) {
 	}
 
 	return entries, nil
-}
-
-// DecodeH1 decodes an h1 checksum ("h1:<base64>") to a SHA-256 digest.
-// It returns false if the value is not a valid h1 checksum.
-func DecodeH1(s string) (digest.Digest, bool) {
-	h, ok := strings.CutPrefix(s, "h1:")
-	if !ok {
-		return "", false
-	}
-
-	b, err := base64.StdEncoding.DecodeString(h)
-	if err != nil || len(b) != sha256.Size {
-		return "", false
-	}
-
-	return digest.NewDigestFromString(digest.SHA256, hex.EncodeToString(b)), true
 }

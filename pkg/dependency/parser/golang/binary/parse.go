@@ -15,7 +15,6 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
-	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/sum"
 	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -113,8 +112,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Relationship: ftypes.RelationshipUnknown,
 		}
 
-		if d, ok := sum.DecodeH1(mod.Sum); ok {
-			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceGoModuleH1))
+		if d, ok := digest.ParseGoModuleH1(mod.Sum); ok {
+			pkg.AddDigests(d)
 		}
 
 		pkgs = append(pkgs, pkg)
@@ -141,8 +140,8 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Relationship: ftypes.RelationshipRoot,
 		}
 
-		if d, ok := sum.DecodeH1(info.Main.Sum); ok {
-			root.AddDigests(digest.NewSourcedDigest(d, digest.SourceGoModuleH1))
+		if d, ok := digest.ParseGoModuleH1(info.Main.Sum); ok {
+			root.AddDigests(d)
 		}
 
 		depIDs := xslices.Map(pkgs, func(pkg ftypes.Package) string {

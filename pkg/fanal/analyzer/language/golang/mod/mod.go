@@ -377,16 +377,20 @@ func mergeGoSum(gomod *types.Application, gosum []sum.Entry) {
 }
 
 func fillDigests(gomod *types.Application, gosum []sum.Entry) {
-	sums := make(map[module.Version]string)
+	digests := make(map[module.Version]digest.SourcedDigest)
 	for _, e := range gosum {
-		sums[e.Module] = e.ModuleSum
+		if d, ok := digest.ParseGoModuleH1(e.ModuleSum); ok {
+			digests[e.Module] = d
+		}
 	}
 
 	for i := range gomod.Packages {
 		pkg := &gomod.Packages[i]
-		if d, ok := sum.DecodeH1(sums[module.Version{Path: pkg.Name, Version: pkg.Version}]); ok {
-			pkg.AddDigests(digest.NewSourcedDigest(d, digest.SourceGoModuleH1))
+		d, ok := digests[module.Version{Path: pkg.Name, Version: pkg.Version}]
+		if !ok {
+			continue
 		}
+		pkg.AddDigests(d)
 	}
 }
 
