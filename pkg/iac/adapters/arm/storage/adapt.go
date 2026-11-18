@@ -81,13 +81,13 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 	orphanContainers := deployment.GetOrphanResources(accountType, containerType)
 	orphanQueues := deployment.GetOrphanResources(accountType, queueType)
 	if len(orphanContainers) > 0 || len(orphanQueues) > 0 {
-		accounts = append(accounts, orphanAccount(adaptContainers(orphanContainers), adaptQueues(orphanQueues)))
+		accounts = append(accounts, orphanage(adaptContainers(orphanContainers), adaptQueues(orphanQueues)))
 	}
 	return accounts
 }
 
-// orphanAccount holds the containers and queues whose account is unknown.
-func orphanAccount(containers []storage.Container, queues []storage.Queue) storage.Account {
+// orphanage holds the containers and queues whose account is unknown.
+func orphanage(containers []storage.Container, queues []storage.Queue) storage.Account {
 	metadata := types.NewUnmanagedMetadata()
 	return storage.Account{
 		Metadata:     metadata,

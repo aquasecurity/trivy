@@ -194,7 +194,7 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: storage.Storage{
-				Accounts: []storage.Account{accountWithContainers(), orphanAccountWithContainers("container")},
+				Accounts: []storage.Account{accountWithContainers(), orphanageWithContainers("container")},
 			},
 		},
 		{
@@ -210,7 +210,7 @@ func TestAdapt(t *testing.T) {
   ]
 }`,
 			expected: storage.Storage{
-				Accounts: []storage.Account{accountWithContainers(), orphanAccountWithContainers("container")},
+				Accounts: []storage.Account{accountWithContainers(), orphanageWithContainers("container")},
 			},
 		},
 		{
@@ -233,7 +233,7 @@ func TestAdapt(t *testing.T) {
 			expected: storage.Storage{
 				Accounts: []storage.Account{
 					accountWithQueues("nested", "sa/default/top"),
-					orphanAccountWithQueues("other/default/orphan"),
+					orphanageWithQueues("other/default/orphan"),
 				},
 			},
 		},
@@ -246,7 +246,7 @@ func TestAdapt(t *testing.T) {
 	}
 }
 
-func TestAdaptOrphanAccountIsUnmanaged(t *testing.T) {
+func TestAdaptOrphanageIsUnmanaged(t *testing.T) {
 	fsys := testutil.CreateFS(map[string]string{
 		"test.json": `{
   "resources": [
@@ -281,14 +281,14 @@ func accountWithQueues(names ...string) storage.Account {
 	return account
 }
 
-func orphanAccountWithContainers(publicAccess ...string) storage.Account {
-	account := testOrphanAccount()
+func orphanageWithContainers(publicAccess ...string) storage.Account {
+	account := testOrphanage()
 	account.Containers = testContainers(publicAccess)
 	return account
 }
 
-func orphanAccountWithQueues(names ...string) storage.Account {
-	account := testOrphanAccount()
+func orphanageWithQueues(names ...string) storage.Account {
+	account := testOrphanage()
 	account.Queues = testQueues(names)
 	return account
 }
@@ -309,7 +309,7 @@ func testQueues(names []string) []storage.Queue {
 	return queues
 }
 
-func testOrphanAccount() storage.Account {
+func testOrphanage() storage.Account {
 	return storage.Account{
 		EnforceHTTPS:                    types.BoolTest(true),
 		MinimumTLSVersion:               types.StringTest(""),
