@@ -75,6 +75,20 @@ func TestDeployment_GetChildResources(t *testing.T) {
 			expected:  []string{"sa/default/one", "SA/default/two"},
 		},
 		{
+			name:    "children nested in a top-level child",
+			account: testResource(accountType, "sa"),
+			topLevel: []Resource{
+				testResource(accountType+"/blobServices", "sa/default",
+					testResource("containers", "one"),
+				),
+				testResource(accountType+"/blobServices", "other/default",
+					testResource("containers", "two"),
+				),
+			},
+			childType: "blobServices/containers",
+			expected:  []string{"one"},
+		},
+		{
 			name:      "top-level child with an expression name is skipped",
 			account:   testResource(accountType, "sa"),
 			topLevel:  []Resource{testExprResource(containerType, "format('{0}/default/one', 'sa')")},
@@ -108,10 +122,16 @@ func TestDeployment_GetOrphanResources(t *testing.T) {
 		testResource(containerType, "other/default/unknown-parent"),
 		testExprResource(containerType, "format('{0}/default/expr', 'sa')"),
 		testResource(accountType+"/queueServices/queues", "other/default/queue"),
+		testResource(accountType+"/blobServices", "sa/default",
+			testResource("containers", "owned-nested"),
+		),
+		testExprResource(accountType+"/blobServices", "format('{0}/default', 'sa')",
+			testResource("containers", "expr-parent-nested"),
+		),
 	}}
 
 	assert.Equal(t,
-		[]string{"other/default/unknown-parent", "format('{0}/default/expr', 'sa')"},
+		[]string{"other/default/unknown-parent", "format('{0}/default/expr', 'sa')", "expr-parent-nested"},
 		resourceNames(deployment.GetOrphanResources(accountType, "blobServices/containers")),
 	)
 }
@@ -124,10 +144,11 @@ func testResource(typ, name string, children ...Resource) Resource {
 	}
 }
 
-func testExprResource(typ, name string) Resource {
+func testExprResource(typ, name string, children ...Resource) Resource {
 	return Resource{
-		Type: NewValue(typ, types.NewTestMetadata()),
-		Name: NewExprValue(name, types.NewTestMetadata()),
+		Type:      NewValue(typ, types.NewTestMetadata()),
+		Name:      NewExprValue(name, types.NewTestMetadata()),
+		Resources: children,
 	}
 }
 

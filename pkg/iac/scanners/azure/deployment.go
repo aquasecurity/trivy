@@ -79,38 +79,44 @@ func (r *Resource) GetResourcesByType(t string) []Resource {
 }
 
 // GetChildResources returns the resources of childType that belong to parent:
-// the ones nested in parent at any depth, and the top-level ones whose name
-// starts with the parent's name and "/". childType is either a full type or a
-// type relative to the parent's, such as "blobServices/containers" for a
-// storage account. Types match case-insensitively.
+// the ones nested in parent at any depth, and the ones declared at the top
+// level, or nested in a top-level resource, whose name starts with the
+// parent's name and "/". childType is either a full type or a type relative to
+// the parent's, such as "blobServices/containers" for a storage account. Types
+// match case-insensitively.
 //
 // The parser does not evaluate expressions, so a top-level resource is skipped
-// when its name or the parent's name is an expression. GetOrphanResources
-// returns it instead.
+// when its name or the parent's name is an expression.
 func (d *Deployment) GetChildResources(parent Resource, childType string) []Resource {
 	parentType := parent.Type.AsString()
 	fullType := qualifyType(parentType, childType)
 	resources := nestedResources(parent.Resources, parentType, fullType)
 	for _, resource := range d.Resources {
-		if strings.EqualFold(resource.Type.AsString(), fullType) && isNamedChild(resource, parent) {
-			resources = append(resources, resource)
+		if isSubpath(resource.Type.AsString(), parentType) &&
+			isSubpath(resource.Name.AsString(), parent.Name.AsString()) {
+			resources = append(resources, nestedResources([]Resource{resource}, parentType, fullType)...)
 		}
 	}
 	return resources
 }
 
-// GetOrphanResources returns the top-level resources of childType that
-// GetChildResources returns for no top-level resource of parentType.
+// GetOrphanResources returns the resources of childType whose parent of
+// parentType is not found in the deployment, for example because the name of
+// the child or the parent is an expression. childType is either a full type or
+// a type relative to parentType.
 func (d *Deployment) GetOrphanResources(parentType, childType string) []Resource {
 	fullType := qualifyType(parentType, childType)
 	parents := d.GetResourcesByType(parentType)
 	var orphans []Resource
 	for _, resource := range d.Resources {
-		if !strings.EqualFold(resource.Type.AsString(), fullType) {
+		if !isSubpath(resource.Type.AsString(), parentType) {
 			continue
 		}
-		if !slices.ContainsFunc(parents, func(parent Resource) bool { return isNamedChild(resource, parent) }) {
-			orphans = append(orphans, resource)
+		hasParent := slices.ContainsFunc(parents, func(parent Resource) bool {
+			return isSubpath(resource.Name.AsString(), parent.Name.AsString())
+		})
+		if !hasParent {
+			orphans = append(orphans, nestedResources([]Resource{resource}, parentType, fullType)...)
 		}
 	}
 	return orphans
@@ -139,11 +145,10 @@ func qualifyType(parentType, typ string) string {
 	return parentType + "/" + typ
 }
 
-func isNamedChild(child, parent Resource) bool {
-	childName, parentName := child.Name.AsString(), parent.Name.AsString()
-	if childName == "" || parentName == "" {
-		return false
-	}
-	prefix := parentName + "/"
-	return len(childName) > len(prefix) && strings.EqualFold(childName[:len(prefix)], prefix)
+// isSubpath reports whether path continues parent with "/" and at least one
+// more character, ignoring case. An empty parent, such as the name of an
+// expression, contains no paths.
+func isSubpath(path, parent string) bool {
+	prefix := parent + "/"
+	return parent != "" && len(path) > len(prefix) && strings.EqualFold(path[:len(prefix)], prefix)
 }

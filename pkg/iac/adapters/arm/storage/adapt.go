@@ -87,7 +87,6 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 }
 
 // orphanAccount holds the containers and queues whose account is unknown.
-// Its metadata is unmanaged, so checks on accounts skip it.
 func orphanAccount(containers []storage.Container, queues []storage.Queue) storage.Account {
 	metadata := types.NewUnmanagedMetadata()
 	return storage.Account{
