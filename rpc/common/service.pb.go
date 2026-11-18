@@ -2254,16 +2254,17 @@ type SecretFinding struct {
 	sizeCache     protoimpl.SizeCache
 	unknownFields protoimpl.UnknownFields
 
-	RuleId    string `protobuf:"bytes,1,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
-	Category  string `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
-	Severity  string `protobuf:"bytes,3,opt,name=severity,proto3" json:"severity,omitempty"`
-	Title     string `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
-	StartLine int32  `protobuf:"varint,5,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
-	EndLine   int32  `protobuf:"varint,6,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
-	Code      *Code  `protobuf:"bytes,7,opt,name=code,proto3" json:"code,omitempty"`
-	Match     string `protobuf:"bytes,8,opt,name=match,proto3" json:"match,omitempty"`
-	Layer     *Layer `protobuf:"bytes,10,opt,name=layer,proto3" json:"layer,omitempty"`
-	Offset    int32  `protobuf:"varint,11,opt,name=offset,proto3" json:"offset,omitempty"`
+	RuleId    string          `protobuf:"bytes,1,opt,name=rule_id,json=ruleId,proto3" json:"rule_id,omitempty"`
+	Category  string          `protobuf:"bytes,2,opt,name=category,proto3" json:"category,omitempty"`
+	Severity  string          `protobuf:"bytes,3,opt,name=severity,proto3" json:"severity,omitempty"`
+	Title     string          `protobuf:"bytes,4,opt,name=title,proto3" json:"title,omitempty"`
+	StartLine int32           `protobuf:"varint,5,opt,name=start_line,json=startLine,proto3" json:"start_line,omitempty"`
+	EndLine   int32           `protobuf:"varint,6,opt,name=end_line,json=endLine,proto3" json:"end_line,omitempty"`
+	Code      *Code           `protobuf:"bytes,7,opt,name=code,proto3" json:"code,omitempty"`
+	Match     string          `protobuf:"bytes,8,opt,name=match,proto3" json:"match,omitempty"`
+	Layer     *Layer          `protobuf:"bytes,10,opt,name=layer,proto3" json:"layer,omitempty"`
+	Offset    int32           `protobuf:"varint,11,opt,name=offset,proto3" json:"offset,omitempty"`
+	Custom    *structpb.Value `protobuf:"bytes,12,opt,name=custom,proto3" json:"custom,omitempty"`
 }
 
 func (x *SecretFinding) Reset() {
@@ -2366,6 +2367,13 @@ func (x *SecretFinding) GetOffset() int32 {
 		return x.Offset
 	}
 	return 0
+}
+
+func (x *SecretFinding) GetCustom() *structpb.Value {
+	if x != nil {
+		return x.Custom
+	}
+	return nil
 }
 
 type Secret struct {
@@ -3905,7 +3913,7 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x61, 0x75, 0x73, 0x65, 0x12, 0x10, 0x0a, 0x03, 0x72, 0x61, 0x77, 0x18, 0x01, 0x20, 0x01, 0x28,
 	0x09, 0x52, 0x03, 0x72, 0x61, 0x77, 0x12, 0x20, 0x0a, 0x0b, 0x68, 0x69, 0x67, 0x68, 0x6c, 0x69,
 	0x67, 0x68, 0x74, 0x65, 0x64, 0x18, 0x02, 0x20, 0x01, 0x28, 0x09, 0x52, 0x0b, 0x68, 0x69, 0x67,
-	0x68, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x65, 0x64, 0x22, 0xb7, 0x02, 0x0a, 0x0d, 0x53, 0x65, 0x63,
+	0x68, 0x6c, 0x69, 0x67, 0x68, 0x74, 0x65, 0x64, 0x22, 0xe7, 0x02, 0x0a, 0x0d, 0x53, 0x65, 0x63,
 	0x72, 0x65, 0x74, 0x46, 0x69, 0x6e, 0x64, 0x69, 0x6e, 0x67, 0x12, 0x17, 0x0a, 0x07, 0x72, 0x75,
 	0x6c, 0x65, 0x5f, 0x69, 0x64, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x06, 0x72, 0x75, 0x6c,
 	0x65, 0x49, 0x64, 0x12, 0x1a, 0x0a, 0x08, 0x63, 0x61, 0x74, 0x65, 0x67, 0x6f, 0x72, 0x79, 0x18,
@@ -3924,7 +3932,10 @@ var file_rpc_common_service_proto_rawDesc = []byte{
 	0x65, 0x72, 0x18, 0x0a, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x13, 0x2e, 0x74, 0x72, 0x69, 0x76, 0x79,
 	0x2e, 0x63, 0x6f, 0x6d, 0x6d, 0x6f, 0x6e, 0x2e, 0x4c, 0x61, 0x79, 0x65, 0x72, 0x52, 0x05, 0x6c,
 	0x61, 0x79, 0x65, 0x72, 0x12, 0x16, 0x0a, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x18, 0x0b,
-	0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x4a, 0x04, 0x08, 0x09,
+	0x20, 0x01, 0x28, 0x05, 0x52, 0x06, 0x6f, 0x66, 0x66, 0x73, 0x65, 0x74, 0x12, 0x2e, 0x0a, 0x06,
+	0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x18, 0x0c, 0x20, 0x01, 0x28, 0x0b, 0x32, 0x16, 0x2e, 0x67,
+	0x6f, 0x6f, 0x67, 0x6c, 0x65, 0x2e, 0x70, 0x72, 0x6f, 0x74, 0x6f, 0x62, 0x75, 0x66, 0x2e, 0x56,
+	0x61, 0x6c, 0x75, 0x65, 0x52, 0x06, 0x63, 0x75, 0x73, 0x74, 0x6f, 0x6d, 0x4a, 0x04, 0x08, 0x09,
 	0x10, 0x0a, 0x22, 0x5d, 0x0a, 0x06, 0x53, 0x65, 0x63, 0x72, 0x65, 0x74, 0x12, 0x1a, 0x0a, 0x08,
 	0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x18, 0x01, 0x20, 0x01, 0x28, 0x09, 0x52, 0x08,
 	0x66, 0x69, 0x6c, 0x65, 0x70, 0x61, 0x74, 0x68, 0x12, 0x37, 0x0a, 0x08, 0x66, 0x69, 0x6e, 0x64,
@@ -4241,32 +4252,33 @@ var file_rpc_common_service_proto_depIdxs = []int32{
 	23, // 30: trivy.common.Code.lines:type_name -> trivy.common.Line
 	24, // 31: trivy.common.SecretFinding.code:type_name -> trivy.common.Code
 	19, // 32: trivy.common.SecretFinding.layer:type_name -> trivy.common.Layer
-	26, // 33: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
-	0,  // 34: trivy.common.DetectedLicense.severity:type_name -> trivy.common.Severity
-	1,  // 35: trivy.common.DetectedLicense.category:type_name -> trivy.common.LicenseCategory.Enum
-	2,  // 36: trivy.common.LicenseFile.license_type:type_name -> trivy.common.LicenseType.Enum
-	30, // 37: trivy.common.LicenseFile.fingings:type_name -> trivy.common.LicenseFinding
-	19, // 38: trivy.common.LicenseFile.layer:type_name -> trivy.common.Layer
-	1,  // 39: trivy.common.LicenseFinding.category:type_name -> trivy.common.LicenseCategory.Enum
-	36, // 40: trivy.common.CryptoAsset.identity:type_name -> trivy.common.CryptoIdentity
-	37, // 41: trivy.common.CryptoAsset.certificate:type_name -> trivy.common.CryptoCertificate
-	38, // 42: trivy.common.CryptoAsset.key:type_name -> trivy.common.CryptoKey
-	39, // 43: trivy.common.CryptoAsset.algorithm:type_name -> trivy.common.CryptoAlgorithm
-	41, // 44: trivy.common.CryptoAsset.relationships:type_name -> trivy.common.CryptoRelationship
-	19, // 45: trivy.common.CryptoAsset.layer:type_name -> trivy.common.Layer
-	35, // 46: trivy.common.CryptoFinding.evidence:type_name -> trivy.common.CryptoEvidence
-	44, // 47: trivy.common.CryptoEvidence.not_after:type_name -> google.protobuf.Timestamp
-	44, // 48: trivy.common.CryptoCertificate.not_before:type_name -> google.protobuf.Timestamp
-	44, // 49: trivy.common.CryptoCertificate.not_after:type_name -> google.protobuf.Timestamp
-	36, // 50: trivy.common.CryptoDescriptor.identity:type_name -> trivy.common.CryptoIdentity
-	40, // 51: trivy.common.CryptoRelationship.related_asset:type_name -> trivy.common.CryptoDescriptor
-	21, // 52: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
-	0,  // 53: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
-	54, // [54:54] is the sub-list for method output_type
-	54, // [54:54] is the sub-list for method input_type
-	54, // [54:54] is the sub-list for extension type_name
-	54, // [54:54] is the sub-list for extension extendee
-	0,  // [0:54] is the sub-list for field type_name
+	45, // 33: trivy.common.SecretFinding.custom:type_name -> google.protobuf.Value
+	26, // 34: trivy.common.Secret.findings:type_name -> trivy.common.SecretFinding
+	0,  // 35: trivy.common.DetectedLicense.severity:type_name -> trivy.common.Severity
+	1,  // 36: trivy.common.DetectedLicense.category:type_name -> trivy.common.LicenseCategory.Enum
+	2,  // 37: trivy.common.LicenseFile.license_type:type_name -> trivy.common.LicenseType.Enum
+	30, // 38: trivy.common.LicenseFile.fingings:type_name -> trivy.common.LicenseFinding
+	19, // 39: trivy.common.LicenseFile.layer:type_name -> trivy.common.Layer
+	1,  // 40: trivy.common.LicenseFinding.category:type_name -> trivy.common.LicenseCategory.Enum
+	36, // 41: trivy.common.CryptoAsset.identity:type_name -> trivy.common.CryptoIdentity
+	37, // 42: trivy.common.CryptoAsset.certificate:type_name -> trivy.common.CryptoCertificate
+	38, // 43: trivy.common.CryptoAsset.key:type_name -> trivy.common.CryptoKey
+	39, // 44: trivy.common.CryptoAsset.algorithm:type_name -> trivy.common.CryptoAlgorithm
+	41, // 45: trivy.common.CryptoAsset.relationships:type_name -> trivy.common.CryptoRelationship
+	19, // 46: trivy.common.CryptoAsset.layer:type_name -> trivy.common.Layer
+	35, // 47: trivy.common.CryptoFinding.evidence:type_name -> trivy.common.CryptoEvidence
+	44, // 48: trivy.common.CryptoEvidence.not_after:type_name -> google.protobuf.Timestamp
+	44, // 49: trivy.common.CryptoCertificate.not_before:type_name -> google.protobuf.Timestamp
+	44, // 50: trivy.common.CryptoCertificate.not_after:type_name -> google.protobuf.Timestamp
+	36, // 51: trivy.common.CryptoDescriptor.identity:type_name -> trivy.common.CryptoIdentity
+	40, // 52: trivy.common.CryptoRelationship.related_asset:type_name -> trivy.common.CryptoDescriptor
+	21, // 53: trivy.common.Vulnerability.CvssEntry.value:type_name -> trivy.common.CVSS
+	0,  // 54: trivy.common.Vulnerability.VendorSeverityEntry.value:type_name -> trivy.common.Severity
+	55, // [55:55] is the sub-list for method output_type
+	55, // [55:55] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_rpc_common_service_proto_init() }

@@ -707,6 +707,9 @@ func TestConvertFromRPCResults(t *testing.T) {
 	fixedPublishedDate := time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)
 	fixedLastModifiedDate := time.Date(2009, 11, 10, 23, 0, 10, 0, time.UTC)
 	customJSON := `{"Field":"value","Number":1}`
+	customSecret := map[string]any{"Field": "value", "Number": float64(1), "List": []any{"a", true}}
+	customSecretValue, err := structpb.NewValue(customSecret)
+	require.NoError(t, err)
 
 	type args struct {
 		rpcResults []*scanner.Result
@@ -762,6 +765,14 @@ func TestConvertFromRPCResults(t *testing.T) {
 									Name: "GitHub Security Advisory Maven",
 									Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 								},
+							},
+						},
+						Secrets: []*common.SecretFinding{
+							{
+								RuleId:   "aws-access-key-id",
+								Severity: "CRITICAL",
+								Layer:    &common.Layer{},
+								Custom:   customSecretValue,
 							},
 						},
 						CryptoAssets: []*common.CryptoAsset{
@@ -826,6 +837,13 @@ func TestConvertFromRPCResults(t *testing.T) {
 								URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 							},
 							Custom: customJSON,
+						},
+					},
+					Secrets: []types.DetectedSecret{
+						{
+							RuleID:   "aws-access-key-id",
+							Severity: "CRITICAL",
+							Custom:   customSecret,
 						},
 					},
 					CryptoAssets: []ftypes.CryptoAsset{
@@ -1947,6 +1965,111 @@ func TestConvertFromRPCCryptoAssets(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, ConvertFromRPCCryptoAssets(tt.assets))
+		})
+	}
+}
+
+func TestConvertToRPCSecretFindings(t *testing.T) {
+	type customStruct struct {
+		Field  string
+		Number int
+	}
+	customValue, err := structpb.NewValue(map[string]any{"Field": "value", "Number": 1})
+	require.NoError(t, err)
+
+	tests := []struct {
+		name     string
+		findings []ftypes.SecretFinding
+		want     []*common.SecretFinding
+	}{
+		{
+			name: "happy path",
+			findings: []ftypes.SecretFinding{
+				{
+					RuleID:    "aws-access-key-id",
+					Category:  "AWS",
+					Severity:  "CRITICAL",
+					Title:     "AWS Access Key ID",
+					StartLine: 1,
+					EndLine:   1,
+					Match:     "AWS_ACCESS_KEY_ID=********************",
+					Layer: ftypes.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					Custom: customStruct{Field: "value", Number: 1},
+				},
+			},
+			want: []*common.SecretFinding{
+				{
+					RuleId:    "aws-access-key-id",
+					Category:  "AWS",
+					Severity:  "CRITICAL",
+					Title:     "AWS Access Key ID",
+					StartLine: 1,
+					EndLine:   1,
+					Code:      &common.Code{},
+					Match:     "AWS_ACCESS_KEY_ID=********************",
+					Layer: &common.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					Custom: customValue,
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCSecretFindings(tt.findings)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+// TestConvertSecretFindingsCustomRoundTrip checks that the custom data of a secret finding keeps its value
+// after crossing the client/server boundary twice.
+func TestConvertSecretFindingsCustomRoundTrip(t *testing.T) {
+	type customStruct struct {
+		Field  string
+		Number int
+	}
+
+	tests := []struct {
+		name   string
+		custom any
+		want   any
+	}{
+		{
+			name:   "struct",
+			custom: customStruct{Field: "value", Number: 1},
+			want:   map[string]any{"Field": "value", "Number": float64(1)},
+		},
+		{
+			name:   "map with nested values",
+			custom: map[string]any{"List": []string{"a", "b"}, "Map": map[string]int{"c": 2}},
+			want:   map[string]any{"List": []any{"a", "b"}, "Map": map[string]any{"c": float64(2)}},
+		},
+		{
+			name:   "JSON string",
+			custom: `{"Field":"value","Number":1}`,
+			want:   `{"Field":"value","Number":1}`,
+		},
+		{
+			name:   "without custom data",
+			custom: nil,
+			want:   nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Simulates the blob upload from the client to the server cache (ConvertToRPCPutBlobRequest -> ConvertFromRPCPutBlobRequest)
+			onServer := convertFromRPCSecretCustom(convertToRPCSecretCustom(tt.custom))
+
+			// Simulates the scan result returned from the server to the client (ConvertToRPCScanResponse -> ConvertFromRPCResults)
+			got := convertFromRPCSecretCustom(convertToRPCSecretCustom(onServer))
+
+			assert.Equal(t, tt.want, got)
 		})
 	}
 }

@@ -248,6 +248,7 @@ message SecretFinding {
   string match = 8;
   Layer layer = 10;
   int32 offset = 11;
+  google.protobuf.Value custom = 12;
 
   reserved 9; // deprecated 'deleted'
 }

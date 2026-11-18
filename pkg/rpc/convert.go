@@ -211,9 +211,37 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
 			Offset:    int32(f.Offset),
+			Custom:    convertToRPCSecretCustom(f.Custom),
 		})
 	}
 	return rpcFindings
+}
+
+// convertToRPCSecretCustom converts custom data of a secret finding to a protobuf value, keeping its structure.
+// The data crosses the client/server boundary twice (blob upload and scan result),
+// so it must not be encoded as a JSON string, otherwise it would be encoded again on the second hop.
+func convertToRPCSecretCustom(custom any) *structpb.Value {
+	if custom == nil {
+		return nil
+	}
+	// structpb.NewValue supports only JSON-like types (e.g. not structs or typed slices),
+	// so the data is normalized to them via JSON.
+	b, err := jsonv2.Marshal(custom)
+	if err != nil {
+		log.Warn("Failed to marshal custom data of the secret finding", log.Err(err))
+		return nil
+	}
+	var v any
+	if err = jsonv2.Unmarshal(b, &v); err != nil {
+		log.Warn("Failed to unmarshal custom data of the secret finding", log.Err(err))
+		return nil
+	}
+	value, err := structpb.NewValue(v)
+	if err != nil {
+		log.Warn("Failed to convert custom data of the secret finding", log.Err(err))
+		return nil
+	}
+	return value
 }
 
 func ConvertToRPCLicenseFiles(licenses []ftypes.LicenseFile) []*common.LicenseFile {
@@ -721,6 +749,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 			Code:      ConvertFromRPCCode(finding.Code),
 			Match:     finding.Match,
 			Offset:    int(finding.Offset),
+			Custom:    convertFromRPCSecretCustom(finding.Custom),
 			Layer: ftypes.Layer{
 				Digest:    finding.Layer.Digest,
 				DiffID:    finding.Layer.DiffId,
@@ -729,6 +758,13 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 		})
 	}
 	return findings
+}
+
+func convertFromRPCSecretCustom(custom *structpb.Value) any {
+	if custom == nil {
+		return nil
+	}
+	return custom.AsInterface()
 }
 
 func ConvertFromRPCSecrets(recSecrets []*common.Secret) []ftypes.Secret {
