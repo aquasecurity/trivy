@@ -32,7 +32,7 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			Containers:   adaptContainers(deployment.GetChildResources(resource, containerType)),
 			QueueProperties: storage.QueueProperties{
 				Metadata:      resource.Properties.GetMetadata(),
-				EnableLogging: types.BoolDefault(false, resource.Properties.GetMetadata()),
+				EnableLogging: types.BoolUnresolvable(resource.Properties.GetMetadata()),
 			},
 			// The default interpretation is TLS 1.0 for this property.
 			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").
@@ -95,7 +95,7 @@ func orphanage(containers []storage.Container, queues []storage.Queue) storage.A
 		Containers:   containers,
 		QueueProperties: storage.QueueProperties{
 			Metadata:      metadata,
-			EnableLogging: types.BoolDefault(false, metadata),
+			EnableLogging: types.BoolUnresolvable(metadata),
 		},
 		MinimumTLSVersion:   types.StringDefault("", metadata),
 		Queues:              queues,

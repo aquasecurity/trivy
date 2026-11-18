@@ -269,6 +269,25 @@ func TestAdaptOrphanageIsUnmanaged(t *testing.T) {
 	assert.True(t, accounts[0].Containers[0].Metadata.IsManaged())
 }
 
+func TestAdaptQueueLoggingIsUnresolvable(t *testing.T) {
+	fsys := testutil.CreateFS(map[string]string{
+		"test.json": `{
+  "resources": [
+    {"type": "Microsoft.Storage/storageAccounts", "name": "sa"},
+    {"type": "Microsoft.Storage/storageAccounts/queueServices/queues", "name": "sa/default/queue"}
+  ]
+}`,
+	})
+	deployments, err := parser.New(fsys).ParseFS(t.Context(), ".")
+	require.NoError(t, err)
+	require.Len(t, deployments, 1)
+
+	accounts := Adapt(deployments[0]).Accounts
+	require.Len(t, accounts, 1)
+	require.Len(t, accounts[0].Queues, 1)
+	assert.False(t, accounts[0].QueueProperties.EnableLogging.GetMetadata().IsResolvable())
+}
+
 func accountWithContainers(publicAccess ...string) storage.Account {
 	account := testAccount()
 	account.Containers = testContainers(publicAccess)
