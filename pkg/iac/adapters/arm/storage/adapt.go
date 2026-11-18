@@ -137,7 +137,7 @@ func adaptContainers(resources []azure.Resource) []storage.Container {
 }
 
 // adaptContainer maps the ARM publicAccess values None, Blob and Container to
-// the values the checks expect.
+// the provider values. A missing or unknown value becomes off.
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.storage/storageaccounts/blobservices/containers?pivots=deployment-language-arm-template
 func adaptContainer(resource azure.Resource) storage.Container {
 	access := resource.Properties.GetMapValue("publicAccess")

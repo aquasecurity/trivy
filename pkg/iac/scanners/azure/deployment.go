@@ -78,12 +78,14 @@ func (r *Resource) GetResourcesByType(t string) []Resource {
 	return resources
 }
 
-// GetChildResources returns the resources of childType that belong to parent:
-// the ones nested in parent at any depth, and the ones declared at the top
-// level, or nested in a top-level resource, whose name starts with the
-// parent's name and "/". childType is either a full type or a type relative to
-// the parent's, such as "blobServices/containers" for a storage account. Types
-// match case-insensitively.
+// GetChildResources returns the resources of childType that belong to parent.
+// It finds them in two places:
+//   - nested in parent at any depth;
+//   - in the top-level resources named "<parent name>/...", or nested in them.
+//
+// childType is either a full type or a type relative to the parent's, such as
+// "blobServices/containers" for a storage account. Types match
+// case-insensitively.
 //
 // The parser does not evaluate expressions, so a top-level resource is skipped
 // when its name or the parent's name is an expression.
