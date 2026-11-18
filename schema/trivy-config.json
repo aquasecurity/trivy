@@ -866,6 +866,14 @@
         "tag": {
           "type": "string",
           "description": "pass the tag name to be scanned"
+        },
+        "username": {
+          "type": "string",
+          "description": "username for cloning a remote git repository over HTTPS"
+        },
+        "password": {
+          "type": "string",
+          "description": "password or access token for cloning a remote git repository over HTTPS. TRIVY_GIT_PASSWORD should be used for security reasons."
         }
       }
     },

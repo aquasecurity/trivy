@@ -346,9 +346,9 @@ func setupAuthTestServer(t *testing.T, username, password string) *url.URL {
 }
 
 // testInspectArtifact is a helper function to inspect an artifact and assert the results
-func testInspectArtifact(t *testing.T, target, wantRepoURL, wantName, wantErr string) {
+func testInspectArtifact(t *testing.T, target string, opt artifact.Option, wantRepoURL, wantName, wantErr string) {
 	t.Helper()
-	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), artifact.Option{})
+	art, cleanup, err := NewArtifact(target, cache.NewMemoryCache(), walker.NewFS(), opt)
 	t.Cleanup(cleanup)
 
 	if wantErr != "" {
@@ -433,7 +433,70 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 				}
 
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantName, tt.wantErr)
+				testInspectArtifact(t, tt.target, artifact.Option{}, tt.wantRepoURL, tt.wantName, tt.wantErr)
+			})
+		}
+	})
+
+	// Test with credentials passed via --git-username and --git-password
+	t.Run("flag authentication", func(t *testing.T) {
+		tsURL := setupAuthTestServer(t, testUsername, testPassword)
+		tokenURL := setupAuthTestServer(t, "fanal-aquasecurity-scan", testPassword)
+
+		tests := []struct {
+			name     string
+			target   string
+			username string
+			password string
+			envVars  map[string]string
+			wantErr  string
+		}{
+			{
+				name:     "success with username and password",
+				target:   tsURL.String(),
+				username: testUsername,
+				password: testPassword,
+			},
+			{
+				name:     "success with password only",
+				target:   tokenURL.String(),
+				password: testPassword,
+			},
+			{
+				name:     "flag takes precedence over GITHUB_TOKEN",
+				target:   tsURL.String(),
+				username: testUsername,
+				password: testPassword,
+				envVars: map[string]string{
+					"GITHUB_TOKEN": "wrongpassword",
+				},
+			},
+			{
+				name:     "failure with wrong password",
+				target:   tsURL.String(),
+				username: testUsername,
+				password: "wrongpass",
+				wantErr:  "authentication required",
+			},
+			{
+				name:     "username without password is ignored",
+				target:   tsURL.String(),
+				username: testUsername,
+				wantErr:  "authentication required",
+			},
+		}
+
+		for _, tt := range tests {
+			t.Run(tt.name, func(t *testing.T) {
+				for key, value := range tt.envVars {
+					t.Setenv(key, value)
+				}
+
+				opt := artifact.Option{
+					RepoUsername: tt.username,
+					RepoPassword: tt.password,
+				}
+				testInspectArtifact(t, tt.target, opt, tt.target, tt.target, tt.wantErr)
 			})
 		}
 	})
@@ -480,7 +543,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		for _, tt := range tests {
 			t.Run(tt.name, func(t *testing.T) {
 				// Test using helper function
-				testInspectArtifact(t, tt.target, tt.wantRepoURL, tt.wantName, tt.wantErr)
+				testInspectArtifact(t, tt.target, artifact.Option{}, tt.wantRepoURL, tt.wantName, tt.wantErr)
 			})
 		}
 	})
@@ -505,7 +568,7 @@ func TestArtifact_InspectWithAuth(t *testing.T) {
 		require.NoError(t, err)
 
 		// Scan and verify the local cloned directory
-		testInspectArtifact(t, cloneDir, tsURL.String(), cloneDir, "")
+		testInspectArtifact(t, cloneDir, artifact.Option{}, tsURL.String(), cloneDir, "")
 	})
 }
 
