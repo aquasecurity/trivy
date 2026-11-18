@@ -29,8 +29,6 @@ func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGro
 		sgs = append(sgs, adaptSecurityGroup(resource, deployment))
 	}
 	if orphans := deployment.GetOrphanResources(securityGroupType, securityRuleType); len(orphans) > 0 {
-		// The group of these rules is unknown, so they go to a group with
-		// unmanaged metadata.
 		sgs = append(sgs, network.SecurityGroup{
 			Metadata: iacTypes.NewUnmanagedMetadata(),
 			Rules:    adaptSecurityRuleResources(orphans),
