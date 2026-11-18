@@ -75,12 +75,6 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Version:      "v0.0.0-20200804184101-5ec99f83aff1",
 								Relationship: types.RelationshipIndirect,
 								Indirect:     true,
-								Digests: []digest.SourcedDigest{
-									{
-										Digest: "sha256:828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1",
-										Source: digest.SourceGoModuleH1,
-									},
-								},
 							},
 						},
 					},
