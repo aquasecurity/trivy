@@ -1,0 +1,7 @@
+{
+  "name": "z",
+  "version": "1.0.0",
+  "devDependencies": {
+    "minimist": "1.2.5"
+  }
+}

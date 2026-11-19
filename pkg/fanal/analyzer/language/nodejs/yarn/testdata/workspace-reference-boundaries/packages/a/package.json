@@ -1,0 +1,6 @@
+{
+  "name": "a",
+  "dependencies": {
+    "repro": "workspace:*"
+  }
+}

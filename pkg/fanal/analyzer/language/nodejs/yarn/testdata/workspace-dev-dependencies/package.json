@@ -1,0 +1,8 @@
+{
+  "name": "repro",
+  "private": true,
+  "packageManager": "yarn@4.13.0",
+  "workspaces": [
+    "packages/*"
+  ]
+}
