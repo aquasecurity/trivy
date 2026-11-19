@@ -1,8 +1,17 @@
 package cache_test
 
 import (
+	"crypto/ecdsa"
+	"crypto/elliptic"
+	"crypto/rand"
+	"crypto/x509"
+	"crypto/x509/pkix"
 	"encoding/json"
+	"encoding/pem"
 	"fmt"
+	"math/big"
+	"os"
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -571,4 +580,79 @@ func TestRedisOptions_BackendMasked(t *testing.T) {
 			assert.Equal(t, tt.want, tt.fields.BackendMasked())
 		})
 	}
+}
+
+func TestGetTLSConfig(t *testing.T) {
+	dir := t.TempDir()
+	certPEM, keyPEM := generateTestCertificate(t)
+
+	certPath := filepath.Join(dir, "cert.pem")
+	keyPath := filepath.Join(dir, "key.pem")
+	require.NoError(t, os.WriteFile(certPath, certPEM, 0o600))
+	require.NoError(t, os.WriteFile(keyPath, keyPEM, 0o600))
+
+	tests := []struct {
+		name    string
+		caCert  []byte
+		wantErr string
+	}{
+		{
+			name:   "valid CA certificate",
+			caCert: certPEM,
+		},
+		{
+			name:    "CA file without PEM certificates",
+			caCert:  []byte("not a certificate"),
+			wantErr: "no valid PEM certificates found in CA file",
+		},
+		{
+			name:    "empty CA file",
+			caCert:  []byte{},
+			wantErr: "no valid PEM certificates found in CA file",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			caPath := filepath.Join(t.TempDir(), "ca.pem")
+			require.NoError(t, os.WriteFile(caPath, tt.caCert, 0o600))
+
+			pool, cert, err := cache.GetTLSConfig(caPath, certPath, keyPath)
+			if tt.wantErr != "" {
+				require.ErrorContains(t, err, tt.wantErr)
+				assert.Nil(t, pool)
+				return
+			}
+
+			require.NoError(t, err)
+			assert.NotNil(t, pool)
+			assert.NotEmpty(t, cert.Certificate)
+		})
+	}
+}
+
+func generateTestCertificate(t *testing.T) ([]byte, []byte) {
+	t.Helper()
+
+	key, err := ecdsa.GenerateKey(elliptic.P256(), rand.Reader)
+	require.NoError(t, err)
+
+	template := &x509.Certificate{
+		SerialNumber:          big.NewInt(1),
+		Subject:               pkix.Name{CommonName: "trivy-test"},
+		NotBefore:             time.Now().Add(-time.Hour),
+		NotAfter:              time.Now().Add(time.Hour),
+		IsCA:                  true,
+		BasicConstraintsValid: true,
+		KeyUsage:              x509.KeyUsageCertSign | x509.KeyUsageDigitalSignature,
+	}
+	der, err := x509.CreateCertificate(rand.Reader, template, template, &key.PublicKey, key)
+	require.NoError(t, err)
+
+	keyDER, err := x509.MarshalECPrivateKey(key)
+	require.NoError(t, err)
+
+	certPEM := pem.EncodeToMemory(&pem.Block{Type: "CERTIFICATE", Bytes: der})
+	keyPEM := pem.EncodeToMemory(&pem.Block{Type: "EC PRIVATE KEY", Bytes: keyDER})
+	return certPEM, keyPEM
 }
