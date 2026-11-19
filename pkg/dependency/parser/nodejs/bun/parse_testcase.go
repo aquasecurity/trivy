@@ -1138,7 +1138,6 @@ var (
 	// cat bun.lock
 	//
 	// "debug" depends on "ms", which bun links to the workspace "ms".
-	// The dev dependency of the workspace must stay a dev dependency.
 	workspaceAsDependencyPkgs = []ftypes.Package{
 		{
 			ID:           "ms@2.0.0",
