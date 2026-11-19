@@ -1,6 +1,8 @@
 package azure
 
 import (
+	"strings"
+
 	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
@@ -58,7 +60,7 @@ const (
 func (d *Deployment) GetResourcesByType(t string) []Resource {
 	var resources []Resource
 	for _, r := range d.Resources {
-		if r.Type.AsString() == t {
+		if strings.EqualFold(r.Type.AsString(), t) {
 			resources = append(resources, r)
 		}
 	}
@@ -68,7 +70,7 @@ func (d *Deployment) GetResourcesByType(t string) []Resource {
 func (r *Resource) GetResourcesByType(t string) []Resource {
 	var resources []Resource
 	for _, res := range r.Resources {
-		if res.Type.AsString() == t {
+		if strings.EqualFold(res.Type.AsString(), t) {
 			resources = append(resources, res)
 		}
 	}
