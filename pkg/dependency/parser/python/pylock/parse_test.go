@@ -79,6 +79,41 @@ func TestParser_Parse(t *testing.T) {
 			wantErr: assert.NoError,
 		},
 		{
+			// A dependency without a version picks the only package of that name.
+			// An ambiguous name (`gamma`) or an unknown one is skipped.
+			name: "dependency by name only",
+			file: "testdata/name-only.toml",
+			wantPkgs: []ftypes.Package{
+				{
+					ID:      "alpha@1.0.0",
+					Name:    "alpha",
+					Version: "1.0.0",
+				},
+				{
+					ID:      "beta@2.0.0",
+					Name:    "beta",
+					Version: "2.0.0",
+				},
+				{
+					ID:      "gamma@1.0.0",
+					Name:    "gamma",
+					Version: "1.0.0",
+				},
+				{
+					ID:      "gamma@2.0.0",
+					Name:    "gamma",
+					Version: "2.0.0",
+				},
+			},
+			wantDeps: []ftypes.Dependency{
+				{
+					ID:        "alpha@1.0.0",
+					DependsOn: []string{"beta@2.0.0"},
+				},
+			},
+			wantErr: assert.NoError,
+		},
+		{
 			name:    "sad path",
 			file:    "testdata/sad.toml",
 			wantErr: assert.Error,
