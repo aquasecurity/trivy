@@ -573,8 +573,7 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 		parent.content.Dependencies.Dependency)
 
 	// Merge repositories.
-	// Disabled repositories are filtered out only when the repositories are resolved,
-	// so a repository disabled in this POM also hides the one with the same ID from the parent POM.
+	// A repository disabled in this POM also hides the one with the same ID from the parent POM.
 	pom.content.Repositories = mergePomRepositories(pom.content.Repositories, parent.content.Repositories)
 
 	return nil
@@ -924,7 +923,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 		// Route each repository through its mirrors; a config-file mirror may expand
 		// one repository into several ordered fallback candidates.
 		for _, candidate := range p.mirrorFor(repo) {
-			// Skip Release only repositories for snapshot artifacts and vice versa.
+			// Skip repositories disabled for the artifact type (release or snapshot), including fully disabled ones.
 			// This is checked before deduplication, so a skipped repository doesn't hide
 			// a mirror that another repository with an enabled policy is routed to.
 			if snapshot && !candidate.snapshotEnabled || !snapshot && !candidate.releaseEnabled {

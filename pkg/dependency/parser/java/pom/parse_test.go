@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"os"
 	"path/filepath"
+	"sync/atomic"
 	"testing"
 
 	"github.com/samber/lo"
@@ -2551,6 +2552,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		inputFile     string
 		rootRepoTxtar string            // txtar file for root repository
 		repos         map[string]string // key: repository URL placeholder, value: txtar file path
+		unusedRepos   []string          // repository URL placeholders that must not receive any requests
 		wantPackages  map[string]string // key: package ID, value: license; empty if the POM must not be found
 	}{
 		{
@@ -2604,6 +2606,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"REPO2_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo2-artifacts.txtar"),
 				"REPO3_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo3-artifacts.txtar"),
 			},
+			// overridden and disabled by the child POM
+			unusedRepos: []string{"REPO2_URL", "REPO3_URL"},
 			wantPackages: map[string]string{
 				// version from the BOM in the repository of the parent POM
 				"org.example:example-api:1.1.0::ff70a01d": "License from repo1",
@@ -2617,8 +2621,23 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api5:1.0.0::505b8e76": "",
 				// version from the greatgrandparent POM in the child's overridden repository
 				"org.example:example-api6:1.0.0-reporoot::b56c1528": "License from reporoot",
-				// ancestor in the child's disabled repository is not resolved
-				"org.example:example-api7:1.0.0::cc0410ac": "",
+				// the version from the ancestor in the child's disabled repository is not resolved,
+				// so example-api7 is skipped (checked by requests to unusedRepos)
+			},
+		},
+		{
+			name:          "repositories disabled in child POMs hide the ones with the same ID while resolving ancestors",
+			inputFile:     filepath.Join("testdata", "disabled-repos-hide-ancestor-repos", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "disabled-repos-hide-ancestor-repos", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO_DISABLED_URL": filepath.Join("testdata", "disabled-repos-hide-ancestor-repos", "repo-disabled-artifacts.txtar"),
+			},
+			// declared in the parent POMs, but disabled (fully or for releases) in the scanned POM or the dependency POM
+			unusedRepos: []string{"REPO_DISABLED_URL"},
+			wantPackages: map[string]string{
+				// version from the parent POM of the scanned POM
+				"org.example:example-api:1.0.0::139177ed": "License from reporoot",
+				"org.example:example-dep:1.0.0::e20d9463": "License from reporoot",
 			},
 		},
 	}
@@ -2627,13 +2646,13 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			// Setup remote repositories from txtar files
 			repoURLs := make(map[string]string)
+			repoRequests := make(map[string]*atomic.Int64)
 			for placeholder, txtarPath := range tt.repos {
-				repoURL := setupTxtarRepository(t, txtarPath, nil)
-				repoURLs[placeholder] = repoURL
+				repoURLs[placeholder], repoRequests[placeholder] = setupTxtarRepository(t, txtarPath, nil)
 			}
 
 			// Setup root repository with replacements for repo placeholders
-			rootRepoURL := setupTxtarRepository(t, tt.rootRepoTxtar, repoURLs)
+			rootRepoURL, _ := setupTxtarRepository(t, tt.rootRepoTxtar, repoURLs)
 
 			// Prepare input POM file with root repository URL
 			pomContent := applyReplacements(t, tt.inputFile, map[string]string{
@@ -2661,6 +2680,10 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				}
 				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
 				require.Equal(t, wantLicense, p.Licenses[0])
+			}
+
+			for _, placeholder := range tt.unusedRepos {
+				assert.Zero(t, repoRequests[placeholder].Load(), "repository %s was requested", placeholder)
 			}
 		})
 	}
@@ -2696,16 +2719,21 @@ func txtarWithReposReplace(t *testing.T, txtarPath string, reposReplacements map
 }
 
 // setupTxtarRepository reads a txtar file, applies repository URL replacements,
-// starts an HTTP test server with the files, and returns the server URL.
-func setupTxtarRepository(t *testing.T, txtarPath string, reposReplacements map[string]string) string {
+// starts an HTTP test server with the files, and returns the server URL and the number of requests to it.
+func setupTxtarRepository(t *testing.T, txtarPath string, reposReplacements map[string]string) (string, *atomic.Int64) {
 	t.Helper()
 
 	fsys := txtarWithReposReplace(t, txtarPath, reposReplacements)
 
-	ts := httptest.NewServer(http.FileServer(http.FS(fsys)))
+	requests := &atomic.Int64{}
+	fileServer := http.FileServer(http.FS(fsys))
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requests.Add(1)
+		fileServer.ServeHTTP(w, r)
+	}))
 	t.Cleanup(ts.Close)
 
-	return ts.URL
+	return ts.URL, requests
 }
 
 func TestPomLicenseName(t *testing.T) {

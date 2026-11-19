@@ -32,6 +32,7 @@ var mavenCentralRepo = repository{
 	releaseEnabled: true,
 }
 
+// resolvePomRepos also returns disabled repositories, so that they hide repositories with the same ID, as in Maven.
 func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	logger := log.WithPrefix("pom")
 	var repos []repository
@@ -42,11 +43,6 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			// cf. https://maven.apache.org/pom.html#Repositories
 			releaseEnabled:  rep.ReleasesEnabled == trueString || rep.ReleasesEnabled == "",
 			snapshotEnabled: rep.SnapshotsEnabled == trueString || rep.SnapshotsEnabled == "",
-		}
-
-		// Add only enabled repositories
-		if !r.releaseEnabled && !r.snapshotEnabled {
-			continue
 		}
 
 		repoURL, err := url.Parse(rep.URL)
@@ -71,7 +67,8 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			}
 		}
 
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", repoURL.Redacted()))
+		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", repoURL.Redacted()),
+			log.Bool("releases", r.releaseEnabled), log.Bool("snapshots", r.snapshotEnabled))
 		r.url = *repoURL
 		repos = append(repos, r)
 	}

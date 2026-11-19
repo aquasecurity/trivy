@@ -1,0 +1,53 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>com.example</groupId>
+    <artifactId>disabled-repos-hide-ancestor-repos</artifactId>
+    <version>1.0.0</version>
+
+    <repositories>
+        <repository>
+            <id>root-repo</id>
+            <url>REPO_ROOT_URL</url>
+        </repository>
+        <!-- disables the repository with the same ID declared in the parent POM -->
+        <repository>
+            <id>corp</id>
+            <url>REPO_ROOT_URL</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <!-- disables releases only, which also hides the release repository with the same ID declared in the parent POM -->
+        <repository>
+            <id>corp-releases</id>
+            <url>REPO_ROOT_URL</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+        </repository>
+    </repositories>
+
+    <dependencies>
+        <!-- version from the parent POM -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-dep</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</project>

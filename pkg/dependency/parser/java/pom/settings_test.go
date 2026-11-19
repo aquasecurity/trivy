@@ -602,7 +602,7 @@ func Test_effectiveRepositories(t *testing.T) {
 			},
 		},
 		{
-			name: "disabled repositories are ignored",
+			name: "disabled repositories are kept",
 			s: settings{
 				Profiles: []Profile{
 					{
@@ -625,11 +625,18 @@ func Test_effectiveRepositories(t *testing.T) {
 					},
 				},
 			},
+			// Reversed, as Maven takes repositories from settings in reverse order
 			want: []repository{
 				{
 					id:              "enabled",
 					url:             mustParseURL(t, "https://example.com/enabled"),
 					releaseEnabled:  true,
+					snapshotEnabled: false,
+				},
+				{
+					id:              "disabled",
+					url:             mustParseURL(t, "https://example.com/disabled"),
+					releaseEnabled:  false,
 					snapshotEnabled: false,
 				},
 			},

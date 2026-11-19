@@ -77,7 +77,6 @@
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>example-api7</artifactId>
-            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>
