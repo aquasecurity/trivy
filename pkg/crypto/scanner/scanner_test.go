@@ -169,6 +169,7 @@ func expiredFinding(asset ftypes.CryptoAsset) types.CryptoFinding {
 
 const (
 	oidRSAEncryption = "1.2.840.113549.1.1.1"
+	oidRSASSAPSS     = "1.2.840.113549.1.1.10"
 	oidECPublicKey   = "1.2.840.10045.2.1"
 	oidSHA256WithRSA = "1.2.840.113549.1.1.11"
 )
@@ -218,6 +219,13 @@ func TestScan(t *testing.T) {
 			assets: []ftypes.CryptoAsset{publicKey("key.pem", oidRSAEncryption, 2047, ftypes.CryptoKeyFormatPKIX)},
 			want: []types.CryptoFinding{
 				smallRSAKeyFinding(publicKey("key.pem", oidRSAEncryption, 2047, ftypes.CryptoKeyFormatPKIX)),
+			},
+		},
+		{
+			name:   "RSA-PSS key below 2048 bits",
+			assets: []ftypes.CryptoAsset{publicKey("key.pem", oidRSASSAPSS, 1024, ftypes.CryptoKeyFormatPKIX)},
+			want: []types.CryptoFinding{
+				smallRSAKeyFinding(publicKey("key.pem", oidRSASSAPSS, 1024, ftypes.CryptoKeyFormatPKIX)),
 			},
 		},
 		{
