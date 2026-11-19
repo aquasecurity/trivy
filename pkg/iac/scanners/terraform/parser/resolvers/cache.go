@@ -43,10 +43,6 @@ func locateCacheDir(cacheDir string) (string, error) {
 }
 
 func (r *cacheResolver) Resolve(_ context.Context, _ fs.FS, opt Options) (Result, error) {
-	if opt.SkipCache {
-		opt.Logger.Debug("Module caching is disabled")
-		return Result{}, ErrNotApplicable
-	}
 	cacheFS, err := locateCacheFS(opt.CacheDir)
 	if err != nil {
 		opt.Logger.Debug("No cache filesystem is available on this machine.", log.Err(err))

@@ -26,19 +26,19 @@ const (
 )
 
 type evaluator struct {
-	logger            *log.Logger
-	filesystem        fs.FS
-	ctx               *tfcontext.Context
-	blocks            terraform.Blocks
-	inputVars         map[string]cty.Value
-	moduleMetadata    *ModulesMetadata
-	projectRootPath   string // root of the current scan
-	modulePath        string
-	moduleName        string
-	ignores           ignore.Rules
-	parentParser      *Parser
-	allowDownloads    bool
-	skipCachedModules bool
+	logger          *log.Logger
+	filesystem      fs.FS
+	ctx             *tfcontext.Context
+	blocks          terraform.Blocks
+	inputVars       map[string]cty.Value
+	moduleMetadata  *ModulesMetadata
+	projectRootPath string // root of the current scan
+	modulePath      string
+	moduleName      string
+	ignores         ignore.Rules
+	parentParser    *Parser
+	allowDownloads  bool
+	moduleCacheDir  string
 }
 
 func newEvaluator(
@@ -55,7 +55,7 @@ func newEvaluator(
 	ignores ignore.Rules,
 	logger *log.Logger,
 	allowDownloads bool,
-	skipCachedModules bool,
+	moduleCacheDir string,
 ) *evaluator {
 
 	// create a context to store variables and make functions available
@@ -75,19 +75,19 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:        target,
-		parentParser:      parentParser,
-		modulePath:        modulePath,
-		moduleName:        moduleName,
-		projectRootPath:   projectRootPath,
-		ctx:               ctx,
-		blocks:            blocks,
-		inputVars:         inputVars,
-		moduleMetadata:    moduleMetadata,
-		ignores:           ignores,
-		logger:            logger,
-		allowDownloads:    allowDownloads,
-		skipCachedModules: skipCachedModules,
+		filesystem:      target,
+		parentParser:    parentParser,
+		modulePath:      modulePath,
+		moduleName:      moduleName,
+		projectRootPath: projectRootPath,
+		ctx:             ctx,
+		blocks:          blocks,
+		inputVars:       inputVars,
+		moduleMetadata:  moduleMetadata,
+		ignores:         ignores,
+		logger:          logger,
+		allowDownloads:  allowDownloads,
+		moduleCacheDir:  moduleCacheDir,
 	}
 }
 

@@ -143,7 +143,7 @@ func (e *evaluator) loadExternalModule(ctx context.Context, b *terraform.Block, 
 		ModulePath:      e.modulePath,
 		Logger:          e.logger.With(log.Prefix("module resolver")),
 		AllowDownloads:  e.allowDownloads,
-		SkipCache:       e.skipCachedModules,
+		CacheDir:        e.moduleCacheDir,
 	}
 
 	res, err := resolvers.Resolve(ctx, e.filesystem, opt)
