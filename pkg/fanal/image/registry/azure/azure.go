@@ -20,7 +20,6 @@ import (
 
 type RegistryClient struct {
 	domain string
-	scope  string
 	cloud  cloud.Configuration
 }
 
@@ -30,22 +29,20 @@ type Registry struct {
 const (
 	azureURL      = ".azurecr.io"
 	chinaAzureURL = ".azurecr.cn"
-	scope         = "https://management.azure.com/.default"
-	chinaScope    = "https://management.chinacloudapi.cn/.default"
-	scheme        = "https"
+	// Use the ACR audience because a registry always accepts it, while ARM audience tokens can be disabled.
+	scope  = "https://containerregistry.azure.net/.default"
+	scheme = "https"
 )
 
 func (r *Registry) CheckOptions(domain string, _ types.RegistryOptions) (intf.RegistryClient, error) {
 	if strings.HasSuffix(domain, azureURL) {
 		return &RegistryClient{
 			domain: domain,
-			scope:  scope,
 			cloud:  cloud.AzurePublic,
 		}, nil
 	} else if strings.HasSuffix(domain, chinaAzureURL) {
 		return &RegistryClient{
 			domain: domain,
-			scope:  chinaScope,
 			cloud:  cloud.AzureChina,
 		}, nil
 	}
@@ -59,7 +56,7 @@ func (r *RegistryClient) GetCredential(ctx context.Context) (string, string, err
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to generate acr credential error: %w", err)
 	}
-	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{r.scope}})
+	aadToken, err := cred.GetToken(ctx, policy.TokenRequestOptions{Scopes: []string{scope}})
 	if err != nil {
 		return "", "", xerrors.Errorf("unable to get an access token: %w", err)
 	}
