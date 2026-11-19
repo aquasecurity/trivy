@@ -9,6 +9,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/table"
+	"github.com/aquasecurity/trivy/pkg/types"
 )
 
 func BuildSummary(cr *ComplianceReport) *SummaryReport {
@@ -20,7 +21,7 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 			Severity: control.Severity,
 		}
 		if !strings.Contains(control.Name, "Manual") {
-			ccm.TotalFail = new(len(control.Results))
+			ccm.TotalFail = new(countFailed(control.Results))
 		}
 		ccma = append(ccma, ccm)
 	}
@@ -29,6 +30,31 @@ func BuildSummary(cr *ComplianceReport) *SummaryReport {
 		Title:           cr.Title,
 		SummaryControls: ccma,
 	}
+}
+
+// countFailed returns the number of control results that hold a failing finding.
+// A misconfiguration is only a failure when its status says so, which is the rule
+// [types.Results.Failed] applies; the other finding types fail by presence.
+func countFailed(results types.Results) int {
+	var n int
+	for _, r := range results {
+		// With --include-non-failures a passed check reaches the report as well,
+		// and it is not an issue for the control.
+		if len(r.Misconfigurations) > 0 && !hasFailedMisconf(r.Misconfigurations) {
+			continue
+		}
+		n++
+	}
+	return n
+}
+
+func hasFailedMisconf(misconfs []types.DetectedMisconfiguration) bool {
+	for _, m := range misconfs {
+		if m.Status == types.MisconfStatusFailure {
+			return true
+		}
+	}
+	return false
 }
 
 type SummaryWriter struct {
