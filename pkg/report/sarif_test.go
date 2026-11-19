@@ -76,6 +76,7 @@ func TestReportWriter_Sarif(t *testing.T) {
 									Title:       "foobar",
 									Description: "baz",
 									Severity:    "HIGH",
+									CweIDs:      []string{"CWE-20", "CWE-502"},
 									VendorSeverity: map[dbTypes.SourceID]dbTypes.Severity{
 										vulnerability.NVD:    dbTypes.SeverityCritical,
 										vulnerability.RedHat: dbTypes.SeverityHigh,
@@ -122,6 +123,8 @@ func TestReportWriter_Sarif(t *testing.T) {
 												"vulnerability",
 												"security",
 												"HIGH",
+												"CWE-20",
+												"CWE-502",
 											},
 											"precision":         "very-high",
 											"security-severity": "7.5",
@@ -870,6 +873,7 @@ func TestMakePropertiesMarshal(t *testing.T) {
 		severity  string
 		cvssScore string
 		cvssData  map[string]any
+		cweIDs    []string
 		expected  string
 	}{
 		{
@@ -960,11 +964,42 @@ func TestMakePropertiesMarshal(t *testing.T) {
 				"tags": ["test", "security", "HIGH"]
 			}`,
 		},
+		{
+			name:      "with CWE IDs",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "5.0",
+			cvssData:  make(map[string]any),
+			cweIDs:    []string{"CWE-20", "CWE-502"},
+			expected: `{
+				"precision": "very-high",
+				"security-severity": "5.0",
+				"tags": ["test", "security", "HIGH", "CWE-20", "CWE-502"]
+			}`,
+		},
+		{
+			name:      "tags capped at 20",
+			title:     "test",
+			severity:  "HIGH",
+			cvssScore: "5.0",
+			cvssData:  make(map[string]any),
+			cweIDs: []string{
+				"CWE-1", "CWE-2", "CWE-3", "CWE-4", "CWE-5", "CWE-6", "CWE-7", "CWE-8", "CWE-9", "CWE-10",
+				"CWE-11", "CWE-12", "CWE-13", "CWE-14", "CWE-15", "CWE-16", "CWE-17", "CWE-18",
+			},
+			expected: `{
+				"precision": "very-high",
+				"security-severity": "5.0",
+				"tags": ["test", "security", "HIGH",
+					"CWE-1", "CWE-2", "CWE-3", "CWE-4", "CWE-5", "CWE-6", "CWE-7", "CWE-8", "CWE-9", "CWE-10",
+					"CWE-11", "CWE-12", "CWE-13", "CWE-14", "CWE-15", "CWE-16", "CWE-17"]
+			}`,
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			result := report.ToProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData)
+			result := report.ToProperties(tt.title, tt.severity, tt.cvssScore, tt.cvssData, tt.cweIDs)
 
 			actualJSON, err := json.Marshal(result)
 			require.NoError(t, err)
