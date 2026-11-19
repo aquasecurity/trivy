@@ -1,6 +1,8 @@
 package pom
 
 import (
+	"bytes"
+	"cmp"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -678,6 +680,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
 		wantHits        map[string]int      // expected request count per server role
 		wantErr         string              // non-empty: fetch must fail with an error containing this
+		wantWarn        string              // non-empty: the logged output must contain this text
 	}{
 		{
 			name:            "settings.xml <server> credentials reach the mirror as Basic Auth",
@@ -703,6 +706,16 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"dead": 1, "chain": 1},
 		},
 		{
+			// A POM that fails to parse is not retried against another repository: the
+			// repository that served it is treated as authoritative, same as Maven.
+			name:           "invalid POM: not retried against another repository",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"broken", "chain"}},
+			wantHits:       map[string]int{"broken": 1},
+			wantErr:        "failed to parse the remote POM",
+			wantWarn:       "Invalid POM",
+		},
+		{
 			// The first mirror returns 429; the fetch skips it and succeeds on the second.
 			name:           "trivy.yaml fallback: first mirror 429s, second one serves",
 			mirrorPatterns: []string{"*"},
@@ -726,7 +739,8 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			// newServer registers an HTTP server for a role. status 200 serves the POM;
 			// any other status (e.g. 404 or 429) makes the fetch fall back to the next candidate.
-			newServer := func(role string, status int) *httptest.Server {
+			// A non-empty body overrides the served POM.
+			newServer := func(role string, status int, body string) *httptest.Server {
 				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					hits[role]++
 					if u, _, ok := r.BasicAuth(); ok {
@@ -736,7 +750,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 						w.WriteHeader(status)
 						return
 					}
-					_, _ = w.Write([]byte(minimalPOM))
+					_, _ = w.Write([]byte(cmp.Or(body, minimalPOM)))
 				}))
 				t.Cleanup(s.Close)
 				return s
@@ -745,11 +759,12 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":   newServer("repo1", http.StatusOK, ""),
+				"mirror":  newServer("mirror", http.StatusOK, ""),
+				"chain":   newServer("chain", http.StatusOK, ""),
+				"dead":    newServer("dead", http.StatusNotFound, ""),
+				"limited": newServer("limited", http.StatusTooManyRequests, ""),
+				"broken":  newServer("broken", http.StatusOK, "not a pom"),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -776,8 +791,9 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			require.NoError(t, err)
 			pomRepo := repository{id: "central", url: *origURL, releaseEnabled: true}
 
+			var logBuf bytes.Buffer
 			p := &Parser{
-				logger:     log.WithPrefix("pom"),
+				logger:     log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
 				mirrors:    resolved,
 				httpClient: http.DefaultClient,
 			}
@@ -795,6 +811,82 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 				require.Equal(t, tt.wantHits[role], hits[role], "request count for %q", role)
 			}
 			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
+			if tt.wantWarn != "" {
+				require.Contains(t, logBuf.String(), tt.wantWarn)
+			}
 		})
 	}
+}
+
+// Test_fetchPOMFromRemoteRepositories_invalidMetadata covers a snapshot lookup where the
+// first repository's maven-metadata.xml is invalid: resolution must warn and move on to the
+// next repository instead of failing outright. This needs its own server setup (snapshot
+// mode, a maven-metadata.xml endpoint distinct from the POM endpoint, and a repository list
+// instead of mirrors), so it does not fit the mirror-focused table above.
+func Test_fetchPOMFromRemoteRepositories_invalidMetadata(t *testing.T) {
+	const snapshotPOM = `<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>example-api</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+</project>`
+	const validMetadata = `<?xml version="1.0" encoding="UTF-8"?>
+<metadata>
+  <versioning>
+    <snapshotVersions>
+      <snapshotVersion>
+        <extension>pom</extension>
+        <value>1.0.0-20231001.120000-1</value>
+      </snapshotVersion>
+    </snapshotVersions>
+  </versioning>
+</metadata>`
+
+	hits := make(map[string]int)
+	newRepoServer := func(role, metadataBody string) *httptest.Server {
+		s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+			if strings.HasSuffix(r.URL.Path, "maven-metadata.xml") {
+				hits[role+":metadata"]++
+				_, _ = w.Write([]byte(metadataBody))
+				return
+			}
+			hits[role+":pom"]++
+			if strings.HasSuffix(r.URL.Path, "example-api-1.0.0-20231001.120000-1.pom") {
+				_, _ = w.Write([]byte(snapshotPOM))
+				return
+			}
+			w.WriteHeader(http.StatusNotFound)
+		}))
+		t.Cleanup(s.Close)
+		return s
+	}
+
+	// repoBad serves invalid maven-metadata.xml; repoGood serves valid metadata pointing at
+	// the timestamped snapshot POM.
+	badServer := newRepoServer("bad", "not valid metadata")
+	goodServer := newRepoServer("good", validMetadata)
+
+	repoFor := func(id string, s *httptest.Server) repository {
+		u, err := url.Parse(s.URL)
+		require.NoError(t, err)
+		return repository{id: id, url: *u, releaseEnabled: true, snapshotEnabled: true}
+	}
+
+	var logBuf bytes.Buffer
+	p := &Parser{
+		logger:     log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
+		httpClient: http.DefaultClient,
+	}
+
+	paths := []string{"com", "example", "example-api", "1.0.0-SNAPSHOT", "example-api-1.0.0-SNAPSHOT.pom"}
+	got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, true,
+		[]repository{repoFor("bad", badServer), repoFor("good", goodServer)})
+	require.NoError(t, err)
+	require.NotNil(t, got)
+
+	// repoBad: metadata fetched and rejected, then the unresolved (non-snapshot) filename 404s.
+	// repoGood: metadata fetched and resolves the timestamped filename, which is then served.
+	require.Equal(t, map[string]int{"bad:metadata": 1, "bad:pom": 1, "good:metadata": 1, "good:pom": 1}, hits)
+	require.Contains(t, logBuf.String(), "Invalid maven-metadata.xml")
 }
