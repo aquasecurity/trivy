@@ -3,6 +3,7 @@ package rapidfort
 import (
 	"cmp"
 	"context"
+	"slices"
 	"strings"
 	"unicode"
 
@@ -69,19 +70,25 @@ func parseDistTag(elem string) (tag, num string, ok bool) {
 	return "", "", false
 }
 
+// dpkgRfMarkers are the substrings that mark a RapidFort rebuild in a
+// Debian/Ubuntu version string.
+var dpkgRfMarkers = []string{
+	"+rf",      // revision suffix, e.g. "0:2.5.2-1build1+rf.1"
+	"rfubu",    // Ubuntu rebuilds: "rfubu", "rfubuntu", "rfubujl"
+	"rfdebian", // Debian rebuilds, e.g. "14.2.0-29rfdebian~rf.1+bookworm1"
+	".rf.",     // bare-rf rebuild mid-release, e.g. "0:2.43-14.rf.1"
+	"-rf.",     // revision that starts with rf, e.g. "1:1.5.91-rf.1"
+}
+
 // dpkgHasRfMarker reports whether a Debian/Ubuntu version string carries a
 // RapidFort rebuild marker — the same signal the feed annotator writes as the
 // "rf" range identifier, so the routing decision here matches the DB build.
-// Four substring forms cover every rebuild spelling in the live feed; shapes
-// these forms do not match ("1surf1", "rfdebian") don't occur in real
-// OS/ubuntu or OS/debian data.
-//
-//	"+rf"           Debian/Ubuntu revision suffix (e.g. "0:2.5.2-1build1+rf.1")
-//	"rfubu"         Ubuntu rebuilds — matches "rfubu", "rfubuntu", "rfubujl"
-//	".rf." / ".rf"  Debian bare-rf rebuild, mid-release or at the tail
+// Besides dpkgRfMarkers, a bare-rf rebuild may end with ".rf" (e.g.
+// "0:5.40.1-10.rf").
 func dpkgHasRfMarker(ver string) bool {
-	return strings.Contains(ver, "+rf") || strings.Contains(ver, "rfubu") ||
-		strings.Contains(ver, ".rf.") || strings.HasSuffix(ver, ".rf")
+	return strings.HasSuffix(ver, ".rf") || slices.ContainsFunc(dpkgRfMarkers, func(m string) bool {
+		return strings.Contains(ver, m)
+	})
 }
 
 // getters is package-level because a getter is not tied to a scanner: the
@@ -255,7 +262,9 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 
 		// Some advisory files key entries by the binary package name rather
 		// than the SRPM name, so fall back to the binary name when the two
-		// differ. SRPM entries win on collision.
+		// differ. For a CVE present in both, the SRPM entry wins only when
+		// its range covers the install; otherwise the binary entry is
+		// evaluated.
 		if pkg.Name != srcName {
 			binAdvisories, err := vs.Get(db.GetParams{
 				Release: release,
@@ -265,15 +274,16 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", pkg.Name, err)
 			}
 			if len(binAdvisories) > 0 {
-				seen := set.New[string]()
+				srpmMatched := set.New[string]()
 				for _, adv := range advisories {
-					seen.Append(adv.VulnerabilityID)
+					if s.isVulnerable(ctx, installedVer, adv) {
+						srpmMatched.Append(adv.VulnerabilityID)
+					}
 				}
 				for _, adv := range binAdvisories {
-					if seen.Contains(adv.VulnerabilityID) {
+					if srpmMatched.Contains(adv.VulnerabilityID) {
 						continue
 					}
-					seen.Append(adv.VulnerabilityID)
 					advisories = append(advisories, adv)
 				}
 			}

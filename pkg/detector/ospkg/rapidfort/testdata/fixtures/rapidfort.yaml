@@ -97,6 +97,16 @@
             PatchedVersions:
               - "1.9.0-1.el9"
             Severity: 3
+        # Paired with the same CVE in the binary bucket below, with a
+        # narrower range than the binary's — drives the collision rule where
+        # the SRPM entry wins only when its range covers the install.
+        - key: CVE-2025-WIDEN
+          value:
+            VulnerableVersions:
+              - "<1.5.0-1.el9"
+            PatchedVersions:
+              - "1.5.0-1.el9"
+            Severity: 3
     # Binary bucket (queried by pkg.Name when it differs from pkg.SrcName).
     - bucket: rpm-sequoia
       pairs:
@@ -116,6 +126,15 @@
             PatchedVersions:
               - "99.99.99-1.el9"
             Severity: 1
+        # Wider range for the same CVE as the SRPM entry above — must be
+        # kept when the SRPM range misses the install.
+        - key: CVE-2025-WIDEN
+          value:
+            VulnerableVersions:
+              - "<2.0.0-1.el9"
+            PatchedVersions:
+              - "2.0.0-1.el9"
+            Severity: 2
 - bucket: rapidfort fedora 39
   pairs:
     - bucket: curl
@@ -287,8 +306,8 @@
             Severity: 2
 # RapidFort's own dpkg rebuilds inside a Debian image. The feed tags these
 # events with identifier: "rf", which trivy-db routes to this family bucket;
-# the scanner reaches the same bucket by matching the "+rf" / "rfubu" marker
-# in the installed version. The fix here is deliberately distinct from the
+# the scanner reaches the same bucket by matching an rf marker in the
+# installed version. The fix here is deliberately distinct from the
 # versioned "rapidfort debian 12" bucket's so a misroute is visible.
 - bucket: rapidfort debian
   pairs:
