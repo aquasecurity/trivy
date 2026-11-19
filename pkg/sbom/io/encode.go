@@ -286,6 +286,38 @@ func (e *Encoder) encodePackages(parent *core.Component, result types.Result) {
 			e.bom.AddRelationship(c, nil, "")
 		}
 	}
+
+	// Link packages that remain unreachable from the parent component to it.
+	// Packages in a dependency cycle have parents inside the cycle only,
+	// so none of them is linked to the parent and the whole cycle becomes
+	// an island detached from the BOM. Downstream decoding then treats these
+	// packages as orphans.
+	// cf. https://github.com/aquasecurity/trivy/issues/9011
+	depsByID := make(map[string][]string, len(result.Packages))
+	linked := make(map[string]bool, len(result.Packages))
+	var queue []string
+	for _, pkg := range result.Packages {
+		depsByID[pkg.ID] = pkg.DependsOn
+		if e.belongToParent(pkg, parents, hasRoot) {
+			linked[pkg.ID] = true
+			queue = append(queue, pkg.ID)
+		}
+	}
+	for len(queue) > 0 {
+		id := queue[0]
+		queue = queue[1:]
+		for _, dep := range depsByID[id] {
+			if !linked[dep] {
+				linked[dep] = true
+				queue = append(queue, dep)
+			}
+		}
+	}
+	for _, pkg := range result.Packages {
+		if !linked[pkg.ID] {
+			e.bom.AddRelationship(parent, components[pkg.Identifier.UID], core.RelationshipContains)
+		}
+	}
 }
 
 // encodeCryptoAssets turns cryptographic assets into components, one per identity. The
