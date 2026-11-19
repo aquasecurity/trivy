@@ -1,0 +1,95 @@
+Root repository: the parent POM and a dependency also published to repository 1.
+The parent POM also declares repositories 2 and 3, which the child POM overrides and disables by ID.
+
+-- org/example/example-parent/1.0.0/example-parent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-grandparent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>example-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <repository>
+            <id>repo1</id>
+            <url>REPO1_URL</url>
+        </repository>
+        <repository>
+            <id>overridden-repo</id>
+            <url>REPO2_URL</url>
+        </repository>
+        <repository>
+            <id>disabled-repo</id>
+            <url>REPO3_URL</url>
+        </repository>
+    </repositories>
+</project>
+
+-- org/example/example-api3/1.0.0/example-api3-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api3</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+</project>
+
+-- org/example/example-greatgrandparent/1.0.0/example-greatgrandparent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-disabled-ancestor</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-greatgrandparent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-api6</artifactId>
+                <version>1.0.0-reporoot</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+
+-- org/example/example-api6/1.0.0-reporoot/example-api6-1.0.0-reporoot.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api6</artifactId>
+    <version>1.0.0-reporoot</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+</project>
