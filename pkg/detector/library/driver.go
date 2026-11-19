@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/rubygems"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -103,6 +104,12 @@ type Driver struct {
 	dbc       db.Config
 }
 
+type comparableAdvisory struct {
+	advisory          dbTypes.Advisory
+	comparer          compare.Comparer
+	comparisonVersion string
+}
+
 // Type returns the driver ecosystem
 func (d *Driver) Type() string {
 	return string(d.ecosystem)
@@ -115,14 +122,15 @@ func (d *Driver) Type() string {
 func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.DetectedVulnerability, error) {
 	normalizedName := vulnerability.NormalizePkgName(d.ecosystem, pkgName)
 
-	advisories, comparer, err := d.advisories(normalizedName, pkgVer)
+	advisories, err := d.advisories(normalizedName, pkgVer)
 	if err != nil {
 		return nil, err
 	}
 
 	var vulns []types.DetectedVulnerability
-	for _, adv := range advisories {
-		if !comparer.IsVulnerable(pkgVer, adv) {
+	for _, item := range advisories {
+		adv := item.advisory
+		if !item.comparer.IsVulnerable(item.comparisonVersion, adv) {
 			continue
 		}
 
@@ -143,30 +151,81 @@ func (d *Driver) DetectVulnerabilities(pkgID, pkgName, pkgVer string) ([]types.D
 }
 
 // advisories resolves the advisory bucket for the package and returns the
-// matching advisories together with the version comparer to use.
+// matching advisories together with the version comparer to use for each one.
 //
 // For supplier packages (e.g. Seal Security), it prefers the supplier-specific
 // bucket and comparer. When the supplier match is only a candidate (a version
 // suffix that can also appear on real packages, e.g. `-spN` on Go/npm), the
 // supplier bucket is used only if it actually contains advisories for the
 // package; otherwise it falls back to the default ecosystem bucket.
-func (d *Driver) advisories(normalizedName, pkgVer string) ([]dbTypes.Advisory, compare.Comparer, error) {
+//
+// Suppliers that return MatchedWithUpstream use both buckets. Their advisories
+// replace default advisories with the same primary vulnerability ID before version
+// comparison, while unrelated default advisories keep the ecosystem comparer.
+func (d *Driver) advisories(normalizedName, pkgVer string) ([]comparableAdvisory, error) {
 	if v, res := lookupSupplier(d.ecosystem, normalizedName, pkgVer); res != NoMatch {
-		advisories, err := d.dbc.GetAdvisories(v.BucketPrefix(d.ecosystem), normalizedName)
+		supplierAdvisories, err := d.dbc.GetAdvisories(v.BucketPrefix(d.ecosystem), normalizedName)
 		if err != nil {
-			return nil, nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+			return nil, xerrors.Errorf("failed to get %s %s advisories: %w", v.Name(), d.ecosystem, err)
 		}
-		if res == Matched || len(advisories) > 0 {
-			return advisories, v.Comparer(d.ecosystem, d.comparer), nil
+		supplierComparer := v.Comparer(d.ecosystem, d.comparer)
+		if res == MatchedWithUpstream {
+			defaultAdvisories, err := d.dbc.GetAdvisories(defaultBucketPrefix(d.ecosystem), normalizedName)
+			if err != nil {
+				return nil, xerrors.Errorf("failed to get upstream %s advisories: %w", d.ecosystem, err)
+			}
+			upstreamVersion := pkgVer
+			if versioner, ok := v.(upstreamVersioner); ok {
+				upstreamVersion = versioner.UpstreamVersion(pkgVer)
+			}
+			return mergeAdvisories(defaultAdvisories, d.comparer, upstreamVersion,
+				supplierAdvisories, supplierComparer, pkgVer), nil
+		}
+		if res == Matched || len(supplierAdvisories) > 0 {
+			return advisoriesWithComparer(supplierAdvisories, supplierComparer, pkgVer), nil
 		}
 		// Candidate match without supplier advisories: fall back to the default bucket.
 	}
 
 	advisories, err := d.dbc.GetAdvisories(defaultBucketPrefix(d.ecosystem), normalizedName)
 	if err != nil {
-		return nil, nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
+		return nil, xerrors.Errorf("failed to get %s advisories: %w", d.ecosystem, err)
 	}
-	return advisories, d.comparer, nil
+	return advisoriesWithComparer(advisories, d.comparer, pkgVer), nil
+}
+
+func advisoriesWithComparer(advisories []dbTypes.Advisory, comparer compare.Comparer,
+	comparisonVersion string) []comparableAdvisory {
+	result := make([]comparableAdvisory, 0, len(advisories))
+	for _, advisory := range advisories {
+		result = append(result, comparableAdvisory{
+			advisory:          advisory,
+			comparer:          comparer,
+			comparisonVersion: comparisonVersion,
+		})
+	}
+	return result
+}
+
+func mergeAdvisories(defaultAdvisories []dbTypes.Advisory, defaultComparer compare.Comparer, defaultVersion string,
+	supplierAdvisories []dbTypes.Advisory, supplierComparer compare.Comparer, supplierVersion string) []comparableAdvisory {
+	supplierIDs := set.New[string]()
+	for _, advisory := range supplierAdvisories {
+		supplierIDs.Append(advisory.VulnerabilityID)
+	}
+
+	merged := make([]comparableAdvisory, 0, len(defaultAdvisories)+len(supplierAdvisories))
+	for _, advisory := range defaultAdvisories {
+		if supplierIDs.Contains(advisory.VulnerabilityID) {
+			continue
+		}
+		merged = append(merged, comparableAdvisory{
+			advisory:          advisory,
+			comparer:          defaultComparer,
+			comparisonVersion: defaultVersion,
+		})
+	}
+	return append(merged, advisoriesWithComparer(supplierAdvisories, supplierComparer, supplierVersion)...)
 }
 
 func createFixedVersions(advisory dbTypes.Advisory) string {
