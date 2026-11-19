@@ -5,6 +5,7 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/iac/adapters/arm/adaptertest"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/monitor"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func TestAdapt(t *testing.T) {
@@ -23,7 +24,9 @@ func TestAdapt(t *testing.T) {
     }
   ]
 }`,
-			expected: monitor.Monitor{},
+			expected: monitor.Monitor{
+				LogProfiles: []monitor.LogProfile{{}},
+			},
 		},
 		{
 			name: "complete",
@@ -42,7 +45,16 @@ func TestAdapt(t *testing.T) {
     }
   ]
 }`,
-			expected: monitor.Monitor{},
+			expected: monitor.Monitor{
+				LogProfiles: []monitor.LogProfile{{
+					RetentionPolicy: monitor.RetentionPolicy{
+						Enabled: types.BoolTest(true),
+						Days:    types.IntTest(20),
+					},
+					Categories: []types.StringValue{types.StringTest("Write")},
+					Locations:  []types.StringValue{types.StringTest("global")},
+				}},
+			},
 		},
 	}
 
