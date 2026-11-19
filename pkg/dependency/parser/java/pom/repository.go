@@ -21,6 +21,11 @@ type repository struct {
 	snapshotEnabled bool
 }
 
+// hasCredentials reports whether requests to the repository carry credentials.
+func (r repository) hasCredentials() bool {
+	return r.url.User != nil
+}
+
 type repositories struct {
 	settings    []repository // Repositories from settings.xml files
 	defaultRepo repository   // Default repository - Maven Central for Release, empty for Snapshot
@@ -72,4 +77,11 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 		repos = append(repos, r)
 	}
 	return repos
+}
+
+// displayURL returns the URL without the userinfo, query and fragment, which may carry
+// credentials or a token.
+func displayURL(u url.URL) string {
+	u.User, u.RawQuery, u.Fragment, u.ForceQuery = nil, "", "", false
+	return u.String()
 }

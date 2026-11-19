@@ -1,6 +1,8 @@
 package pom
 
 import (
+	"bytes"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -647,6 +649,180 @@ func TestParser_mirrorFor(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			p := &Parser{mirrors: resolveMirrors(tt.settingsMirrors, tt.servers, tt.configMirrors)}
 			require.Equal(t, tt.want, p.mirrorFor(tt.repo))
+		})
+	}
+}
+
+// Test_fetchPOMFromRemoteRepositories_rejectedCredentials verifies that a repository that rejects
+// the configured credentials (401/403) is warned about once, and that the warning leaks no secrets.
+func Test_fetchPOMFromRemoteRepositories_rejectedCredentials(t *testing.T) {
+	const (
+		user  = "repo-user"
+		pass  = "repo-pass"
+		token = "secret-token"
+	)
+	const pom = `<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>example-api</artifactId>
+  <version>1.0.0</version>
+</project>`
+
+	type repoSpec struct {
+		status         int    // answer for the POM request
+		metadataStatus int    // answer for the maven-metadata.xml request; status if zero
+		withCreds      bool   // credentials come from a settings.xml <server>
+		viaMirror      bool   // reached through a settings.xml mirror instead of a pom.xml <repository>
+		query          string // appended to the mirror URL
+	}
+	tests := []struct {
+		name       string
+		repos      []repoSpec
+		snapshot   bool
+		parsers    int    // parsers (pom.xml files) fetching the POM
+		wantHits   []int  // request count per repository
+		wantStatus []int  // status codes of the expected warnings
+		wantErr    string // non-empty: fetch must fail with an error containing this
+	}{
+		{
+			name:       "pom.xml repository with <server> credentials, 401",
+			repos:      []repoSpec{{status: http.StatusUnauthorized, withCreds: true}},
+			parsers:    1,
+			wantHits:   []int{1},
+			wantStatus: []int{http.StatusUnauthorized},
+			wantErr:    "not found",
+		},
+		{
+			name:       "mirror with <server> credentials and a URL query, 403",
+			repos:      []repoSpec{{status: http.StatusForbidden, withCreds: true, viaMirror: true, query: "?token=" + token}},
+			parsers:    1,
+			wantHits:   []int{1},
+			wantStatus: []int{http.StatusForbidden},
+			wantErr:    "not found",
+		},
+		{
+			name:       "two parsers, the same repository is warned about once",
+			repos:      []repoSpec{{status: http.StatusUnauthorized, withCreds: true}},
+			parsers:    2,
+			wantHits:   []int{2},
+			wantStatus: []int{http.StatusUnauthorized},
+			wantErr:    "not found",
+		},
+		{
+			name:       "snapshot, 401 on maven-metadata.xml, the POM is served",
+			repos:      []repoSpec{{status: http.StatusOK, metadataStatus: http.StatusUnauthorized, withCreds: true}},
+			snapshot:   true,
+			parsers:    1,
+			wantHits:   []int{2},
+			wantStatus: []int{http.StatusUnauthorized},
+		},
+		{
+			name: "different repositories are warned about separately",
+			repos: []repoSpec{
+				{status: http.StatusUnauthorized, withCreds: true},
+				{status: http.StatusForbidden, withCreds: true},
+			},
+			parsers:    1,
+			wantHits:   []int{1, 1},
+			wantStatus: []int{http.StatusUnauthorized, http.StatusForbidden},
+			wantErr:    "not found",
+		},
+		{
+			name:     "404 with credentials is not warned about",
+			repos:    []repoSpec{{status: http.StatusNotFound, withCreds: true}},
+			parsers:  1,
+			wantHits: []int{1},
+			wantErr:  "not found",
+		},
+		{
+			name:     "401 without credentials is not warned about",
+			repos:    []repoSpec{{status: http.StatusUnauthorized}},
+			parsers:  1,
+			wantHits: []int{1},
+			wantErr:  "not found",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// The warning is deduplicated by host:port, and the OS may reuse the port
+			// of a server closed by an earlier case.
+			rejectedCredentialsRepos.Range(func(key string, _ struct{}) bool {
+				rejectedCredentialsRepos.Delete(key)
+				return true
+			})
+
+			hits := make([]int, len(tt.repos))
+			gotUsers := make([]string, len(tt.repos))
+			var pomRepos []pomRepository
+			var servers []Server
+			var settingsMirrors []Mirror
+			for i, spec := range tt.repos {
+				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					hits[i]++
+					gotUsers[i], _, _ = r.BasicAuth()
+					status := spec.status
+					if strings.HasSuffix(r.URL.Path, "/maven-metadata.xml") && spec.metadataStatus != 0 {
+						status = spec.metadataStatus
+					}
+					if status != http.StatusOK {
+						w.WriteHeader(status)
+						return
+					}
+					_, _ = w.Write([]byte(pom))
+				}))
+				t.Cleanup(s.Close)
+
+				id := fmt.Sprintf("repo-%d", i)
+				repoURL := s.URL
+				if spec.viaMirror {
+					// The pom.xml repository is replaced by the mirror and never requested.
+					repoURL = "https://repo.invalid/maven2"
+					id = fmt.Sprintf("mirror-%d", i)
+					settingsMirrors = append(settingsMirrors, Mirror{ID: id, URL: s.URL + spec.query, MirrorOf: fmt.Sprintf("repo-%d", i)})
+				}
+				if spec.withCreds {
+					servers = append(servers, Server{ID: id, Username: user, Password: pass})
+				}
+				pomRepos = append(pomRepos, pomRepository{ID: fmt.Sprintf("repo-%d", i), URL: repoURL})
+			}
+			var logs bytes.Buffer
+			logger := log.New(log.NewHandler(&logs, &log.Options{Level: log.LevelWarn}))
+			repos := resolvePomRepos(servers, pomRepos)
+			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
+			for range tt.parsers {
+				p := &Parser{
+					logger:     logger,
+					mirrors:    resolveMirrors(settingsMirrors, servers, nil),
+					httpClient: http.DefaultClient,
+				}
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, repos)
+				if tt.wantErr != "" {
+					require.ErrorContains(t, err, tt.wantErr)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, got)
+				}
+			}
+
+			require.Equal(t, tt.wantHits, hits, "request count per repository")
+			for i, spec := range tt.repos {
+				wantUser := ""
+				if spec.withCreds {
+					wantUser = user
+				}
+				require.Equal(t, wantUser, gotUsers[i], "basic auth user of repository %d", i)
+			}
+
+			out := logs.String()
+			require.Equal(t, len(tt.wantStatus), strings.Count(out, "denied access with the configured credentials"), out)
+			for _, status := range tt.wantStatus {
+				require.Contains(t, out, fmt.Sprintf("statusCode=%d", status))
+			}
+			for _, secret := range []string{user, pass, token} {
+				require.NotContains(t, out, secret)
+			}
 		})
 	}
 }
