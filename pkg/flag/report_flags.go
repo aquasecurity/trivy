@@ -293,7 +293,7 @@ func (f *ReportFlagGroup) ToOptions(opts *Options) error {
 	return nil
 }
 
-func loadComplianceTypes(compliance string, cacheDir string) (spec.ComplianceSpec, error) {
+func loadComplianceTypes(compliance, cacheDir string) (spec.ComplianceSpec, error) {
 	if compliance != "" && !slices.Contains(types.SupportedCompliances, compliance) && !strings.HasPrefix(compliance, "@") {
 		return spec.ComplianceSpec{}, xerrors.Errorf("unknown compliance: %v", compliance)
 	}
