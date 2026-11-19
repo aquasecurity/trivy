@@ -75,6 +75,12 @@ func TestFS_Walk(t *testing.T) {
 			},
 			wantErr: "failed to analyze file",
 		},
+		{
+			name:      "root does not exist",
+			rootDir:   "testdata/missing",
+			analyzeFn: func(string, os.FileInfo, analyzer.Opener) error { return nil },
+			wantErr:   "unknown error with testdata/missing",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -87,6 +93,33 @@ func TestFS_Walk(t *testing.T) {
 			require.NoError(t, err)
 		})
 	}
+}
+
+func TestFS_WalkRemovedFiles(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"a", "b", "c/c", "d"} {
+		path := filepath.Join(dir, name)
+		require.NoError(t, os.MkdirAll(filepath.Dir(path), 0o755))
+		require.NoError(t, os.WriteFile(path, []byte(name), 0o644))
+	}
+
+	var got []string
+	err := walker.NewFS().Walk(dir, walker.Option{}, func(filePath string, _ os.FileInfo, opener analyzer.Opener) error {
+		if filePath == "a" {
+			require.NoError(t, os.Remove(filepath.Join(dir, "a")))
+			require.NoError(t, os.Remove(filepath.Join(dir, "b")))
+			require.NoError(t, os.RemoveAll(filepath.Join(dir, "c")))
+		}
+		f, err := opener()
+		if err != nil {
+			return err
+		}
+		require.NoError(t, f.Close())
+		got = append(got, filePath)
+		return nil
+	})
+	require.NoError(t, err)
+	assert.Equal(t, []string{"d"}, got)
 }
 
 func TestFS_BuildSkipPaths(t *testing.T) {

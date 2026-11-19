@@ -1,6 +1,8 @@
 package fsutils
 
 import (
+	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"testing"
@@ -78,6 +80,25 @@ func TestDirExists(t *testing.T) {
 		require.NoError(t, err)
 		assert.False(t, DirExists(filePath))
 	})
+}
+
+func TestWalkDirRemovedFile(t *testing.T) {
+	dir := t.TempDir()
+	for _, name := range []string{"a", "b", "c"} {
+		require.NoError(t, os.WriteFile(filepath.Join(dir, name), []byte(name), 0o644))
+	}
+
+	var got []string
+	err := WalkDir(os.DirFS(dir), ".", func(string, fs.DirEntry) bool { return true },
+		func(path string, _ fs.DirEntry, _ io.Reader) error {
+			got = append(got, path)
+			if path == "a" {
+				require.NoError(t, os.Remove(filepath.Join(dir, "b")))
+			}
+			return nil
+		})
+	require.NoError(t, err)
+	assert.Equal(t, []string{"a", "c"}, got)
 }
 
 func TestFileExists(t *testing.T) {

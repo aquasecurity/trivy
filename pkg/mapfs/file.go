@@ -1,6 +1,7 @@
 package mapfs
 
 import (
+	"errors"
 	"io"
 	"io/fs"
 	"os"
@@ -139,9 +140,12 @@ func (f *file) ReadDir(name string) ([]fs.DirEntry, error) {
 			if value.isVirtual() {
 				entries = append(entries, &value.stat)
 			} else {
-				var fi os.FileInfo
-				fi, err = os.Stat(value.underlyingPath)
-				if err != nil {
+				fi, statErr := os.Stat(value.underlyingPath)
+				if errors.Is(statErr, fs.ErrNotExist) {
+					// The underlying file disappeared after it had been mapped.
+					return true
+				} else if statErr != nil {
+					err = statErr
 					return false
 				}
 				entries = append(entries, &fileStat{
