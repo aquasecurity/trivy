@@ -1,0 +1,8 @@
+name: test-env
+channels:
+  - conda-forge
+dependencies:
+  - conda-forge::numpy=1.26.4
+  - defaults::blas=1.0=openblas
+  - pytorch::pytorch
+prefix: /opt/conda/envs/test-env
