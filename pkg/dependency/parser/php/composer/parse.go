@@ -133,11 +133,25 @@ func licenses(val any) []string {
 	case []any:
 		var lics []string
 		for _, l := range v {
-			if lic, ok := l.(string); ok {
+			if lic, ok := l.(string); ok && lic != "" {
 				lics = append(lics, lic)
 			}
 		}
-		return lics
+		return disjunction(lics)
 	}
 	return nil
+}
+
+// disjunction joins the licenses of a Composer array into a single `OR` expression,
+// because an array means the user can choose any one of them ("disjunctive license").
+func disjunction(lics []string) []string {
+	if len(lics) < 2 {
+		return lics
+	}
+	for i, lic := range lics {
+		if strings.ContainsAny(lic, " \t") {
+			lics[i] = "(" + lic + ")"
+		}
+	}
+	return []string{strings.Join(lics, " OR ")}
 }

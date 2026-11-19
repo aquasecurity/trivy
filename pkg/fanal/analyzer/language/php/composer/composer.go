@@ -26,7 +26,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeComposer, newComposerAnalyzer)
 }
 
-const composerAnalyzerVersion = 1
+const composerAnalyzerVersion = 2
 
 var requiredFiles = []string{
 	types.ComposerLock,
