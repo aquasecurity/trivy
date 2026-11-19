@@ -284,19 +284,18 @@ func TestReportFlagGroup_ToOptions(t *testing.T) {
 		_, err := flags.ToOptions(nil)
 		assert.ErrorContains(t, err, "ignore file not found: doesntexist")
 	})
-}
 
-func TestReportFlagGroup_ToOptions_ComplianceSpecFromCacheDir(t *testing.T) {
-	t.Cleanup(viper.Reset)
+	t.Run("load built-in compliance spec from --cache-dir", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
 
-	cacheDir := t.TempDir()
+		cacheDir := t.TempDir()
 
-	policyDir := filepath.Join(cacheDir, "policy")
-	specDir := filepath.Join(policyDir, "content", "specs", "compliance")
-	require.NoError(t, os.MkdirAll(specDir, 0o755))
-	require.NoError(t, os.WriteFile(filepath.Join(policyDir, "metadata.json"), []byte(`{}`), 0o600))
+		policyDir := filepath.Join(cacheDir, "policy")
+		specDir := filepath.Join(policyDir, "content", "specs", "compliance")
+		require.NoError(t, os.MkdirAll(specDir, 0o755))
+		require.NoError(t, os.WriteFile(filepath.Join(policyDir, "metadata.json"), []byte(`{}`), 0o600))
 
-	specYAML := `spec:
+		specYAML := `spec:
   id: docker-cis-1.6.0
   title: Spec from the cache dir
   description: Custom test spec
@@ -304,17 +303,18 @@ func TestReportFlagGroup_ToOptions_ComplianceSpecFromCacheDir(t *testing.T) {
   relatedResources: []
   controls: []
 `
-	require.NoError(t, os.WriteFile(filepath.Join(specDir, "docker-cis-1.6.0.yaml"), []byte(specYAML), 0o600))
+		require.NoError(t, os.WriteFile(filepath.Join(specDir, "docker-cis-1.6.0.yaml"), []byte(specYAML), 0o600))
 
-	setValue(flag.CacheDirFlag.ConfigName, cacheDir)
-	setValue(flag.ComplianceFlag.ConfigName, "docker-cis-1.6.0")
+		setValue(flag.CacheDirFlag.ConfigName, cacheDir)
+		setValue(flag.ComplianceFlag.ConfigName, "docker-cis-1.6.0")
 
-	flags := flag.Flags{
-		flag.NewGlobalFlagGroup(),
-		flag.NewReportFlagGroup(),
-	}
+		flags := flag.Flags{
+			flag.NewGlobalFlagGroup(),
+			flag.NewReportFlagGroup(),
+		}
 
-	opts, err := flags.ToOptions(nil)
-	require.NoError(t, err)
-	assert.Equal(t, "Spec from the cache dir", opts.Compliance.Spec.Title)
+		opts, err := flags.ToOptions(nil)
+		require.NoError(t, err)
+		assert.Equal(t, "Spec from the cache dir", opts.Compliance.Spec.Title)
+	})
 }
