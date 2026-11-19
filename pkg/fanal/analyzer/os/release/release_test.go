@@ -260,6 +260,26 @@ func Test_osReleaseAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			name:      "CleanStart",
+			inputFile: "testdata/cleanstart",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CleanStart,
+					Name:   "20241216",
+				},
+			},
+		},
+		{
+			name:      "CleanStart with legacy clnstrt ID",
+			inputFile: "testdata/cleanstart-clnstrt",
+			want: &analyzer.AnalysisResult{
+				OS: types.OS{
+					Family: types.CleanStart,
+					Name:   "20241216",
+				},
+			},
+		},
+		{
 			name:      "Bottlerocket",
 			inputFile: "testdata/bottlerocket",
 			want: &analyzer.AnalysisResult{

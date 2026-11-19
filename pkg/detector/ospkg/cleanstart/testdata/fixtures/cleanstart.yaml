@@ -1,0 +1,19 @@
+- bucket: cleanstart
+  pairs:
+    # Advisories that carry an upstream CVE are keyed by the CVE.
+    - bucket: redis
+      pairs:
+        - key: CVE-2025-12345
+          value:
+            FixedVersion: "7.4.6-r0"
+    # Advisories whose upstream has no CVE are keyed by the normalized GHSA.
+    - bucket: linkerd2
+      pairs:
+        - key: GHSA-hr2v-4r36-88hr
+          value:
+            FixedVersion: "26.1.4-r0"
+    - bucket: invalid-src
+      pairs:
+        - key: CVE-2025-00001
+          value:
+            FixedVersion: "invalid"

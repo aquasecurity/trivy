@@ -1,0 +1,7 @@
+- bucket: data-source
+  pairs:
+    - key: cleanstart
+      value:
+        ID: "cleanstart"
+        Name: "CleanStart Security Advisories"
+        URL: "https://github.com/cleanstart-dev/cleanstart-security-advisories"

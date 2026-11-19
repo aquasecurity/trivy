@@ -56,6 +56,7 @@ const (
 	SLES               OSType = "sles"
 	Ubuntu             OSType = "ubuntu"
 	Wolfi              OSType = "wolfi"
+	CleanStart         OSType = "cleanstart"
 )
 
 // HasOSPackages returns true if the OS type has OS-level packages managed by a package manager.
@@ -96,6 +97,8 @@ var OSTypeAliases = map[OSType]OSType{
 	"amazon linux": Amazon,
 	// This is used to map OS names in Kind
 	"debian gnu/linux": Debian,
+	// This is used to map OS names in SBOMs of older CleanStart images, which shipped ID=clnstrt
+	"clnstrt": CleanStart,
 }
 
 // Programming language dependencies
@@ -173,6 +176,7 @@ var (
 		SLES,
 		Ubuntu,
 		Wolfi,
+		CleanStart,
 	}
 	AggregatingTypes = []LangType{
 		PythonPkg,
