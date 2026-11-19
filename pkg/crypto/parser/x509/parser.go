@@ -139,6 +139,11 @@ type rawCertificate struct {
 
 var oidRSAEncryption = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 1}
 
+// oidRSASSAPSS identifies an RSA key restricted to RSASSA-PSS signatures, defined by RFC 4055
+// section 1.2.
+// See https://www.rfc-editor.org/rfc/rfc4055#section-1.2
+var oidRSASSAPSS = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}
+
 // oidECPublicKey identifies an EC public key, defined by RFC 5480 section 2.1.1.
 // See https://www.rfc-editor.org/rfc/rfc5480#section-2.1.1
 var oidECPublicKey = asn1.ObjectIdentifier{1, 2, 840, 10045, 2, 1}
@@ -359,6 +364,8 @@ func pkcs8PrivateKeyObject(der []byte) (object, error) {
 		switch {
 		case key.Algo.Algorithm.Equal(oidRSAEncryption):
 			return rsaPrivateKeyObject(key.PrivateKey, ftypes.CryptoKeyFormatPKCS8)
+		case key.Algo.Algorithm.Equal(oidRSASSAPSS):
+			return rsaPSSPrivateKeyObject(key)
 		case key.Algo.Algorithm.Equal(oidECPublicKey) && isP192(key.Algo.Parameters.FullBytes):
 			// The curve is stored in the outer AlgorithmIdentifier, so the key may omit it.
 			if _, ok := parseP192PrivateKey(key.PrivateKey); !ok {
@@ -469,39 +476,79 @@ func p192AlgorithmObject() object {
 }
 
 // rsaPrivateKeyObject reads an RSA private key in PKCS#1 and projects it to its public key.
-// It checks the structure of the key but not its math, because crypto/x509 validates a key
+func rsaPrivateKeyObject(der []byte, format ftypes.CryptoKeyFormat) (object, error) {
+	publicKey, err := parseRSAPrivateKey(der)
+	if err != nil {
+		return object{}, err
+	}
+	return object{
+		kind:      objectPrivateKey,
+		publicKey: publicKey,
+		keyFormat: format,
+	}, nil
+}
+
+// rsaPSSPrivateKeyObject reads an RSASSA-PSS private key in PKCS#8, which holds a PKCS#1
+// key, and projects it to its public key. The public key keeps the algorithm identifier of
+// the private key with its parameters, because the identity of the key is taken over that
+// encoding.
+func rsaPSSPrivateKeyObject(key pkcs8PrivateKey) (object, error) {
+	publicKey, err := parseRSAPrivateKey(key.PrivateKey)
+	if err != nil {
+		return object{}, err
+	}
+	pkcs1 := stdx509.MarshalPKCS1PublicKey(publicKey)
+	spki, err := asn1.Marshal(struct {
+		Algorithm        pkix.AlgorithmIdentifier
+		SubjectPublicKey asn1.BitString
+	}{
+		Algorithm:        key.Algo,
+		SubjectPublicKey: asn1.BitString{Bytes: pkcs1, BitLength: len(pkcs1) * 8},
+	})
+	if err != nil {
+		return object{}, errMalformedCrypto
+	}
+	// The key is described from this encoding, which rejects a public exponent over 2^31-1
+	// that a private key may carry.
+	if _, err := crypto.ParseSubjectPublicKeyInfo(spki); err != nil {
+		return object{}, errMalformedCrypto
+	}
+	return object{
+		kind:         objectPrivateKey,
+		rawPublicKey: spki,
+		keyFormat:    ftypes.CryptoKeyFormatPKCS8,
+	}, nil
+}
+
+// parseRSAPrivateKey reads an RSA private key in PKCS#1 and returns its public key. It
+// checks the structure of the key but not its math, because crypto/x509 validates a key
 // with arithmetic whose cost grows with the size of its values, and a crafted key picks
 // them freely.
-func rsaPrivateKeyObject(der []byte, format ftypes.CryptoKeyFormat) (object, error) {
+func parseRSAPrivateKey(der []byte) (*rsa.PublicKey, error) {
 	var key pkcs1PrivateKey
 	rest, err := asn1.Unmarshal(der, &key)
 	if err != nil || len(rest) > 0 {
-		return object{}, errMalformedCrypto
+		return nil, errMalformedCrypto
 	}
 	if key.Version < 0 || key.Version > 1 || key.E <= 0 {
-		return object{}, errMalformedCrypto
+		return nil, errMalformedCrypto
 	}
 	for _, v := range []*big.Int{key.N, key.D, key.P, key.Q} {
 		if v.Sign() <= 0 {
-			return object{}, errMalformedCrypto
+			return nil, errMalformedCrypto
 		}
 	}
 	for _, v := range []*big.Int{key.Dp, key.Dq, key.Qinv} {
 		if v != nil && v.Sign() <= 0 {
-			return object{}, errMalformedCrypto
+			return nil, errMalformedCrypto
 		}
 	}
 	for _, p := range key.AdditionalPrimes {
 		if p.Prime.Sign() <= 0 {
-			return object{}, errMalformedCrypto
+			return nil, errMalformedCrypto
 		}
 	}
-
-	return object{
-		kind:      objectPrivateKey,
-		publicKey: &rsa.PublicKey{N: key.N, E: key.E},
-		keyFormat: format,
-	}, nil
+	return &rsa.PublicKey{N: key.N, E: key.E}, nil
 }
 
 func parseDERObject(der []byte) (object, error) {

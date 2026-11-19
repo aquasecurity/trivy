@@ -20,6 +20,9 @@ type ECPrivateKey = ecPrivateKey
 // OIDRSAEncryption exports oidRSAEncryption for testing.
 var OIDRSAEncryption = oidRSAEncryption
 
+// OIDRSASSAPSS exports oidRSASSAPSS for testing.
+var OIDRSASSAPSS = oidRSASSAPSS
+
 // OIDECPublicKey exports oidECPublicKey for testing.
 var OIDECPublicKey = oidECPublicKey
 
