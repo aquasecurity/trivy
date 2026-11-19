@@ -394,6 +394,10 @@ func aggregate(detail *ftypes.ArtifactDetail) {
 // A finding from a lower layer is merged into the upper-layer finding only when the upper version of the file
 // has a finding with the same rule and the same masked match, as it is most likely the same secret
 // (e.g. the file was copied up by chmod or the secret moved to another line).
+// Each upper-layer finding is merged with at most one lower-layer finding, so several lower-layer secrets
+// that look the same after masking are not all hidden by a single upper-layer secret.
+// Findings with the same key are paired in order, so when such findings moved to other lines,
+// the reported line of a remaining lower-layer finding may belong to another of them.
 // It returns the number of merged findings.
 func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, layer ftypes.Layer) int {
 	for i := range newSecret.Findings { // add layer to the Findings from the new secret
@@ -407,9 +411,16 @@ func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, 
 		return 0
 	}
 
+	// The number of upper-layer findings that can still be merged with a lower-layer finding
+	unmerged := make(map[secretFindingKey]int)
+	for _, f := range newSecret.Findings {
+		unmerged[newSecretFindingKey(f)]++
+	}
+
 	var merged int
 	for _, previousFinding := range secret.Findings { // secrets from previous layers
-		if secretFindingsContains(newSecret.Findings, previousFinding) {
+		if key := newSecretFindingKey(previousFinding); unmerged[key] > 0 {
+			unmerged[key]--
 			merged++
 			log.WithPrefix(log.PrefixSecret).Debug("Secret finding is merged with the same finding in an upper layer",
 				log.FilePath(newSecret.FilePath), log.String("rule_id", previousFinding.RuleID),
@@ -422,15 +433,21 @@ func mergeSecrets(secretsMap map[string]ftypes.Secret, newSecret ftypes.Secret, 
 	return merged
 }
 
-// secretFindingsContains reports whether findings contain a finding with the same rule and masked match.
+// secretFindingKey identifies a secret finding by its rule and masked match.
 // The masking keeps the length of the secret, so findings that differ only in the secret value
-// are considered equal when the secrets have the same length and the same surrounding text.
+// have the same key when the secrets have the same length and the same surrounding text.
 // For binary files the match holds only the file path and the rule title,
-// so findings of the same rule are always considered equal.
-func secretFindingsContains(findings []ftypes.SecretFinding, finding ftypes.SecretFinding) bool {
-	return slices.ContainsFunc(findings, func(f ftypes.SecretFinding) bool {
-		return f.RuleID == finding.RuleID && f.Match == finding.Match
-	})
+// so findings of the same rule always have the same key.
+type secretFindingKey struct {
+	RuleID string
+	Match  string
+}
+
+func newSecretFindingKey(f ftypes.SecretFinding) secretFindingKey {
+	return secretFindingKey{
+		RuleID: f.RuleID,
+		Match:  f.Match,
+	}
 }
 
 // purlMatchesOS checks if a package's PURL namespace matches the detected OS family.
