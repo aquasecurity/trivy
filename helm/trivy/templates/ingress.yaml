@@ -1,5 +1,5 @@
 {{- if .Values.ingress.enabled -}}
-{{- $fullName := include "trivy.fullname" . -}}
+{{- $serviceName := .Values.service.name | default (include "trivy.fullname" .) -}}
 {{- if .Capabilities.APIVersions.Has "networking.k8s.io/v1" }}
 apiVersion: networking.k8s.io/v1
 {{- else if .Capabilities.APIVersions.Has "networking.k8s.io/v1beta1" }}
@@ -41,12 +41,12 @@ spec:
             pathType: {{ $.Values.ingress.pathType }}
             backend:
               service:
-                name: {{ $fullName }}
+                name: {{ $serviceName }}
                 port:
                   number: {{ $.Values.service.port -}}
           {{- else }}
             backend:
-              serviceName: {{ $fullName }}
+              serviceName: {{ $serviceName }}
               servicePort: {{ $.Values.service.port -}}
           {{- end }}
   {{- end }}
