@@ -48,14 +48,8 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 			// The default interpretation is TLS 1.0 for this property.
 			MinimumTLSVersion: resource.Properties.GetMapValue("minimumTlsVersion").
 				AsStringValue("TLS1_0", resource.Properties.GetMetadata()),
-			Queues: queues,
-			BlobProperties: storage.BlobProperties{
-				Metadata: resource.Properties.GetMetadata(),
-				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
-					Metadata: resource.Properties.GetMetadata(),
-					Days:     resource.Properties.GetMapValue("blobServices").GetMapValue("properties").GetMapValue("deleteRetentionPolicy").GetMapValue("days").AsIntValue(0, resource.Properties.GetMetadata()),
-				},
-			},
+			Queues:                          queues,
+			BlobProperties:                  adaptBlobProperties(resource),
 			AccountReplicationType:          resource.Properties.GetMapValue("sku").GetMapValue("name").AsStringValue("", resource.Properties.GetMetadata()),
 			InfrastructureEncryptionEnabled: resource.Properties.GetMapValue("encryption").GetMapValue("requireInfrastructureEncryption").AsBoolValue(false, resource.Properties.GetMetadata()),
 			CustomerManagedKey: storage.CustomerManagedKey{
@@ -89,6 +83,54 @@ func adaptAccounts(deployment azure.Deployment) []storage.Account {
 		accounts = append(accounts, account)
 	}
 	return accounts
+}
+
+func adaptBlobProperties(account azure.Resource) storage.BlobProperties {
+	service, ok := findBlobService(account)
+	if !ok {
+		return storage.BlobProperties{
+			Metadata: account.Properties.GetMetadata(),
+			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+				Metadata: account.Properties.GetMetadata(),
+				Days:     types.IntDefault(0, account.Properties.GetMetadata()),
+			},
+		}
+	}
+
+	policy := service.Properties.GetMapValue("deleteRetentionPolicy")
+	if policy.IsNull() {
+		return storage.BlobProperties{
+			Metadata: service.Metadata,
+			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+				Metadata: service.Metadata,
+				Days:     types.IntDefault(0, service.Metadata),
+			},
+		}
+	}
+
+	// With soft delete disabled, deleted blobs are removed immediately and days has no effect.
+	// See https://learn.microsoft.com/en-us/rest/api/storageservices/set-blob-service-properties#request-body
+	days := policy.GetMapValue("days").AsIntValue(0, policy.GetMetadata())
+	if enabled := policy.GetMapValue("enabled").AsBoolValue(false, policy.GetMetadata()); enabled.IsFalse() {
+		days = types.Int(0, enabled.GetMetadata())
+	}
+
+	return storage.BlobProperties{
+		Metadata: service.Metadata,
+		DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+			Metadata: policy.GetMetadata(),
+			Days:     days,
+		},
+	}
+}
+
+func findBlobService(account azure.Resource) (azure.Resource, bool) {
+	for _, typ := range []string{"blobServices", "Microsoft.Storage/storageAccounts/blobServices"} {
+		if services := account.GetResourcesByType(typ); len(services) > 0 {
+			return services[0], true
+		}
+	}
+	return azure.Resource{}, false
 }
 
 func adaptNetworkRules(resource azure.Resource) []storage.NetworkRule {
