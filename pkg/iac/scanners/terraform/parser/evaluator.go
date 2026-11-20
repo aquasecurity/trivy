@@ -174,7 +174,7 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 	for i := range maxContextIterations {
 		changed := false
 		for _, sm := range submodules {
-			changed = changed || e.evaluateSubmodule(ctx, sm)
+			changed = e.evaluateSubmodule(ctx, sm) || changed
 		}
 		if !changed {
 			e.logger.Debug("All submodules are evaluated", log.Int("loop", i))
