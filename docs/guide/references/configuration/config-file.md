@@ -594,8 +594,14 @@ repository:
   # Same as '--commit'
   commit: ""
 
+  # Same as '--git-password'
+  password: ""
+
   # Same as '--tag'
   tag: ""
+
+  # Same as '--git-username'
+  username: ""
 
 ```
 ## Scan options

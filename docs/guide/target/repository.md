@@ -179,3 +179,15 @@ $ trivy repo <your private GitHub repo URL>
 $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
 ```
+
+For other Git hosting platforms (e.g. Bitbucket, Gitea, GitHub Enterprise or a self-hosted server), pass the credentials with `--git-username` and `--git-password`.
+They're used for HTTP basic auth when cloning over HTTPS and take precedence over `GITHUB_TOKEN` and `GITLAB_TOKEN`.
+If you only set `--git-password` (e.g. with an access token), a placeholder username is used, which most token-based hosts accept.
+
+To keep the password out of your shell history and process list, use the `TRIVY_GIT_PASSWORD` environment variable instead of the flag.
+
+```
+$ export TRIVY_GIT_USERNAME="your_username"
+$ export TRIVY_GIT_PASSWORD="your_app_password_or_token"
+$ trivy repo https://bitbucket.org/your-workspace/your-private-repo
+```

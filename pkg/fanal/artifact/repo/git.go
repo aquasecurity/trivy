@@ -98,7 +98,7 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
-		Auth:            gitAuth(),
+		Auth:            gitAuth(artifactOpt),
 		Progress:        os.Stderr,
 		InsecureSkipTLS: artifactOpt.Insecure,
 	}
@@ -158,11 +158,24 @@ func newURL(rawurl string) (*url.URL, error) {
 	return u, nil
 }
 
-// Helper function to check for a GitHub/GitLab token from env vars in order to
-// make authenticated requests to access private repos
-func gitAuth() http.AuthMethod {
+// gitAuth returns credentials for cloning private repos.
+// Credentials passed via --git-username/--git-password take precedence,
+// then GITHUB_TOKEN and GITLAB_TOKEN are checked.
+func gitAuth(artifactOpt artifact.Option) http.AuthMethod {
 	// The username can be anything for HTTPS Git operations
 	gitUsername := "fanal-aquasecurity-scan"
+
+	if artifactOpt.RepoPassword != "" {
+		username := artifactOpt.RepoUsername
+		if username == "" {
+			// Token-based hosts (e.g. Bitbucket access tokens, Gitea) accept any username
+			username = gitUsername
+		}
+		return &http.BasicAuth{
+			Username: username,
+			Password: artifactOpt.RepoPassword,
+		}
+	}
 
 	// We first check if a GitHub token was provided
 	githubToken := os.Getenv("GITHUB_TOKEN")
