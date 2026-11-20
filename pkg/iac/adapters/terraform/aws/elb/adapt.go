@@ -1,6 +1,8 @@
 package elb
 
 import (
+	"strings"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/aws/elb"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -101,12 +103,19 @@ func adaptListener(listenerBlock *terraform.Block, typeVal string) elb.Listener 
 	}
 
 	protocolAttr := listenerBlock.GetAttribute("protocol")
-	if typeVal == "application" {
+	switch typeVal {
+	case elb.TypeApplication:
 		listener.Protocol = protocolAttr.AsStringValueOrDefault("HTTP", listenerBlock)
+	case elb.TypeNetwork:
+		listener.Protocol = protocolAttr.AsStringValueOrDefault("", listenerBlock)
 	}
 
 	sslPolicyAttr := listenerBlock.GetAttribute("ssl_policy")
-	listener.TLSPolicy = sslPolicyAttr.AsStringValueOrDefault("", listenerBlock)
+	defaultPolicy := ""
+	if terminatesTLS(listener.Protocol) {
+		defaultPolicy = elb.DefaultTLSPolicy
+	}
+	listener.TLSPolicy = sslPolicyAttr.AsStringValueOrDefault(defaultPolicy, listenerBlock)
 
 	for _, defaultActionBlock := range listenerBlock.GetBlocks("default_action") {
 		action := elb.Action{
@@ -117,4 +126,10 @@ func adaptListener(listenerBlock *terraform.Block, typeVal string) elb.Listener 
 	}
 
 	return listener
+}
+
+// terminatesTLS reports whether a listener with the given protocol requires a TLS policy.
+// The AWS provider accepts the protocol in any case.
+func terminatesTLS(protocol iacTypes.StringValue) bool {
+	return strings.EqualFold(protocol.Value(), "HTTPS") || strings.EqualFold(protocol.Value(), "TLS")
 }
