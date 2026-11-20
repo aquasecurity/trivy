@@ -75,6 +75,13 @@
           "version": "dev"
         }
       },
+      "invocations": [
+        {
+          "endTimeUtc": "2021-08-25T12:20:30.000000005Z",
+          "executionSuccessful": true,
+          "startTimeUtc": "2021-08-25T12:20:30.000000005Z"
+        }
+      ],
       "results": [
         {
           "ruleId": "CVE-2019-1549",

@@ -3,7 +3,10 @@ package report_test
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
+	"os"
 	"testing"
+	"time"
 
 	"github.com/owenrumney/go-sarif/v2/sarif"
 	"github.com/stretchr/testify/assert"
@@ -15,6 +18,8 @@ import (
 	"github.com/aquasecurity/trivy/pkg/report"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
+
+var update = flag.Bool("update", false, "update golden files")
 
 // TestReportWriter_Sarif reuses report.PathToFileURI to compute expected URIs.
 // The correctness of PathToFileURI itself (including Windows path handling) is verified in TestWrite_Sarif.
@@ -747,6 +752,55 @@ func TestReportWriter_Sarif(t *testing.T) {
 			err = json.Unmarshal(sarifWritten.Bytes(), result)
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, result)
+		})
+	}
+}
+
+// TestReportWriter_SarifGolden verifies the SARIF output, including the invocation
+// `startTimeUtc`/`endTimeUtc` fields, against golden files.
+// Run `go test ./pkg/report/ -run TestReportWriter_SarifGolden -update` to regenerate them.
+func TestReportWriter_SarifGolden(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  types.Report
+		golden string
+	}{
+		{
+			name: "invocation with scan timestamps",
+			input: types.Report{
+				ArtifactName: "debian:9",
+				ArtifactType: ftypes.TypeContainerImage,
+				StartedAt:    time.Date(2026, 2, 3, 4, 5, 6, 0, time.UTC),
+				CreatedAt:    time.Date(2026, 2, 3, 4, 6, 7, 0, time.UTC),
+			},
+			golden: "testdata/sarif-invocation.golden",
+		},
+		{
+			name: "invocation falls back to report creation time",
+			input: types.Report{
+				ArtifactName: "debian:9",
+				ArtifactType: ftypes.TypeContainerImage,
+				CreatedAt:    time.Date(2026, 2, 3, 4, 6, 7, 0, time.UTC),
+			},
+			golden: "testdata/sarif-invocation-fallback.golden",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sarifWritten := bytes.NewBuffer(nil)
+			w := report.SarifWriter{
+				Output:  sarifWritten,
+				Version: "test",
+			}
+			require.NoError(t, w.Write(t.Context(), tt.input))
+
+			if *update {
+				require.NoError(t, os.WriteFile(tt.golden, sarifWritten.Bytes(), 0o600))
+			}
+			want, err := os.ReadFile(tt.golden)
+			require.NoError(t, err)
+			assert.Equal(t, string(want), sarifWritten.String())
 		})
 	}
 }

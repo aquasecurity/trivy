@@ -22,6 +22,10 @@ type Report struct {
 	Trivy         TrivyInfo `json:",omitzero"`
 	ReportID      string    `json:",omitempty"` // Unique identifier for this scan report
 	CreatedAt     time.Time `json:",omitzero"`
+	// StartedAt is the time when scanning of the artifact started.
+	// Together with CreatedAt it defines the tool execution window reported
+	// in SARIF invocations (startTimeUtc/endTimeUtc).
+	StartedAt time.Time `json:",omitzero"`
 
 	// ArtifactID uniquely identifies the scanned artifact.
 	// For container images: hash(ImageID + Registry + Repository) - ensures same image in different repos have different IDs

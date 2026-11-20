@@ -260,6 +260,10 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	}
 	sw.run.ColumnKind = columnKind
 
+	if invocation := sarifInvocation(report); invocation != nil {
+		sw.run.AddInvocations(invocation)
+	}
+
 	if sw.Target != "" {
 		rootPath := pathToFileURI(sw.Target)
 		sw.run.OriginalUriBaseIDs = map[string]*sarif.ArtifactLocation{
@@ -270,6 +274,30 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 	}
 	sarifReport.AddRun(sw.run)
 	return sarifReport.PrettyWrite(sw.Output)
+}
+
+// sarifInvocation returns the invocation of the current tool run with `startTimeUtc` and `endTimeUtc`,
+// as recommended by the SARIF specification:
+// https://docs.oasis-open.org/sarif/sarif/v2.1.0/os/sarif-v2.1.0-os.html#_Toc34317574
+// The times represent the execution window of the scan (StartedAt -> CreatedAt), not the time
+// the report was written. For reports without scan times (e.g. reports created by `trivy convert`
+// from older JSON reports) the creation time is used for both fields.
+// It returns nil when no timestamps are available, so no empty invocation is emitted.
+func sarifInvocation(report types.Report) *sarif.Invocation {
+	startTime, endTime := report.StartedAt, report.CreatedAt
+	if startTime.IsZero() {
+		startTime = endTime
+	}
+	if endTime.IsZero() {
+		endTime = startTime
+	}
+	if startTime.IsZero() {
+		return nil
+	}
+	return sarif.NewInvocation().
+		WithStartTimeUTC(startTime).
+		WithEndTimeUTC(endTime).
+		WithExecutionSuccess(true)
 }
 
 func toSarifLocations(locations []location, artifactLocation, locationMessage string) []*sarif.Location {
