@@ -8,6 +8,16 @@
               - 4.2.7
             VulnerableVersions:
               - ">= 4.2.0, < 4.2.7"
+    - bucket: magento/product-community-edition
+      pairs:
+        - key: CVE-2024-34102
+          value:
+            PatchedVersions:
+              - 2.4.6-p6
+              - 2.4.7-p1
+            VulnerableVersions:
+              - ">= 2.4.6, < 2.4.6-p6"
+              - ">= 2.4.7, < 2.4.7-p1"
 - bucket: "composer::php-security-advisories"
   pairs:
     - bucket: symfony/symfony

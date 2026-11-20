@@ -150,6 +150,32 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
+			// Composer orders a patch after the release it patches, unlike SemVer
+			name: "composer patch",
+			fixtures: []string{
+				"testdata/fixtures/php.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			libType: ftypes.Composer,
+			args: args{
+				pkgName: "magento/product-community-edition",
+				pkgVer:  "2.4.6-p5",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2024-34102",
+					PkgName:          "magento/product-community-edition",
+					InstalledVersion: "2.4.6-p5",
+					FixedVersion:     "2.4.6-p6, 2.4.7-p1",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GLAD,
+						Name: "GitLab Advisory Database Community",
+						URL:  "https://gitlab.com/gitlab-org/advisories-community",
+					},
+				},
+			},
+		},
+		{
 			name: "no vulnerable versions in the advisory",
 			fixtures: []string{
 				"testdata/fixtures/ruby.yaml",
