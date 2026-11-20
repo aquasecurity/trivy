@@ -53,6 +53,26 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// Only a value naming one version unambiguously loses its brackets; "[$(PinnedVersion)]" becomes a
+			// variable and is skipped, and every other range or malformed value is kept as written.
+			name:      "ExactVersionRanges",
+			inputFile: "testdata/exact_version_ranges.props",
+			want: []ftypes.Package{
+				{Name: "DifferentSpelling", Version: "[1.0,1.0.0]", ID: "DifferentSpelling@[1.0,1.0.0]"},
+				{Name: "EmptyBrackets", Version: "[]", ID: "EmptyBrackets@[]"},
+				{Name: "EqualBounds", Version: "1.0", ID: "EqualBounds@1.0"},
+				{Name: "ExactPin", Version: "4.7.0", ID: "ExactPin@4.7.0"},
+				{Name: "ExclusivePin", Version: "(1.0)", ID: "ExclusivePin@(1.0)"},
+				{Name: "FloatingPin", Version: "[1.*]", ID: "FloatingPin@[1.*]"},
+				{Name: "HalfOpenPin", Version: "[1.0)", ID: "HalfOpenPin@[1.0)"},
+				{Name: "InclusiveRange", Version: "[1.0,2.0]", ID: "InclusiveRange@[1.0,2.0]"},
+				{Name: "MissingLowerBound", Version: "[,1.0]", ID: "MissingLowerBound@[,1.0]"},
+				{Name: "OpenRange", Version: "[8.0.32,9)", ID: "OpenRange@[8.0.32,9)"},
+				{Name: "SpacedPin", Version: "4.7.1", ID: "SpacedPin@4.7.1"},
+				{Name: "UnclosedBracket", Version: "[1.0", ID: "UnclosedBracket@[1.0"},
+			},
+		},
+		{
 			name:      "NoItemGroupInXMLStructure",
 			inputFile: "testdata/no_item_group.props",
 			want:      []ftypes.Package(nil),
