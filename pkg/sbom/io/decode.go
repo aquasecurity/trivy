@@ -374,7 +374,14 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 	}
 
 	if len(osPkgMap) > 1 {
-		return xerrors.Errorf("multiple types of OS packages in SBOM are not supported (%q)", lo.Keys(osPkgMap))
+		osTypes := lo.Keys(osPkgMap)
+		sort.Strings(osTypes)
+		kept := osTypes[0]
+		m.logger.Warn("Multiple types of OS packages in SBOM are not supported, taking one type and ignoring the rest",
+			log.Any("types", osTypes), log.String("kept", kept))
+		for _, t := range osTypes[1:] {
+			delete(osPkgMap, t)
+		}
 	}
 
 	// Add OS packages
@@ -390,7 +397,7 @@ func (m *Decoder) addOrphanPkgs(sbom *types.SBOM) error {
 		sbom.Packages[0].Packages = append(sbom.Packages[0].Packages, pkgs...)
 		sort.Sort(sbom.Packages[0].Packages)
 
-		break // Just take the first element
+		break // Exactly one OS package type remains
 	}
 
 	// Add language-specific packages
