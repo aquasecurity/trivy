@@ -3,17 +3,24 @@ package database
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const mariaDBServerType = "Microsoft.DBforMariaDB/servers"
+
 func adaptMariaDBServers(deployment azure.Deployment) (mariaDbServers []database.MariaDBServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforMariaDB/servers") {
+	for _, resource := range deployment.GetResourcesByType(mariaDBServerType) {
 		mariaDbServers = append(mariaDbServers, adaptMariaDBServer(resource, deployment))
+	}
+	if rules := orphanFirewallRules(deployment, mariaDBServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		mariaDbServers = append(mariaDbServers, database.MariaDBServer{Metadata: metadata, Server: orphanage(metadata, rules)})
 	}
 	return mariaDbServers
 
 }
 
-func adaptMariaDBServer(resource azure.Resource, _ azure.Deployment) database.MariaDBServer {
+func adaptMariaDBServer(resource azure.Resource, deployment azure.Deployment) database.MariaDBServer {
 	return database.MariaDBServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{
@@ -21,7 +28,7 @@ func adaptMariaDBServer(resource azure.Resource, _ azure.Deployment) database.Ma
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource),
+			FirewallRules:             addFirewallRule(resource, deployment),
 		},
 	}
 }

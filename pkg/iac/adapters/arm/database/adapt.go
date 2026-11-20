@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) database.Database {
@@ -14,14 +15,20 @@ func Adapt(deployment azure.Deployment) database.Database {
 	}
 }
 
+const mysqlServerType = "Microsoft.DBforMySQL/servers"
+
 func adaptMySQLServers(deployment azure.Deployment) (mysqlDbServers []database.MySQLServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforMySQL/servers") {
+	for _, resource := range deployment.GetResourcesByType(mysqlServerType) {
 		mysqlDbServers = append(mysqlDbServers, adaptMySQLServer(resource, deployment))
+	}
+	if rules := orphanFirewallRules(deployment, mysqlServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		mysqlDbServers = append(mysqlDbServers, database.MySQLServer{Metadata: metadata, Server: orphanage(metadata, rules)})
 	}
 	return mysqlDbServers
 }
 
-func adaptMySQLServer(resource azure.Resource, _ azure.Deployment) database.MySQLServer {
+func adaptMySQLServer(resource azure.Resource, deployment azure.Deployment) database.MySQLServer {
 	return database.MySQLServer{
 		Metadata: resource.Metadata,
 		Server: database.Server{
@@ -29,7 +36,7 @@ func adaptMySQLServer(resource azure.Resource, _ azure.Deployment) database.MySQ
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource),
+			FirewallRules:             addFirewallRule(resource, deployment),
 		},
 	}
 }
