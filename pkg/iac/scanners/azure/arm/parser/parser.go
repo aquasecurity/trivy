@@ -8,6 +8,7 @@ import (
 	"github.com/samber/lo"
 
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	"github.com/aquasecurity/trivy/pkg/iac/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
@@ -115,16 +116,26 @@ func (p *Parser) convertResource(input Resource) azure.Resource {
 		children = append(children, p.convertResource(child))
 	}
 
+	metadata := lo.FromPtr(input.Metadata)
 	resource := azure.Resource{
-		Metadata:   lo.FromPtr(input.Metadata),
-		APIVersion: input.APIVersion,
-		Type:       input.Type,
-		Kind:       input.Kind,
-		Name:       input.Name,
-		Location:   input.Location,
-		Properties: input.Properties,
+		Metadata:   metadata,
+		APIVersion: valueOrNull(input.APIVersion, metadata),
+		Type:       valueOrNull(input.Type, metadata),
+		Kind:       valueOrNull(input.Kind, metadata),
+		Name:       valueOrNull(input.Name, metadata),
+		Location:   valueOrNull(input.Location, metadata),
+		Properties: valueOrNull(input.Properties, metadata),
 		Resources:  children,
 	}
 
 	return resource
+}
+
+// valueOrNull returns a null value with the given metadata if v is absent
+// in the template.
+func valueOrNull(v azure.Value, metadata types.Metadata) azure.Value {
+	if v.GetMetadata().IsManaged() {
+		return v
+	}
+	return azure.NewValue(nil, metadata)
 }

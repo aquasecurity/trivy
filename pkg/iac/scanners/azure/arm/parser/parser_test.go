@@ -265,6 +265,7 @@ func TestParser_Parse(t *testing.T) {
 								"location",
 								createMetadata(fsys, filename, 10, 10, "resources.myacc.location", &resourceMetadata),
 							),
+							Properties: azure.NewValue(nil, resourceMetadata),
 						},
 					},
 				}
