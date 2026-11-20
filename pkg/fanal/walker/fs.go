@@ -28,7 +28,7 @@ func (w *FS) Walk(root string, opt Option, fn WalkFunc) error {
 	opt.SkipDirs = append(opt.SkipDirs, defaultSkipDirs...)
 
 	walkDirFunc := w.WalkDirFunc(root, fn, opt)
-	walkDirFunc = w.onError(walkDirFunc)
+	walkDirFunc = w.onError(root, walkDirFunc)
 
 	// Walk the filesystem
 	if err := filepath.WalkDir(root, walkDirFunc); err != nil {
@@ -77,13 +77,18 @@ func (w *FS) WalkDirFunc(root string, fn WalkFunc, opt Option) fs.WalkDirFunc {
 	}
 }
 
-func (w *FS) onError(wrapped fs.WalkDirFunc) fs.WalkDirFunc {
+func (w *FS) onError(root string, wrapped fs.WalkDirFunc) fs.WalkDirFunc {
 	return func(filePath string, d fs.DirEntry, err error) error {
 		err = wrapped(filePath, d, err)
 		switch {
 		// Unwrap fs.SkipDir error
 		case errors.Is(err, fs.SkipDir):
 			return fs.SkipDir
+		// Skip files and directories that disappeared during the walk.
+		// A missing root is still an error.
+		case errors.Is(err, fs.ErrNotExist) && filePath != root:
+			log.Debug("Skip the file that disappeared during the scan", log.FilePath(filePath))
+			return nil
 		// Ignore permission errors
 		case os.IsPermission(err):
 			return nil
