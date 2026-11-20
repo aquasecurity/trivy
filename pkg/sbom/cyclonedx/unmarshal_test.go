@@ -949,6 +949,33 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			},
 		},
 		{
+			name:      "happy path firmware metadata component",
+			inputFile: "testdata/happy/firmware-metadata-component-bom.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.Composer,
+						Packages: ftypes.Packages{
+							{
+								ID:      "pear/core@1.13.1",
+								Name:    "pear/core",
+								Version: "1.13.1",
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeComposer,
+										Namespace: "pear",
+										Name:      "core",
+										Version:   "1.13.1",
+									},
+									BOMRef: "pkg:composer/pear/core@1.13.1",
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "invalid serial",
 			inputFile: "testdata/sad/invalid-serial.json",
 			wantErr:   "CycloneDX decode error",
