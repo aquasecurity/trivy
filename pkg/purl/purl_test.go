@@ -79,6 +79,19 @@ func TestNewPackageURL(t *testing.T) {
 			},
 		},
 		{
+			name: "OpenJDK runtime",
+			typ:  ftypes.JDK,
+			pkg: ftypes.Package{
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+			want: &purl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+		},
+		{
 			name: "yarn package",
 			typ:  ftypes.Yarn,
 			pkg: ftypes.Package{
@@ -1009,6 +1022,24 @@ func TestPackageURL_LangType(t *testing.T) {
 				Version:   "1.21.1",
 			},
 			want: ftypes.EKS,
+		},
+		{
+			name: "openjdk generic runtime",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "openjdk",
+				Version: "17.0.13+11",
+			},
+			want: ftypes.JDK,
+		},
+		{
+			name: "unknown generic package",
+			purl: packageurl.PackageURL{
+				Type:    packageurl.TypeGeneric,
+				Name:    "custom-binary",
+				Version: "1.0.0",
+			},
+			want: purl.TypeUnknown,
 		},
 	}
 	for _, tt := range tests {

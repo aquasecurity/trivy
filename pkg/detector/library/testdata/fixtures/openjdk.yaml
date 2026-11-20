@@ -1,0 +1,10 @@
+- bucket: "openjdk::NVD"
+  pairs:
+    - bucket: openjdk
+      pairs:
+        - key: CVE-2026-114938
+          value:
+            PatchedVersions:
+              - 17.0.21.1+2
+            VulnerableVersions:
+              - ">=17.0.0, <17.0.21.1+2"

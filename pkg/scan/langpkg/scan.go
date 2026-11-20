@@ -25,6 +25,7 @@ var (
 		ftypes.GemSpec:     "Ruby",
 		ftypes.NodePkg:     "Node.js",
 		ftypes.Jar:         "Java",
+		ftypes.JDK:         "Java",
 		ftypes.K8sUpstream: "Kubernetes",
 	}
 )

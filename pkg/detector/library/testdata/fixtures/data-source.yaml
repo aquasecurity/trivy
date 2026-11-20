@@ -85,3 +85,8 @@
         ID: "echo-osv"
         Name: "Echo OSV"
         URL: "https://advisory.echohq.com/osv/all.zip"
+    - key: "openjdk::NVD"
+      value:
+        ID: "nvd"
+        Name: "National Vulnerability Database"
+        URL: "https://nvd.nist.gov/vuln"
