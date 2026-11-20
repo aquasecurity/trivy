@@ -89,6 +89,29 @@ func TestFS_Walk(t *testing.T) {
 	}
 }
 
+func TestFS_Walk_ProjectSystemNamedDir(t *testing.T) {
+	root := t.TempDir()
+	devDir := filepath.Join(root, "dev")
+	require.NoError(t, os.Mkdir(devDir, 0o755))
+	require.NoError(t, os.WriteFile(filepath.Join(devDir, "main.tf"), []byte("terraform {}"), 0o600))
+
+	var visited []string
+	err := walker.NewFS().Walk(root, walker.Option{}, func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
+		visited = append(visited, filePath)
+		return nil
+	})
+	require.NoError(t, err)
+	assert.Contains(t, visited, "dev/main.tf")
+
+	visited = nil
+	err = walker.NewFS().Walk(root, walker.Option{SkipDirs: []string{"dev"}}, func(filePath string, _ os.FileInfo, _ analyzer.Opener) error {
+		visited = append(visited, filePath)
+		return nil
+	})
+	require.NoError(t, err)
+	assert.NotContains(t, visited, "dev/main.tf")
+}
+
 func TestFS_BuildSkipPaths(t *testing.T) {
 	tests := []struct {
 		name  string

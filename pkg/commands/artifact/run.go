@@ -230,6 +230,9 @@ func (r *runner) ScanFilesystem(ctx context.Context, opts flag.Options) (types.R
 func (r *runner) ScanRootfs(ctx context.Context, opts flag.Options) (types.Report, error) {
 	// Disable the lock file scanning
 	opts.DisabledAnalyzers = append(opts.DisabledAnalyzers, analyzer.TypeLockfiles...)
+	// The target is a root filesystem even when it is mounted below the host root.
+	// Avoid walking virtual system directories within it.
+	opts.SkipDirs = append(opts.SkipDirs, "dev", "proc", "sys")
 
 	return r.scanFS(ctx, opts)
 }
