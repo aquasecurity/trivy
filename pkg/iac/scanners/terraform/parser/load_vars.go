@@ -8,11 +8,12 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func parseEnvVar(name, val string, ty cty.Type) (cty.Value, error) {
