@@ -1123,4 +1123,122 @@ var (
 		},
 	}
 	pnpmV9MultiVersionDeps = []ftypes.Dependency{}
+
+	// pnpmV9Alias tests npm aliases in "importers", where the version is the full
+	// snapshot key ("mkdirp@0.5.1") rather than a plain version.
+	//
+	// docker run --rm node@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 sh -c '
+	// npm install -g pnpm@11.28.2
+	// mkdir /app && cd /app
+	// echo "{\"name\":\"app\",\"version\":\"1.0.0\"}" > package.json
+	// pnpm add my-mkdirp@npm:mkdirp@0.5.1 my-xmldom@npm:@xmldom/xmldom@0.8.13
+	// cat pnpm-lock.yaml'
+	pnpmV9Alias = []ftypes.Package{
+		{
+			ID:           "@xmldom/xmldom@0.8.13",
+			Name:         "@xmldom/xmldom",
+			Version:      "0.8.13",
+			Relationship: ftypes.RelationshipDirect,
+		},
+		{
+			ID:           "minimist@0.0.8",
+			Name:         "minimist",
+			Version:      "0.0.8",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "mkdirp@0.5.1",
+			Name:         "mkdirp",
+			Version:      "0.5.1",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9AliasDeps = []ftypes.Dependency{
+		{
+			ID:        "mkdirp@0.5.1",
+			DependsOn: []string{"minimist@0.0.8"},
+		},
+	}
+
+	// pnpmV9Deploy tests a workspace package injected by "pnpm deploy", where the
+	// importer version is the full snapshot key ("shared@file:///...").
+	//
+	// docker run --rm node@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 sh -c '
+	// npm install -g pnpm@11.28.2
+	// mkdir -p /app/packages/shared /app/packages/service && cd /app
+	// echo "{\"name\":\"root\",\"version\":\"1.0.0\"}" > package.json
+	// printf "packages:\n- packages/*\n" > pnpm-workspace.yaml
+	// echo "{\"name\":\"shared\",\"version\":\"1.0.0\",\"dependencies\":{\"mkdirp\":\"0.5.1\"}}" > packages/shared/package.json
+	// echo "{\"name\":\"service\",\"version\":\"1.0.0\",\"dependencies\":{\"shared\":\"workspace:*\"}}" > packages/service/package.json
+	// pnpm install
+	// pnpm --config.inject-workspace-packages=true --filter service deploy --prod /out
+	// cat /out/pnpm-lock.yaml'
+	pnpmV9Deploy = []ftypes.Package{
+		{
+			ID:           "minimist@0.0.8",
+			Name:         "minimist",
+			Version:      "0.0.8",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "mkdirp@0.5.1",
+			Name:         "mkdirp",
+			Version:      "0.5.1",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "shared@file:///app/packages/shared",
+			Name:         "shared",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9DeployDeps = []ftypes.Dependency{
+		{
+			ID:        "mkdirp@0.5.1",
+			DependsOn: []string{"minimist@0.0.8"},
+		},
+		{
+			ID:        "shared@file:///app/packages/shared",
+			DependsOn: []string{"mkdirp@0.5.1"},
+		},
+	}
+
+	// pnpmV9NestedAlias tests an npm alias in the dependencies of a snapshot.
+	//
+	// docker run --rm node@sha256:ebfe2f90462722a7a4de65e91990e97fe0d401c70e0e762c5b53302f905ec1c1 sh -c '
+	// npm install -g pnpm@11.28.2
+	// mkdir -p /app/shared /app/app
+	// echo "{\"name\":\"shared\",\"version\":\"1.0.0\",\"dependencies\":{\"my-mkdirp\":\"npm:mkdirp@0.5.1\"}}" > /app/shared/package.json
+	// cd /app/app && echo "{\"name\":\"app\",\"version\":\"1.0.0\"}" > package.json
+	// pnpm add file:../shared
+	// cat pnpm-lock.yaml'
+	pnpmV9NestedAlias = []ftypes.Package{
+		{
+			ID:           "minimist@0.0.8",
+			Name:         "minimist",
+			Version:      "0.0.8",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "mkdirp@0.5.1",
+			Name:         "mkdirp",
+			Version:      "0.5.1",
+			Relationship: ftypes.RelationshipIndirect,
+		},
+		{
+			ID:           "shared@file:../shared",
+			Name:         "shared",
+			Relationship: ftypes.RelationshipDirect,
+		},
+	}
+	pnpmV9NestedAliasDeps = []ftypes.Dependency{
+		{
+			ID:        "mkdirp@0.5.1",
+			DependsOn: []string{"minimist@0.0.8"},
+		},
+		{
+			ID:        "shared@file:../shared",
+			DependsOn: []string{"mkdirp@0.5.1"},
+		},
+	}
 )
