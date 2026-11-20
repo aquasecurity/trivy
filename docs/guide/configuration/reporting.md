@@ -338,6 +338,39 @@ $ trivy image -f json -o results.json alpine:latest
       "Target": "alpine:latest (alpine 3.20.3)",
       "Class": "os-pkgs",
       "Type": "alpine",
+      "Packages": [
+        {
+          "ID": "musl@1.2.5-r0",
+          "Name": "musl",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/musl@1.2.5-r0?arch=aarch64&distro=3.20.3",
+            "UID": "2a959bfc2fdb4677"
+          },
+          "Version": "1.2.5-r0",
+          "Arch": "aarch64",
+          "SrcName": "musl",
+          "SrcVersion": "1.2.5-r0",
+          "Licenses": [
+            "MIT"
+          ],
+          "Maintainer": "Natanael Copa <ncopa@alpinelinux.org>",
+          "Layer": {
+            "DiffID": "sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8"
+          },
+          "Digest": "sha1:b1d943abdafd90a5481993600d7ea690f64c6871",
+          "Digests": [
+            {
+              "Digest": "sha1:b1d943abdafd90a5481993600d7ea690f64c6871",
+              "Source": "apk-installed-db"
+            }
+          ],
+          "InstalledFiles": [
+            "lib/ld-musl-aarch64.so.1",
+            "lib/libc.musl-aarch64.so.1"
+          ],
+          "AnalyzedBy": "apk"
+        }
+      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2024-9143",
@@ -453,6 +486,11 @@ $ trivy image -f json -o results.json alpine:latest
 </details>
 
 `VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
+
+The `Digests` field of each package in `Packages` holds the [package digests](../supply-chain/package-digests.md).
+
+!!! warning
+    The `Digest` field of a package is deprecated. Use `Digests` instead. `Digest` holds a single value without its source and is not filled for digests from newer sources, such as `go-module-h1`.
 
 ### SARIF
 |     Scanner      | Supported |
