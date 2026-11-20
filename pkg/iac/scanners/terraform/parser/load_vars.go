@@ -8,14 +8,30 @@ import (
 	"path/filepath"
 	"strings"
 
+	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/hashicorp/hcl/v2"
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
 )
 
-func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
-	combinedVars := make(map[string]cty.Value)
+func parseEnvVar(name, val string, ty cty.Type) (cty.Value, error) {
+	if ty == cty.NilType || ty == cty.DynamicPseudoType || ty.IsPrimitiveType() {
+		return cty.StringVal(val), nil
+	}
+	expr, diags := hclsyntax.ParseExpression([]byte(val), "<TF_VAR_"+name+">", hcl.InitialPos)
+	if diags.HasErrors() {
+		return cty.NilVal, fmt.Errorf("parse HCL expression: %w", diags)
+	}
+	v, diag := expr.Value(nil)
+	if diag.HasErrors() {
+		return cty.NilVal, fmt.Errorf("evaluate HCL expression: %w", diag)
+	}
+	return v, nil
+}
+
+func loadEnvVars(logger *log.Logger, varTypes map[string]cty.Type) map[string]cty.Value {
+	envVars := make(map[string]cty.Value)
 
 	for _, env := range os.Environ() {
 		key, val, _ := strings.Cut(env, "=")
@@ -23,8 +39,19 @@ func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
 		if !ok {
 			continue
 		}
-		combinedVars[name] = parseEnvVar(name, val, varTypes[name])
+		v, err := parseEnvVar(name, val, varTypes[name])
+		if err != nil {
+			logger.Warn("Ignoring TF_VAR environment variable", log.String("name", "TF_VAR_"+name), log.Err(err))
+			continue
+		}
+		envVars[name] = v
 	}
+
+	return envVars
+}
+
+func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
+	combinedVars := make(map[string]cty.Value)
 
 	for _, filename := range filenames {
 		vars, err := loadTFVarsFile(srcFS, filename)
