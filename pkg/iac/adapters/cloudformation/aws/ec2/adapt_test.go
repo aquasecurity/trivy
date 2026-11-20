@@ -415,6 +415,33 @@ Resources:
 			},
 		},
 		{
+			name: "network ACL entry with egress as string",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  NetworkACL:
+    Type: AWS::EC2::NetworkAcl
+  Rule:
+    Type: AWS::EC2::NetworkAclEntry
+    Properties:
+      NetworkAclId:
+        Ref: NetworkACL
+      Egress: "true"`,
+			expected: ec2.EC2{
+				NetworkACLs: []ec2.NetworkACL{
+					{
+						Rules: []ec2.NetworkACLRule{
+							{
+								Action:   types.StringTest("allow"),
+								Type:     types.StringTest("egress"),
+								FromPort: types.IntTest(-1),
+								ToPort:   types.IntTest(-1),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "VPC flow log ref to other VPC",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:

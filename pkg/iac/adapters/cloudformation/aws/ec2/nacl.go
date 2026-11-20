@@ -35,12 +35,12 @@ func getRules(id string, ctx parser.FileContext) (rules []ec2.NetworkACLRule) {
 				CIDRs:    nil,
 			}
 
-			if egressProperty := ruleResource.GetProperty("Egress"); egressProperty.IsBool() {
-				if egressProperty.AsBool() {
-					rule.Type = iacTypes.String(ec2.TypeEgress, egressProperty.Metadata())
-				} else {
-					rule.Type = iacTypes.String(ec2.TypeIngress, egressProperty.Metadata())
-				}
+			egress := ruleResource.GetBoolProperty("Egress")
+			switch {
+			case egress.IsTrue():
+				rule.Type = iacTypes.String(ec2.TypeEgress, egress.GetMetadata())
+			case egress.IsFalse():
+				rule.Type = iacTypes.String(ec2.TypeIngress, egress.GetMetadata())
 			}
 
 			if actionProperty := ruleResource.GetProperty("RuleAction"); actionProperty.IsString() {
