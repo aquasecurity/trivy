@@ -4,6 +4,7 @@ import (
 	"archive/zip"
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -546,12 +547,101 @@ func TestDecodePomLicenses(t *testing.T) {
 			xml:  `<project><licenses><license><name></name><url>https://example.com/my-license</url></license></licenses></project>`,
 			want: nil,
 		},
+		{
+			name: "default namespace",
+			xml:  `<project xmlns="http://maven.apache.org/POM/4.0.0"><licenses><license><name>MIT</name></license></licenses></project>`,
+			want: []string{"MIT"},
+		},
+		{
+			name: "namespace prefix",
+			xml:  `<pom:project xmlns:pom="http://maven.apache.org/POM/4.0.0"><pom:licenses><pom:license><pom:name>MIT</pom:name></pom:license></pom:licenses></pom:project>`,
+			want: []string{"MIT"},
+		},
+		{
+			name: "licenses after dependencies",
+			xml:  `<project><dependencies><dependency><groupId>com.example</groupId></dependency></dependencies><licenses><license><name>MIT</name></license></licenses></project>`,
+			want: []string{"MIT"},
+		},
+		{
+			name: "licenses below the root are ignored",
+			xml:  `<project><build><plugins><plugin><configuration><licenses><license><name>MIT</name></license></licenses></configuration></plugin></plugins></build></project>`,
+			want: nil,
+		},
+		{
+			name: "license url in a comment",
+			xml:  `<!-- http://www.apache.org/licenses/LICENSE-2.0 --><project><parent><groupId>com.example</groupId></parent></project>`,
+			want: nil,
+		},
+		{
+			name: "ISO-8859-1",
+			xml:  "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><project><licenses><license><name>Licen\xe7a</name></license></licenses></project>",
+			want: []string{"Licença"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got, err := jar.DecodePomLicenses(strings.NewReader(tt.xml))
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+// benchPom returns a pom.xml in the shape of an embedded Maven descriptor:
+// a license header comment, a parent, the licenses if withLicenses is set,
+// and n dependencies.
+func benchPom(withLicenses bool, n int) string {
+	var b strings.Builder
+	b.WriteString(`<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+      http://www.apache.org/licenses/LICENSE-2.0
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>com.example</groupId>
+    <artifactId>parent</artifactId>
+    <version>1.0.0</version>
+  </parent>
+  <artifactId>example</artifactId>
+  <name>Example</name>
+`)
+	if withLicenses {
+		b.WriteString(`  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
+    </license>
+  </licenses>
+`)
+	}
+	b.WriteString("  <dependencies>\n")
+	for i := range n {
+		fmt.Fprintf(&b, "    <dependency>\n      <groupId>com.example</groupId>\n      <artifactId>dep-%d</artifactId>\n      <version>1.0.%d</version>\n    </dependency>\n", i, i)
+	}
+	b.WriteString("  </dependencies>\n</project>\n")
+	return b.String()
+}
+
+func BenchmarkDecodePomLicenses(b *testing.B) {
+	for _, bb := range []struct {
+		name string
+		pom  string
+	}{
+		{name: "licenses", pom: benchPom(true, 100)},
+		{name: "parent", pom: benchPom(false, 100)},
+	} {
+		b.Run(bb.name, func(b *testing.B) {
+			b.ReportAllocs()
+			for b.Loop() {
+				if _, err := jar.DecodePomLicenses(strings.NewReader(bb.pom)); err != nil {
+					b.Fatal(err)
+				}
+			}
 		})
 	}
 }
