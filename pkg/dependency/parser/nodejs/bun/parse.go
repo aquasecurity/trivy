@@ -147,9 +147,15 @@ func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, ma
 		// A workspace member is written as "<name>@workspace:<dir>",
 		// e.g. "a": ["a@workspace:packages/a"] for the workspace "packages/a".
 		if wsDir, ok := strings.CutPrefix(pkgVersion, "workspace:"); ok {
+			ws := lockFile.Workspaces[wsDir]
 			wsPaths[wsDir] = pkgPath
-			pkgVersion = lockFile.Workspaces[wsDir].Version
+			pkgVersion = ws.Version
 			relationship = ftypes.RelationshipWorkspace
+			// Since lockfileVersion 1 a workspace entry has no metadata, so its dependencies come from `workspaces`.
+			// Duplicates (e.g. a peer dependency that is also a dev dependency,
+			// or the dependencies in the metadata of lockfileVersion 0) are removed in mergePackages.
+			depNames[pkgPath] = slices.Concat(lo.Keys(ws.Dependencies), lo.Keys(ws.PeerDependencies),
+				lo.Keys(ws.OptionalDependencies), lo.Keys(ws.DevDependencies))
 		}
 		if pkgVersion != "" {
 			if _, err := semver.Parse(pkgVersion); err != nil {
@@ -169,7 +175,7 @@ func (p *Parser) parsePackages(lockFile LockFile) (map[string]ftypes.Package, ma
 		}
 
 		if depMap, ok := parsed.Meta["dependencies"].(map[string]any); ok && len(depMap) > 0 {
-			depNames[pkgPath] = lo.Keys(depMap)
+			depNames[pkgPath] = append(depNames[pkgPath], lo.Keys(depMap)...)
 		}
 	}
 	return pkgs, depNames, wsPaths
@@ -235,6 +241,11 @@ func walkProdPackages(pkgPath string, pkgs map[string]ftypes.Package, deps map[s
 	pkgs[pkgPath] = pkg
 
 	visited.Append(pkgPath)
+	// The dependencies of a workspace include its dev dependencies, so the walk stops at a workspace.
+	// Its prod dependencies are walked as direct dependencies.
+	if pkg.Relationship == ftypes.RelationshipWorkspace {
+		return
+	}
 	for _, dep := range deps[pkgPath] {
 		walkProdPackages(dep, pkgs, deps, visited)
 	}
