@@ -2,6 +2,7 @@
 package jdk
 
 import (
+	"cmp"
 	"strconv"
 	"strings"
 
@@ -20,19 +21,26 @@ func (c Comparer) IsVulnerable(ver string, advisory dbTypes.Advisory) bool {
 }
 
 type parsedVersion struct {
-	nums  []int
-	build int
+	nums     []int
+	pre      string
+	build    int
+	hasBuild bool
 }
 
 func parseVersion(s string) (parsedVersion, error) {
 	s = strings.TrimSpace(s)
-	base, buildStr, hasPlus := strings.Cut(s, "+")
+	beforePlus, afterPlus, hasPlus := strings.Cut(s, "+")
+	base, preAndOpt, hasDash := strings.Cut(beforePlus, "-")
+
 	parts := strings.Split(base, ".")
 	if len(parts) == 0 || parts[0] == "" {
 		return parsedVersion{}, xerrors.Errorf("empty version %q", s)
 	}
 	nums := make([]int, 0, len(parts))
 	for _, p := range parts {
+		if !isAllDigits(p) {
+			return parsedVersion{}, xerrors.Errorf("invalid segment %q in %q", p, s)
+		}
 		n, err := strconv.Atoi(p)
 		if err != nil {
 			return parsedVersion{}, xerrors.Errorf("invalid segment %q in %q: %w", p, s, err)
@@ -42,15 +50,33 @@ func parseVersion(s string) (parsedVersion, error) {
 	for len(nums) > 1 && nums[len(nums)-1] == 0 {
 		nums = nums[:len(nums)-1]
 	}
-	var build int
-	if hasPlus && buildStr != "" {
-		b, err := strconv.Atoi(buildStr)
-		if err != nil {
-			return parsedVersion{}, xerrors.Errorf("invalid build %q in %q: %w", buildStr, s, err)
+
+	var pre string
+	if hasDash {
+		pre, _, _ = strings.Cut(preAndOpt, "-")
+		if pre == "" {
+			return parsedVersion{}, xerrors.Errorf("empty pre-release in %q", s)
 		}
-		build = b
 	}
-	return parsedVersion{nums: nums, build: build}, nil
+
+	var build int
+	var hasBuild bool
+	if hasPlus {
+		buildStr, _, _ := strings.Cut(afterPlus, "-")
+		if buildStr != "" {
+			if !isAllDigits(buildStr) {
+				return parsedVersion{}, xerrors.Errorf("invalid build %q in %q", buildStr, s)
+			}
+			b, err := strconv.Atoi(buildStr)
+			if err != nil {
+				return parsedVersion{}, xerrors.Errorf("invalid build %q in %q: %w", buildStr, s, err)
+			}
+			build = b
+			hasBuild = true
+		}
+	}
+
+	return parsedVersion{nums: nums, pre: pre, build: build, hasBuild: hasBuild}, nil
 }
 
 func compareVersions(a, b parsedVersion) int {
@@ -63,21 +89,65 @@ func compareVersions(a, b parsedVersion) int {
 		if i < len(b.nums) {
 			bv = b.nums[i]
 		}
-		if av != bv {
-			if av < bv {
-				return -1
-			}
-			return 1
+		if c := cmp.Compare(av, bv); c != 0 {
+			return c
 		}
 	}
+	if c := comparePre(a.pre, b.pre); c != 0 {
+		return c
+	}
 	switch {
-	case a.build < b.build:
+	case !a.hasBuild && !b.hasBuild:
+		return 0
+	case !a.hasBuild:
 		return -1
-	case a.build > b.build:
+	case !b.hasBuild:
 		return 1
 	default:
+		return cmp.Compare(a.build, b.build)
+	}
+}
+
+func comparePre(a, b string) int {
+	if a == b {
 		return 0
 	}
+	if a == "" {
+		return 1 // GA > pre-release
+	}
+	if b == "" {
+		return -1 // pre-release < GA
+	}
+	aNum := isAllDigits(a)
+	bNum := isAllDigits(b)
+	switch {
+	case aNum && bNum:
+		return compareNumericStrings(a, b)
+	case aNum:
+		return -1 // JEP 322: numeric pre-release < non-numeric pre-release
+	case bNum:
+		return 1
+	default:
+		return cmp.Compare(a, b)
+	}
+}
+
+func compareNumericStrings(a, b string) int {
+	a = strings.TrimLeft(a, "0")
+	b = strings.TrimLeft(b, "0")
+	if len(a) != len(b) {
+		return cmp.Compare(len(a), len(b))
+	}
+	return cmp.Compare(a, b)
+}
+
+func isAllDigits(s string) bool {
+	for i := range len(s) {
+		if s[i] < '0' || s[i] > '9' {
+			return false
+		}
+	}
+	return s != ""
 }
 
 // MatchVersion checks whether an OpenJDK version satisfies a constraint expression.

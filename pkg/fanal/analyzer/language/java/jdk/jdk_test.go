@@ -79,6 +79,51 @@ func TestReleaseParser_Parse(t *testing.T) {
 			want:    "8.0.432+6",
 		},
 		{
+			name:    "jep 322 early-access build preserves pre-release tag",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"17.0.13-ea\"\nJAVA_RUNTIME_VERSION=\"17.0.13-ea+8\"\n",
+			want:    "17.0.13-ea+8",
+		},
+		{
+			name:    "jep 322 early-access with optional suffix strips opt and keeps pre",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"17.0.13-ea\"\nJAVA_RUNTIME_VERSION=\"17.0.13-ea+8-LTS\"\n",
+			want:    "17.0.13-ea+8",
+		},
+		{
+			name:    "jep 322 pre-release without build number",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"17.0.13-ea\"\n",
+			want:    "17.0.13-ea",
+		},
+		{
+			name:    "jep 322 pre-release with optional suffix and no build",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"21-internal-adhoc.user\"\n",
+			want:    "21-internal",
+		},
+		{
+			name:    "jep 322 optional suffix without build or pre-release",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"21.0.5\"\nJAVA_RUNTIME_VERSION=\"21.0.5+-LTS\"\n",
+			want:    "21.0.5",
+		},
+		{
+			name:    "legacy jdk 8 early-access without build",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"1.8.0-ea\"\n",
+			want:    "8.0-ea",
+		},
+		{
+			name:    "legacy jdk 8 early-access with build",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"1.8.0-ea\"\nJAVA_RUNTIME_VERSION=\"1.8.0-ea-b123\"\n",
+			want:    "8.0-ea+123",
+		},
+		{
+			name:    "legacy jdk 8 update early-access with build",
+			content: "IMPLEMENTOR=\"Oracle Corporation\"\nJAVA_VERSION=\"1.8.0_432-ea\"\nJAVA_RUNTIME_VERSION=\"1.8.0_432-ea-b06\"\n",
+			want:    "8.0.432-ea+6",
+		},
+		{
+			name:    "legacy jdk 8 beta build preserves pre-release tag",
+			content: "IMPLEMENTOR=\"Eclipse Adoptium\"\nJAVA_VERSION=\"1.8.0_432-beta\"\nJAVA_RUNTIME_VERSION=\"1.8.0_432-beta-b01\"\n",
+			want:    "8.0.432-beta+1",
+		},
+		{
 			name:    "unrelated file named release",
 			content: "RELEASE=2026.11\nCHANNEL=stable\n",
 			want:    "",
