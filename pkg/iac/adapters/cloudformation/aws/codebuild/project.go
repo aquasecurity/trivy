@@ -34,9 +34,9 @@ func getSecondaryArtifactSettings(r *parser.Resource) (secondaryArtifacts []code
 			Metadata:          secondaryArtifactsList.Metadata(),
 			EncryptionEnabled: types.BoolDefault(true, secondaryArtifactsList.Metadata()),
 		}
-		encryptionDisabled := a.GetProperty("EncryptionDisabled")
-		if encryptionDisabled.IsBool() {
-			settings.EncryptionEnabled = types.Bool(!encryptionDisabled.AsBool(), encryptionDisabled.Metadata())
+		encryptionDisabled := a.GetBoolProperty("EncryptionDisabled")
+		if m := encryptionDisabled.GetMetadata(); m.IsResolvable() && !m.IsDefault() {
+			settings.EncryptionEnabled = encryptionDisabled.Invert()
 		}
 		secondaryArtifacts = append(secondaryArtifacts, settings)
 	}
@@ -51,12 +51,8 @@ func getArtifactSettings(r *parser.Resource) codebuild.ArtifactSettings {
 		EncryptionEnabled: types.BoolDefault(true, r.Metadata()),
 	}
 
-	artifactsProperty := r.GetProperty("Artifacts")
-	if artifactsProperty.IsNotNil() {
-		encryptionDisabled := artifactsProperty.GetProperty("EncryptionDisabled")
-		if encryptionDisabled.IsBool() {
-			settings.EncryptionEnabled = types.Bool(!encryptionDisabled.AsBool(), encryptionDisabled.Metadata())
-		}
+	if encryptionDisabled := r.GetBoolProperty("Artifacts.EncryptionDisabled"); encryptionDisabled.GetMetadata().IsResolvable() {
+		settings.EncryptionEnabled = encryptionDisabled.Invert()
 	}
 
 	return settings
