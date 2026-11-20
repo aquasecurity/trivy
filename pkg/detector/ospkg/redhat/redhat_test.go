@@ -141,13 +141,17 @@ func TestScanner_Detect(t *testing.T) {
 					},
 				},
 				{
+					// The installed package is el7_6, so it is compared against
+					// the el7_6 errata (RHSA-2021:0876), not the higher
+					// el7_3 rebuild (RHSA-2021:0538): per-minor comparison
+					// (cf. #11199).
 					VulnerabilityID: "CVE-2020-12403",
 					VendorIDs: []string{
-						"RHSA-2021:0538",
+						"RHSA-2021:0876",
 					},
 					PkgName:          "nss",
 					InstalledVersion: "3.36.0-7.1.el7_6",
-					FixedVersion:     "3.53.1-17.el7_3",
+					FixedVersion:     "3.36.0-9.el7_6",
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityHigh.String(),
@@ -445,6 +449,155 @@ func TestScanner_Detect(t *testing.T) {
 					SeveritySource:   vulnerability.RedHat,
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityMedium.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
+			// A package already carrying its own minor's published fix is
+			// not reported, even though a newer minor fixed the same CVE
+			// at a higher version (cf. #11199).
+			name: "happy path: per-minor fix is not reported",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "9.7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glib2",
+						Version:    "2.68.4",
+						Release:    "18.el9_7.2",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "glib2",
+						SrcVersion: "2.68.4",
+						SrcRelease: "18.el9_7.2",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-9-for-x86_64-baseos-rpms"},
+						},
+					},
+				},
+			},
+			want: nil,
+		},
+		{
+			// Below its own minor's fix the package is still reported, with
+			// its own minor's RHSA rather than the newer minor's; and a
+			// same-minor respin still supersedes the older fix.
+			name: "happy path: older than its own minor fix is reported",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "9.7",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "glib2",
+						Version:    "2.68.4",
+						Release:    "17.el9_7",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "glib2",
+						SrcVersion: "2.68.4",
+						SrcRelease: "17.el9_7",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-9-for-x86_64-baseos-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-00001",
+					VendorIDs: []string{
+						"RHSA-2026:00002",
+					},
+					PkgName:          "glib2",
+					InstalledVersion: "2.68.4-17.el9_7",
+					FixedVersion:     "2.68.4-18.el9_7.2",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+				{
+					VulnerabilityID: "CVE-2025-14087",
+					VendorIDs: []string{
+						"RHSA-2026:15971",
+					},
+					PkgName:          "glib2",
+					InstalledVersion: "2.68.4-17.el9_7",
+					FixedVersion:     "2.68.4-18.el9_7.2",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+					Layer: ftypes.Layer{
+						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+					},
+				},
+			},
+		},
+		{
+			// The installed release carries no ".el9_<minor>" marker, so
+			// there is nothing to scope to: highest-wins across every
+			// fixed version, exactly the pre-#11199 behavior.
+			name: "happy path: unmarked release falls back to highest fix",
+			fixtures: []string{
+				"testdata/fixtures/redhat.yaml",
+				"testdata/fixtures/cpe.yaml",
+			},
+			args: args{
+				osVer: "9.9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "libtasn1",
+						Version:    "4.16.0",
+						Release:    "1.el9",
+						Epoch:      0,
+						Arch:       "x86_64",
+						SrcName:    "libtasn1",
+						SrcVersion: "4.16.0",
+						SrcRelease: "1.el9",
+						SrcEpoch:   0,
+						Layer: ftypes.Layer{
+							DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
+						},
+						BuildInfo: &ftypes.BuildInfo{
+							ContentSets: []string{"rhel-9-for-x86_64-baseos-rpms"},
+						},
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2025-99991",
+					VendorIDs: []string{
+						"RHSA-2026:40002",
+					},
+					PkgName:          "libtasn1",
+					InstalledVersion: "4.16.0-1.el9",
+					FixedVersion:     "4.16.0-3.el9_9",
+					SeveritySource:   vulnerability.RedHat,
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
 					},
 					Layer: ftypes.Layer{
 						DiffID: "sha256:932da51564135c98a49a34a193d6cd363d8fa4184d957fde16c9d8527b3f3b02",
