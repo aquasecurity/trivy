@@ -7,6 +7,11 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const (
+	securityGroupType = "Microsoft.Network/networkSecurityGroups"
+	securityRuleType  = "securityRules"
+)
+
 func parsePortRange(input string, meta iacTypes.Metadata) common.PortRange {
 	return common.ParsePortRange(input, meta, common.WithWildcard())
 }
@@ -20,79 +25,89 @@ func Adapt(deployment azure.Deployment) network.Network {
 }
 
 func adaptSecurityGroups(deployment azure.Deployment) (sgs []network.SecurityGroup) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups") {
+	for _, resource := range deployment.GetResourcesByType(securityGroupType) {
 		sgs = append(sgs, adaptSecurityGroup(resource, deployment))
 	}
+	if orphans := deployment.GetOrphanResources(securityGroupType, securityRuleType); len(orphans) > 0 {
+		sgs = append(sgs, network.SecurityGroup{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Rules:    adaptSecurityRuleResources(orphans),
+		})
+	}
 	return sgs
-
 }
 
 func adaptSecurityGroup(resource azure.Resource, deployment azure.Deployment) network.SecurityGroup {
+	var rules []network.SecurityGroupRule
+	for _, rule := range resource.Properties.GetMapValue("securityRules").AsList() {
+		rules = append(rules, adaptSecurityGroupRule(rule.GetMapValue("properties"), rule.GetMetadata()))
+	}
 	return network.SecurityGroup{
 		Metadata: resource.Metadata,
-		Rules:    adaptSecurityGroupRules(deployment),
+		Rules:    append(rules, adaptSecurityRuleResources(deployment.GetChildResources(resource, securityRuleType))...),
 	}
 }
 
-func adaptSecurityGroupRules(deployment azure.Deployment) (rules []network.SecurityGroupRule) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.Network/networkSecurityGroups/securityRules") {
-		rules = append(rules, adaptSecurityGroupRule(resource))
+func adaptSecurityRuleResources(resources []azure.Resource) []network.SecurityGroupRule {
+	var rules []network.SecurityGroupRule
+	for _, resource := range resources {
+		rules = append(rules, adaptSecurityGroupRule(resource.Properties, resource.Metadata))
 	}
 	return rules
 }
 
-func adaptSecurityGroupRule(resource azure.Resource) network.SecurityGroupRule {
-	sourceAddressPrefixes := resource.Properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
-	if prefix := resource.Properties.GetMapValue("sourceAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+func adaptSecurityGroupRule(properties azure.Value, metadata iacTypes.Metadata) network.SecurityGroupRule {
+	sourceAddressPrefixes := properties.GetMapValue("sourceAddressPrefixes").AsStringValuesList("")
+	if prefix := properties.GetMapValue("sourceAddressPrefix").AsStringValue("", metadata); prefix.IsNotEmpty() {
 		sourceAddressPrefixes = append(sourceAddressPrefixes, prefix)
 	}
 
 	var sourcePortRanges []common.PortRange
-	for _, portRange := range resource.Properties.GetMapValue("sourcePortRanges").AsList() {
-		rng := parsePortRange(portRange.AsString(), resource.Metadata)
+	for _, portRange := range properties.GetMapValue("sourcePortRanges").AsList() {
+		rng := parsePortRange(portRange.AsString(), metadata)
 		if rng.Valid() {
 			sourcePortRanges = append(sourcePortRanges, rng)
 		}
 	}
-	if rng := parsePortRange(resource.Properties.GetMapValue("sourcePortRange").AsString(), resource.Metadata); rng.Valid() {
+	if rng := parsePortRange(properties.GetMapValue("sourcePortRange").AsString(), metadata); rng.Valid() {
 		sourcePortRanges = append(sourcePortRanges, rng)
 	}
 
-	destinationAddressPrefixes := resource.Properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
-	if prefix := resource.Properties.GetMapValue("destinationAddressPrefix").AsStringValue("", resource.Metadata); prefix.IsNotEmpty() {
+	destinationAddressPrefixes := properties.GetMapValue("destinationAddressPrefixes").AsStringValuesList("")
+	if prefix := properties.GetMapValue("destinationAddressPrefix").AsStringValue("", metadata); prefix.IsNotEmpty() {
 		destinationAddressPrefixes = append(destinationAddressPrefixes, prefix)
 	}
 
 	var destinationPortRanges []common.PortRange
-	for _, portRange := range resource.Properties.GetMapValue("destinationPortRanges").AsList() {
-		rng := parsePortRange(portRange.AsString(), resource.Metadata)
+	for _, portRange := range properties.GetMapValue("destinationPortRanges").AsList() {
+		rng := parsePortRange(portRange.AsString(), metadata)
 		if rng.Valid() {
 			destinationPortRanges = append(destinationPortRanges, rng)
 		}
 	}
-	if rng := parsePortRange(resource.Properties.GetMapValue("destinationPortRange").AsString(), resource.Metadata); rng.Valid() {
+	if rng := parsePortRange(properties.GetMapValue("destinationPortRange").AsString(), metadata); rng.Valid() {
 		destinationPortRanges = append(destinationPortRanges, rng)
 	}
 
-	allow := iacTypes.BoolDefault(false, resource.Metadata)
-	if resource.Properties.GetMapValue("access").AsString() == "Allow" {
-		allow = iacTypes.Bool(true, resource.Metadata)
+	allow := iacTypes.BoolDefault(false, metadata)
+	if properties.GetMapValue("access").AsString() == "Allow" {
+		allow = iacTypes.Bool(true, metadata)
 	}
 
-	outbound := iacTypes.BoolDefault(false, resource.Metadata)
-	if resource.Properties.GetMapValue("direction").AsString() == "Outbound" {
-		outbound = iacTypes.Bool(true, resource.Metadata)
+	outbound := iacTypes.BoolDefault(false, metadata)
+	if properties.GetMapValue("direction").AsString() == "Outbound" {
+		outbound = iacTypes.Bool(true, metadata)
 	}
 
 	return network.SecurityGroupRule{
-		Metadata:             resource.Metadata,
+		Metadata:             metadata,
 		Outbound:             outbound,
 		Allow:                allow,
 		SourceAddresses:      sourceAddressPrefixes,
 		SourcePorts:          sourcePortRanges,
 		DestinationAddresses: destinationAddressPrefixes,
 		DestinationPorts:     destinationPortRanges,
-		Protocol:             resource.Properties.GetMapValue("protocol").AsStringValue("", resource.Metadata),
+		Protocol:             properties.GetMapValue("protocol").AsStringValue("", metadata),
 	}
 }
 
