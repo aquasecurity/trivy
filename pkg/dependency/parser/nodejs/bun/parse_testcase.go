@@ -1194,4 +1194,61 @@ var (
 			},
 		},
 	}
+
+	// docker run --rm oven/bun:1.3.5@sha256:e90cdbaf9ccdb3d4bd693aa335c3310a6004286a880f62f79b18f9b1312a8ec3 sh -c '
+	//   mkdir /app && cd /app
+	//   bun add github:jonschlinkert/kind-of#6.0.3
+	//   cat bun.lock'
+	gitV13Pkgs = []ftypes.Package{
+		{
+			ID:           "kind-of",
+			Name:         "kind-of",
+			Version:      "",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 12,
+					EndLine:   12,
+				},
+			},
+		},
+	}
+
+	// docker run --rm oven/bun:1.4.4@sha256:1d22548f177f4ff38e0c15baa3c2c46c6c2060ba2d1bc573bb4720b407548f1d sh -c '
+	//   mkdir /app && cd /app
+	//   bun add github:micromatch/to-regex-range#5.0.1
+	//   cat bun.lock'
+	gitV14Pkgs = []ftypes.Package{
+		{
+			ID:           "to-regex-range",
+			Name:         "to-regex-range",
+			Version:      "",
+			Relationship: ftypes.RelationshipDirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 14,
+					EndLine:   14,
+				},
+			},
+		},
+		{
+			ID:           "is-number@7.0.0",
+			Name:         "is-number",
+			Version:      "7.0.0",
+			Relationship: ftypes.RelationshipIndirect,
+			Locations: ftypes.Locations{
+				{
+					StartLine: 12,
+					EndLine:   12,
+				},
+			},
+		},
+	}
+
+	gitV14Deps = []ftypes.Dependency{
+		{
+			ID:        "to-regex-range",
+			DependsOn: []string{"is-number@7.0.0"},
+		},
+	}
 )
