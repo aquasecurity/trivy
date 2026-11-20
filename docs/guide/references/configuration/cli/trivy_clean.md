@@ -23,27 +23,27 @@ trivy clean [flags]
 ### Options
 
 ```
-  -a, --all             remove all caches
-      --checks-bundle   remove checks bundle
-  -h, --help            help for clean
-      --java-db         remove Java database
-      --scan-cache      remove scan cache (container and VM image analysis results)
-      --vex-repo        remove VEX repositories
-      --vuln-db         remove vulnerability database
+  -a, --all[=true|false]             remove all caches
+      --checks-bundle[=true|false]   remove checks bundle
+  -h, --help[=true|false]            help for clean
+      --java-db[=true|false]         remove Java database
+      --scan-cache[=true|false]      remove scan cache (container and VM image analysis results)
+      --vex-repo[=true|false]        remove VEX repositories
+      --vuln-db[=true|false]         remove vulnerability database
 ```
 
 ### Options inherited from parent commands
 
 ```
-      --cacert string             Path to PEM-encoded CA certificate file
-      --cache-dir string          cache directory (default "/path/to/cache")
-  -c, --config string             config path (empty string disables loading) (default "trivy.yaml")
-  -d, --debug                     debug mode
-      --generate-default-config   write the default config to trivy-default.yaml
-      --insecure                  allow insecure server connections
-  -q, --quiet                     suppress progress bar and log output
-      --timeout duration          timeout (default 5m0s)
-  -v, --version                   show version
+      --cacert string                          Path to PEM-encoded CA certificate file
+      --cache-dir string                       cache directory (default "/path/to/cache")
+  -c, --config string                          config path (empty string disables loading) (default "trivy.yaml")
+  -d, --debug[=true|false]                     debug mode
+      --generate-default-config[=true|false]   write the default config to trivy-default.yaml
+      --insecure[=true|false]                  allow insecure server connections
+  -q, --quiet[=true|false]                     suppress progress bar and log output
+      --timeout duration                       timeout (default 5m0s)
+  -v, --version[=true|false]                   show version
 ```
 
 ### SEE ALSO
