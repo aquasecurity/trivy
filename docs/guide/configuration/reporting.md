@@ -474,6 +474,10 @@ This SARIF file can be uploaded to several platforms, including:
 - [GitHub code scanning results][sarif-github], and there is a [Trivy GitHub Action][action] for automating this process
 - [SonarQube][sarif-sonar]
 
+For misconfigurations with a `via` hierarchy, SARIF includes a code flow from the outermost caller to the cause.
+Each caller step retains its file, line range, and resource name, so SARIF viewers can distinguish uses of the same Terraform module.
+The primary location of the finding remains the location of the misconfiguration.
+
 ### GitHub dependency snapshot
 Trivy supports the following packages:
 
