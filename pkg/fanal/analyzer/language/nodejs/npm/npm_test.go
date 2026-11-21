@@ -224,6 +224,122 @@ func Test_npmLibraryAnalyzer_Analyze(t *testing.T) {
 			},
 		},
 		{
+			// The lock file has no license for @aws-crypto/util, so it comes from node_modules.
+			name: "split package keeps license from node_modules",
+			dir:  "testdata/split-license",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Npm,
+						FilePath: "package-lock.json",
+						Packages: types.Packages{
+							{
+								ID:           "@aws-crypto/util@2.0.2::b82c7310",
+								Name:         "@aws-crypto/util",
+								Version:      "2.0.2",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipDirect,
+								DependsOn:    []string{"@aws-sdk/types@3.775.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 15,
+										EndLine:   21,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@aws-crypto/util/-/util-2.0.2.tgz",
+									},
+								},
+							},
+							{
+								ID:           "@aws-sdk/client-location@3.186.4",
+								Name:         "@aws-sdk/client-location",
+								Version:      "3.186.4",
+								Licenses:     []string{"Apache-2.0"},
+								Relationship: types.RelationshipDirect,
+								DependsOn:    []string{"@aws-crypto/util@2.0.2::2a5a3315"},
+								Locations: []types.Location{
+									{
+										StartLine: 22,
+										EndLine:   29,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@aws-sdk/client-location/-/client-location-3.186.4.tgz",
+									},
+								},
+							},
+							{
+								ID:           "@aws-crypto/util@2.0.2::2a5a3315",
+								Name:         "@aws-crypto/util",
+								Version:      "2.0.2",
+								Licenses:     []string{"Apache-2.0"},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								DependsOn:    []string{"@aws-sdk/types@3.186.0"},
+								Locations: []types.Location{
+									{
+										StartLine: 30,
+										EndLine:   36,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@aws-crypto/util/-/util-2.0.2.tgz",
+									},
+								},
+							},
+							{
+								ID:           "@aws-sdk/types@3.186.0",
+								Name:         "@aws-sdk/types",
+								Version:      "3.186.0",
+								Licenses:     []string{"Apache-2.0"},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 37,
+										EndLine:   41,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@aws-sdk/types/-/types-3.186.0.tgz",
+									},
+								},
+							},
+							{
+								ID:           "@aws-sdk/types@3.775.0",
+								Name:         "@aws-sdk/types",
+								Version:      "3.775.0",
+								Licenses:     []string{"Apache-2.0"},
+								Indirect:     true,
+								Relationship: types.RelationshipIndirect,
+								Locations: []types.Location{
+									{
+										StartLine: 42,
+										EndLine:   46,
+									},
+								},
+								ExternalReferences: []types.ExternalRef{
+									{
+										Type: types.RefOther,
+										URL:  "https://registry.npmjs.org/@aws-sdk/types/-/types-3.775.0.tgz",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "sad path",
 			dir:  "testdata/sad",
 			want: &analyzer.AnalysisResult{},

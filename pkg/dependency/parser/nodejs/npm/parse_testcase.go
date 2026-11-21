@@ -1935,4 +1935,531 @@ var (
 			},
 		},
 	}
+
+	// Trimmed from the package-lock.json attached to https://github.com/aquasecurity/trivy/discussions/8775.
+	// The nested copies of @aws-crypto/util@2.0.2 depend on different @aws-sdk/types versions.
+	npmV3WithDifferentSubgraphsPkgs = []ftypes.Package{
+		{
+			ID:           "@aws-crypto/crc32@2.0.0",
+			Name:         "@aws-crypto/crc32",
+			Version:      "2.0.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-crypto/crc32/-/crc32-2.0.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 16,
+					EndLine:   26,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/client-lex-runtime-service@3.186.4",
+			Name:         "@aws-sdk/client-lex-runtime-service",
+			Version:      "3.186.4",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/client-lex-runtime-service/-/client-lex-runtime-service-3.186.4.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 63,
+					EndLine:   74,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/client-location@3.186.4",
+			Name:         "@aws-sdk/client-location",
+			Version:      "3.186.4",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/client-location/-/client-location-3.186.4.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 127,
+					EndLine:   138,
+				},
+			},
+		},
+		{
+			ID:           "@aws-crypto/sha256-js@2.0.0",
+			Name:         "@aws-crypto/sha256-js",
+			Version:      "2.0.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-crypto/sha256-js/-/sha256-js-2.0.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 75,
+					EndLine:   85,
+				},
+				{
+					StartLine: 139,
+					EndLine:   149,
+				},
+			},
+		},
+		{
+			ID:           "@aws-crypto/util@2.0.2::0a9f199e",
+			Name:         "@aws-crypto/util",
+			Version:      "2.0.2",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-crypto/util/-/util-2.0.2.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 92,
+					EndLine:   102,
+				},
+				{
+					StartLine: 156,
+					EndLine:   166,
+				},
+			},
+		},
+		{
+			ID:           "@aws-crypto/util@2.0.2::2bb218bb",
+			Name:         "@aws-crypto/util",
+			Version:      "2.0.2",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-crypto/util/-/util-2.0.2.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 27,
+					EndLine:   37,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/types@3.186.0",
+			Name:         "@aws-sdk/types",
+			Version:      "3.186.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/types/-/types-3.186.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 109,
+					EndLine:   117,
+				},
+				{
+					StartLine: 173,
+					EndLine:   181,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/types@3.775.0",
+			Name:         "@aws-sdk/types",
+			Version:      "3.775.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/types/-/types-3.775.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 38,
+					EndLine:   50,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/util-utf8-browser@3.186.0",
+			Name:         "@aws-sdk/util-utf8-browser",
+			Version:      "3.186.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/util-utf8-browser/-/util-utf8-browser-3.186.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 118,
+					EndLine:   126,
+				},
+				{
+					StartLine: 182,
+					EndLine:   190,
+				},
+			},
+		},
+		{
+			ID:           "@aws-sdk/util-utf8-browser@3.6.1",
+			Name:         "@aws-sdk/util-utf8-browser",
+			Version:      "3.6.1",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@aws-sdk/util-utf8-browser/-/util-utf8-browser-3.6.1.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 191,
+					EndLine:   199,
+				},
+			},
+		},
+		{
+			ID:           "@smithy/types@4.2.0",
+			Name:         "@smithy/types",
+			Version:      "4.2.0",
+			Licenses:     []string{"Apache-2.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/@smithy/types/-/types-4.2.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 206,
+					EndLine:   217,
+				},
+			},
+		},
+		{
+			ID:           "tslib@1.14.1",
+			Name:         "tslib",
+			Version:      "1.14.1",
+			Licenses:     []string{"0BSD"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/tslib/-/tslib-1.14.1.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 57,
+					EndLine:   62,
+				},
+				{
+					StartLine: 86,
+					EndLine:   91,
+				},
+				{
+					StartLine: 103,
+					EndLine:   108,
+				},
+				{
+					StartLine: 150,
+					EndLine:   155,
+				},
+				{
+					StartLine: 167,
+					EndLine:   172,
+				},
+				{
+					StartLine: 200,
+					EndLine:   205,
+				},
+			},
+		},
+		{
+			ID:           "tslib@2.8.1",
+			Name:         "tslib",
+			Version:      "2.8.1",
+			Licenses:     []string{"0BSD"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/tslib/-/tslib-2.8.1.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 51,
+					EndLine:   56,
+				},
+				{
+					StartLine: 218,
+					EndLine:   223,
+				},
+			},
+		},
+	}
+
+	npmV3WithDifferentSubgraphsDeps = []ftypes.Dependency{
+		{
+			ID: "@aws-crypto/crc32@2.0.0",
+			DependsOn: []string{
+				"@aws-crypto/util@2.0.2::2bb218bb",
+				"@aws-sdk/types@3.775.0",
+				"tslib@1.14.1",
+			},
+		},
+		{
+			ID: "@aws-crypto/sha256-js@2.0.0",
+			DependsOn: []string{
+				"@aws-crypto/util@2.0.2::0a9f199e",
+				"@aws-sdk/types@3.186.0",
+				"tslib@1.14.1",
+			},
+		},
+		{
+			ID: "@aws-crypto/util@2.0.2::0a9f199e",
+			DependsOn: []string{
+				"@aws-sdk/types@3.186.0",
+				"@aws-sdk/util-utf8-browser@3.186.0",
+				"tslib@1.14.1",
+			},
+		},
+		{
+			ID: "@aws-crypto/util@2.0.2::2bb218bb",
+			DependsOn: []string{
+				"@aws-sdk/types@3.775.0",
+				"@aws-sdk/util-utf8-browser@3.6.1",
+				"tslib@1.14.1",
+			},
+		},
+		{
+			ID: "@aws-sdk/client-lex-runtime-service@3.186.4",
+			DependsOn: []string{
+				"@aws-crypto/sha256-js@2.0.0",
+				"@aws-sdk/types@3.186.0",
+				"@aws-sdk/util-utf8-browser@3.186.0",
+				"tslib@2.8.1",
+			},
+		},
+		{
+			ID: "@aws-sdk/client-location@3.186.4",
+			DependsOn: []string{
+				"@aws-crypto/sha256-js@2.0.0",
+				"@aws-sdk/types@3.186.0",
+				"@aws-sdk/util-utf8-browser@3.186.0",
+				"tslib@2.8.1",
+			},
+		},
+		{
+			ID: "@aws-sdk/types@3.775.0",
+			DependsOn: []string{
+				"@smithy/types@4.2.0",
+				"tslib@2.8.1",
+			},
+		},
+		{
+			ID: "@aws-sdk/util-utf8-browser@3.186.0",
+			DependsOn: []string{
+				"tslib@2.8.1",
+			},
+		},
+		{
+			ID: "@aws-sdk/util-utf8-browser@3.6.1",
+			DependsOn: []string{
+				"tslib@1.14.1",
+			},
+		},
+		{
+			ID: "@smithy/types@4.2.0",
+			DependsOn: []string{
+				"tslib@2.8.1",
+			},
+		},
+	}
+
+	// Trimmed from the same lockfile: browserslist and update-browserslist-db depend on each other.
+	npmV3WithCyclePkgs = []ftypes.Package{
+		{
+			ID:           "browserslist@4.24.4",
+			Name:         "browserslist",
+			Version:      "4.24.4",
+			Licenses:     []string{"MIT"},
+			Relationship: ftypes.RelationshipDirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/browserslist/-/browserslist-4.24.4.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 14,
+					EndLine:   46,
+				},
+			},
+		},
+		{
+			ID:           "caniuse-lite@1.0.30001715",
+			Name:         "caniuse-lite",
+			Version:      "1.0.30001715",
+			Licenses:     []string{"CC-BY-4.0"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/caniuse-lite/-/caniuse-lite-1.0.30001715.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 47,
+					EndLine:   67,
+				},
+			},
+		},
+		{
+			ID:           "electron-to-chromium@1.5.140",
+			Name:         "electron-to-chromium",
+			Version:      "1.5.140",
+			Licenses:     []string{"ISC"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.140.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 68,
+					EndLine:   74,
+				},
+			},
+		},
+		{
+			ID:           "escalade@3.2.0",
+			Name:         "escalade",
+			Version:      "3.2.0",
+			Licenses:     []string{"MIT"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/escalade/-/escalade-3.2.0.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 75,
+					EndLine:   84,
+				},
+			},
+		},
+		{
+			ID:           "node-releases@2.0.19",
+			Name:         "node-releases",
+			Version:      "2.0.19",
+			Licenses:     []string{"MIT"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/node-releases/-/node-releases-2.0.19.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 85,
+					EndLine:   91,
+				},
+			},
+		},
+		{
+			ID:           "picocolors@1.1.1",
+			Name:         "picocolors",
+			Version:      "1.1.1",
+			Licenses:     []string{"ISC"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 92,
+					EndLine:   98,
+				},
+			},
+		},
+		{
+			ID:           "update-browserslist-db@1.1.3",
+			Name:         "update-browserslist-db",
+			Version:      "1.1.3",
+			Licenses:     []string{"MIT"},
+			Relationship: ftypes.RelationshipIndirect,
+			ExternalReferences: []ftypes.ExternalRef{
+				{
+					Type: ftypes.RefOther,
+					URL:  "https://registry.npmjs.org/update-browserslist-db/-/update-browserslist-db-1.1.3.tgz",
+				},
+			},
+			Locations: []ftypes.Location{
+				{
+					StartLine: 99,
+					EndLine:   129,
+				},
+			},
+		},
+	}
+
+	npmV3WithCycleDeps = []ftypes.Dependency{
+		{
+			ID: "browserslist@4.24.4",
+			DependsOn: []string{
+				"caniuse-lite@1.0.30001715",
+				"electron-to-chromium@1.5.140",
+				"node-releases@2.0.19",
+				"update-browserslist-db@1.1.3",
+			},
+		},
+		{
+			ID: "update-browserslist-db@1.1.3",
+			DependsOn: []string{
+				"browserslist@4.24.4",
+				"escalade@3.2.0",
+				"picocolors@1.1.1",
+			},
+		},
+	}
 )
