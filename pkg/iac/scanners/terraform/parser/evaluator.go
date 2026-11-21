@@ -9,7 +9,6 @@ import (
 	"slices"
 
 	"github.com/hashicorp/hcl/v2"
-	"github.com/hashicorp/hcl/v2/ext/typeexpr"
 	"github.com/samber/lo"
 	"github.com/zclconf/go-cty/cty"
 	"github.com/zclconf/go-cty/cty/convert"
@@ -26,48 +25,31 @@ const (
 )
 
 type evaluator struct {
-	logger            *log.Logger
-	filesystem        fs.FS
-	ctx               *tfcontext.Context
-	blocks            terraform.Blocks
-	inputVars         map[string]cty.Value
-	moduleMetadata    *ModulesMetadata
-	projectRootPath   string // root of the current scan
-	modulePath        string
-	moduleName        string
-	ignores           ignore.Rules
-	parentParser      *Parser
-	allowDownloads    bool
-	skipCachedModules bool
+	logger          *log.Logger
+	filesystem      fs.FS
+	ctx             *tfcontext.Context
+	blocks          terraform.Blocks
+	inputVars       map[string]cty.Value
+	projectRootPath string // root of the current scan
+	modulePath      string
+	moduleName      string
+	workingDir      string
+	ignores         ignore.Rules
+	parser          *Parser
+	config          *moduleConfig
 }
 
 func newEvaluator(
-	target fs.FS,
-	parentParser *Parser,
-	projectRootPath string,
-	modulePath string,
+	parser *Parser,
+	config *moduleConfig,
 	workingDir string,
-	moduleName string,
 	blocks terraform.Blocks,
 	inputVars map[string]cty.Value,
-	moduleMetadata *ModulesMetadata,
-	workspace string,
 	ignores ignore.Rules,
 	logger *log.Logger,
-	allowDownloads bool,
-	skipCachedModules bool,
 ) *evaluator {
 
-	// create a context to store variables and make functions available
-	ctx := tfcontext.NewContext(&hcl.EvalContext{
-		Functions: Functions(target, modulePath),
-	}, nil)
-
-	// these variables are made available by terraform to each module
-	ctx.SetByDot(cty.StringVal(workspace), "terraform.workspace")
-	ctx.SetByDot(cty.StringVal(projectRootPath), "path.root")
-	ctx.SetByDot(cty.StringVal(modulePath), "path.module")
-	ctx.SetByDot(cty.StringVal(workingDir), "path.cwd")
+	ctx := newModuleContext(config.fsys, parser.projectRoot, config.path, workingDir, parser.workspaceName)
 
 	// each block gets its own scope to define variables in
 	for _, b := range blocks {
@@ -75,20 +57,33 @@ func newEvaluator(
 	}
 
 	return &evaluator{
-		filesystem:        target,
-		parentParser:      parentParser,
-		modulePath:        modulePath,
-		moduleName:        moduleName,
-		projectRootPath:   projectRootPath,
-		ctx:               ctx,
-		blocks:            blocks,
-		inputVars:         inputVars,
-		moduleMetadata:    moduleMetadata,
-		ignores:           ignores,
-		logger:            logger,
-		allowDownloads:    allowDownloads,
-		skipCachedModules: skipCachedModules,
+		filesystem:      config.fsys,
+		parser:          parser,
+		config:          config,
+		modulePath:      config.path,
+		moduleName:      config.name,
+		workingDir:      workingDir,
+		projectRootPath: parser.projectRoot,
+		ctx:             ctx,
+		blocks:          blocks,
+		inputVars:       inputVars,
+		ignores:         ignores,
+		logger:          logger,
 	}
+}
+
+// newModuleContext creates a context with the functions and the values
+// that Terraform makes available to each module.
+func newModuleContext(fsys fs.FS, projectRootPath, modulePath, workingDir, workspace string) *tfcontext.Context {
+	ctx := tfcontext.NewContext(&hcl.EvalContext{
+		Functions: Functions(fsys, modulePath),
+	}, nil)
+
+	ctx.SetByDot(cty.StringVal(workspace), "terraform.workspace")
+	ctx.SetByDot(cty.StringVal(projectRootPath), "path.root")
+	ctx.SetByDot(cty.StringVal(modulePath), "path.module")
+	ctx.SetByDot(cty.StringVal(workingDir), "path.cwd")
+	return ctx
 }
 
 func (e *evaluator) evaluateStep() {
@@ -163,7 +158,7 @@ func (e *evaluator) EvaluateAll(ctx context.Context) (terraform.Modules, map[str
 }
 
 func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Module, fsMap map[string]fs.FS) terraform.Modules {
-	submodules := e.loadSubmodules(ctx)
+	submodules := e.loadSubmodules()
 
 	if len(submodules) == 0 {
 		return nil
@@ -204,45 +199,60 @@ func (e *evaluator) evaluateSubmodules(ctx context.Context, parent *terraform.Mo
 }
 
 type submodule struct {
-	definition *ModuleDefinition
-	eval       *evaluator
-	modules    terraform.Modules
-	lastState  map[string]cty.Value
-	fsMap      map[string]fs.FS
+	block     *terraform.Block
+	eval      *evaluator
+	modules   terraform.Modules
+	lastState map[string]cty.Value
+	fsMap     map[string]fs.FS
 }
 
-func (e *evaluator) loadSubmodules(ctx context.Context) []*submodule {
+// loadSubmodules creates an evaluator for each instance of the module calls.
+// A call without a node in the module tree is skipped.
+func (e *evaluator) loadSubmodules() []*submodule {
 	var submodules []*submodule
 
-	for _, definition := range e.loadModules(ctx) {
-		eval, err := definition.Parser.Load(ctx)
+	for _, b := range e.expandBlocks(e.blocks.OfType("module")) {
+		config, exists := e.config.children[b.Reference().NameLabel()]
+		if !exists {
+			continue
+		}
+
+		eval, err := e.parser.newInstanceEvaluator(config, b, b.Values().AsValueMap(), e.workingDir)
 		if errors.Is(err, ErrNoFiles) {
 			continue
 		} else if err != nil {
-			e.logger.Error("Failed to load submodule", log.String("name", definition.Name), log.Err(err))
+			e.logger.Error("Failed to load submodule", log.String("name", b.Label()), log.Err(err))
 			continue
 		}
 
 		submodules = append(submodules, &submodule{
-			definition: definition,
-			eval:       eval,
-			fsMap:      make(map[string]fs.FS),
+			block: b,
+			eval:  eval,
+			fsMap: make(map[string]fs.FS),
 		})
 	}
 
 	return submodules
 }
 
+func moduleInputs(b *terraform.Block) map[string]cty.Value {
+	inputs := b.NullableValues().AsValueMap()
+	if inputs == nil {
+		return make(map[string]cty.Value)
+	}
+	return inputs
+}
+
 func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
-	inputVars := sm.definition.inputVars()
+	inputVars := moduleInputs(sm.block)
 	if len(sm.modules) > 0 {
 		if reflect.DeepEqual(inputVars, sm.lastState) {
-			e.logger.Debug("Submodule inputs unchanged", log.String("name", sm.definition.Name))
+			e.logger.Debug("Submodule inputs unchanged", log.String("name", sm.block.Label()))
 			return false
 		}
 	}
 
-	e.logger.Debug("Evaluating submodule", log.String("name", sm.definition.Name))
+	e.logger.Debug("Evaluating submodule", log.String("name", sm.block.Label()))
 	sm.eval.inputVars = inputVars
 	sm.modules, sm.fsMap = sm.eval.EvaluateAll(ctx)
 	outputs := sm.eval.exportOutputs()
@@ -256,10 +266,10 @@ func (e *evaluator) evaluateSubmodule(ctx context.Context, sm *submodule) bool {
 	// don't get treated as changes – but before running post-submodule
 	// evaluation, so that changes from that can trigger re-evaluations of
 	// the submodule if/when they feed back into inputs.
-	ref := sm.definition.Definition.Reference()
-	e.ctx.Set(blockInstanceValues(sm.definition.Definition, valueMap, outputs), "module", ref.NameLabel())
-	e.ctx.Set(outputs, "module", sm.definition.Name)
-	sm.lastState = sm.definition.inputVars()
+	ref := sm.block.Reference()
+	e.ctx.Set(blockInstanceValues(sm.block, valueMap, outputs), "module", ref.NameLabel())
+	e.ctx.Set(outputs, "module", sm.block.Label())
+	sm.lastState = moduleInputs(sm.block)
 	e.evaluateSteps()
 	return true
 }
@@ -472,50 +482,6 @@ func (e *evaluator) copyVariables(from, to *terraform.Block) {
 	rootCtx.Set(srcValue, fromBase, toRel)
 }
 
-func (e *evaluator) evaluateVariable(b *terraform.Block) (cty.Value, error) {
-	if b.Label() == "" {
-		return cty.NilVal, errors.New("empty label - cannot resolve")
-	}
-
-	attributes := b.Attributes()
-
-	var valType cty.Type
-	var defaults *typeexpr.Defaults
-	if typeAttr, exists := attributes["type"]; exists {
-		ty, def, err := typeAttr.DecodeVarType()
-		if err != nil {
-			return cty.NilVal, err
-		}
-		valType = ty
-		defaults = def
-	}
-
-	var val cty.Value
-
-	if override, exists := e.inputVars[b.Label()]; exists && override.Type() != cty.NilType {
-		val = override
-	} else if def, exists := attributes["default"]; exists {
-		val = def.NullableValue()
-	} else {
-		return cty.NilVal, errors.New("no value found")
-	}
-
-	if valType != cty.NilType {
-		if defaults != nil {
-			val = defaults.Apply(val)
-		}
-
-		typedVal, err := convert.Convert(val, valType)
-		if err != nil {
-			return cty.NilVal, err
-		}
-		return typedVal, nil
-	}
-
-	return val, nil
-
-}
-
 func (e *evaluator) evaluateOutput(b *terraform.Block) (cty.Value, error) {
 	if b.Label() == "" {
 		return cty.NilVal, errors.New("empty label - cannot resolve")
@@ -537,7 +503,7 @@ func (e *evaluator) getValuesByBlockType(blockType string) cty.Value {
 	for _, b := range blocksOfType {
 		switch b.Type() {
 		case "variable": // variables are special in that their value comes from the "default" attribute
-			val, err := e.evaluateVariable(b)
+			val, err := variableValue(b, e.inputVars)
 			if err != nil {
 				continue
 			}
