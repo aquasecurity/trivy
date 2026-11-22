@@ -14,6 +14,8 @@ replicaCount: 1
 
 persistence:
   enabled: true
+  # Use an existing PersistentVolumeClaim instead of creating one per pod.
+  existingClaim: ""
   storageClass: ""
   accessMode: ReadWriteOnce
   size: 5Gi

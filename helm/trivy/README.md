@@ -62,6 +62,7 @@ The following table lists the configurable parameters of the Trivy chart and the
 | `image.pullPolicy`                    | Image pull policy                                                       | `IfNotPresent` |
 | `image.pullSecret`                    | The name of an imagePullSecret used to pull trivy image from e.g. Docker Hub or a private registry  | |
 | `replicaCount`                        | Number of Trivy Pods to run                                   | `1`            |
+| `persistence.existingClaim`           | Use an existing PersistentVolumeClaim for the cache instead of creating one per pod. All pods share it, so use a `ReadWriteMany` volume if `replicaCount` is more than 1 | `""` |
 | `trivy.debugMode`                     | The flag to enable or disable Trivy debug mode                          | `false` |
 | `trivy.gitHubToken`                   | The GitHub access token to download Trivy DB. More info: https://trivy.dev/docs/latest/references/troubleshooting/#github-rate-limiting                          |      |
 | `trivy.registryUsername`              | The username used to log in at dockerhub. More info: https://trivy.dev/docs/latest/advanced/private-registries/docker-hub/ |      |
