@@ -143,6 +143,10 @@ $ trivy image --format cosign-vuln --output vuln.json alpine:3.10
 
 </details>
 
+!!! note
+    If Trivy does not detect the OS of the target, the record has no `Metadata.OS` and no result of class `os-pkgs`, and it reads like a clean scan.
+    A policy that verifies this attestation should require both in `scanner.result` before it counts vulnerabilities.
+
 ## Create Cosign Vulnerability Attestation
 
 [Cosign](https://github.com/sigstore/cosign) supports generating and verifying [in-toto attestations](https://github.com/in-toto/attestation). This tool enables you to sign and verify Cosign vulnerability attestation.
