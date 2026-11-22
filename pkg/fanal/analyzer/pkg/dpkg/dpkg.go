@@ -234,7 +234,8 @@ func (a dpkgAnalyzer) parseDpkgAvailable(fsys fs.FS) (map[string]digest.Digest, 
 		}
 	}
 	if err = scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		// Keep the digests collected so far rather than discarding everything.
+		a.logger.Warn("Failed to parse some packages", log.FilePath(availableFile), log.Err(err))
 	}
 
 	return pkgs, nil
@@ -264,7 +265,8 @@ func (a dpkgAnalyzer) parseDpkgStatus(filePath string, r io.Reader, digests map[
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, xerrors.Errorf("scan error: %w", err)
+		// Keep the packages parsed so far rather than discarding everything.
+		a.logger.Warn("Failed to parse some packages", log.FilePath(filePath), log.Err(err))
 	}
 
 	a.consolidateDependencies(pkgs, pkgIDs)
