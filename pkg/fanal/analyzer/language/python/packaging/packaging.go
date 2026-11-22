@@ -28,7 +28,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypePythonPkg, newPackagingAnalyzer)
 }
 
-const version = 3
+const version = 4
 
 func newPackagingAnalyzer(opt analyzer.AnalyzerOptions) (analyzer.PostAnalyzer, error) {
 	return &packagingAnalyzer{
@@ -99,6 +99,10 @@ func (a packagingAnalyzer) PostAnalyze(ctx context.Context, input analyzer.PostA
 		}
 
 		apps = append(apps, *app)
+
+		if distInfoDir := path.Dir(filePath); strings.HasSuffix(distInfoDir, ".dist-info") {
+			apps = append(apps, a.sbomApps(input.FS, distInfoDir)...)
+		}
 		return nil
 	})
 
