@@ -116,8 +116,14 @@ func matchPath(path string, patterns []string) bool {
 }
 
 func matchPURL(target *packageurl.PackageURL, purls []*purl.PackageURL) bool {
-	if target == nil || len(purls) == 0 {
+	if len(purls) == 0 {
 		return true
+	}
+	// The finding is narrowed to specific packages, but this one carries no PURL,
+	// so it cannot be one of them. Without this a purl-scoped entry suppresses the
+	// same ID for every package that has no PURL, e.g. local Go modules.
+	if target == nil {
+		return false
 	}
 
 	for _, p := range purls {

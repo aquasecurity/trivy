@@ -6,8 +6,11 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/package-url/packageurl-go"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
+
+	"github.com/aquasecurity/trivy/pkg/purl"
 )
 
 func TestParseIgnoreFile(t *testing.T) {
@@ -102,4 +105,38 @@ func TestParseIgnoreFile(t *testing.T) {
 		assert.Empty(t, got)
 	})
 
+}
+
+// A `purls` entry narrows an ignore finding to specific packages. A package that
+// carries no PURL cannot be one of them, so the entry must not suppress the same
+// ID for it. Packages without a PURL reach this matcher, e.g. local Go modules,
+// whose PURL is intentionally skipped.
+func TestIgnoreFindings_Match_PURLScope(t *testing.T) {
+	scoped, err := purl.FromString("pkg:deb/debian/libssl1.1")
+	require.NoError(t, err)
+
+	findings := IgnoreFindings{
+		{ID: "CVE-2023-3446", PURLs: []*purl.PackageURL{scoped}},
+	}
+
+	t.Run("scoped package is ignored", func(t *testing.T) {
+		got := findings.Match("CVE-2023-3446", "usr/lib/ssl", &packageurl.PackageURL{
+			Type:      packageurl.TypeDebian,
+			Namespace: "debian",
+			Name:      "libssl1.1",
+			Version:   "1.1.1n-0+deb11u5",
+		})
+		assert.NotNil(t, got)
+	})
+
+	t.Run("package without a purl is kept", func(t *testing.T) {
+		got := findings.Match("CVE-2023-3446", "app/package.json", nil)
+		assert.Nil(t, got)
+	})
+
+	t.Run("unscoped entry still matches a package without a purl", func(t *testing.T) {
+		unscoped := IgnoreFindings{{ID: "CVE-2023-3446"}}
+		got := unscoped.Match("CVE-2023-3446", "app/package.json", nil)
+		assert.NotNil(t, got)
+	})
 }
