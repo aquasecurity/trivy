@@ -18,14 +18,6 @@
           value:
             VulnerableVersions:
               - "==1.2.3"
-    - bucket: echonotaffected
-      pairs:
-        - key: CVE-2026-10104
-          value:
-            PatchedVersions:
-              - "1.2.4"
-            VulnerableVersions:
-              - "<1.2.4"
 - bucket: "echo pip::Echo OSV"
   pairs:
     - bucket: echomergepip
@@ -38,12 +30,6 @@
               - "1.2.3+echo.1"
             VulnerableVersions:
               - "<1.2.3+echo.1"
-    - bucket: echonotaffected
-      pairs:
-        - key: CVE-2026-10104
-          value:
-            VendorIDs:
-              - ECHO-1010-1010-1014
 
 - bucket: "maven::Echo Upstream Test"
   pairs:

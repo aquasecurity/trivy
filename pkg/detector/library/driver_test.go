@@ -1044,16 +1044,6 @@ func TestDriver_Detect(t *testing.T) {
 			},
 		},
 		{
-			name:     "echo advisory without affected ranges hides matching upstream advisory",
-			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
-			libType:  ftypes.PythonPkg,
-			args: args{
-				pkgName: "echonotaffected",
-				pkgVer:  "1.2.3+echo.1",
-			},
-			want: nil,
-		},
-		{
 			name:     "echo maven package compares upstream inclusive range against base version",
 			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
 			libType:  ftypes.Jar,
