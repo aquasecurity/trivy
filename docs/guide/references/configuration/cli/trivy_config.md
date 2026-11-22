@@ -73,7 +73,7 @@ trivy config [flags] DIR
                                             - CRITICAL
                                            (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
       --skip-check-update                 skip fetching rego check updates
-      --skip-dirs strings                 specify the directories or glob patterns to skip
+      --skip-dirs strings                 specify the directories or glob patterns to skip (default [/sysroot/ostree])
       --skip-files strings                specify the files or glob patterns to skip
       --skip-version-check                suppress notices about version updates and Trivy announcements
       --table-mode strings                [EXPERIMENTAL] tables that will be displayed in 'table' format (allowed values: summary,detailed) (default [summary,detailed])
