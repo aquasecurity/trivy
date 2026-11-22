@@ -14,7 +14,8 @@ replicaCount: 1
 
 persistence:
   enabled: true
-  # Use an existing PersistentVolumeClaim instead of creating one per pod.
+  # Use an existing PersistentVolumeClaim instead of creating one.
+  # Only for replicaCount: 1, because Trivy locks its cache.
   existingClaim: ""
   storageClass: ""
   accessMode: ReadWriteOnce

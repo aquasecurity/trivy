@@ -143,7 +143,7 @@ spec:
         {{- else if .Values.persistence.existingClaim }}
         - name: data
           persistentVolumeClaim:
-            claimName: {{ .Values.persistence.existingClaim }}
+            claimName: {{ .Values.persistence.existingClaim | quote }}
         {{- end }}
         {{- with .Values.trivy.sslCertDir }}
         - name: ssl-cert-dir
