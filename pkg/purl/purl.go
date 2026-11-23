@@ -62,6 +62,16 @@ func FromString(s string) (*PackageURL, error) {
 	return new(PackageURL(p)), nil
 }
 
+// New builds a PackageURL from the given package and metadata.
+//
+// It returns (nil, nil), without error, when the input cannot produce a
+// well-formed PURL. Concretely:
+//   - the resolved package name is empty: either pkg.Name is empty
+//     (e.g. a local package.json with no "name" field) or a parser
+//     strips it (parseGolang returns "" for local paths "./..." or "../...");
+//   - for OCI, parseOCI returns nil when metadata.RepoDigests is missing
+//     or unparseable.
+//
 // nolint: gocyclo
 func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*PackageURL, error) {
 	qualifiers := parseQualifier(pkg)
@@ -107,9 +117,6 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		namespace, name = parseComposer(name)
 	case packageurl.TypeGolang:
 		namespace, name = parseGolang(name)
-		if name == "" {
-			return nil, nil
-		}
 	case packageurl.TypeNPM:
 		namespace, name = parseNpm(name)
 	case packageurl.TypeSwift:
@@ -117,6 +124,10 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 	case packageurl.TypeCocoapods:
 		name, subpath = parseCocoapods(name)
 	case packageurl.TypeOCI:
+		// OCI PURLs are built from metadata.RepoDigests and deliberately
+		// ignore pkg.Name (callers like pkg/sbom/io/encode.go pass an empty
+		// ftypes.Package{}). This case returns from the switch, so the
+		// empty-name guard at the bottom does not apply to OCI.
 		purl, err := parseOCI(metadata)
 		if err != nil {
 			return nil, err
@@ -128,6 +139,11 @@ func New(t ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) (*Pac
 		var qs packageurl.Qualifiers
 		namespace, name, qs = parseJulia(name, pkg.ID) // for Julia, the ID is set to the package UUID
 		qualifiers = append(qualifiers, qs...)
+	}
+
+	// A PURL without a name is malformed (e.g. local package.json with no name field).
+	if name == "" {
+		return nil, nil
 	}
 
 	return (*PackageURL)(packageurl.NewPackageURL(ptype, namespace, name, ver, qualifiers, subpath)), nil
