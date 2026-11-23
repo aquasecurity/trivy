@@ -17,7 +17,7 @@ func getQueues(ctx parser.FileContext) (queues []sqs.Queue) {
 			QueueURL: iacTypes.StringDefault("", r.Metadata()),
 			Encryption: sqs.Encryption{
 				Metadata:          r.Metadata(),
-				ManagedEncryption: iacTypes.Bool(false, r.Metadata()),
+				ManagedEncryption: r.GetBoolProperty("SqsManagedSseEnabled"),
 				KMSKeyID:          r.GetStringProperty("KmsMasterKeyId"),
 			},
 		}

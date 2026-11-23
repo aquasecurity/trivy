@@ -66,6 +66,44 @@ Resources:
 			},
 		},
 		{
+			name: "managed SSE enabled",
+			source: `AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  MyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: true
+`,
+			expected: sqs.SQS{
+				Queues: []sqs.Queue{
+					{
+						Encryption: sqs.Encryption{
+							ManagedEncryption: types.BoolTest(true),
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "managed SSE disabled",
+			source: `AWSTemplateFormatVersion: '2010-09-09'
+Resources:
+  MyQueue:
+    Type: AWS::SQS::Queue
+    Properties:
+      SqsManagedSseEnabled: false
+`,
+			expected: sqs.SQS{
+				Queues: []sqs.Queue{
+					{
+						Encryption: sqs.Encryption{
+							ManagedEncryption: types.BoolTest(false),
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "empty",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:
