@@ -26,15 +26,15 @@ func ResolveAnd(property *Property) (resolved *Property, success bool) {
 		results[i] = r
 	}
 
-	theSame := allSameStrings(results)
-	return property.deriveResolved(cftypes.Bool, theSame), true
+	return property.deriveResolved(cftypes.Bool, allTrue(results)), true
 }
 
-func allSameStrings(a []bool) bool {
-	for i := 1; i < len(a); i++ {
-		if a[i] != a[0] {
+func allTrue(a []bool) bool {
+	for _, b := range a {
+		if !b {
 			return false
 		}
 	}
+
 	return true
 }
