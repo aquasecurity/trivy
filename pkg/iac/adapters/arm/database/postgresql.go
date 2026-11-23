@@ -13,8 +13,69 @@ func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.P
 	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers") {
 		databases = append(databases, adaptPostgreSQLServer(resource, deployment))
 	}
+	for _, resource := range deployment.GetResourcesByType(postgresqlFlexibleServerType) {
+		databases = append(databases, adaptPostgreSQLFlexibleServer(resource, deployment))
+	}
 
 	return databases
+}
+
+func adaptPostgreSQLFlexibleServer(resource azure.Resource, deployment azure.Deployment) database.PostgreSQLServer {
+	firewallRules := adaptFlexibleFirewallRules(deployment.GetChildResources(resource, firewallRulesType))
+	configs := deployment.GetChildResources(resource, configurationsType)
+	params := parseFlexibleServerParameters(configs, resource.Metadata, "ssl_min_protocol_version")
+
+	geoRedundantBackup := resource.Properties.GetMapValue("backup").GetMapValue("geoRedundantBackup")
+	geoRedundantBackupEnabled := iacTypes.BoolDefault(false, resource.Metadata)
+	if parsed, ok := parseBoolConfigValue(geoRedundantBackup); ok {
+		geoRedundantBackupEnabled = parsed
+	}
+
+	return database.PostgreSQLServer{
+		Metadata: resource.Metadata,
+		Server: database.Server{
+			Metadata:                  resource.Metadata,
+			EnableSSLEnforcement:      params.requireSecureTransport,
+			MinimumTLSVersion:         params.tlsVersion,
+			EnablePublicNetworkAccess: adaptFlexibleServerPublicNetworkAccess(resource),
+			FirewallRules:             firewallRules,
+		},
+		Config:                    adaptPostgreSQLFlexibleConfiguration(resource.Metadata, configs),
+		GeoRedundantBackupEnabled: geoRedundantBackupEnabled,
+		ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+		},
+	}
+}
+
+func adaptPostgreSQLFlexibleConfiguration(metadata iacTypes.Metadata, configs []azure.Resource) database.PostgresSQLConfig {
+	config := database.PostgresSQLConfig{
+		Metadata:             metadata,
+		LogCheckpoints:       iacTypes.BoolDefault(false, metadata),
+		ConnectionThrottling: iacTypes.BoolDefault(false, metadata),
+		LogConnections:       iacTypes.BoolDefault(false, metadata),
+		LogDisconnections:    iacTypes.BoolDefault(false, metadata),
+	}
+
+	for _, configuration := range configs {
+		paramName := configParamName(configuration.Name.AsString())
+		parsed, ok := parseBoolConfigValue(configuration.Properties.GetMapValue("value"))
+		if !ok {
+			continue
+		}
+		switch {
+		case strings.EqualFold(paramName, "log_checkpoints"):
+			config.LogCheckpoints = parsed
+		case strings.EqualFold(paramName, "log_connections"):
+			config.LogConnections = parsed
+		case strings.EqualFold(paramName, "connection_throttle.enable"):
+			config.ConnectionThrottling = parsed
+		case strings.EqualFold(paramName, "log_disconnections"):
+			config.LogDisconnections = parsed
+		}
+	}
+
+	return config
 }
 
 func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment) database.PostgreSQLServer {
