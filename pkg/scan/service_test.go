@@ -153,10 +153,14 @@ func TestScanner_ScanArtifact(t *testing.T) {
 										},
 									},
 								},
+								SeveritySource: "alpine",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "dos",
 									Description: "dos vulnerability",
 									Severity:    "HIGH",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"alpine": 3,
+									},
 								},
 							},
 							{
@@ -190,10 +194,14 @@ func TestScanner_ScanArtifact(t *testing.T) {
 										},
 									},
 								},
+								SeveritySource: "alpine",
 								Vulnerability: dbTypes.Vulnerability{
 									Title:       "dos",
 									Description: "dos vulnerability",
 									Severity:    "HIGH",
+									VendorSeverity: dbTypes.VendorSeverity{
+										"alpine": 3,
+									},
 								},
 							},
 						},
