@@ -137,6 +137,38 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// ALAS2027-2026-007; "2027.0.20260903" is the release of the AL2027 image.
+			name: "amazon linux 2027",
+			fixtures: []string{
+				"testdata/fixtures/amazon.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "2027.0.20260903",
+				pkgs: []ftypes.Package{
+					{
+						Name:    "libpcap",
+						Epoch:   14,
+						Version: "1.10.6",
+						Release: "1.amzn2027",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "libpcap",
+					VulnerabilityID:  "CVE-2026-6554",
+					InstalledVersion: "14:1.10.6-1.amzn2027",
+					FixedVersion:     "14:1.10.7-1.amzn2027",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.Amazon,
+						Name: "Amazon Linux Security Center",
+						URL:  "https://alas.aws.amazon.com/",
+					},
+				},
+			},
+		},
+		{
 			name: "empty version",
 			fixtures: []string{
 				"testdata/fixtures/amazon.yaml",
@@ -274,6 +306,16 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			args: args{
 				osFamily: "amazon",
 				osVer:    "2023",
+			},
+			want: true,
+		},
+		{
+			// Not read as Amazon Linux 1, which reached EOL in 2023.
+			name: "amazon linux 2027",
+			now:  time.Date(2026, 11, 23, 0, 0, 0, 0, time.UTC),
+			args: args{
+				osFamily: "amazon",
+				osVer:    "2027.0.20260903",
 			},
 			want: true,
 		},
