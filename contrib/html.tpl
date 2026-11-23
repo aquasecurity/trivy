@@ -137,6 +137,34 @@
       </tr>
         {{- end }}
       {{- end }}
+            {{- if (eq (len .Licenses) 0) }}
+      <tr><th colspan="6">No Licenses found</th></tr>
+      {{- else }}
+      <tr class="sub-header">
+        <th>Package</th>
+        <th>File Path</th>
+        <th>License</th>
+        <th>Category</th>
+        <th>Severity</th>
+        <th>Confidence</th>
+      </tr>
+        {{- range .Licenses }}
+      <tr class="severity-{{ escapeXML .Severity }}">
+        <td class="pkg-name">{{ escapeXML .PkgName }}</td>
+        <td>{{ escapeXML .FilePath }}</td>
+        <td>
+          {{- if .Link }}
+          <a href={{ escapeXML .Link | printf "%q" }}>{{ escapeXML .Name }}</a>
+          {{- else }}
+          {{ escapeXML .Name }}
+          {{- end }}
+        </td>
+        <td>{{ .Category | toString | escapeXML }}</td>
+        <td class="severity">{{ escapeXML .Severity }}</td>
+        <td>{{ printf "%.2f" .Confidence }}</td>
+      </tr>
+        {{- end }}
+      {{- end }}
     {{- end }}
     </table>
 {{- else }}
