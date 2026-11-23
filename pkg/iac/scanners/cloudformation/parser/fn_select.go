@@ -30,10 +30,11 @@ func ResolveSelect(property *Property) (resolved *Property, success bool) {
 	}
 
 	listItems := list.AsList()
+	idx := index.AsInt()
 
-	if len(listItems) <= index.AsInt() {
+	if idx < 0 || idx >= len(listItems) {
 		return nil, false
 	}
 
-	return listItems[index.AsInt()], true
+	return listItems[idx], true
 }

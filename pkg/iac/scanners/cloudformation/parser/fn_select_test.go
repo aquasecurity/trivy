@@ -75,3 +75,44 @@ Resources:
 	require.Equal(t, "notification::arn::2", topic.AsString())
 
 }
+
+func Test_SelectOutOfBoundsIndex(t *testing.T) {
+	tests := []struct {
+		name  string
+		index string
+	}{
+		{
+			name:  "negative int index",
+			index: "-1",
+		},
+		{
+			name:  "negative string index",
+			index: `"-1"`,
+		},
+		{
+			name:  "index equal to list length",
+			index: "2",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			source := `---
+Resources:
+  ElasticacheCluster:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      Engine: !Select [ ` + tt.index + `, [memcached, redis] ]
+`
+			ctx := createTestFileContext(t, source)
+			require.NotNil(t, ctx)
+
+			res := ctx.GetResourceByLogicalID("ElasticacheCluster")
+			require.NotNil(t, res)
+
+			engineProp := res.GetProperty("Engine")
+			require.NotNil(t, engineProp)
+			assert.True(t, engineProp.IsUnresolved())
+		})
+	}
+}
