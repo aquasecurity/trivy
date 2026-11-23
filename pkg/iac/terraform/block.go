@@ -435,6 +435,8 @@ func getValueByPath(val cty.Value, path []string) (cty.Value, error) {
 	return val, nil
 }
 
+// GetNestedAttribute returns the attribute at a dot-separated path of nested
+// blocks and the innermost block of the path that exists.
 func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 	parts := strings.Split(name, ".")
 	blocks := parts[:len(parts)-1]
@@ -449,13 +451,8 @@ func (b *Block) GetNestedAttribute(name string) (*Attribute, *Block) {
 		working = checkBlock
 	}
 
-	if working != nil {
-		if attr := working.GetAttribute(attrName); attr != nil {
-			return attr, working
-		}
-	}
-
-	return nil, b
+	attr := working.GetAttribute(attrName)
+	return attr, working
 }
 
 func MapNestedAttribute[T any](block *Block, path string, f func(attr *Attribute, parent *Block) T) T {
