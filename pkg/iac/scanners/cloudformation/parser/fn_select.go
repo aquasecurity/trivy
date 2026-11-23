@@ -33,7 +33,7 @@ func ResolveSelect(property *Property) (resolved *Property, success bool) {
 	idx := index.AsInt()
 
 	if idx < 0 || idx >= len(listItems) {
-		return nil, false
+		return abortIntrinsic(property, "index on property [%s] is out of bounds, returning original Property", property.name)
 	}
 
 	return listItems[idx], true

@@ -226,8 +226,9 @@ Resources:
 
 func Test_ScanMalformedIntrinsics(t *testing.T) {
 	tests := []struct {
-		name string
-		src  string
+		name          string
+		src           string
+		wantStartLine int
 	}{
 		{
 			name: "negative Fn::Select index",
@@ -242,6 +243,7 @@ Resources:
     Properties:
       BucketName: test-bucket
 `,
+			wantStartLine: 10,
 		},
 		{
 			name: "malformed Fn::FindInMap mapping",
@@ -259,6 +261,7 @@ Resources:
     Properties:
       BucketName: test-bucket
 `,
+			wantStartLine: 13,
 		},
 	}
 
@@ -280,13 +283,7 @@ Resources:
 			failed := results.GetFailed()
 			require.Len(t, failed, 1)
 			assert.Equal(t, "AWS-001", failed[0].Rule().ID)
-
-			code, err := failed[0].GetCode()
-			require.NoError(t, err)
-			require.NotEmpty(t, code.Lines)
-			causeLine := code.Lines[len(code.Lines)-1]
-			assert.True(t, causeLine.IsCause)
-			assert.Equal(t, "      BucketName: test-bucket", causeLine.Content)
+			assert.Equal(t, tt.wantStartLine, failed[0].Range().GetStartLine())
 		})
 	}
 }
