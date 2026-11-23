@@ -14,6 +14,96 @@ func Test_ValueAsInt(t *testing.T) {
 	assert.Equal(t, 10, val.AsInt())
 }
 
+func Test_ValueAsBool(t *testing.T) {
+	tests := []struct {
+		name         string
+		val          any
+		defaultValue bool
+		expected     bool
+	}{
+		{
+			name:         "bool true",
+			val:          true,
+			defaultValue: false,
+			expected:     true,
+		},
+		{
+			name:         "bool false",
+			val:          false,
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "string true",
+			val:          "true",
+			defaultValue: false,
+			expected:     true,
+		},
+		{
+			name:         "string Enabled",
+			val:          "Enabled",
+			defaultValue: false,
+			expected:     true,
+		},
+		{
+			name:         "string false",
+			val:          "false",
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "string Disabled",
+			val:          "Disabled",
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "string 0",
+			val:          "0",
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "string no",
+			val:          "no",
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "string off",
+			val:          "off",
+			defaultValue: true,
+			expected:     false,
+		},
+		{
+			name:         "unrecognized string uses default true",
+			val:          "unknown",
+			defaultValue: true,
+			expected:     true,
+		},
+		{
+			name:         "nil uses default true",
+			val:          nil,
+			defaultValue: true,
+			expected:     true,
+		},
+		{
+			name:         "nil uses default false",
+			val:          nil,
+			defaultValue: false,
+			expected:     false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val := NewValue(tt.val, types.NewTestMetadata())
+			got := val.AsBoolValue(tt.defaultValue, types.NewTestMetadata()).Value()
+			assert.Equal(t, tt.expected, got)
+		})
+	}
+}
+
 func Test_ValueAsTime(t *testing.T) {
 	tests := []struct {
 		name     string
