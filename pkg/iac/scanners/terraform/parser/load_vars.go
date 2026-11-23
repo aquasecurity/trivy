@@ -13,26 +13,32 @@ import (
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
 
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 func parseEnvVar(name, val string, ty cty.Type) (cty.Value, error) {
-	if ty == cty.NilType || ty == cty.DynamicPseudoType || ty.IsPrimitiveType() {
+	if ty == cty.NilType || ty.IsPrimitiveType() {
 		return cty.StringVal(val), nil
 	}
 	expr, diags := hclsyntax.ParseExpression([]byte(val), "<TF_VAR_"+name+">", hcl.InitialPos)
 	if diags.HasErrors() {
 		return cty.NilVal, fmt.Errorf("parse HCL expression: %w", diags)
 	}
-	v, diag := expr.Value(nil)
-	if diag.HasErrors() {
-		return cty.NilVal, fmt.Errorf("evaluate HCL expression: %w", diag)
+	v, diags := expr.Value(nil)
+	if diags.HasErrors() {
+		return cty.NilVal, fmt.Errorf("evaluate HCL expression: %w", diags)
 	}
 	return v, nil
 }
 
-func loadEnvVars(logger *log.Logger, varTypes map[string]cty.Type) map[string]cty.Value {
+func loadEnvVars(logger *log.Logger, blocks terraform.Blocks) map[string]cty.Value {
 	envVars := make(map[string]cty.Value)
+	varTypes := make(map[string]cty.Type)
+
+	for _, block := range blocks.OfType("variable") {
+		varTypes[block.TypeLabel()] = inputVariableType(block)
+	}
 
 	for _, env := range os.Environ() {
 		key, val, _ := strings.Cut(env, "=")

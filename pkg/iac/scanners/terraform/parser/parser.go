@@ -282,17 +282,15 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 		inputVars = p.tfvars
 		p.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
 	default:
-		varTypes := make(map[string]cty.Type)
-		for _, block := range blocks.OfType("variable") {
-			varTypes[block.TypeLabel()] = inputVariableType(block)
-		}
-		fileVars, err := loadTFVars(p.configsFS, p.tfvarsPaths)
-		inputVars = loadEnvVars(p.logger, varTypes)
+		var fileVars map[string]cty.Value
+		fileVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
 			return nil, err
 		}
+		inputVars = loadEnvVars(p.logger, blocks)
+		p.logger.Debug("Added input variables from environment", log.Int("count", len(inputVars)))
+		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(fileVars)))
 		maps.Copy(inputVars, fileVars)
-		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
 		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
