@@ -128,7 +128,7 @@ trivy filesystem [flags] PATH
       --show-suppressed                   [EXPERIMENTAL] show suppressed vulnerabilities
       --skip-check-update                 skip fetching rego check updates
       --skip-db-update                    skip updating vulnerability database
-      --skip-dirs strings                 specify the directories or glob patterns to skip
+      --skip-dirs strings                 specify the directories or glob patterns to skip (default [/sysroot/ostree])
       --skip-files strings                specify the files or glob patterns to skip
       --skip-java-db-update               skip updating Java index database
       --skip-version-check                suppress notices about version updates and Trivy announcements

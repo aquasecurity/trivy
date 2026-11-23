@@ -20,7 +20,11 @@ var (
 	SkipDirsFlag = Flag[[]string]{
 		Name:       "skip-dirs",
 		ConfigName: "scan.skip-dirs",
-		Usage:      "specify the directories or glob patterns to skip",
+		// On rpm-ostree hosts (e.g. RHCOS), /sysroot/ostree holds a second copy of the
+		// deployed OS plus the OSTree object store. Scanning it duplicates every finding
+		// and bypasses the RPM file-ownership filter, so it is skipped by default.
+		Default: []string{"/sysroot/ostree"},
+		Usage:   "specify the directories or glob patterns to skip",
 	}
 	SkipFilesFlag = Flag[[]string]{
 		Name:       "skip-files",

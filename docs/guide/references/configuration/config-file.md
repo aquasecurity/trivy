@@ -635,7 +635,8 @@ scan:
    - secret
 
   # Same as '--skip-dirs'
-  skip-dirs: []
+  skip-dirs:
+   - /sysroot/ostree
 
   # Same as '--skip-files'
   skip-files: []
