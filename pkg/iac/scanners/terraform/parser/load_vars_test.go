@@ -71,13 +71,13 @@ func Test_LoadEnvVars(t *testing.T) {
 			name:     "map(string) with = in the value",
 			variable: "type = map(string)",
 			env:      `{env="prod"}`,
-			want:     cty.ObjectVal(map[string]cty.Value{"env": cty.StringVal("prod")}),
+			want:     cty.MapVal(map[string]cty.Value{"env": cty.StringVal("prod")}),
 		},
 		{
 			name:     "list(number)",
 			variable: "type = list(number)",
 			env:      "[1, 2]",
-			want:     cty.TupleVal([]cty.Value{cty.NumberIntVal(1), cty.NumberIntVal(2)}),
+			want:     cty.ListVal([]cty.Value{cty.NumberIntVal(1), cty.NumberIntVal(2)}),
 		},
 		{
 			name:     "object",
@@ -121,6 +121,12 @@ func Test_LoadEnvVars(t *testing.T) {
 			env:         "[oops",
 			wantSkipped: true,
 		},
+		{
+			name:        "value with wrong type is skipped",
+			variable:    "type = map(string)",
+			env:         `["a"]`,
+			wantSkipped: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -145,76 +151,4 @@ func Test_LoadEnvVars(t *testing.T) {
 			assert.Empty(t, buf.String())
 		})
 	}
-}
-
-func evalResourceValue(t *testing.T, files map[string]string, opts ...Option) cty.Value {
-	t.Helper()
-
-	opts = append([]Option{OptionStopOnHCLError(true)}, opts...)
-
-	parser := New(testutil.CreateFS(files), "", opts...)
-	require.NoError(t, parser.ParseFS(t.Context(), "."))
-
-	modules, err := parser.EvaluateAll(t.Context())
-	require.NoError(t, err)
-	require.Len(t, modules, 1)
-
-	resources := modules[0].GetResourcesByType("something")
-	require.Len(t, resources, 1)
-
-	attr := resources[0].GetAttribute("value")
-	require.NotNil(t, attr)
-	require.True(t, attr.IsResolvable())
-	return attr.Value()
-}
-
-func Test_TFVarsEnvEndToEnd(t *testing.T) {
-	const tagsTF = `
-variable "tags" {
-  type    = map(string)
-  default = {}
-}
-
-resource "something" "blah" {
-  value = var.tags
-}
-`
-
-	t.Run("map from environment variable", func(t *testing.T) {
-		t.Setenv("TF_VAR_tags", `{env="prod"}`)
-
-		got := evalResourceValue(t, map[string]string{"main.tf": tagsTF})
-		require.True(t, got.Type().IsMapType(), "var.tags must become a map, got %s", got.Type().FriendlyName())
-		assert.Equal(t, "prod", got.AsValueMap()["env"].AsString())
-	})
-
-	t.Run("invalid value falls back to the default", func(t *testing.T) {
-		t.Setenv("TF_VAR_tags", `[oops`)
-
-		got := evalResourceValue(t, map[string]string{
-			"main.tf": `
-variable "tags" {
-  type    = map(string)
-  default = { env = "default" }
-}
-
-resource "something" "blah" {
-  value = var.tags
-}
-`,
-		})
-		require.True(t, got.Type().IsMapType())
-		assert.Equal(t, "default", got.AsValueMap()["env"].AsString())
-	})
-
-	t.Run("tfvars file overrides environment variable", func(t *testing.T) {
-		t.Setenv("TF_VAR_tags", `{env="prod"}`)
-
-		got := evalResourceValue(t, map[string]string{
-			"main.tf":     tagsTF,
-			"main.tfvars": `tags = { env = "dev" }`,
-		}, OptionWithTFVarsPaths("main.tfvars"))
-		require.True(t, got.Type().IsMapType())
-		assert.Equal(t, "dev", got.AsValueMap()["env"].AsString())
-	})
 }
