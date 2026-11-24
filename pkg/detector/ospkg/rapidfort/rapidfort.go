@@ -168,6 +168,22 @@ var familyEcosystems = map[ftypes.OSType]ecosystem.Type{
 	ftypes.Amazon: ecosystem.AmazonLinux,
 }
 
+const rfAdvisoryURLBase = "https://github.com/rapidfort/security-advisories/blob/main/OS/"
+
+// advisoryReferenceURL returns the GitHub URL of the advisory file that
+// seeded the bucket. pkgName is the lookup key the scanner used (SRPM or
+// binary), which matches the on-disk filename "<pkgName>_advisory.json";
+// the feed directory is the ecosystem's string form, which matches the
+// repository's layout. Returns "" when there's no bucket mapping or no
+// lookup key, so no reference is attached in those cases.
+func (s *Scanner) advisoryReferenceURL(pkgName string) string {
+	eco, ok := familyEcosystems[s.baseOS]
+	if !ok || pkgName == "" {
+		return ""
+	}
+	return rfAdvisoryURLBase + string(eco) + "/" + pkgName + "_advisory.json"
+}
+
 // route picks the (ecosystem, release) pair whose bucket the installed package
 // belongs in. RapidFort's own rebuilds are not tied to a distribution release,
 // so they drop it and land in the family-level bucket of their ecosystem — one
@@ -253,6 +269,14 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 			return nil, xerrors.Errorf("failed to get RapidFort advisories for %s: %w", srcName, err)
 		}
 
+		// Track which lookup key each advisory came from so the per-vuln
+		// reference URL can point at the actual file the bucket was seeded
+		// from (SRPM file vs binary file live at different paths).
+		advisoryPkg := make(map[string]string, len(advisories))
+		for _, adv := range advisories {
+			advisoryPkg[adv.VulnerabilityID] = srcName
+		}
+
 		// Some advisory files key entries by the binary package name rather
 		// than the SRPM name, so fall back to the binary name when the two
 		// differ. SRPM entries win on collision.
@@ -275,6 +299,7 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 					}
 					seen.Append(adv.VulnerabilityID)
 					advisories = append(advisories, adv)
+					advisoryPkg[adv.VulnerabilityID] = pkg.Name
 				}
 			}
 		}
@@ -295,10 +320,20 @@ func (s *Scanner) Detect(ctx context.Context, osVer string, _ *ftypes.Repository
 				DataSource:       adv.DataSource,
 			}
 
+			// Carry RapidFort's curated prose here so FillInfo can restore
+			// it after the consolidated-bucket overwrite — the merged
+			// bucket's Title/Description are picked by AllSourceIDs
+			// precedence (RapidFort last) and would otherwise bury this
+			// wording for any CVE an upstream source also carries.
+			vuln.Vulnerability.Title = adv.Title
+			vuln.Vulnerability.Description = adv.Description
+
+			if ref := s.advisoryReferenceURL(advisoryPkg[adv.VulnerabilityID]); ref != "" {
+				vuln.Vulnerability.References = append(vuln.Vulnerability.References, ref)
+			}
+
 			if adv.Severity != dbTypes.SeverityUnknown {
-				vuln.Vulnerability = dbTypes.Vulnerability{
-					Severity: adv.Severity.String(),
-				}
+				vuln.Vulnerability.Severity = adv.Severity.String()
 				vuln.SeveritySource = adv.DataSource.ID
 			}
 

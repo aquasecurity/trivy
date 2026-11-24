@@ -22,6 +22,8 @@
             PatchedVersions:
               - "7.81.0-1ubuntu1.15"
             Severity: 3
+        # Title and Description populated so Detect's forwarding of
+        # RapidFort-curated prose is exercised end-to-end.
         - key: CVE-2023-38039
           value:
             VulnerableVersions:
@@ -29,6 +31,8 @@
             PatchedVersions:
               - "7.81.0-1ubuntu1.14"
             Severity: 2
+            Title: "curl: out of heap memory issue due to missing limit on header quantity"
+            Description: "When curl retrieves an HTTP response, it stores the incoming headers so that they can be accessed later via the libcurl headers API."
     # ubuntu-tagged Ubuntu range for the rf-binutils package: shows the split
     # keeps the ubuntu fix in the Ubuntu bucket so a plain-ubuntu package
     # can't cross-match the "rapidfort ubuntu" bucket's rf-tagged range.
