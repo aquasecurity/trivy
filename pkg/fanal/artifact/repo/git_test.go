@@ -152,6 +152,10 @@ func TestNewArtifact(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			// Clones go to os.TempDir(); isolate it to detect leftover clone directories.
+			tmpDir := t.TempDir()
+			t.Setenv("TMPDIR", tmpDir)
+
 			_, cleanup, err := NewArtifact(tt.args.target, tt.args.c, walker.NewFS(), artifact.Option{
 				NoProgress: tt.args.noProgress,
 				RepoBranch: tt.args.repoBranch,
@@ -159,7 +163,11 @@ func TestNewArtifact(t *testing.T) {
 				RepoCommit: tt.args.repoCommit,
 			})
 			tt.assertion(t, err)
-			defer cleanup()
+			cleanup()
+
+			entries, err := os.ReadDir(tmpDir)
+			require.NoError(t, err)
+			assert.Empty(t, entries, "temporary clone directory was not removed")
 		})
 	}
 }

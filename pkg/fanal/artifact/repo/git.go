@@ -83,18 +83,26 @@ func tryRemoteRepo(target string, c cache.ArtifactCache, w Walker, artifactOpt a
 	}
 	art, err := local.NewArtifact(tmpDir, c, w, artifactOpt)
 	if err != nil {
-		return nil, cleanup, xerrors.Errorf("fs artifact: %w", err)
+		// Callers drop the cleanup function on error, so remove the clone here.
+		cleanup()
+		return nil, func() {}, xerrors.Errorf("fs artifact: %w", err)
 	}
 
 	return art, cleanup, nil
 
 }
 
-func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
+func cloneRepo(u *url.URL, artifactOpt artifact.Option) (_ string, err error) {
 	tmpDir, err := xos.MkdirTemp("", "git-clone-")
 	if err != nil {
 		return "", xerrors.Errorf("failed to create a temp dir: %w", err)
 	}
+	// Remove a partial clone when cloning or checkout fails.
+	defer func() {
+		if err != nil {
+			_ = os.RemoveAll(tmpDir)
+		}
+	}()
 
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
