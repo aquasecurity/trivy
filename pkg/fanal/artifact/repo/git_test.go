@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/fanal/walker"
 	"github.com/aquasecurity/trivy/pkg/uuid"
+	xos "github.com/aquasecurity/trivy/pkg/x/os"
 
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/config/all"
 	_ "github.com/aquasecurity/trivy/pkg/fanal/analyzer/secret"
@@ -33,6 +34,8 @@ func TestNewArtifact(t *testing.T) {
 		repoBranch string
 		repoTag    string
 		repoCommit string
+		// filePatterns lets a case make artifact construction fail after a successful clone.
+		filePatterns []string
 	}
 	tests := []struct {
 		name      string
@@ -148,26 +151,37 @@ func TestNewArtifact(t *testing.T) {
 				return assert.ErrorContains(t, err, "git checkout error: object not found")
 			},
 		},
+		{
+			name: "invalid file pattern after clone",
+			args: args{
+				target:       ts.URL + "/test-repo.git",
+				c:            nil,
+				filePatterns: []string{"dockerfile:["},
+			},
+			assertion: func(t assert.TestingT, err error, _ ...any) bool {
+				return assert.ErrorContains(t, err, "invalid file regexp")
+			},
+		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			// Clones go to os.TempDir(); isolate it to detect leftover clone directories.
-			tmpDir := t.TempDir()
-			t.Setenv("TMPDIR", tmpDir)
+			before := cloneDirs(t)
 
 			_, cleanup, err := NewArtifact(tt.args.target, tt.args.c, walker.NewFS(), artifact.Option{
-				NoProgress: tt.args.noProgress,
-				RepoBranch: tt.args.repoBranch,
-				RepoTag:    tt.args.repoTag,
-				RepoCommit: tt.args.repoCommit,
+				NoProgress:   tt.args.noProgress,
+				RepoBranch:   tt.args.repoBranch,
+				RepoTag:      tt.args.repoTag,
+				RepoCommit:   tt.args.repoCommit,
+				FilePatterns: tt.args.filePatterns,
 			})
 			tt.assertion(t, err)
+			if err != nil {
+				// Callers drop the cleanup function on error, so the clone must already be gone.
+				assert.ElementsMatch(t, before, cloneDirs(t), "clone left behind on error")
+			}
 			cleanup()
-
-			entries, err := os.ReadDir(tmpDir)
-			require.NoError(t, err)
-			assert.Empty(t, entries, "temporary clone directory was not removed")
+			assert.ElementsMatch(t, before, cloneDirs(t), "clone left behind after cleanup")
 		})
 	}
 }
@@ -336,6 +350,15 @@ func TestArtifact_Inspect(t *testing.T) {
 			assert.Equal(t, tt.wantBlobInfo, &blobInfo, "cache content mismatch")
 		})
 	}
+}
+
+// cloneDirs lists the clone directories in the process temp directory, which is created
+// once per process and must not be replaced by a per-test TMPDIR.
+func cloneDirs(t *testing.T) []string {
+	t.Helper()
+	dirs, err := filepath.Glob(filepath.Join(xos.TempDir(), "git-clone-*"))
+	require.NoError(t, err)
+	return dirs
 }
 
 // setupAuthTestServer creates a test server with authentication and returns parsed URL with /test-repo.git path
