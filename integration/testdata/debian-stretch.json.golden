@@ -76,7 +76,7 @@
           "PkgName": "bash",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/bash@4.4-5?arch=amd64\u0026distro=debian-9.9",
-            "UID": "c15fdc5c69f1dca4"
+            "UID": "c85fe61fb4f5b8a"
           },
           "InstalledVersion": "4.4-5",
           "Status": "end_of_life",
@@ -144,7 +144,7 @@
           "PkgName": "e2fslibs",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/e2fslibs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
-            "UID": "9f94b1dd02406b5"
+            "UID": "fbff894c616aafca"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -219,7 +219,7 @@
           "PkgName": "e2fsprogs",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/e2fsprogs@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
-            "UID": "5d43b599b340c996"
+            "UID": "c854d2ba050d8c7e"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -294,7 +294,7 @@
           "PkgName": "libcomerr2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libcomerr2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
-            "UID": "7e38fd4935d4d0d0"
+            "UID": "410a49f85bc2a11e"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",
@@ -369,7 +369,7 @@
           "PkgName": "libss2",
           "PkgIdentifier": {
             "PURL": "pkg:deb/debian/libss2@1.43.4-2?arch=amd64\u0026distro=debian-9.9",
-            "UID": "5871861d62f76b19"
+            "UID": "2e727df4cca01888"
           },
           "InstalledVersion": "1.43.4-2",
           "FixedVersion": "1.43.4-2+deb9u1",

@@ -24,7 +24,7 @@ func init() {
 }
 
 const (
-	eggAnalyzerVersion = 1
+	eggAnalyzerVersion = 2
 	eggExt             = ".egg"
 )
 

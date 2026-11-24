@@ -60,7 +60,7 @@
           "PkgName": "vim",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0",
-            "UID": "63c8a1617938d7b"
+            "UID": "705b7e100f825971"
           },
           "InstalledVersion": "8.2.4081-1.cm1",
           "Status": "affected",
@@ -98,7 +98,7 @@
           "PkgName": "vim",
           "PkgIdentifier": {
             "PURL": "pkg:rpm/cbl-mariner/vim@8.2.4081-1.cm1?arch=x86_64\u0026distro=cbl-mariner-1.0",
-            "UID": "63c8a1617938d7b"
+            "UID": "705b7e100f825971"
           },
           "InstalledVersion": "8.2.4081-1.cm1",
           "FixedVersion": "8.2.4082-1.cm1",

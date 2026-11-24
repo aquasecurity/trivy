@@ -23,10 +23,10 @@ func ResolveIf(property *Property) (resolved *Property, success bool) {
 	} else if property.ctx.Conditions != nil &&
 		condition.IsString() {
 
-		condition := property.ctx.Conditions[condition.AsString()]
-		if condition.isFunction() {
-			con, _ := condition.resolveValue()
-			if con.IsBool() {
+		name := condition.AsString()
+		if cond := property.ctx.Conditions[name]; cond.isFunction() {
+			con, ok := property.ctx.resolveCondition(name, cond)
+			if ok && con.IsBool() {
 				conditionMet = con.AsBool()
 			}
 		}

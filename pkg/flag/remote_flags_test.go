@@ -63,7 +63,7 @@ func TestRemoteFlagGroup_ToOptions(t *testing.T) {
 				TokenHeader: "Trivy-Token",
 			},
 			wantLogs: []string{
-				`"--custom-header" can be used only with "--server"`,
+				`"--custom-headers" can be used only with "--server"`,
 			},
 		},
 		{

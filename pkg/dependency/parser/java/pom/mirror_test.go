@@ -1,6 +1,9 @@
 package pom
 
 import (
+	"bytes"
+	"cmp"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -651,6 +654,180 @@ func TestParser_mirrorFor(t *testing.T) {
 	}
 }
 
+// Test_fetchPOMFromRemoteRepositories_rejectedCredentials verifies that a repository that rejects
+// the configured credentials (401/403) is warned about once, and that the warning leaks no secrets.
+func Test_fetchPOMFromRemoteRepositories_rejectedCredentials(t *testing.T) {
+	const (
+		user  = "repo-user"
+		pass  = "repo-pass"
+		token = "secret-token"
+	)
+	const pom = `<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>com.example</groupId>
+  <artifactId>example-api</artifactId>
+  <version>1.0.0</version>
+</project>`
+
+	type repoSpec struct {
+		status         int    // answer for the POM request
+		metadataStatus int    // answer for the maven-metadata.xml request; status if zero
+		withCreds      bool   // credentials come from a settings.xml <server>
+		viaMirror      bool   // reached through a settings.xml mirror instead of a pom.xml <repository>
+		query          string // appended to the mirror URL
+	}
+	tests := []struct {
+		name       string
+		repos      []repoSpec
+		snapshot   bool
+		parsers    int    // parsers (pom.xml files) fetching the POM
+		wantHits   []int  // request count per repository
+		wantStatus []int  // status codes of the expected warnings
+		wantErr    string // non-empty: fetch must fail with an error containing this
+	}{
+		{
+			name:       "pom.xml repository with <server> credentials, 401",
+			repos:      []repoSpec{{status: http.StatusUnauthorized, withCreds: true}},
+			parsers:    1,
+			wantHits:   []int{1},
+			wantStatus: []int{http.StatusUnauthorized},
+			wantErr:    "not found",
+		},
+		{
+			name:       "mirror with <server> credentials and a URL query, 403",
+			repos:      []repoSpec{{status: http.StatusForbidden, withCreds: true, viaMirror: true, query: "?token=" + token}},
+			parsers:    1,
+			wantHits:   []int{1},
+			wantStatus: []int{http.StatusForbidden},
+			wantErr:    "not found",
+		},
+		{
+			name:       "two parsers, the same repository is warned about once",
+			repos:      []repoSpec{{status: http.StatusUnauthorized, withCreds: true}},
+			parsers:    2,
+			wantHits:   []int{2},
+			wantStatus: []int{http.StatusUnauthorized},
+			wantErr:    "not found",
+		},
+		{
+			name:       "snapshot, 401 on maven-metadata.xml, the POM is served",
+			repos:      []repoSpec{{status: http.StatusOK, metadataStatus: http.StatusUnauthorized, withCreds: true}},
+			snapshot:   true,
+			parsers:    1,
+			wantHits:   []int{2},
+			wantStatus: []int{http.StatusUnauthorized},
+		},
+		{
+			name: "different repositories are warned about separately",
+			repos: []repoSpec{
+				{status: http.StatusUnauthorized, withCreds: true},
+				{status: http.StatusForbidden, withCreds: true},
+			},
+			parsers:    1,
+			wantHits:   []int{1, 1},
+			wantStatus: []int{http.StatusUnauthorized, http.StatusForbidden},
+			wantErr:    "not found",
+		},
+		{
+			name:     "404 with credentials is not warned about",
+			repos:    []repoSpec{{status: http.StatusNotFound, withCreds: true}},
+			parsers:  1,
+			wantHits: []int{1},
+			wantErr:  "not found",
+		},
+		{
+			name:     "401 without credentials is not warned about",
+			repos:    []repoSpec{{status: http.StatusUnauthorized}},
+			parsers:  1,
+			wantHits: []int{1},
+			wantErr:  "not found",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// The warning is deduplicated by host:port, and the OS may reuse the port
+			// of a server closed by an earlier case.
+			rejectedCredentialsRepos.Range(func(key string, _ struct{}) bool {
+				rejectedCredentialsRepos.Delete(key)
+				return true
+			})
+
+			hits := make([]int, len(tt.repos))
+			gotUsers := make([]string, len(tt.repos))
+			var pomRepos []pomRepository
+			var servers []Server
+			var settingsMirrors []Mirror
+			for i, spec := range tt.repos {
+				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					hits[i]++
+					gotUsers[i], _, _ = r.BasicAuth()
+					status := spec.status
+					if strings.HasSuffix(r.URL.Path, "/maven-metadata.xml") && spec.metadataStatus != 0 {
+						status = spec.metadataStatus
+					}
+					if status != http.StatusOK {
+						w.WriteHeader(status)
+						return
+					}
+					_, _ = w.Write([]byte(pom))
+				}))
+				t.Cleanup(s.Close)
+
+				id := fmt.Sprintf("repo-%d", i)
+				repoURL := s.URL
+				if spec.viaMirror {
+					// The pom.xml repository is replaced by the mirror and never requested.
+					repoURL = "https://repo.invalid/maven2"
+					id = fmt.Sprintf("mirror-%d", i)
+					settingsMirrors = append(settingsMirrors, Mirror{ID: id, URL: s.URL + spec.query, MirrorOf: fmt.Sprintf("repo-%d", i)})
+				}
+				if spec.withCreds {
+					servers = append(servers, Server{ID: id, Username: user, Password: pass})
+				}
+				pomRepos = append(pomRepos, pomRepository{ID: fmt.Sprintf("repo-%d", i), URL: repoURL})
+			}
+			var logs bytes.Buffer
+			logger := log.New(log.NewHandler(&logs, &log.Options{Level: log.LevelWarn}))
+			repos := resolvePomRepos(servers, pomRepos)
+			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
+			for range tt.parsers {
+				p := &Parser{
+					logger:     logger,
+					mirrors:    resolveMirrors(settingsMirrors, servers, nil),
+					httpClient: http.DefaultClient,
+				}
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, repos)
+				if tt.wantErr != "" {
+					require.ErrorContains(t, err, tt.wantErr)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, got)
+				}
+			}
+
+			require.Equal(t, tt.wantHits, hits, "request count per repository")
+			for i, spec := range tt.repos {
+				wantUser := ""
+				if spec.withCreds {
+					wantUser = user
+				}
+				require.Equal(t, wantUser, gotUsers[i], "basic auth user of repository %d", i)
+			}
+
+			out := logs.String()
+			require.Equal(t, len(tt.wantStatus), strings.Count(out, "denied access with the configured credentials"), out)
+			for _, status := range tt.wantStatus {
+				require.Contains(t, out, fmt.Sprintf("statusCode=%d", status))
+			}
+			for _, secret := range []string{user, pass, token} {
+				require.NotContains(t, out, secret)
+			}
+		})
+	}
+}
+
 // Test_fetchPOMFromRemoteRepositories_mirror verifies that mirrors substitute
 // the target URL inside fetchPOMFromRemoteRepositories — i.e. that mirrorFor
 // is wired into the fetch loop, not just the matching logic.
@@ -717,6 +894,23 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			wantHits:       map[string]int{"limited": 1},
 			wantErr:        "429",
 		},
+		{
+			// Multiple mirrors are rate-limited; all are queried and the 429 is returned.
+			name:           "multiple mirrors rate-limited: all are queried and 429 is returned",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"limited", "limit2"}},
+			wantHits:       map[string]int{"limited": 1, "limit2": 1},
+			wantErr:        `429 Too Many Requests for:\n  - http://.*/example-api-1\.0\.0\.pom\n  - http://.*/example-api-1\.0\.0\.pom`,
+		},
+		{
+			// The first mirror returns 429, the second one serves a broken POM: the failure
+			// is returned together with the 429, which is not lost.
+			name:           "429 followed by a failure: both are reported",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"limited", "broken"}},
+			wantHits:       map[string]int{"limited": 1, "broken": 1},
+			wantErr:        `(?s)failed to parse the remote POM.*429 Too Many Requests for:\n  - http://\S+/example-api-1\.0\.0\.pom$`,
+		},
 	}
 
 	for _, tt := range tests {
@@ -726,7 +920,8 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			// newServer registers an HTTP server for a role. status 200 serves the POM;
 			// any other status (e.g. 404 or 429) makes the fetch fall back to the next candidate.
-			newServer := func(role string, status int) *httptest.Server {
+			// A non-empty body overrides the served POM.
+			newServer := func(role string, status int, body string) *httptest.Server {
 				s := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 					hits[role]++
 					if u, _, ok := r.BasicAuth(); ok {
@@ -736,7 +931,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 						w.WriteHeader(status)
 						return
 					}
-					_, _ = w.Write([]byte(minimalPOM))
+					_, _ = w.Write([]byte(cmp.Or(body, minimalPOM)))
 				}))
 				t.Cleanup(s.Close)
 				return s
@@ -745,11 +940,13 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			// repo1: original repository; mirror: settings.xml target; chain/dead:
 			// trivy.yaml targets (dead always 404s).
 			servers := map[string]*httptest.Server{
-				"repo1":   newServer("repo1", http.StatusOK),
-				"mirror":  newServer("mirror", http.StatusOK),
-				"chain":   newServer("chain", http.StatusOK),
-				"dead":    newServer("dead", http.StatusNotFound),
-				"limited": newServer("limited", http.StatusTooManyRequests),
+				"repo1":   newServer("repo1", http.StatusOK, ""),
+				"mirror":  newServer("mirror", http.StatusOK, ""),
+				"chain":   newServer("chain", http.StatusOK, ""),
+				"dead":    newServer("dead", http.StatusNotFound, ""),
+				"limited": newServer("limited", http.StatusTooManyRequests, ""),
+				"broken":  newServer("broken", http.StatusOK, "not a pom"),
+				"limit2":  newServer("limit2", http.StatusTooManyRequests, ""),
 			}
 
 			// trivy.yaml mirrors: resolve role names to server URLs.
@@ -785,7 +982,7 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
 			if tt.wantErr != "" {
-				require.ErrorContains(t, err, tt.wantErr)
+				require.Regexp(t, tt.wantErr, err)
 			} else {
 				require.NoError(t, err)
 				require.NotNil(t, got)
@@ -795,6 +992,67 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 				require.Equal(t, tt.wantHits[role], hits[role], "request count for %q", role)
 			}
 			require.Equal(t, tt.wantBasicAuth, gotBasicAuth, "basic auth user")
+		})
+	}
+}
+
+// Repositories with different release and snapshot policies can share one mirror.
+// The mirror is requested for an artifact that only the second repository accepts.
+func Test_fetchPOMFromRemoteRepositories_mirrorPolicy(t *testing.T) {
+	releasesURL, err := url.Parse("https://releases.example.com/maven2/")
+	require.NoError(t, err)
+	snapshotsURL, err := url.Parse("https://snapshots.example.com/maven2/")
+	require.NoError(t, err)
+	releasesRepo := repository{id: "releases", url: *releasesURL, releaseEnabled: true}
+	snapshotsRepo := repository{id: "snapshots", url: *snapshotsURL, snapshotEnabled: true}
+
+	tests := []struct {
+		name      string
+		repos     []repository
+		snapshot  bool
+		version   string
+		wantPaths []string
+	}{
+		{
+			name:     "snapshot artifact, release-only repository first",
+			repos:    []repository{releasesRepo, snapshotsRepo},
+			snapshot: true,
+			version:  "1.0.0-SNAPSHOT",
+			wantPaths: []string{
+				"/com/example/example-api/1.0.0-SNAPSHOT/maven-metadata.xml",
+				"/com/example/example-api/1.0.0-SNAPSHOT/example-api-1.0.0-SNAPSHOT.pom",
+			},
+		},
+		{
+			name:    "release artifact, snapshot-only repository first",
+			repos:   []repository{snapshotsRepo, releasesRepo},
+			version: "1.0.0",
+			wantPaths: []string{
+				"/com/example/example-api/1.0.0/example-api-1.0.0.pom",
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var gotPaths []string
+			srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				gotPaths = append(gotPaths, r.URL.Path)
+				_, _ = w.Write([]byte(`<project><artifactId>example-api</artifactId></project>`))
+			}))
+			t.Cleanup(srv.Close)
+
+			p := &Parser{
+				logger:     log.WithPrefix("pom"),
+				mirrors:    resolveMirrors([]Mirror{{ID: "m1", URL: srv.URL, MirrorOf: "*"}}, nil, nil),
+				httpClient: http.DefaultClient,
+			}
+
+			paths := []string{"com", "example", "example-api", tt.version, "example-api-" + tt.version + ".pom"}
+			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, tt.repos)
+			require.NoError(t, err)
+			require.NotNil(t, got)
+			require.Equal(t, tt.wantPaths, gotPaths)
 		})
 	}
 }

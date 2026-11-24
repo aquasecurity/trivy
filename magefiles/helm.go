@@ -36,7 +36,7 @@ func main() {
 	log.Printf("Current helm version will bump up %q with Trivy %q", newHelmVersion, trivyVersion)
 
 	newBranch := fmt.Sprintf("ci/helm-chart/bump-trivy-to-%s", trivyVersion)
-	title := fmt.Sprintf("ci(helm): bump Trivy version to %s for Trivy Helm Chart %s", trivyVersion, newHelmVersion)
+	title := fmt.Sprintf("ci(chart): bump Trivy version to %s for Trivy Helm Chart %s", trivyVersion, newHelmVersion)
 	description := fmt.Sprintf("This PR bumps Trivy up to the %s version for the Trivy Helm chart %s.",
 		trivyVersion, newHelmVersion)
 

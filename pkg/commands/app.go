@@ -546,6 +546,7 @@ func NewConvertCommand(globalFlags *flag.GlobalFlagGroup) *cobra.Command {
 		Scanners: flag.ScannersFlag.Clone(),
 	}
 	scanFlagGroup.Scanners.Default = nil // disable default scanners
+	scanFlagGroup.Scanners.Values = append(scanFlagGroup.Scanners.Values, string(types.CryptoScanner))
 	scanFlagGroup.Scanners.Usage = "List of scanners included when generating the json report. Used only for rendering the summary table."
 
 	convertFlags := flag.Flags{

@@ -95,6 +95,7 @@ func (s Service) Scan(ctx context.Context, target, artifactKey string, blobKeys 
 				Scanners:            xstrings.ToStringSlice(opts.Scanners),
 				LicenseCategories:   licenseCategories,
 				LicenseFull:         opts.LicenseFull,
+				CryptoChecks:        opts.CryptoChecks,
 				IncludeDevDeps:      opts.IncludeDevDeps,
 				Distro:              distro,
 				VulnSeveritySources: xstrings.ToStringSlice(opts.VulnSeveritySources),

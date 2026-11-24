@@ -63,11 +63,11 @@ func (r *Resources) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
 }
 
 type Parameter struct {
-	Metadata     *types.Metadata
-	Type         azure.Value `json:"type"`
-	DefaultValue azure.Value `json:"defaultValue"`
-	MaxLength    azure.Value `json:"maxLength"`
-	MinLength    azure.Value `json:"minLength"`
+	Metadata     *types.Metadata `json:"-"`
+	Type         azure.Value     `json:"type"`
+	DefaultValue azure.Value     `json:"defaultValue"`
+	MaxLength    azure.Value     `json:"maxLength"`
+	MinLength    azure.Value     `json:"minLength"`
 }
 
 type Function struct{}

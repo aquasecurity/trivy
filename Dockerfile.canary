@@ -1,5 +1,7 @@
-FROM alpine:3.24.2
-RUN apk --no-cache add ca-certificates git
+FROM alpine:3.24.3
+# The Alpine base image tag lags behind security fixes in its repository,
+# so upgrade preinstalled packages to the latest patched versions.
+RUN apk --no-cache upgrade && apk --no-cache add ca-certificates git
 
 # binaries were created with GoReleaser
 # need to copy binaries from folder with correct architecture

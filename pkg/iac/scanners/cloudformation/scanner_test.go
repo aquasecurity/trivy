@@ -223,3 +223,67 @@ Resources:
 		})
 	}
 }
+
+func Test_ScanMalformedIntrinsics(t *testing.T) {
+	tests := []struct {
+		name          string
+		src           string
+		wantStartLine int
+	}{
+		{
+			name: "negative Fn::Select index",
+			src: `---
+Resources:
+  BucketWithNegativeSelect:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !Select [-1, [bucket-a, bucket-b]]
+  MisconfiguredBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+`,
+			wantStartLine: 10,
+		},
+		{
+			name: "malformed Fn::FindInMap mapping",
+			src: `---
+Mappings:
+  BucketNames:
+    prod: not-a-map
+Resources:
+  BucketWithMalformedFindInMap:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: !FindInMap [BucketNames, prod, Name]
+  MisconfiguredBucket:
+    Type: 'AWS::S3::Bucket'
+    Properties:
+      BucketName: test-bucket
+`,
+			wantStartLine: 13,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(map[string]string{
+				"/code/main.yaml": tt.src,
+			})
+
+			scanner := New(
+				rego.WithEmbeddedPolicies(false),
+				rego.WithPolicyReader(strings.NewReader(bucketNameCheck)),
+				rego.WithPolicyNamespaces("user"),
+			)
+
+			results, err := scanner.ScanFS(t.Context(), fsys, "code")
+			require.NoError(t, err)
+
+			failed := results.GetFailed()
+			require.Len(t, failed, 1)
+			assert.Equal(t, "AWS-001", failed[0].Rule().ID)
+			assert.Equal(t, tt.wantStartLine, failed[0].Range().GetStartLine())
+		})
+	}
+}

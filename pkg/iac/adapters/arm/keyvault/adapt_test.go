@@ -49,7 +49,10 @@ func TestAdapt(t *testing.T) {
       "type": "Microsoft.KeyVault/vaults",
       "properties": {
         "enablePurgeProtection": true,
-        "softDeleteRetentionInDays": 50
+        "softDeleteRetentionInDays": 50,
+        "networkAcls": {
+          "defaultAction": "Deny"
+        }
       }
     },
     {
@@ -75,6 +78,9 @@ func TestAdapt(t *testing.T) {
 				Vaults: []keyvault.Vault{{
 					EnablePurgeProtection:   types.BoolTest(true),
 					SoftDeleteRetentionDays: types.IntTest(50),
+					NetworkACLs: keyvault.NetworkACLs{
+						DefaultAction: types.StringTest("Deny"),
+					},
 					Keys: []keyvault.Key{{
 						ExpiryDate: types.TimeTest(time.Unix(20, 0)),
 					}},

@@ -225,6 +225,65 @@ Resources:
 	assert.Equal(t, "/aws/lambda/${ServiceName}", refProp.AsString())
 }
 
+func Test_parse_yaml_condition_short_form(t *testing.T) {
+	tests := []struct {
+		name      string
+		condition string
+		want      string
+	}{
+		{
+			name:      "and",
+			condition: `!And [!Condition IsEnvSet, !Equals [!Ref Env, prod]]`,
+			want:      "enabled",
+		},
+		{
+			name:      "and with false operand",
+			condition: `!And [!Condition IsEnvSet, !Equals [!Ref Env, dev]]`,
+			want:      "disabled",
+		},
+		{
+			name:      "or",
+			condition: `!Or [!Condition IsEnvSet, !Equals [!Ref Env, dev]]`,
+			want:      "enabled",
+		},
+		{
+			name:      "not",
+			condition: `!Not [!Condition IsEnvSet]`,
+			want:      "disabled",
+		},
+		{
+			name:      "top-level",
+			condition: `!Condition IsEnvSet`,
+			want:      "enabled",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			source := `---
+AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Env:
+    Type: String
+    Default: prod
+Conditions:
+  IsEnvSet: !Not [!Equals [!Ref Env, ""]]
+  Target: ` + tt.condition + `
+Resources:
+  Topic:
+    Type: AWS::SNS::Topic
+    Properties:
+      DisplayName: !If [Target, enabled, disabled]
+`
+			ctx := createTestFileContext(t, source)
+
+			res := ctx.GetResourceByLogicalID("Topic")
+			require.NotNil(t, res)
+			assert.Equal(t, tt.want, res.GetStringProperty("DisplayName").Value())
+		})
+	}
+}
+
 func TestParse_WithParameters(t *testing.T) {
 	fs := testutil.CreateFS(map[string]string{
 		"main.yaml": `AWSTemplateFormatVersion: 2010-09-09
@@ -636,4 +695,143 @@ func Test_ExpandForEachJSON(t *testing.T) {
 	require.True(t, ok)
 	assert.Equal(t, "AWS::S3::Bucket", b2.Type())
 	assert.Equal(t, "bucket-B", b2.GetProperty("BucketName").AsString())
+}
+
+func Test_ConditionWithIntrinsicAtTopLevel(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected string
+	}{
+		{
+			name: "condition defined with Fn::If",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Env:
+    Type: String
+    Default: prod
+Conditions:
+  IsEnvSet: !Equals [!Ref Env, prod]
+  IsProd: !If [IsEnvSet, true, false]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "prod-bucket",
+		},
+		{
+			name: "condition defined with Condition",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Parameters:
+  Env:
+    Type: String
+    Default: prod
+Conditions:
+  IsEnvSet: !Equals [!Ref Env, prod]
+  IsProd:
+    Condition: IsEnvSet
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "prod-bucket",
+		},
+		{
+			name: "condition defined with Fn::GetAtt",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd: !GetAtt [TestBucket, Arn]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(map[string]string{
+				"main.yaml": tt.src,
+			})
+
+			files, err := New().ParseFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+			require.Len(t, files, 1)
+
+			res := files[0].GetResourceByLogicalID("TestBucket")
+			require.NotNil(t, res)
+
+			assert.Equal(t, tt.expected, res.GetStringProperty("BucketName").Value())
+		})
+	}
+}
+
+func Test_ConditionCycle(t *testing.T) {
+	tests := []struct {
+		name     string
+		src      string
+		expected string
+	}{
+		{
+			name: "condition referencing itself with Condition",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd:
+    Condition: IsProd
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+		{
+			name: "condition referencing itself with Fn::If",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd: !If [IsProd, true, false]
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+		{
+			name: "two conditions referencing each other",
+			src: `AWSTemplateFormatVersion: "2010-09-09"
+Conditions:
+  IsProd:
+    Condition: IsStaging
+  IsStaging:
+    Condition: IsProd
+Resources:
+  TestBucket:
+    Type: "AWS::S3::Bucket"
+    Properties:
+      BucketName: !If [IsProd, prod-bucket, dev-bucket]`,
+			expected: "dev-bucket",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := testutil.CreateFS(map[string]string{
+				"main.yaml": tt.src,
+			})
+
+			files, err := New().ParseFS(t.Context(), fsys, ".")
+			require.NoError(t, err)
+			require.Len(t, files, 1)
+
+			res := files[0].GetResourceByLogicalID("TestBucket")
+			require.NotNil(t, res)
+
+			assert.Equal(t, tt.expected, res.GetStringProperty("BucketName").Value())
+		})
+	}
 }

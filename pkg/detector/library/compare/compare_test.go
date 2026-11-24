@@ -5,6 +5,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
+	"github.com/aquasecurity/go-version/pkg/version"
 	"github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 )
@@ -15,9 +16,10 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 		advisory types.Advisory
 	}
 	tests := []struct {
-		name string
-		args args
-		want bool
+		name               string
+		buildMetadataOrder version.BuildMetadataOrder
+		args               args
+		want               bool
 	}{
 		{
 			name: "happy path",
@@ -105,10 +107,72 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			},
 			want: true,
 		},
+		{
+			name: "BuildMetadataOrder unset: build metadata ignored",
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.2"},
+					PatchedVersions:    []string{"8.0.0+echo.2"},
+				},
+			},
+			want: false,
+		},
+		{
+			name:               "BuildMetadataOrderNodeSemver: build below the patched build",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.2"},
+					PatchedVersions:    []string{"8.0.0+echo.2"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:               "BuildMetadataOrderNodeSemver: build numbers compare numerically",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
+			args: args{
+				ver: "8.0.0+echo.2",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.0+echo.10"},
+					PatchedVersions:    []string{"8.0.0+echo.10"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:               "BuildMetadataOrderNodeSemver: Echo patched version does not suppress release",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
+			args: args{
+				ver: "8.0.0",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.5"},
+					PatchedVersions:    []string{"8.0.0+echo.1"},
+				},
+			},
+			want: true,
+		},
+		{
+			name:               "BuildMetadataOrderNodeSemver: exact Echo patched version is suppressed",
+			buildMetadataOrder: version.BuildMetadataOrderNodeSemver,
+			args: args{
+				ver: "8.0.0+echo.1",
+				advisory: types.Advisory{
+					VulnerableVersions: []string{"<8.0.5"},
+					PatchedVersions:    []string{"8.0.0+echo.1"},
+				},
+			},
+			want: false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			v := compare.GenericComparer{}
+			if tt.buildMetadataOrder != 0 {
+				v = compare.NewGenericComparer(compare.WithBuildMetadata(tt.buildMetadataOrder))
+			}
 			got := v.IsVulnerable(tt.args.ver, tt.args.advisory)
 			assert.Equal(t, tt.want, got)
 		})

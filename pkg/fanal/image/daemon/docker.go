@@ -4,6 +4,7 @@ import (
 	"context"
 	"os"
 
+	"github.com/distribution/reference"
 	"github.com/google/go-containerregistry/pkg/name"
 	"github.com/moby/moby/client"
 	"golang.org/x/xerrors"
@@ -50,6 +51,7 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 		if err != nil {
 			return nil, cleanup, xerrors.Errorf("unable to inspect the image (%s): %w", imageID, err)
 		}
+		imageID = normalizeImageID(imageID)
 	}
 
 	history, err := c.ImageHistory(ctx, imageID)
@@ -73,4 +75,16 @@ func DockerImage(ctx context.Context, ref name.Reference, host string) (Image, f
 		inspect: inspect.InspectResponse,
 		history: configHistory(history.Items),
 	}, cleanup, nil
+}
+
+// normalizeImageID turns a bare 64-hex image ID into "sha256:<hex>" the way the daemon does.
+// The containerd image store refuses to export a bare 64-hex ID
+// ("cannot specify 64-byte hexadecimal strings"), while inspect and history accept it.
+func normalizeImageID(s string) string {
+	if parsed, err := reference.ParseAnyReference(s); err == nil {
+		if _, named := parsed.(reference.Named); !named {
+			return parsed.String()
+		}
+	}
+	return s
 }

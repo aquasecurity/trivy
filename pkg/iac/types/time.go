@@ -1,7 +1,8 @@
 package types
 
 import (
-	"encoding/json"
+	"encoding/json/jsontext"
+	"encoding/json/v2"
 	"time"
 )
 
@@ -13,18 +14,18 @@ type RFC3339Time struct {
 	time.Time
 }
 
-func (t RFC3339Time) MarshalJSON() ([]byte, error) {
-	return json.Marshal(t.Format(time.RFC3339))
+func (t RFC3339Time) MarshalJSONTo(enc *jsontext.Encoder) error {
+	return json.MarshalEncode(enc, t.Format(time.RFC3339))
 }
 
-func (t *RFC3339Time) UnmarshalJSON(data []byte) error {
-	if string(data) == "null" {
+func (t *RFC3339Time) UnmarshalJSONFrom(dec *jsontext.Decoder) error {
+	if dec.PeekKind() == jsontext.KindNull {
 		t.Time = time.Time{}
-		return nil
+		return dec.SkipValue()
 	}
 
 	var s string
-	if err := json.Unmarshal(data, &s); err != nil {
+	if err := json.UnmarshalDecode(dec, &s); err != nil {
 		return err
 	}
 

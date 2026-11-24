@@ -126,6 +126,7 @@ const (
 	LPL102                      = "LPL-1.02"
 	LPL10                       = "LPL-1.0"
 	MIT                         = "MIT"
+	MIT0                        = "MIT-0"
 	MPL10                       = "MPL-1.0"
 	MPL11                       = "MPL-1.1"
 	MPL20                       = "MPL-2.0"
@@ -367,6 +368,7 @@ var (
 		CC010,
 		Unlicense,
 		ZeroBSD,
+		MIT0,
 	}
 )
 

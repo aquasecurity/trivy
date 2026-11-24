@@ -29,7 +29,7 @@ ports := services.ports
 Example loading the data file:
 
 ```bash
-trivy config --config-check ./checks --config-data ./data --namespaces user ./configs
+trivy config --config-check ./checks --config-data ./data --check-namespaces user ./configs
 ```
 
 ## Customizing default checks data

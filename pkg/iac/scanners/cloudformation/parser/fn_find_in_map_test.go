@@ -93,3 +93,47 @@ Resources:
 	nodeTypeProp := testRes.GetBoolProperty("MultiAZ")
 	assert.False(t, nodeTypeProp.Value())
 }
+
+func Test_FindInMap_MalformedMapping(t *testing.T) {
+	source := `---
+Mappings:
+  CacheNodeTypes:
+    scalarEntry: cache.t2.micro
+    listEntry:
+      - cache.t2.small
+    nullEntry: null
+Resources:
+  ClusterScalar:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      CacheNodeType: !FindInMap [ CacheNodeTypes, scalarEntry, NodeType ]
+  ClusterScalarWithDefault:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      CacheNodeType: !FindInMap [ CacheNodeTypes, scalarEntry, NodeType, DefaultValue: cache.t2.medium ]
+  ClusterList:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      CacheNodeType: !FindInMap [ CacheNodeTypes, listEntry, NodeType ]
+  ClusterNull:
+    Type: 'AWS::ElastiCache::CacheCluster'
+    Properties:
+      CacheNodeType: !FindInMap [ CacheNodeTypes, nullEntry, NodeType ]
+`
+
+	ctx := createTestFileContext(t, source)
+	require.NotNil(t, ctx)
+
+	for _, id := range []string{"ClusterScalar", "ClusterList", "ClusterNull"} {
+		res := ctx.GetResourceByLogicalID(id)
+		require.NotNil(t, res)
+		prop := res.GetProperty("CacheNodeType")
+		require.NotNil(t, prop)
+		assert.True(t, prop.IsUnresolved())
+	}
+
+	resWithDefault := ctx.GetResourceByLogicalID("ClusterScalarWithDefault")
+	require.NotNil(t, resWithDefault)
+	nodeType := resWithDefault.GetStringProperty("CacheNodeType", "")
+	assert.Equal(t, "cache.t2.medium", nodeType.Value())
+}

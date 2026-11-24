@@ -54,12 +54,8 @@ func (n familiarNamed) String() string {
 }
 
 func imageWriter(c *client.Client, img client.Image, platform types.Platform) imageSave {
-	return func(ctx context.Context, ref []string, _ ...dockerClient.ImageSaveOption) (dockerClient.ImageSaveResult, error) {
-		if len(ref) < 1 {
-			return nil, xerrors.New("no image reference")
-		}
-		imgOpts := archive.WithImage(c.ImageService(), ref[0])
-		manifestOpts := archive.WithManifest(img.Target())
+	return func(ctx context.Context, _ []string, _ ...dockerClient.ImageSaveOption) (dockerClient.ImageSaveResult, error) {
+		manifestOpts := archive.WithManifest(img.Target(), img.Name())
 
 		var platformMatchComparer platforms.MatchComparer
 		if platform.Platform == nil {
@@ -70,7 +66,7 @@ func imageWriter(c *client.Client, img client.Image, platform types.Platform) im
 		platOpts := archive.WithPlatform(platformMatchComparer)
 		pr, pw := io.Pipe()
 		go func() {
-			pw.CloseWithError(archive.Export(ctx, c.ContentStore(), pw, imgOpts, manifestOpts, platOpts))
+			pw.CloseWithError(archive.Export(ctx, c.ContentStore(), pw, manifestOpts, platOpts))
 		}()
 		return pr, nil
 	}

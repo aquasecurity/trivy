@@ -1,6 +1,8 @@
 package compute
 
 import (
+	"encoding/base64"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/compute"
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/network"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
@@ -54,9 +56,8 @@ func adaptWindowsVirtualMachine(resource azure.Resource) compute.WindowsVirtualM
 	return compute.WindowsVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
-			Metadata: resource.Metadata,
-			CustomData: resource.Properties.GetMapValue("osProfile").
-				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			Metadata:          resource.Metadata,
+			CustomData:        adaptCustomData(resource),
 			NetworkInterfaces: networkInterfaces,
 		},
 	}
@@ -79,9 +80,8 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 	return compute.LinuxVirtualMachine{
 		Metadata: resource.Metadata,
 		VirtualMachine: compute.VirtualMachine{
-			Metadata: resource.Metadata,
-			CustomData: resource.Properties.GetMapValue("osProfile").
-				GetMapValue("customData").AsStringValue("", resource.Metadata),
+			Metadata:          resource.Metadata,
+			CustomData:        adaptCustomData(resource),
 			NetworkInterfaces: networkInterfaces,
 		},
 		OSProfileLinuxConfig: compute.OSProfileLinuxConfig{
@@ -92,6 +92,18 @@ func adaptLinuxVirtualMachine(resource azure.Resource) compute.LinuxVirtualMachi
 		},
 	}
 
+}
+
+// adaptCustomData decodes osProfile.customData, which ARM requires to be base64
+// encoded. A value that isn't valid base64 is kept as written.
+func adaptCustomData(resource azure.Resource) iacTypes.StringValue {
+	customData := resource.Properties.GetMapValue("osProfile").
+		GetMapValue("customData").AsStringValue("", resource.Metadata)
+	decoded, err := base64.StdEncoding.DecodeString(customData.Value())
+	if err != nil {
+		return customData
+	}
+	return iacTypes.String(string(decoded), customData.GetMetadata())
 }
 
 func extractNetworkInterfaces(_ azure.Value, _ iacTypes.Metadata) []network.NetworkInterface {
