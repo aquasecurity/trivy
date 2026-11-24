@@ -240,7 +240,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			wantBlobs: []cachetest.WantBlob{
 				{
 					// Cache key is based on commit hash (8a19b492a589955c3e70c6ad8efd1e4ec6ae0d35)
-					ID: "sha256:74a32b480af4718f21f6a2102c522d7574987bed398aabe53d334ee6e37fd31e",
+					ID: "sha256:d0685eeb4be367af9b877559b1aa4703407ed34472185b9528023c0de18ff18e",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 					},
@@ -249,9 +249,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
 				Type: types.TypeRepository,
-				ID:   "sha256:74a32b480af4718f21f6a2102c522d7574987bed398aabe53d334ee6e37fd31e",
+				ID:   "sha256:d0685eeb4be367af9b877559b1aa4703407ed34472185b9528023c0de18ff18e",
 				BlobIDs: []string{
-					"sha256:74a32b480af4718f21f6a2102c522d7574987bed398aabe53d334ee6e37fd31e",
+					"sha256:d0685eeb4be367af9b877559b1aa4703407ed34472185b9528023c0de18ff18e",
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",

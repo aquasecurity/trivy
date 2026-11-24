@@ -27,7 +27,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newAlpinePkgAnalyzer())
 }
 
-const analyzerVersion = 4
+const analyzerVersion = 5
 
 var requiredFiles = []string{"lib/apk/db/installed", "usr/lib/apk/db/installed"}
 
@@ -135,8 +135,9 @@ func (a alpinePkgAnalyzer) trimRequirement(s string) string {
 	// e.g.
 	//   so:libssl.so.1.1=1.1 => so:libssl.so.1.1
 	//   musl>=1.2 => musl
-	if strings.ContainsAny(s, "<>=") {
-		s = s[:strings.IndexAny(s, "><=")]
+	//   python3~3.12 => python3
+	if strings.ContainsAny(s, "<>=~") {
+		s = s[:strings.IndexAny(s, "><=~")]
 	}
 	return s
 }
