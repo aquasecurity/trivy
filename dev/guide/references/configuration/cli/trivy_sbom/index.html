@@ -8662,143 +8662,143 @@ You're not viewing the latest version of the documentation.
   $ trivy sbom /path/to/report.cdx.intoto.jsonl
 </code></pre></div>
 <h3 id="options">Options<a class="headerlink" href="#options" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>      --cache-backend string           [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default &quot;memory&quot;)
-      --cache-ttl duration             cache TTL when using Redis as cache backend
-      --compliance string              compliance report to generate
-      --custom-headers strings         custom headers in client mode
-      --db-repository strings          OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
-      --detection-priority string      specify the detection priority:
-                                         - &quot;precise&quot;: Prioritizes precise by minimizing false positives.
-                                         - &quot;comprehensive&quot;: Aims to detect more security findings at the cost of potential false positives.
-                                        (allowed values: precise,comprehensive) (default &quot;precise&quot;)
-      --disable-telemetry              disable sending anonymous usage data to Aqua
-      --distro string                  [EXPERIMENTAL] specify a distribution, &lt;family&gt;/&lt;version&gt;
-      --download-db-only               download/update vulnerability database but don&#39;t run a scan
-      --download-java-db-only          download/update Java index database but don&#39;t run a scan
-      --exit-code int                  specify exit code when any security issues are found
-      --exit-on-eol int                exit with the specified code when the OS reaches end of service/life
-      --file-patterns strings          specify config file patterns
-  -f, --format string                  format
-                                       Allowed values:
-                                         - table
-                                         - json
-                                         - template
-                                         - sarif
-                                         - cyclonedx
-                                         - spdx
-                                         - spdx-json
-                                         - github
-                                         - cosign-vuln
-                                        (default &quot;table&quot;)
-  -h, --help                           help for sbom
-      --ignore-policy string           specify the Rego file path to evaluate each vulnerability
-      --ignore-status strings          comma-separated list of vulnerability statuses to ignore
-                                       Allowed values:
-                                         - unknown
-                                         - not_affected
-                                         - affected
-                                         - fixed
-                                         - under_investigation
-                                         - will_not_fix
-                                         - fix_deferred
-                                         - end_of_life
-      --ignore-unfixed                 display only fixed vulnerabilities
-      --ignored-licenses strings       specify a list of licenses to ignore
-      --ignorefile string              specify .trivyignore file (empty string disables loading) (default &quot;.trivyignore&quot;)
-      --java-db-repository strings     OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
-      --list-all-pkgs                  output all packages in the JSON report regardless of vulnerability (default true)
-      --no-progress                    suppress progress bar
-      --offline-scan                   do not issue API requests to identify dependencies
-  -o, --output string                  output file name
-      --output-plugin-arg string       [EXPERIMENTAL] output plugin arguments
-      --password strings               password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
-      --password-stdin                 password from stdin. Comma-separated passwords are not supported.
-      --pkg-relationships strings      list of package relationships
-                                       Allowed values:
-                                         - unknown
-                                         - root
-                                         - workspace
-                                         - direct
-                                         - indirect
-                                        (default [unknown,root,workspace,direct,indirect])
-      --pkg-types strings              list of package types (allowed values: os,library) (default [os,library])
-      --redis-ca string                Redis CA file location, if using Redis as cache backend
-      --redis-cert string              Redis certificate file location, if using Redis as cache backend
-      --redis-key string               Redis key file location, if using Redis as cache backend
-      --redis-tls                      enable Redis TLS with public certificates, if using Redis as cache backend
-      --registry-token string          registry token
-      --rekor-url string               [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
-      --sbom-sources strings           [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
-      --scanners strings               comma-separated list of what security issues to detect (allowed values: vuln,license) (default [vuln])
-      --server string                  server address in client mode
-  -s, --severity strings               severities of security issues to be displayed
-                                       Allowed values:
-                                         - UNKNOWN
-                                         - LOW
-                                         - MEDIUM
-                                         - HIGH
-                                         - CRITICAL
-                                        (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
-      --show-suppressed                [EXPERIMENTAL] show suppressed vulnerabilities
-      --skip-db-update                 skip updating vulnerability database
-      --skip-java-db-update            skip updating Java index database
-      --skip-version-check             suppress notices about version updates and Trivy announcements
-      --skip-vex-repo-update           [EXPERIMENTAL] skip VEX repository update
-      --table-mode strings             [EXPERIMENTAL] tables that will be displayed in &#39;table&#39; format (allowed values: summary,detailed) (default [summary,detailed])
-  -t, --template string                output template (file path must have .tpl extension)
-      --token string                   for authentication in client/server mode
-      --token-header string            specify a header name for token in client/server mode (default &quot;Trivy-Token&quot;)
-      --username strings               username. Comma-separated usernames allowed.
-      --vex strings                    [EXPERIMENTAL] VEX sources (&quot;repo&quot;, &quot;oci&quot; or file path)
-      --vuln-severity-source strings   order of data sources for selecting vulnerability severity level
-                                       Allowed values:
-                                         - nvd
-                                         - redhat
-                                         - redhat-oval
-                                         - debian
-                                         - ubuntu
-                                         - alpine
-                                         - amazon
-                                         - oracle-oval
-                                         - suse-cvrf
-                                         - photon
-                                         - arch-linux
-                                         - alma
-                                         - rocky
-                                         - cbl-mariner
-                                         - azure
-                                         - ruby-advisory-db
-                                         - php-security-advisories
-                                         - nodejs-security-wg
-                                         - ghsa
-                                         - glad
-                                         - aqua
-                                         - osv
-                                         - k8s
-                                         - wolfi
-                                         - chainguard
-                                         - bitnami
-                                         - govulndb
-                                         - julia
-                                         - bottlerocket
-                                         - echo
-                                         - echo-osv
-                                         - minimos
-                                         - rootio
-                                         - rapidfort
-                                         - auto
-                                        (default [auto])
+<div class="highlight"><pre><span></span><code>      --cache-backend string                 [EXPERIMENTAL] cache backend (e.g. redis://localhost:6379) (default &quot;memory&quot;)
+      --cache-ttl duration                   cache TTL when using Redis as cache backend
+      --compliance string                    compliance report to generate
+      --custom-headers strings               custom headers in client mode
+      --db-repository strings                OCI repository(ies) to retrieve trivy-db in order of priority (default [mirror.gcr.io/aquasec/trivy-db:2,ghcr.io/aquasecurity/trivy-db:2])
+      --detection-priority string            specify the detection priority:
+                                               - &quot;precise&quot;: Prioritizes precise by minimizing false positives.
+                                               - &quot;comprehensive&quot;: Aims to detect more security findings at the cost of potential false positives.
+                                              (allowed values: precise,comprehensive) (default &quot;precise&quot;)
+      --disable-telemetry[=true|false]       disable sending anonymous usage data to Aqua
+      --distro string                        [EXPERIMENTAL] specify a distribution, &lt;family&gt;/&lt;version&gt;
+      --download-db-only[=true|false]        download/update vulnerability database but don&#39;t run a scan
+      --download-java-db-only[=true|false]   download/update Java index database but don&#39;t run a scan
+      --exit-code int                        specify exit code when any security issues are found
+      --exit-on-eol int                      exit with the specified code when the OS reaches end of service/life
+      --file-patterns strings                specify config file patterns
+  -f, --format string                        format
+                                             Allowed values:
+                                               - table
+                                               - json
+                                               - template
+                                               - sarif
+                                               - cyclonedx
+                                               - spdx
+                                               - spdx-json
+                                               - github
+                                               - cosign-vuln
+                                              (default &quot;table&quot;)
+  -h, --help[=true|false]                    help for sbom
+      --ignore-policy string                 specify the Rego file path to evaluate each vulnerability
+      --ignore-status strings                comma-separated list of vulnerability statuses to ignore
+                                             Allowed values:
+                                               - unknown
+                                               - not_affected
+                                               - affected
+                                               - fixed
+                                               - under_investigation
+                                               - will_not_fix
+                                               - fix_deferred
+                                               - end_of_life
+      --ignore-unfixed[=true|false]          display only fixed vulnerabilities
+      --ignored-licenses strings             specify a list of licenses to ignore
+      --ignorefile string                    specify .trivyignore file (empty string disables loading) (default &quot;.trivyignore&quot;)
+      --java-db-repository strings           OCI repository(ies) to retrieve trivy-java-db in order of priority (default [mirror.gcr.io/aquasec/trivy-java-db:1,ghcr.io/aquasecurity/trivy-java-db:1])
+      --list-all-pkgs[=true|false]           output all packages in the JSON report regardless of vulnerability (default true)
+      --no-progress[=true|false]             suppress progress bar
+      --offline-scan[=true|false]            do not issue API requests to identify dependencies
+  -o, --output string                        output file name
+      --output-plugin-arg string             [EXPERIMENTAL] output plugin arguments
+      --password strings                     password. Comma-separated passwords allowed. TRIVY_PASSWORD should be used for security reasons.
+      --password-stdin[=true|false]          password from stdin. Comma-separated passwords are not supported.
+      --pkg-relationships strings            list of package relationships
+                                             Allowed values:
+                                               - unknown
+                                               - root
+                                               - workspace
+                                               - direct
+                                               - indirect
+                                              (default [unknown,root,workspace,direct,indirect])
+      --pkg-types strings                    list of package types (allowed values: os,library) (default [os,library])
+      --redis-ca string                      Redis CA file location, if using Redis as cache backend
+      --redis-cert string                    Redis certificate file location, if using Redis as cache backend
+      --redis-key string                     Redis key file location, if using Redis as cache backend
+      --redis-tls[=true|false]               enable Redis TLS with public certificates, if using Redis as cache backend
+      --registry-token string                registry token
+      --rekor-url string                     [EXPERIMENTAL] address of rekor STL server (default &quot;https://rekor.sigstore.dev&quot;)
+      --sbom-sources strings                 [EXPERIMENTAL] try to retrieve SBOM from the specified sources (allowed values: oci,rekor)
+      --scanners strings                     comma-separated list of what security issues to detect (allowed values: vuln,license) (default [vuln])
+      --server string                        server address in client mode
+  -s, --severity strings                     severities of security issues to be displayed
+                                             Allowed values:
+                                               - UNKNOWN
+                                               - LOW
+                                               - MEDIUM
+                                               - HIGH
+                                               - CRITICAL
+                                              (default [UNKNOWN,LOW,MEDIUM,HIGH,CRITICAL])
+      --show-suppressed[=true|false]         [EXPERIMENTAL] show suppressed vulnerabilities
+      --skip-db-update[=true|false]          skip updating vulnerability database
+      --skip-java-db-update[=true|false]     skip updating Java index database
+      --skip-version-check[=true|false]      suppress notices about version updates and Trivy announcements
+      --skip-vex-repo-update[=true|false]    [EXPERIMENTAL] skip VEX repository update
+      --table-mode strings                   [EXPERIMENTAL] tables that will be displayed in &#39;table&#39; format (allowed values: summary,detailed) (default [summary,detailed])
+  -t, --template string                      output template (file path must have .tpl extension)
+      --token string                         for authentication in client/server mode
+      --token-header string                  specify a header name for token in client/server mode (default &quot;Trivy-Token&quot;)
+      --username strings                     username. Comma-separated usernames allowed.
+      --vex strings                          [EXPERIMENTAL] VEX sources (&quot;repo&quot;, &quot;oci&quot; or file path)
+      --vuln-severity-source strings         order of data sources for selecting vulnerability severity level
+                                             Allowed values:
+                                               - nvd
+                                               - redhat
+                                               - redhat-oval
+                                               - debian
+                                               - ubuntu
+                                               - alpine
+                                               - amazon
+                                               - oracle-oval
+                                               - suse-cvrf
+                                               - photon
+                                               - arch-linux
+                                               - alma
+                                               - rocky
+                                               - cbl-mariner
+                                               - azure
+                                               - ruby-advisory-db
+                                               - php-security-advisories
+                                               - nodejs-security-wg
+                                               - ghsa
+                                               - glad
+                                               - aqua
+                                               - osv
+                                               - k8s
+                                               - wolfi
+                                               - chainguard
+                                               - bitnami
+                                               - govulndb
+                                               - julia
+                                               - bottlerocket
+                                               - echo
+                                               - echo-osv
+                                               - minimos
+                                               - rootio
+                                               - rapidfort
+                                               - auto
+                                              (default [auto])
 </code></pre></div>
 <h3 id="options-inherited-from-parent-commands">Options inherited from parent commands<a class="headerlink" href="#options-inherited-from-parent-commands" title="Permanent link">&para;</a></h3>
-<div class="highlight"><pre><span></span><code>      --cacert string             Path to PEM-encoded CA certificate file
-      --cache-dir string          cache directory (default &quot;/path/to/cache&quot;)
-  -c, --config string             config path (empty string disables loading) (default &quot;trivy.yaml&quot;)
-  -d, --debug                     debug mode
-      --generate-default-config   write the default config to trivy-default.yaml
-      --insecure                  allow insecure server connections
-  -q, --quiet                     suppress progress bar and log output
-      --timeout duration          timeout (default 5m0s)
-  -v, --version                   show version
+<div class="highlight"><pre><span></span><code>      --cacert string                          Path to PEM-encoded CA certificate file
+      --cache-dir string                       cache directory (default &quot;/path/to/cache&quot;)
+  -c, --config string                          config path (empty string disables loading) (default &quot;trivy.yaml&quot;)
+  -d, --debug[=true|false]                     debug mode
+      --generate-default-config[=true|false]   write the default config to trivy-default.yaml
+      --insecure[=true|false]                  allow insecure server connections
+  -q, --quiet[=true|false]                     suppress progress bar and log output
+      --timeout duration                       timeout (default 5m0s)
+  -v, --version[=true|false]                   show version
 </code></pre></div>
 <h3 id="see-also">SEE ALSO<a class="headerlink" href="#see-also" title="Permanent link">&para;</a></h3>
 <ul>
