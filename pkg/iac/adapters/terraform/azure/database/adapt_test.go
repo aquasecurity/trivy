@@ -277,6 +277,7 @@ func Test_Adapt(t *testing.T) {
 						Config: database.PostgresSQLConfig{
 							LogConnections:       iacTypes.BoolTest(true),
 							LogCheckpoints:       iacTypes.BoolTest(true),
+							LogDisconnections:    iacTypes.BoolTest(true),
 							ConnectionThrottling: iacTypes.BoolTest(true),
 						},
 						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
@@ -328,6 +329,11 @@ func Test_Adapt(t *testing.T) {
 								},
 							},
 						},
+						Config: database.PostgresSQLConfig{
+							LogConnections:    iacTypes.BoolTest(true),
+							LogCheckpoints:    iacTypes.BoolTest(true),
+							LogDisconnections: iacTypes.BoolTest(true),
+						},
 						// Threat Detection is not configurable via Terraform for PostgreSQL Flexible Server
 						// It can only be configured via Azure CLI, so it's marked as unmanaged
 						ThreatDetectionPolicy: database.ThreatDetectionPolicy{},
@@ -349,6 +355,11 @@ func Test_Adapt(t *testing.T) {
 							EnableSSLEnforcement:      iacTypes.BoolTest(true),
 							MinimumTLSVersion:         iacTypes.StringTest("TLS1_2"),
 							EnablePublicNetworkAccess: iacTypes.BoolTest(true),
+						},
+						Config: database.PostgresSQLConfig{
+							LogConnections:    iacTypes.BoolTest(true),
+							LogCheckpoints:    iacTypes.BoolTest(true),
+							LogDisconnections: iacTypes.BoolTest(true),
 						},
 					},
 				},
