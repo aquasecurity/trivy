@@ -224,15 +224,27 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	fset.ParseErrorsAllowlist.UnknownFlags = true
 	// The shorthand name is needed here because setting the full name
 	// to `X` will cause the flag set to look for `--X` instead of `-X`.
-	// The flag can also be set multiple times, so a string slice is needed
-	// to handle that edge case.
-	var x map[string]string
-	fset.StringToStringVarP(&x, "", "X", nil, "")
+	// The flag can also be set multiple times, so a string array is needed
+	// to handle that edge case. Each value is kept as is (no CSV splitting)
+	// and split on the first `=` below, the same way the Go linker does.
+	// cf. https://pkg.go.dev/cmd/link (`-X importpath.name=value`)
+	var xFlags []string
+	fset.StringArrayVarP(&xFlags, "", "X", nil, "")
 	// Init `help` flag to avoid error in flags with `h` (e.g. `-lpthread`)
 	fset.BoolP("help", "h", false, "just to disable the built-in help flag")
 	if err := fset.Parse(flags); err != nil {
 		p.logger.Error("Could not parse -ldflags found in build info", log.Err(err))
 		return ""
+	}
+
+	// The last value wins for a repeated key, as in the Go linker.
+	x := make(map[string]string, len(xFlags))
+	for _, f := range xFlags {
+		key, val, ok := strings.Cut(f, "=")
+		if !ok {
+			continue
+		}
+		x[key] = val
 	}
 
 	// foundVersions contains discovered versions by type.
@@ -252,8 +264,8 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		// -X='main.version=1.0.0'
 		// -X="main.version=1.0.0"
 		// -X "main.version=1.0.0"
-		key = strings.TrimLeft(key, `'`)
-		val = strings.TrimRight(val, `'`)
+		key = strings.TrimLeft(key, `'"`)
+		val = strings.TrimRight(val, `'"`)
 		if isVersionXKey(key) && isValidSemVer(val) {
 			classifyVersion(foundVersions, key, name, val)
 		}
