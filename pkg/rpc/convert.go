@@ -2,6 +2,7 @@ package rpc
 
 import (
 	"cmp"
+	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"strings"
 	"time"
@@ -211,9 +212,23 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
 			Offset:    int32(f.Offset),
+			Custom:    convertToRPCSecretCustom(f.Custom),
 		})
 	}
 	return rpcFindings
+}
+
+// convertToRPCSecretCustom encodes custom data of a secret finding as JSON.
+func convertToRPCSecretCustom(custom any) []byte {
+	if custom == nil {
+		return nil
+	}
+	b, err := jsonv2.Marshal(custom)
+	if err != nil {
+		log.Warn("Failed to marshal custom data of the secret finding", log.Err(err))
+		return nil
+	}
+	return b
 }
 
 func ConvertToRPCLicenseFiles(licenses []ftypes.LicenseFile) []*common.LicenseFile {
@@ -721,6 +736,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 			Code:      ConvertFromRPCCode(finding.Code),
 			Match:     finding.Match,
 			Offset:    int(finding.Offset),
+			Custom:    convertFromRPCSecretCustom(finding.Custom),
 			Layer: ftypes.Layer{
 				Digest:    finding.Layer.Digest,
 				DiffID:    finding.Layer.DiffId,
@@ -729,6 +745,16 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 		})
 	}
 	return findings
+}
+
+// convertFromRPCSecretCustom keeps custom data of a secret finding as raw JSON.
+// The data crosses the client/server boundary twice (blob upload and scan result),
+// and raw JSON is marshaled as is, so it is not encoded again on the second hop.
+func convertFromRPCSecretCustom(custom []byte) any {
+	if len(custom) == 0 {
+		return nil
+	}
+	return jsontext.Value(custom)
 }
 
 func ConvertFromRPCSecrets(recSecrets []*common.Secret) []ftypes.Secret {

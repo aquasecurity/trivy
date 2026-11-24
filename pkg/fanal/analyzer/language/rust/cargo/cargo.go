@@ -28,6 +28,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/utils/fsutils"
 )
 
@@ -35,7 +36,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeCargo, newCargoAnalyzer)
 }
 
-const version = 1
+const version = 2
 
 var requiredFiles = []string{
 	types.CargoLock,
@@ -124,15 +125,33 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		return pkg.ID, pkg
 	})
 
+	// IDs of packages that root and workspace packages depend on in Cargo.lock
+	lockDeps := set.New[string]()
+	for _, id := range append([]string{root}, workspaces...) {
+		if pkg, ok := pkgIDs[id]; ok {
+			lockDeps.Append(pkg.DependsOn...)
+		}
+	}
+
 	// Identify direct dependencies
 	pkgs := make(map[string]types.Package)
-	for name, constraint := range directDeps {
+	for _, dep := range directDeps {
 		for _, pkg := range app.Packages {
-			if pkg.Name != name {
+			if pkg.Name != dep.Name {
 				continue
 			}
 
-			if match, err := a.matchVersion(pkg.Version, constraint); err != nil {
+			// Root and workspace packages are not external dependencies
+			if pkg.ID == root || slices.Contains(workspaces, pkg.ID) {
+				continue
+			}
+
+			// Without a version constraint (git/path), pick the candidate from Cargo.lock
+			if dep.Constraint == "" && !lockDeps.Contains(pkg.ID) {
+				continue
+			}
+
+			if match, err := a.matchVersion(pkg.Version, dep.Constraint); err != nil {
 				a.logger.Warn("Unable to match Cargo version", log.String("package", pkg.ID), log.Err(err))
 				continue
 			} else if match {
@@ -165,7 +184,7 @@ func (a cargoAnalyzer) removeDevDependencies(fsys fs.FS, dir string, app *types.
 		// Root/workspace package may include dev dependencies in lock file, so we need to remove them.
 		pkg.DependsOn = lo.Filter(pkg.DependsOn, func(dep string, _ int) bool {
 			_, ok := pkgs[dep]
-			return ok
+			return ok || slices.Contains(workspaces, dep)
 		})
 		pkgs[pkgID] = pkg
 	}
@@ -212,9 +231,15 @@ type cargoTomlWorkspace struct {
 
 type Dependencies map[string]any
 
+// cargoDependency is a dependency declared in Cargo.toml: the actual package name and its version constraint.
+type cargoDependency struct {
+	Name       string
+	Constraint string
+}
+
 // parseRootCargoTOML parses top-level Cargo.toml and returns dependencies.
 // It also parses workspace members and their dependencies.
-func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]string, error) {
+func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, []string, map[string]cargoDependency, error) {
 	rootPkg, dependencies, members, rootWorkspaceVersion, err := a.parseCargoTOML(fsys, filePath, "")
 	if err != nil {
 		return "", nil, nil, xerrors.Errorf("unable to parse %s: %w", filePath, err)
@@ -253,22 +278,23 @@ func (a cargoAnalyzer) parseRootCargoTOML(fsys fs.FS, filePath string) (string, 
 		}
 	}
 
-	deps := make(map[string]string)
+	deps := make(map[string]cargoDependency)
 	for name, value := range dependencies {
 		switch ver := value.(type) {
 		case string:
 			// e.g. regex = "1.5"
-			deps[name] = ver
+			deps[name] = cargoDependency{Name: name, Constraint: ver}
 		case map[string]any:
 			// e.g. serde = { version = "1.0", features = ["derive"] }
-			for k, v := range ver {
-				if k == "version" {
-					if vv, ok := v.(string); ok {
-						deps[name] = vv
-					}
-					break
-				}
+			// or tantivy-fst = { git = "..." } / local = { path = "..." } without a version
+			constraint, _ := ver["version"].(string)
+			// A renamed dependency (e.g. rc = { package = "rand_core" }) is keyed by its alias,
+			// so several versions of the same crate can be declared side by side.
+			pkgName, ok := ver["package"].(string)
+			if !ok {
+				pkgName = name
 			}
+			deps[name] = cargoDependency{Name: pkgName, Constraint: constraint}
 		}
 	}
 
@@ -295,6 +321,10 @@ func (a cargoAnalyzer) walkIndirectDependencies(pkg types.Package, pkgIDs, deps 
 
 // cf. https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
 func (a cargoAnalyzer) matchVersion(currentVersion, constraint string) (bool, error) {
+	if constraint == "" {
+		return true, nil
+	}
+
 	// `` == `^` - https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
 	// Add `^` for correct version comparison
 	//   - 1.2.3 -> ^1.2.3

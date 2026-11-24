@@ -221,21 +221,32 @@ The scanner also works in [client/server mode](../references/modes/client-server
 
 ## Limitations
 
-The scanner is available for `trivy image` only.
+### Supported targets and options
 
-Trivy rejects `--scanners crypto` together with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image), because a remote SBOM found for the image replaces the analysis of its layers.
+- The scanner is available for `trivy image` only.
+- Trivy rejects `--scanners crypto` together with [`--sbom-sources`](../target/container_image.md#discover-sbom-referencing-the-container-image), because a remote SBOM found for the image replaces the analysis of its layers.
 
-A file without one of the extensions above is not read, so a key in a file named `tls-key` or inside a config file is missed. You can point the scanner at such a file with [`--file-patterns`](../configuration/skipping.md#customizing-file-handling), as long as it holds PEM or DER material or a PKCS#12 or JKS keystore:
+### File selection
+
+By default, Trivy selects files by the extensions listed under [What is scanned](#what-is-scanned) and by the exact file name `cacerts`. Files larger than 10 MiB are skipped, including files selected with `--file-patterns`.
+
+Use [`--file-patterns`](../configuration/skipping.md#customizing-file-handling) to select a file with another name if it contains PEM or DER material or is a PKCS#12 or JKS keystore. This example scans a key named `tls-key`.
 
 ```shell
 $ trivy image --scanners crypto --format cyclonedx --file-patterns "crypto:etc/app/tls-key" myimage:1.0.0
 ```
 
-Files larger than 10 MB are skipped, because a file of that size with one of these extensions is almost never cryptographic material.
+### Unsupported material
 
-Some objects are recognized and skipped. Certificate signing requests, CRLs and PKCS#7 bundles are not part of the inventory. OpenSSH keys, JCEKS keystores and OpenPGP keyrings are not covered yet. A certificate or key that uses an EC key with explicit curve parameters instead of a named curve cannot be parsed and is skipped as well. Private keys of X25519, X448 and Ed448 are skipped, although their public keys are reported.
+- Certificates embedded in application binaries, such as Node.js's built-in root certificates.
+- Certificate signing requests, certificate revocation lists (CRLs), and PKCS#7 bundles.
+- OpenSSH keys, JCEKS keystores, and OpenPGP keyrings.
+- Certificates and keys that use explicit EC curve parameters instead of a named curve.
+- X25519, X448, and Ed448 private keys. Trivy reports their public keys.
 
 From certificates and keys on the curve P-192, only the `EC-P-192` algorithm is extracted.
+
+### Keystore limitations
 
 Trivy does not decrypt PKCS#12 keystores and reads only what is stored without encryption. Private keys are usually stored this way, because keytool, OpenSSL and .NET encrypt each key separately and keep it out of the encrypted part. An encrypted key is reported without its algorithm, and a key stored in the clear, such as with `-keypbe NONE` in OpenSSL, is reported with it. The same tools encrypt certificates unless this is turned off, such as with `-J-Dkeystore.pkcs12.certProtectionAlgorithm=NONE` in keytool or `-certpbe NONE` in OpenSSL. OpenSSL encrypts them even with an empty password. The `cacerts` trust store of JDK 18 and later has no password, so all its certificates are reported.
 

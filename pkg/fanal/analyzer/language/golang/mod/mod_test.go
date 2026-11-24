@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/internal/testutil"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -52,6 +53,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Version:      "v0.0.0-20220406074731-71021a481237",
 								Relationship: types.RelationshipDirect,
 								Licenses:     []string{"MIT"},
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:157e4c68d8a6cf9c4ae8b61ba7e988db78b69ba3a6a0a68700481155e84b0ecf",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 								ExternalReferences: []types.ExternalRef{
 									{
 										Type: types.RefVCS,
@@ -209,6 +216,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"github.com/BurntSushi/toml@v0.3.1",
 								},
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:1fd211d78ad1dfe675dd91fb6b2f5bb3684704bed602a74424b2ebf27871fd1b",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 								ExternalReferences: []types.ExternalRef{
 									{
 										Type: types.RefVCS,
@@ -224,6 +237,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Indirect:     true,
 								Licenses: []string{
 									"MIT",
+								},
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:597918625e98af7a817f52bbf440672f899a9343a29817c1d1751ff55976f0e4",
+										Source: digest.SourceGoModuleH1,
+									},
 								},
 							},
 						},
@@ -263,6 +282,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								DependsOn: []string{
 									"github.com/BurntSushi/toml@v0.3.1",
 								},
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:1fd211d78ad1dfe675dd91fb6b2f5bb3684704bed602a74424b2ebf27871fd1b",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 								ExternalReferences: []types.ExternalRef{
 									{
 										Type: types.RefVCS,
@@ -278,6 +303,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Indirect:     true,
 								Licenses: []string{
 									"MIT",
+								},
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:597918625e98af7a817f52bbf440672f899a9343a29817c1d1751ff55976f0e4",
+										Source: digest.SourceGoModuleH1,
+									},
 								},
 							},
 						},
@@ -356,6 +387,12 @@ func Test_gomodAnalyzer_Analyze(t *testing.T) {
 								Name:         "github.com/aquasecurity/go-dep-parser",
 								Version:      "v0.0.0-20211110174639-8257534ffed3",
 								Relationship: types.RelationshipDirect,
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha256:1fd211d78ad1dfe675dd91fb6b2f5bb3684704bed602a74424b2ebf27871fd1b",
+										Source: digest.SourceGoModuleH1,
+									},
+								},
 								ExternalReferences: []types.ExternalRef{
 									{
 										Type: types.RefVCS,

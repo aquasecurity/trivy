@@ -48,6 +48,9 @@ const (
 	PropertyLayerDigest     = "LayerDigest"
 	PropertyLayerDiffID     = "LayerDiffID"
 
+	// Repository the package was distributed from
+	PropertyRepositoryClass = "RepositoryClass"
+
 	// PropertySourcedDigest records a digest of the component together with the source it was
 	// acquired from, as "<source>:<algorithm>:<value>". Neither CycloneDX hashes nor SPDX
 	// checksums have room for the source, so the property refers to the hash by its value.

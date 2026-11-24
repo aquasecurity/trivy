@@ -479,6 +479,15 @@ func TestRepository(t *testing.T) {
 			golden: goldenCondaEnvironmentCycloneDX,
 		},
 		{
+			name: "gomod generating CycloneDX SBOM",
+			args: repoTestArgs{
+				command: "fs",
+				format:  "cyclonedx",
+				input:   "testdata/fixtures/repo/gomod",
+			},
+			golden: goldenGoModCycloneDX,
+		},
+		{
 			name: "pom.xml generating CycloneDX SBOM (with vulnerabilities)",
 			args: repoTestArgs{
 				command: "fs",

@@ -68,9 +68,15 @@ func getPublicAccessBlock(module parser.Module) *s3.PublicAccessBlock {
 }
 
 func (a *adapter) getLogging(module parser.Module) s3.Logging {
-	// TODO: adapt
+	logging := module.NodeAt("logging")
+	if logging.IsNil() {
+		return s3.Logging{Metadata: module.Metadata()}
+	}
+	target := logging.StringValue("target_bucket")
 	return s3.Logging{
-		Metadata: module.Metadata(),
+		Metadata:     logging.Metadata(),
+		Enabled:      iacTypes.Bool(!target.IsEmpty(), logging.Metadata()),
+		TargetBucket: target,
 	}
 }
 

@@ -4,7 +4,7 @@ All binaries and container images are signed by [Cosign](https://github.com/sigs
 
 ## Verifying container image
 
-Use the following command for keyless [verification](https://docs.sigstore.dev/cosign/verify/):
+Use the following command for keyless [verification](https://docs.sigstore.dev/cosign/verifying/verify/):
 
 ```shell
 cosign verify aquasec/trivy:<version> \
@@ -26,7 +26,7 @@ The following checks were performed on each of these signatures:
 
 ## Verifying release assets
 
-Since Trivy v0.68.1, GitHub Releases provide [sigstore signature bundles](https://docs.sigstore.dev/cosign/bundle/). Separate `.sig` and certificate (`.pem`) files are no longer published. Every release asset has a corresponding `.sigstore.json` bundle file.
+Since Trivy v0.68.1, GitHub Releases provide [sigstore signature bundles](https://docs.sigstore.dev/about/bundle/). Separate `.sig` and certificate (`.pem`) files are no longer published. Every release asset has a corresponding `.sigstore.json` bundle file.
 
 Download the release asset and its associated `.sigstore.json` bundle file from the [GitHub Release](https://github.com/aquasecurity/trivy/releases).
 
