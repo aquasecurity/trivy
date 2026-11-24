@@ -114,16 +114,15 @@ func TestDescribeAlgorithm(t *testing.T) {
 			},
 		},
 		{
-			// RSASSA-PSS is left out of the catalog because its variants share one OID.
 			name: "algorithm outside the catalog",
-			oid:  "1.2.840.113549.1.1.10",
+			oid:  "1.3.101.110",
 			want: ftypes.CryptoAssetInfo{
 				Kind: ftypes.CryptoKindAlgorithm,
 				Identity: ftypes.CryptoIdentity{
 					Method: ftypes.CryptoMethodOID,
-					Value:  "1.2.840.113549.1.1.10",
+					Value:  "1.3.101.110",
 				},
-				Name: "1.2.840.113549.1.1.10",
+				Name: "1.3.101.110",
 				Algorithm: &ftypes.CryptoAlgorithm{
 					Primitive: ftypes.CryptoPrimitiveUnknown,
 				},

@@ -35,22 +35,21 @@ func DescribeKey(
 	return describeKeyAsset(identity, keyAlgorithm, keyType, size, curve), keyAlgorithm, nil
 }
 
-// DescribeRawPublicKey describes a key from its SubjectPublicKeyInfo DER without decoding
-// the key itself. The algorithm comes from the OID, the curve stays unset, and the size is
-// set only when the OID fixes it. The key is identified by the digest of the
-// SubjectPublicKeyInfo.
+// DescribeRawPublicKey describes a key from its SubjectPublicKeyInfo DER. The algorithm
+// comes from the OID and the curve stays unset. The size is set when the OID fixes it, and
+// for an RSASSA-PSS key it is the size of the modulus. The key is identified by the digest
+// of the SubjectPublicKeyInfo.
 func DescribeRawPublicKey(
 	spki []byte,
 	keyType ftypes.CryptoKeyType,
 ) (key, keyAlgorithm ftypes.CryptoAssetInfo, err error) {
-	oid, err := ParseSubjectPublicKeyInfo(spki)
+	oid, size, err := parseSubjectPublicKeyInfo(spki)
 	if err != nil {
 		return ftypes.CryptoAssetInfo{}, ftypes.CryptoAssetInfo{}, err
 	}
 
 	algorithmOID := oid.String()
 	identity := ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, spki)
-	size := fixedKeySizes[algorithmOID]
 	keyAlgorithm = DescribeAlgorithm(algorithmOID, size, 0, "")
 	return describeKeyAsset(identity, keyAlgorithm, keyType, size, ""), keyAlgorithm, nil
 }
@@ -153,9 +152,16 @@ func publicKeyInfo(pub stdcrypto.PublicKey) (ftypes.CryptoIdentity, string, erro
 	return ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, der), oid.String(), nil
 }
 
-// oidDSA identifies a DSA public key, defined by RFC 3279 section 2.3.2.
-// See https://datatracker.ietf.org/doc/html/rfc3279#section-2.3.2
-var oidDSA = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
+var (
+	// oidDSA identifies a DSA public key, defined by RFC 3279 section 2.3.2.
+	// See https://datatracker.ietf.org/doc/html/rfc3279#section-2.3.2
+	oidDSA = asn1.ObjectIdentifier{1, 2, 840, 10040, 4, 1}
+
+	// oidRSASSAPSS identifies an RSA key restricted to RSASSA-PSS signatures, defined by
+	// RFC 4055 section 1.2. The key itself is the PKCS#1 RSAPublicKey of rsaEncryption.
+	// See https://datatracker.ietf.org/doc/html/rfc4055#section-1.2
+	oidRSASSAPSS = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}
+)
 
 // MarshalPublicKey encodes a public key as PKIX SubjectPublicKeyInfo, the canonical form a
 // key is identified by. A DSA key is encoded here, because crypto/x509 parses that form but
@@ -204,18 +210,27 @@ func marshalDSAPublicKey(pub *dsa.PublicKey) ([]byte, error) {
 }
 
 // ParseSubjectPublicKeyInfo reads the algorithm OID out of SubjectPublicKeyInfo DER. A key
-// of an algorithm whose OID fixes the key size is rejected when its length differs.
+// of an algorithm whose OID fixes the key size is rejected when its length differs, and an
+// RSASSA-PSS key is rejected when it is not a valid RSA public key.
 func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
+	oid, _, err := parseSubjectPublicKeyInfo(der)
+	return oid, err
+}
+
+// parseSubjectPublicKeyInfo reads the algorithm OID and the key size in bits out of
+// SubjectPublicKeyInfo DER. The size is zero for a key whose size is not known without
+// decoding it.
+func parseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, int, error) {
 	var info struct {
 		Algorithm        pkix.AlgorithmIdentifier
 		SubjectPublicKey asn1.BitString
 	}
 	rest, err := asn1.Unmarshal(der, &info)
 	if err != nil {
-		return nil, xerrors.Errorf("unmarshal subject public key info: %w", err)
+		return nil, 0, xerrors.Errorf("unmarshal subject public key info: %w", err)
 	}
 	if len(rest) > 0 {
-		return nil, xerrors.Errorf("subject public key info is followed by %d bytes", len(rest))
+		return nil, 0, xerrors.Errorf("subject public key info is followed by %d bytes", len(rest))
 	}
 
 	// The identity is the digest of these bytes, so a key written with extra elements would
@@ -223,15 +238,23 @@ func ParseSubjectPublicKeyInfo(der []byte) (asn1.ObjectIdentifier, error) {
 	// target struct does not declare, and re-encoding detects them.
 	encoded, err := asn1.Marshal(info)
 	if err != nil {
-		return nil, xerrors.Errorf("marshal subject public key info: %w", err)
+		return nil, 0, xerrors.Errorf("marshal subject public key info: %w", err)
 	}
 	if !bytes.Equal(encoded, der) {
-		return nil, xerrors.New("subject public key info does not round-trip")
+		return nil, 0, xerrors.New("subject public key info does not round-trip")
 	}
 
 	oid := info.Algorithm.Algorithm
-	if size, ok := fixedKeySizes[oid.String()]; ok && info.SubjectPublicKey.BitLength != size {
-		return nil, xerrors.Errorf("%s key is %d bits instead of %d", oid, info.SubjectPublicKey.BitLength, size)
+	if oid.Equal(oidRSASSAPSS) {
+		pub, err := x509.ParsePKCS1PublicKey(info.SubjectPublicKey.RightAlign())
+		if err != nil {
+			return nil, 0, xerrors.Errorf("parse RSASSA-PSS public key: %w", err)
+		}
+		return oid, pub.N.BitLen(), nil
 	}
-	return oid, nil
+	size, ok := fixedKeySizes[oid.String()]
+	if ok && info.SubjectPublicKey.BitLength != size {
+		return nil, 0, xerrors.Errorf("%s key is %d bits instead of %d", oid, info.SubjectPublicKey.BitLength, size)
+	}
+	return oid, size, nil
 }

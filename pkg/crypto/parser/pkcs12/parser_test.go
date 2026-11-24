@@ -32,6 +32,7 @@ var (
 	oidSecretBag       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 12, 10, 1, 5}
 	oidSDSICertificate = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 9, 22, 2}
 	oidPBES2           = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 5, 13}
+	oidRSASSAPSS       = asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}
 )
 
 // encryptedPrivateKeyInfo is a PKCS#8 EncryptedPrivateKeyInfo, as defined in RFC 5208.
@@ -53,6 +54,16 @@ func TestParse(t *testing.T) {
 	sec1Key, err := stdx509.MarshalECPrivateKey(ecKey)
 	require.NoError(t, err)
 	rsaKey, err := rsa.GenerateKey(rand.Reader, 2048)
+	require.NoError(t, err)
+	// crypto/x509 does not encode an RSASSA-PSS key.
+	pssKey, err := asn1.Marshal(struct {
+		Version    int
+		Algorithm  pkix.AlgorithmIdentifier
+		PrivateKey []byte
+	}{
+		Algorithm:  pkix.AlgorithmIdentifier{Algorithm: oidRSASSAPSS},
+		PrivateKey: stdx509.MarshalPKCS1PrivateKey(rsaKey),
+	})
 	require.NoError(t, err)
 
 	tests := []struct {
@@ -96,6 +107,11 @@ func TestParse(t *testing.T) {
 				newCertBag(t, pkcs12.OIDX509Certificate, certificate),
 			))),
 			want: []string{"EC-P-256 private key", "example.test"},
+		},
+		{
+			name:    "RSA-PSS private key",
+			content: keystore(t, dataContent(t, safeContents(t, newKeyBag(t, pssKey)))),
+			want:    []string{"RSA-PSS-2048 private key"},
 		},
 		{
 			name: "repeated private key",
