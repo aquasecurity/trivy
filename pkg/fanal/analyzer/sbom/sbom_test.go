@@ -325,6 +325,95 @@ func Test_sbomAnalyzer_Analyze(t *testing.T) {
 			wantErr: require.NoError,
 		},
 		{
+			name:     "valid bitnami spdx file with go binary",
+			file:     "testdata/wait-for-port.spdx.json",
+			filePath: "opt/bitnami/common/.spdx-wait-for-port.spdx",
+			want: &analyzer.AnalysisResult{
+				Applications: []types.Application{
+					{
+						Type:     types.Bitnami,
+						FilePath: "opt/bitnami/common",
+						Packages: types.Packages{
+							{
+								ID:       "wait-for-port@1.0.9-1",
+								Name:     "wait-for-port",
+								Version:  "1.0.9-1",
+								Arch:     "amd64",
+								Licenses: []string{"Apache-2.0"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "wait-for-port",
+										Version: "1.0.9-1",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "arch", Value: "amd64"},
+											{Key: "distro", Value: "debian-12"},
+										},
+									},
+								},
+								DependsOn: []string{
+									"golang.org/x/sys@v0.33.0",
+									"github.com/jessevdk/go-flags@v1.6.1",
+									"stdlib@v1.24.5",
+								},
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/bitnami/common/.spdx-wait-for-port.spdx",
+						Packages: types.Packages{
+							{
+								ID:       "github.com/jessevdk/go-flags@v1.6.1",
+								Name:     "github.com/jessevdk/go-flags",
+								Version:  "v1.6.1",
+								Licenses: []string{"NOASSERTION"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "github.com/jessevdk",
+										Name:      "go-flags",
+										Version:   "v1.6.1",
+									},
+								},
+								FilePath: "opt/bitnami/common/bin/wait-for-port",
+							},
+							{
+								ID:       "golang.org/x/sys@v0.33.0",
+								Name:     "golang.org/x/sys",
+								Version:  "v0.33.0",
+								Licenses: []string{"NOASSERTION"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:      packageurl.TypeGolang,
+										Namespace: "golang.org/x",
+										Name:      "sys",
+										Version:   "v0.33.0",
+									},
+								},
+								FilePath: "opt/bitnami/common/bin/wait-for-port",
+							},
+							{
+								ID:       "stdlib@v1.24.5",
+								Name:     "stdlib",
+								Version:  "v1.24.5",
+								Licenses: []string{"NOASSERTION"},
+								Identifier: types.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+								FilePath: "opt/bitnami/common/bin/wait-for-port",
+							},
+						},
+					},
+				},
+			},
+			wantErr: require.NoError,
+		},
+		{
 			name:     "invalid spdx file",
 			file:     "testdata/invalid_spdx.json",
 			filePath: "opt/bitnami/elasticsearch/.spdx-elasticsearch.spdx",

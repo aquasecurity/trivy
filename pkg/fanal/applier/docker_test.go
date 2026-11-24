@@ -9,6 +9,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/aquasecurity/trivy/internal/cryptotest"
+	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -1747,6 +1748,205 @@ func TestApplyLayers(t *testing.T) {
 							DiffID: "sha256:2b3c4d5e6f708192a3b4c5d6e7f8091a2b3c4d5e6f708192a3b4c5d6e7f809",
 						},
 						Data: "other-path",
+					},
+				},
+			},
+		},
+		{
+			name: "SBOM packages describing an analyzed binary are dropped",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Applications: []types.Application{
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/bin/wait-for-port",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									AnalyzedBy: analyzer.TypeGoBinary,
+								},
+							},
+						},
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/.spdx-wait-for-port.spdx",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									FilePath:   "opt/bitnami/common/bin/wait-for-port",
+									AnalyzedBy: analyzer.TypeSBOM,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/bitnami/common/bin/wait-for-port",
+						Packages: types.Packages{
+							{
+								Name:    "stdlib",
+								Version: "v1.24.5",
+								Identifier: types.PkgIdentifier{
+									UID: "68b702bbbd1fe56a",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "SBOM packages describing an unparsed binary are kept",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Applications: []types.Application{
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/bin/wait-for-port",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									AnalyzedBy: analyzer.TypeGoBinary,
+								},
+							},
+						},
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/.spdx-common.spdx",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									FilePath:   "opt/bitnami/common/bin/wait-for-port",
+									AnalyzedBy: analyzer.TypeSBOM,
+								},
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.4",
+									FilePath:   "opt/bitnami/common/bin/ini-file",
+									AnalyzedBy: analyzer.TypeSBOM,
+								},
+							},
+						},
+					},
+				},
+			},
+			want: types.ArtifactDetail{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/bitnami/common/.spdx-common.spdx",
+						Packages: types.Packages{
+							{
+								Name:     "stdlib",
+								Version:  "v1.24.4",
+								FilePath: "opt/bitnami/common/bin/ini-file",
+								Identifier: types.PkgIdentifier{
+									UID: "38f0eb563632c6a3",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.4",
+									},
+								},
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
+					},
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/bitnami/common/bin/wait-for-port",
+						Packages: types.Packages{
+							{
+								Name:    "stdlib",
+								Version: "v1.24.5",
+								Identifier: types.PkgIdentifier{
+									UID: "68b702bbbd1fe56a",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+								AnalyzedBy: analyzer.TypeGoBinary,
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "SBOM packages describing a whited-out binary are kept",
+			inputLayers: []types.BlobInfo{
+				{
+					SchemaVersion: 2,
+					Applications: []types.Application{
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/bin/wait-for-port",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									AnalyzedBy: analyzer.TypeGoBinary,
+								},
+							},
+						},
+						{
+							Type:     types.GoBinary,
+							FilePath: "opt/bitnami/common/.spdx-wait-for-port.spdx",
+							Packages: types.Packages{
+								{
+									Name:       "stdlib",
+									Version:    "v1.24.5",
+									FilePath:   "opt/bitnami/common/bin/wait-for-port",
+									AnalyzedBy: analyzer.TypeSBOM,
+								},
+							},
+						},
+					},
+				},
+				{
+					SchemaVersion: 2,
+					WhiteoutFiles: []string{"opt/bitnami/common/bin/wait-for-port"},
+				},
+			},
+			want: types.ArtifactDetail{
+				Applications: []types.Application{
+					{
+						Type:     types.GoBinary,
+						FilePath: "opt/bitnami/common/.spdx-wait-for-port.spdx",
+						Packages: types.Packages{
+							{
+								Name:     "stdlib",
+								Version:  "v1.24.5",
+								FilePath: "opt/bitnami/common/bin/wait-for-port",
+								Identifier: types.PkgIdentifier{
+									UID: "82eea89da217e04",
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+								AnalyzedBy: analyzer.TypeSBOM,
+							},
+						},
 					},
 				},
 			},

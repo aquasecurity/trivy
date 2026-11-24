@@ -372,6 +372,84 @@ func TestUnmarshaler_Unmarshal(t *testing.T) {
 			want:      types.SBOM{},
 		},
 		{
+			name:      "happy path bitnami sbom with binary path in sourceInfo",
+			inputFile: "testdata/happy/bitnami-go-binary.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.Bitnami,
+						Packages: ftypes.Packages{
+							{
+								ID:       "wait-for-port@1.0.9-1",
+								Name:     "wait-for-port",
+								Version:  "1.0.9-1",
+								Arch:     "amd64",
+								Licenses: []string{"Apache-2.0"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeBitnami,
+										Name:    "wait-for-port",
+										Version: "1.0.9-1",
+										Qualifiers: packageurl.Qualifiers{
+											{Key: "arch", Value: "amd64"},
+											{Key: "distro", Value: "debian-12"},
+										},
+									},
+								},
+								DependsOn: []string{"stdlib@v1.24.5"},
+							},
+						},
+					},
+					{
+						Type: ftypes.GoBinary,
+						Packages: ftypes.Packages{
+							{
+								ID:       "stdlib@v1.24.5",
+								Name:     "stdlib",
+								Version:  "v1.24.5",
+								Licenses: []string{"NOASSERTION"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+								FilePath: "opt/bitnami/common/bin/wait-for-port",
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			// "sourceInfo" is free text, so it is read as a path only in Bitnami SBOMs.
+			name:      "happy path non-bitnami sbom with bare sourceInfo",
+			inputFile: "testdata/happy/non-bitnami-bare-sourceinfo.json",
+			want: types.SBOM{
+				Applications: []ftypes.Application{
+					{
+						Type: ftypes.GoBinary,
+						Packages: ftypes.Packages{
+							{
+								ID:       "stdlib@v1.24.5",
+								Name:     "stdlib",
+								Version:  "v1.24.5",
+								Licenses: []string{"NOASSERTION"},
+								Identifier: ftypes.PkgIdentifier{
+									PURL: &packageurl.PackageURL{
+										Type:    packageurl.TypeGolang,
+										Name:    "stdlib",
+										Version: "v1.24.5",
+									},
+								},
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "sad path invalid purl",
 			inputFile: "testdata/sad/invalid-purl.json",
 			wantErr:   "purl is missing type or name",

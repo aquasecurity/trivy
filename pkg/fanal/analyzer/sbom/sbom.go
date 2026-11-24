@@ -19,7 +19,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&sbomAnalyzer{})
 }
 
-const version = 2
+const version = 3
 
 var requiredSuffixes = []string{
 	".spdx",
@@ -109,6 +109,11 @@ func handleBitnamiImages(componentPath string, bom types.SBOM) {
 		}
 
 		for j, pkg := range app.Packages {
+			// The SBOM may already give the path from the image root, e.g. the binary of a Go module.
+			// cf. https://github.com/aquasecurity/trivy/issues/8993
+			if strings.HasPrefix(pkg.FilePath, "opt/bitnami/") {
+				continue
+			}
 			// Set the absolute path since SBOM in Bitnami images contain a relative path
 			// e.g. modules/apm/elastic-apm-agent-1.36.0.jar
 			//      => opt/bitnami/elasticsearch/modules/apm/elastic-apm-agent-1.36.0.jar

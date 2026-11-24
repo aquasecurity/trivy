@@ -152,6 +152,8 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]
 
 	// Convert packages into components
 	components := make(map[common.ElementID]*core.Component)
+	var root *core.Component
+	binaryPaths := make(map[*core.Component]string)
 	for _, pkg := range spdxDocument.Packages {
 		// A null element in the packages array decodes to a nil pointer.
 		if pkg == nil {
@@ -165,8 +167,22 @@ func (s *SPDX) parsePackages(spdxDocument *spdx.Document) (map[common.ElementID]
 
 		if pkg.PackageSPDXIdentifier == rootID {
 			component.Root = true
+			root = component
+		}
+		if pkg.PackageSourceInfo != "" {
+			binaryPaths[component] = pkg.PackageSourceInfo
 		}
 		s.BOM.AddComponent(component)
+	}
+
+	// Bitnami SBOMs record the binary a library was found in as a bare path in "sourceInfo",
+	// e.g. "opt/bitnami/common/bin/wait-for-port".
+	// cf. https://github.com/aquasecurity/trivy/issues/8993
+	if root == nil || root.PkgIdentifier.PURL == nil || root.PkgIdentifier.PURL.Type != packageurl.TypeBitnami {
+		return components, nil
+	}
+	for component, binaryPath := range binaryPaths {
+		component.Files = append(component.Files, core.File{Path: binaryPath})
 	}
 	return components, nil
 }

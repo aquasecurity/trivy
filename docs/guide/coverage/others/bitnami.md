@@ -26,6 +26,8 @@ The table below outlines the features offered by Trivy.
 Trivy analyzes the SBOM information contained within the container images provided by Bitnami.
 The SBOM files are located at `/opt/bitnami/<component>/.spdx-<component>.spdx`.
 
+When an SBOM lists the modules of a Go binary that Trivy also analyzes, the modules are reported once, under the binary.
+
 ## Vulnerability
 Since Bitnami has its [own vulnerability database][vulndb], it uses these for vulnerability detection of applications and packages distributed by Bitnami.
 
