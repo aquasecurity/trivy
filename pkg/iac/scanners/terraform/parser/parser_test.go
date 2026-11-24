@@ -3418,3 +3418,83 @@ resource "aws_s3_bucket" "test" {}`,
 	assert.Len(t, modules.GetResourcesByType("aws_security_group"), 1)
 	assert.Len(t, modules.GetResourcesByType("aws_s3_bucket"), 1)
 }
+
+func evalResourceValue(t *testing.T, files map[string]string, opts ...Option) cty.Value {
+	t.Helper()
+
+	opts = append([]Option{OptionStopOnHCLError(true)}, opts...)
+
+	parser := New(testutil.CreateFS(files), "", opts...)
+	require.NoError(t, parser.ParseFS(t.Context(), "."))
+
+	modules, err := parser.EvaluateAll(t.Context())
+	require.NoError(t, err)
+	require.Len(t, modules, 1)
+
+	resources := modules[0].GetResourcesByType("something")
+	require.Len(t, resources, 1)
+
+	attr := resources[0].GetAttribute("value")
+	require.NotNil(t, attr)
+	require.True(t, attr.IsResolvable())
+	return attr.Value()
+}
+
+func Test_VariableValueFromEnv(t *testing.T) {
+	const tagsTF = `
+variable "tags" {
+  type    = map(string)
+  default = {}
+}
+
+resource "something" "blah" {
+  value = var.tags
+}
+`
+
+	const tagsWithDefaultTF = `
+variable "tags" {
+  type    = map(string)
+  default = { env = "default" }
+}
+
+resource "something" "blah" {
+  value = var.tags
+}
+`
+
+	t.Run("map from environment variable", func(t *testing.T) {
+		t.Setenv("TF_VAR_tags", `{env="prod"}`)
+
+		got := evalResourceValue(t, map[string]string{"main.tf": tagsTF})
+		require.True(t, got.Type().IsMapType(), "var.tags must become a map, got %s", got.Type().FriendlyName())
+		assert.Equal(t, "prod", got.AsValueMap()["env"].AsString())
+	})
+
+	t.Run("invalid value falls back to the default", func(t *testing.T) {
+		t.Setenv("TF_VAR_tags", `[oops`)
+
+		got := evalResourceValue(t, map[string]string{"main.tf": tagsWithDefaultTF})
+		require.True(t, got.Type().IsMapType())
+		assert.Equal(t, "default", got.AsValueMap()["env"].AsString())
+	})
+
+	t.Run("value with wrong type falls back to the default", func(t *testing.T) {
+		t.Setenv("TF_VAR_tags", `["a"]`)
+
+		got := evalResourceValue(t, map[string]string{"main.tf": tagsWithDefaultTF})
+		require.True(t, got.Type().IsMapType())
+		assert.Equal(t, "default", got.AsValueMap()["env"].AsString())
+	})
+
+	t.Run("tfvars file overrides environment variable", func(t *testing.T) {
+		t.Setenv("TF_VAR_tags", `{env="prod"}`)
+
+		got := evalResourceValue(t, map[string]string{
+			"main.tf":     tagsTF,
+			"main.tfvars": `tags = { env = "dev" }`,
+		}, OptionWithTFVarsPaths("main.tfvars"))
+		require.True(t, got.Type().IsMapType())
+		assert.Equal(t, "dev", got.AsValueMap()["env"].AsString())
+	})
+}
