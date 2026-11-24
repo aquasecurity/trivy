@@ -70,7 +70,10 @@ func resolveMapping(ctx *FileContext, mapName, topKey, secKey string) (any, erro
 	if !ok {
 		return nil, fmt.Errorf("key %s not found in map %s", topKey, mapName)
 	}
-	mapValues := k.(map[string]any)
+	mapValues, ok := k.(map[string]any)
+	if !ok {
+		return nil, fmt.Errorf("key %s in map %s has invalid type", topKey, mapName)
+	}
 
 	prop, ok := mapValues[secKey]
 	if !ok {

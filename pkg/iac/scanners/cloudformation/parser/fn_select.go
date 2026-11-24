@@ -30,10 +30,11 @@ func ResolveSelect(property *Property) (resolved *Property, success bool) {
 	}
 
 	listItems := list.AsList()
+	idx := index.AsInt()
 
-	if len(listItems) <= index.AsInt() {
-		return nil, false
+	if idx < 0 || idx >= len(listItems) {
+		return abortIntrinsic(property, "index on property [%s] is out of bounds, returning original Property", property.name)
 	}
 
-	return listItems[index.AsInt()], true
+	return listItems[idx], true
 }

@@ -38,3 +38,54 @@ func TestSourcedDigest_JSON(t *testing.T) {
 		})
 	}
 }
+
+func TestParseGoModuleH1(t *testing.T) {
+	tests := []struct {
+		name   string
+		input  string
+		want   digest.SourcedDigest
+		wantOK bool
+	}{
+		{
+			name:  "valid",
+			input: "h1:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=",
+			want: digest.SourcedDigest{
+				Digest: "sha256:828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1",
+				Source: digest.SourceGoModuleH1,
+			},
+			wantOK: true,
+		},
+		{
+			name:  "empty string",
+			input: "",
+		},
+		{
+			name:  "no prefix",
+			input: "go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=",
+		},
+		{
+			name:  "unknown prefix",
+			input: "h2:go1bK/D/BFZV2I8cIQd1NKEZ+0owSTG1fDTci4IqFcE=",
+		},
+		{
+			name:  "empty value",
+			input: "h1:",
+		},
+		{
+			name:  "invalid base64",
+			input: "h1:!!!",
+		},
+		{
+			name:  "not a SHA-256",
+			input: "h1:AAAA",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, ok := digest.ParseGoModuleH1(tt.input)
+			assert.Equal(t, tt.wantOK, ok)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}

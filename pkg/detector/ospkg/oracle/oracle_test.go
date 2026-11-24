@@ -71,6 +71,18 @@ func TestScanner_IsSupportedVersion(t *testing.T) {
 			osVersion: "8",
 			expected:  false,
 		},
+		"oracle10": {
+			now:       time.Date(2035, 6, 30, 23, 59, 58, 0, time.UTC),
+			osFamily:  "oracle",
+			osVersion: "10.0",
+			expected:  true,
+		},
+		"oracle10-same-time": {
+			now:       time.Date(2035, 6, 30, 23, 59, 59, 0, time.UTC),
+			osFamily:  "oracle",
+			osVersion: "10.0",
+			expected:  false,
+		},
 		"latest": {
 			now:       time.Date(2019, 5, 31, 23, 59, 59, 0, time.UTC),
 			osFamily:  "oracle",

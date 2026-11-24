@@ -37,7 +37,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypeYarn, newYarnAnalyzer)
 }
 
-const version = 2
+const version = 3
 
 // Taken from Yarn
 // cf. https://github.com/yarnpkg/yarn/blob/328fd596de935acc6c3e134741748fcc62ec3739/src/resolvers/exotics/registry-resolver.js#L12

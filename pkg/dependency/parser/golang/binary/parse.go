@@ -15,6 +15,7 @@ import (
 	"golang.org/x/xerrors"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/set"
@@ -103,12 +104,19 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		}
 
 		version := p.checkVersion(mod.Path, mod.Version)
-		pkgs = append(pkgs, ftypes.Package{
+
+		pkg := ftypes.Package{
 			ID:           dependency.ID(ftypes.GoBinary, mod.Path, version),
 			Name:         mod.Path,
 			Version:      version,
 			Relationship: ftypes.RelationshipUnknown,
-		})
+		}
+
+		if d, ok := digest.ParseGoModuleH1(mod.Sum); ok {
+			pkg.AddDigests(d)
+		}
+
+		pkgs = append(pkgs, pkg)
 	}
 
 	// There are times when gobinaries don't contain Main information.
@@ -130,6 +138,10 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 			Name:         info.Main.Path,
 			Version:      version,
 			Relationship: ftypes.RelationshipRoot,
+		}
+
+		if d, ok := digest.ParseGoModuleH1(info.Main.Sum); ok {
+			root.AddDigests(d)
 		}
 
 		depIDs := xslices.Map(pkgs, func(pkg ftypes.Package) string {

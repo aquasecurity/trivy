@@ -1,5 +1,12 @@
 package digest
 
+import (
+	"crypto/sha256"
+	"encoding/base64"
+	"encoding/hex"
+	"strings"
+)
+
 // Source identifies where a digest value was acquired from, so that consumers can tell
 // which bytes it covers: values with the same algorithm may cover different byte ranges.
 type Source string
@@ -49,6 +56,12 @@ const (
 	// PKG-INFO extracted from the archive.
 	// Trivy computes it only for the cyclonedx, spdx and spdx-json formats.
 	SourceFileContent Source = "file-content"
+
+	// SourceGoModuleH1 is the h1 checksum of a Go module, read from go.sum or from the build
+	// info of a Go binary. It is a SHA-256 over the list of the module's file names
+	// and their SHA-256 hashes, so it differs from the SHA-256 of the module zip file.
+	// https://go.dev/ref/mod#go-sum-files
+	SourceGoModuleH1 Source = "go-module-h1"
 )
 
 // SourcedDigest is a digest value together with the source it was acquired from.
@@ -78,4 +91,20 @@ func NewSourcedDigest(d Digest, src Source) SourcedDigest {
 		Digest: d,
 		Source: src,
 	}
+}
+
+// ParseGoModuleH1 parses a Go module checksum ("h1:<base64>") into a SHA-256 digest
+// with the SourceGoModuleH1 source. It returns false if the value is not a valid h1 checksum.
+func ParseGoModuleH1(s string) (SourcedDigest, bool) {
+	h, ok := strings.CutPrefix(s, "h1:")
+	if !ok {
+		return SourcedDigest{}, false
+	}
+
+	b, err := base64.StdEncoding.DecodeString(h)
+	if err != nil || len(b) != sha256.Size {
+		return SourcedDigest{}, false
+	}
+
+	return NewSourcedDigest(NewDigestFromString(SHA256, hex.EncodeToString(b)), SourceGoModuleH1), true
 }

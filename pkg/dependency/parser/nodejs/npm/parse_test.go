@@ -72,6 +72,12 @@ func TestParse(t *testing.T) {
 			wantDeps: npmV3WithoutRootDepsFieldDeps,
 		},
 		{
+			name:     "lock version v3 with workspace path that prefixes another",
+			file:     "testdata/package-lock_v3_with_workspace_prefix.json",
+			want:     npmV3WithWorkspacePrefixPkgs,
+			wantDeps: nil,
+		},
+		{
 			name:     "lock version v3 with broken link",
 			file:     "testdata/package-lock_v3_broken_link.json",
 			want:     nil,
