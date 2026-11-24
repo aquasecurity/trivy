@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/database"
 	"github.com/aquasecurity/trivy/pkg/iac/scanners/azure"
+	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
 func Adapt(deployment azure.Deployment) database.Database {
@@ -20,6 +21,13 @@ func adaptMySQLServers(deployment azure.Deployment) (mysqlDbServers []database.M
 	}
 	for _, resource := range deployment.GetResourcesByType(mysqlFlexibleServerType) {
 		mysqlDbServers = append(mysqlDbServers, adaptMySQLFlexibleServer(resource, deployment))
+	}
+	if orphanRules := deployment.GetOrphanResources(mysqlFlexibleServerType, firewallRulesType); len(orphanRules) > 0 {
+		server := orphanFlexibleServer(adaptFlexibleFirewallRules(orphanRules))
+		mysqlDbServers = append(mysqlDbServers, database.MySQLServer{
+			Metadata: server.Metadata,
+			Server:   server,
+		})
 	}
 	return mysqlDbServers
 }
@@ -50,6 +58,21 @@ func adaptMySQLFlexibleServer(resource azure.Resource, deployment azure.Deployme
 			MinimumTLSVersion:         params.tlsVersion,
 			EnablePublicNetworkAccess: adaptFlexibleServerPublicNetworkAccess(resource),
 			FirewallRules:             firewallRules,
+		},
+	}
+}
+
+func orphanPostgreSQLFlexibleServer(firewallRules []database.FirewallRule) database.PostgreSQLServer {
+	server := orphanFlexibleServer(firewallRules)
+	metadata := server.Metadata
+	return database.PostgreSQLServer{
+		Metadata:                  metadata,
+		Server:                    server,
+		Config:                    adaptPostgreSQLFlexibleConfiguration(metadata, nil),
+		GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, metadata),
+		ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+			Metadata: metadata,
+			Enabled:  iacTypes.BoolDefault(false, metadata),
 		},
 	}
 }

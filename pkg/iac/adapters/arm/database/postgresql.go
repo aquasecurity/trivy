@@ -16,6 +16,9 @@ func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.P
 	for _, resource := range deployment.GetResourcesByType(postgresqlFlexibleServerType) {
 		databases = append(databases, adaptPostgreSQLFlexibleServer(resource, deployment))
 	}
+	if orphanRules := deployment.GetOrphanResources(postgresqlFlexibleServerType, firewallRulesType); len(orphanRules) > 0 {
+		databases = append(databases, orphanPostgreSQLFlexibleServer(adaptFlexibleFirewallRules(orphanRules)))
+	}
 
 	return databases
 }
@@ -42,19 +45,35 @@ func adaptPostgreSQLFlexibleServer(resource azure.Resource, deployment azure.Dep
 		},
 		Config:                    adaptPostgreSQLFlexibleConfiguration(resource.Metadata, configs),
 		GeoRedundantBackupEnabled: geoRedundantBackupEnabled,
-		ThreatDetectionPolicy: database.ThreatDetectionPolicy{
-			Metadata: iacTypes.NewUnmanagedMetadata(),
-		},
+		ThreatDetectionPolicy:     adaptFlexibleThreatDetectionPolicy(resource, deployment),
+	}
+}
+
+func adaptFlexibleThreatDetectionPolicy(resource azure.Resource, deployment azure.Deployment) database.ThreatDetectionPolicy {
+	for _, setting := range deployment.GetChildResources(resource, advancedThreatProtectionSettingsType) {
+		state := setting.Properties.GetMapValue("state").AsStringValue("Disabled", setting.Metadata)
+		metadata := setting.Properties.GetMapValue("state").GetMetadata()
+		return database.ThreatDetectionPolicy{
+			Metadata: metadata,
+			Enabled:  iacTypes.Bool(state.EqualTo("Enabled"), metadata),
+		}
+	}
+
+	return database.ThreatDetectionPolicy{
+		Metadata: resource.Metadata,
+		Enabled:  iacTypes.BoolDefault(false, resource.Metadata),
 	}
 }
 
 func adaptPostgreSQLFlexibleConfiguration(metadata iacTypes.Metadata, configs []azure.Resource) database.PostgresSQLConfig {
+	// log_checkpoints, log_connections and log_disconnections are ON by default on PostgreSQL flexible servers.
+	// https://learn.microsoft.com/en-us/azure/postgresql/parameters/parameters-reporting-logging-what-log
 	config := database.PostgresSQLConfig{
 		Metadata:             metadata,
-		LogCheckpoints:       iacTypes.BoolDefault(false, metadata),
+		LogCheckpoints:       iacTypes.BoolDefault(true, metadata),
 		ConnectionThrottling: iacTypes.BoolDefault(false, metadata),
-		LogConnections:       iacTypes.BoolDefault(false, metadata),
-		LogDisconnections:    iacTypes.BoolDefault(false, metadata),
+		LogConnections:       iacTypes.BoolDefault(true, metadata),
+		LogDisconnections:    iacTypes.BoolDefault(true, metadata),
 	}
 
 	for _, configuration := range configs {
