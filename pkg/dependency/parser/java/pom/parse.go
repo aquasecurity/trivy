@@ -954,6 +954,10 @@ func (p *Parser) fetchPomFileNameFromMavenMetadata(ctx context.Context, repoURL 
 
 	mavenMetadata, err := parseMavenMetadata(resp.Body)
 	if err != nil {
+		// A timeout while reading the body is not invalid metadata.
+		if shouldReturnError(err) {
+			return "", err
+		}
 		// Invalid metadata does not block resolution: as for a non-200 response, the non-timestamped
 		// POM is requested from this repository, and if it is not there, the remaining candidates,
 		// which may serve valid metadata for the same artifact, are tried.
