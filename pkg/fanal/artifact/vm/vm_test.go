@@ -117,16 +117,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
+					ID:       "sha256:4e3660e57de14f05f4a8a36396b0a3f77952238b115d40a2d291f7c4b2783b73",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "rawdata.img",
 				Type: types.TypeVM,
-				ID:   "sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
+				ID:   "sha256:4e3660e57de14f05f4a8a36396b0a3f77952238b115d40a2d291f7c4b2783b73",
 				BlobIDs: []string{
-					"sha256:501ce2453820cc0c4e8b6807cb7a5f35f7c63f1f123f3dd8993711ba967684b9",
+					"sha256:4e3660e57de14f05f4a8a36396b0a3f77952238b115d40a2d291f7c4b2783b73",
 				},
 			},
 		},
@@ -136,16 +136,16 @@ func TestArtifact_Inspect(t *testing.T) {
 			rootDir: "testdata/alpine",
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID:       "sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
+					ID:       "sha256:60d51bcb3f9ac0186673b899640c3ae92cf94d36fdcbff2a7c5ccb9c7a708260",
 					BlobInfo: expectedBlobInfo,
 				},
 			},
 			want: artifact.Reference{
 				Name: "ebs-012345",
 				Type: types.TypeVM,
-				ID:   "sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
+				ID:   "sha256:60d51bcb3f9ac0186673b899640c3ae92cf94d36fdcbff2a7c5ccb9c7a708260",
 				BlobIDs: []string{
-					"sha256:e21f910185164358fe21301af84a148632b2aa20bcde806d55b9fb2d02b0f46b",
+					"sha256:60d51bcb3f9ac0186673b899640c3ae92cf94d36fdcbff2a7c5ccb9c7a708260",
 				},
 			},
 		},

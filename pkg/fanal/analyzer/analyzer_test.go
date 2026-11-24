@@ -776,7 +776,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 				Analyzers: map[string]int{
 					"alpine":       1,
 					"apk-repo":     1,
-					"apk":          4,
+					"apk":          5,
 					"bundler":      1,
 					"dpkg-license": 1,
 					"ubuntu":       1,
@@ -802,7 +802,7 @@ func TestAnalyzerGroup_AnalyzerVersions(t *testing.T) {
 			},
 			want: analyzer.Versions{
 				Analyzers: map[string]int{
-					"apk":     4,
+					"apk":     5,
 					"bundler": 1,
 				},
 				PostAnalyzers: map[string]int{
