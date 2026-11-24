@@ -12,6 +12,7 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
 
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	"github.com/aquasecurity/trivy/pkg/log"
@@ -28,6 +29,10 @@ func parseEnvVar(name, val string, ty cty.Type) (cty.Value, error) {
 	v, diags := expr.Value(nil)
 	if diags.HasErrors() {
 		return cty.NilVal, fmt.Errorf("evaluate HCL expression: %w", diags)
+	}
+	v, err := convert.Convert(v, ty)
+	if err != nil {
+		return cty.NilVal, fmt.Errorf("convert to %s: %w", ty.FriendlyName(), err)
 	}
 	return v, nil
 }
