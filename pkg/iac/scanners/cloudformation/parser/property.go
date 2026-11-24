@@ -294,6 +294,16 @@ func (p *Property) IntDefault(defaultValue int) iacTypes.IntValue {
 	return iacTypes.IntDefault(defaultValue, p.Metadata())
 }
 
+// nullProperty returns a property without a value that has the metadata of p.
+func (p *Property) nullProperty() *Property {
+	return &Property{
+		name:        p.name,
+		rng:         p.rng,
+		parentRange: p.parentRange,
+		logicalId:   p.logicalId,
+	}
+}
+
 func (p *Property) GetProperty(path string) *Property {
 	pathParts := strings.Split(path, ".")
 
@@ -304,22 +314,25 @@ func (p *Property) GetProperty(path string) *Property {
 		property, _ = p.resolveValue()
 	}
 
+	// Nothing inside an unresolved property can be resolved.
+	if property.IsUnresolved() {
+		return property
+	}
+
 	if property.IsNotMap() {
 		return nil
 	}
 
-	for n, p := range property.AsMap() {
-		if n == first {
-			property = p
-			break
-		}
+	child := property.AsMap()[first]
+	if child == nil {
+		return property.nullProperty()
 	}
 
-	if len(pathParts) == 1 || property == nil {
-		return property
+	if len(pathParts) == 1 {
+		return child
 	}
 
-	if nestedProperty := property.GetProperty(strings.Join(pathParts[1:], ".")); nestedProperty != nil {
+	if nestedProperty := child.GetProperty(strings.Join(pathParts[1:], ".")); nestedProperty != nil {
 		if nestedProperty.isFunction() {
 			resolved, _ := nestedProperty.resolveValue()
 			return resolved
