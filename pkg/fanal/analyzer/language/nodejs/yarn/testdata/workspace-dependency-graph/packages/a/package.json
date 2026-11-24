@@ -1,0 +1,11 @@
+{
+  "name": "a",
+  "version": "1.0.0",
+  "devDependencies": {
+    "minimist": "1.2.5",
+    "dev-parent": "1.0.0"
+  },
+  "dependencies": {
+    "b": "workspace:*"
+  }
+}
