@@ -494,14 +494,6 @@ func (b *Block) ModuleBlock() *Block {
 	return b.moduleBlock
 }
 
-func (b *Block) ModuleKey() string {
-	name := b.Reference().NameLabel()
-	if b.moduleBlock == nil {
-		return name
-	}
-	return fmt.Sprintf("%s.%s", b.moduleBlock.ModuleKey(), name)
-}
-
 func (b *Block) UniqueName() string {
 	if b.moduleBlock != nil {
 		return fmt.Sprintf("%s:%s:%s", b.FullName(), b.metadata.Range().GetFilename(), b.moduleBlock.UniqueName())
