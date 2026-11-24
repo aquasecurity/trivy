@@ -126,8 +126,9 @@ When scanning Java projects, Trivy resolves transitive dependencies by downloadi
 
 !!! error
     ```
-    FATAL Error remote Maven repository returned 429 Too Many Requests for https://repo.maven.apache.org/maven2/.../<artifact>-<version>.pom. Retry-After: 1800.
-    The repository blocks all subsequent requests from this IP until the block clears.
+    FATAL Error remote Maven repositories returned 429 Too Many Requests for:
+      - https://repo.maven.apache.org/maven2/.../<artifact>-<version>.pom (Retry-After: 1800)
+    The repositories block all subsequent requests from this IP until the block clears.
     To avoid this, populate the local Maven cache before scanning (e.g. run `mvn dependency:resolve`, or `mvn install` for a multi-module project, and cache ~/.m2 in CI).
     ```
 
