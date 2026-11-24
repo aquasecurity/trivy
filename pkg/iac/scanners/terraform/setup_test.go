@@ -47,7 +47,7 @@ func scanFS(t *testing.T, fsys fs.FS, target string, opts ...options.ScannerOpti
 		rego.WithEmbeddedPolicies(false),
 		rego.WithMaxAllowedErrors(0),
 		ScannerWithAllDirectories(true),
-		ScannerWithSkipCachedModules(true),
+		ScannerWithModuleCacheDir(t.TempDir()),
 		ScannerWithStopOnHCLError(true),
 	}
 

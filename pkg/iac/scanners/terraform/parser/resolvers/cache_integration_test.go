@@ -6,8 +6,10 @@ import (
 	"io/fs"
 	"net/http"
 	"net/http/httptest"
+	"os"
 	"path"
 	"strings"
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -131,6 +133,36 @@ func TestResolveModuleFromCache(t *testing.T) {
 			assert.Equal(t, tt.expectedString, string(b))
 		})
 	}
+}
+
+func TestResolveModuleConcurrently(t *testing.T) {
+	repo := "terraform-aws-s3-bucket"
+	gs := gittest.NewServer(t, repo, "testdata/terraform-aws-s3-bucket", gittest.Options{})
+
+	opts := testOptions(t, "git::"+gs.URL+"/"+repo+".git")
+
+	const n = 10
+	results := make([]resolvers.Result, n)
+	errs := make([]error, n)
+
+	var wg sync.WaitGroup
+	for i := range n {
+		wg.Go(func() {
+			results[i], errs[i] = resolvers.Remote.Resolve(t.Context(), nil, opts)
+		})
+	}
+	wg.Wait()
+
+	for i := range n {
+		require.NoError(t, errs[i])
+		b, err := fs.ReadFile(results[i].FS, path.Join(results[i].Dir, "README.md"))
+		require.NoError(t, err)
+		assert.Equal(t, "# AWS S3 bucket Terraform module", string(b))
+	}
+
+	entries, err := os.ReadDir(opts.CacheDir)
+	require.NoError(t, err)
+	assert.Len(t, entries, 1, "temporary download directories must be removed")
 }
 
 func TestResolveModuleFromCacheWithDifferentSubdir(t *testing.T) {

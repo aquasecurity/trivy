@@ -52,9 +52,9 @@ func OptionWithDownloads(allowed bool) Option {
 	}
 }
 
-func OptionWithSkipCachedModules(b bool) Option {
+func OptionWithModuleCacheDir(dir string) Option {
 	return func(p *Parser) {
-		p.skipCachedModules = b
+		p.moduleCacheDir = dir
 	}
 }
 

@@ -2986,7 +2986,7 @@ locals {
 	}
 
 	parser := New(fsys, "",
-		OptionWithSkipCachedModules(true),
+		OptionWithModuleCacheDir(t.TempDir()),
 		OptionWithDownloads(false),
 		OptionStopOnHCLError(true),
 	)
@@ -3013,7 +3013,7 @@ module "test" {
 
 	fsys := testutil.CreateFS(files)
 	parser := New(fsys, "",
-		OptionWithSkipCachedModules(true),
+		OptionWithModuleCacheDir(t.TempDir()),
 		OptionStopOnHCLError(true),
 	)
 	err := parser.ParseFS(t.Context(), ".")
@@ -3064,7 +3064,7 @@ resource "foo" "bar" {
 
 			fsys := testutil.CreateFS(files)
 			parser := New(fsys, "",
-				OptionWithSkipCachedModules(true),
+				OptionWithModuleCacheDir(t.TempDir()),
 				OptionStopOnHCLError(true),
 			)
 			err := parser.ParseFS(t.Context(), ".")
