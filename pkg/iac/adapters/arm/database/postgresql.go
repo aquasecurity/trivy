@@ -13,8 +13,88 @@ func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.P
 	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers") {
 		databases = append(databases, adaptPostgreSQLServer(resource, deployment))
 	}
+	for _, resource := range deployment.GetResourcesByType(postgresqlFlexibleServerType) {
+		databases = append(databases, adaptPostgreSQLFlexibleServer(resource, deployment))
+	}
+	if orphanRules := deployment.GetOrphanResources(postgresqlFlexibleServerType, firewallRulesType); len(orphanRules) > 0 {
+		databases = append(databases, orphanPostgreSQLFlexibleServer(adaptFlexibleFirewallRules(orphanRules)))
+	}
 
 	return databases
+}
+
+func adaptPostgreSQLFlexibleServer(resource azure.Resource, deployment azure.Deployment) database.PostgreSQLServer {
+	firewallRules := adaptFlexibleFirewallRules(deployment.GetChildResources(resource, firewallRulesType))
+	configs := deployment.GetChildResources(resource, configurationsType)
+	params := parseFlexibleServerParameters(configs, resource.Metadata, "ssl_min_protocol_version")
+
+	geoRedundantBackup := resource.Properties.GetMapValue("backup").GetMapValue("geoRedundantBackup")
+	geoRedundantBackupEnabled := iacTypes.BoolDefault(false, resource.Metadata)
+	if parsed, ok := parseBoolConfigValue(geoRedundantBackup); ok {
+		geoRedundantBackupEnabled = parsed
+	}
+
+	return database.PostgreSQLServer{
+		Metadata: resource.Metadata,
+		Server: database.Server{
+			Metadata:                  resource.Metadata,
+			EnableSSLEnforcement:      params.requireSecureTransport,
+			MinimumTLSVersion:         params.tlsVersion,
+			EnablePublicNetworkAccess: adaptFlexibleServerPublicNetworkAccess(resource),
+			FirewallRules:             firewallRules,
+		},
+		Config:                    adaptPostgreSQLFlexibleConfiguration(resource.Metadata, configs),
+		GeoRedundantBackupEnabled: geoRedundantBackupEnabled,
+		ThreatDetectionPolicy:     adaptFlexibleThreatDetectionPolicy(resource, deployment),
+	}
+}
+
+func adaptFlexibleThreatDetectionPolicy(resource azure.Resource, deployment azure.Deployment) database.ThreatDetectionPolicy {
+	for _, setting := range deployment.GetChildResources(resource, advancedThreatProtectionSettingsType) {
+		state := setting.Properties.GetMapValue("state").AsStringValue("Disabled", setting.Metadata)
+		metadata := setting.Properties.GetMapValue("state").GetMetadata()
+		return database.ThreatDetectionPolicy{
+			Metadata: metadata,
+			Enabled:  iacTypes.Bool(state.EqualTo("Enabled"), metadata),
+		}
+	}
+
+	return database.ThreatDetectionPolicy{
+		Metadata: resource.Metadata,
+		Enabled:  iacTypes.BoolDefault(false, resource.Metadata),
+	}
+}
+
+func adaptPostgreSQLFlexibleConfiguration(metadata iacTypes.Metadata, configs []azure.Resource) database.PostgresSQLConfig {
+	// log_checkpoints, log_connections and log_disconnections are ON by default on PostgreSQL flexible servers.
+	// https://learn.microsoft.com/en-us/azure/postgresql/parameters/parameters-reporting-logging-what-log
+	config := database.PostgresSQLConfig{
+		Metadata:             metadata,
+		LogCheckpoints:       iacTypes.BoolDefault(true, metadata),
+		ConnectionThrottling: iacTypes.BoolDefault(false, metadata),
+		LogConnections:       iacTypes.BoolDefault(true, metadata),
+		LogDisconnections:    iacTypes.BoolDefault(true, metadata),
+	}
+
+	for _, configuration := range configs {
+		paramName := configParamName(configuration.Name.AsString())
+		parsed, ok := parseBoolConfigValue(configuration.Properties.GetMapValue("value"))
+		if !ok {
+			continue
+		}
+		switch {
+		case strings.EqualFold(paramName, "log_checkpoints"):
+			config.LogCheckpoints = parsed
+		case strings.EqualFold(paramName, "log_connections"):
+			config.LogConnections = parsed
+		case strings.EqualFold(paramName, "connection_throttle.enable"):
+			config.ConnectionThrottling = parsed
+		case strings.EqualFold(paramName, "log_disconnections"):
+			config.LogDisconnections = parsed
+		}
+	}
+
+	return config
 }
 
 func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment) database.PostgreSQLServer {

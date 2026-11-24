@@ -1,12 +1,14 @@
-package database
+package common_test
 
 import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/adapters/common"
 )
 
-func Test_minimumTLSVersion(t *testing.T) {
+func TestMinimumAzureTLSVersion(t *testing.T) {
 	tests := []struct {
 		name     string
 		val      string
@@ -61,7 +63,7 @@ func Test_minimumTLSVersion(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			assert.Equal(t, tt.expected, minimumTLSVersion(tt.val))
+			assert.Equal(t, tt.expected, common.MinimumAzureTLSVersion(tt.val))
 		})
 	}
 }
