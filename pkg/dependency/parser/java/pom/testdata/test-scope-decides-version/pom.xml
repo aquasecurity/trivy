@@ -1,0 +1,28 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>test-scope-decides-version</artifactId>
+    <version>1.0.0</version>
+
+    <dependencies>
+        <!-- Declared at depth 1, so nearest-wins mediation resolves
+             example-api to this version even though the scope is `test`.
+             The resolved copy is test-scoped, so it is not on the
+             compile/runtime classpath and must not be reported. -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api</artifactId>
+            <version>1.7.30</version>
+            <scope>test</scope>
+        </dependency>
+        <!-- Depends on org.example:example-api:2.0.0 at depth 2, which loses
+             mediation to the depth-1 declaration above. -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-dependency</artifactId>
+            <version>1.2.3</version>
+        </dependency>
+    </dependencies>
+</project>
