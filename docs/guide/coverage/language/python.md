@@ -117,7 +117,7 @@ Therefore, Trivy checks `METADATA` files from `lib/site-packages` directory.
 Trivy uses 3 ways to detect `site-packages` directory:
 
 - Checks `VIRTUAL_ENV` environment variable.
-- Detects path to `python`[^1] binary and checks `../lib/pythonX.Y/site-packages` directory.
+- Detects path to `python`[^1] binary and checks `../lib/pythonX.Y/site-packages` (`../Lib/site-packages` on Windows) directory.
 - Detects path to `python`[^1] binary and checks `../../lib/site-packages` directory.
 
 ### Pipenv
