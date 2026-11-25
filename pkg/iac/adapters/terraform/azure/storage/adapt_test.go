@@ -368,3 +368,139 @@ func TestLines(t *testing.T) {
 	assert.Equal(t, 40, account.Containers[0].PublicAccess.GetMetadata().Range().GetEndLine())
 
 }
+
+func Test_AdaptQueueLogging(t *testing.T) {
+	tests := []struct {
+		name       string
+		terraform  string
+		enabled    bool
+		resolvable bool
+	}{
+		{
+			name: "inline block with every flag disabled",
+			terraform: `
+			resource "azurerm_storage_account" "example" {
+				queue_properties {
+					logging {
+						delete  = false
+						read    = false
+						write   = false
+						version = "1.0"
+					}
+				}
+			}`,
+			enabled:    false,
+			resolvable: true,
+		},
+		{
+			name: "inline block with one flag enabled",
+			terraform: `
+			resource "azurerm_storage_account" "example" {
+				queue_properties {
+					logging {
+						delete  = false
+						read    = false
+						write   = true
+						version = "1.0"
+					}
+				}
+			}`,
+			enabled:    true,
+			resolvable: true,
+		},
+		{
+			name: "inline block with an unknown flag",
+			terraform: `
+			variable "read" {
+				type = bool
+			}
+
+			resource "azurerm_storage_account" "example" {
+				queue_properties {
+					logging {
+						delete  = false
+						read    = var.read
+						write   = false
+						version = "1.0"
+					}
+				}
+			}`,
+			enabled:    false,
+			resolvable: false,
+		},
+		{
+			name: "standalone resource with logging enabled",
+			terraform: `
+			resource "azurerm_storage_account" "example" {}
+
+			resource "azurerm_storage_account_queue_properties" "example" {
+				storage_account_id = azurerm_storage_account.example.id
+				logging {
+					delete  = true
+					read    = true
+					write   = true
+					version = "1.0"
+				}
+			}`,
+			enabled:    true,
+			resolvable: true,
+		},
+		{
+			name: "standalone resource with every flag disabled",
+			terraform: `
+			resource "azurerm_storage_account" "example" {}
+
+			resource "azurerm_storage_account_queue_properties" "example" {
+				storage_account_id = azurerm_storage_account.example.id
+				logging {
+					delete  = false
+					read    = false
+					write   = false
+					version = "1.0"
+				}
+			}`,
+			enabled:    false,
+			resolvable: true,
+		},
+		{
+			name: "standalone resource without logging",
+			terraform: `
+			resource "azurerm_storage_account" "example" {}
+
+			resource "azurerm_storage_account_queue_properties" "example" {
+				storage_account_id = azurerm_storage_account.example.id
+			}`,
+			enabled:    false,
+			resolvable: true,
+		},
+		{
+			name: "standalone resource for another account",
+			terraform: `
+			resource "azurerm_storage_account" "example" {}
+
+			resource "azurerm_storage_account_queue_properties" "other" {
+				storage_account_id = azurerm_storage_account.other.id
+				logging {
+					delete  = true
+					read    = true
+					write   = true
+					version = "1.0"
+				}
+			}`,
+			enabled:    false,
+			resolvable: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, tt.terraform, ".tf")
+			adapted := Adapt(modules)
+
+			require.NotEmpty(t, adapted.Accounts)
+			enableLogging := adapted.Accounts[0].QueueProperties.EnableLogging
+			assert.Equal(t, tt.enabled, enableLogging.IsTrue())
+			assert.Equal(t, tt.resolvable, enableLogging.GetMetadata().IsResolvable())
+		})
+	}
+}
