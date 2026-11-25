@@ -1,0 +1,8 @@
+NAME="openSUSE Leap Micro"
+VERSION="6.0"
+VERSION_ID="6.0"
+PRETTY_NAME="openSUSE Leap Micro 6.0"
+ID="opensuse-leap-micro"
+ID_LIKE="suse opensuse"
+ANSI_COLOR="0;32"
+CPE_NAME="cpe:/o:opensuse:leap-micro:6.0"
