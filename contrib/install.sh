@@ -261,13 +261,20 @@ http_download_curl() {
   local_file=$1
   source_url=$2
   header=$3
+  rc=0
+  # "|| rc=$?" keeps "set -e" from exiting silently when curl itself fails
+  # (e.g. exit code 6: could not resolve host), so the URL can be reported.
   if [ -z "$header" ]; then
-    code=$(curl -w '%{http_code}' -sL -o "$local_file" "$source_url")
+    code=$(curl -w '%{http_code}' -sL -o "$local_file" "$source_url") || rc=$?
   else
-    code=$(curl -w '%{http_code}' -sL -H "$header" -o "$local_file" "$source_url")
+    code=$(curl -w '%{http_code}' -sL -H "$header" -o "$local_file" "$source_url") || rc=$?
+  fi
+  if [ "$rc" -ne 0 ]; then
+    log_err "failed to download ${source_url} (curl exit code ${rc})"
+    return "$rc"
   fi
   if [ "$code" != "200" ]; then
-    log_debug "http_download_curl received HTTP status $code"
+    log_err "failed to download ${source_url} (HTTP status ${code})"
     return 1
   fi
   return 0
@@ -276,11 +283,17 @@ http_download_wget() {
   local_file=$1
   source_url=$2
   header=$3
+  rc=0
   if [ -z "$header" ]; then
-    wget -q -O "$local_file" "$source_url"
+    wget -q -O "$local_file" "$source_url" || rc=$?
   else
-    wget -q --header "$header" -O "$local_file" "$source_url"
+    wget -q --header "$header" -O "$local_file" "$source_url" || rc=$?
   fi
+  if [ "$rc" -ne 0 ]; then
+    log_err "failed to download ${source_url} (wget exit code ${rc})"
+    return "$rc"
+  fi
+  return 0
 }
 http_download() {
   log_debug "http_download $2"
