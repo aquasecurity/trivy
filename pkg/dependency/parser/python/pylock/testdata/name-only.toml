@@ -1,0 +1,21 @@
+lock-version = "1.0"
+created-by = "minimal-reproducer"
+
+[[packages]]
+name = "alpha"
+version = "1.0.0"
+dependencies = [{ name = "Beta" }, { name = "gamma" }, { name = "missing" }]
+
+[[packages]]
+name = "beta"
+version = "2.0.0"
+
+[[packages]]
+name = "gamma"
+version = "1.0.0"
+marker = "python_version < '3.12'"
+
+[[packages]]
+name = "gamma"
+version = "2.0.0"
+marker = "python_version >= '3.12'"

@@ -25,7 +25,7 @@ func init() {
 	analyzer.RegisterPostAnalyzer(analyzer.TypePyLock, newPylockAnalyzer)
 }
 
-const version = 1
+const version = 2
 
 type pylockAnalyzer struct {
 	logger          *log.Logger
