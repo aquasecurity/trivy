@@ -211,6 +211,46 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
+			// A `channel::` prefix selects the channel and is not part of the
+			// package name, so the parser must strip it.
+			name:  "dependency with channel prefix",
+			input: "testdata/channel-prefix.yaml",
+			want: environment.Packages{
+				Packages: []ftypes.Package{
+					{
+						Name:    "blas",
+						Version: "1.0",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 6,
+								EndLine:   6,
+							},
+						},
+					},
+					{
+						Name:    "numpy",
+						Version: "1.26.4",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 5,
+								EndLine:   5,
+							},
+						},
+					},
+					{
+						Name: "pytorch",
+						Locations: ftypes.Locations{
+							{
+								StartLine: 7,
+								EndLine:   7,
+							},
+						},
+					},
+				},
+				Prefix: "/opt/conda/envs/test-env",
+			},
+		},
+		{
 			name:    "invalid yaml file",
 			input:   "testdata/invalid.yaml",
 			wantErr: "cannot unmarshal !!str `invalid` into environment.environment",
