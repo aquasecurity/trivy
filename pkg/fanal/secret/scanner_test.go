@@ -2403,6 +2403,35 @@ func TestSecretScanner(t *testing.T) {
 	}
 }
 
+// Mailchimp API keys end in "-us<N>", where N is the account's datacenter. The
+// keys are assembled at runtime so no complete key-shaped string is committed.
+func TestSecretScannerMailchimpDatacenters(t *testing.T) {
+	const hexPart = "3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d"
+	content := strings.Join([]string{
+		`MAILCHIMP_API_KEY: "` + hexPart + "-us" + "6" + `"`,
+		`MAILCHIMP_API_KEY: "` + hexPart + "-us" + "20" + `"`,
+		// A bare 32-hex list ID and a datacenter name on their own are not keys.
+		`MAILCHIMP_LIST_ID: "` + hexPart + `"`,
+		`MAILCHIMP_SERVER: "us6"`,
+	}, "\n")
+
+	c, err := secret.ParseConfig(filepath.Join("testdata", "config.yaml"))
+	require.NoError(t, err)
+
+	s := secret.NewScanner(c)
+	got := s.Scan(secret.ScanArgs{
+		FilePath: "mailchimp.env",
+		Content:  strings.NewReader(content),
+	})
+
+	var lines []int
+	for _, f := range got.Findings {
+		assert.Equal(t, "mailchimp-api-key", f.RuleID)
+		lines = append(lines, f.StartLine)
+	}
+	assert.Equal(t, []int{1, 2}, lines, "keys for us6 and us20 are found; the list ID and server name are not")
+}
+
 func TestSecretScannerWithStreaming(t *testing.T) {
 	tests := []struct {
 		name        string
