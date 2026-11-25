@@ -27,7 +27,7 @@ func init() {
 }
 
 const (
-	version = 3
+	version = 4
 )
 
 type bunLibraryAnalyzer struct {
