@@ -525,7 +525,7 @@ type pomLicenses struct {
 	} `xml:"license"`
 }
 
-// names returns the license values of l, resolved by pomLicenseName.
+// names returns the license values of l, skipping licenses that resolve to an empty value.
 func (l pomLicenses) names() []string {
 	var names []string
 	for _, lic := range l.License {
