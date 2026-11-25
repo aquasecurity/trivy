@@ -8,16 +8,11 @@ import (
 
 const firewallRuleType = "firewallRules"
 
-// adaptFirewallRules collects the firewall rules of a database server from the
-// firewallRules property and from its firewallRules child resources, e.g.
-// "Microsoft.Sql/servers/firewallRules".
+// adaptFirewallRules collects the firewall rules of a database server from its
+// firewallRules child resources, e.g. "Microsoft.Sql/servers/firewallRules".
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules?pivots=deployment-language-arm-template
 func adaptFirewallRules(server azure.Resource, deployment azure.Deployment) []database.FirewallRule {
-	var rules []database.FirewallRule
-	for _, rule := range server.Properties.GetMapValue("firewallRules").AsMap() {
-		rules = append(rules, adaptFirewallRule(rule, rule.GetMetadata()))
-	}
-	return append(rules, adaptFirewallRuleResources(deployment.GetChildResources(server, firewallRuleType))...)
+	return adaptFirewallRuleResources(deployment.GetChildResources(server, firewallRuleType))
 }
 
 // orphanFirewallRules returns the top-level firewall rules of serverType whose
@@ -40,15 +35,11 @@ func orphanage(metadata iacTypes.Metadata, rules []database.FirewallRule) databa
 func adaptFirewallRuleResources(resources []azure.Resource) []database.FirewallRule {
 	var rules []database.FirewallRule
 	for _, resource := range resources {
-		rules = append(rules, adaptFirewallRule(resource.Properties, resource.Metadata))
+		rules = append(rules, database.FirewallRule{
+			Metadata: resource.Metadata,
+			StartIP:  resource.Properties.GetMapValue("startIpAddress").AsStringValue("", resource.Metadata),
+			EndIP:    resource.Properties.GetMapValue("endIpAddress").AsStringValue("", resource.Metadata),
+		})
 	}
 	return rules
-}
-
-func adaptFirewallRule(properties azure.Value, metadata iacTypes.Metadata) database.FirewallRule {
-	return database.FirewallRule{
-		Metadata: metadata,
-		StartIP:  properties.GetMapValue("startIpAddress").AsStringValue("", metadata),
-		EndIP:    properties.GetMapValue("endIpAddress").AsStringValue("", metadata),
-	}
 }
