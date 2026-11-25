@@ -2403,13 +2403,11 @@ func TestSecretScanner(t *testing.T) {
 	}
 }
 
-// Mailchimp API keys end in "-us<N>", where N is the account's datacenter. The
-// keys are assembled at runtime so no complete key-shaped string is committed.
 func TestSecretScannerMailchimpDatacenters(t *testing.T) {
 	const hexPart = "3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d"
 	content := strings.Join([]string{
-		`MAILCHIMP_API_KEY: "` + hexPart + "-us" + "6" + `"`,
-		`MAILCHIMP_API_KEY: "` + hexPart + "-us" + "20" + `"`,
+		`MAILCHIMP_API_KEY: "` + hexPart + "-us6" + `"`,
+		`MAILCHIMP_API_KEY: "` + hexPart + "-us20" + `"`,
 		// A bare 32-hex list ID and a datacenter name on their own are not keys.
 		`MAILCHIMP_LIST_ID: "` + hexPart + `"`,
 		`MAILCHIMP_SERVER: "us6"`,
