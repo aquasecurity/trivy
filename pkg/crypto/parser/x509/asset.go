@@ -19,13 +19,17 @@ import (
 func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 	switch obj.kind {
 	case objectCertificate:
-		return describeCertificate(obj.certificate, obj.encoding)
+		return describeCertificate(obj.certificate, obj.encoding, obj.keystore)
 	case objectPublicKey:
 		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePublic)
 	case objectPrivateKey:
 		return describeStandaloneKey(obj, ftypes.CryptoKeyTypePrivate)
 	case objectEncryptedPrivateKey:
 		return describeEncryptedPrivateKey(obj)
+	case objectECAlgorithm:
+		algorithm := crypto.DescribeAlgorithm(oidECPublicKey.String(), 0, 0, obj.curve)
+		// An algorithm has no format or encoding.
+		return []ftypes.CryptoAsset{{CryptoAssetInfo: algorithm}}, nil
 	default:
 		return nil, xerrors.Errorf("object kind %d has no description", obj.kind)
 	}
@@ -36,6 +40,7 @@ func objectToAssets(obj object) ([]ftypes.CryptoAsset, error) {
 func describeCertificate(
 	cert certificate,
 	encoding ftypes.CryptoEncoding,
+	keystore ftypes.CryptoKeystoreType,
 ) ([]ftypes.CryptoAsset, error) {
 	// The full distinguished name is reported, because a certificate authority often
 	// identifies itself by organization alone and carries no common name.
@@ -98,6 +103,7 @@ func describeCertificate(
 	asset := ftypes.CryptoAsset{
 		CryptoAssetInfo: info,
 		Encoding:        encoding,
+		Keystore:        keystore,
 	}
 	return append([]ftypes.CryptoAsset{asset}, related...), nil
 }
@@ -123,8 +129,9 @@ func describeStandaloneKey(obj object, keyType ftypes.CryptoKeyType) ([]ftypes.C
 			CryptoAssetInfo: key,
 			Format:          obj.keyFormat,
 			Encoding:        obj.encoding,
+			Keystore:        obj.keystore,
 		},
-		// The algorithm is derived and has no encoded form.
+		// An algorithm has no format or encoding.
 		{CryptoAssetInfo: keyAlgorithm},
 	}, nil
 }
@@ -148,6 +155,7 @@ func describeEncryptedPrivateKey(obj object) ([]ftypes.CryptoAsset, error) {
 		CryptoAssetInfo: key,
 		Format:          obj.keyFormat,
 		Encoding:        obj.encoding,
+		Keystore:        obj.keystore,
 	}}, nil
 }
 

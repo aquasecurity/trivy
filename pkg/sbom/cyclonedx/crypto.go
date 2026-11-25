@@ -13,10 +13,11 @@ import (
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
-// ellipticCurves maps the curve names of crypto/elliptic to the CycloneDX elliptic curve
+// ellipticCurves maps the NIST curve names to the CycloneDX elliptic curve
 // enumeration, which qualifies a curve with the body that standardized it. A curve absent
 // from the map is left out, because the enumeration accepts nothing else.
 var ellipticCurves = map[string]string{
+	"P-192": "nist/P-192",
 	"P-224": "nist/P-224",
 	"P-256": "nist/P-256",
 	"P-384": "nist/P-384",

@@ -1,0 +1,3430 @@
+{
+  "SchemaVersion": 2,
+  "Trivy": {
+    "Version": "dev"
+  },
+  "ReportID": "017b7d41-e09f-7000-80ea-000000000001",
+  "CreatedAt": "2021-08-25T12:20:30.000000005Z",
+  "ArtifactID": "sha256:e926603ddccdd0d67ffc7008208f9515098611768e41b93cd898cf1b6a8d3c50",
+  "ArtifactName": "testdata/fixtures/images/crypto-v3.tar.gz",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 86016,
+    "ImageID": "sha256:f4e5886f82604a0e44cd2595fd0b12b696b81098b53ac40745563bfcb2a25751",
+    "DiffIDs": [
+      "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa",
+      "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+    ],
+    "RepoTags": [
+      "ghcr.io/aquasecurity/trivy-test-images:crypto-v3"
+    ],
+    "Reference": "ghcr.io/aquasecurity/trivy-test-images:crypto-v3",
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2026-11-02T12:27:11.448636542Z",
+      "history": [
+        {
+          "created": "2026-11-02T12:27:11.278188489Z",
+          "created_by": "COPY rootfs/etc /etc # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        },
+        {
+          "created": "2026-11-02T12:27:11.448636542Z",
+          "created_by": "COPY rootfs/opt /opt # buildkit",
+          "comment": "buildkit.dockerfile.v0"
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa",
+          "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+        ]
+      },
+      "config": {
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "WorkingDir": "/"
+      }
+    },
+    "Layers": [
+      {
+        "Size": 58368,
+        "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+        "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+      },
+      {
+        "Size": 27648,
+        "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+        "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "testdata/fixtures/images/crypto-v3.tar.gz",
+      "Class": "crypto",
+      "CryptoAssets": [
+        {
+          "AssetID": "3ffe62f2bc72c73",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10040.4.1",
+            "Parameters": "key-size=2048,subgroup-size=224"
+          },
+          "Name": "DSA-2048",
+          "Algorithm": {
+            "Family": "DSA",
+            "Primitive": "signature",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/dsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "f8a0113c66853aae",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10040.4.3"
+          },
+          "Name": "DSA-SHA-1",
+          "Algorithm": {
+            "Family": "DSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/dsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "b8ababf0115fb157",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/p192.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "ba912ff4a9c6b357",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/p192.key",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "362831e38706a08f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-192"
+          },
+          "Name": "EC-P-192",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/public/p192.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "10bb9f843a9330d1",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ec.der",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "44b9b922907710f9",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ecdsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "50ed554f2da82e33",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/ec.key",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "b671b647ee1a37eb",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/truststore.keystore",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "3e5b275937359f8c",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "e1eccaf15adef515",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.2.1",
+            "Parameters": "curve=P-256"
+          },
+          "Name": "EC-P-256",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "5d9c4714f015f612",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.4.1"
+          },
+          "Name": "ECDSA-SHA-1",
+          "Algorithm": {
+            "Family": "ECDSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ecdsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "35214c8f361587da",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.4.3.2"
+          },
+          "Name": "ECDSA-SHA-256",
+          "Algorithm": {
+            "Family": "ECDSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ec.der",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "f2220b7a794b7484",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.4.3.2"
+          },
+          "Name": "ECDSA-SHA-256",
+          "Algorithm": {
+            "Family": "ECDSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/truststore.keystore",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "33cbc5298d1edb9f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.4.3.2"
+          },
+          "Name": "ECDSA-SHA-256",
+          "Algorithm": {
+            "Family": "ECDSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "1ef29bfd1a07d01a",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.10045.4.3.2"
+          },
+          "Name": "ECDSA-SHA-256",
+          "Algorithm": {
+            "Family": "ECDSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "31a2a39feabc61a5",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=1024"
+          },
+          "Name": "RSA-1024",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/weak.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "94f216e1eb3755ec",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=1024"
+          },
+          "Name": "RSA-1024",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/weak.key",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "fd68216ec41d1504",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=1024"
+          },
+          "Name": "RSA-1024",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "43ead51a25464872",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=1024"
+          },
+          "Name": "RSA-1024",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/plain.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "6eb8d1205cde5b6f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=1024"
+          },
+          "Name": "RSA-1024",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 80,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/weak.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "25f9928220b3c130",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "12df5ae7b65d33",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/rsa-pss-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "e157dc7a65fadfaf",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/rsa-pss-sha256.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "28401195a7936d43",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "3d83cee314c27356",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/pkcs1.key",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "6c697ba0c622fcee",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/private/rsa.key",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "1455e8581fffe5c7",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/public/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "bd236caed66df15f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "eeca7531e0ef28da",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.pfx",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "779fca0806e50d0b",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "6a81515e21d96666",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/truststore.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "136ce8de52c46267",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f4f2e85d82fb8b36",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.1",
+            "Parameters": "key-size=2048"
+          },
+          "Name": "RSA-2048",
+          "Algorithm": {
+            "Primitive": "unknown",
+            "ClassicalSecurityLevel": 112,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "438bf672534103b8",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.10"
+          },
+          "Name": "1.2.840.113549.1.1.10",
+          "Algorithm": {
+            "Primitive": "unknown"
+          },
+          "FilePath": "etc/ssl/certs/rsa-pss-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "e3e79959a84da894",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.10"
+          },
+          "Name": "1.2.840.113549.1.1.10",
+          "Algorithm": {
+            "Primitive": "unknown"
+          },
+          "FilePath": "etc/ssl/certs/rsa-pss-sha256.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "3b97463c3e27aa10",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "9bd4e0d7332574f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "46f73011855c664f",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f941ebafb19fd07a",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.pfx",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "9ba56c9c4f82a6bb",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "ced66e04a489c966",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/truststore.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "d28d8f11a9d97b03",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "40e75d4858c00eb6",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.11"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-256",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "b1939b6db552f2f4",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.5"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-1",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/weak.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "a263a6175738e309",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.5"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-1",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "b5a390716cee6c83",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.5"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-1",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/plain.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f43beea75040ae12",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.2.840.113549.1.1.5"
+          },
+          "Name": "RSA-PKCS1-1.5-SHA-1",
+          "Algorithm": {
+            "Family": "RSASSA-PKCS1",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "opt/app/weak.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "44bf5e1b2f104666",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.110"
+          },
+          "Name": "1.3.101.110",
+          "Algorithm": {
+            "Primitive": "unknown"
+          },
+          "FilePath": "etc/ssl/public/x25519.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "9835ec5a908fef35",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.111"
+          },
+          "Name": "1.3.101.111",
+          "Algorithm": {
+            "Primitive": "unknown"
+          },
+          "FilePath": "etc/ssl/certs/x448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "e35942331c5cd2fd",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.111"
+          },
+          "Name": "1.3.101.111",
+          "Algorithm": {
+            "Primitive": "unknown"
+          },
+          "FilePath": "etc/ssl/public/x448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "ee63378c41cebc53",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.112"
+          },
+          "Name": "Ed25519",
+          "Algorithm": {
+            "Family": "EdDSA",
+            "Primitive": "signature",
+            "ClassicalSecurityLevel": 128,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ed25519.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "8df21e2ef7709ba9",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.113"
+          },
+          "Name": "Ed448",
+          "Algorithm": {
+            "Family": "EdDSA",
+            "Primitive": "signature",
+            "ClassicalSecurityLevel": 224,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/ed448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "74c1e36bba7340fa",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.113"
+          },
+          "Name": "Ed448",
+          "Algorithm": {
+            "Family": "EdDSA",
+            "Primitive": "signature",
+            "ClassicalSecurityLevel": 224,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/certs/x448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "bfd19a5897098666",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "1.3.101.113"
+          },
+          "Name": "Ed448",
+          "Algorithm": {
+            "Family": "EdDSA",
+            "Primitive": "signature",
+            "ClassicalSecurityLevel": 224,
+            "NISTQuantumSecurityLevel": 0
+          },
+          "FilePath": "etc/ssl/public/ed448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "a3e7a5f5479d49e1",
+          "Kind": "algorithm",
+          "Identity": {
+            "Method": "oid",
+            "Value": "2.16.840.1.101.3.4.3.18"
+          },
+          "Name": "ML-DSA-65",
+          "Algorithm": {
+            "Family": "ML-DSA",
+            "Primitive": "signature",
+            "NISTQuantumSecurityLevel": 3
+          },
+          "FilePath": "etc/ssl/certs/ml-dsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "1c82174669dbcdb1",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "05e5176f1fc41ccab60e7cb609e21aeb147a24acf912a1f647a2219843481cbc"
+          },
+          "Name": "jks.trivy.test",
+          "Certificate": {
+            "Subject": "CN=jks.trivy.test",
+            "Issuer": "CN=jks.trivy.test",
+            "SerialNumber": "b0f67a2d9ac93eb4",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509"
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:5a16df6acf68dac77c9535924698a01cc45e4eec765c0e95ddad1963c0124b20"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "95e7f3c117e0f690",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "180a99e3955610eca08450110c1e840748bad3445864a0c548f0ecf3f326691e"
+          },
+          "Name": "dsa-sha1.trivy.test",
+          "Certificate": {
+            "Subject": "CN=dsa-sha1.trivy.test",
+            "Issuer": "CN=dsa-sha1.trivy.test",
+            "SerialNumber": "8",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10040.4.3"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:f6548419aaf2c795a631b2a1de87bf347f49b09a48865f2e803310a41df66026"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/dsa-sha1.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "d963367d2e113905",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "1c9de6711c0ada6a2c75dc20895e4220303a849e02e826a195b1369e35bcee64"
+          },
+          "Name": "ed448.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ed448.trivy.test",
+            "Issuer": "CN=ed448.trivy.test",
+            "SerialNumber": "c",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.113"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:7741a6bd8599abd9daee9eff656050a4d9baab43b822c5ee163ab224510ec9af"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ed448.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "ed4f97f94e7f3930",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "7a37295458a2474c5fa6871649fafc2d29d825c0a718286e589692f1a8493861"
+          },
+          "Name": "ec.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ec.trivy.test",
+            "Issuer": "CN=ec.trivy.test",
+            "SerialNumber": "2",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.4.3.2"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ec.der",
+          "Encoding": "DER",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "e738a1e7abb7cb4e",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "7a37295458a2474c5fa6871649fafc2d29d825c0a718286e589692f1a8493861"
+          },
+          "Name": "ec.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ec.trivy.test",
+            "Issuer": "CN=ec.trivy.test",
+            "SerialNumber": "2",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.4.3.2"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+            }
+          ],
+          "FilePath": "opt/app/truststore.keystore",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "22ac51d1ab855ed1",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "7a37295458a2474c5fa6871649fafc2d29d825c0a718286e589692f1a8493861"
+          },
+          "Name": "ec.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ec.trivy.test",
+            "Issuer": "CN=ec.trivy.test",
+            "SerialNumber": "2",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.4.3.2"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+            }
+          ],
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "837da4fc85c49544",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "7a37295458a2474c5fa6871649fafc2d29d825c0a718286e589692f1a8493861"
+          },
+          "Name": "ec.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ec.trivy.test",
+            "Issuer": "CN=ec.trivy.test",
+            "SerialNumber": "2",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.4.3.2"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+            }
+          ],
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "3d9b806af0c5735c",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "aa58a804b374d09465956db6e545e58976ae16ddc0449d091ee9f4bc63b814d4"
+          },
+          "Name": "rsa-pss-sha256.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa-pss-sha256.trivy.test",
+            "Issuer": "CN=rsa-pss-sha256.trivy.test",
+            "SerialNumber": "e",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.10"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:9effb00691ec209a852669d85442db8beaca2e68e6e976ba63817a971cf77eee"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa-pss-sha256.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "9fc78f63d337c9b3",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "afa3443dc8b93b8b8f05e2400bf3f8d3953b68ca17cfb591ddcbff95bcf8dea3"
+          },
+          "Name": "weak.trivy.test",
+          "Certificate": {
+            "Subject": "CN=weak.trivy.test",
+            "Issuer": "CN=weak.trivy.test",
+            "SerialNumber": "7",
+            "NotBefore": "2019-01-01T00:00:00Z",
+            "NotAfter": "2020-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.5"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/weak.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "b6136c295e187bbe",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "afa3443dc8b93b8b8f05e2400bf3f8d3953b68ca17cfb591ddcbff95bcf8dea3"
+          },
+          "Name": "weak.trivy.test",
+          "Certificate": {
+            "Subject": "CN=weak.trivy.test",
+            "Issuer": "CN=weak.trivy.test",
+            "SerialNumber": "7",
+            "NotBefore": "2019-01-01T00:00:00Z",
+            "NotAfter": "2020-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.5"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f9152942431a8a48",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "afa3443dc8b93b8b8f05e2400bf3f8d3953b68ca17cfb591ddcbff95bcf8dea3"
+          },
+          "Name": "weak.trivy.test",
+          "Certificate": {
+            "Subject": "CN=weak.trivy.test",
+            "Issuer": "CN=weak.trivy.test",
+            "SerialNumber": "7",
+            "NotBefore": "2019-01-01T00:00:00Z",
+            "NotAfter": "2020-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.5"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "opt/app/plain.p12",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "bc1420583b0070b5",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "afa3443dc8b93b8b8f05e2400bf3f8d3953b68ca17cfb591ddcbff95bcf8dea3"
+          },
+          "Name": "weak.trivy.test",
+          "Certificate": {
+            "Subject": "CN=weak.trivy.test",
+            "Issuer": "CN=weak.trivy.test",
+            "SerialNumber": "7",
+            "NotBefore": "2019-01-01T00:00:00Z",
+            "NotAfter": "2020-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.5"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "opt/app/weak.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "62d09a45c7de3447",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "f5f5410c2668a0cf",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "b3d775bab65abc36",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "opt/app/app.pfx",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "a13da5540b2788fb",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "opt/app/rsa.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "7405d299e0e9902e",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "opt/app/truststore.p12",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f281d7100127cd3e",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b30ce6fe46b382b8c51ebde2d107999051f4815e61847a0c9a8a34c1bf701c54"
+          },
+          "Name": "rsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa.trivy.test",
+            "Issuer": "CN=rsa.trivy.test",
+            "SerialNumber": "1",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "digitalSignature",
+              "keyEncipherment"
+            ],
+            "ExtendedKeyUsage": [
+              "serverAuth",
+              "clientAuth"
+            ],
+            "DNSNames": [
+              "rsa.trivy.test"
+            ],
+            "EmailAddresses": [
+              "crypto@trivy.test"
+            ],
+            "IPAddresses": [
+              "127.0.0.1"
+            ],
+            "URIs": [
+              "https://trivy.test/rsa"
+            ],
+            "BasicConstraintsValid": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "d84e1611f0437b4",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "b7b21762568d35512f963def41d804042b3f5d009aa5d78011956d6081992332"
+          },
+          "Name": "rsa-pss-sha1.trivy.test",
+          "Certificate": {
+            "Subject": "CN=rsa-pss-sha1.trivy.test",
+            "Issuer": "CN=rsa-pss-sha1.trivy.test",
+            "SerialNumber": "a",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.10"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:d396976662ab6ff083142bdb8e34d188fd09ad4dd12311f11f80119b72733129"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa-pss-sha1.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "6e25fd3d115e6e24",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "c3c7562d8c32a8d322a625e7e467ba8e35b1c3a91a29f378d538dd14e9c33698"
+          },
+          "Name": "x448.trivy.test",
+          "Certificate": {
+            "Subject": "CN=x448.trivy.test",
+            "Issuer": "CN=ed448.trivy.test",
+            "SerialNumber": "d",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509"
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.113"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:e959da15e50314231364e31bff026d8277258cbee1b0ee88511fe6a5bd56d840"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/x448.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "62e4c11b187bdaa4",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "cce1e82199c1d11d537922a946b51174d8c40074431437f5cfac9c79bd7d68a1"
+          },
+          "Name": "Trivy Crypto Test CA",
+          "Certificate": {
+            "Subject": "CN=Trivy Crypto Test CA",
+            "Issuer": "CN=Trivy Crypto Test CA",
+            "SerialNumber": "4",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "keyCertSign",
+              "cRLSign"
+            ],
+            "BasicConstraintsValid": true,
+            "IsCA": true,
+            "MaxPathLenZero": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:59c27ebbc5424ebbbb93166fc5e00d8f2bc3c24e7d423d5818f19e8f370b1339"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "be921def70e0bc5f",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "cce1e82199c1d11d537922a946b51174d8c40074431437f5cfac9c79bd7d68a1"
+          },
+          "Name": "Trivy Crypto Test CA",
+          "Certificate": {
+            "Subject": "CN=Trivy Crypto Test CA",
+            "Issuer": "CN=Trivy Crypto Test CA",
+            "SerialNumber": "4",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "KeyUsage": [
+              "keyCertSign",
+              "cRLSign"
+            ],
+            "BasicConstraintsValid": true,
+            "IsCA": true,
+            "MaxPathLenZero": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:59c27ebbc5424ebbbb93166fc5e00d8f2bc3c24e7d423d5818f19e8f370b1339"
+            }
+          ],
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "12791ce032340fa9",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "cd2a2edddbc8c8b164c464b3327b184cc684c16a9501c15034b6eebea20b1bb5"
+          },
+          "Name": "ecdsa-sha1.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ecdsa-sha1.trivy.test",
+            "Issuer": "CN=ecdsa-sha1.trivy.test",
+            "SerialNumber": "9",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.4.1"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:9c437613e35f5a1c9f55713325b3e16db6754a6553aca2c9352a8a60d954fac3"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ecdsa-sha1.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "58cefa8d76564183",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "cfeded381e5fff9837ebbe76a4cd86574ad70f58e47a3926a46cbc7aa33fac1c"
+          },
+          "Name": "ml-dsa.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ml-dsa.trivy.test",
+            "Issuer": "CN=ml-dsa.trivy.test",
+            "SerialNumber": "6",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:2.16.840.1.101.3.4.3.18"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:71236366915b2998270138fe360c4cd39eeb48fef7c3fa5d2a1944149c9b51d9"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ml-dsa.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "97f1cb67108291d0",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "f8e9f1e4a1aaf58997366f9e8490c95eff5b094d17b559f46dd1f57f817cc342"
+          },
+          "Name": "ed25519.trivy.test",
+          "Certificate": {
+            "Subject": "CN=ed25519.trivy.test",
+            "Issuer": "CN=ed25519.trivy.test",
+            "SerialNumber": "3",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509",
+            "BasicConstraintsValid": true,
+            "IsCA": true
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.112"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:b408fe9452abc3e3513243b1a50dcbd3fe075346ab924ecd69ecce6a2238a65a"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ed25519.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "c8277d93edfb9ada",
+          "Kind": "certificate",
+          "Identity": {
+            "Method": "sha256",
+            "Value": "fac9029f4c719711c172e13e01566f1e4d631d024f8bb9cf2de9ae052b15ddee"
+          },
+          "Name": "leaf.trivy.test",
+          "Certificate": {
+            "Subject": "CN=leaf.trivy.test",
+            "Issuer": "CN=Trivy Crypto Test CA",
+            "SerialNumber": "5",
+            "NotBefore": "2024-01-01T00:00:00Z",
+            "NotAfter": "2034-01-01T00:00:00Z",
+            "Format": "X.509"
+          },
+          "Relationships": [
+            {
+              "Type": "signed_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.11"
+            },
+            {
+              "Type": "contains",
+              "RelatedAsset": "key:public:spki-sha256:0e00d68712019b91e6499bc2fad370a9091eb9ebde6f5715b404a749f4e79dac"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "2c9f8eea47c9dac8",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "58493ba35bac946c6d59c3408412fd07cb02dd4344bbf5aae31d71b988b70a0f"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/app.jks",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "JKS",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "d67d086d7b39efd9",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "6087954afb9c1283a4aa085851d925a72431dbc51de920a6022181e402e8fa1a"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/protected.p12",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "a1be633ac2f18476",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "ae83874b02777d57c79a6ac5876138dd104c48f9f7359f23f775a04a2eabb48e"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "etc/ssl/private/encrypted.key",
+          "Format": "PKCS#8",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "429a9e6ba07bac44",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-pkcs8-sha256",
+            "Value": "b0e47e22029bf91df335e37ff1598b56d5eb71487520a1817af62fdc519eb2c7"
+          },
+          "Name": "Encrypted PKCS#8 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "opt/app/app.pfx",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "77ab7a58f6bec89d",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "encrypted-rfc1423-sha256",
+            "Value": "33c4a55d07866eacf22e834ea182d9eaef9260271a77573d0525c5bba44064ac"
+          },
+          "Name": "Encrypted PKCS#1 private key",
+          "Key": {
+            "Encrypted": true
+          },
+          "FilePath": "etc/ssl/private/legacy-encrypted.key",
+          "Format": "PKCS#1",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "253d9e4c63824b3d",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "69b776bd378b3c5ec602916b9e22c83af81abb5b5643f410b0afb60a7d115f35"
+          },
+          "Name": "RSA-2048 private key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/private/pkcs1.key",
+          "Format": "PKCS#1",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "4e09a789d52c5078",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+          },
+          "Name": "EC-P-256 private key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            },
+            {
+              "Type": "corresponds_to",
+              "RelatedAsset": "key:public:spki-sha256:a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+            }
+          ],
+          "FilePath": "etc/ssl/private/ec.key",
+          "Format": "SEC1",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "5eb0577f41c054a9",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "b408fe9452abc3e3513243b1a50dcbd3fe075346ab924ecd69ecce6a2238a65a"
+          },
+          "Name": "Ed25519 private key",
+          "Key": {
+            "Size": 256
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.112"
+            },
+            {
+              "Type": "corresponds_to",
+              "RelatedAsset": "key:public:spki-sha256:b408fe9452abc3e3513243b1a50dcbd3fe075346ab924ecd69ecce6a2238a65a"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ed25519.pem",
+          "Format": "PKCS#8",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "b7cbd0333a9a5c1b",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 private key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            },
+            {
+              "Type": "corresponds_to",
+              "RelatedAsset": "key:public:spki-sha256:e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+            }
+          ],
+          "FilePath": "etc/ssl/private/rsa.key",
+          "Format": "PKCS#8",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "52130ffd8c6ba14e",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 private key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            },
+            {
+              "Type": "corresponds_to",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "etc/ssl/private/weak.key",
+          "Format": "PKCS#8",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "1b49106bedd2215c",
+          "Kind": "key",
+          "KeyType": "private",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 private key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            },
+            {
+              "Type": "corresponds_to",
+              "RelatedAsset": "key:public:spki-sha256:ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+            }
+          ],
+          "FilePath": "opt/app/plain.p12",
+          "Format": "PKCS#8",
+          "Encoding": "DER",
+          "Keystore": "PKCS#12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "563db0c1586784f5",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "0e00d68712019b91e6499bc2fad370a9091eb9ebde6f5715b404a749f4e79dac"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "8ac048bd29635fc9",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "3a6846a5fce41f658f2686cab3ee9196338a9d9914616d7f90345979a70db035"
+          },
+          "Name": "1.3.101.110 public key",
+          "Key": {
+            "Size": 256
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.110"
+            }
+          ],
+          "FilePath": "etc/ssl/public/x25519.pem",
+          "Format": "PKIX",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "2d24f84f507f3990",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "59c27ebbc5424ebbbb93166fc5e00d8f2bc3c24e7d423d5818f19e8f370b1339"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/bundle.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "993722c317a2f947",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "59c27ebbc5424ebbbb93166fc5e00d8f2bc3c24e7d423d5818f19e8f370b1339"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "b4b9a59433871d4a",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "5a16df6acf68dac77c9535924698a01cc45e4eec765c0e95ddad1963c0124b20"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "ae76408feb459261",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "71236366915b2998270138fe360c4cd39eeb48fef7c3fa5d2a1944149c9b51d9"
+          },
+          "Name": "ML-DSA-65 public key",
+          "Key": {
+            "Size": 15616
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:2.16.840.1.101.3.4.3.18"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ml-dsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "9471ba88529f1eb1",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "7741a6bd8599abd9daee9eff656050a4d9baab43b822c5ee163ab224510ec9af"
+          },
+          "Name": "Ed448 public key",
+          "Key": {
+            "Size": 456
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.113"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ed448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "6c97d0b646ff089f",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "7741a6bd8599abd9daee9eff656050a4d9baab43b822c5ee163ab224510ec9af"
+          },
+          "Name": "Ed448 public key",
+          "Key": {
+            "Size": 456
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.113"
+            }
+          ],
+          "FilePath": "etc/ssl/public/ed448.pem",
+          "Format": "PKIX",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "a581e80e143f935a",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "9c437613e35f5a1c9f55713325b3e16db6754a6553aca2c9352a8a60d954fac3"
+          },
+          "Name": "EC-P-256 public key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ecdsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "6ad398048bb0373d",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "9effb00691ec209a852669d85442db8beaca2e68e6e976ba63817a971cf77eee"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa-pss-sha256.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "a927ef15bb0c0561",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+          },
+          "Name": "EC-P-256 public key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ec.der",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "8c7d8c73c7b9e757",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+          },
+          "Name": "EC-P-256 public key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ],
+          "FilePath": "opt/app/truststore.keystore",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f367a0adff497b24",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+          },
+          "Name": "EC-P-256 public key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ],
+          "FilePath": "opt/java/jdk-21/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "8e5d653f162682fd",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "a9a6c62b03c6d94ba1a3e0d06d0ea119c25d3523759cb10d487df50689075251"
+          },
+          "Name": "EC-P-256 public key",
+          "Key": {
+            "Size": 256,
+            "Curve": "P-256"
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10045.2.1:curve%3DP-256"
+            }
+          ],
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "a6ed9e87503e50f1",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "b408fe9452abc3e3513243b1a50dcbd3fe075346ab924ecd69ecce6a2238a65a"
+          },
+          "Name": "Ed25519 public key",
+          "Key": {
+            "Size": 256
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.112"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/ed25519.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "5ad5a5bbf1e61838",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "d396976662ab6ff083142bdb8e34d188fd09ad4dd12311f11f80119b72733129"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa-pss-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "43ceae90c340b881",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "7e2b05105ec110b4",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "etc/ssl/public/rsa.pem",
+          "Format": "PKIX",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "4491a1fdf2524a65",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "985d88a60496feb8",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/app/app.pfx",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "54cb59b73ad60dd",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/app/rsa.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "d3c0a41ecd1ce7a4",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/app/truststore.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "4e718cf4a536829c",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e3b32ea7cb638d1fa32b65ece44021aeed78fe55833a03b7535ab98c85e3e6e0"
+          },
+          "Name": "RSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D2048"
+            }
+          ],
+          "FilePath": "opt/java/jdk-8/jre/lib/security/cacerts",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "b9cb19ba75c0ea92",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e959da15e50314231364e31bff026d8277258cbee1b0ee88511fe6a5bd56d840"
+          },
+          "Name": "1.3.101.111 public key",
+          "Key": {
+            "Size": 448
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.111"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/x448.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "7ec8230d2473728f",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "e959da15e50314231364e31bff026d8277258cbee1b0ee88511fe6a5bd56d840"
+          },
+          "Name": "1.3.101.111 public key",
+          "Key": {
+            "Size": 448
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.3.101.111"
+            }
+          ],
+          "FilePath": "etc/ssl/public/x448.pem",
+          "Format": "PKIX",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "df7ba0540b407c30",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 public key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/weak.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "a55a6e280fd21769",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 public key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/weak.pem",
+          "Format": "PKIX",
+          "Encoding": "PEM",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        },
+        {
+          "AssetID": "df6078aa726a512d",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 public key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            }
+          ],
+          "FilePath": "opt/app/app.jks",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "c61fdd3fe92755df",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 public key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            }
+          ],
+          "FilePath": "opt/app/plain.p12",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "f71729859cfc31f6",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "ee79a06399a02e8d9362c2c6e15c76f64ba38ac1f037f53b2287bf65fd2d2777"
+          },
+          "Name": "RSA-1024 public key",
+          "Key": {
+            "Size": 1024
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.113549.1.1.1:key-size%3D1024"
+            }
+          ],
+          "FilePath": "opt/app/weak.pem",
+          "Layer": {
+            "Digest": "sha256:1a5f8228d6a971a4f21edc7c68da7bfc4a2c3559d2af2cf0fe0987c26138c048",
+            "DiffID": "sha256:018ac07a84de3de0446d3b4d0f9e7ba7a4319a2779fd72a1b9c8c99ac60c0ba0"
+          }
+        },
+        {
+          "AssetID": "41ce5192c454b2b2",
+          "Kind": "key",
+          "KeyType": "public",
+          "Identity": {
+            "Method": "spki-sha256",
+            "Value": "f6548419aaf2c795a631b2a1de87bf347f49b09a48865f2e803310a41df66026"
+          },
+          "Name": "DSA-2048 public key",
+          "Key": {
+            "Size": 2048
+          },
+          "Relationships": [
+            {
+              "Type": "used_with",
+              "RelatedAsset": "algorithm:oid:1.2.840.10040.4.1:key-size%3D2048%2Csubgroup-size%3D224"
+            }
+          ],
+          "FilePath": "etc/ssl/certs/dsa-sha1.pem",
+          "Layer": {
+            "Digest": "sha256:9f07e9e0d398db616f238eac088656cb36044edf4d9fea23782a86f9ed58870c",
+            "DiffID": "sha256:64a8bc2d92079e01742caaa973be7732bd917405e2e454914f48a8e4c781a3fa"
+          }
+        }
+      ],
+      "CryptoFindings": [
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "95e7f3c117e0f690",
+          "Evidence": {
+            "SignatureAlgorithm": "DSA-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.10040.4.3"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "12791ce032340fa9",
+          "Evidence": {
+            "SignatureAlgorithm": "ECDSA-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.10045.4.1"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "b8ababf0115fb157",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "9fc78f63d337c9b3",
+          "Evidence": {
+            "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "df7ba0540b407c30",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "a55a6e280fd21769",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0004",
+          "Title": "Expired certificate",
+          "Severity": "MEDIUM",
+          "AssetID": "9fc78f63d337c9b3",
+          "Evidence": {
+            "NotAfter": "2020-01-01T00:00:00Z"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "ba912ff4a9c6b357",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "52130ffd8c6ba14e",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0003",
+          "Title": "Weak elliptic curve",
+          "Severity": "HIGH",
+          "AssetID": "362831e38706a08f",
+          "Evidence": {
+            "Curve": "P-192",
+            "ClassicalSecurityLevel": 80
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "b6136c295e187bbe",
+          "Evidence": {
+            "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "df6078aa726a512d",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0004",
+          "Title": "Expired certificate",
+          "Severity": "MEDIUM",
+          "AssetID": "b6136c295e187bbe",
+          "Evidence": {
+            "NotAfter": "2020-01-01T00:00:00Z"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "f9152942431a8a48",
+          "Evidence": {
+            "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "1b49106bedd2215c",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "c61fdd3fe92755df",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0004",
+          "Title": "Expired certificate",
+          "Severity": "MEDIUM",
+          "AssetID": "f9152942431a8a48",
+          "Evidence": {
+            "NotAfter": "2020-01-01T00:00:00Z"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0001",
+          "Title": "SHA-1 certificate signature",
+          "Severity": "MEDIUM",
+          "AssetID": "bc1420583b0070b5",
+          "Evidence": {
+            "SignatureAlgorithm": "RSA-PKCS1-1.5-SHA-1",
+            "SignatureAlgorithmOID": "1.2.840.113549.1.1.5"
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0002",
+          "Title": "Small RSA key",
+          "Severity": "HIGH",
+          "AssetID": "f71729859cfc31f6",
+          "Evidence": {
+            "KeySize": 1024
+          }
+        },
+        {
+          "RuleID": "CRYPTO-0004",
+          "Title": "Expired certificate",
+          "Severity": "MEDIUM",
+          "AssetID": "bc1420583b0070b5",
+          "Evidence": {
+            "NotAfter": "2020-01-01T00:00:00Z"
+          }
+        }
+      ]
+    }
+  ]
+}

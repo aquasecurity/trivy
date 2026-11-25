@@ -5,9 +5,13 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"slices"
+	"strconv"
 
+	"github.com/mitchellh/hashstructure/v2"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	"github.com/aquasecurity/trivy/pkg/log"
 )
 
 // CryptoKind identifies the category of a cryptographic asset.
@@ -63,6 +67,16 @@ const (
 	CryptoEncodingPEM CryptoEncoding = "PEM"
 	// CryptoEncodingDER identifies DER encoding.
 	CryptoEncodingDER CryptoEncoding = "DER"
+)
+
+// CryptoKeystoreType identifies the keystore that source cryptographic data is stored in.
+type CryptoKeystoreType string
+
+const (
+	// CryptoKeystorePKCS12 identifies a PKCS#12 keystore.
+	CryptoKeystorePKCS12 CryptoKeystoreType = "PKCS#12"
+	// CryptoKeystoreJKS identifies a JKS keystore.
+	CryptoKeystoreJKS CryptoKeystoreType = "JKS"
 )
 
 // CryptoAssetInfo describes a format-neutral cryptographic asset. Its identity is derived
@@ -138,11 +152,7 @@ func (a CryptoAssetInfo) Validate() error {
 // CompareCryptoAssets orders assets by identity, then by where they were found.
 func CompareCryptoAssets(a, b CryptoAsset) int {
 	return cmp.Or(
-		cmp.Compare(a.Kind, b.Kind),
-		cmp.Compare(a.KeyType, b.KeyType),
-		cmp.Compare(a.Identity.Method, b.Identity.Method),
-		cmp.Compare(a.Identity.Value, b.Identity.Value),
-		cmp.Compare(a.Identity.Parameters, b.Identity.Parameters),
+		a.Descriptor().Compare(b.Descriptor()),
 		cmp.Compare(a.FilePath, b.FilePath),
 		cmp.Compare(a.Layer.DiffID, b.Layer.DiffID),
 		cmp.Compare(a.Format, b.Format),
@@ -221,12 +231,16 @@ func (a CryptoAssetInfo) validateAlgorithm() error {
 // CryptoAsset is a described asset together with the file it was found in and the
 // container it was stored in there.
 type CryptoAsset struct {
+	// AssetID identifies the asset within a report.
+	AssetID string `json:",omitempty"`
 	CryptoAssetInfo
 	FilePath string `json:",omitempty"`
 	// Format is empty for a key with no container of its own, such as the key of a certificate.
 	Format CryptoKeyFormat `json:",omitempty"`
 	// Encoding is empty for a derived asset, such as an algorithm.
 	Encoding CryptoEncoding `json:",omitempty"`
+	// Keystore is empty for material outside a keystore.
+	Keystore CryptoKeystoreType `json:",omitempty"`
 	// Layer is empty for a target that has no layers.
 	Layer Layer `json:",omitzero"`
 }
@@ -254,6 +268,15 @@ func (a CryptoAsset) Validate() error {
 	if a.Encoding != "" && a.Kind == CryptoKindAlgorithm {
 		return xerrors.Errorf("asset kind %q has no encoded form", a.Kind)
 	}
+
+	switch a.Keystore {
+	case "", CryptoKeystorePKCS12, CryptoKeystoreJKS:
+	default:
+		return xerrors.Errorf("unknown keystore type %q", a.Keystore)
+	}
+	if a.Keystore != "" && a.Encoding != CryptoEncodingDER {
+		return xerrors.Errorf("keystore %q requires %s encoding", a.Keystore, CryptoEncodingDER)
+	}
 	return nil
 }
 
@@ -261,4 +284,67 @@ func (a CryptoAsset) Validate() error {
 func (a CryptoAsset) Clone() CryptoAsset {
 	a.CryptoAssetInfo = a.CryptoAssetInfo.Clone()
 	return a
+}
+
+// CryptoAssets is a list of cryptographic assets.
+type CryptoAssets []CryptoAsset
+
+// Finalize sets the ID of every asset and links key pairs.
+func (assets CryptoAssets) Finalize() {
+	assets.assignIDs()
+	assets.linkKeyPairs()
+}
+
+func (assets CryptoAssets) assignIDs() {
+	for i := range assets {
+		assets[i].AssetID = assetID(assets[i])
+	}
+}
+
+// linkKeyPairs points every private key at the public key derived from it, when both were
+// found. An encrypted container is never linked, because its identity is the digest of the
+// container and not of a SubjectPublicKeyInfo.
+func (assets CryptoAssets) linkKeyPairs() {
+	public := make(map[CryptoIdentity]CryptoDescriptor)
+	for _, asset := range assets {
+		if asset.Kind == CryptoKindKey && asset.KeyType == CryptoKeyTypePublic {
+			public[asset.Identity] = asset.Descriptor()
+		}
+	}
+	if len(public) == 0 {
+		return
+	}
+
+	for i, asset := range assets {
+		if asset.Kind != CryptoKindKey || asset.KeyType != CryptoKeyTypePrivate {
+			continue
+		}
+		descriptor, found := public[asset.Identity]
+		if !found {
+			continue
+		}
+		assets[i].Relationships = append(assets[i].Relationships, CryptoRelationship{
+			Type:         CryptoRelationshipCorrespondsTo,
+			RelatedAsset: descriptor,
+		})
+	}
+}
+
+// assetID derives the ID from the descriptor, the file path and the format, so the same
+// material found in different files gets different IDs.
+func assetID(asset CryptoAsset) string {
+	v := map[string]any{
+		"descriptor": asset.Descriptor().String(),
+		"filePath":   asset.FilePath,
+		"format":     asset.Format,
+	}
+	hash, err := hashstructure.Hash(v, hashstructure.FormatV2, &hashstructure.HashOptions{
+		ZeroNil:         true,
+		IgnoreZeroValue: true,
+	})
+	if err != nil {
+		log.Warn("Failed to calculate the cryptographic asset hash",
+			log.String("asset", asset.Descriptor().String()), log.FilePath(asset.FilePath), log.Err(err))
+	}
+	return strconv.FormatUint(hash, 16)
 }

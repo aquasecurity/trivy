@@ -27,8 +27,9 @@ func adaptVault(resource azure.Resource, deployment azure.Deployment) keyvault.V
 		EnablePurgeProtection:   resource.Properties.GetMapValue("enablePurgeProtection").AsBoolValue(false, resource.Metadata),
 		SoftDeleteRetentionDays: resource.Properties.GetMapValue("softDeleteRetentionInDays").AsIntValue(7, resource.Metadata),
 		NetworkACLs: keyvault.NetworkACLs{
-			Metadata:      resource.Metadata,
-			DefaultAction: resource.Properties.GetMapValue("properties").GetMapValue("networkAcls").GetMapValue("defaultAction").AsStringValue("", resource.Metadata),
+			Metadata: resource.Metadata,
+			DefaultAction: resource.Properties.GetMapValue("networkAcls").GetMapValue("defaultAction").
+				AsStringValue("", resource.Metadata),
 		},
 	}
 }

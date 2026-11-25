@@ -1,44 +1,60 @@
 name: Automatic Backporting
+run-name: "Backport #${{ inputs.pr-number }} to ${{ inputs.branch }}"
 
+# Only users with write access to the repository can run a workflow_dispatch workflow,
+# so no separate permission check is needed.
 on:
-  issue_comment:
-    types: [created]
+  workflow_dispatch:
+    inputs:
+      pr-number:
+        description: Number of the merged PR to backport
+        required: true
+        type: number
+      branch:
+        description: Target release branch (e.g. release/v0.50)
+        required: true
+        type: string
+
+# github.token is only used to read the PR; checkout and backport.sh use the GitHub App token.
+permissions:
+  contents: read
+  pull-requests: read
 
 jobs:
-  check_permission:
-    name: Check comment author permissions
-    runs-on: ubuntu-2404-2core
-    outputs:
-      is_maintainer: ${{ steps.check_permission.outputs.is_maintainer }}
-    steps:
-      - name: Check permission
-        id: check_permission
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          PERMISSION=$(gh api /repos/$GITHUB_REPOSITORY/collaborators/$GITHUB_ACTOR/permission --jq '.permission')
-          if [ "$PERMISSION" == "admin" ] || [ "$PERMISSION" == "write" ]; then
-           echo "is_maintainer=true" >> $GITHUB_OUTPUT
-          else
-           echo "is_maintainer=false" >> $GITHUB_OUTPUT
-          fi
-  
-
   backport:
     name: Backport PR
-    needs: check_permission # run this job after checking permissions
-    if: |
-      needs.check_permission.outputs.is_maintainer == 'true' &&      
-      github.event.issue.pull_request &&
-      github.event.issue.pull_request.merged_at != null &&
-      startsWith(github.event.comment.body, '@aqua-bot backport release/')
     runs-on: ubuntu-2404-2core
     steps:
+      - name: Validate inputs
+        env:
+          GH_TOKEN: ${{ github.token }} # required by gh api
+          PR_NUMBER: ${{ inputs.pr-number }}
+          BRANCH_NAME: ${{ inputs.branch }}
+        run: |
+          # Always run backport.sh from main, regardless of the ref selected in "Use workflow from".
+          if [[ "$GITHUB_REF" != "refs/heads/main" ]]; then
+            echo "Error: the workflow must be run from main, got $GITHUB_REF" >&2
+            exit 1
+          fi
+          if [[ ! "$PR_NUMBER" =~ ^[0-9]+$ ]]; then
+            echo "Error: invalid PR number: $PR_NUMBER" >&2
+            exit 1
+          fi
+          if [[ "$BRANCH_NAME" == *".."* || ! "$BRANCH_NAME" =~ ^release/[A-Za-z0-9._-]+$ ]]; then
+            echo "Error: invalid release branch name: $BRANCH_NAME" >&2
+            exit 1
+          fi
+          MERGED=$(gh api "/repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER" --jq '.merged and .base.ref == "main"')
+          if [[ "$MERGED" != "true" ]]; then
+            echo "Error: PR #$PR_NUMBER is not merged into main" >&2
+            exit 1
+          fi
+
       # GITHUB_TOKEN cannot trigger workflows on PRs it creates, so the backport
       # PR would not run CI — generate a GitHub App installation token instead.
       - name: Generate token
         id: app-token
-        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        uses: actions/create-github-app-token@64ab729a6294000f5aa4a4bc0b73d1f32bc45510 # v3.3.0
         with:
           client-id: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_CLIENT_ID }}
           private-key: ${{ secrets.REPO_TRIVY_WRITE_GH_APP_PRIVATE_KEY }}
@@ -52,17 +68,6 @@ jobs:
           persist-credentials: true # backport.sh runs git push
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Extract branch name
-        env:
-          COMMENT_BODY: ${{ github.event.comment.body }}
-        run: |
-          BRANCH_NAME=$(echo "$COMMENT_BODY" | grep -oE '@aqua-bot backport\s+(\S+)' | awk '{print $3}')
-          if [[ -z "$BRANCH_NAME" || "$BRANCH_NAME" == *".."* || ! "$BRANCH_NAME" =~ ^[A-Za-z0-9._-]+(/[A-Za-z0-9._-]+)*$ ]]; then
-            echo "Error: Invalid branch name extracted (unsafe characters detected)." >&2
-            exit 1
-          fi
-          echo "BRANCH_NAME=$BRANCH_NAME" >> "$GITHUB_ENV"
-
       - name: Set up Git user
         run: |
           git config --global user.email "actions@github.com"
@@ -71,5 +76,6 @@ jobs:
       - name: Run backport script
         env:
           GITHUB_TOKEN: ${{ steps.app-token.outputs.token }}
-          ISSUE_NUMBER: ${{ github.event.issue.number }}
-        run: ./misc/backport/backport.sh "$BRANCH_NAME" "$ISSUE_NUMBER"
+          PR_NUMBER: ${{ inputs.pr-number }}
+          BRANCH_NAME: ${{ inputs.branch }}
+        run: ./misc/backport/backport.sh "$BRANCH_NAME" "$PR_NUMBER"

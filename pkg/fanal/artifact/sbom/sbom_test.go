@@ -31,7 +31,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom.json"),
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+					ID: "sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -191,9 +191,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "bom.json"),
 				Type: types.TypeCycloneDX,
-				ID:   "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+				ID:   "sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 				BlobIDs: []string{
-					"sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+					"sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
@@ -213,7 +213,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+					ID: "sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -373,9 +373,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "sbom.cdx.intoto.jsonl"),
 				Type: types.TypeCycloneDX,
-				ID:   "sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+				ID:   "sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 				BlobIDs: []string{
-					"sha256:76bc49ae239d24c6a122e730bafb9d5295d0af380492aeb92a3bf34bea3a14ca",
+					"sha256:5253cb3c687363f1c3620ae0bcbddec37f888a47cea555c9253e6d465a840214",
 				},
 				ImageMetadata: artifact.ImageMetadata{
 					ID: "sha256:49193a2310dbad4c02382da87ac624a80a92387a4f7536235f9ba590e5bcd7b5",
@@ -394,7 +394,7 @@ func TestArtifact_Inspect(t *testing.T) {
 			filePath: filepath.Join("testdata", "bom-missing-refs.json"),
 			wantBlobs: []cachetest.WantBlob{
 				{
-					ID: "sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+					ID: "sha256:8df9d77cec8e6c354fc05b5c2346203a3798dfcd2ea3a5a44d4a02230bfbd2be",
 					BlobInfo: types.BlobInfo{
 						SchemaVersion: types.BlobJSONSchemaVersion,
 						OS: types.OS{
@@ -466,9 +466,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: filepath.Join("testdata", "bom-missing-refs.json"),
 				Type: types.TypeCycloneDX,
-				ID:   "sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+				ID:   "sha256:8df9d77cec8e6c354fc05b5c2346203a3798dfcd2ea3a5a44d4a02230bfbd2be",
 				BlobIDs: []string{
-					"sha256:512b9e999c9d7b4880c63ce55c2c74ea5c22b05cdbcb486097a16ec692c746a0",
+					"sha256:8df9d77cec8e6c354fc05b5c2346203a3798dfcd2ea3a5a44d4a02230bfbd2be",
 				},
 			},
 		},

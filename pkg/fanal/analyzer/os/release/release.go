@@ -15,7 +15,7 @@ func init() {
 	analyzer.RegisterAnalyzer(&osReleaseAnalyzer{})
 }
 
-const version = 1
+const version = 2
 
 var requiredFiles = []string{
 	"etc/os-release",
@@ -85,6 +85,8 @@ func idToOSFamily(id string) types.OSType {
 		return types.Fedora
 	case "alpine":
 		return types.Alpine
+	case "ubuntu":
+		return types.Ubuntu
 	case "bottlerocket":
 		return types.Bottlerocket
 	case "opensuse-tumbleweed":

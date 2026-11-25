@@ -31,6 +31,15 @@ func TestScanner_Scan(t *testing.T) {
 			wantSeverity: "CRITICAL",
 		},
 		{
+			name: "default unencumbered licenses",
+			categories: map[types.LicenseCategory][]string{
+				types.CategoryUnencumbered: expression.UnencumberedLicenses,
+			},
+			licenseName:  "MIT-0",
+			wantCategory: types.CategoryUnencumbered,
+			wantSeverity: "LOW",
+		},
+		{
 			name: "has plus",
 			categories: map[types.LicenseCategory][]string{
 				types.CategoryForbidden: {

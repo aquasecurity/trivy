@@ -151,6 +151,41 @@ var (
 		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 28, EndLine: 33}}},
 	}
 
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add es-toolkit@1.47.0
+	//   cat yarn.lock'
+	// with a dependencies section and the ms block added by hand, as Berry
+	// writes dependencies right before dependenciesMeta.
+	yarnV2WithDependenciesMeta = []ftypes.Package{
+		{ID: "es-toolkit@1.47.0", Name: "es-toolkit", Version: "1.47.0", Locations: []ftypes.Location{{StartLine: 16, EndLine: 30}}},
+		{ID: "ms@2.1.2", Name: "ms", Version: "2.1.2", Locations: []ftypes.Location{{StartLine: 32, EndLine: 37}}},
+	}
+
+	yarnV2WithDependenciesMetaDeps = []ftypes.Dependency{
+		{
+			ID:        "es-toolkit@1.47.0",
+			DependsOn: []string{"ms@2.1.2"},
+		},
+	}
+
+	// docker run --rm node@sha256:18a6d90fd60542269850c80ca03b29b1d9b14d6b221ac7ee8e35b0d33ef904bd sh -c '
+	//   mkdir /app && cd /app
+	//   corepack enable
+	//   yarn init -2
+	//   yarn add versions@15.5.2
+	//   cat yarn.lock'
+	yarnV2WithVersionBin = []ftypes.Package{
+		{ID: "versions@15.5.2", Name: "versions", Version: "15.5.2", Locations: []ftypes.Location{{StartLine: 16, EndLine: 23}}},
+	}
+
+	// A package name that starts with "version" in the block header.
+	yarnV2WithVersionName = []ftypes.Package{
+		{ID: "version-compare@1.0.0", Name: "version-compare", Version: "1.0.0", Locations: []ftypes.Location{{StartLine: 8, EndLine: 12}}},
+	}
+
 	yarnV2DepsWithProtocolDeps = []ftypes.Dependency{
 		{
 			ID:        "debug@4.3.4",

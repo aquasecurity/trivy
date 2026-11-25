@@ -523,7 +523,7 @@ o:test-parent
 m:Carlo Landmeter <clandmeter@gmail.com>
 t:1546255353
 c:856c64b1dc1f9b8176c60e28808482f8503c4e98
-D:pkgconfig sqlite-libs=3.26.0-r3
+D:pkgconfig~1 sqlite-libs~3.26
 p:pc:sqlite3=3.26.0
 F:usr
 F:usr/lib

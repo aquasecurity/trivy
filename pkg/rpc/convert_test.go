@@ -1,6 +1,7 @@
 package rpc
 
 import (
+	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"testing"
 	"time"
@@ -14,6 +15,7 @@ import (
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/internal/cryptotest"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/types"
 	"github.com/aquasecurity/trivy/rpc/common"
@@ -140,6 +142,46 @@ func TestConvertToRpcPkgs(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "package with several digests",
+			args: args{
+				pkgs: []ftypes.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Digests: []digest.SourcedDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: digest.SourceRPMSigMD5,
+							},
+							{
+								Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+								Source: digest.SourceFileContent,
+							},
+						},
+					},
+				},
+			},
+			want: []*common.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Layer:   &common.Layer{},
+					Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []*common.PackageDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: "rpm-sigmd5",
+						},
+						{
+							Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							Source: "file-content",
+						},
+					},
+				},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -229,6 +271,7 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 						Digest: "sha256:6a428f9f83b0a29f1fdd2ccccca19a9bab805a925b8eddf432a5a3d3da04afbc",
 						DiffID: "sha256:39982b2a789afc156fff00c707d0ff1c6ab4af8f1666a8df4787714059ce24e7",
 					},
+					// The peer sent the legacy field only, and it is passed through as such.
 					Digest:       "SHA1:901a7b55410321c4d35543506cff2a8613ef5aa2",
 					Relationship: ftypes.RelationshipIndirect,
 					Indirect:     true,
@@ -322,6 +365,87 @@ func TestConvertFromRpcPkgs(t *testing.T) {
 					Maintainer: "alice@example.com",
 					Repository: ftypes.PackageRepository{
 						Class: ftypes.RepositoryClassThirdParty,
+					},
+				},
+			},
+		},
+		{
+			// The legacy field is passed through as received, even when it is empty.
+			name: "digests without the legacy field",
+			args: args{
+				rpcPkgs: []*common.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digests: []*common.PackageDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: "rpm-sigmd5",
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: digest.SourceRPMSigMD5,
+						},
+					},
+				},
+			},
+		},
+		{
+			name: "package with several digests",
+			args: args{
+				rpcPkgs: []*common.Package{
+					{
+						Name:    "binary",
+						Version: "1.2.3",
+						Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+						Digests: []*common.PackageDigest{
+							{
+								Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+								Source: "rpm-sigmd5",
+							},
+							{
+								Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+								Source: "file-content",
+							},
+							{
+								// An empty source on the wire means the peer did not know it.
+								Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+							},
+							{
+								// An entry without a value is dropped rather than stored.
+								Source: "file-content",
+							},
+						},
+					},
+				},
+			},
+			want: []ftypes.Package{
+				{
+					Name:    "binary",
+					Version: "1.2.3",
+					Digest:  "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "md5:e35b7bd7c7a54c73d4b7f7e18f4a1e4f",
+							Source: digest.SourceRPMSigMD5,
+						},
+						{
+							Digest: "sha256:cf7b0f1d1a1e9b3e5b6b7e8f9a0b1c2d3e4f5061728394a5b6c7d8e9f0a1b2c3",
+							Source: digest.SourceFileContent,
+						},
+						{
+							Digest: "sha256:1e2d3c4b5a69788796a5b4c3d2e1f00918273645546372819a0b1c2d3e4f5061",
+							Source: digest.SourceUnknown,
+						},
 					},
 				},
 			},
@@ -584,6 +708,7 @@ func TestConvertFromRPCResults(t *testing.T) {
 	fixedPublishedDate := time.Date(2009, 11, 10, 23, 0, 0, 0, time.UTC)
 	fixedLastModifiedDate := time.Date(2009, 11, 10, 23, 0, 10, 0, time.UTC)
 	customJSON := `{"Field":"value","Number":1}`
+	customSecretJSON := `{"Field":"value","Number":1}`
 
 	type args struct {
 		rpcResults []*scanner.Result
@@ -639,6 +764,14 @@ func TestConvertFromRPCResults(t *testing.T) {
 									Name: "GitHub Security Advisory Maven",
 									Url:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 								},
+							},
+						},
+						Secrets: []*common.SecretFinding{
+							{
+								RuleId:   "aws-access-key-id",
+								Severity: "CRITICAL",
+								Layer:    &common.Layer{},
+								Custom:   []byte(customSecretJSON),
 							},
 						},
 						CryptoAssets: []*common.CryptoAsset{
@@ -703,6 +836,13 @@ func TestConvertFromRPCResults(t *testing.T) {
 								URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Amaven",
 							},
 							Custom: customJSON,
+						},
+					},
+					Secrets: []types.DetectedSecret{
+						{
+							RuleID:   "aws-access-key-id",
+							Severity: "CRITICAL",
+							Custom:   jsontext.Value(customSecretJSON),
 						},
 					},
 					CryptoAssets: []ftypes.CryptoAsset{
@@ -1596,6 +1736,8 @@ func TestConvertCryptoAssets(t *testing.T) {
 		{
 			name: "certificate",
 			asset: cryptotest.CertificateAsset(cryptotest.WithMutate(func(asset *ftypes.CryptoAsset) {
+				asset.Encoding = ftypes.CryptoEncodingDER
+				asset.Keystore = ftypes.CryptoKeystorePKCS12
 				asset.Certificate.NotBefore = time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)
 				asset.Certificate.NotAfter = time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC)
 				asset.Certificate.KeyUsage = []string{"digitalSignature"}
@@ -1607,6 +1749,7 @@ func TestConvertCryptoAssets(t *testing.T) {
 				asset.Certificate.BasicConstraintsValid = true
 				asset.Certificate.IsCA = true
 				asset.Certificate.MaxPathLenZero = true
+				asset.AssetID = "1e7b3d9c04a65f28"
 				asset.Relationships = []ftypes.CryptoRelationship{
 					{
 						Type:         ftypes.CryptoRelationshipSignedWith,
@@ -1685,6 +1828,80 @@ func TestConvertCryptoAssets(t *testing.T) {
 	}
 }
 
+func TestConvertCryptoFindings(t *testing.T) {
+	tests := []struct {
+		name    string
+		finding types.CryptoFinding
+	}{
+		{
+			name: "SHA-1 signature",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0001",
+				Title:    "SHA-1 certificate signature",
+				Severity: "MEDIUM",
+				AssetID:  "1e7b3d9c04a65f28",
+				Evidence: types.CryptoEvidence{
+					SignatureAlgorithm:    "RSA-PKCS1-1.5-SHA-1",
+					SignatureAlgorithmOID: "1.2.840.113549.1.1.5",
+				},
+			},
+		},
+		{
+			name: "small RSA key",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0002",
+				Title:    "Small RSA key",
+				Severity: "HIGH",
+				AssetID:  "8c2f0e5a91d34b76",
+				Evidence: types.CryptoEvidence{
+					KeySize: 1024,
+				},
+			},
+		},
+		{
+			name: "weak elliptic curve",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0003",
+				Title:    "Weak elliptic curve",
+				Severity: "HIGH",
+				AssetID:  "5d90a2c7e13f6b48",
+				Evidence: types.CryptoEvidence{
+					Curve:                  "P-192",
+					ClassicalSecurityLevel: new(80),
+				},
+			},
+		},
+		{
+			name: "expired certificate",
+			finding: types.CryptoFinding{
+				RuleID:   "CRYPTO-0004",
+				Title:    "Expired certificate",
+				Severity: "MEDIUM",
+				AssetID:  "1e7b3d9c04a65f28",
+				Evidence: types.CryptoEvidence{
+					NotAfter: time.Date(2025, 1, 1, 0, 0, 0, 0, time.UTC),
+				},
+			},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			findings := []types.CryptoFinding{tt.finding}
+
+			var received []*common.CryptoFinding
+			for _, sent := range ConvertToRPCCryptoFindings(findings) {
+				wire, err := proto.Marshal(sent)
+				require.NoError(t, err)
+				var finding common.CryptoFinding
+				require.NoError(t, proto.Unmarshal(wire, &finding))
+				received = append(received, &finding)
+			}
+			assert.Equal(t, findings, ConvertFromRPCCryptoFindings(received))
+		})
+	}
+}
+
 func TestConvertFromRPCCryptoAssets(t *testing.T) {
 	tests := []struct {
 		name   string
@@ -1747,6 +1964,112 @@ func TestConvertFromRPCCryptoAssets(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			assert.Equal(t, tt.want, ConvertFromRPCCryptoAssets(tt.assets))
+		})
+	}
+}
+
+func TestConvertToRPCSecretFindings(t *testing.T) {
+	type customStruct struct {
+		Field  string
+		Number int
+	}
+	tests := []struct {
+		name     string
+		findings []ftypes.SecretFinding
+		want     []*common.SecretFinding
+	}{
+		{
+			name: "happy path",
+			findings: []ftypes.SecretFinding{
+				{
+					RuleID:    "aws-access-key-id",
+					Category:  "AWS",
+					Severity:  "CRITICAL",
+					Title:     "AWS Access Key ID",
+					StartLine: 1,
+					EndLine:   1,
+					Match:     "AWS_ACCESS_KEY_ID=********************",
+					Layer: ftypes.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffID: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					Custom: customStruct{Field: "value", Number: 1},
+				},
+			},
+			want: []*common.SecretFinding{
+				{
+					RuleId:    "aws-access-key-id",
+					Category:  "AWS",
+					Severity:  "CRITICAL",
+					Title:     "AWS Access Key ID",
+					StartLine: 1,
+					EndLine:   1,
+					Code:      &common.Code{},
+					Match:     "AWS_ACCESS_KEY_ID=********************",
+					Layer: &common.Layer{
+						Digest: "sha256:154ad0735c360b212b167f424d33a62305770a1fcfb6363882f5c436cfbd9812",
+						DiffId: "sha256:b2a1a2d80bf0c747a4f6b0ca6af5eef23f043fcdb1ed4f3a3e750aef2dc68079",
+					},
+					Custom: []byte(`{"Field":"value","Number":1}`),
+				},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := ConvertToRPCSecretFindings(tt.findings)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+// TestConvertSecretFindingsCustomRoundTrip checks that the custom data of a secret finding keeps its value
+// after crossing the client/server boundary twice.
+func TestConvertSecretFindingsCustomRoundTrip(t *testing.T) {
+	type customStruct struct {
+		Field  string
+		Number int
+	}
+
+	tests := []struct {
+		name   string
+		custom any
+		want   string // JSON of the custom data in the report
+	}{
+		{
+			name:   "struct",
+			custom: customStruct{Field: "value", Number: 1},
+			want:   `{"Field":"value","Number":1}`,
+		},
+		{
+			name:   "map with nested values",
+			custom: map[string]any{"List": []string{"a", "b"}, "Map": map[string]int{"c": 2}},
+			want:   `{"List":["a","b"],"Map":{"c":2}}`,
+		},
+		{
+			name:   "JSON string",
+			custom: `{"Field":"value","Number":1}`,
+			want:   `"{\"Field\":\"value\",\"Number\":1}"`,
+		},
+		{
+			name:   "without custom data",
+			custom: nil,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			// Simulates the blob upload from the client to the server cache (ConvertToRPCPutBlobRequest -> ConvertFromRPCPutBlobRequest)
+			onServer := convertFromRPCSecretCustom(convertToRPCSecretCustom(tt.custom))
+
+			// Simulates the scan result returned from the server to the client (ConvertToRPCScanResponse -> ConvertFromRPCResults)
+			got := convertFromRPCSecretCustom(convertToRPCSecretCustom(onServer))
+
+			if tt.want == "" {
+				assert.Nil(t, got)
+				return
+			}
+			require.IsType(t, jsontext.Value{}, got)
+			assert.JSONEq(t, tt.want, string(got.(jsontext.Value)))
 		})
 	}
 }

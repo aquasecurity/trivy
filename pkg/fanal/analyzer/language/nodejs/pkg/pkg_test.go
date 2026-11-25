@@ -7,6 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	"github.com/aquasecurity/trivy/pkg/digest"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
 )
@@ -57,6 +58,12 @@ func Test_nodePkgLibraryAnalyzer_Analyze(t *testing.T) {
 								Licenses: []string{"MIT"},
 								FilePath: "testdata/package.json",
 								Digest:   "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+								Digests: []digest.SourcedDigest{
+									{
+										Digest: "sha1:901a7b55410321c4d35543506cff2a8613ef5aa2",
+										Source: digest.SourceFileContent,
+									},
+								},
 							},
 						},
 					},

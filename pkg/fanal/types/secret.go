@@ -18,4 +18,7 @@ type SecretFinding struct {
 	Match     string
 	Layer     Layer `json:",omitzero"`
 	Offset    int   `json:",omitempty"` // Byte offset in the original file
+
+	// Custom is for extensibility and not supposed to be used in OSS
+	Custom any `json:",omitempty"`
 }

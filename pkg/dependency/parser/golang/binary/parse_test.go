@@ -8,6 +8,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/golang/binary"
+	"github.com/aquasecurity/trivy/pkg/digest"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 )
 
@@ -29,16 +30,34 @@ func TestParse(t *testing.T) {
 			ID:      "github.com/aquasecurity/go-pep440-version@v0.0.0-20210121094942-22b2f8951d46",
 			Name:    "github.com/aquasecurity/go-pep440-version",
 			Version: "v0.0.0-20210121094942-22b2f8951d46",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha256:be65cd97e1c37eaa9782bd2e6355202b5180869b3c9db000b6a1cd05c8327fee",
+					Source: digest.SourceGoModuleH1,
+				},
+			},
 		},
 		{
 			ID:      "github.com/aquasecurity/go-version@v0.0.0-20210121072130-637058cfe492",
 			Name:    "github.com/aquasecurity/go-version",
 			Version: "v0.0.0-20210121072130-637058cfe492",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha256:adc106e47238f74145d1aef3bafc4ec5e9f9d9d7728027cd5633f45ce08c97e3",
+					Source: digest.SourceGoModuleH1,
+				},
+			},
 		},
 		{
 			ID:      "golang.org/x/xerrors@v0.0.0-20200804184101-5ec99f83aff1",
 			Name:    "golang.org/x/xerrors",
 			Version: "v0.0.0-20200804184101-5ec99f83aff1",
+			Digests: []digest.SourcedDigest{
+				{
+					Digest: "sha256:828d5b2bf0ff045655d88f1c21077534a119fb4a304931b57c34dc8b822a15c1",
+					Source: digest.SourceGoModuleH1,
+				},
+			},
 		},
 	}
 	wantDeps := []ftypes.Dependency{
@@ -79,6 +98,14 @@ func TestParse(t *testing.T) {
 			wantDeps:  wantDeps,
 		},
 		{
+			// docker run --rm -v "$PWD/testdata":/out -e GOOS=linux -e GOARCH=amd64 golang:1.27.3@sha256:c292963ad0e5f51e843c726edc204a4e4c26a859ba1e4d736d91028aa3633048 sh -c '
+			//   mkdir /src && cd /src
+			//   go mod init github.com/ebati/trivy-mod-parse
+			//   printf "package main\n\nimport (\n\t\"github.com/davecgh/go-spew/spew\"\n\t_ \"github.com/go-sql-driver/mysql\"\n)\n\nfunc main() { spew.Dump() }\n" > main.go
+			//   go mod edit -replace github.com/go-sql-driver/mysql=github.com/go-sql-driver/mysql@v1.5.0
+			//   go get github.com/davecgh/go-spew@v1.1.1
+			//   go mod tidy
+			//   go build -trimpath -ldflags="-s -w" -o /out/replace.elf'
 			name:      "with replace directive",
 			inputFile: "testdata/replace.elf",
 			wantPkgs: []ftypes.Package{
@@ -89,20 +116,32 @@ func TestParse(t *testing.T) {
 					Relationship: ftypes.RelationshipRoot,
 				},
 				{
-					ID:           "stdlib@v1.16.4",
+					ID:           "stdlib@v1.27.3",
 					Name:         "stdlib",
-					Version:      "v1.16.4",
+					Version:      "v1.27.3",
 					Relationship: ftypes.RelationshipDirect,
 				},
 				{
 					ID:      "github.com/davecgh/go-spew@v1.1.1",
 					Name:    "github.com/davecgh/go-spew",
 					Version: "v1.1.1",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha256:be3f63feed5baa7bc211f24ec1486d94e011aacdfeae41d8635de36164d4f7b7",
+							Source: digest.SourceGoModuleH1,
+						},
+					},
 				},
 				{
 					ID:      "github.com/go-sql-driver/mysql@v1.5.0",
 					Name:    "github.com/go-sql-driver/mysql",
 					Version: "v1.5.0",
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha256:a33c9960d416df1dc7b6a4f58e2adad3b0cdd8f02bc76bfbfe637aea019c1ceb",
+							Source: digest.SourceGoModuleH1,
+						},
+					},
 				},
 			},
 			wantDeps: []ftypes.Dependency{
@@ -111,7 +150,7 @@ func TestParse(t *testing.T) {
 					DependsOn: []string{
 						"github.com/davecgh/go-spew@v1.1.1",
 						"github.com/go-sql-driver/mysql@v1.5.0",
-						"stdlib@v1.16.4",
+						"stdlib@v1.27.3",
 					},
 				},
 			},
@@ -125,6 +164,12 @@ func TestParse(t *testing.T) {
 					Name:         "go.etcd.io/bbolt",
 					Version:      "v1.3.5",
 					Relationship: ftypes.RelationshipRoot,
+					Digests: []digest.SourcedDigest{
+						{
+							Digest: "sha256:5c0cf1f608c26f44718fb128a9c0a53c3d5de590716499348dbba83c77a706dd",
+							Source: digest.SourceGoModuleH1,
+						},
+					},
 				},
 				{
 					ID:           "stdlib@v1.20.6",

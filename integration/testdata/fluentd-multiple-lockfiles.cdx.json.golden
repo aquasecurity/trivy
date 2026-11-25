@@ -122,6 +122,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "adduser"
         },
@@ -170,6 +174,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "apt"
         },
@@ -211,6 +219,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -261,6 +273,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "base-passwd"
         },
@@ -302,6 +318,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -421,6 +441,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -478,6 +502,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ca-certificates"
         },
@@ -519,6 +547,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -568,6 +600,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "dash"
         },
@@ -615,6 +651,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "debconf"
         },
@@ -658,6 +698,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "debian-archive-keyring"
         },
@@ -699,6 +743,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -747,6 +795,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -820,6 +872,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "dpkg"
         },
@@ -866,6 +922,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -985,6 +1045,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -1035,6 +1099,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1107,6 +1175,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1211,6 +1283,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "gnupg2"
         },
@@ -1263,6 +1339,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "grep"
         },
@@ -1310,6 +1390,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "gzip"
         },
@@ -1355,6 +1439,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1408,6 +1496,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1468,6 +1560,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "acl"
         },
@@ -1518,6 +1614,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1576,6 +1676,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -1639,6 +1743,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcEpoch",
           "value": "1"
         },
@@ -1698,6 +1806,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -1821,6 +1933,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -1871,6 +1987,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -1925,6 +2045,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "glibc"
         },
@@ -1975,6 +2099,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2034,6 +2162,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libcap-ng"
         },
@@ -2072,6 +2204,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2114,6 +2250,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "db5.3"
         },
@@ -2152,6 +2292,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2200,6 +2344,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2319,6 +2467,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -2366,6 +2518,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libffi"
         },
@@ -2404,6 +2560,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2456,6 +2616,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2525,6 +2689,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "gdbm"
         },
@@ -2592,6 +2760,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "gdbm"
         },
@@ -2652,6 +2824,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -2755,6 +2931,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "gnutls28"
         },
@@ -2827,6 +3007,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libgpg-error"
         },
@@ -2865,6 +3049,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -2944,6 +3132,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libidn2"
         },
@@ -3016,6 +3208,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "jemalloc"
         },
@@ -3071,6 +3267,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -3190,6 +3390,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "xz-utils"
         },
@@ -3307,6 +3511,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -3347,6 +3555,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ncurses"
         },
@@ -3385,6 +3597,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -3474,6 +3690,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "nettle"
         },
@@ -3541,6 +3761,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "p11-kit"
         },
@@ -3586,6 +3810,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -3635,6 +3863,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "pam"
         },
@@ -3680,6 +3912,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -3729,6 +3965,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "pam"
         },
@@ -3767,6 +4007,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -3823,6 +4067,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -3972,6 +4220,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ruby2.5"
         },
@@ -4017,6 +4269,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4071,6 +4327,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libselinux"
         },
@@ -4121,6 +4381,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4175,6 +4439,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libsemanage"
         },
@@ -4225,6 +4493,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4344,6 +4616,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -4382,6 +4658,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4424,6 +4704,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "openssl"
         },
@@ -4462,6 +4746,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4541,6 +4829,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "systemd"
         },
@@ -4603,6 +4895,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libtasn1-6"
         },
@@ -4641,6 +4937,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4718,6 +5018,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4815,6 +5119,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -4934,6 +5242,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -4984,6 +5296,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5053,6 +5369,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "libzstd"
         },
@@ -5098,6 +5418,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -5149,6 +5473,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5268,6 +5596,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -5306,6 +5638,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5348,6 +5684,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ncurses"
         },
@@ -5386,6 +5726,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5435,6 +5779,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcEpoch",
           "value": "1"
         },
@@ -5477,6 +5825,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5524,6 +5876,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5578,6 +5934,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "readline"
         },
@@ -5623,6 +5983,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5672,6 +6036,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ruby-minitest"
         },
@@ -5717,6 +6085,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5769,6 +6141,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -5833,6 +6209,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ruby-test-unit"
         },
@@ -5878,6 +6258,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -6027,6 +6411,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "ruby2.5"
         },
@@ -6079,6 +6467,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcEpoch",
           "value": "1"
         },
@@ -6126,6 +6518,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "rubygems-integration"
         },
@@ -6167,6 +6563,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -6221,6 +6621,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "sysvinit"
         },
@@ -6273,6 +6677,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "tar"
         },
@@ -6311,6 +6719,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcName",
@@ -6430,6 +6842,10 @@
           "value": "debian"
         },
         {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
+        },
+        {
           "name": "aquasecurity:trivy:SrcName",
           "value": "util-linux"
         },
@@ -6475,6 +6891,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "debian"
+        },
+        {
+          "name": "aquasecurity:trivy:RepositoryClass",
+          "value": "official"
         },
         {
           "name": "aquasecurity:trivy:SrcEpoch",
@@ -6529,6 +6949,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:a2cd09dcbaf8ca1951fb8e3f2ebdfe6728ab44f7"
         }
       ]
     },
@@ -6567,6 +6991,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b4596fdeffcb1c89b24623b6f775a6b054a8323f"
         }
       ]
     },
@@ -6605,6 +7033,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:c96749b0390ad63300b13dca6fd83e5508facf18"
         }
       ]
     },
@@ -6636,6 +7068,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:706a2490b54301e8ae8f2ca8f9f56b279b96ac7b"
         }
       ]
     },
@@ -6674,6 +7110,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:04a4a555fe3a7e253098e870cf8a6c8746828829"
         }
       ]
     },
@@ -6722,6 +7162,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:e45a352deedbf1d48c2563caa583d0864d6ac62b"
         }
       ]
     },
@@ -6760,6 +7204,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:aac794d1d845525dc57d73d8bd5bda4b7f593ea4"
         }
       ]
     },
@@ -6798,6 +7246,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:29ab0a306cfc109b82ac19c37f288956a4d6d1d9"
         }
       ]
     },
@@ -6836,6 +7288,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:f3996e145e83f80d27ed48f8d2dca84f02c696c3"
         }
       ]
     },
@@ -6874,6 +7330,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:8b5c81a189d2748ae488dff8a7b4876493b86f76"
         }
       ]
     },
@@ -6912,6 +7372,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b8c741fbdc2d729a59e2e855037421040673ca45"
         }
       ]
     },
@@ -6950,6 +7414,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b9ffee214ef79e695c14c8703566f7c13be4c2ba"
         }
       ]
     },
@@ -6988,6 +7456,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:e6345da46b7a923b2248bc76d074362e7491376b"
         }
       ]
     },
@@ -7026,6 +7498,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b6a0da88821e50d052cb244b57562f00abe79888"
         }
       ]
     },
@@ -7064,6 +7540,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:d1a7b50f7723ead908453f463e24424735be0a56"
         }
       ]
     },
@@ -7102,6 +7582,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:d60372f3af2757abd0a4ff68484e9328b2cbe386"
         }
       ]
     },
@@ -7140,6 +7624,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:eeb3ce046c69c9c83ed1d4bc949058ef6a124f96"
         }
       ]
     },
@@ -7178,6 +7666,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:9aa245fc07627474621e29f04507a377dfae09d3"
         }
       ]
     },
@@ -7216,6 +7708,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:597a311791f0d05968c558e8015c8bed864137e2"
         }
       ]
     },
@@ -7254,6 +7750,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:115901208913bc5031597a20fae33c50c6de6500"
         }
       ]
     },
@@ -7292,6 +7792,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:5f31ca316e345410e5a5b70b5fafed8a51fd5092"
         }
       ]
     },
@@ -7323,6 +7827,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:21dedf2ba79a24f86528c2dfc32d17dd9324d9fd"
         }
       ]
     },
@@ -7361,6 +7869,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:e6f5b8e237e694b3729797cca134525822769964"
         }
       ]
     },
@@ -7399,6 +7911,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:53c844c1f954a9c43b78b8e57f18c0ec965beb1f"
         }
       ]
     },
@@ -7437,6 +7953,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:7c6889d98755a1fe8859d850892412a0e001ba9a"
         }
       ]
     },
@@ -7475,6 +7995,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:79032e0328aa1d3ee184a38c50cd93d5bce8998b"
         }
       ]
     },
@@ -7513,6 +8037,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:0ed80e936eaf7151f540186333c3df436afd46c6"
         }
       ]
     },
@@ -7551,6 +8079,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:d13bccc2521cef33fc4303888b24f327a7369877"
         }
       ]
     },
@@ -7589,6 +8121,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:31916cb42ac6b30c68a5422414946d0328be94d4"
         }
       ]
     },
@@ -7627,6 +8163,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:c8c5874f406a8fefc655fee48b75dfa276a5b8fa"
         }
       ]
     },
@@ -7665,6 +8205,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:8a80ce9bf4961df0184d25699612d29293a05aee"
         }
       ]
     },
@@ -7703,6 +8247,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b70aa1555acff548ee282c76ddd562e831483187"
         }
       ]
     },
@@ -7741,6 +8289,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:8fcf25c201eacdf1a0e4db78efcb37ad590f33c0"
         }
       ]
     },
@@ -7779,6 +8331,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:bda4ff6f3cd395534ba441ccacc4640f9dc43942"
         }
       ]
     },
@@ -7817,6 +8373,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:fead333877a2db2e2aaca87d8cd1f270952cd42e"
         }
       ]
     },
@@ -7855,6 +8415,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:927edb51d5b23a49a417fe1503f196896c0e8034"
         }
       ]
     },
@@ -7893,6 +8457,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:98d7bbb894429413feb5c0a3b766a7945f65e3ba"
         }
       ]
     },
@@ -7931,6 +8499,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:b348b933b9c2f6a6e952f6a15c7cbd9f1186815f"
         }
       ]
     },
@@ -7969,6 +8541,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:f829d25ee6b39cdda518f7b6f85be6563d7b5990"
         }
       ]
     },
@@ -8007,6 +8583,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:ac88907845a8bec2a0df25cf2e3ef61121e47252"
         }
       ]
     },
@@ -8045,6 +8625,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:07a0817cd9df688930b2d8481a647a7ec321b870"
         }
       ]
     },
@@ -8083,6 +8667,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:d01a832a472daf914670adda88b44b419a4d2daf"
         }
       ]
     },
@@ -8121,6 +8709,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:5a4a02765d82d6786a832384b890f0a2497c2e14"
         }
       ]
     },
@@ -8159,6 +8751,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:a7e5943a216b16e0867693f20d5d1604cd015486"
         }
       ]
     },
@@ -8197,6 +8793,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:16e5806b2d513f6b075355c602aed0f960584267"
         }
       ]
     },
@@ -8235,6 +8835,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:1bae5c6042dc82a4bec6aacb42f75ba71f7cb634"
         }
       ]
     },
@@ -8273,6 +8877,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:17150d9e40754ea1a732796f224b9be78e77b86a"
         }
       ]
     },
@@ -8311,6 +8919,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:4f310622fe58e95897147736c96d3d42174a3363"
         }
       ]
     },
@@ -8349,6 +8961,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:546993ac33864e279ae73e918d6da5d4ca083098"
         }
       ]
     },
@@ -8387,6 +9003,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:26832d11382943b02433f3ad1df7653b4cfdf3a2"
         }
       ]
     },
@@ -8425,6 +9045,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:5b7db490d431d97366729086683e736d2b5fee99"
         }
       ]
     },
@@ -8463,6 +9087,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:85ff87b60a6d16ffddf4db5f5f91c0ef76bacd3d"
         }
       ]
     },
@@ -8501,6 +9129,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:1b5141ee855f16e832534c2e73d81fec0601ebd3"
         }
       ]
     },
@@ -8539,6 +9171,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:670f3cd2fc601c9b7fde02b1d8c60e90491a7221"
         }
       ]
     },
@@ -8577,6 +9213,10 @@
         {
           "name": "aquasecurity:trivy:PkgType",
           "value": "gemspec"
+        },
+        {
+          "name": "aquasecurity:trivy:SourcedDigest",
+          "value": "file-content:sha1:803894c06d28932016866a26fc2b22c4db942094"
         }
       ]
     }

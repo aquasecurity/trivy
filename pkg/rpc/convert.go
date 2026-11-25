@@ -1,6 +1,8 @@
 package rpc
 
 import (
+	"cmp"
+	"encoding/json/jsontext"
 	jsonv2 "encoding/json/v2"
 	"strings"
 	"time"
@@ -73,6 +75,7 @@ func ConvertToRPCPkgs(pkgs []ftypes.Package) []*common.Package {
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
 			Digest:          pkg.Digest.String(),
+			Digests:         ConvertToRPCPkgDigests(pkg.Digests),
 			Relationship:    int32(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -110,6 +113,31 @@ func ConvertToRPCPkgIdentifier(pkg ftypes.PkgIdentifier) *common.PkgIdentifier {
 		Purl:   p,
 		BomRef: pkg.BOMRef,
 	}
+}
+
+func ConvertToRPCPkgDigests(digests []digest.SourcedDigest) []*common.PackageDigest {
+	var rpcDigests []*common.PackageDigest
+	for _, d := range digests {
+		rpcDigests = append(rpcDigests, &common.PackageDigest{
+			Digest: d.Digest.String(),
+			Source: d.Source.String(),
+		})
+	}
+	return rpcDigests
+}
+
+func ConvertFromRPCPkgDigests(rpcDigests []*common.PackageDigest) []digest.SourcedDigest {
+	var digests []digest.SourcedDigest
+	for _, d := range rpcDigests {
+		if d.Digest == "" {
+			continue
+		}
+		digests = append(digests, digest.SourcedDigest{
+			Digest: digest.Digest(d.Digest),
+			Source: cmp.Or(digest.Source(d.Source), digest.SourceUnknown),
+		})
+	}
+	return digests
 }
 
 func ConvertToRPCLocations(pkgLocs []ftypes.Location) []*common.Location {
@@ -184,9 +212,23 @@ func ConvertToRPCSecretFindings(findings []ftypes.SecretFinding) []*common.Secre
 			Match:     f.Match,
 			Layer:     ConvertToRPCLayer(f.Layer),
 			Offset:    int32(f.Offset),
+			Custom:    convertToRPCSecretCustom(f.Custom),
 		})
 	}
 	return rpcFindings
+}
+
+// convertToRPCSecretCustom encodes custom data of a secret finding as JSON.
+func convertToRPCSecretCustom(custom any) []byte {
+	if custom == nil {
+		return nil
+	}
+	b, err := jsonv2.Marshal(custom)
+	if err != nil {
+		log.Warn("Failed to marshal custom data of the secret finding", log.Err(err))
+		return nil
+	}
+	return b
 }
 
 func ConvertToRPCLicenseFiles(licenses []ftypes.LicenseFile) []*common.LicenseFile {
@@ -224,6 +266,7 @@ func ConvertToRPCLicenseFindings(findings ftypes.LicenseFindings) []*common.Lice
 func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset {
 	return xslices.Map(assets, func(asset ftypes.CryptoAsset) *common.CryptoAsset {
 		return &common.CryptoAsset{
+			AssetId:       asset.AssetID,
 			Kind:          string(asset.Kind),
 			KeyType:       string(asset.KeyType),
 			Identity:      convertToRPCCryptoIdentity(asset.Identity),
@@ -235,7 +278,28 @@ func ConvertToRPCCryptoAssets(assets []ftypes.CryptoAsset) []*common.CryptoAsset
 			FilePath:      asset.FilePath,
 			Format:        string(asset.Format),
 			Encoding:      string(asset.Encoding),
+			Keystore:      string(asset.Keystore),
 			Layer:         ConvertToRPCLayer(asset.Layer),
+		}
+	})
+}
+
+// ConvertToRPCCryptoFindings returns the RPC findings of the built-in crypto checks.
+func ConvertToRPCCryptoFindings(findings []types.CryptoFinding) []*common.CryptoFinding {
+	return xslices.Map(findings, func(finding types.CryptoFinding) *common.CryptoFinding {
+		return &common.CryptoFinding{
+			RuleId:   finding.RuleID,
+			Title:    finding.Title,
+			Severity: finding.Severity,
+			AssetId:  finding.AssetID,
+			Evidence: &common.CryptoEvidence{
+				SignatureAlgorithm:     finding.Evidence.SignatureAlgorithm,
+				SignatureAlgorithmOid:  finding.Evidence.SignatureAlgorithmOID,
+				KeySize:                int32(finding.Evidence.KeySize),
+				Curve:                  finding.Evidence.Curve,
+				ClassicalSecurityLevel: convertOptionalInt[int32](finding.Evidence.ClassicalSecurityLevel),
+				NotAfter:               convertToRPCTime(finding.Evidence.NotAfter),
+			},
 		}
 	})
 }
@@ -349,6 +413,7 @@ func ConvertFromRPCPkgs(rpcPkgs []*common.Package) []ftypes.Package {
 			FilePath:        pkg.FilePath,
 			DependsOn:       pkg.DependsOn,
 			Digest:          digest.Digest(pkg.Digest),
+			Digests:         ConvertFromRPCPkgDigests(pkg.Digests),
 			Relationship:    ftypes.Relationship(pkg.Relationship),
 			Indirect:        pkg.Indirect,
 			Maintainer:      pkg.Maintainer,
@@ -577,6 +642,7 @@ func ConvertFromRPCResults(rpcResults []*scanner.Result) []types.Result {
 			Secrets:           ConvertFromRPCDetectedSecrets(result.Secrets),
 			Licenses:          ConvertFromRPCDetectedLicenses(result.Licenses),
 			CryptoAssets:      ConvertFromRPCCryptoAssets(result.CryptoAssets),
+			CryptoFindings:    ConvertFromRPCCryptoFindings(result.CryptoFindings),
 		})
 	}
 	return results
@@ -670,6 +736,7 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 			Code:      ConvertFromRPCCode(finding.Code),
 			Match:     finding.Match,
 			Offset:    int(finding.Offset),
+			Custom:    convertFromRPCSecretCustom(finding.Custom),
 			Layer: ftypes.Layer{
 				Digest:    finding.Layer.Digest,
 				DiffID:    finding.Layer.DiffId,
@@ -678,6 +745,16 @@ func ConvertFromRPCSecretFindings(rpcFindings []*common.SecretFinding) []ftypes.
 		})
 	}
 	return findings
+}
+
+// convertFromRPCSecretCustom keeps custom data of a secret finding as raw JSON.
+// The data crosses the client/server boundary twice (blob upload and scan result),
+// and raw JSON is marshaled as is, so it is not encoded again on the second hop.
+func convertFromRPCSecretCustom(custom []byte) any {
+	if len(custom) == 0 {
+		return nil
+	}
+	return jsontext.Value(custom)
 }
 
 func ConvertFromRPCSecrets(recSecrets []*common.Secret) []ftypes.Secret {
@@ -723,6 +800,7 @@ func ConvertFromRPCLicenseFindings(rpcFindings []*common.LicenseFinding) ftypes.
 func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.CryptoAsset {
 	return xslices.Map(rpcAssets, func(rpcAsset *common.CryptoAsset) ftypes.CryptoAsset {
 		return ftypes.CryptoAsset{
+			AssetID: rpcAsset.AssetId,
 			CryptoAssetInfo: ftypes.CryptoAssetInfo{
 				Kind:          ftypes.CryptoKind(rpcAsset.Kind),
 				KeyType:       ftypes.CryptoKeyType(rpcAsset.KeyType),
@@ -736,8 +814,32 @@ func ConvertFromRPCCryptoAssets(rpcAssets []*common.CryptoAsset) []ftypes.Crypto
 			FilePath: rpcAsset.FilePath,
 			Format:   ftypes.CryptoKeyFormat(rpcAsset.Format),
 			Encoding: ftypes.CryptoEncoding(rpcAsset.Encoding),
+			Keystore: ftypes.CryptoKeystoreType(rpcAsset.Keystore),
 			Layer:    ConvertFromRPCLayer(rpcAsset.Layer),
 		}
+	})
+}
+
+// ConvertFromRPCCryptoFindings returns the findings of the built-in crypto checks.
+func ConvertFromRPCCryptoFindings(rpcFindings []*common.CryptoFinding) []types.CryptoFinding {
+	return xslices.Map(rpcFindings, func(rpcFinding *common.CryptoFinding) types.CryptoFinding {
+		finding := types.CryptoFinding{
+			RuleID:   rpcFinding.RuleId,
+			Title:    rpcFinding.Title,
+			Severity: rpcFinding.Severity,
+			AssetID:  rpcFinding.AssetId,
+		}
+		if evidence := rpcFinding.Evidence; evidence != nil {
+			finding.Evidence = types.CryptoEvidence{
+				SignatureAlgorithm:     evidence.SignatureAlgorithm,
+				SignatureAlgorithmOID:  evidence.SignatureAlgorithmOid,
+				KeySize:                int(evidence.KeySize),
+				Curve:                  evidence.Curve,
+				ClassicalSecurityLevel: convertOptionalInt[int](evidence.ClassicalSecurityLevel),
+				NotAfter:               convertFromRPCTime(evidence.NotAfter),
+			}
+		}
+		return finding
 	})
 }
 
@@ -1299,6 +1401,7 @@ func ConvertToRPCScanResponse(response types.ScanResponse) *scanner.ScanResponse
 			Licenses:          ConvertToRPCLicenses(result.Licenses),
 			CustomResources:   ConvertToRPCCustomResources(result.CustomResources),
 			CryptoAssets:      ConvertToRPCCryptoAssets(result.CryptoAssets),
+			CryptoFindings:    ConvertToRPCCryptoFindings(result.CryptoFindings),
 		})
 	}
 
