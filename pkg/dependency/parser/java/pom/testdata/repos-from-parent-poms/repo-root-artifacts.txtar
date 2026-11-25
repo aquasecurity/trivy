@@ -1,5 +1,6 @@
 Root repository: the parent POM and a dependency also published to repository 1.
-The parent POM also declares repositories 2 and 3, which the child POM overrides and disables by ID.
+The parent POM also declares repositories 2 and 3, which the child POM overrides and disables by ID,
+and repository 4 without an ID, which is kept although the child POM also declares a repository without an ID.
 
 -- org/example/example-parent/1.0.0/example-parent-1.0.0.pom --
 <?xml version="1.0" encoding="UTF-8"?>
@@ -28,6 +29,9 @@ The parent POM also declares repositories 2 and 3, which the child POM overrides
         <repository>
             <id>disabled-repo</id>
             <url>REPO3_URL</url>
+        </repository>
+        <repository>
+            <url>REPO4_URL</url>
         </repository>
     </repositories>
 </project>

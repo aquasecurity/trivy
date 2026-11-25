@@ -17,6 +17,10 @@
             <id>root-repo</id>
             <url>REPO_ROOT_URL</url>
         </repository>
+        <!-- Maven requires the ID, but repositories without one are kept and deduplicated by URL -->
+        <repository>
+            <url>REPO_ROOT_URL</url>
+        </repository>
         <!-- overrides the repository with the same ID from the parent POM -->
         <repository>
             <id>overridden-repo</id>
@@ -77,6 +81,11 @@
         <dependency>
             <groupId>org.example</groupId>
             <artifactId>example-api7</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api8</artifactId>
+            <version>1.0.0</version>
         </dependency>
     </dependencies>
 </project>

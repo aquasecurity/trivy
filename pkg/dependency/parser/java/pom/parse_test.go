@@ -2606,6 +2606,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"REPO1_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo1-artifacts.txtar"),
 				"REPO2_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo2-artifacts.txtar"),
 				"REPO3_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo3-artifacts.txtar"),
+				"REPO4_URL": filepath.Join("testdata", "repos-from-parent-poms", "repo4-artifacts.txtar"),
 			},
 			// overridden and disabled by the child POM
 			unusedRepos: []string{"REPO2_URL", "REPO3_URL"},
@@ -2624,6 +2625,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-api6:1.0.0-reporoot": "License from reporoot",
 				// the version from the ancestor in the child's disabled repository is not resolved,
 				// so example-api7 is skipped (checked by requests to unusedRepos)
+				// the parent repository without an ID is kept along with the child repository without an ID
+				"org.example:example-api8:1.0.0": "License from repo4",
 			},
 		},
 		{

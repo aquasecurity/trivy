@@ -641,6 +641,35 @@ func Test_effectiveRepositories(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "repositories with relative URLs are skipped",
+			s: settings{
+				Profiles: []Profile{
+					{
+						ID:              "p",
+						ActiveByDefault: true,
+						Repositories: []pomRepository{
+							{
+								ID:  "relative",
+								URL: "repo/relative",
+							},
+							{
+								ID:  "absolute",
+								URL: "https://example.com/absolute",
+							},
+						},
+					},
+				},
+			},
+			want: []repository{
+				{
+					id:              "absolute",
+					url:             mustParseURL(t, "https://example.com/absolute"),
+					releaseEnabled:  true,
+					snapshotEnabled: true,
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
