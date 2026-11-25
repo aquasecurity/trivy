@@ -657,6 +657,30 @@ func TestParser_ParseLDFlags(t *testing.T) {
 			want: "1.2.3",
 		},
 		{
+			name: "with quoted and unquoted assignments to the same key",
+			args: args{
+				name: "github.com/aquasecurity/test",
+				flags: []string{
+					"-X",
+					`"main.version=1.2.3"`,
+					"-X",
+					"main.version=2.0.0",
+				},
+			},
+			want: "2.0.0",
+		},
+		{
+			name: "with comma-separated assignments in a single flag value",
+			args: args{
+				name: "github.com/aquasecurity/test",
+				flags: []string{
+					"-X",
+					"main.banner=x,main.version=1.2.3",
+				},
+			},
+			want: "",
+		},
+		{
 			name: "with no flags",
 			args: args{
 				name:  "github.com/aquasecurity/test",

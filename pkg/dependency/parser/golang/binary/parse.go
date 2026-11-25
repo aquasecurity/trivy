@@ -244,6 +244,20 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 		if !ok {
 			continue
 		}
+		// It's valid to set the -X flags with quotes so we trim any that might
+		// have been provided: Ex:
+		//
+		// -X main.version=1.0.0
+		// -X=main.version=1.0.0
+		// -X 'main.version=1.0.0'
+		// -X='main.version=1.0.0'
+		// -X="main.version=1.0.0"
+		// -X "main.version=1.0.0"
+		//
+		// Quotes are trimmed before the assignment so that quoted and unquoted
+		// forms of the same key overwrite each other.
+		key = strings.TrimLeft(key, `'"`)
+		val = strings.TrimRight(val, `'"`)
 		x[key] = val
 	}
 
@@ -255,17 +269,6 @@ func (p *Parser) ParseLDFlags(name string, flags []string) string {
 	//   [2]: Other versions
 	var foundVersions = make([][]string, 3)
 	for key, val := range x {
-		// It's valid to set the -X flags with quotes so we trim any that might
-		// have been provided: Ex:
-		//
-		// -X main.version=1.0.0
-		// -X=main.version=1.0.0
-		// -X 'main.version=1.0.0'
-		// -X='main.version=1.0.0'
-		// -X="main.version=1.0.0"
-		// -X "main.version=1.0.0"
-		key = strings.TrimLeft(key, `'"`)
-		val = strings.TrimRight(val, `'"`)
 		if isVersionXKey(key) && isValidSemVer(val) {
 			classifyVersion(foundVersions, key, name, val)
 		}
