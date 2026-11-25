@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/fs"
+	"maps"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -2553,7 +2554,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 		rootRepoTxtar string            // txtar file for root repository
 		repos         map[string]string // key: repository URL placeholder, value: txtar file path
 		unusedRepos   []string          // repository URL placeholders that must not receive any requests
-		wantPackages  map[string]string // key: package ID, value: license; empty if the POM must not be found
+		wantPackages  map[string]string // key: package name and version, value: license; empty if the POM must not be found
 	}{
 		{
 			name:          "different repos for different dependencies",
@@ -2564,9 +2565,9 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"REPO2_URL": filepath.Join("testdata", "different-repos-for-different-poms", "repo2-artifacts.txtar"),
 			},
 			wantPackages: map[string]string{
-				"org.example:example-api:1.7.30::2cbe1ca4": "License from repo1",
-				"org.example:example-api2:1.0.0::f8958ec7": "License from repo2",
-				"org.example:example-api3:1.0.0::887fc940": "License from reporoot",
+				"org.example:example-api:1.7.30": "License from repo1",
+				"org.example:example-api2:1.0.0": "License from repo2",
+				"org.example:example-api3:1.0.0": "License from reporoot",
 			},
 		},
 		{
@@ -2575,7 +2576,7 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			rootRepoTxtar: filepath.Join("testdata", "repo-from-root-for-dep-from-module", "repo-artifacts.txtar"),
 			repos:         nil,
 			wantPackages: map[string]string{
-				"org.example:example-api:1.0.0::4a790a84": "License from root repo",
+				"org.example:example-api:1.0.0": "License from root repo",
 			},
 		},
 		{
@@ -2588,13 +2589,13 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			},
 			wantPackages: map[string]string{
 				// version from the BOM in the root POM repository
-				"org.example:example-api:1.1.0::4a7b5843": "License from reporoot",
+				"org.example:example-api:1.1.0": "License from reporoot",
 				// version from the nested BOM in the repository of the imported BOM
-				"org.example:example-api-nested:1.2.0::47955d7d": "License from reporoot",
+				"org.example:example-api-nested:1.2.0": "License from reporoot",
 				// version from the BOM imported by two BOMs, found only in the repository of the second one
-				"org.example:example-api-shared:1.4.0::c490d1f7": "License from reporoot",
+				"org.example:example-api-shared:1.4.0": "License from reporoot",
 				// version from the BOM in the repository of the transitive dependency
-				"org.example:example-api-transitive:1.3.0::6ce0264f": "License from repo2",
+				"org.example:example-api-transitive:1.3.0": "License from repo2",
 			},
 		},
 		{
@@ -2610,17 +2611,17 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			unusedRepos: []string{"REPO2_URL", "REPO3_URL"},
 			wantPackages: map[string]string{
 				// version from the BOM in the repository of the parent POM
-				"org.example:example-api:1.1.0::ff70a01d": "License from repo1",
+				"org.example:example-api:1.1.0": "License from repo1",
 				// version from the grandparent POM in the repository of the parent POM
-				"org.example:example-api2:1.0.0::805ec0f5": "License from repo1",
+				"org.example:example-api2:1.0.0": "License from repo1",
 				// repositories of the POM take precedence over the ones inherited from the parent POM
-				"org.example:example-api3:1.0.0::47b52949": "License from reporoot",
+				"org.example:example-api3:1.0.0": "License from reporoot",
 				// the parent repository is overridden by the child repository with the same ID
-				"org.example:example-api4:1.0.0::1ad0a18b": "",
+				"org.example:example-api4:1.0.0": "",
 				// the parent repository is disabled by the child repository with the same ID
-				"org.example:example-api5:1.0.0::505b8e76": "",
+				"org.example:example-api5:1.0.0": "",
 				// version from the greatgrandparent POM in the child's overridden repository
-				"org.example:example-api6:1.0.0-reporoot::b56c1528": "License from reporoot",
+				"org.example:example-api6:1.0.0-reporoot": "License from reporoot",
 				// the version from the ancestor in the child's disabled repository is not resolved,
 				// so example-api7 is skipped (checked by requests to unusedRepos)
 			},
@@ -2636,8 +2637,8 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			unusedRepos: []string{"REPO_DISABLED_URL"},
 			wantPackages: map[string]string{
 				// version from the parent POM of the scanned POM
-				"org.example:example-api:1.0.0::139177ed": "License from reporoot",
-				"org.example:example-dep:1.0.0::e20d9463": "License from reporoot",
+				"org.example:example-api:1.0.0": "License from reporoot",
+				"org.example:example-dep:1.0.0": "License from reporoot",
 			},
 		},
 		{
@@ -2651,11 +2652,30 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			// declared in the dependency POM, but disabled in the scanned POM
 			unusedRepos: []string{"REPO_DISABLED_URL"},
 			wantPackages: map[string]string{
-				"org.example:example-dep:1.0.0::a73e87a5": "License from reporoot",
+				"org.example:example-dep:1.0.0": "License from reporoot",
 				// version from the BOM in the dependency POM's repository
-				"org.example:example-mid:1.0.0::ef0cb2ee": "License from reporoot",
+				"org.example:example-mid:1.0.0": "License from reporoot",
 				// declared in the transitive dependency, found in the scanned POM's repository with the same ID
-				"org.example:example-leaf:1.0.0::70af86f8": "License from reporoot",
+				"org.example:example-leaf:1.0.0": "License from reporoot",
+			},
+		},
+		{
+			name:          "repositories of the aggregator POM are not used for modules that do not inherit from it",
+			inputFile:     filepath.Join("testdata", "aggregator-repos-not-used-for-modules", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "aggregator-repos-not-used-for-modules", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO_AGGREGATOR_URL":       filepath.Join("testdata", "aggregator-repos-not-used-for-modules", "repo-aggregator-artifacts.txtar"),
+				"REPO_AGGREGATOR_OTHER_URL": filepath.Join("testdata", "aggregator-repos-not-used-for-modules", "repo-aggregator-other-artifacts.txtar"),
+			},
+			// declared only in the aggregator POM, which is not the parent of the module
+			unusedRepos: []string{"REPO_AGGREGATOR_URL", "REPO_AGGREGATOR_OTHER_URL"},
+			wantPackages: map[string]string{
+				// version from the parent POM in the module's repository
+				"org.example:example-api:1.0.0": "License from reporoot",
+				// version from the BOM in the module's repository
+				"org.example:example-api2:1.0.0": "License from reporoot",
+				// published only to a repository of the aggregator POM
+				"org.example:example-api3:1.0.0": "",
 			},
 		},
 	}
@@ -2672,31 +2692,36 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 			// Setup root repository with replacements for repo placeholders
 			rootRepoURL, _ := setupTxtarRepository(t, tt.rootRepoTxtar, repoURLs)
 
-			// Prepare input POM file with root repository URL
-			pomContent := applyReplacements(t, tt.inputFile, map[string]string{
-				rootRepoPlaceholder: rootRepoURL,
-			})
+			// Copy the directory of the input POM file with repository URLs, so that modules can declare repositories too
+			replacements := maps.Clone(repoURLs)
+			replacements[rootRepoPlaceholder] = rootRepoURL
+			inputDir := copyWithReplacements(t, filepath.Dir(tt.inputFile), replacements)
+			inputFile := filepath.Join(inputDir, filepath.Base(tt.inputFile))
+			pomContent, err := os.ReadFile(inputFile)
+			require.NoError(t, err)
 
 			// Default repository that always returns 404 to ensure remote tests don't reach Maven Central
 			dummyServer := httptest.NewServer(http.NotFoundHandler())
 			t.Cleanup(dummyServer.Close)
 
 			// Parse the POM
-			parser := pom.NewParser(tt.inputFile, pom.WithDefaultRepo(dummyServer.URL, true, true))
+			parser := pom.NewParser(inputFile, pom.WithDefaultRepo(dummyServer.URL, true, true))
 			pkgs, _, err := parser.Parse(t.Context(), bytes.NewReader(pomContent))
 			require.NoError(t, err)
 
-			// Verify expected packages
-			for pkgID, wantLicense := range tt.wantPackages {
-				p, found := lo.Find(pkgs, func(pkg ftypes.Package) bool {
-					return pkg.ID == pkgID
+			// Verify expected packages.
+			// Package IDs depend on the path of the temporary directory, so packages are matched by name and version.
+			for pkgName, wantLicense := range tt.wantPackages {
+				found := lo.Filter(pkgs, func(pkg ftypes.Package, _ int) bool {
+					return pkg.Name+":"+pkg.Version == pkgName
 				})
-				require.True(t, found, "package %s not found", pkgID)
+				require.Len(t, found, 1, "package %s", pkgName)
+				p := found[0]
 				if wantLicense == "" {
-					require.Empty(t, p.Licenses, "package %s has licenses", pkgID)
+					require.Empty(t, p.Licenses, "package %s has licenses", pkgName)
 					continue
 				}
-				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgID)
+				require.NotEmpty(t, p.Licenses, "package %s has no licenses", pkgName)
 				require.Equal(t, wantLicense, p.Licenses[0])
 			}
 
@@ -2719,6 +2744,31 @@ func applyReplacements(t *testing.T, filePath string, replacements map[string]st
 	}
 
 	return content
+}
+
+// copyWithReplacements copies the directory to a temporary directory, applies replacements to the copied files
+// and returns the temporary directory.
+func copyWithReplacements(t *testing.T, dir string, replacements map[string]string) string {
+	t.Helper()
+
+	tmpDir := t.TempDir()
+	err := filepath.WalkDir(dir, func(path string, d fs.DirEntry, err error) error {
+		if err != nil || d.IsDir() {
+			return err
+		}
+		rel, err := filepath.Rel(dir, path)
+		if err != nil {
+			return err
+		}
+		dst := filepath.Join(tmpDir, rel)
+		if err = os.MkdirAll(filepath.Dir(dst), 0o755); err != nil {
+			return err
+		}
+		return os.WriteFile(dst, applyReplacements(t, path, replacements), 0o600)
+	})
+	require.NoError(t, err)
+
+	return tmpDir
 }
 
 // txtarWithReposReplace reads a txtar file, applies repository URL replacements,

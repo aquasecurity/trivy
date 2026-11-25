@@ -328,7 +328,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		// Parse, cache, and enqueue modules.
 		for _, relativePath := range result.modules {
-			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath, root.Repositories)
+			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
 					log.FilePath(result.filePath), log.Err(err))
@@ -407,16 +407,17 @@ func depVersion(depName string, uniqArtifacts map[string]artifact) string {
 	return ""
 }
 
-func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string, repos []repository) (artifact, error) {
+func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string) (artifact, error) {
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
 		return artifact{}, xerrors.Errorf("unable to open the relative path: %w", err)
 	}
 
+	// As in Maven, repositories of an aggregator POM are not used for its modules,
+	// unless the module inherits them from the aggregator POM as its parent.
 	result, err := p.analyze(ctx, module, analysisOptions{
 		rootFilePath: module.filePath,
-		repositories: repos,
 	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)

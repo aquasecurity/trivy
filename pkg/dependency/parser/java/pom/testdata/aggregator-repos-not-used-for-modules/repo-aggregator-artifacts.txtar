@@ -1,0 +1,13 @@
+Aggregator repository (declared in the aggregator as "corp", which the module declares with another URL): must not be used for the module, which doesn't inherit from the aggregator POM.
+
+-- org/example/company-parent/1.0.0/company-parent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>company-parent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+</project>
