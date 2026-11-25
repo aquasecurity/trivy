@@ -40,6 +40,11 @@ Trivy parses `package-lock.json`.
 
 By default, Trivy doesn't report development dependencies. Use the `--include-dev-deps` flag to include them.
 
+#### Duplicate packages
+npm can install the same version of a package in several places.
+For lock files v2 and later, Trivy reports those copies as one package when their full dependency trees are identical, and as separate packages when they differ.
+Each of those separate packages gets an ID with a suffix, e.g. `@aws-crypto/util@2.0.2::2bb218bb`.
+
 #### Licenses
 Trivy retrieves dependency license information from the lock file (starting with v2).
 If license information is missing, Trivy analyzes the `node_modules` directory located next to the `package-lock.json` file to detect licenses.

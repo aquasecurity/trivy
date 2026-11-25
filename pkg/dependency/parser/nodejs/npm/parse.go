@@ -1,7 +1,10 @@
 package npm
 
 import (
+	"cmp"
 	"context"
+	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json/jsontext"
 	"encoding/json/v2"
 	"fmt"
@@ -9,6 +12,7 @@ import (
 	"path"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 
 	"github.com/samber/lo"
@@ -22,6 +26,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/set"
 	xio "github.com/aquasecurity/trivy/pkg/x/io"
 	xjson "github.com/aquasecurity/trivy/pkg/x/json"
+	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 const nodeModulesDir = "node_modules"
@@ -96,15 +101,21 @@ func (p *Parser) Parse(_ context.Context, r xio.ReadSeekerAt) ([]ftypes.Package,
 		return nil, nil, xerrors.Errorf("decode error: %w", err)
 	}
 
-	var pkgs []ftypes.Package
-	var deps []ftypes.Dependency
 	if lockFile.LockfileVersion == 1 {
-		pkgs, deps = p.parseV1(lockFile.Dependencies, make(map[string]string))
-	} else {
-		pkgs, deps = p.parseV2(lockFile.Packages)
+		pkgs, deps := p.parseV1(lockFile.Dependencies, make(map[string]string))
+		return utils.UniquePackages(pkgs), uniqueDeps(deps), nil
 	}
 
-	return utils.UniquePackages(pkgs), uniqueDeps(deps), nil
+	// v2+ package IDs are unique per dependency subgraph, so they must not be merged by name and version again.
+	pkgs, deps := p.parseV2(lockFile.Packages)
+	sort.Sort(ftypes.Packages(pkgs))
+	return xslices.ZeroToNil(pkgs), uniqueDeps(deps), nil
+}
+
+// lockNode is a package installed at one lockfile path.
+type lockNode struct {
+	name     string
+	children []string // lockfile paths of the resolved dependencies
 }
 
 func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftypes.Dependency) {
@@ -128,18 +139,13 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		directDeps.Append(pkgPath)
 	}
 
-	for pkgPath, pkg := range packages {
-		if !strings.HasPrefix(pkgPath, "node_modules") {
-			continue
-		}
-
-		// pkg.Name exists when package name != folder name
-		pkgName := pkg.Name
-		if pkgName == "" {
-			pkgName = p.pkgNameFromPath(pkgPath)
-		}
-
-		pkgID := packageID(pkgName, pkg.Version)
+	nodes := p.lockNodes(packages)
+	pkgPaths := slices.Sorted(maps.Keys(nodes))
+	idOf := assignIDs(pkgPaths, nodes, packages)
+	for _, pkgPath := range pkgPaths {
+		pkg := packages[pkgPath]
+		node := nodes[pkgPath]
+		pkgID := idOf(pkgPath)
 
 		var ref ftypes.ExternalRef
 		if pkg.Resolved != "" {
@@ -180,7 +186,7 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 
 		newPkg := ftypes.Package{
 			ID:                 pkgID,
-			Name:               pkgName,
+			Name:               node.name,
 			Version:            pkg.Version,
 			Licenses:           licenses,
 			Relationship:       lo.Ternary(pkgIndirect, ftypes.RelationshipIndirect, ftypes.RelationshipDirect),
@@ -190,22 +196,10 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 		}
 		pkgs[pkgID] = newPkg
 
-		// npm builds graph using optional deps. e.g.:
-		// └─┬ watchpack@1.7.5
-		// ├─┬ chokidar@3.5.3 - optional dependency
-		// │ └── glob-parent@5.1.
-		dependencies := lo.Assign(pkg.Dependencies, pkg.OptionalDependencies, pkg.PeerDependencies)
-		dependsOn := make([]string, 0, len(dependencies))
-		for depName, depVersion := range dependencies {
-			depID, err := findDependsOn(pkgPath, depName, packages)
-			if err != nil {
-				p.logger.Debug("Unable to resolve the version",
-					log.String("name", depName), log.String("version", depVersion))
-				continue
-			}
-			dependsOn = append(dependsOn, depID)
-		}
-
+		// Copies sharing an ID have identical subgraphs, so their children share IDs too.
+		dependsOn := lo.Map(node.children, func(child string, _ int) string {
+			return idOf(child)
+		})
 		if len(dependsOn) > 0 {
 			deps = append(deps, ftypes.Dependency{
 				ID:        newPkg.ID,
@@ -216,6 +210,99 @@ func (p *Parser) parseV2(packages map[string]Package) ([]ftypes.Package, []ftype
 	}
 
 	return lo.Values(pkgs), deps
+}
+
+// lockNodes resolves every installed package and its dependencies to lockfile paths.
+func (p *Parser) lockNodes(packages map[string]Package) map[string]lockNode {
+	nodes := make(map[string]lockNode, len(packages))
+	for pkgPath, pkg := range packages {
+		if !strings.HasPrefix(pkgPath, nodeModulesDir) {
+			continue
+		}
+		// pkg.Name exists when package name != folder name
+		node := lockNode{name: cmp.Or(pkg.Name, p.pkgNameFromPath(pkgPath))}
+
+		// npm builds graph using optional deps. e.g.:
+		// └─┬ watchpack@1.7.5
+		// ├─┬ chokidar@3.5.3 - optional dependency
+		// │ └── glob-parent@5.1.
+		for depName, depVersion := range lo.Assign(pkg.Dependencies, pkg.OptionalDependencies, pkg.PeerDependencies) {
+			depPath, err := findDependsOn(pkgPath, depName, packages)
+			if err != nil {
+				p.logger.Debug("Unable to resolve the version",
+					log.String("name", depName), log.String("version", depVersion))
+				continue
+			}
+			node.children = append(node.children, depPath)
+		}
+		nodes[pkgPath] = node
+	}
+	return nodes
+}
+
+// assignIDs returns the package ID of each lockfile path. Copies of a package share an ID only
+// when their whole dependency subgraphs are identical. Paths start grouped by name@version; a group
+// splits while its members depend on different groups. This also terminates on dependency cycles.
+// cf. https://github.com/aquasecurity/trivy/issues/8776
+func assignIDs(pkgPaths []string, nodes map[string]lockNode, packages map[string]Package) func(pkgPath string) string {
+	baseID := func(pkgPath string) string {
+		return packageID(nodes[pkgPath].name, packages[pkgPath].Version)
+	}
+
+	// Each round reuses the previous round's group numbers, so no subgraph is walked twice.
+	group, firstPaths := classify(pkgPaths, baseID)
+	for {
+		next, nextFirstPaths := classify(pkgPaths, func(pkgPath string) string {
+			children := lo.Map(nodes[pkgPath].children, func(child string, _ int) int { return group[child] })
+			slices.Sort(children)
+			var key strings.Builder
+			key.WriteString(strconv.Itoa(group[pkgPath]))
+			for _, child := range children {
+				key.WriteByte(',')
+				key.WriteString(strconv.Itoa(child))
+			}
+			return key.String()
+		})
+		// No group split: the partition and its numbering are unchanged.
+		if len(nextFirstPaths) == len(firstPaths) {
+			break
+		}
+		group, firstPaths = next, nextFirstPaths
+	}
+
+	baseIDs := make([]string, len(firstPaths))
+	groupsPerID := make(map[string]int)
+	for g, pkgPath := range firstPaths {
+		baseIDs[g] = baseID(pkgPath)
+		groupsPerID[baseIDs[g]]++
+	}
+	return func(pkgPath string) string {
+		g := group[pkgPath]
+		if groupsPerID[baseIDs[g]] == 1 {
+			return baseIDs[g]
+		}
+		sum := sha256.Sum256([]byte(firstPaths[g]))
+		return baseIDs[g] + "::" + hex.EncodeToString(sum[:4])
+	}
+}
+
+// classify numbers the distinct keys of paths in order of first appearance. It returns each
+// path's number and, indexed by number, the first path that got it.
+func classify(pkgPaths []string, key func(pkgPath string) string) (map[string]int, []string) {
+	numbers := make(map[string]int)
+	groups := make(map[string]int, len(pkgPaths))
+	var firstPaths []string
+	for _, pkgPath := range pkgPaths {
+		k := key(pkgPath)
+		n, ok := numbers[k]
+		if !ok {
+			n = len(firstPaths)
+			numbers[k] = n
+			firstPaths = append(firstPaths, pkgPath)
+		}
+		groups[pkgPath] = n
+	}
+	return groups, firstPaths
 }
 
 // for local package npm uses links. e.g.:
@@ -302,8 +389,8 @@ func findDependsOn(pkgPath, depName string, packages map[string]Package) (string
 		modulePath := joinPaths(paths[:i+1]...)
 		modulePath = joinPaths(modulePath, depName)
 
-		if dep, ok := packages[modulePath]; ok {
-			return packageID(depName, dep.Version), nil
+		if _, ok := packages[modulePath]; ok {
+			return modulePath, nil
 		}
 	}
 

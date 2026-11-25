@@ -10,6 +10,7 @@ import (
 
 	"golang.org/x/xerrors"
 
+	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/npm"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer"
 	"github.com/aquasecurity/trivy/pkg/fanal/analyzer/language"
@@ -26,7 +27,7 @@ func init() {
 }
 
 const (
-	version = 1
+	version = 2
 )
 
 type npmLibraryAnalyzer struct {
@@ -68,7 +69,8 @@ func (a npmLibraryAnalyzer) PostAnalyze(ctx context.Context, input analyzer.Post
 		// Fill licenses from package.json only if not present in lock file
 		for i, pkg := range app.Packages {
 			if len(pkg.Licenses) == 0 {
-				if ll, ok := licenses[pkg.ID]; ok {
+				// Licenses from node_modules are keyed by name@version, not by the package ID.
+				if ll, ok := licenses[dependency.ID(types.Npm, pkg.Name, pkg.Version)]; ok {
 					app.Packages[i].Licenses = ll
 				}
 			}
