@@ -97,7 +97,7 @@ type Parser struct {
 	rootPath        string
 	cache           pomCache
 	importCache     pomCache        // POMs imported into dependencyManagement are resolved without dependencies, so they are cached separately
-	notFoundPOMs    set.Set[string] // POMs not found in remote repositories, keyed by repository URL and POM path
+	notFoundPOMs    set.Set[string] // POMs not fetched from remote repositories (not found or failed), keyed by repository URL and POM path
 	localRepository string
 	remoteRepos     repositories
 	offline         bool
@@ -708,7 +708,8 @@ func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependenc
 	})
 }
 
-// mergeRepositories merges repositories in order of priority and removes duplicate IDs or URLs.
+// mergeRepositories merges repositories in order of priority and removes repositories with duplicate IDs.
+// Repositories without an ID are deduplicated by URL.
 func mergeRepositories(repos ...[]repository) []repository {
 	return lo.UniqBy(slices.Concat(repos...), func(r repository) string {
 		// Maven requires the repository ID, so fall back to the URL to keep repositories without one
@@ -947,7 +948,8 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			seen.Append(candidate.url.String())
 
-			// As in Maven Resolver, a POM not found in a repository is not requested from it again.
+			// As in Maven Resolver, a POM that was not found in a repository or failed to be fetched from it
+			// is not requested from it again.
 			// cf. https://github.com/apache/maven-resolver/blob/maven-resolver-1.9.22/maven-resolver-impl/src/main/java/org/eclipse/aether/internal/impl/DefaultUpdateCheckManager.java#L183
 			notFoundKey := candidate.url.String() + "|" + path.Join(paths...)
 			if p.notFoundPOMs.Contains(notFoundKey) {
