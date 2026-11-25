@@ -2,6 +2,7 @@ package parallel
 
 import (
 	"context"
+	"errors"
 	"io/fs"
 
 	"golang.org/x/sync/errgroup"
@@ -86,7 +87,10 @@ func WalkDir[T any](ctx context.Context, fsys fs.FS, root string, parallel int,
 
 func walk[T any](ctx context.Context, fsys fs.FS, path string, c chan T, onFile onFile[T]) error {
 	f, err := fsys.Open(path)
-	if err != nil {
+	if errors.Is(err, fs.ErrNotExist) {
+		log.Debug("Skip the file that disappeared during the scan", log.FilePath(path))
+		return nil
+	} else if err != nil {
 		return xerrors.Errorf("file open error: %w", err)
 	}
 	defer f.Close()

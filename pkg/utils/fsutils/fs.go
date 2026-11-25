@@ -1,6 +1,7 @@
 package fsutils
 
 import (
+	"errors"
 	"fmt"
 	"io"
 	"io/fs"
@@ -80,7 +81,10 @@ func WalkDir(fsys fs.FS, root string, required WalkDirRequiredFunc, fn WalkDirFu
 		}
 
 		f, err := fsys.Open(path)
-		if err != nil {
+		if errors.Is(err, fs.ErrNotExist) {
+			log.Debug("Skip the file that disappeared during the scan", log.FilePath(path))
+			return nil
+		} else if err != nil {
 			return xerrors.Errorf("file open error: %w", err)
 		}
 		defer f.Close()

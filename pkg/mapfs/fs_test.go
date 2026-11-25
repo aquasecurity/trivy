@@ -3,6 +3,8 @@ package mapfs_test
 import (
 	"io"
 	"io/fs"
+	"os"
+	"path/filepath"
 	"runtime"
 	"testing"
 
@@ -315,6 +317,21 @@ func TestFS_ReadDir(t *testing.T) {
 			}
 		})
 	}
+}
+
+func TestFS_ReadDirRemovedFile(t *testing.T) {
+	removed := filepath.Join(t.TempDir(), "removed.txt")
+	require.NoError(t, os.WriteFile(removed, []byte("removed"), 0o644))
+
+	fsys := mapfs.New()
+	require.NoError(t, fsys.WriteFile("hello.txt", "testdata/hello.txt"))
+	require.NoError(t, fsys.WriteFile("removed.txt", removed))
+	require.NoError(t, os.Remove(removed))
+
+	entries, err := fsys.ReadDir(".")
+	require.NoError(t, err)
+	require.Len(t, entries, 1)
+	assert.Equal(t, "hello.txt", entries[0].Name())
 }
 
 func TestFS_Open(t *testing.T) {
