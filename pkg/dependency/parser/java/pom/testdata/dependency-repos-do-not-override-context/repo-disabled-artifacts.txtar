@@ -1,0 +1,18 @@
+Disabled repository (declared in the dependency POM as "corp-disabled", which the scanned POM disables): must not be used.
+
+-- org/example/example-mid/1.0.0/example-mid-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-mid</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from repodisabled</name>
+        </license>
+    </licenses>
+</project>

@@ -2640,6 +2640,24 @@ func TestPom_Parse_Remote_Repos(t *testing.T) {
 				"org.example:example-dep:1.0.0::e20d9463": "License from reporoot",
 			},
 		},
+		{
+			name:          "repositories of the scanned POM take precedence over the ones with the same ID from dependency POMs",
+			inputFile:     filepath.Join("testdata", "dependency-repos-do-not-override-context", "pom.xml"),
+			rootRepoTxtar: filepath.Join("testdata", "dependency-repos-do-not-override-context", "repo-root-artifacts.txtar"),
+			repos: map[string]string{
+				"REPO_OLD_URL":      filepath.Join("testdata", "dependency-repos-do-not-override-context", "repo-old-artifacts.txtar"),
+				"REPO_DISABLED_URL": filepath.Join("testdata", "dependency-repos-do-not-override-context", "repo-disabled-artifacts.txtar"),
+			},
+			// declared in the dependency POM, but disabled in the scanned POM
+			unusedRepos: []string{"REPO_DISABLED_URL"},
+			wantPackages: map[string]string{
+				"org.example:example-dep:1.0.0::a73e87a5": "License from reporoot",
+				// version from the BOM in the dependency POM's repository
+				"org.example:example-mid:1.0.0::ef0cb2ee": "License from reporoot",
+				// declared in the transitive dependency, found in the scanned POM's repository with the same ID
+				"org.example:example-leaf:1.0.0::70af86f8": "License from reporoot",
+			},
+		},
 	}
 
 	for _, tt := range tests {

@@ -509,8 +509,15 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
 
-	// Get repositories from current POM, including ones from parent POMs, and merge with ones from upper-level POMs
-	opts.repositories = mergeRepositories(pom.repositories(p.servers), opts.repositories)
+	// Repositories of this POM, including the ones from its parent POMs
+	pomRepos := pom.repositories(p.servers)
+
+	// As in Maven, repositories of this POM take precedence over the ones with the same ID from upper-level POMs
+	// when resolving the POMs it imports, but not when resolving its dependencies.
+	// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L402
+	// cf. https://github.com/apache/maven-resolver/blob/maven-resolver-1.9.22/maven-resolver-impl/src/main/java/org/eclipse/aether/internal/impl/collect/df/DfDependencyCollector.java#L329-L332
+	importRepos := mergeRepositories(pomRepos, opts.repositories)
+	opts.repositories = mergeRepositories(opts.repositories, pomRepos)
 
 	// Resolve dependencies
 	props := pom.properties()
@@ -518,7 +525,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 	var deps []artifact
 	if !opts.skipDependencies {
 		var err error
-		deps, err = p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
+		deps, err = p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, importRepos, opts)
 		if err != nil {
 			return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
 		}
@@ -527,7 +534,7 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 
 	art := pom.artifact()
 	art.RootFilePath = opts.rootFilePath
-	art.Repositories = opts.repositories
+	art.Repositories = importRepos // used to resolve the POMs imported by this POM
 
 	return analysisResult{
 		filePath:             pom.filePath,
@@ -596,7 +603,7 @@ func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 }
 
 func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, props map[string]string, depManagement []pomDependency,
-	opts analysisOptions,
+	importRepos []repository, opts analysisOptions,
 ) ([]artifact, error) {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
@@ -605,7 +612,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 	var err error
 	// Resolve dependencyManagement
-	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, opts.repositories, set.New[string]())
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, importRepos, set.New[string]())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}

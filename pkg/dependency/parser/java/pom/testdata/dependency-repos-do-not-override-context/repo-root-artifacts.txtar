@@ -1,0 +1,93 @@
+Root repository (declared in the scanned POM as "corp"): the dependency and its transitive dependencies.
+The dependency POM declares "corp" with the URL of the old repository and "corp-disabled", which is disabled in the scanned POM.
+
+-- org/example/example-dep/1.0.0/example-dep-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-dep</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+
+    <repositories>
+        <repository>
+            <id>corp</id>
+            <url>REPO_OLD_URL</url>
+        </repository>
+        <repository>
+            <id>corp-disabled</id>
+            <url>REPO_DISABLED_URL</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <!-- published only to the old repository -->
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- version from the BOM -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-mid</artifactId>
+        </dependency>
+    </dependencies>
+</project>
+
+-- org/example/example-mid/1.0.0/example-mid-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-mid</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-leaf</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</project>
+
+-- org/example/example-leaf/1.0.0/example-leaf-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-leaf</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+</project>
