@@ -56,9 +56,15 @@ parse_args() {
 execute() {
   tmpdir=$(mktemp -d)
   log_debug "downloading files into ${tmpdir}"
-  http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}"
   http_download "${tmpdir}/${CHECKSUM}" "${CHECKSUM_URL}"
-  hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  # Fall back to GitHub releases if get.trivy.dev is unreachable or serves
+  # something that doesn't match the published checksum.
+  if ! { http_download "${tmpdir}/${TARBALL}" "${TARBALL_URL}" &&
+    hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"; }; then
+    log_info "download from ${GET_DOWNLOAD} failed, falling back to GitHub releases"
+    http_download "${tmpdir}/${TARBALL}" "${GITHUB_DOWNLOAD}/${TAG}/${TARBALL}"
+    hash_sha256_verify "${tmpdir}/${TARBALL}" "${tmpdir}/${CHECKSUM}"
+  fi
   srcdir="${tmpdir}"
   (cd "${tmpdir}" && untar "${TARBALL}")
   test ! -d "${BINDIR}" && install -d "${BINDIR}"
