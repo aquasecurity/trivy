@@ -7,10 +7,14 @@ import "io"
 var (
 	EmbeddedPomGAV     = embeddedPomGAV
 	DecodePomLicenses  = decodePomLicenses
+	ParsePomLicenses   = parsePomLicenses
 	IsJarLicenseFile   = isJarLicenseFile
 	ParseBundleLicense = parseBundleLicense
 	ParseManifest      = parseManifest
 )
+
+// MaxPomSize exposes the limit on the embedded pom.xml that parsePomLicenses reads.
+const MaxPomSize = maxPomSize
 
 // BundleLicense exposes the unexported bundleLicense field to tests.
 func (m *manifest) BundleLicense() string { return m.bundleLicense }

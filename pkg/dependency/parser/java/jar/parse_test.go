@@ -18,6 +18,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/java/jar/sonatype"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
+	xio "github.com/aquasecurity/trivy/pkg/x/io"
 )
 
 var (
@@ -453,7 +454,7 @@ func TestParsePluginLicenseNames(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			m, err := jar.ParseManifest(manifestZipEntry(t, tt.manifest))
+			m, err := jar.ParseManifest(zipEntry(t, "META-INF/MANIFEST.MF", tt.manifest))
 			require.NoError(t, err)
 			assert.Equal(t, tt.want, m.PluginLicenseNames())
 		})
@@ -577,6 +578,11 @@ func TestDecodePomLicenses(t *testing.T) {
 			xml:  "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><project><licenses><license><name>Licen\xe7a</name></license></licenses></project>",
 			want: []string{"Licença"},
 		},
+		{
+			name: "broken XML after licenses",
+			xml:  `<project><licenses><license><name>MIT</name></license></licenses><broken`,
+			want: []string{"MIT"},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -642,6 +648,30 @@ func BenchmarkDecodePomLicenses(b *testing.B) {
 					b.Fatal(err)
 				}
 			}
+		})
+	}
+}
+
+func TestParsePomLicensesLimit(t *testing.T) {
+	pom := `<project><licenses><license><name>MIT</name></license></licenses></project>`
+	tests := []struct {
+		name    string
+		size    int
+		wantErr error
+	}{
+		{name: "at the limit", size: jar.MaxPomSize},
+		{name: "past the limit", size: jar.MaxPomSize + 1, wantErr: xio.ErrLimitExceeded},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			content := pom + strings.Repeat(" ", tt.size-len(pom))
+			got, err := jar.ParsePomLicenses(zipEntry(t, "META-INF/maven/g/a/pom.xml", content))
+			if tt.wantErr != nil {
+				require.ErrorIs(t, err, tt.wantErr)
+				return
+			}
+			require.NoError(t, err)
+			assert.Equal(t, []string{"MIT"}, got)
 		})
 	}
 }
@@ -838,21 +868,21 @@ func TestParseManifestFolding(t *testing.T) {
 				" SE-2.0.txt" + tt.eol +
 				"Bundle-Name: Example" + tt.eol
 
-			m, err := jar.ParseManifest(manifestZipEntry(t, mf))
+			m, err := jar.ParseManifest(zipEntry(t, "META-INF/MANIFEST.MF", mf))
 			require.NoError(t, err)
 			assert.Equal(t, "https://www.apache.org/licenses/LICENSE-2.0.txt", m.BundleLicense())
 		})
 	}
 }
 
-// manifestZipEntry packs the given MANIFEST.MF content into a zip archive and
-// returns its entry, as parseManifest reads the manifest straight from the JAR.
-func manifestZipEntry(t *testing.T, content string) *zip.File {
+// zipEntry packs content into a zip archive under name and returns its entry,
+// as parseManifest and parsePomLicenses read their files straight from the JAR.
+func zipEntry(t *testing.T, name, content string) *zip.File {
 	t.Helper()
 
 	var buf bytes.Buffer
 	zw := zip.NewWriter(&buf)
-	w, err := zw.Create("META-INF/MANIFEST.MF")
+	w, err := zw.Create(name)
 	require.NoError(t, err)
 	_, err = w.Write([]byte(content))
 	require.NoError(t, err)

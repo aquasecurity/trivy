@@ -36,6 +36,11 @@ var (
 // guarding against a decompression bomb. Real manifests are a few KB.
 const maxManifestSize = 10 << 20 // 10 MiB
 
+// maxPomSize caps how much of a (decompressed) embedded pom.xml is read
+// into memory, guarding against a decompression bomb. Real embedded poms
+// are a few KB.
+const maxPomSize = 10 << 20 // 10 MiB
+
 type Client interface {
 	Exists(groupID, artifactID string) (bool, error)
 	SearchBySHA1(sha1 string) (Properties, error)
@@ -558,7 +563,7 @@ func parsePomLicenses(f *zip.File) ([]string, error) {
 	}
 	defer file.Close()
 
-	return decodePomLicenses(file)
+	return decodePomLicenses(xio.MaxBytesReader(file, maxPomSize))
 }
 
 // decodePomLicenses decodes the <licenses> child of the root element of a pom.xml
