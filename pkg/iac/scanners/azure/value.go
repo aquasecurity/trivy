@@ -206,9 +206,9 @@ func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.Boo
 		s := v.rLit.(string)
 		switch {
 		case boolTrueValues.Contains(s):
-			return types.Bool(true, metadata)
+			return types.Bool(true, v.GetMetadata())
 		case boolFalseValues.Contains(s):
-			return types.Bool(false, metadata)
+			return types.Bool(false, v.GetMetadata())
 		}
 	}
 

@@ -16,64 +16,74 @@ func Test_ValueAsInt(t *testing.T) {
 
 func Test_ValueAsBool(t *testing.T) {
 	tests := []struct {
-		name         string
-		val          any
-		defaultValue bool
-		expected     bool
+		name          string
+		val           any
+		defaultValue  bool
+		expected      bool
+		expectValMeta bool
 	}{
 		{
-			name:         "bool true",
-			val:          true,
-			defaultValue: false,
-			expected:     true,
+			name:          "bool true",
+			val:           true,
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
 		},
 		{
-			name:         "bool false",
-			val:          false,
-			defaultValue: true,
-			expected:     false,
+			name:          "bool false",
+			val:           false,
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
-			name:         "string true",
-			val:          "true",
-			defaultValue: false,
-			expected:     true,
+			name:          "string true",
+			val:           "true",
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
 		},
 		{
-			name:         "string Enabled",
-			val:          "Enabled",
-			defaultValue: false,
-			expected:     true,
+			name:          "string Enabled",
+			val:           "Enabled",
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
 		},
 		{
-			name:         "string false",
-			val:          "false",
-			defaultValue: true,
-			expected:     false,
+			name:          "string false",
+			val:           "false",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
-			name:         "string Disabled",
-			val:          "Disabled",
-			defaultValue: true,
-			expected:     false,
+			name:          "string Disabled",
+			val:           "Disabled",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
-			name:         "string 0",
-			val:          "0",
-			defaultValue: true,
-			expected:     false,
+			name:          "string 0",
+			val:           "0",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
-			name:         "string no",
-			val:          "no",
-			defaultValue: true,
-			expected:     false,
+			name:          "string no",
+			val:           "no",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
-			name:         "string off",
-			val:          "off",
-			defaultValue: true,
-			expected:     false,
+			name:          "string off",
+			val:           "off",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
 		},
 		{
 			name:         "unrecognized string uses default true",
@@ -95,11 +105,19 @@ func Test_ValueAsBool(t *testing.T) {
 		},
 	}
 
+	valueMeta := types.NewMetadata(types.NewRange("prop.json", 42, 42, "", nil), "")
+	fallbackMeta := types.NewMetadata(types.NewRange("res.json", 10, 10, "", nil), "")
+
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			val := NewValue(tt.val, types.NewTestMetadata())
-			got := val.AsBoolValue(tt.defaultValue, types.NewTestMetadata()).Value()
-			assert.Equal(t, tt.expected, got)
+			val := NewValue(tt.val, valueMeta)
+			got := val.AsBoolValue(tt.defaultValue, fallbackMeta)
+			assert.Equal(t, tt.expected, got.Value())
+			expectedMeta := fallbackMeta
+			if tt.expectValMeta {
+				expectedMeta = valueMeta
+			}
+			assert.Equal(t, expectedMeta, got.GetMetadata())
 		})
 	}
 }
