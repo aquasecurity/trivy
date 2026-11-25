@@ -28,7 +28,7 @@ func adaptMariaDBServer(resource azure.Resource, deployment azure.Deployment) da
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource, deployment),
+			FirewallRules:             adaptFirewallRules(resource, deployment),
 		},
 	}
 }

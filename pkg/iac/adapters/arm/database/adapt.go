@@ -36,7 +36,7 @@ func adaptMySQLServer(resource azure.Resource, deployment azure.Deployment) data
 			EnableSSLEnforcement:      resource.Properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         resource.Properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: resource.Properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource, deployment),
+			FirewallRules:             adaptFirewallRules(resource, deployment),
 		},
 	}
 }

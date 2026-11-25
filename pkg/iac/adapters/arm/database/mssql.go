@@ -48,7 +48,7 @@ func adaptMSSQLServer(resource azure2.Resource, deployment azure2.Deployment) da
 			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource, deployment),
+			FirewallRules:             adaptFirewallRules(resource, deployment),
 		},
 		ExtendedAuditingPolicies:      adaptExtendedAuditingPolicies(resource, deployment),
 		SecurityAlertPolicies:         adaptSecurityAlertPolicies(resource, deployment),

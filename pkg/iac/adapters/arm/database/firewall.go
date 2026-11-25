@@ -8,11 +8,11 @@ import (
 
 const firewallRuleType = "firewallRules"
 
-// addFirewallRule collects the firewall rules of a database server from the
+// adaptFirewallRules collects the firewall rules of a database server from the
 // firewallRules property and from its firewallRules child resources, e.g.
 // "Microsoft.Sql/servers/firewallRules".
 // https://learn.microsoft.com/en-us/azure/templates/microsoft.sql/servers/firewallrules?pivots=deployment-language-arm-template
-func addFirewallRule(server azure.Resource, deployment azure.Deployment) []database.FirewallRule {
+func adaptFirewallRules(server azure.Resource, deployment azure.Deployment) []database.FirewallRule {
 	var rules []database.FirewallRule
 	for _, rule := range server.Properties.GetMapValue("firewallRules").AsMap() {
 		rules = append(rules, adaptFirewallRule(rule, rule.GetMetadata()))
