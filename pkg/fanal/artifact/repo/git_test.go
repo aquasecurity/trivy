@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/go-git/go-git/v5"
+	"github.com/go-git/go-git/v5/plumbing/transport/http"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
@@ -552,4 +553,167 @@ func Test_newURL(t *testing.T) {
 			assert.Equal(t, tt.want, got.String())
 		})
 	}
+}
+
+func TestTokenForHost(t *testing.T) {
+	// Ensure a clean, isolated environment for every subtest.
+	clearTokens := func(t *testing.T) {
+		t.Helper()
+		for _, k := range []string{"GITHUB_TOKEN", "GITLAB_TOKEN", "BITBUCKET_TOKEN", "BITBUCKET_USERNAME"} {
+			t.Setenv(k, "")
+		}
+	}
+
+	tests := []struct {
+		name         string
+		host         string
+		envVars      map[string]string
+		wantUsername string
+		wantToken    string
+	}{
+		{
+			name:         "github.com uses GITHUB_TOKEN",
+			host:         "github.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gh-tok",
+		},
+		{
+			name:         "www.github.com subdomain uses GITHUB_TOKEN",
+			host:         "www.github.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gh-tok",
+		},
+		{
+			name:         "gitlab.com uses GITLAB_TOKEN even when GITHUB_TOKEN is set",
+			host:         "gitlab.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gl-tok",
+		},
+		{
+			name:         "self-hosted GitLab uses GITLAB_TOKEN",
+			host:         "gitlab.corp.example.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gl-tok",
+		},
+		{
+			name:         "bitbucket.org uses BITBUCKET_TOKEN with x-token-auth default (issue #6833)",
+			host:         "bitbucket.org",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "x-token-auth",
+			wantToken:    "bb-tok",
+		},
+		{
+			name:         "bitbucket.org honors BITBUCKET_USERNAME for app passwords",
+			host:         "bitbucket.org",
+			envVars:      map[string]string{"BITBUCKET_TOKEN": "bb-tok", "BITBUCKET_USERNAME": "daniel"},
+			wantUsername: "daniel",
+			wantToken:    "bb-tok",
+		},
+		{
+			name:         "self-hosted Bitbucket Server uses BITBUCKET_TOKEN",
+			host:         "bitbucket.corp.example.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "x-token-auth",
+			wantToken:    "bb-tok",
+		},
+		{
+			name:         "host matching is case-insensitive",
+			host:         "BitBucket.ORG",
+			envVars:      map[string]string{"BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "x-token-auth",
+			wantToken:    "bb-tok",
+		},
+		{
+			name:         "unknown host falls back to GITHUB_TOKEN first",
+			host:         "git.example.com",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gh-tok",
+		},
+		{
+			name:         "unknown host falls back to GITLAB_TOKEN",
+			host:         "git.example.com",
+			envVars:      map[string]string{"GITLAB_TOKEN": "gl-tok", "BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "fanal-aquasecurity-scan",
+			wantToken:    "gl-tok",
+		},
+		{
+			name:         "unknown host falls back to BITBUCKET_TOKEN last",
+			host:         "git.example.com",
+			envVars:      map[string]string{"BITBUCKET_TOKEN": "bb-tok"},
+			wantUsername: "x-token-auth",
+			wantToken:    "bb-tok",
+		},
+		{
+			name:         "no tokens returns empty",
+			host:         "bitbucket.org",
+			envVars:      map[string]string{},
+			wantUsername: "",
+			wantToken:    "",
+		},
+		{
+			name:         "known host without its token returns empty even if other tokens are set",
+			host:         "bitbucket.org",
+			envVars:      map[string]string{"GITHUB_TOKEN": "gh-tok", "GITLAB_TOKEN": "gl-tok"},
+			wantUsername: "",
+			wantToken:    "",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			clearTokens(t)
+			for k, v := range tt.envVars {
+				t.Setenv(k, v)
+			}
+			username, token := tokenForHost(tt.host)
+			assert.Equal(t, tt.wantUsername, username)
+			assert.Equal(t, tt.wantToken, token)
+
+			// gitAuth must wrap the same credentials in a BasicAuth method.
+			auth := gitAuth(tt.host)
+			if tt.wantToken == "" {
+				assert.Nil(t, auth)
+				return
+			}
+			basic, ok := auth.(*http.BasicAuth)
+			require.True(t, ok, "expected *http.BasicAuth, got %T", auth)
+			assert.Equal(t, tt.wantUsername, basic.Username)
+			assert.Equal(t, tt.wantToken, basic.Password)
+		})
+	}
+}
+
+func TestGitAuth_IntegrationWithAuthServer(t *testing.T) {
+	// A Bitbucket-style token must be used for bitbucket.org hosts, so a
+	// server that only accepts the BITBUCKET_TOKEN credentials must succeed
+	// when the target URL host is rewritten to bitbucket.org via a custom
+	// resolver is not possible here; instead verify that gitAuth picks the
+	// Bitbucket credentials for a bitbucket.org URL parsed by newURL.
+	t.Setenv("GITHUB_TOKEN", "")
+	t.Setenv("GITLAB_TOKEN", "")
+	t.Setenv("BITBUCKET_TOKEN", "bb-secret")
+	t.Setenv("BITBUCKET_USERNAME", "")
+
+	u, err := newURL("https://bitbucket.org/workspace/private-repo.git")
+	require.NoError(t, err)
+
+	auth := gitAuth(u.Hostname())
+	basic, ok := auth.(*http.BasicAuth)
+	require.True(t, ok)
+	assert.Equal(t, "x-token-auth", basic.Username)
+	assert.Equal(t, "bb-secret", basic.Password)
+
+	// Port must be stripped before host matching.
+	u2, err := newURL("https://bitbucket.org:8443/workspace/private-repo.git")
+	require.NoError(t, err)
+	assert.Equal(t, "bitbucket.org", u2.Hostname())
+	auth2 := gitAuth(u2.Hostname())
+	basic2, ok := auth2.(*http.BasicAuth)
+	require.True(t, ok)
+	assert.Equal(t, "bb-secret", basic2.Password)
 }

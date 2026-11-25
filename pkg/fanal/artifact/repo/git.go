@@ -1,8 +1,10 @@
 package repo
 
 import (
+	"cmp"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/go-git/go-git/v5"
 	"github.com/go-git/go-git/v5/plumbing"
@@ -98,7 +100,7 @@ func cloneRepo(u *url.URL, artifactOpt artifact.Option) (string, error) {
 
 	cloneOptions := git.CloneOptions{
 		URL:             u.String(),
-		Auth:            gitAuth(),
+		Auth:            gitAuth(u.Hostname()),
 		Progress:        os.Stderr,
 		InsecureSkipTLS: artifactOpt.Insecure,
 	}
@@ -158,32 +160,71 @@ func newURL(rawurl string) (*url.URL, error) {
 	return u, nil
 }
 
-// Helper function to check for a GitHub/GitLab token from env vars in order to
-// make authenticated requests to access private repos
-func gitAuth() http.AuthMethod {
-	// The username can be anything for HTTPS Git operations
-	gitUsername := "fanal-aquasecurity-scan"
+// defaultGitUsername can be any non-empty username for HTTPS Git operations
+// against GitHub and GitLab.
+const defaultGitUsername = "fanal-aquasecurity-scan"
 
-	// We first check if a GitHub token was provided
-	githubToken := os.Getenv("GITHUB_TOKEN")
-	if githubToken != "" {
-		return &http.BasicAuth{
-			Username: gitUsername,
-			Password: githubToken,
-		}
+// defaultBitbucketUsername is the username Bitbucket expects when
+// authenticating with a repository access token over HTTPS.
+const defaultBitbucketUsername = "x-token-auth"
+
+// tokenForHost returns the credentials to use for the given repository host.
+// The token is selected based on the hosting platform so that, e.g., a
+// BITBUCKET_TOKEN is used for bitbucket.org repositories even when
+// GITHUB_TOKEN/GITLAB_TOKEN are also set (see issue #6833).
+//
+// For unknown hosts (self-hosted instances, local test servers, ...), the
+// tokens are tried in the order GITHUB_TOKEN, GITLAB_TOKEN, BITBUCKET_TOKEN
+// to preserve the historical behavior.
+func tokenForHost(host string) (username, token string) {
+	username, token = selectTokenForHost(host)
+	if token == "" {
+		// No usable token: report no credentials at all.
+		return "", ""
+	}
+	return username, token
+}
+
+func selectTokenForHost(host string) (username, token string) {
+	host = strings.ToLower(strings.TrimSpace(host))
+
+	switch {
+	case host == "github.com" || strings.HasSuffix(host, ".github.com"):
+		return defaultGitUsername, os.Getenv("GITHUB_TOKEN")
+	case host == "gitlab.com" || strings.HasSuffix(host, ".gitlab.com") || strings.Contains(host, "gitlab"):
+		return defaultGitUsername, os.Getenv("GITLAB_TOKEN")
+	case host == "bitbucket.org" || strings.HasSuffix(host, ".bitbucket.org") || strings.Contains(host, "bitbucket"):
+		// Bitbucket app passwords require the account username, while
+		// repository/workspace access tokens use "x-token-auth".
+		// BITBUCKET_USERNAME allows overriding the default.
+		return cmp.Or(os.Getenv("BITBUCKET_USERNAME"), defaultBitbucketUsername), os.Getenv("BITBUCKET_TOKEN")
 	}
 
-	// Otherwise we check if a GitLab token was provided
-	gitlabToken := os.Getenv("GITLAB_TOKEN")
-	if gitlabToken != "" {
-		return &http.BasicAuth{
-			Username: gitUsername,
-			Password: gitlabToken,
-		}
+	// Unknown host: fall back to the historical precedence order.
+	if token := os.Getenv("GITHUB_TOKEN"); token != "" {
+		return defaultGitUsername, token
 	}
+	if token := os.Getenv("GITLAB_TOKEN"); token != "" {
+		return defaultGitUsername, token
+	}
+	if token := os.Getenv("BITBUCKET_TOKEN"); token != "" {
+		return cmp.Or(os.Getenv("BITBUCKET_USERNAME"), defaultBitbucketUsername), token
+	}
+	return "", ""
+}
 
-	// If no token was provided, we simply return a nil,
-	// which will make the request to be unauthenticated
-	return nil
-
+// Helper function to pick the token matching the repository host from env
+// vars in order to make authenticated requests to access private repos.
+// Returns nil when no token is available, making the request unauthenticated.
+func gitAuth(host string) http.AuthMethod {
+	username, token := tokenForHost(host)
+	if token == "" {
+		// If no token was provided, we simply return a nil,
+		// which will make the request to be unauthenticated
+		return nil
+	}
+	return &http.BasicAuth{
+		Username: username,
+		Password: token,
+	}
 }

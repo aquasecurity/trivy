@@ -163,11 +163,17 @@ $ trivy repo --tag <tag-name> <repo-name>
 ```
 
 ### Scanning Private Repositories
-In order to scan private GitHub or GitLab repositories, the environment variable `GITHUB_TOKEN` or `GITLAB_TOKEN` must be set, respectively, with a valid token that has access to the private repository being scanned.
+In order to scan private repositories, set the environment variable matching the hosting platform with a valid token that has access to the private repository being scanned:
 
-The `GITHUB_TOKEN` environment variable will take precedence over `GITLAB_TOKEN`, so if a private GitLab repository will be scanned, then `GITHUB_TOKEN` must be unset.
+| Platform | Environment variable | Notes |
+|---|---|---|
+| GitHub (`github.com`) | `GITHUB_TOKEN` | Personal access token (classic or fine-grained) |
+| GitLab (`gitlab.com` or self-hosted, host contains `gitlab`) | `GITLAB_TOKEN` | Personal access token |
+| Bitbucket (`bitbucket.org` or self-hosted Bitbucket Server, host contains `bitbucket`) | `BITBUCKET_TOKEN` | Repository/workspace access token (default username `x-token-auth`) or app password (set `BITBUCKET_USERNAME` to your account username) |
 
-You can find how to generate your GitHub Token in the following [GitHub documentation.](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token)
+The token is selected based on the repository host, so a private Bitbucket repository can be scanned by setting only `BITBUCKET_TOKEN`, even when `GITHUB_TOKEN`/`GITLAB_TOKEN` are also set. For any other (e.g. self-hosted) host, the tokens are tried in the order `GITHUB_TOKEN`, `GITLAB_TOKEN`, `BITBUCKET_TOKEN`.
+
+You can find how to generate your GitHub token in the following [GitHub documentation](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/creating-a-personal-access-token), your GitLab token in the [GitLab documentation](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html), and your Bitbucket app password or repository access token in the [Bitbucket documentation](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/).
 
 For example:
 
@@ -178,4 +184,13 @@ $ trivy repo <your private GitHub repo URL>
 # or
 $ export GITLAB_TOKEN="your_private_gitlab_token"
 $ trivy repo <your private GitLab repo URL>
+
+# or
+$ export BITBUCKET_TOKEN="your_private_bitbucket_token"
+$ trivy repo <your private Bitbucket repo URL>
+
+# Bitbucket app password instead of an access token:
+$ export BITBUCKET_USERNAME="your_bitbucket_username"
+$ export BITBUCKET_TOKEN="your_bitbucket_app_password"
+$ trivy repo <your private Bitbucket repo URL>
 ```
