@@ -97,15 +97,16 @@ func (e *Executor) Execute(ctx context.Context, modules terraform.Modules, baseP
 			continue
 		}
 
-		res.WithRenderedCause(e.renderCause(modules, res.Range()))
+		res.WithRenderedCause(e.renderCause(modules, res.Metadata()))
 		results[i] = res
 	}
 
 	return results, nil
 }
 
-func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) scan.RenderedCause {
-	tfBlock := findBlockForCause(modules, causeRng)
+func (e *Executor) renderCause(modules terraform.Modules, cause types.Metadata) scan.RenderedCause {
+	causeRng := cause.Range()
+	tfBlock := findBlockForCause(modules, cause)
 	if tfBlock == nil {
 		e.logger.Debug("No matching Terraform block found", log.String("cause_range", causeRng.String()))
 		return scan.RenderedCause{}
@@ -121,9 +122,9 @@ func (e *Executor) renderCause(modules terraform.Modules, causeRng types.Range) 
 	f := hclwrite.NewEmptyFile()
 	f.Body().AppendBlock(block)
 
-	cause := string(hclwrite.Format(f.Bytes()))
-	cause = strings.TrimSuffix(cause, "\n")
-	return scan.RenderedCause{Raw: cause}
+	raw := string(hclwrite.Format(f.Bytes()))
+	raw = strings.TrimSuffix(raw, "\n")
+	return scan.RenderedCause{Raw: raw}
 }
 
 // normalizeBlockLables removes indexes and keys from labels.
@@ -175,14 +176,39 @@ func writeBlock(tfBlock *terraform.Block, block *hclwrite.Block, causeRng types.
 	return found
 }
 
-func findBlockForCause(modules terraform.Modules, causeRng types.Range) *terraform.Block {
+func findBlockForCause(modules terraform.Modules, cause types.Metadata) *terraform.Block {
+	causeRng := cause.Range()
 	for _, block := range modules.GetBlocks() {
-		blockRng := block.GetMetadata().Range()
-		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) {
+		blockMeta := block.GetMetadata()
+		blockRng := blockMeta.Range()
+		// Instances of a module share the file and the range of each block,
+		// so the block must also be an ancestor of the cause.
+		if blockRng.GetFilename() == causeRng.GetFilename() && blockRng.Includes(causeRng) &&
+			hasAncestor(&cause, &blockMeta) {
 			return block
 		}
 	}
 	return nil
+}
+
+func hasAncestor(m, ancestor *types.Metadata) bool {
+	for ; m != nil; m = m.Parent() {
+		if sameHierarchy(m, ancestor) {
+			return true
+		}
+	}
+	return false
+}
+
+func sameHierarchy(a, b *types.Metadata) bool {
+	for ; a != nil && b != nil; a, b = a.Parent(), b.Parent() {
+		ar, br := a.Range(), b.Range()
+		if a.Reference() != b.Reference() || ar.GetFilename() != br.GetFilename() ||
+			ar.GetStartLine() != br.GetStartLine() || ar.GetEndLine() != br.GetEndLine() {
+			return false
+		}
+	}
+	return a == nil && b == nil
 }
 
 func (e *Executor) filterResults(results scan.Results) scan.Results {
