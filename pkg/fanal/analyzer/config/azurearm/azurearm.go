@@ -11,7 +11,7 @@ import (
 )
 
 const (
-	version      = 1
+	version      = 2
 	analyzerType = analyzer.TypeAzureARM
 )
 

@@ -10,7 +10,7 @@ import (
 
 const (
 	analyzerType = analyzer.TypeTerraform
-	version      = 1
+	version      = 2
 )
 
 func init() {

@@ -122,7 +122,8 @@
               "Raw": "resource \"aws_security_group_rule\" \"this\" {\n  cidr_blocks = [\"0.0.0.0/0\"]\n}",
               "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_security_group_rule\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {\n  \u001b[38;5;245mcidr_blocks\u001b[0m = [\u001b[38;5;37m\"0.0.0.0/0\"\u001b[0m]\n}"
             }
-          }
+          },
+          "Fingerprint": "66c3b32dfa16465406efe4012e615716b9accc46620cbd5608970b0023fd0339"
         },
         {
           "Type": "Terraform Security Check",
@@ -220,7 +221,8 @@
               "Raw": "resource \"aws_security_group_rule\" \"this\" {\n  description = \"\"\n}",
               "Highlighted": "\u001b[38;5;33mresource\u001b[0m \u001b[38;5;37m\"aws_security_group_rule\"\u001b[0m \u001b[38;5;37m\"this\"\u001b[0m {\n  \u001b[38;5;245mdescription\u001b[0m = \u001b[38;5;37m\"\"\n\u001b[0m}"
             }
-          }
+          },
+          "Fingerprint": "50e5dd01d16341b55b01be19594801a4f0683aca9451ef2cea2ddbd218267935"
         }
       ]
     }

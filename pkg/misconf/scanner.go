@@ -518,6 +518,7 @@ func ResultsToMisconf(configType types.ConfigType, scannerName string, results s
 				References:         flattened.Links,
 			},
 			CauseMetadata: cause,
+			Fingerprint:   result.Fingerprint(),
 			Traces:        result.Traces(),
 		}
 

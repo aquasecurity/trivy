@@ -55,3 +55,76 @@ func Test_Occurrences(t *testing.T) {
 		})
 	}
 }
+
+func TestResult_Fingerprint(t *testing.T) {
+	const (
+		modFile   = "modules/sg/main.tf"
+		causeRef  = "aws_security_group_rule.this.cidr_blocks"
+		moduleRef = "module.sg"
+	)
+
+	newResult := func(shift int, causeRef, moduleRef string) *scan.Result {
+		moduleMeta := types.NewMetadata(types.NewRange("main.tf", 1, 3, "", nil), moduleRef)
+		resourceMeta := types.NewMetadata(
+			types.NewRange(modFile, shift+1, shift+10, "", nil), "aws_security_group_rule.this",
+		).WithParent(moduleMeta)
+
+		var r scan.Result
+		r.SetRule(scan.Rule{ID: "AWS-0104"})
+		r.OverrideMetadata(types.NewMetadata(
+			types.NewRange(modFile, shift+5, shift+5, "", nil), causeRef,
+		).WithParent(resourceMeta))
+		return &r
+	}
+
+	tests := []struct {
+		name  string
+		a     *scan.Result
+		b     *scan.Result
+		equal bool
+	}{
+		{
+			name: "different count keys",
+			a:    newResult(0, causeRef, moduleRef+"[0]"),
+			b:    newResult(0, causeRef, moduleRef+"[1]"),
+		},
+		{
+			name: "different for_each keys",
+			a:    newResult(0, causeRef, moduleRef+`["dev"]`),
+			b:    newResult(0, causeRef, moduleRef+`["prod"]`),
+		},
+		{
+			name: "different cause refs",
+			a:    newResult(0, causeRef, moduleRef),
+			b:    newResult(0, "aws_security_group_rule.this.description", moduleRef),
+		},
+		{
+			name:  "shifted lines",
+			a:     newResult(0, causeRef, moduleRef),
+			b:     newResult(20, causeRef, moduleRef),
+			equal: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			a, b := tt.a.Fingerprint(), tt.b.Fingerprint()
+			assert.NotEmpty(t, a)
+			assert.NotEmpty(t, b)
+			if tt.equal {
+				assert.Equal(t, a, b)
+			} else {
+				assert.NotEqual(t, a, b)
+			}
+		})
+	}
+
+	t.Run("no refs", func(t *testing.T) {
+		var r scan.Result
+		r.SetRule(scan.Rule{ID: "KSV-0001"})
+		r.OverrideMetadata(types.NewMetadata(
+			types.NewRange("deploy.yaml", 5, 5, "", nil), "",
+		).WithParent(types.NewMetadata(types.NewRange("deploy.yaml", 1, 20, "", nil), "")))
+		assert.Empty(t, r.Fingerprint())
+	})
+}

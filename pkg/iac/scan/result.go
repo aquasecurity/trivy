@@ -1,6 +1,8 @@
 package scan
 
 import (
+	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io/fs"
 	"path/filepath"
@@ -385,4 +387,26 @@ func (r *Result) Occurrences() []Occurrence {
 		})
 	}
 	return occurrences
+}
+
+// Fingerprint returns a hex SHA-256 of the rule ID, the file of the cause and
+// the references of the metadata chain from the cause up to the root.
+// Line numbers are not part of it.
+// It returns an empty string if no level of the chain has a reference.
+func (r *Result) Fingerprint() string {
+	rng := r.metadata.Range()
+	parts := []string{r.rule.ID, rng.GetFilename()}
+
+	var hasRef bool
+	for m := &r.metadata; m != nil; m = m.Parent() {
+		ref := m.Reference()
+		hasRef = hasRef || ref != ""
+		parts = append(parts, ref)
+	}
+	if !hasRef {
+		return ""
+	}
+
+	sum := sha256.Sum256([]byte(strings.Join(parts, "\x00")))
+	return hex.EncodeToString(sum[:])
 }

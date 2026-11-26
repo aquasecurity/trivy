@@ -168,7 +168,8 @@
                 }
               }
             ]
-          }
+          },
+          "Fingerprint": "8533322ec4154ff455f9a62d691956f7718b42985da3cf20108c5fddbfdb4382"
         },
         {
           "Type": "Terraform Security Check",
@@ -312,7 +313,8 @@
                 }
               }
             ]
-          }
+          },
+          "Fingerprint": "30c8e0c9cc6cca93e6c33d4d66523b5e927a7b1ec71200057591b02e21a6cd35"
         },
         {
           "Type": "Terraform Security Check",
@@ -455,7 +457,8 @@
                 }
               }
             ]
-          }
+          },
+          "Fingerprint": "2897982e67d5e42b50b97542763d4cdd380b54aa891b66b4f0f2e7665720834f"
         }
       ]
     }

@@ -181,9 +181,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: ts.URL + "/test-repo.git",
 				Type: types.TypeRepository,
-				ID:   "sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d", // Calculated from commit hash
+				ID:   "sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466", // Calculated from commit hash
 				BlobIDs: []string{
-					"sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d", // Calculated from commit hash
+					"sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466", // Calculated from commit hash
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   ts.URL + "/test-repo.git",
@@ -205,9 +205,9 @@ func TestArtifact_Inspect(t *testing.T) {
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
 				Type: types.TypeRepository,
-				ID:   "sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d", // Calculated from commit hash
+				ID:   "sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466", // Calculated from commit hash
 				BlobIDs: []string{
-					"sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d", // Calculated from commit hash
+					"sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466", // Calculated from commit hash
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",
@@ -265,16 +265,16 @@ func TestArtifact_Inspect(t *testing.T) {
 					},
 				}
 				// Store the blob info in the cache to test cache hit
-				cacheKey := "sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d"
+				cacheKey := "sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466"
 				err := c.PutBlob(t.Context(), cacheKey, blobInfo)
 				require.NoError(t, err)
 			},
 			want: artifact.Reference{
 				Name: "../../../../internal/gittest/testdata/test-repo",
 				Type: types.TypeRepository,
-				ID:   "sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d",
+				ID:   "sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466",
 				BlobIDs: []string{
-					"sha256:1587f4be90cf95b3e1b733512d674301f5fe4200055f10efa4dbf0d5e590d32d",
+					"sha256:428b60b880d684cdc6898fea4f2cd9ad24055a116c204de87b4fea3dfb107466",
 				},
 				RepoMetadata: artifact.RepoMetadata{
 					RepoURL:   "https://github.com/aquasecurity/trivy-test-repo/",

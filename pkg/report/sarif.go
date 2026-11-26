@@ -67,6 +67,7 @@ type sarifData struct {
 	cvssScore        string
 	cvssData         map[string]any
 	locations        []location
+	fingerprint      string
 }
 
 type location struct {
@@ -101,6 +102,11 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
 		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
+	if data.fingerprint != "" {
+		result.WithPartialFingerPrints(map[string]any{
+			"primaryLocationLineHash": data.fingerprint,
+		})
+	}
 	sw.run.AddResult(result)
 }
 
@@ -196,6 +202,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 						endLine:   misconf.CauseMetadata.EndLine,
 					},
 				},
+				fingerprint:      misconf.Fingerprint,
 				resultIndex:      getRuleIndex(misconf.ID, ruleIndexes),
 				shortDescription: misconf.Title,
 				fullDescription:  misconf.Description,
