@@ -15,7 +15,7 @@ spec:
     matchLabels:
       app.kubernetes.io/name: {{ include "trivy.name" . }}
       app.kubernetes.io/instance: {{ .Release.Name }}
-  {{- if .Values.persistence.enabled }}
+  {{- if and .Values.persistence.enabled (not .Values.persistence.existingClaim) }}
   volumeClaimTemplates:
     - apiVersion: v1
       kind: PersistentVolumeClaim
@@ -140,6 +140,10 @@ spec:
         {{- if not .Values.persistence.enabled }}
         - name: data
           emptyDir: {}
+        {{- else if .Values.persistence.existingClaim }}
+        - name: data
+          persistentVolumeClaim:
+            claimName: {{ .Values.persistence.existingClaim | quote }}
         {{- end }}
         {{- with .Values.trivy.sslCertDir }}
         - name: ssl-cert-dir
