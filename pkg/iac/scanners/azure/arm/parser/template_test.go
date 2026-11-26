@@ -3,6 +3,7 @@ package parser
 import (
 	"os"
 	"testing"
+	"testing/fstest"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -48,4 +49,41 @@ func Test_JSONUnmarshal(t *testing.T) {
 	assert.Equal(t, azure.KindNumber, prefix.MinLength.Kind)
 	assert.Equal(t, 11, prefix.MinLength.GetMetadata().Range().GetStartLine())
 	assert.Equal(t, 11, prefix.MinLength.GetMetadata().Range().GetEndLine())
+}
+
+func TestParseTemplate_NodeRef(t *testing.T) {
+	tests := []struct {
+		name         string
+		input        string
+		wantResource string
+		wantTag      string
+	}{
+		{
+			name:         "resources as array",
+			input:        `{"resources": [{"tags": {"2024": "x"}}]}`,
+			wantResource: "resources[0]",
+			wantTag:      "resources[0].tags.2024",
+		},
+		{
+			name:         "resources as object with numeric name",
+			input:        `{"resources": {"1": {"tags": {"2024": "x"}}}}`,
+			wantResource: "resources.1",
+			wantTag:      "resources.1.tags.2024",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			fsys := fstest.MapFS{
+				"template.json": &fstest.MapFile{Data: []byte(tt.input)},
+			}
+			template, err := ParseTemplate(fsys, "template.json")
+			require.NoError(t, err)
+			require.Len(t, template.Resources, 1)
+
+			res := template.Resources[0]
+			assert.Equal(t, tt.wantResource, res.Metadata.Reference())
+			assert.Equal(t, tt.wantTag, res.Tags.GetMapValue("2024").GetMetadata().Reference())
+		})
+	}
 }
