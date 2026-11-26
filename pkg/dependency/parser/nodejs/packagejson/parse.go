@@ -9,7 +9,6 @@ import (
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
-	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
 
 var nameRegexp = regexp.MustCompile(`^(@[A-Za-z0-9-._]+/)?[A-Za-z0-9-._]+$`)
@@ -55,27 +54,44 @@ func (p *Parser) Parse(r io.Reader) (Package, error) {
 // `workspaces` field supports 2 types -
 // string array and map with `packages` key only
 // cf. https://github.com/npm/map-workspaces#usage
+//
+// The field is part of the scanned repository, so any shape a package.json can
+// hold reaches here: a `packages` value that is not an array, or an array whose
+// elements are not strings, is ignored rather than converted blindly.
 func ParseWorkspaces(val any) []string {
-	// Workspaces support 2 types - https://github.com/SchemaStore/schemastore/blob/d9516961f8a5b0e65a457808070147b5a866f60b/src/schemas/json/package.json#L777
 	switch ws := val.(type) {
 	// Workspace as object (map[string][]string)
 	// e.g. "workspaces": {"packages": ["packages/*", "plugins/*"]},
 	case map[string]any:
 		// Take only workspaces for `packages`:
 		// cf . https://github.com/npm/map-workspaces#usage
-		if pkgsWorkspaces, ok := ws["packages"]; ok {
-			return xslices.Map(pkgsWorkspaces.([]any), func(workspace any) string {
-				return workspace.(string)
-			})
+		pkgsWorkspaces, ok := ws["packages"]
+		if !ok {
+			return nil
 		}
+		list, ok := pkgsWorkspaces.([]any)
+		if !ok {
+			return nil
+		}
+		return stringElements(list)
 	// Workspace as string array
 	// e.g.   "workspaces": ["packages/*", "backend"],
 	case []any:
-		return xslices.Map(ws, func(workspace any) string {
-			return workspace.(string)
-		})
+		return stringElements(ws)
 	}
 	return nil
+}
+
+// stringElements keeps the string members of a decoded JSON array and drops the
+// rest, so one malformed entry does not discard the whole list.
+func stringElements(list []any) []string {
+	out := make([]string, 0, len(list))
+	for _, item := range list {
+		if s, ok := item.(string); ok {
+			out = append(out, s)
+		}
+	}
+	return out
 }
 
 func IsValidName(name string) bool {
