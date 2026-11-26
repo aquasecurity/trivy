@@ -72,6 +72,48 @@ func TestParser_Parse(t *testing.T) {
 			},
 		},
 		{
+			name:      "android test configurations",
+			inputFile: "testdata/android.lockfile",
+			want: []ftypes.Package{
+				{
+					ID:      "androidx.test.ext:junit:1.1.5",
+					Name:    "androidx.test.ext:junit",
+					Version: "1.1.5",
+					Dev:     true,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 5,
+							EndLine:   5,
+						},
+					},
+				},
+				{
+					ID:      "junit:junit:4.12",
+					Name:    "junit:junit",
+					Version: "4.12",
+					Dev:     true,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 4,
+							EndLine:   4,
+						},
+					},
+				},
+				{
+					ID:      "org.mockito:mockito-core:5.11.0",
+					Name:    "org.mockito:mockito-core",
+					Version: "5.11.0",
+					Dev:     false,
+					Locations: []ftypes.Location{
+						{
+							StartLine: 6,
+							EndLine:   6,
+						},
+					},
+				},
+			},
+		},
+		{
 			name:      "empty",
 			inputFile: "testdata/empty.lockfile",
 			want:      nil,
@@ -87,6 +129,41 @@ func TestParser_Parse(t *testing.T) {
 			pkgs, _, _ := parser.Parse(t.Context(), f)
 			sort.Sort(ftypes.Packages(pkgs))
 			assert.Equal(t, tt.want, pkgs)
+		})
+	}
+}
+
+func TestIsTestConfiguration(t *testing.T) {
+	tests := []struct {
+		configuration string
+		want          bool
+	}{
+		// JVM test configurations
+		{configuration: "testCompileClasspath", want: true},
+		{configuration: "testRuntimeClasspath", want: true},
+		// Android test configurations (build variant prefix)
+		{configuration: "debugUnitTestCompileClasspath", want: true},
+		{configuration: "debugUnitTestRuntimeClasspath", want: true},
+		{configuration: "releaseUnitTestRuntimeClasspath", want: true},
+		{configuration: "debugAndroidTestCompileClasspath", want: true},
+		{configuration: "freeReleaseAndroidTestRuntimeClasspath", want: true},
+		{configuration: "debugUnitTestAnnotationProcessorClasspath", want: true},
+		// Production configurations must never be treated as test configurations
+		{configuration: "compileClasspath", want: false},
+		{configuration: "runtimeClasspath", want: false},
+		{configuration: "releaseRuntimeClasspath", want: false},
+		{configuration: "classpath", want: false},
+		{configuration: "", want: false},
+		// Near misses: no variant prefix, or only a partial Android suffix
+		{configuration: "UnitTestCompileClasspath", want: false},
+		{configuration: "AndroidTestRuntimeClasspath", want: false},
+		{configuration: "debugUnitTestClasspath", want: false},
+		{configuration: "debugUnitTestRuntimeClasspathExtra", want: false},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.configuration, func(t *testing.T) {
+			assert.Equal(t, tt.want, isTestConfiguration(tt.configuration))
 		})
 	}
 }
