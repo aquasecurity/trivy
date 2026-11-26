@@ -5723,6 +5723,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.CustomerManagedKey"
         },
+        "diagnosticlogging": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.DiagnosticLogging"
+        },
         "enforcehttps": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
@@ -5812,6 +5816,31 @@
         "days": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.IntValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.azure.storage.DiagnosticLogging": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "blob": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "file": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "queue": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        },
+        "table": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
         }
       }
     },

@@ -279,6 +279,278 @@ func Test_Adapt(t *testing.T) {
 	}
 }
 
+func Test_AdaptDiagnosticLogging(t *testing.T) {
+	orphanAccount := storage.Account{
+		BlobProperties: storage.BlobProperties{
+			DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+				Days: iacTypes.IntTest(7),
+			},
+		},
+	}
+	defaultAccount := func(logging storage.DiagnosticLogging) storage.Account {
+		return storage.Account{
+			PublicNetworkAccess: iacTypes.BoolTest(true),
+			MinimumTLSVersion:   iacTypes.StringTest(minimumTlsVersionOneTwo),
+			EnforceHTTPS:        iacTypes.BoolTest(true),
+			DiagnosticLogging:   logging,
+			BlobProperties: storage.BlobProperties{
+				DeleteRetentionPolicy: storage.DeleteRetentionPolicy{
+					Days: iacTypes.IntTest(7),
+				},
+			},
+		}
+	}
+
+	tests := []struct {
+		name      string
+		terraform string
+		expected  storage.Storage
+	}{
+		{
+			// Exact reproduction from #11754: blob request logging is
+			// configured through a diagnostic setting, so AZU-0057 must see
+			// the blob service as logging.
+			name: "diagnostic logging for blob service",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name                     = "example"
+  resource_group_name      = "example"
+  location                 = "westeurope"
+  account_kind             = "BlobStorage"
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "blob" {
+  name                       = "blob-logs"
+  target_resource_id         = "${azurerm_storage_account.example.id}/blobServices/default"
+  log_analytics_workspace_id = "example"
+
+  enabled_log {
+    category = "StorageRead"
+  }
+
+  enabled_log {
+    category = "StorageWrite"
+  }
+
+  enabled_log {
+    category = "StorageDelete"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					func() storage.Account {
+						account := defaultAccount(storage.DiagnosticLogging{
+							Blob: iacTypes.BoolTest(true),
+						})
+						account.AccountReplicationType = iacTypes.StringTest("GRS")
+						return account
+					}(),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "diagnostic logging for queue service",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "queue" {
+  name               = "queue-logs"
+  target_resource_id = "${azurerm_storage_account.example.id}/queueServices/default"
+
+  enabled_log {
+    category = "StorageRead"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{
+						Queue: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "diagnostic logging with allLogs category group",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "table" {
+  name               = "table-logs"
+  target_resource_id = "${azurerm_storage_account.example.id}/tableServices/default"
+
+  enabled_log {
+    category_group = "allLogs"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{
+						Table: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "non-request log category and metrics do not count",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "blob" {
+  name               = "blob-logs"
+  target_resource_id = "${azurerm_storage_account.example.id}/blobServices/default"
+
+  enabled_log {
+    category = "Transaction"
+  }
+
+  enabled_metric {
+    category = "Transaction"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "diagnostic setting targeting the account applies to all services",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "account" {
+  name               = "account-logs"
+  target_resource_id = azurerm_storage_account.example.id
+
+  enabled_log {
+    category = "StorageWrite"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{
+						Blob:  iacTypes.BoolTest(true),
+						File:  iacTypes.BoolTest(true),
+						Queue: iacTypes.BoolTest(true),
+						Table: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "dynamic enabled_log block",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "queue" {
+  name               = "queue-logs"
+  target_resource_id = "${azurerm_storage_account.example.id}/queueServices/default"
+
+  dynamic "enabled_log" {
+    for_each = ["StorageRead"]
+    content {
+      category = enabled_log.value
+    }
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{
+						Queue: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "diagnostic setting targeting another account does not count",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "example"
+}
+
+resource "azurerm_storage_account" "other" {
+  name = "other"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "other" {
+  name               = "other-logs"
+  target_resource_id = "${azurerm_storage_account.other.id}/blobServices/default"
+
+  enabled_log {
+    category = "StorageRead"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{}),
+					defaultAccount(storage.DiagnosticLogging{
+						Blob: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+		{
+			name: "diagnostic setting with literal target resource ID",
+			terraform: `
+resource "azurerm_storage_account" "example" {
+  name = "mystorage"
+}
+
+resource "azurerm_monitor_diagnostic_setting" "blob" {
+  name               = "blob-logs"
+  target_resource_id = "/subscriptions/00000000-0000-0000-0000-000000000000/resourceGroups/example/providers/Microsoft.Storage/storageAccounts/mystorage/blobServices/default"
+
+  enabled_log {
+    category = "StorageDelete"
+  }
+}
+`,
+			expected: storage.Storage{
+				Accounts: []storage.Account{
+					defaultAccount(storage.DiagnosticLogging{
+						Blob: iacTypes.BoolTest(true),
+					}),
+					orphanAccount,
+				},
+			},
+		},
+	}
+
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			modules := tftestutil.CreateModulesFromSource(t, test.terraform, ".tf")
+			adapted := Adapt(modules)
+			testutil.AssertDefsecEqual(t, test.expected, adapted)
+		})
+	}
+}
+
 func TestLines(t *testing.T) {
 	src := `
 	resource "azurerm_resource_group" "example" {
