@@ -221,6 +221,8 @@ func cryptoPrimitive(primitive ftypes.CryptoPrimitive) cdx.CryptoPrimitive {
 		return cdx.CryptoPrimitiveSignature
 	case ftypes.CryptoPrimitivePKE:
 		return cdx.CryptoPrimitivePKE
+	case ftypes.CryptoPrimitiveKEM:
+		return cdx.CryptoPrimitiveKEM
 	}
 	return cdx.CryptoPrimitiveUnknown
 }

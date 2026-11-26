@@ -274,6 +274,9 @@ func TestDescribeRawPublicKey(t *testing.T) {
 	ed448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 113}, make([]byte, 57))
 	x448 := marshalSPKI(t, asn1.ObjectIdentifier{1, 3, 101, 111}, make([]byte, 56))
 	rsaPSS := marshalSPKI(t, asn1.ObjectIdentifier{1, 2, 840, 113549, 1, 1, 10}, make([]byte, 270))
+	mlkem768 := marshalSPKI(t, asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 4, 2}, make([]byte, 1184))
+	slhdsaSHAKE256f := marshalSPKI(t, asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 3, 31}, make([]byte, 64))
+	hashSLHDSASHA2128s := marshalSPKI(t, asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 3, 35}, make([]byte, 32))
 
 	ed448Algorithm := ftypes.CryptoAssetInfo{
 		Kind: ftypes.CryptoKindAlgorithm,
@@ -307,6 +310,43 @@ func TestDescribeRawPublicKey(t *testing.T) {
 		Name: "1.2.840.113549.1.1.10",
 		Algorithm: &ftypes.CryptoAlgorithm{
 			Primitive: ftypes.CryptoPrimitiveUnknown,
+		},
+	}
+
+	mlkem768Algorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.4.2",
+		},
+		Name: "ML-KEM-768",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "ML-KEM",
+			Primitive: ftypes.CryptoPrimitiveKEM,
+		},
+	}
+	slhdsaSHAKE256fAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.3.31",
+		},
+		Name: "SLH-DSA-SHAKE-256f",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "SLH-DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
+		},
+	}
+	hashSLHDSASHA2128sAlgorithm := ftypes.CryptoAssetInfo{
+		Kind: ftypes.CryptoKindAlgorithm,
+		Identity: ftypes.CryptoIdentity{
+			Method: ftypes.CryptoMethodOID,
+			Value:  "2.16.840.1.101.3.4.3.35",
+		},
+		Name: "HashSLH-DSA-SHA2-128s-SHA-256",
+		Algorithm: &ftypes.CryptoAlgorithm{
+			Family:    "SLH-DSA",
+			Primitive: ftypes.CryptoPrimitiveSignature,
 		},
 	}
 
@@ -370,6 +410,69 @@ func TestDescribeRawPublicKey(t *testing.T) {
 				}},
 			},
 			wantAlgorithm: rsaPSSAlgorithm,
+		},
+		{
+			name:    "ML-KEM-768 public key",
+			spki:    mlkem768,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, mlkem768),
+				Name:     "ML-KEM-768 public key",
+				Key:      &ftypes.CryptoKey{Size: 1184 * 8},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: mlkem768Algorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: mlkem768Algorithm,
+		},
+		{
+			name:    "SLH-DSA-SHAKE-256f public key",
+			spki:    slhdsaSHAKE256f,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, slhdsaSHAKE256f),
+				Name:     "SLH-DSA-SHAKE-256f public key",
+				Key:      &ftypes.CryptoKey{Size: 64 * 8},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: slhdsaSHAKE256fAlgorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: slhdsaSHAKE256fAlgorithm,
+		},
+		{
+			name:    "HashSLH-DSA-SHA2-128s-SHA-256 public key",
+			spki:    hashSLHDSASHA2128s,
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantKey: ftypes.CryptoAssetInfo{
+				Kind:     ftypes.CryptoKindKey,
+				KeyType:  ftypes.CryptoKeyTypePublic,
+				Identity: ftypes.DigestIdentity(ftypes.CryptoMethodSPKISHA256, hashSLHDSASHA2128s),
+				Name:     "HashSLH-DSA-SHA2-128s-SHA-256 public key",
+				Key:      &ftypes.CryptoKey{Size: 32 * 8},
+				Relationships: []ftypes.CryptoRelationship{{
+					Type:         ftypes.CryptoRelationshipUsedWith,
+					RelatedAsset: hashSLHDSASHA2128sAlgorithm.Descriptor(),
+				}},
+			},
+			wantAlgorithm: hashSLHDSASHA2128sAlgorithm,
+		},
+		{
+			name:    "ML-KEM-512 key of the wrong length",
+			spki:    marshalSPKI(t, asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 4, 1}, make([]byte, 799)),
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantErr: "6392 bits instead of 6400",
+		},
+		{
+			name:    "SLH-DSA key of the wrong length",
+			spki:    marshalSPKI(t, asn1.ObjectIdentifier{2, 16, 840, 1, 101, 3, 4, 3, 20}, make([]byte, 64)),
+			keyType: ftypes.CryptoKeyTypePublic,
+			wantErr: "512 bits instead of 256",
 		},
 		{
 			name:    "Ed448 key of the wrong length",
