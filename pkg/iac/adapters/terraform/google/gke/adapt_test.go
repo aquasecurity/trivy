@@ -161,6 +161,11 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 						PrivateCluster: gke.PrivateCluster{
 							EnablePrivateNodes: iacTypes.BoolTest(true),
 						},
+						ControlPlaneEndpoints: gke.ControlPlaneEndpoints{
+							IPEndpoints: gke.IPEndpoints{
+								Enabled: iacTypes.BoolTest(true),
+							},
+						},
 						LoggingService:    iacTypes.StringTest("logging.googleapis.com/kubernetes"),
 						MonitoringService: iacTypes.StringTest("monitoring.googleapis.com/kubernetes"),
 						MasterAuth: gke.MasterAuth{
@@ -218,6 +223,48 @@ resource "google_container_cluster" "example" {
 						MasterAuth: gke.MasterAuth{
 							ClientCertificate: gke.ClientCertificate{},
 						},
+						ControlPlaneEndpoints: gke.ControlPlaneEndpoints{
+							IPEndpoints: gke.IPEndpoints{
+								Enabled: iacTypes.BoolTest(true),
+							},
+						},
+						EnableShieldedNodes: iacTypes.BoolTest(true),
+						ResourceLabels:      iacTypes.MapTest(make(map[string]string)),
+					},
+				},
+			},
+		},
+		{
+			name: "IP endpoints disabled",
+			terraform: `
+resource "google_container_cluster" "example" {
+  control_plane_endpoints_config {
+    dns_endpoint_config {
+      allow_external_traffic = true
+    }
+    ip_endpoints_config {
+      enabled = false
+    }
+  }
+}
+`,
+			expected: gke.GKE{
+				Clusters: []gke.Cluster{
+					{
+						MasterAuthorizedNetworks: gke.MasterAuthorizedNetworks{
+							CIDRs: []iacTypes.StringValue{},
+						},
+						ControlPlaneEndpoints: gke.ControlPlaneEndpoints{
+							IPEndpoints: gke.IPEndpoints{
+								Enabled: iacTypes.BoolTest(false),
+							},
+						},
+						NodeConfig: gke.NodeConfig{
+							EnableLegacyEndpoints: iacTypes.BoolTest(true),
+						},
+						DatapathProvider:    iacTypes.StringTest("DATAPATH_PROVIDER_UNSPECIFIED"),
+						LoggingService:      iacTypes.StringTest("logging.googleapis.com/kubernetes"),
+						MonitoringService:   iacTypes.StringTest("monitoring.googleapis.com/kubernetes"),
 						EnableShieldedNodes: iacTypes.BoolTest(true),
 						ResourceLabels:      iacTypes.MapTest(make(map[string]string)),
 					},

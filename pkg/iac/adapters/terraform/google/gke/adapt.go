@@ -69,6 +69,13 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 			Metadata:           resource.GetMetadata(),
 			EnablePrivateNodes: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		},
+		ControlPlaneEndpoints: gke.ControlPlaneEndpoints{
+			Metadata: resource.GetMetadata(),
+			IPEndpoints: gke.IPEndpoints{
+				Metadata: resource.GetMetadata(),
+				Enabled:  iacTypes.BoolDefault(true, resource.GetMetadata()),
+			},
+		},
 		LoggingService:    iacTypes.StringDefault("logging.googleapis.com/kubernetes", resource.GetMetadata()),
 		MonitoringService: iacTypes.StringDefault("monitoring.googleapis.com/kubernetes", resource.GetMetadata()),
 		MasterAuth: gke.MasterAuth{
@@ -116,6 +123,10 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 		privateNodesEnabledAttr := privBlock.GetAttribute("enable_private_nodes")
 		cluster.PrivateCluster.Metadata = privBlock.GetMetadata()
 		cluster.PrivateCluster.EnablePrivateNodes = privateNodesEnabledAttr.AsBoolValueOrDefault(false, privBlock)
+	}
+
+	if endpointsBlock := resource.GetBlock("control_plane_endpoints_config"); endpointsBlock.IsNotNil() {
+		cluster.ControlPlaneEndpoints = adaptControlPlaneEndpoints(endpointsBlock)
 	}
 
 	loggingAttr := resource.GetAttribute("logging_service")
@@ -240,6 +251,13 @@ func (a *adapter) adaptNodePool(resource *terraform.Block) {
 			Metadata:           iacTypes.NewUnmanagedMetadata(),
 			EnablePrivateNodes: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
 		},
+		ControlPlaneEndpoints: gke.ControlPlaneEndpoints{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			IPEndpoints: gke.IPEndpoints{
+				Metadata: iacTypes.NewUnmanagedMetadata(),
+				Enabled:  iacTypes.BoolDefault(true, iacTypes.NewUnmanagedMetadata()),
+			},
+		},
 		LoggingService:    iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		MonitoringService: iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		MasterAuth: gke.MasterAuth{
@@ -323,6 +341,25 @@ func adaptMasterAuth(resource *terraform.Block) gke.MasterAuth {
 		Username:          username,
 		Password:          password,
 	}
+}
+
+func adaptControlPlaneEndpoints(block *terraform.Block) gke.ControlPlaneEndpoints {
+	endpoints := gke.ControlPlaneEndpoints{
+		Metadata: block.GetMetadata(),
+		IPEndpoints: gke.IPEndpoints{
+			Metadata: block.GetMetadata(),
+			Enabled:  iacTypes.BoolDefault(true, block.GetMetadata()),
+		},
+	}
+
+	if ipBlock := block.GetBlock("ip_endpoints_config"); ipBlock.IsNotNil() {
+		endpoints.IPEndpoints = gke.IPEndpoints{
+			Metadata: ipBlock.GetMetadata(),
+			Enabled:  ipBlock.GetAttribute("enabled").AsBoolValueOrDefault(true, ipBlock),
+		}
+	}
+
+	return endpoints
 }
 
 func adaptMasterAuthNetworksAsBlocks(blocks terraform.Blocks) gke.MasterAuthorizedNetworks {
