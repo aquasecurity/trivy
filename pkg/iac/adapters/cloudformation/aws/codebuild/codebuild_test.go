@@ -42,6 +42,33 @@ Resources:
 			},
 		},
 		{
+			name: "encryption disabled as string",
+			source: `AWSTemplateFormatVersion: 2010-09-09
+Resources:
+  Project:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Artifacts:
+        EncryptionDisabled: "true"
+      SecondaryArtifacts:
+        - EncryptionDisabled: "true"
+`,
+			expected: codebuild.CodeBuild{
+				Projects: []codebuild.Project{
+					{
+						ArtifactSettings: codebuild.ArtifactSettings{
+							EncryptionEnabled: types.BoolTest(false),
+						},
+						SecondaryArtifactSettings: []codebuild.ArtifactSettings{
+							{
+								EncryptionEnabled: types.BoolTest(false),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
 			name: "empty",
 			source: `AWSTemplateFormatVersion: 2010-09-09
 Resources:
