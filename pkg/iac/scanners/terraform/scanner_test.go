@@ -1031,6 +1031,35 @@ resource "aws_s3_bucket" "test" {
 }`,
 		},
 		{
+			name:       "misconfigured resource in one of the module instances",
+			inputCheck: s3check,
+			fsys: fstest.MapFS{
+				"main.tf": &fstest.MapFile{Data: []byte(`
+module "bucket" {
+  source     = "./modules/bucket"
+  for_each   = { a = true, b = false }
+  versioning = each.value
+}
+`),
+				},
+				"modules/bucket/main.tf": &fstest.MapFile{Data: []byte(`
+variable "versioning" {}
+
+resource "aws_s3_bucket" "test" {
+  bucket = "test"
+
+  versioning {
+    enabled = var.versioning
+  }
+}`)},
+			},
+			expected: `resource "aws_s3_bucket" "test" {
+  versioning {
+    enabled = false
+  }
+}`,
+		},
+		{
 			name:       "misconfigured resource",
 			inputCheck: iamcheck,
 			fsys: fstest.MapFS{`main.tf`: &fstest.MapFile{Data: []byte(`
