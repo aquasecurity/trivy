@@ -14,7 +14,9 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
+	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
@@ -464,4 +466,171 @@ func TestOptions_ScanOpts_cryptoChecks(t *testing.T) {
 			assert.Equal(t, tt.want, opts.ScanOpts().CryptoChecks)
 		})
 	}
+}
+
+func TestOptions_WriteDefaultConfig(t *testing.T) {
+	t.Run("writes all six license category defaults", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
+
+		cmd := &cobra.Command{Use: "test"}
+		globalFlags := flag.NewGlobalFlagGroup()
+		globalFlags.AddFlags(cmd)
+		require.NoError(t, globalFlags.Bind(cmd))
+
+		licenseFlags := flag.NewLicenseFlagGroup()
+		reportFlags := flag.NewReportFlagGroup()
+		flags := flag.Flags{globalFlags, licenseFlags, reportFlags}
+		flags.AddFlags(cmd)
+		require.NoError(t, flags.Bind(cmd))
+
+		opts, err := flags.ToOptions(nil)
+		require.NoError(t, err)
+
+		outPath := filepath.Join(t.TempDir(), "trivy-default.yaml")
+		require.NoError(t, opts.WriteDefaultConfig(outPath))
+
+		raw, err := os.ReadFile(outPath)
+		require.NoError(t, err)
+		assert.Contains(t, string(raw), "permissive: []")
+
+		v := viper.New()
+		v.SetConfigFile(outPath)
+		require.NoError(t, v.ReadInConfig())
+
+		assert.Equal(t, expression.ForbiddenLicenses, v.GetStringSlice(flag.LicenseForbidden.ConfigName))
+		assert.Equal(t, expression.RestrictedLicenses, v.GetStringSlice(flag.LicenseRestricted.ConfigName))
+		assert.Equal(t, expression.ReciprocalLicenses, v.GetStringSlice(flag.LicenseReciprocal.ConfigName))
+		assert.Equal(t, expression.NoticeLicenses, v.GetStringSlice(flag.LicenseNotice.ConfigName))
+		assert.True(t, v.IsSet(flag.LicensePermissive.ConfigName))
+		assert.Empty(t, v.GetStringSlice(flag.LicensePermissive.ConfigName))
+		assert.Equal(t, expression.UnencumberedLicenses, v.GetStringSlice(flag.LicenseUnencumbered.ConfigName))
+
+		assert.False(t, v.IsSet(flag.GenerateDefaultConfigFlag.ConfigName))
+		assert.False(t, v.IsSet(flag.ComplianceFlag.ConfigName))
+		assert.False(t, v.IsSet(flag.TraceHTTPFlag.ConfigName))
+
+		// Verify generated config loads cleanly and keeps all six license categories.
+		viper.Reset()
+		viper.SetConfigFile(outPath)
+		require.NoError(t, viper.ReadInConfig())
+
+		reloadCmd := &cobra.Command{Use: "test"}
+		reloadedLicenseFlags := flag.NewLicenseFlagGroup()
+		reloadFlags := flag.Flags{reloadedLicenseFlags}
+		reloadFlags.AddFlags(reloadCmd)
+		require.NoError(t, reloadFlags.Bind(reloadCmd))
+
+		reloadedOpts, err := reloadFlags.ToOptions(nil)
+		require.NoError(t, err)
+		assert.Equal(t, expression.ForbiddenLicenses, reloadedOpts.LicenseCategories[ftypes.CategoryForbidden])
+		assert.Equal(t, expression.RestrictedLicenses, reloadedOpts.LicenseCategories[ftypes.CategoryRestricted])
+		assert.Equal(t, expression.ReciprocalLicenses, reloadedOpts.LicenseCategories[ftypes.CategoryReciprocal])
+		assert.Equal(t, expression.NoticeLicenses, reloadedOpts.LicenseCategories[ftypes.CategoryNotice])
+		assert.Empty(t, reloadedOpts.LicenseCategories[ftypes.CategoryPermissive])
+		assert.Equal(t, expression.UnencumberedLicenses, reloadedOpts.LicenseCategories[ftypes.CategoryUnencumbered])
+	})
+
+	t.Run("preserves explicit config overrides and keeps IsSet accurate", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
+
+		inPath := filepath.Join(t.TempDir(), "trivy.yaml")
+		configYAML := `license:
+  forbidden:
+    - MIT
+  restricted: []
+  permissive:
+    - BSD-3-Clause
+`
+		require.NoError(t, os.WriteFile(inPath, []byte(configYAML), 0o600))
+		viper.SetConfigFile(inPath)
+		require.NoError(t, viper.ReadInConfig())
+
+		cmd := &cobra.Command{Use: "test"}
+		licenseFlags := flag.NewLicenseFlagGroup()
+		flags := flag.Flags{licenseFlags}
+		flags.AddFlags(cmd)
+		require.NoError(t, flags.Bind(cmd))
+
+		opts, err := flags.ToOptions(nil)
+		require.NoError(t, err)
+
+		assert.True(t, licenseFlags.LicenseForbidden.IsSet())
+		assert.True(t, licenseFlags.LicenseRestricted.IsSet())
+		assert.True(t, licenseFlags.LicensePermissive.IsSet())
+		assert.False(t, licenseFlags.LicenseReciprocal.IsSet())
+		assert.False(t, licenseFlags.LicenseNotice.IsSet())
+		assert.False(t, licenseFlags.LicenseUnencumbered.IsSet())
+
+		assert.Equal(t, []string{"MIT"}, opts.LicenseCategories[ftypes.CategoryForbidden])
+		assert.NotNil(t, opts.LicenseCategories[ftypes.CategoryRestricted])
+		assert.Empty(t, opts.LicenseCategories[ftypes.CategoryRestricted])
+		assert.Equal(t, []string{"BSD-3-Clause"}, opts.LicenseCategories[ftypes.CategoryPermissive])
+		assert.Equal(t, expression.ReciprocalLicenses, opts.LicenseCategories[ftypes.CategoryReciprocal])
+		assert.Equal(t, expression.NoticeLicenses, opts.LicenseCategories[ftypes.CategoryNotice])
+		assert.Equal(t, expression.UnencumberedLicenses, opts.LicenseCategories[ftypes.CategoryUnencumbered])
+
+		outPath := filepath.Join(t.TempDir(), "trivy-default.yaml")
+		require.NoError(t, opts.WriteDefaultConfig(outPath))
+
+		v := viper.New()
+		v.SetConfigFile(outPath)
+		require.NoError(t, v.ReadInConfig())
+
+		assert.Equal(t, []string{"MIT"}, v.GetStringSlice(flag.LicenseForbidden.ConfigName))
+		assert.True(t, v.IsSet(flag.LicenseRestricted.ConfigName))
+		assert.Empty(t, v.GetStringSlice(flag.LicenseRestricted.ConfigName))
+		assert.Equal(t, []string{"BSD-3-Clause"}, v.GetStringSlice(flag.LicensePermissive.ConfigName))
+		assert.Equal(t, expression.ReciprocalLicenses, v.GetStringSlice(flag.LicenseReciprocal.ConfigName))
+		assert.Equal(t, expression.NoticeLicenses, v.GetStringSlice(flag.LicenseNotice.ConfigName))
+		assert.Equal(t, expression.UnencumberedLicenses, v.GetStringSlice(flag.LicenseUnencumbered.ConfigName))
+	})
+
+	t.Run("writes default when YAML license key has null value", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
+
+		inPath := filepath.Join(t.TempDir(), "trivy.yaml")
+		configYAML := `license:
+  forbidden:
+`
+		require.NoError(t, os.WriteFile(inPath, []byte(configYAML), 0o600))
+		viper.SetConfigFile(inPath)
+		require.NoError(t, viper.ReadInConfig())
+
+		cmd := &cobra.Command{Use: "test"}
+		licenseFlags := flag.NewLicenseFlagGroup()
+		flags := flag.Flags{licenseFlags}
+		flags.AddFlags(cmd)
+		require.NoError(t, flags.Bind(cmd))
+
+		opts, err := flags.ToOptions(nil)
+		require.NoError(t, err)
+
+		assert.False(t, licenseFlags.LicenseForbidden.IsSet())
+		assert.Equal(t, expression.ForbiddenLicenses, opts.LicenseCategories[ftypes.CategoryForbidden])
+
+		outPath := filepath.Join(t.TempDir(), "trivy-default.yaml")
+		require.NoError(t, opts.WriteDefaultConfig(outPath))
+
+		v := viper.New()
+		v.SetConfigFile(outPath)
+		require.NoError(t, v.ReadInConfig())
+		assert.Equal(t, expression.ForbiddenLicenses, v.GetStringSlice(flag.LicenseForbidden.ConfigName))
+	})
+
+	t.Run("returns error when destination already exists", func(t *testing.T) {
+		t.Cleanup(viper.Reset)
+
+		cmd := &cobra.Command{Use: "test"}
+		flags := flag.Flags{flag.NewLicenseFlagGroup()}
+		flags.AddFlags(cmd)
+		require.NoError(t, flags.Bind(cmd))
+
+		opts, err := flags.ToOptions(nil)
+		require.NoError(t, err)
+
+		outPath := filepath.Join(t.TempDir(), "trivy-default.yaml")
+		require.NoError(t, os.WriteFile(outPath, nil, 0o600))
+
+		require.Error(t, opts.WriteDefaultConfig(outPath))
+	})
 }

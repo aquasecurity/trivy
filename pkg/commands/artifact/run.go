@@ -13,7 +13,6 @@ import (
 
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
-	"github.com/spf13/viper"
 	"golang.org/x/xerrors"
 	"gopkg.in/yaml.v3"
 
@@ -382,22 +381,7 @@ func Run(ctx context.Context, opts flag.Options, targetKind TargetKind) (err err
 
 	if opts.GenerateDefaultConfig {
 		log.Info("Writing the default config to trivy-default.yaml...")
-
-		hiddenFlags := flag.HiddenFlags()
-		// Viper does not have the ability to remove flags.
-		// So we only save the necessary flags and set these flags after viper.Reset
-		v := viper.New()
-		for _, k := range viper.AllKeys() {
-			// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
-			// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
-			// Also don't keep removed or deprecated flags to avoid confusing users.
-			if k == flag.GenerateDefaultConfigFlag.ConfigName || k == flag.ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
-				continue
-			}
-			v.Set(k, viper.Get(k))
-		}
-
-		return v.SafeWriteConfigAs("trivy-default.yaml")
+		return opts.WriteDefaultConfig("trivy-default.yaml")
 	}
 
 	// Call pre-run hooks

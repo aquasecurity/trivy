@@ -447,6 +447,9 @@ type Options struct {
 
 	// usedFlags allows us to get the underlying flags for the options
 	usedFlags []Flagger
+
+	// allFlags retains all non-nil flags used to build these options
+	allFlags []Flagger
 }
 
 // cryptoFormats are the formats that show cryptographic assets or their findings.
@@ -629,6 +632,39 @@ func (o *Options) GetUsedFlags() []Flagger {
 	return o.usedFlags
 }
 
+// WriteDefaultConfig writes the effective configuration to filename, including
+// config-only flags whose defaults are not registered in viper.
+func (o *Options) WriteDefaultConfig(filename string) error {
+	hiddenFlags := HiddenFlags()
+	// Viper does not have the ability to remove flags.
+	// So we only save the necessary flags into a fresh Viper instance.
+	v := viper.New()
+	for _, k := range viper.AllKeys() {
+		// Skip the `GenerateDefaultConfigFlag` flags to avoid errors with default config file.
+		// Users often use "normal" formats instead of compliance. So we'll skip ComplianceFlag
+		// Also don't keep removed or deprecated flags to avoid confusing users.
+		if k == GenerateDefaultConfigFlag.ConfigName || k == ComplianceFlag.ConfigName || slices.Contains(hiddenFlags, k) {
+			continue
+		}
+		v.Set(k, viper.Get(k))
+	}
+
+	if o != nil {
+		for _, flg := range o.allFlags {
+			if lo.IsNil(flg) || flg.GetName() != "" || flg.GetConfigName() == "" || flg.Hidden() {
+				continue
+			}
+			// Config-only flags do not call viper.SetDefault during Bind so IsSet
+			// stays accurate; populate their defaults when unset in viper.
+			if !flg.IsSet() {
+				v.Set(flg.GetConfigName(), flg.GetDefaultValue())
+			}
+		}
+	}
+
+	return v.SafeWriteConfigAs(filename)
+}
+
 func (o *Options) outputPluginWriter(ctx context.Context) (writer io.Writer, cleanup func() error, err error) {
 	pluginName := strings.TrimPrefix(o.Output, "plugin=")
 
@@ -735,11 +771,15 @@ func (f *Flags) ToOptions(args []string) (Options, error) {
 	}
 
 	for _, group := range *f { // Include global flags
+		if group == nil {
+			continue
+		}
 		if err := parseFlags(group); err != nil {
 			return Options{}, xerrors.Errorf("unable to parse flags: %w", err)
 		}
 
 		opts.usedFlags = append(opts.usedFlags, usedFlags(group)...)
+		opts.allFlags = append(opts.allFlags, nonNilFlags(group)...)
 
 		if err := group.ToOptions(&opts); err != nil {
 			return Options{}, xerrors.Errorf("unable to convert flags to options: %w", err)
@@ -858,4 +898,14 @@ func usedFlags(fg FlagGroup) []Flagger {
 		}
 	}
 	return flags
+}
+
+// nonNilFlags returns all non-nil flags in the given FlagGroup.
+func nonNilFlags(fg FlagGroup) []Flagger {
+	if fg == nil {
+		return nil
+	}
+	return lo.Filter(fg.Flags(), func(flag Flagger, _ int) bool {
+		return !lo.IsNil(flag)
+	})
 }
