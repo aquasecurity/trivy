@@ -21,6 +21,7 @@ type DetectedMisconfiguration struct {
 	Status        MisconfStatus        `json:",omitempty"`
 	Layer         ftypes.Layer         `json:",omitzero"`
 	CauseMetadata ftypes.CauseMetadata `json:",omitzero"`
+	Fingerprint   string               `json:",omitempty"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`

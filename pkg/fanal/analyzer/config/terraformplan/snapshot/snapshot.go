@@ -11,7 +11,7 @@ import (
 
 const (
 	analyzerType = analyzer.TypeTerraformPlanSnapshot
-	version      = 1
+	version      = 2
 )
 
 func init() {

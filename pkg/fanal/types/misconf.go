@@ -22,6 +22,7 @@ type MisconfResult struct {
 	Message        string `json:",omitempty"`
 	PolicyMetadata `json:",omitzero"`
 	CauseMetadata  `json:",omitzero"`
+	Fingerprint    string `json:",omitempty"`
 
 	// For debugging
 	Traces []string `json:",omitempty"`

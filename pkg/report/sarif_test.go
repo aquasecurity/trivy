@@ -199,13 +199,14 @@ func TestReportWriter_Sarif(t *testing.T) {
 						Class:  types.ClassConfig,
 						Misconfigurations: []types.DetectedMisconfiguration{
 							{
-								Type:       "Kubernetes Security Check",
-								ID:         "KSV001",
-								Title:      "Image tag ':latest' used",
-								Message:    "Message",
-								Severity:   "HIGH",
-								PrimaryURL: "https://avd.aquasec.com/appshield/ksv001",
-								Status:     types.MisconfStatusFailure,
+								Type:        "Kubernetes Security Check",
+								ID:          "KSV001",
+								Title:       "Image tag ':latest' used",
+								Message:     "Message",
+								Severity:    "HIGH",
+								PrimaryURL:  "https://avd.aquasec.com/appshield/ksv001",
+								Status:      types.MisconfStatusFailure,
+								Fingerprint: "c1e2f3",
 							},
 							{
 								Type:       "Kubernetes Security Check",
@@ -287,6 +288,9 @@ func TestReportWriter_Sarif(t *testing.T) {
 								RuleIndex: new(uint(0)),
 								Level:     new("error"),
 								Message:   sarif.Message{Text: new("Artifact: library/test 1\nType: \nVulnerability KSV001\nSeverity: HIGH\nMessage: Message\nLink: [KSV001](https://avd.aquasec.com/appshield/ksv001)")},
+								PartialFingerprints: map[string]any{
+									"primaryLocationLineHash": "c1e2f3",
+								},
 								Locations: []*sarif.Location{
 									{
 										Message: &sarif.Message{Text: new("library/test 1")},

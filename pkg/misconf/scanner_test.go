@@ -169,6 +169,83 @@ func TestScanner_Scan(t *testing.T) {
 	}
 }
 
+func TestScanner_Scan_Fingerprint(t *testing.T) {
+	scanFailures := func(t *testing.T, fileType detection.FileType, files map[string]string) []types.MisconfResult {
+		fsys := mapfs.New()
+		for path, content := range files {
+			require.NoError(t, fsys.MkdirAll(filepath.Dir(path), 0o755))
+			require.NoError(t, fsys.WriteVirtualFile(path, []byte(content), 0o666))
+		}
+
+		s, err := NewScanner(fileType, ScannerOption{})
+		require.NoError(t, err)
+
+		misconfs, err := s.Scan(t.Context(), fsys)
+		require.NoError(t, err)
+
+		var failures []types.MisconfResult
+		for _, m := range misconfs {
+			failures = append(failures, m.Failures...)
+		}
+		require.NotEmpty(t, failures)
+		return failures
+	}
+
+	t.Run("terraform module instances", func(t *testing.T) {
+		failures := scanFailures(t, detection.FileTypeTerraform, map[string]string{
+			"main.tf": `
+module "api" {
+  source = "./modules/sg"
+}
+
+module "provisioner" {
+  source = "./modules/sg"
+  count  = 2
+}
+`,
+			"modules/sg/main.tf": `
+resource "aws_security_group_rule" "egress" {
+  description = "HTTPS to anywhere"
+  type        = "egress"
+  from_port   = 443
+  to_port     = 443
+  protocol    = "tcp"
+  cidr_blocks = ["0.0.0.0/0"]
+}
+`,
+		})
+
+		fingerprints := make(map[string]struct{})
+		for _, f := range failures {
+			if f.ID != "AWS-0104" {
+				continue
+			}
+			assert.NotEmpty(t, f.Fingerprint)
+			fingerprints[f.Fingerprint] = struct{}{}
+		}
+		assert.Len(t, fingerprints, 3)
+	})
+
+	t.Run("kubernetes manifest", func(t *testing.T) {
+		failures := scanFailures(t, detection.FileTypeKubernetes, map[string]string{
+			"pod.yaml": `
+apiVersion: v1
+kind: Pod
+metadata:
+  name: test
+spec:
+  containers:
+    - name: app
+      image: nginx:latest
+`,
+		})
+
+		for _, f := range failures {
+			assert.Empty(t, f.Fingerprint, f.ID)
+		}
+	})
+}
+
 func Test_createPolicyFS(t *testing.T) {
 	t.Run("outside pwd", func(t *testing.T) {
 		tmpDir := t.TempDir()

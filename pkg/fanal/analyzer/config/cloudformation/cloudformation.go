@@ -8,7 +8,7 @@ import (
 
 const (
 	analyzerType = analyzer.TypeCloudFormation
-	version      = 1
+	version      = 2
 )
 
 func init() {
