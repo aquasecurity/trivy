@@ -95,6 +95,13 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 		ResourceLabels:        iacTypes.MapDefault(make(map[string]string), resource.GetMetadata()),
 		RemoveDefaultNodePool: iacTypes.BoolDefault(false, resource.GetMetadata()),
 		EnableAutpilot:        iacTypes.BoolDefault(false, resource.GetMetadata()),
+		ControlPlaneEndpoints: gke.ControlPlaneEndpointsConfig{
+			Metadata: resource.GetMetadata(),
+			IPEndpointsConfig: gke.IPEndpointsConfig{
+				Metadata: resource.GetMetadata(),
+				Enabled:  iacTypes.BoolDefault(true, resource.GetMetadata()),
+			},
+		},
 	}
 
 	if allocBlock := resource.GetBlock("ip_allocation_policy"); allocBlock.IsNotNil() {
@@ -116,6 +123,14 @@ func (a *adapter) adaptCluster(resource *terraform.Block) {
 		privateNodesEnabledAttr := privBlock.GetAttribute("enable_private_nodes")
 		cluster.PrivateCluster.Metadata = privBlock.GetMetadata()
 		cluster.PrivateCluster.EnablePrivateNodes = privateNodesEnabledAttr.AsBoolValueOrDefault(false, privBlock)
+	}
+
+	if cpBlock := resource.GetBlock("control_plane_endpoints_config"); cpBlock.IsNotNil() {
+		cluster.ControlPlaneEndpoints.Metadata = cpBlock.GetMetadata()
+		if ipBlock := cpBlock.GetBlock("ip_endpoints_config"); ipBlock.IsNotNil() {
+			cluster.ControlPlaneEndpoints.IPEndpointsConfig.Metadata = ipBlock.GetMetadata()
+			cluster.ControlPlaneEndpoints.IPEndpointsConfig.Enabled = ipBlock.GetAttribute("enabled").AsBoolValueOrDefault(true, ipBlock)
+		}
 	}
 
 	loggingAttr := resource.GetAttribute("logging_service")

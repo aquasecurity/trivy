@@ -26,6 +26,17 @@ type Cluster struct {
 	RemoveDefaultNodePool    iacTypes.BoolValue
 	EnableAutpilot           iacTypes.BoolValue
 	DatapathProvider         iacTypes.StringValue
+	ControlPlaneEndpoints    ControlPlaneEndpointsConfig
+}
+
+type ControlPlaneEndpointsConfig struct {
+	Metadata          iacTypes.Metadata
+	IPEndpointsConfig IPEndpointsConfig
+}
+
+type IPEndpointsConfig struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type NodeConfig struct {

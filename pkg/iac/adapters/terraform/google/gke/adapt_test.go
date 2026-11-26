@@ -158,6 +158,11 @@ resource "google_container_node_pool" "primary_preemptible_nodes" {
 							Enabled: iacTypes.BoolTest(true),
 						},
 						DatapathProvider: iacTypes.StringTest("ADVANCED_DATAPATH"),
+						ControlPlaneEndpoints: gke.ControlPlaneEndpointsConfig{
+							IPEndpointsConfig: gke.IPEndpointsConfig{
+								Enabled: iacTypes.BoolTest(true),
+							},
+						},
 						PrivateCluster: gke.PrivateCluster{
 							EnablePrivateNodes: iacTypes.BoolTest(true),
 						},
@@ -212,6 +217,11 @@ resource "google_container_cluster" "example" {
 						},
 						NetworkPolicy:     gke.NetworkPolicy{},
 						DatapathProvider:  iacTypes.StringTest("DATAPATH_PROVIDER_UNSPECIFIED"),
+						ControlPlaneEndpoints: gke.ControlPlaneEndpointsConfig{
+							IPEndpointsConfig: gke.IPEndpointsConfig{
+								Enabled: iacTypes.BoolTest(true),
+							},
+						},
 						PrivateCluster:    gke.PrivateCluster{},
 						LoggingService:    iacTypes.StringTest("logging.googleapis.com/kubernetes"),
 						MonitoringService: iacTypes.StringTest("monitoring.googleapis.com/kubernetes"),
