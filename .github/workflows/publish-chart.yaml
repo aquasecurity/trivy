@@ -50,8 +50,9 @@ jobs:
         run: ct lint-and-install --validate-maintainers=false --charts helm/trivy
       - name: Run chart-testing (Ingress enabled)
         run: |
-          sed -i -e '136s,false,'true',g' ./helm/trivy/values.yaml
-          ct lint-and-install --validate-maintainers=false --charts helm/trivy
+          ct lint-and-install --validate-maintainers=false --charts helm/trivy \
+            --helm-lint-extra-args "--set=ingress.enabled=true" \
+            --helm-extra-set-args "--set=ingress.enabled=true"
 
 
   # `publish-chart` job starts if a PR with a new Helm Chart is merged or manually
