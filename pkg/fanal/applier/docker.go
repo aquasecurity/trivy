@@ -17,6 +17,7 @@ import (
 	"github.com/aquasecurity/trivy/pkg/log"
 	"github.com/aquasecurity/trivy/pkg/purl"
 	"github.com/aquasecurity/trivy/pkg/scan/utils"
+	"github.com/aquasecurity/trivy/pkg/set"
 	"github.com/aquasecurity/trivy/pkg/types"
 	xslices "github.com/aquasecurity/trivy/pkg/x/slices"
 )
@@ -138,8 +139,7 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 
 		// Apply language-specific packages
 		for _, app := range layer.Applications {
-			key := fmt.Sprintf("%s/type:%s", app.FilePath, app.Type)
-			nestedMap.SetByString(key, sep, app)
+			nestedMap.SetByString(appKey(app.FilePath, app.Type), sep, app)
 		}
 
 		// Apply misconfigurations
@@ -194,6 +194,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		}
 	}
 
+	// Files parsed by an analyzer, keyed by appKey.
+	// The walk runs after whiteouts, so a deleted binary never hides its SBOM packages.
+	analyzed := set.New[string]()
 	// nolint
 	_ = nestedMap.Walk(func(keys []string, value any) error {
 		switch v := value.(type) {
@@ -201,6 +204,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			mergedLayer.Packages = append(mergedLayer.Packages, v.Packages...)
 		case ftypes.Application:
 			mergedLayer.Applications = append(mergedLayer.Applications, v)
+			if lo.SomeBy(v.Packages, func(pkg ftypes.Package) bool { return pkg.AnalyzedBy != analyzer.TypeSBOM }) {
+				analyzed.Append(appKey(v.FilePath, v.Type))
+			}
 		case ftypes.Misconfiguration:
 			mergedLayer.Misconfigurations = append(mergedLayer.Misconfigurations, v)
 		case ftypes.LicenseFile:
@@ -303,7 +309,13 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 		return fmt.Sprintf("%s/%s", id, pkg.FilePath)
 	}))
 
+	var apps []ftypes.Application
 	for _, app := range mergedLayer.Applications {
+		pkgs := dropSBOMDuplicates(app, analyzed)
+		if len(pkgs) == 0 && len(app.Packages) > 0 {
+			continue
+		}
+		app.Packages = pkgs
 		for i, pkg := range app.Packages {
 			// Skip lookup for SBOM
 			if lo.IsEmpty(pkg.Layer) {
@@ -318,7 +330,9 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 			}
 			app.Packages[i].Identifier.UID = dependency.UID(app.FilePath, pkg)
 		}
+		apps = append(apps, app)
 	}
+	mergedLayer.Applications = apps
 
 	for i, customResource := range mergedLayer.CustomResources {
 		// Skip lookup if the layer is already set.
@@ -337,6 +351,33 @@ func ApplyLayers(layers []ftypes.BlobInfo) ftypes.ArtifactDetail {
 	mergedLayer.Sort()
 
 	return mergedLayer
+}
+
+func appKey(filePath string, appType ftypes.LangType) string {
+	return fmt.Sprintf("%s/type:%s", filePath, appType)
+}
+
+// dropSBOMDuplicates returns the app's packages without the SBOM packages that describe a file an
+// analyzer has already parsed, such as the Go modules of a Bitnami binary listed in its SPDX file.
+// The analyzer's copy is kept because it comes from the file itself.
+// cf. https://github.com/aquasecurity/trivy/issues/8993
+func dropSBOMDuplicates(app ftypes.Application, analyzed set.Set[string]) []ftypes.Package {
+	if len(app.Packages) == 0 || analyzed.Size() == 0 {
+		return app.Packages
+	}
+	dropped := make(map[string]int)
+	pkgs := lo.Reject(app.Packages, func(pkg ftypes.Package, _ int) bool {
+		if pkg.AnalyzedBy != analyzer.TypeSBOM || !analyzed.Contains(appKey(pkg.FilePath, app.Type)) {
+			return false
+		}
+		dropped[pkg.FilePath]++
+		return true
+	})
+	for filePath, n := range dropped {
+		log.Debug("Dropped SBOM packages already found by an analyzer",
+			log.FilePath(filePath), log.String("sbom", app.FilePath), log.Int("count", n))
+	}
+	return pkgs
 }
 
 func newPURL(pkgType ftypes.TargetType, metadata types.Metadata, pkg ftypes.Package) *packageurl.PackageURL {

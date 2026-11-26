@@ -1,0 +1,74 @@
+{
+    "SPDXID": "SPDXRef-DOCUMENT",
+    "spdxVersion": "SPDX-2.3",
+    "creationInfo": {
+        "created": "2025-07-08T20:21:48Z",
+        "creators": [
+            "Organization: Broadcom Inc. and/or its subsidiaries.",
+            "Tool: Blacksmith-6.46.2"
+        ]
+    },
+    "name": "SPDX document for wait-for-port 1.0.9",
+    "dataLicense": "CC0-1.0",
+    "documentDescribes": [
+        "SPDXRef-wait-for-port"
+    ],
+    "documentNamespace": "pkg:bitnami/wait-for-port@1.0.9-1?arch=amd64&distro=debian-12",
+    "packages": [
+        {
+            "SPDXID": "SPDXRef-wait-for-port",
+            "name": "wait-for-port",
+            "versionInfo": "1.0.9-1",
+            "downloadLocation": "https://github.com/bitnami/wait-for-port/archive/refs/tags/v1.0.9.tar.gz",
+            "licenseConcluded": "Apache-2.0",
+            "licenseDeclared": "Apache-2.0",
+            "supplier": "Organization: Bitnami",
+            "originator": "Organization: upstream",
+            "primaryPackagePurpose": "APPLICATION",
+            "filesAnalyzed": false,
+            "externalRefs": [
+                {
+                    "referenceCategory": "SECURITY",
+                    "referenceType": "cpe23Type",
+                    "referenceLocator": "cpe:2.3:*:wait-for-port:wait-for-port:1.0.9:*:*:*:*:*:*:*"
+                },
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:bitnami/wait-for-port@1.0.9-1?arch=amd64&distro=debian-12"
+                }
+            ],
+            "copyrightText": "NOASSERTION"
+        },
+        {
+            "name": "stdlib",
+            "SPDXID": "SPDXRef-Package-f1f557590681efd3",
+            "versionInfo": "v1.24.5",
+            "supplier": "Organization: Bitnami",
+            "downloadLocation": "NONE",
+            "filesAnalyzed": false,
+            "sourceInfo": "opt/bitnami/common/bin/wait-for-port",
+            "licenseConcluded": "NOASSERTION",
+            "licenseDeclared": "NOASSERTION",
+            "externalRefs": [
+                {
+                    "referenceCategory": "PACKAGE-MANAGER",
+                    "referenceType": "purl",
+                    "referenceLocator": "pkg:golang/stdlib@v1.24.5"
+                }
+            ],
+            "primaryPackagePurpose": "LIBRARY",
+            "originator": "Organization: upstream",
+            "copyrightText": "NOASSERTION"
+        }
+    ],
+    "files": [],
+    "hasExtractedLicensingInfos": [],
+    "relationships": [
+        {
+            "spdxElementId": "SPDXRef-wait-for-port",
+            "relatedSpdxElement": "SPDXRef-Package-f1f557590681efd3",
+            "relationshipType": "DEPENDS_ON"
+        }
+    ]
+}
