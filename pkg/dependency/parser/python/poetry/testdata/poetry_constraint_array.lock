@@ -1,0 +1,26 @@
+[[package]]
+name = "numpy"
+version = "2.5.3"
+optional = false
+python-versions = ">=3.12"
+groups = ["main"]
+files = []
+
+[[package]]
+name = "pandas"
+version = "3.0.6"
+optional = false
+python-versions = ">=3.11"
+groups = ["main"]
+files = []
+
+[package.dependencies]
+numpy = [
+    {version = ">=1.26.0", markers = "python_version < \"3.14\""},
+    {version = ">=2.3.3", markers = "python_version >= \"3.14\""},
+]
+
+[metadata]
+lock-version = "2.1"
+python-versions = ">=3.12"
+content-hash = "0000000000000000000000000000000000000000000000000000000000000000"

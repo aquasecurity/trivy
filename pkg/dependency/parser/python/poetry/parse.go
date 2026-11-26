@@ -112,27 +112,72 @@ func (p *Parser) parseDependency(name string, versRange any, pkgVersions map[str
 		return "", xerrors.Errorf("no version found for %q", name)
 	}
 
+	constraints, err := versionConstraints(versRange)
+	if err != nil {
+		return "", xerrors.Errorf("failed to parse constraints for %s: %w", name, err)
+	}
+
 	for _, ver := range vers {
-		var vRange string
-
-		switch r := versRange.(type) {
-		case string:
-			vRange = r
-		case map[string]any:
-			for k, v := range r {
-				if k == "version" {
-					vRange = v.(string)
-				}
-			}
-		}
-
-		if matched, err := matchVersion(ver, vRange); err != nil {
+		if matched, err := matchAnyVersion(ver, constraints); err != nil {
 			return "", xerrors.Errorf("failed to match version for %s: %w", name, err)
 		} else if matched {
 			return packageID(name, ver), nil
 		}
 	}
 	return "", xerrors.Errorf("no matched version found for %q", name)
+}
+
+// versionConstraints returns every version constraint a dependency entry
+// carries. Poetry writes one string or inline table for a single constraint,
+// and an array of inline tables when the same dependency is required with
+// different constraints per environment marker:
+//
+//	numpy = [
+//	    {version = ">=1.26.0", markers = "python_version < \"3.14\""},
+//	    {version = ">=2.3.3", markers = "python_version >= \"3.14\""},
+//	]
+//
+// Markers are not evaluated here, matching the single-entry behaviour, so a
+// package satisfies the dependency when any of its constraints does.
+func versionConstraints(versRange any) ([]string, error) {
+	var constraints []string
+	switch r := versRange.(type) {
+	case string:
+		constraints = append(constraints, r)
+	case map[string]any:
+		if v, ok := r["version"].(string); ok {
+			constraints = append(constraints, v)
+		}
+	case []any:
+		for _, item := range r {
+			switch entry := item.(type) {
+			case string:
+				constraints = append(constraints, entry)
+			case map[string]any:
+				if v, ok := entry["version"].(string); ok {
+					constraints = append(constraints, v)
+				}
+			}
+		}
+	}
+	if len(constraints) == 0 {
+		return nil, xerrors.New("no version constraint found")
+	}
+	return constraints, nil
+}
+
+// matchAnyVersion reports whether any of the constraints accepts the version.
+func matchAnyVersion(currentVersion string, constraints []string) (bool, error) {
+	for _, constraint := range constraints {
+		matched, err := matchVersion(currentVersion, constraint)
+		if err != nil {
+			return false, err
+		}
+		if matched {
+			return true, nil
+		}
+	}
+	return false, nil
 }
 
 // matchVersion checks if the package version satisfies the given constraint.
