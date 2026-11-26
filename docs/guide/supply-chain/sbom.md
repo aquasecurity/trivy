@@ -1758,7 +1758,24 @@ Trivy writes the [package digests](package-digests.md) to CycloneDX `hashes` and
 ]
 ```
 
-In SPDX, if a package was read from its own file, such as a JAR or a metadata file, Trivy puts the digests of the package on the file element that the package contains, for example the `java-archive` and `file-content` digests. The `SourcedDigest` annotations stay on the package. Packages from lock files and binaries, such as `go.mod` or a Go binary, and OS packages have their digests in the package `checksums`.
+In SPDX, if a package was read from its own file, such as a JAR or a metadata file, Trivy puts the digests of the package on the file element that the package contains, for example the `java-archive` and `file-content` digests. The `SourcedDigest` annotations stay on the package. Packages from lock files and binaries, such as `go.mod` or a Go binary, and OS packages have their digests in the package `checksums`. The annotation holds the value in `comment` after the `SourcedDigest: ` prefix.
+
+```json
+"checksums": [
+  {
+    "algorithm": "SHA1",
+    "checksumValue": "b1d943abdafd90a5481993600d7ea690f64c6871"
+  }
+],
+"annotations": [
+  {
+    "annotator": "Tool: trivy-dev",
+    "annotationDate": "2026-11-26T07:33:39Z",
+    "annotationType": "OTHER",
+    "comment": "SourcedDigest: apk-installed-db:sha1:b1d943abdafd90a5481993600d7ea690f64c6871"
+  }
+]
+```
 
 When Trivy reads an SBOM, it restores the sources from these properties. The restored source is what the SBOM claims, and Trivy does not verify it. A hash without a property gets the `sbom` source.
 

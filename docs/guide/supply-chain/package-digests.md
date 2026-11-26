@@ -15,4 +15,6 @@ Trivy reports the digests it collects for a package. Each digest has an algorith
 
 Trivy computes `java-archive` and `file-content` digests only for the SBOM formats: `cyclonedx`, `spdx` and `spdx-json`. Trivy does not verify any of the digests.
 
+A package has no digest when its source has no value for the installed version. For example, `/var/lib/dpkg/available` is not updated when a package is upgraded, so an upgraded Debian or Ubuntu package often has no `dpkg-available-sha256` digest.
+
 See [JSON](../configuration/reporting.md#json) and [SBOM](sbom.md#package-digests) for how the digests appear in each format.
