@@ -12,24 +12,58 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsyntax"
 	hcljson "github.com/hashicorp/hcl/v2/json"
 	"github.com/zclconf/go-cty/cty"
+	"github.com/zclconf/go-cty/cty/convert"
+
+	"github.com/aquasecurity/trivy/pkg/iac/terraform"
+	"github.com/aquasecurity/trivy/pkg/log"
 )
+
+func parseEnvVar(name, val string, ty cty.Type) (cty.Value, error) {
+	if ty == cty.NilType || ty.IsPrimitiveType() {
+		return cty.StringVal(val), nil
+	}
+	expr, diags := hclsyntax.ParseExpression([]byte(val), "<TF_VAR_"+name+">", hcl.InitialPos)
+	if diags.HasErrors() {
+		return cty.NilVal, fmt.Errorf("parse HCL expression: %w", diags)
+	}
+	v, diags := expr.Value(nil)
+	if diags.HasErrors() {
+		return cty.NilVal, fmt.Errorf("evaluate HCL expression: %w", diags)
+	}
+	v, err := convert.Convert(v, ty)
+	if err != nil {
+		return cty.NilVal, fmt.Errorf("convert to %s: %w", ty.FriendlyName(), err)
+	}
+	return v, nil
+}
+
+func loadEnvVars(logger *log.Logger, blocks terraform.Blocks) map[string]cty.Value {
+	envVars := make(map[string]cty.Value)
+	varTypes := make(map[string]cty.Type)
+
+	for _, block := range blocks.OfType("variable") {
+		varTypes[block.TypeLabel()] = inputVariableType(block)
+	}
+
+	for _, env := range os.Environ() {
+		key, val, _ := strings.Cut(env, "=")
+		name, ok := strings.CutPrefix(key, "TF_VAR_")
+		if !ok {
+			continue
+		}
+		v, err := parseEnvVar(name, val, varTypes[name])
+		if err != nil {
+			logger.Warn("Ignoring TF_VAR environment variable", log.String("name", "TF_VAR_"+name), log.Err(err))
+			continue
+		}
+		envVars[name] = v
+	}
+
+	return envVars
+}
 
 func loadTFVars(srcFS fs.FS, filenames []string) (map[string]cty.Value, error) {
 	combinedVars := make(map[string]cty.Value)
-
-	for _, env := range os.Environ() {
-		split := strings.Split(env, "=")
-		key := split[0]
-		if !strings.HasPrefix(key, "TF_VAR_") {
-			continue
-		}
-		key = strings.TrimPrefix(key, "TF_VAR_")
-		var val string
-		if len(split) > 1 {
-			val = split[1]
-		}
-		combinedVars[key] = cty.StringVal(val)
-	}
 
 	for _, filename := range filenames {
 		vars, err := loadTFVarsFile(srcFS, filename)

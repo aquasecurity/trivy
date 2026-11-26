@@ -3418,3 +3418,115 @@ resource "aws_s3_bucket" "test" {}`,
 	assert.Len(t, modules.GetResourcesByType("aws_security_group"), 1)
 	assert.Len(t, modules.GetResourcesByType("aws_s3_bucket"), 1)
 }
+
+func Test_VariableValueFromEnv(t *testing.T) {
+	tests := []struct {
+		name     string
+		variable string
+		env      string
+		tfvars   string
+		want     cty.Value
+	}{
+		{
+			name:     "map(string) with = in the value",
+			variable: `type = map(string)`,
+			env:      `{env="prod"}`,
+			want:     cty.MapVal(map[string]cty.Value{"env": cty.StringVal("prod")}),
+		},
+		{
+			name:     "list(number)",
+			variable: `type = list(number)`,
+			env:      `[1, 2]`,
+			want:     cty.ListVal([]cty.Value{cty.NumberIntVal(1), cty.NumberIntVal(2)}),
+		},
+		{
+			name:     "object",
+			variable: `type = object({ a = number })`,
+			env:      `{a=1}`,
+			want:     cty.ObjectVal(map[string]cty.Value{"a": cty.NumberIntVal(1)}),
+		},
+		{
+			name:     "any is parsed as HCL",
+			variable: `type = any`,
+			env:      `["a","b"]`,
+			want:     cty.TupleVal([]cty.Value{cty.StringVal("a"), cty.StringVal("b")}),
+		},
+		{
+			name: "variable without type stays a literal",
+			env:  `{a=1}`,
+			want: cty.StringVal(`{a=1}`),
+		},
+		{
+			name:     "string that looks like HCL stays a string",
+			variable: `type = string`,
+			env:      `["a"]`,
+			want:     cty.StringVal(`["a"]`),
+		},
+		{
+			name:     "string keeps = in the value",
+			variable: `type = string`,
+			env:      `a=b`,
+			want:     cty.StringVal(`a=b`),
+		},
+		{
+			name:     "number",
+			variable: `type = number`,
+			env:      `5`,
+			want:     cty.NumberIntVal(5),
+		},
+		{
+			name: "invalid value falls back to the default",
+			variable: `type    = map(string)
+default = { env = "default" }`,
+			env:  `[oops`,
+			want: cty.MapVal(map[string]cty.Value{"env": cty.StringVal("default")}),
+		},
+		{
+			name: "value with wrong type falls back to the default",
+			variable: `type    = map(string)
+default = { env = "default" }`,
+			env:  `["a"]`,
+			want: cty.MapVal(map[string]cty.Value{"env": cty.StringVal("default")}),
+		},
+		{
+			name:     "tfvars file overrides environment variable",
+			variable: `type = map(string)`,
+			env:      `{env="prod"}`,
+			tfvars:   `x = { env = "dev" }`,
+			want:     cty.MapVal(map[string]cty.Value{"env": cty.StringVal("dev")}),
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Setenv("TF_VAR_x", tt.env)
+
+			files := map[string]string{
+				"main.tf": fmt.Sprintf(`
+variable "x" {
+%s
+}
+
+resource "test" "this" {
+  value = var.x
+}
+`, tt.variable),
+			}
+			var opts []Option
+			if tt.tfvars != "" {
+				files["main.tfvars"] = tt.tfvars
+				opts = append(opts, OptionWithTFVarsPaths("main.tfvars"))
+			}
+
+			resources := parse(t, files, opts...).GetResourcesByType("test")
+			require.Len(t, resources, 1)
+
+			attr := resources[0].GetAttribute("value")
+			require.NotNil(t, attr)
+			require.True(t, attr.IsResolvable())
+
+			got := attr.Value()
+			assert.True(t, tt.want.RawEquals(got), "want %#v, got %#v", tt.want, got)
+		})
+	}
+}

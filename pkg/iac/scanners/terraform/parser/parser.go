@@ -8,6 +8,7 @@ import (
 	"io"
 	"io/fs"
 	"log/slog"
+	"maps"
 	"os"
 	"path"
 	"path/filepath"
@@ -281,11 +282,15 @@ func (p *Parser) Load(_ context.Context) (*evaluator, error) {
 		inputVars = p.tfvars
 		p.logger.Debug("Added input variables from tfvars.", log.Int("count", len(inputVars)))
 	default:
-		inputVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
+		var fileVars map[string]cty.Value
+		fileVars, err = loadTFVars(p.configsFS, p.tfvarsPaths)
 		if err != nil {
 			return nil, err
 		}
-		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(inputVars)))
+		inputVars = loadEnvVars(p.logger, blocks)
+		p.logger.Debug("Added input variables from environment", log.Int("count", len(inputVars)))
+		p.logger.Debug("Added input variables from tfvars", log.Int("count", len(fileVars)))
+		maps.Copy(inputVars, fileVars)
 		p.setFallbackValuesForMissingVars(inputVars, blocks)
 	}
 
