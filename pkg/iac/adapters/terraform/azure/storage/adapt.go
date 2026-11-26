@@ -123,13 +123,10 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 				}
 				account.Queues = append(account.Queues, queue)
 			}
-			// Adapt queue properties resource
 			// Only use the resource if the inline block did not set logging (they are mutually exclusive in Terraform)
 			if resource.GetBlock("queue_properties").GetBlock("logging").IsNil() {
-				queuePropertiesResources := module.GetReferencingResources(resource, "azurerm_storage_account_queue_properties", "storage_account_id")
-				for _, queuePropertiesResource := range queuePropertiesResources {
-					account.QueueProperties = adaptQueueProperties(queuePropertiesResource)
-					break // Only process the first matching resource
+				if res := module.GetReferencingResources(resource, "azurerm_storage_account_queue_properties", "storage_account_id"); len(res) > 0 {
+					account.QueueProperties = adaptQueueProperties(res[0])
 				}
 			}
 
