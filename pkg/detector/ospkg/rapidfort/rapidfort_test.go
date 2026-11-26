@@ -768,8 +768,122 @@ func TestScanner_Detect(t *testing.T) {
 				},
 				{
 					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.5.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// Install inside the SRPM range, so the binary entry is
+					// correctly dropped.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
 					VulnerabilityID:  "CVE-2026-2625",
 					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.10.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
+			// When both buckets list the same CVE but the SRPM range does
+			// not cover the install, the binary's wider range must still be
+			// evaluated. The fixture is picked so this one install exercises
+			// all four cases in the same pass: SRPM-only match, both-match
+			// with SRPM winning, SRPM-lists-but-misses so binary wins, and
+			// binary-only match.
+			name:   "RedHat: binary wider range catches install SRPM narrow range misses",
+			baseOS: ftypes.RedHat,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "9",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rpm-sequoia",
+						Version:    "1.7.0-1.el9",
+						SrcName:    "rust-rpm-sequoia",
+						SrcVersion: "1.7.0-1.el9",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-0977",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "1.8.0-2.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-OVERLAP",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "1.9.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// Both buckets list this CVE but the SRPM match wins, so
+					// the FixedVersion is the SRPM entry's rather than the
+					// binary bucket's.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.7.0-1.el9",
+					FixedVersion:     "2.0.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					// SRPM lists the CVE but its range misses the install,
+					// so the binary wider range catches it instead.
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2026-2625",
+					InstalledVersion: "1.7.0-1.el9",
 					FixedVersion:     "1.10.0-1.el9",
 					SeveritySource:   "rapidfort",
 					DataSource: &dbTypes.DataSource{
@@ -838,6 +952,22 @@ func TestScanner_Detect(t *testing.T) {
 						Severity: dbTypes.SeverityHigh.String(),
 					},
 				},
+				{
+					PkgName:          "rust-rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "1.5.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityHigh.String(),
+					},
+				},
 			},
 		},
 		{
@@ -876,6 +1006,22 @@ func TestScanner_Detect(t *testing.T) {
 					},
 					Vulnerability: dbTypes.Vulnerability{
 						Severity: dbTypes.SeverityLow.String(),
+					},
+				},
+				{
+					PkgName:          "rpm-sequoia",
+					VulnerabilityID:  "CVE-2025-WIDEN",
+					InstalledVersion: "1.0.0-1.el9",
+					FixedVersion:     "2.0.0-1.el9",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "redhat",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
 					},
 				},
 				{
@@ -1915,6 +2061,46 @@ func TestScanner_Detect(t *testing.T) {
 			},
 		},
 		{
+			// An "rfdebian" revision carries neither "+rf" nor "rfubu", so it
+			// reaches the rapidfort debian bucket only through the rfdebian
+			// marker.
+			name:   "Debian: rfdebian revision routes to the rapidfort debian bucket",
+			baseOS: ftypes.Debian,
+			fixtures: []string{
+				"testdata/fixtures/rapidfort.yaml",
+				"testdata/fixtures/data-source.yaml",
+			},
+			args: args{
+				osVer: "12",
+				pkgs: []ftypes.Package{
+					{
+						Name:       "rf-git",
+						Version:    "0:2.43.0-11rfdebian~rf.1",
+						SrcName:    "rf-git",
+						SrcVersion: "0:2.43.0-11rfdebian~rf.1",
+					},
+				},
+			},
+			want: []types.DetectedVulnerability{
+				{
+					PkgName:          "rf-git",
+					VulnerabilityID:  "CVE-2025-27614",
+					InstalledVersion: "0:2.43.0-11rfdebian~rf.1",
+					FixedVersion:     "0:2.48.2-0rfubu",
+					SeveritySource:   "rapidfort",
+					DataSource: &dbTypes.DataSource{
+						ID:     "rapidfort",
+						BaseID: "debian",
+						Name:   "RapidFort Security Advisories",
+						URL:    "https://github.com/rapidfort/security-advisories",
+					},
+					Vulnerability: dbTypes.Vulnerability{
+						Severity: dbTypes.SeverityMedium.String(),
+					},
+				},
+			},
+		},
+		{
 			// A plain Debian revision for an rf-named package must NOT cross-match
 			// the rf bucket: it has no marker, so it routes to the versioned
 			// bucket, where this package has no advisory. The version has to
@@ -2374,8 +2560,8 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "ubuntu security revision", ver: "0:2.46-3ubuntu2", want: false},
 		{name: "empty version", ver: "", want: false},
 		{name: "debian security revision", ver: "0:1.26.2-3+deb13u1", want: false},
-		// None of the four published forms (+rf, rfubu, trailing .rf, .rf.
-		// mid-release) appear in these substrings, so an unpublished "rf"
+		// None of the published forms (+rf, rfubu, rfdebian, -rf., .rf.,
+		// trailing .rf) appear in these substrings, so an unpublished "rf"
 		// fragment stays unmatched and the package keeps its distro routing.
 		// A bare "~rf" is one such unpublished form — the dpkg feeds don't
 		// emit it, so a plain tilde-rf version must not route to the rf bucket.
@@ -2384,9 +2570,15 @@ func TestDpkgHasRfMarker(t *testing.T) {
 		{name: "bare tilde-rf is not a published spelling", ver: "0:1.0-1~rf.1", want: false},
 		// "ubu" takes a variant suffix: curl and libxml2 ship "rfubujl".
 		{name: "rfubu with a variant suffix", ver: "0:1.2.3-3rfubujl", want: true},
-		// A spelling with no "ubu" must not match on its "rf" prefix.
-		{name: "rfdebian is not a published spelling", ver: "0:3.2.1-4rfdebian", want: false},
-		{name: "rfdeb is not a published spelling", ver: "0:3.2.1-4rfdebjl", want: false},
+		{name: "rfdebian with tilde-rf and bookworm tag", ver: "14.2.0-29rfdebian~rf.1+bookworm1", want: true},
+		{name: "rfdebian with tilde-rf trailer", ver: "2.4.9-7rfdebian~rf.1", want: true},
+		// The marker is the whole "rfdebian" word; a truncated prefix must
+		// not match.
+		{name: "rfdeb prefix without rfdebian", ver: "0:3.2.1-4rfdebjl", want: false},
+		{name: "debian revision starting with rf.", ver: "1:1.5.91-rf.1", want: true},
+		// "-rf." needs the dot: a revision that merely starts with "rf" is
+		// not a published spelling.
+		{name: "debian revision starting with rf without a dot", ver: "1:1.5.91-rf1", want: false},
 	}
 
 	for _, tt := range tests {
