@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<settings xmlns="http://maven.apache.org/SETTINGS/1.0.0">
+    <servers>
+        <server>
+            <id>project-server</id>
+            <username>project-user</username>
+        </server>
+    </servers>
+    <repositories>
+        <repository>
+            <id>project-repo</id>
+            <url>https://project.example.com/repo</url>
+        </repository>
+    </repositories>
+</settings>

@@ -46,12 +46,13 @@ type Mirror struct {
 }
 
 type settings struct {
-	LocalRepository string    `xml:"localRepository"`
-	Servers         []Server  `xml:"servers>server"`
-	Profiles        []Profile `xml:"profiles>profile"`
-	ActiveProfiles  []string  `xml:"activeProfiles>activeProfile"`
-	Proxies         []Proxy   `xml:"proxies>proxy"`
-	Mirrors         []Mirror  `xml:"mirrors>mirror"`
+	LocalRepository string          `xml:"localRepository"`
+	Servers         []Server        `xml:"servers>server"`
+	Profiles        []Profile       `xml:"profiles>profile"`
+	ActiveProfiles  []string        `xml:"activeProfiles>activeProfile"`
+	Proxies         []Proxy         `xml:"proxies>proxy"`
+	Mirrors         []Mirror        `xml:"mirrors>mirror"`
+	Repositories    []pomRepository `xml:"repositories>repository"` // Repositories declared at the root of settings.xml (Maven 4)
 }
 
 func (s settings) effectiveRepositories() []repository {
@@ -61,6 +62,11 @@ func (s settings) effectiveRepositories() []repository {
 			pomRepos = append(pomRepos, profile.Repositories...)
 		}
 	}
+
+	// Repositories declared at the root of settings.xml (Maven 4).
+	// Profile repositories are appended first so they win when deduplicating by ID.
+	pomRepos = append(pomRepos, s.Repositories...)
+
 	pomRepos = lo.UniqBy(pomRepos, func(r pomRepository) string {
 		return r.ID
 	})
@@ -110,13 +116,28 @@ func (p Proxy) isNonProxyHost(host string) bool {
 	return false
 }
 
-func readSettings() settings {
+// readSettings loads Maven settings and merges them by precedence.
+// Maven resolves settings in the order global < project < user, so user
+// settings are dominant, followed by project settings, then global.
+// https://maven.apache.org/ref/4-LATEST/api/maven-api-settings/settings.html
+//
+// projectDir is the directory of the POM being parsed. When it contains a
+// .mvn/settings.xml file (Maven 4 project-specific settings), it is merged
+// between the user and global settings.
+func readSettings(projectDir string) settings {
 	s := settings{}
 
 	userSettingsPath := filepath.Join(os.Getenv("HOME"), ".m2", "settings.xml")
-	userSettings, err := openSettings(userSettingsPath)
-	if err == nil {
+	if userSettings, err := openSettings(userSettingsPath); err == nil {
 		s = userSettings
+	}
+
+	// Maven 4 project-specific settings (${session.rootdir}/.mvn/settings.xml).
+	if projectDir != "" {
+		projectSettingsPath := filepath.Join(projectDir, ".mvn", "settings.xml")
+		if projectSettings, err := openSettings(projectSettingsPath); err == nil {
+			mergeSettings(&s, projectSettings)
+		}
 	}
 
 	// Some package managers use this path by default
@@ -125,38 +146,40 @@ func readSettings() settings {
 		mavenHome = mHome
 	}
 	globalSettingsPath := filepath.Join(mavenHome, "conf", "settings.xml")
-	globalSettings, err := openSettings(globalSettingsPath)
-	if err == nil {
-		// We need to merge global and user settings. User settings being dominant.
-		// https://maven.apache.org/settings.html#quick-overview
-		if s.LocalRepository == "" {
-			s.LocalRepository = globalSettings.LocalRepository
-		}
-
-		// Maven servers
-		s.Servers = lo.UniqBy(append(s.Servers, globalSettings.Servers...), func(server Server) string {
-			return server.ID
-		})
-
-		// Merge profiles
-		s.Profiles = lo.UniqBy(append(s.Profiles, globalSettings.Profiles...), func(p Profile) string {
-			return p.ID
-		})
-		// Merge active profiles
-		s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, globalSettings.ActiveProfiles...))
-
-		// Merge proxies
-		s.Proxies = lo.UniqBy(append(s.Proxies, globalSettings.Proxies...), func(p Proxy) string {
-			return p.ID
-		})
-
-		// Merge mirrors
-		s.Mirrors = lo.UniqBy(append(s.Mirrors, globalSettings.Mirrors...), func(m Mirror) string {
-			return m.ID
-		})
+	if globalSettings, err := openSettings(globalSettingsPath); err == nil {
+		mergeSettings(&s, globalSettings)
 	}
 
 	return s
+}
+
+// mergeSettings merges lower-priority settings into s. Values already present
+// in s take precedence, so callers must merge from highest to lowest priority.
+// https://maven.apache.org/settings.html#quick-overview
+func mergeSettings(s *settings, lower settings) {
+	if s.LocalRepository == "" {
+		s.LocalRepository = lower.LocalRepository
+	}
+	s.Servers = lo.UniqBy(append(s.Servers, lower.Servers...), func(server Server) string {
+		return server.ID
+	})
+	s.Profiles = lo.UniqBy(append(s.Profiles, lower.Profiles...), func(p Profile) string {
+		return p.ID
+	})
+	s.ActiveProfiles = lo.Uniq(append(s.ActiveProfiles, lower.ActiveProfiles...))
+	s.Proxies = lo.UniqBy(append(s.Proxies, lower.Proxies...), func(p Proxy) string {
+		return p.ID
+	})
+	s.Mirrors = lo.UniqBy(append(s.Mirrors, lower.Mirrors...), func(m Mirror) string {
+		return m.ID
+	})
+	// Root-level repositories are a Maven 4 addition. Merge them only when
+	// present so that settings without them keep a nil slice.
+	if len(s.Repositories) > 0 || len(lower.Repositories) > 0 {
+		s.Repositories = lo.UniqBy(append(s.Repositories, lower.Repositories...), func(r pomRepository) string {
+			return r.ID
+		})
+	}
 }
 
 func openSettings(filePath string) (settings, error) {
@@ -196,6 +219,12 @@ func expandAllEnvPlaceholders(s *settings) {
 	}
 	for i, activeProfile := range s.ActiveProfiles {
 		s.ActiveProfiles[i] = evaluateVariable(activeProfile, nil, nil)
+	}
+
+	for i, repo := range s.Repositories {
+		s.Repositories[i].ID = evaluateVariable(repo.ID, nil, nil)
+		s.Repositories[i].Name = evaluateVariable(repo.Name, nil, nil)
+		s.Repositories[i].URL = evaluateVariable(repo.URL, nil, nil)
 	}
 
 	for i, proxy := range s.Proxies {
