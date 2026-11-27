@@ -7,6 +7,7 @@ import (
 	"errors"
 	"io"
 	"io/fs"
+	"net/url"
 	"os"
 	"path"
 	"path/filepath"
@@ -18,6 +19,8 @@ import (
 	"github.com/hashicorp/go-multierror"
 	"github.com/samber/lo"
 	"golang.org/x/xerrors"
+
+	npmversion "github.com/aquasecurity/go-npm-version/pkg"
 
 	"github.com/aquasecurity/trivy/pkg/dependency"
 	"github.com/aquasecurity/trivy/pkg/dependency/parser/nodejs/packagejson"
@@ -288,20 +291,54 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 			continue
 		}
 
-		// Handle aliases
+		origConstraint := constraint
+
+		// Handle Berry patch protocol ranges
+		// cf. https://yarnpkg.com/features/protocols#patch
+		// Format: patch:<sourceLocator>#<patchPath>[::<params>]
+		// e.g. patch:fsevents@npm%3A2.1.3#builtin<compat/fsevents>
+		//      patch:minimist@1.2.5#./patches/minimist.patch
+		if strings.HasPrefix(constraint, "patch:") {
+			raw := strings.TrimPrefix(constraint, "patch:")
+			source := strings.SplitN(raw, "#", 2)[0]
+			source = strings.SplitN(source, "::", 2)[0]
+			if unescaped, err := url.QueryUnescape(source); err == nil {
+				source = unescaped
+			}
+			if idx := strings.LastIndex(source, "@"); idx > 0 {
+				innerConstraint := source[idx+1:]
+				if strings.HasPrefix(innerConstraint, "npm:") || strings.HasPrefix(innerConstraint, "yarn:") {
+					innerConstraint = strings.TrimPrefix(strings.TrimPrefix(innerConstraint, "npm:"), "yarn:")
+				}
+				constraint = innerConstraint
+			}
+		}
+
+		// Handle npm/yarn aliases and Berry npm protocol ranges
 		// cf. https://classic.yarnpkg.com/lang/en/docs/cli/add/#toc-yarn-add-alias
-		if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
-			pkg.Name = m[2] // original name
-			constraint = m[4]
+		if strings.HasPrefix(constraint, "npm:") || strings.HasPrefix(constraint, "yarn:") {
+			raw := strings.TrimPrefix(strings.TrimPrefix(constraint, "npm:"), "yarn:")
+			if _, err := npmversion.NewConstraints(raw); err == nil {
+				// Yarn Berry allows explicit npm: protocol with version ranges (e.g. npm:1.2.5).
+				// The dependency name is unchanged, and the constraint is the version range.
+				constraint = raw
+			} else if m := fragmentRegexp.FindStringSubmatch(constraint); len(m) == 5 {
+				pkg.Name = m[2] // original name
+				constraint = m[4]
+			}
 		}
 
 		// Try to find an exact match to the pattern.
 		// In some cases, patterns from yarn.lock and package.json may not match (e.g., yarn v2 uses the allowed version for ID).
 		// Therefore, if the patterns don't match - compare versions.
-		if pkgPatterns, found := patterns[pkg.ID]; !found || !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) {
+		if strings.HasPrefix(constraint, "workspace:") {
+			// Workspace protocol dependencies reference local monorepo workspaces directly.
+		} else if pkgPatterns, found := patterns[pkg.ID]; !found || (!slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, constraint)) && !slices.Contains(pkgPatterns, dependency.ID(types.Yarn, pkg.Name, origConstraint))) {
 			// npm has own comparer to compare versions
-			if match, err := a.comparer.MatchVersion(pkg.Version, constraint); err != nil {
-				return xerrors.Errorf("unable to match version for %s", pkg.Name)
+			if match, err := a.comparer.MatchVersion(strings.TrimPrefix(pkg.Version, "v"), constraint); err != nil {
+				// Non-semver constraints (e.g. URLs or unsupported protocols) cannot be compared
+				// via semver, so skip matching rather than failing dependency resolution.
+				continue
 			} else if !match {
 				continue
 			}
@@ -316,7 +353,9 @@ func (a yarnAnalyzer) walkDependencies(parent *types.Package, pkgs map[string]ty
 
 		// Mark as a direct dependency
 		pkg.Indirect = false
-		pkg.Relationship = types.RelationshipDirect
+		if pkg.Relationship != types.RelationshipWorkspace {
+			pkg.Relationship = types.RelationshipDirect
+		}
 
 		pkgs[pkg.ID] = pkg
 		seenIDs.Append(pkg.ID)
