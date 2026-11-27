@@ -1,6 +1,9 @@
 package binary
 
-import "io"
+import (
+	"debug/elf"
+	"io"
+)
 
 // Bridge to expose binary parser internals to tests in the binary_test package.
 
@@ -15,3 +18,19 @@ func (p *Parser) ELFSymbolVersion(r io.ReaderAt, name string) string {
 }
 
 var ParseStdlibVersion = parseStdlibVersion
+
+// StrSymbols exports strSymbols for testing.
+func StrSymbols(f *elf.File) ([]elf.Symbol, error) {
+	return strSymbols(f)
+}
+
+// LookupStrName reads an ELF string table from r and looks up the name at
+// offset off, as strSymbols does for each symbol.
+func LookupStrName(r io.Reader, off uint32) (string, bool, error) {
+	names, err := readStrNames(r)
+	if err != nil {
+		return "", false, err
+	}
+	name, ok := names.lookup(off)
+	return name, ok, nil
+}
