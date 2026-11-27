@@ -206,6 +206,17 @@ func TestAdapt(t *testing.T) {
           "properties": {"startIpAddress": "10.0.0.1", "endIpAddress": "10.0.0.9"}
         }
       ]
+    },
+    {
+      "type": "Microsoft.DBforMariaDB/servers",
+      "name": "maria",
+      "resources": [
+        {
+          "type": "firewallRules",
+          "name": "all",
+          "properties": {"startIpAddress": "0.0.0.0", "endIpAddress": "255.255.255.255"}
+        }
+      ]
     }
   ]
 }`,
@@ -216,6 +227,14 @@ func TestAdapt(t *testing.T) {
 						FirewallRules: []database.FirewallRule{
 							{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
 							{StartIP: types.StringTest("10.0.0.1"), EndIP: types.StringTest("10.0.0.9")},
+						},
+					},
+				}},
+				MariaDBServers: []database.MariaDBServer{{
+					Server: database.Server{
+						MinimumTLSVersion: types.StringTest("TLSEnforcementDisabled"),
+						FirewallRules: []database.FirewallRule{
+							{StartIP: types.StringTest("0.0.0.0"), EndIP: types.StringTest("255.255.255.255")},
 						},
 					},
 				}},
