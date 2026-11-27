@@ -22,9 +22,7 @@ func adaptStores(deployment azure.Deployment) (stores []datalake.Store) {
 
 func adaptStore(resource azure.Resource) datalake.Store {
 	return datalake.Store{
-		Metadata: resource.Metadata,
-		// TODO: encryptionState is string
-		// https://learn.microsoft.com/en-us/azure/templates/microsoft.datalakestore/accounts?pivots=deployment-language-arm-template#createdatalakestoreaccountpropertiesordatalakestoreaccountproperties-1
+		Metadata:         resource.Metadata,
 		EnableEncryption: resource.Properties.GetMapValue("encryptionState").AsBoolValue(false, resource.Metadata),
 	}
 }

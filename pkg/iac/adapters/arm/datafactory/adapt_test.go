@@ -44,6 +44,24 @@ func TestAdapt(t *testing.T) {
 }`,
 			expected: datafactory.DataFactory{
 				DataFactories: []datafactory.Factory{{
+					EnablePublicNetwork: types.BoolTest(false),
+				}},
+			},
+		},
+		{
+			name: "enabled",
+			source: `{
+  "resources": [
+    {
+      "type": "Microsoft.DataFactory/factories",
+      "properties": {
+        "publicNetworkAccess": "Enabled"
+      }
+    }
+  ]
+}`,
+			expected: datafactory.DataFactory{
+				DataFactories: []datafactory.Factory{{
 					EnablePublicNetwork: types.BoolTest(true),
 				}},
 			},

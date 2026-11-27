@@ -14,6 +14,114 @@ func Test_ValueAsInt(t *testing.T) {
 	assert.Equal(t, 10, val.AsInt())
 }
 
+func Test_ValueAsBool(t *testing.T) {
+	tests := []struct {
+		name          string
+		val           any
+		defaultValue  bool
+		expected      bool
+		expectValMeta bool
+	}{
+		{
+			name:          "bool true",
+			val:           true,
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
+		},
+		{
+			name:          "bool false",
+			val:           false,
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:          "string true",
+			val:           "true",
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
+		},
+		{
+			name:          "string Enabled",
+			val:           "Enabled",
+			defaultValue:  false,
+			expected:      true,
+			expectValMeta: true,
+		},
+		{
+			name:          "string false",
+			val:           "false",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:          "string Disabled",
+			val:           "Disabled",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:          "string 0",
+			val:           "0",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:          "string no",
+			val:           "no",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:          "string off",
+			val:           "off",
+			defaultValue:  true,
+			expected:      false,
+			expectValMeta: true,
+		},
+		{
+			name:         "unrecognized string uses default true",
+			val:          "unknown",
+			defaultValue: true,
+			expected:     true,
+		},
+		{
+			name:         "nil uses default true",
+			val:          nil,
+			defaultValue: true,
+			expected:     true,
+		},
+		{
+			name:         "nil uses default false",
+			val:          nil,
+			defaultValue: false,
+			expected:     false,
+		},
+	}
+
+	valueMeta := types.NewMetadata(types.NewRange("prop.json", 42, 42, "", nil), "")
+	fallbackMeta := types.NewMetadata(types.NewRange("res.json", 10, 10, "", nil), "")
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			val := NewValue(tt.val, valueMeta)
+			got := val.AsBoolValue(tt.defaultValue, fallbackMeta)
+			assert.Equal(t, tt.expected, got.Value())
+			expectedMeta := fallbackMeta
+			if tt.expectValMeta {
+				expectedMeta = valueMeta
+			}
+			assert.Equal(t, expectedMeta, got.GetMetadata())
+		})
+	}
+}
+
 func Test_ValueAsTime(t *testing.T) {
 	tests := []struct {
 		name     string

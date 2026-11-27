@@ -40,7 +40,10 @@ var NullValue = Value{
 	Kind: KindNull,
 }
 
-var boolTrueValues = set.NewCaseInsensitive("true", "1", "yes", "on", "enabled")
+var (
+	boolTrueValues  = set.NewCaseInsensitive("true", "1", "yes", "on", "enabled")
+	boolFalseValues = set.NewCaseInsensitive("false", "0", "no", "off", "disabled")
+)
 
 func NewValue(value any, metadata types.Metadata) Value {
 
@@ -200,8 +203,12 @@ func (v Value) AsIntValue(defaultValue int, metadata types.Metadata) types.IntVa
 
 func (v Value) AsBoolValue(defaultValue bool, metadata types.Metadata) types.BoolValue {
 	if v.Kind == KindString {
-		if boolTrueValues.Contains(v.rLit.(string)) {
-			return types.Bool(true, metadata)
+		s := v.rLit.(string)
+		switch {
+		case boolTrueValues.Contains(s):
+			return types.Bool(true, v.GetMetadata())
+		case boolFalseValues.Contains(s):
+			return types.Bool(false, v.GetMetadata())
 		}
 	}
 
