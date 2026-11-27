@@ -62,6 +62,10 @@ $ trivy image --exit-code 0 --severity MEDIUM,HIGH ruby:2.4.0
 $ trivy image --exit-code 1 --severity CRITICAL ruby:2.4.0
 ```
 
+!!! note
+    The exit code only reflects findings, so it is also 0 when nothing was scanned, for example for an image whose OS Trivy does not detect.
+    To be sure OS packages were scanned, also check the JSON report for `Metadata.OS` and a result of class `os-pkgs`.
+
 ## Exit on EOL
 |     Scanner      | Supported |
 |:----------------:|:---------:|
