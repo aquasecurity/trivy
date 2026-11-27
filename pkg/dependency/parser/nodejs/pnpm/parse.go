@@ -143,10 +143,10 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 	directProdDeps := set.New[string]() // packageIDs of direct production dependencies
 	for _, importer := range lockFile.Importers {
 		for n, v := range importer.DevDependencies {
-			directDevDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
+			directDevDeps.Append(depPath(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
 		for n, v := range importer.Dependencies {
-			directProdDeps.Append(packageID(n, p.trimPeerDeps(v.Version, lockVer)))
+			directProdDeps.Append(depPath(n, p.trimPeerDeps(v.Version, lockVer)))
 		}
 	}
 
@@ -201,9 +201,9 @@ func (p *Parser) parseV9(lockFile LockFile) ([]ftypes.Package, []ftypes.Dependen
 		for depName, depVer := range lo.Assign(snapshot.OptionalDependencies, snapshot.Dependencies) {
 			normalizedDepVer := p.trimPeerDeps(depVer, lockVer)
 			// Only include dependencies that are actually installed (exist in "packages" section).
-			if _, ok := lockFile.Packages[PackageKey(packageID(depName, normalizedDepVer))]; ok {
+			if _, ok := lockFile.Packages[PackageKey(depPath(depName, normalizedDepVer))]; ok {
 				// Use the original name/version string (with peer deps) to build the snapshot key correctly.
-				dependsOn = append(dependsOn, packageID(depName, depVer))
+				dependsOn = append(dependsOn, depPath(depName, depVer))
 			}
 		}
 		if len(dependsOn) > 0 {
@@ -390,6 +390,29 @@ func (p *Parser) parseVersion(depPath, ver string, lockVer float64) string {
 func isDirectPkg(name string, directDeps map[string]any) bool {
 	_, ok := directDeps[name]
 	return ok
+}
+
+// depPath returns the snapshot key that a dependency reference in "importers" or "snapshots" points to.
+// The reference is either a version, or a full key when the dependency is an alias or an injected workspace package.
+// e.g.
+//   - "0.5.1", "1.0.0(react@18.0.0)", "file:../shared" => "<name>@<reference>"
+//   - "mkdirp@0.5.1", "@xmldom/xmldom@0.8.13", "shared@file:///app/packages/shared" => "<reference>"
+//
+// cf. https://github.com/pnpm/pnpm/blob/8ac50989f036984bbc0079e71e155967719f4589/pnpm11/deps/path/src/index.ts#L166-L180
+func depPath(name, reference string) string {
+	if strings.HasPrefix(reference, "@") {
+		return reference
+	}
+	atIndex := strings.Index(reference, "@")
+	if atIndex == -1 {
+		return packageID(name, reference)
+	}
+	colonIndex := strings.Index(reference, ":")
+	bracketIndex := strings.Index(reference, "(")
+	if (colonIndex == -1 || atIndex < colonIndex) && (bracketIndex == -1 || atIndex < bracketIndex) {
+		return reference
+	}
+	return packageID(name, reference)
 }
 
 func packageID(name, version string) string {
