@@ -48,6 +48,12 @@ type Option struct {
 	// For image scanning
 	ImageOption types.ImageOptions
 
+	// ImageOSVersion is the image config's os.version (e.g. the Windows build "10.0.20348.2655").
+	// When set, it is part of the layer cache key, so a post-handler that writes data derived from
+	// the image config into layer blobs does not share those blobs between images that contain the
+	// same layer but were built on different OS versions. Empty by default, which keeps existing keys.
+	ImageOSVersion string `json:",omitempty"`
+
 	MisconfScannerOption misconf.ScannerOption
 	SecretScannerOption  analyzer.SecretScannerOption
 	LicenseScannerOption analyzer.LicenseScannerOption

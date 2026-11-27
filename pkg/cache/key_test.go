@@ -285,3 +285,24 @@ func TestCalcKey(t *testing.T) {
 		})
 	}
 }
+
+// ImageOSVersion must separate layer keys per OS version, and leave keys unchanged when empty.
+func TestCalcKey_ImageOSVersion(t *testing.T) {
+	const diffID = "sha256:5c534be56eca62e756ef2ef51523feda0f19cd7c15bb0c015e3d6e3ae090bf6e"
+	analyzerVersions := analyzer.Versions{Analyzers: map[string]int{"alpine": 1, "debian": 1}}
+	hookVersions := map[string]int{"python-pkg": 1}
+	calc := func(osVersion string) string {
+		t.Helper()
+		got, err := CalcKey(diffID, 1, analyzerVersions, hookVersions, artifact.Option{ImageOSVersion: osVersion})
+		require.NoError(t, err)
+		return got
+	}
+
+	// Same inputs as the "happy path" case of TestCalcKey: an empty os.version keeps the existing key.
+	assert.Equal(t, "sha256:9ac2cf39c18b5c936694820bc9c380dd8c74d33484ebd08183c5620215a1d33c", calc(""))
+
+	older, newer := calc("10.0.20348.5499"), calc("10.0.20348.5622")
+	assert.NotEqual(t, older, newer, "same layer on different OS versions must not share a cache key")
+	assert.NotEqual(t, calc(""), older)
+	assert.Equal(t, older, calc("10.0.20348.5499"), "key must be deterministic")
+}
