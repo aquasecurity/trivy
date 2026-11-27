@@ -36,6 +36,7 @@ type Resource struct {
 	Kind       Value
 	Name       Value
 	Location   Value
+	Scope      Value
 	Tags       Value
 	Sku        Value
 	Properties Value

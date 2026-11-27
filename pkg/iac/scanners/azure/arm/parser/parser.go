@@ -127,6 +127,9 @@ func (p *Parser) convertResource(input Resource) azure.Resource {
 		Properties: valueOrNull(input.Properties, metadata),
 		Resources:  children,
 	}
+	// The scope is recorded separately so diagnostic settings, which target
+	// resources through it, can be matched to the resources they apply to.
+	resource.Scope = input.Scope
 
 	return resource
 }

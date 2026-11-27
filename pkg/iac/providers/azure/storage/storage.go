@@ -20,7 +20,24 @@ type Account struct {
 	BlobProperties                  BlobProperties
 	AccountReplicationType          iacTypes.StringValue
 	InfrastructureEncryptionEnabled iacTypes.BoolValue
+	DiagnosticLogging               DiagnosticLogging
 	CustomerManagedKey              CustomerManagedKey
+}
+
+// DiagnosticLogCategories are the Azure Monitor log categories that record
+// storage requests.
+var DiagnosticLogCategories = []string{"StorageRead", "StorageWrite", "StorageDelete"}
+
+// DiagnosticLogging records, per storage service, whether request logging is
+// enabled through an Azure Monitor diagnostic setting. A service logs
+// requests when a diagnostic setting targeting it enables one of
+// DiagnosticLogCategories, or the allLogs category group.
+type DiagnosticLogging struct {
+	Metadata iacTypes.Metadata
+	Blob     iacTypes.BoolValue
+	File     iacTypes.BoolValue
+	Queue    iacTypes.BoolValue
+	Table    iacTypes.BoolValue
 }
 
 type Queue struct {

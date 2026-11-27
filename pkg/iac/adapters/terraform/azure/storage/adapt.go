@@ -1,6 +1,8 @@
 package storage
 
 import (
+	"strings"
+
 	"github.com/aquasecurity/trivy/pkg/iac/providers/azure/storage"
 	"github.com/aquasecurity/trivy/pkg/iac/terraform"
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
@@ -30,6 +32,13 @@ func Adapt(modules terraform.Modules) storage.Storage {
 		},
 		AccountReplicationType:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
 		InfrastructureEncryptionEnabled: iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		DiagnosticLogging: storage.DiagnosticLogging{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Blob:     iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			File:     iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			Queue:    iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+			Table:    iacTypes.BoolDefault(false, iacTypes.NewUnmanagedMetadata()),
+		},
 		CustomerManagedKey: storage.CustomerManagedKey{
 			Metadata:               iacTypes.NewUnmanagedMetadata(),
 			KeyVaultKeyId:          iacTypes.StringDefault("", iacTypes.NewUnmanagedMetadata()),
@@ -87,7 +96,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 
 	for _, module := range modules {
 		for _, resource := range module.GetResourcesByType("azurerm_storage_account") {
-			account := adaptAccount(resource)
+			account := adaptAccount(resource, diagnosticSettingsForAccount(module, resource))
 			containerResource := module.GetReferencingResources(resource, "azurerm_storage_container", "storage_account_id")
 
 			if len(containerResource) == 0 {
@@ -161,7 +170,7 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 	return accounts, accountedForContainers, accountedForNetworkRules
 }
 
-func adaptAccount(resource *terraform.Block) storage.Account {
+func adaptAccount(resource *terraform.Block, diagnosticSettings terraform.Blocks) storage.Account {
 	account := storage.Account{
 		Metadata:     resource.GetMetadata(),
 		NetworkRules: nil,
@@ -182,6 +191,7 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 		},
 		AccountReplicationType:          resource.GetAttribute("account_replication_type").AsStringValueOrDefault("", resource),
 		InfrastructureEncryptionEnabled: resource.GetAttribute("infrastructure_encryption_enabled").AsBoolValueOrDefault(false, resource),
+		DiagnosticLogging:               adaptDiagnosticLogging(diagnosticSettings, resource.GetMetadata()),
 		CustomerManagedKey: storage.CustomerManagedKey{
 			Metadata:               resource.GetMetadata(),
 			KeyVaultKeyId:          iacTypes.StringDefault("", resource.GetMetadata()),
@@ -248,6 +258,104 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	minTLSVersionAttr := resource.GetAttribute("min_tls_version")
 	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault(minimumTlsVersionOneTwo, resource)
 	return account
+}
+
+// adaptDiagnosticLogging returns, per storage service, whether request logging
+// is enabled through one of the given diagnostic settings.
+func adaptDiagnosticLogging(settings terraform.Blocks, metadata iacTypes.Metadata) storage.DiagnosticLogging {
+	logging := storage.DiagnosticLogging{
+		Metadata: metadata,
+		Blob:     iacTypes.BoolDefault(false, metadata),
+		File:     iacTypes.BoolDefault(false, metadata),
+		Queue:    iacTypes.BoolDefault(false, metadata),
+		Table:    iacTypes.BoolDefault(false, metadata),
+	}
+	for _, setting := range settings {
+		if !diagnosticSettingLogsRequests(setting) {
+			continue
+		}
+		if field := diagnosticSettingField(setting, &logging); field != nil {
+			*field = iacTypes.Bool(true, setting.GetMetadata())
+		}
+	}
+	return logging
+}
+
+// diagnosticSettingField returns the DiagnosticLogging field a diagnostic
+// setting logs requests for, or nil when the setting does not target a
+// storage service. A setting targeting the account itself can only carry
+// metrics, so it is ignored.
+func diagnosticSettingField(setting *terraform.Block, logging *storage.DiagnosticLogging) *iacTypes.BoolValue {
+	target := setting.GetAttribute("target_resource_id").AsStringValueOrDefault("", setting).Value()
+	if target == "" {
+		return nil
+	}
+	target = strings.ToLower(strings.TrimRight(target, "/"))
+	switch {
+	case strings.HasSuffix(target, "/blobservices/default"):
+		return &logging.Blob
+	case strings.HasSuffix(target, "/fileservices/default"):
+		return &logging.File
+	case strings.HasSuffix(target, "/queueservices/default"):
+		return &logging.Queue
+	case strings.HasSuffix(target, "/tableservices/default"):
+		return &logging.Table
+	default:
+		return nil
+	}
+}
+
+// diagnosticSettingsForAccount returns the diagnostic settings targeting the
+// given storage account, either by referencing it in target_resource_id or,
+// when the setting has no reference to the account at all, by naming it in
+// a literal target resource ID.
+func diagnosticSettingsForAccount(module *terraform.Module, accountResource *terraform.Block) terraform.Blocks {
+	seen := make(map[string]bool)
+	var settings terraform.Blocks
+	add := func(block *terraform.Block) {
+		if block == nil || seen[block.ID()] {
+			return
+		}
+		seen[block.ID()] = true
+		settings = append(settings, block)
+	}
+
+	for _, setting := range module.GetReferencingResources(accountResource, "azurerm_monitor_diagnostic_setting", "target_resource_id") {
+		add(setting)
+	}
+
+	// A setting may target the account with a literal resource ID instead of
+	// referencing the account block.
+	if name := accountResource.GetAttribute("name").AsStringValueOrDefault("", accountResource).Value(); name != "" {
+		accountID := "/storageaccounts/" + strings.ToLower(name)
+		for _, setting := range module.GetResourcesByType("azurerm_monitor_diagnostic_setting") {
+			target := strings.ToLower(setting.GetAttribute("target_resource_id").AsStringValueOrDefault("", setting).Value())
+			if strings.Contains(target, accountID+"/") || strings.HasSuffix(target, accountID) {
+				add(setting)
+			}
+		}
+	}
+
+	return settings
+}
+
+// diagnosticSettingLogsRequests reports whether a diagnostic setting enables
+// request logging for a storage service. Metric blocks and other log
+// categories do not count.
+func diagnosticSettingLogsRequests(setting *terraform.Block) bool {
+	for _, logBlock := range setting.GetBlocks("enabled_log") {
+		if category := logBlock.GetAttribute("category"); category.IsNotNil() {
+			for _, want := range storage.DiagnosticLogCategories {
+				if category.Equals(want) {
+					return true
+				}
+			}
+		}
+		if group := logBlock.GetAttribute("category_group"); group.IsNotNil() && group.Equals("allLogs") {
+			return true
+		}
+	}
+	return false
 }
 
 func adaptContainer(resource *terraform.Block) storage.Container {
