@@ -3,6 +3,7 @@ package jar
 import (
 	"archive/zip"
 	"bufio"
+	"bytes"
 	"context"
 	"encoding/xml"
 	"errors"
@@ -34,6 +35,11 @@ var (
 // maxManifestSize caps how much of a (decompressed) MANIFEST.MF is read,
 // guarding against a decompression bomb. Real manifests are a few KB.
 const maxManifestSize = 10 << 20 // 10 MiB
+
+// maxPomSize caps how much of a (decompressed) embedded pom.xml is read
+// into memory, guarding against a decompression bomb. Real embedded poms
+// are a few KB.
+const maxPomSize = 10 << 20 // 10 MiB
 
 type Client interface {
 	Exists(groupID, artifactID string) (bool, error)
@@ -511,14 +517,23 @@ func parsePomProperties(f *zip.File, filePath string) (Properties, error) {
 	return p, nil
 }
 
-// embeddedPom is a minimal view of an embedded pom.xml: only the license name and URL are needed.
-type embeddedPom struct {
-	Licenses struct {
-		License []struct {
-			Name string `xml:"name"`
-			URL  string `xml:"url"`
-		} `xml:"license"`
-	} `xml:"licenses"`
+// pomLicenses is the <licenses> element of an embedded pom.xml: only the license name and URL are needed.
+type pomLicenses struct {
+	License []struct {
+		Name string `xml:"name"`
+		URL  string `xml:"url"`
+	} `xml:"license"`
+}
+
+// names returns the license values of l, skipping licenses that resolve to an empty value.
+func (l pomLicenses) names() []string {
+	var names []string
+	for _, lic := range l.License {
+		if name := pomLicenseName(lic.Name, lic.URL); name != "" {
+			names = append(names, name)
+		}
+	}
+	return names
 }
 
 // embeddedPomGAV extracts groupId and artifactId from a path of the form
@@ -548,27 +563,51 @@ func parsePomLicenses(f *zip.File) ([]string, error) {
 	}
 	defer file.Close()
 
-	return decodePomLicenses(file)
+	return decodePomLicenses(xio.MaxBytesReader(file, maxPomSize))
 }
 
-// decodePomLicenses decodes a pom.xml and returns the license values.
+// decodePomLicenses decodes the <licenses> child of the root element of a pom.xml
+// and returns the license values.
 // The <name> is kept as-is (normalization happens downstream); when it is empty,
 // the <url> is used as a fallback but only if it resolves to an SPDX license ID.
 func decodePomLicenses(r io.Reader) ([]string, error) {
-	var pom embeddedPom
-	decoder := xml.NewDecoder(r)
-	decoder.CharsetReader = charset.NewReaderLabel
-	if err := decoder.Decode(&pom); err != nil {
-		return nil, xerrors.Errorf("xml decode error: %w", err)
+	b, err := io.ReadAll(r)
+	if err != nil {
+		return nil, xerrors.Errorf("read error: %w", err)
+	}
+	// A start tag is "<" and the element name, which may carry a namespace
+	// prefix, so a pom with neither "<licenses" nor ":licenses" has no
+	// <licenses> element.
+	if !bytes.Contains(b, []byte("<licenses")) && !bytes.Contains(b, []byte(":licenses")) {
+		return nil, nil
 	}
 
-	var names []string
-	for _, lic := range pom.Licenses.License {
-		if name := pomLicenseName(lic.Name, lic.URL); name != "" {
-			names = append(names, name)
+	decoder := xml.NewDecoder(bytes.NewReader(b))
+	decoder.CharsetReader = charset.NewReaderLabel
+	depth := 0
+	for {
+		tok, err := decoder.Token()
+		if err != nil {
+			return nil, xerrors.Errorf("xml decode error: %w", err)
+		}
+		switch t := tok.(type) {
+		case xml.StartElement:
+			depth++
+			if depth == 2 && t.Name.Local == "licenses" {
+				var licenses pomLicenses
+				if err := decoder.DecodeElement(&licenses, &t); err != nil {
+					return nil, xerrors.Errorf("xml decode error: %w", err)
+				}
+				return licenses.names(), nil
+			}
+		case xml.EndElement:
+			depth--
+			if depth == 0 {
+				// The root element ends without a <licenses> child.
+				return nil, nil
+			}
 		}
 	}
-	return names, nil
 }
 
 // pomLicenseName resolves a single pom <license> to a license value: the <name>
