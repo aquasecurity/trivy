@@ -33,6 +33,8 @@ func CalcKey(id string, artifactVersion int, analyzerVersions analyzer.Versions,
 		SkipDirs          []string
 		FilePatterns      []string                `json:",omitempty"`
 		DetectionPriority types.DetectionPriority `json:",omitempty"`
+		// Omitted when empty so existing keys are unchanged.
+		ImageOSVersion string `json:",omitempty"`
 	}{
 		id,
 		artifactVersion,
@@ -42,6 +44,7 @@ func CalcKey(id string, artifactVersion int, analyzerVersions analyzer.Versions,
 		artifactOpt.WalkerOption.SkipDirs,
 		artifactOpt.FilePatterns,
 		artifactOpt.DetectionPriority,
+		artifactOpt.ImageOSVersion,
 	}
 
 	if err := json.NewEncoder(h).Encode(keyBase); err != nil {
