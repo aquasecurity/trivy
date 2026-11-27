@@ -25,7 +25,7 @@ func init() {
 	analyzer.RegisterAnalyzer(newRPMPkgAnalyzer())
 }
 
-const version = 4
+const version = 5
 
 var (
 	requiredFiles = []string{
@@ -252,10 +252,14 @@ func splitFileName(filename string) (name, ver, rel string, err error) {
 }
 
 func packageProvidedByVendor(pkg *rpmdb.PackageInfo) bool {
+	// Packages built for Amazon Linux carry "amzn" in their release. Some official ones have no
+	// `Vendor` field (https://github.com/aquasecurity/trivy/issues/5887), and Amazon Corretto's
+	// is just "Amazon", which none of osVendors matches.
+	if strings.Contains(pkg.Release, "amzn") && (pkg.Vendor == "" || pkg.Vendor == "Amazon") {
+		return true
+	}
 	if pkg.Vendor == "" {
-		// Official Amazon packages may not contain `Vendor` field:
-		// https://github.com/aquasecurity/trivy/issues/5887
-		return strings.Contains(pkg.Release, "amzn")
+		return false
 	}
 
 	for _, vendor := range osVendors {
