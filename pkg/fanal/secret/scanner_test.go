@@ -792,6 +792,74 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 28,
 	}
+	wantFindingMailchimpUs6 := types.SecretFinding{
+		RuleID:    "mailchimp-api-key",
+		Category:  secret.CategoryMailchimp,
+		Title:     "Mailchimp API key",
+		Severity:  "MEDIUM",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "MAILCHIMP_API_KEY: \"************************************\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MAILCHIMP_API_KEY: \"************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "MAILCHIMP_API_KEY: \"*************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"*************************************\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+		Offset: 20,
+	}
+	wantFindingMailchimpUs20 := types.SecretFinding{
+		RuleID:    "mailchimp-api-key",
+		Category:  secret.CategoryMailchimp,
+		Title:     "Mailchimp API key",
+		Severity:  "MEDIUM",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "MAILCHIMP_API_KEY: \"*************************************\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MAILCHIMP_API_KEY: \"************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"************************************\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "MAILCHIMP_API_KEY: \"*************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"*************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "MAILCHIMP_LIST_ID: \"3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d\"",
+					Highlighted: "MAILCHIMP_LIST_ID: \"3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+		Offset: 78,
+	}
 	wantFindingPrivatePackagistOrgReadToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
 		Category:  secret.CategoryPrivatePackagist,
@@ -1874,6 +1942,18 @@ func TestSecretScanner(t *testing.T) {
 					wantFindingPrivatePackagistOrgReadToken,
 					wantFindingPrivatePackagistOrgUpdateToken,
 					wantFindingPrivatePackagistUserToken,
+				},
+			},
+		},
+		{
+			name:          "find Mailchimp API keys from every datacenter",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "mailchimp-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "mailchimp-api-key.txt"),
+				Findings: []types.SecretFinding{
+					wantFindingMailchimpUs6,
+					wantFindingMailchimpUs20,
 				},
 			},
 		},

@@ -678,7 +678,7 @@ var builtinRules = []Rule{
 		Category:        CategoryMailchimp,
 		Title:           "Mailchimp API key",
 		Severity:        "MEDIUM",
-		Regex:           MustCompile(`(?i)(?P<key>mailchimp[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"](?P<secret>[a-f0-9]{32}-us20)['\"]`),
+		Regex:           MustCompile(`(?i)(?P<key>mailchimp[a-z0-9_ .\-,]{0,25})(=|>|:=|\|\|:|<=|=>|:).{0,5}['\"](?P<secret>[a-f0-9]{32}-us[0-9]{1,2})['\"]`),
 		SecretGroupName: "secret",
 		Keywords:        []string{"mailchimp"},
 	},
