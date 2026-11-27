@@ -792,6 +792,74 @@ func TestSecretScanner(t *testing.T) {
 		},
 		Offset: 28,
 	}
+	wantFindingMailchimpUs6 := types.SecretFinding{
+		RuleID:    "mailchimp-api-key",
+		Category:  secret.CategoryMailchimp,
+		Title:     "Mailchimp API key",
+		Severity:  "MEDIUM",
+		StartLine: 1,
+		EndLine:   1,
+		Match:     "MAILCHIMP_API_KEY: \"************************************\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MAILCHIMP_API_KEY: \"************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      2,
+					Content:     "MAILCHIMP_API_KEY: \"*************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"*************************************\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+		Offset: 20,
+	}
+	wantFindingMailchimpUs20 := types.SecretFinding{
+		RuleID:    "mailchimp-api-key",
+		Category:  secret.CategoryMailchimp,
+		Title:     "Mailchimp API key",
+		Severity:  "MEDIUM",
+		StartLine: 2,
+		EndLine:   2,
+		Match:     "MAILCHIMP_API_KEY: \"*************************************\"",
+		Code: types.Code{
+			Lines: []types.Line{
+				{
+					Number:      1,
+					Content:     "MAILCHIMP_API_KEY: \"************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"************************************\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+				{
+					Number:      2,
+					Content:     "MAILCHIMP_API_KEY: \"*************************************\"",
+					Highlighted: "MAILCHIMP_API_KEY: \"*************************************\"",
+					IsCause:     true,
+					FirstCause:  true,
+					LastCause:   true,
+				},
+				{
+					Number:      3,
+					Content:     "MAILCHIMP_LIST_ID: \"3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d\"",
+					Highlighted: "MAILCHIMP_LIST_ID: \"3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d\"",
+					IsCause:     false,
+					FirstCause:  false,
+					LastCause:   false,
+				},
+			},
+		},
+		Offset: 78,
+	}
 	wantFindingPrivatePackagistOrgReadToken := types.SecretFinding{
 		RuleID:    "private-packagist-token",
 		Category:  secret.CategoryPrivatePackagist,
@@ -1878,6 +1946,18 @@ func TestSecretScanner(t *testing.T) {
 			},
 		},
 		{
+			name:          "find Mailchimp API keys from every datacenter",
+			configPath:    filepath.Join("testdata", "config.yaml"),
+			inputFilePath: filepath.Join("testdata", "mailchimp-api-key.txt"),
+			want: types.Secret{
+				FilePath: filepath.Join("testdata", "mailchimp-api-key.txt"),
+				Findings: []types.SecretFinding{
+					wantFindingMailchimpUs6,
+					wantFindingMailchimpUs20,
+				},
+			},
+		},
+		{
 			name:          "include when keyword found",
 			configPath:    filepath.Join("testdata", "config-happy-keywords.yaml"),
 			inputFilePath: filepath.Join("testdata", "secret.txt"),
@@ -2401,33 +2481,6 @@ func TestSecretScanner(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
-}
-
-func TestSecretScannerMailchimpDatacenters(t *testing.T) {
-	const hexPart = "3f9c2a7d1b8e4c6f0a5d9e2b7c1f4a8d"
-	content := strings.Join([]string{
-		`MAILCHIMP_API_KEY: "` + hexPart + "-us6" + `"`,
-		`MAILCHIMP_API_KEY: "` + hexPart + "-us20" + `"`,
-		// A bare 32-hex list ID and a datacenter name on their own are not keys.
-		`MAILCHIMP_LIST_ID: "` + hexPart + `"`,
-		`MAILCHIMP_SERVER: "us6"`,
-	}, "\n")
-
-	c, err := secret.ParseConfig(filepath.Join("testdata", "config.yaml"))
-	require.NoError(t, err)
-
-	s := secret.NewScanner(c)
-	got := s.Scan(secret.ScanArgs{
-		FilePath: "mailchimp.env",
-		Content:  strings.NewReader(content),
-	})
-
-	var lines []int
-	for _, f := range got.Findings {
-		assert.Equal(t, "mailchimp-api-key", f.RuleID)
-		lines = append(lines, f.StartLine)
-	}
-	assert.Equal(t, []int{1, 2}, lines, "keys for us6 and us20 are found; the list ID and server name are not")
 }
 
 func TestSecretScannerWithStreaming(t *testing.T) {
