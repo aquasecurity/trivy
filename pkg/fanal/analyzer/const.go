@@ -74,6 +74,7 @@ const (
 	// .NET
 	TypeNuget         Type = "nuget"
 	TypeDotNetCore    Type = "dotnet-core"
+	TypeDotNetBundle  Type = "dotnet-bundle"
 	TypePackagesProps Type = "packages-props"
 
 	// Conda
@@ -212,6 +213,7 @@ var (
 		TypeBun,
 		TypeNuget,
 		TypeDotNetCore,
+		TypeDotNetBundle,
 		TypePackagesProps,
 		TypeCondaPkg,
 		TypeCondaEnv,
@@ -268,6 +270,7 @@ var (
 		TypeGoBinary,
 		TypeJar,
 		TypeRustBinary,
+		TypeDotNetBundle,
 		TypeComposerVendor,
 	}
 
