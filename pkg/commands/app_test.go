@@ -13,6 +13,7 @@ import (
 
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
 	"github.com/aquasecurity/trivy/pkg/flag"
+	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 	"github.com/aquasecurity/trivy/pkg/types"
 )
 
@@ -398,4 +399,32 @@ scan:
 			require.NoError(t, err)
 		})
 	}
+}
+
+func TestGenerateDefaultConfig(t *testing.T) {
+	t.Cleanup(viper.Reset)
+	t.Chdir(t.TempDir())
+
+	app := NewApp()
+	app.SetOut(io.Discard)
+	app.SetErr(io.Discard)
+	app.SetArgs([]string{"fs", "--generate-default-config", "."})
+
+	require.NoError(t, app.Execute())
+
+	raw, err := os.ReadFile("trivy-default.yaml")
+	require.NoError(t, err)
+	assert.Contains(t, string(raw), "permissive: []")
+
+	v := viper.New()
+	v.SetConfigFile("trivy-default.yaml")
+	require.NoError(t, v.ReadInConfig())
+
+	assert.Equal(t, expression.ForbiddenLicenses, v.GetStringSlice(flag.LicenseForbidden.ConfigName))
+	assert.Equal(t, expression.RestrictedLicenses, v.GetStringSlice(flag.LicenseRestricted.ConfigName))
+	assert.Equal(t, expression.ReciprocalLicenses, v.GetStringSlice(flag.LicenseReciprocal.ConfigName))
+	assert.Equal(t, expression.NoticeLicenses, v.GetStringSlice(flag.LicenseNotice.ConfigName))
+	assert.True(t, v.IsSet(flag.LicensePermissive.ConfigName))
+	assert.Empty(t, v.GetStringSlice(flag.LicensePermissive.ConfigName))
+	assert.Equal(t, expression.UnencumberedLicenses, v.GetStringSlice(flag.LicenseUnencumbered.ConfigName))
 }
