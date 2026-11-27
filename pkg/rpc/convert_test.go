@@ -981,6 +981,16 @@ func TestConvertFromRPCMisconfs(t *testing.T) {
 							Service:   "general",
 							StartLine: 3,
 							EndLine:   3,
+							Occurrences: []*common.Occurrence{
+								{
+									Resource: "module.app",
+									Filename: "main.tf",
+									Location: &common.Location{
+										StartLine: 1,
+										EndLine:   5,
+									},
+								},
+							},
 							Code: &common.Code{
 								Lines: []*common.Line{
 									{
@@ -1023,6 +1033,16 @@ func TestConvertFromRPCMisconfs(t *testing.T) {
 						Service:   "general",
 						StartLine: 3,
 						EndLine:   3,
+						Occurrences: []ftypes.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: ftypes.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 						Code: ftypes.Code{
 							Lines: []ftypes.Line{
 								{
@@ -1087,6 +1107,16 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 							Service:   "general",
 							StartLine: 3,
 							EndLine:   3,
+							Occurrences: []ftypes.Occurrence{
+								{
+									Resource: "module.app",
+									Filename: "main.tf",
+									Location: ftypes.Location{
+										StartLine: 1,
+										EndLine:   5,
+									},
+								},
+							},
 							Code: ftypes.Code{
 								Lines: []ftypes.Line{
 									{
@@ -1129,6 +1159,16 @@ func TestConvertToRPCMiconfs(t *testing.T) {
 						Service:   "general",
 						StartLine: 3,
 						EndLine:   3,
+						Occurrences: []*common.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: &common.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 						Code: &common.Code{
 							Lines: []*common.Line{
 								{
@@ -1191,6 +1231,16 @@ func TestConvertToMisconfResults(t *testing.T) {
 						Service:   "general",
 						StartLine: 3,
 						EndLine:   3,
+						Occurrences: []ftypes.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: ftypes.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -1222,6 +1272,16 @@ func TestConvertToMisconfResults(t *testing.T) {
 						EndLine:       3,
 						Code:          &common.Code{},
 						RenderedCause: &common.RenderedCause{},
+						Occurrences: []*common.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: &common.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 					},
 				},
 			},
@@ -1270,6 +1330,16 @@ func TestConvertFromRPCMisconfResults(t *testing.T) {
 						Service:   "general",
 						StartLine: 3,
 						EndLine:   3,
+						Occurrences: []*common.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: &common.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 						Code: &common.Code{
 							Lines: []*common.Line{
 								{
@@ -1310,6 +1380,16 @@ func TestConvertFromRPCMisconfResults(t *testing.T) {
 						Service:   "general",
 						StartLine: 3,
 						EndLine:   3,
+						Occurrences: []ftypes.Occurrence{
+							{
+								Resource: "module.app",
+								Filename: "main.tf",
+								Location: ftypes.Location{
+									StartLine: 1,
+									EndLine:   5,
+								},
+							},
+						},
 						Code: ftypes.Code{
 							Lines: []ftypes.Line{
 								{

@@ -191,6 +191,13 @@ message CauseMetadata {
   int32 end_line = 5;
   Code code = 6;
   RenderedCause rendered_cause = 7;
+  repeated Occurrence occurrences = 8;
+}
+
+message Occurrence {
+  string resource = 1;
+  string filename = 2;
+  Location location = 3;
 }
 
 enum Severity {

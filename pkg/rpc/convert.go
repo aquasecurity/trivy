@@ -612,7 +612,23 @@ func ConvertToRPCCauseMetadata(cause ftypes.CauseMetadata) *common.CauseMetadata
 			Raw:         cause.RenderedCause.Raw,
 			Highlighted: cause.RenderedCause.Highlighted,
 		},
+		Occurrences: ConvertToRPCOccurrences(cause.Occurrences),
 	}
+}
+
+func ConvertToRPCOccurrences(occurrences []ftypes.Occurrence) []*common.Occurrence {
+	var rpcOccurrences []*common.Occurrence
+	for _, o := range occurrences {
+		rpcOccurrences = append(rpcOccurrences, &common.Occurrence{
+			Resource: o.Resource,
+			Filename: o.Filename,
+			Location: &common.Location{
+				StartLine: int32(o.Location.StartLine),
+				EndLine:   int32(o.Location.EndLine),
+			},
+		})
+	}
+	return rpcOccurrences
 }
 
 // ConvertToRPCDataSource returns common.DataSource
@@ -1076,8 +1092,24 @@ func ConvertFromRPCCauseMetadata(rpcCause *common.CauseMetadata) ftypes.CauseMet
 		StartLine:     int(rpcCause.StartLine),
 		EndLine:       int(rpcCause.EndLine),
 		Code:          ConvertFromRPCCode(rpcCause.Code),
+		Occurrences:   ConvertFromRPCOccurrences(rpcCause.Occurrences),
 		RenderedCause: ConvertFromRPCRenderedCause(rpcCause.RenderedCause),
 	}
+}
+
+func ConvertFromRPCOccurrences(rpcOccurrences []*common.Occurrence) []ftypes.Occurrence {
+	var occurrences []ftypes.Occurrence
+	for _, o := range rpcOccurrences {
+		occurrences = append(occurrences, ftypes.Occurrence{
+			Resource: o.GetResource(),
+			Filename: o.GetFilename(),
+			Location: ftypes.Location{
+				StartLine: int(o.GetLocation().GetStartLine()),
+				EndLine:   int(o.GetLocation().GetEndLine()),
+			},
+		})
+	}
+	return occurrences
 }
 
 func ConvertFromRPCRenderedCause(rendered *common.RenderedCause) ftypes.RenderedCause {
