@@ -123,6 +123,13 @@ func adaptAccounts(modules terraform.Modules) ([]storage.Account, []string, []st
 				}
 				account.Queues = append(account.Queues, queue)
 			}
+			// Only use the resource if the inline block did not set logging (they are mutually exclusive in Terraform)
+			if resource.GetBlock("queue_properties").GetBlock("logging").IsNil() {
+				if res := module.GetReferencingResources(resource, "azurerm_storage_account_queue_properties", "storage_account_id"); len(res) > 0 {
+					account.QueueProperties = adaptQueueProperties(res[0])
+				}
+			}
+
 			// Adapt customer managed key resource
 			// Only use the resource if the block wasn't already set (they are mutually exclusive in Terraform)
 			if account.CustomerManagedKey.KeyVaultKeyId.IsEmpty() {
@@ -230,24 +237,55 @@ func adaptAccount(resource *terraform.Block) storage.Account {
 	// Adapt queue properties
 	queuePropertiesBlock := resource.GetBlock("queue_properties")
 	if queuePropertiesBlock.IsNotNil() {
-		account.QueueProperties.Metadata = queuePropertiesBlock.GetMetadata()
-		loggingBlock := queuePropertiesBlock.GetBlock("logging")
-		if loggingBlock.IsNotNil() {
-			account.QueueProperties.EnableLogging = iacTypes.Bool(true, loggingBlock.GetMetadata())
-			account.QueueProperties.Logging = storage.QueueLogging{
-				Metadata:            loggingBlock.GetMetadata(),
-				Delete:              loggingBlock.GetAttribute("delete").AsBoolValueOrDefault(false, loggingBlock),
-				Read:                loggingBlock.GetAttribute("read").AsBoolValueOrDefault(false, loggingBlock),
-				Write:               loggingBlock.GetAttribute("write").AsBoolValueOrDefault(false, loggingBlock),
-				Version:             loggingBlock.GetAttribute("version").AsStringValueOrDefault("", loggingBlock),
-				RetentionPolicyDays: loggingBlock.GetAttribute("retention_policy_days").AsIntValueOrDefault(0, loggingBlock),
-			}
-		}
+		account.QueueProperties = adaptQueueProperties(queuePropertiesBlock)
 	}
 
 	minTLSVersionAttr := resource.GetAttribute("min_tls_version")
 	account.MinimumTLSVersion = minTLSVersionAttr.AsStringValueOrDefault(minimumTlsVersionOneTwo, resource)
 	return account
+}
+
+// adaptQueueProperties adapts either the inline queue_properties block or the
+// azurerm_storage_account_queue_properties resource, which have the same logging block.
+func adaptQueueProperties(block *terraform.Block) storage.QueueProperties {
+	properties := storage.QueueProperties{
+		Metadata:      block.GetMetadata(),
+		EnableLogging: iacTypes.BoolDefault(false, block.GetMetadata()),
+	}
+
+	loggingBlock := block.GetBlock("logging")
+	if loggingBlock.IsNil() {
+		return properties
+	}
+
+	properties.Logging = storage.QueueLogging{
+		Metadata:            loggingBlock.GetMetadata(),
+		Delete:              loggingBlock.GetAttribute("delete").AsBoolValueOrDefault(false, loggingBlock),
+		Read:                loggingBlock.GetAttribute("read").AsBoolValueOrDefault(false, loggingBlock),
+		Write:               loggingBlock.GetAttribute("write").AsBoolValueOrDefault(false, loggingBlock),
+		Version:             loggingBlock.GetAttribute("version").AsStringValueOrDefault("", loggingBlock),
+		RetentionPolicyDays: loggingBlock.GetAttribute("retention_policy_days").AsIntValueOrDefault(0, loggingBlock),
+	}
+	properties.EnableLogging = isQueueLoggingEnabled(properties.Logging)
+
+	return properties
+}
+
+// isQueueLoggingEnabled reports whether at least one operation is logged.
+// The result is unresolvable if no flag is known to be true but some flag is unknown.
+func isQueueLoggingEnabled(logging storage.QueueLogging) iacTypes.BoolValue {
+	flags := []iacTypes.BoolValue{logging.Delete, logging.Read, logging.Write}
+	for _, flag := range flags {
+		if flag.IsTrue() {
+			return iacTypes.Bool(true, logging.Metadata)
+		}
+	}
+	for _, flag := range flags {
+		if !flag.GetMetadata().IsResolvable() {
+			return iacTypes.BoolUnresolvable(logging.Metadata)
+		}
+	}
+	return iacTypes.Bool(false, logging.Metadata)
 }
 
 func adaptContainer(resource *terraform.Block) storage.Container {
