@@ -61,7 +61,7 @@ type sarifData struct {
 	severity         string
 	url              *url.URL
 	resultIndex      int
-	artifactLocation *url.URL
+	artifactLocation string
 	locationMessage  string
 	message          string
 	cvssScore        string
@@ -100,7 +100,7 @@ func (sw *SarifWriter) addSarifResult(data *sarifData) {
 		WithRuleIndex(data.resultIndex).
 		WithMessage(sarif.NewTextMessage(data.message)).
 		WithLevel(toSarifErrorLevel(data.severity)).
-		WithLocations(toSarifLocations(data.locations, data.artifactLocation.String(), data.locationMessage))
+		WithLocations(toSarifLocations(data.locations, data.artifactLocation, data.locationMessage))
 	sw.run.AddResult(result)
 }
 
@@ -165,7 +165,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				cvssData:         cvssData,
 				url:              toUri(vuln.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: toUri(path),
+				artifactLocation: toArtifactURI(path),
 				locationMessage:  fmt.Sprintf("%v: %v@%v", path, vuln.PkgName, vuln.InstalledVersion),
 				locations:        sw.getLocations(vuln.PkgName, vuln.InstalledVersion, path, res.Packages),
 				resultIndex:      getRuleIndex(vuln.VulnerabilityID, ruleIndexes),
@@ -188,7 +188,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				cvssScore:        severityToScore(misconf.Severity),
 				url:              toUri(misconf.PrimaryURL),
 				resourceClass:    res.Class,
-				artifactLocation: toUri(locationURI),
+				artifactLocation: toArtifactURI(locationURI),
 				locationMessage:  locationURI,
 				locations: []location{
 					{
@@ -215,7 +215,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				cvssScore:        severityToScore(secret.Severity),
 				url:              toUri(builtinRulesUrl),
 				resourceClass:    res.Class,
-				artifactLocation: toUri(target),
+				artifactLocation: toArtifactURI(target),
 				locationMessage:  target,
 				locations: []location{
 					{
@@ -244,7 +244,7 @@ func (sw *SarifWriter) Write(_ context.Context, report types.Report) error {
 				cvssScore:        severityToScore(license.Severity),
 				url:              toUri(license.Link),
 				resourceClass:    res.Class,
-				artifactLocation: toUri(target),
+				artifactLocation: toArtifactURI(target),
 				resultIndex:      getRuleIndex(id, ruleIndexes),
 				shortDescription: desc,
 				fullDescription:  desc,
@@ -397,6 +397,16 @@ func toUri(str string) *url.URL {
 		logger.Error("Unable to parse URI", log.String("URI", str), log.Err(err))
 	}
 	return uri
+}
+
+// toArtifactURI converts a path to a URI for artifactLocation.
+// Paths that `url.Parse` rejects (e.g. `git@bitbucket.org:org/repo.git/main.tf` or `100%.tf`)
+// are escaped as a relative path, so the result still has a location.
+func toArtifactURI(path string) string {
+	if uri, err := url.Parse(path); err == nil {
+		return uri.String()
+	}
+	return (&url.URL{Path: path}).String()
 }
 
 func (sw *SarifWriter) getLocations(name, version, path string, pkgs []ftypes.Package) []location {
