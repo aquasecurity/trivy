@@ -62,6 +62,8 @@ var rules = []rule{
 const (
 	// oidRSAEncryption identifies the RSA key algorithm, defined by RFC 8017 appendix A.1.
 	oidRSAEncryption = "1.2.840.113549.1.1.1"
+	// oidRSASSAPSS identifies an RSA key restricted to RSASSA-PSS, defined by RFC 4055 section 1.2.
+	oidRSASSAPSS = "1.2.840.113549.1.1.10"
 	// oidECPublicKey identifies the elliptic curve key algorithm, defined by RFC 5480 section 2.1.1.
 	oidECPublicKey = "1.2.840.10045.2.1"
 )
@@ -98,7 +100,7 @@ func matchSmallRSAKey(asset ftypes.CryptoAsset, _ time.Time) (types.CryptoEviden
 		return types.CryptoEvidence{}, false
 	}
 	algorithm, found := relatedAlgorithm(asset, ftypes.CryptoRelationshipUsedWith)
-	if !found || algorithm.Value != oidRSAEncryption {
+	if !found || (algorithm.Value != oidRSAEncryption && algorithm.Value != oidRSASSAPSS) {
 		return types.CryptoEvidence{}, false
 	}
 	return types.CryptoEvidence{
