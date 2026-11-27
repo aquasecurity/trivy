@@ -338,6 +338,43 @@ $ trivy image -f json -o results.json alpine:latest
       "Target": "alpine:latest (alpine 3.20.3)",
       "Class": "os-pkgs",
       "Type": "alpine",
+      "Packages": [
+        {
+          "ID": "libssl3@3.3.2-r0",
+          "Name": "libssl3",
+          "Identifier": {
+            "PURL": "pkg:apk/alpine/libssl3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3",
+            "UID": "c063faeb15a10ea8"
+          },
+          "Version": "3.3.2-r0",
+          "Arch": "aarch64",
+          "SrcName": "openssl",
+          "SrcVersion": "3.3.2-r0",
+          "Licenses": [
+            "Apache-2.0"
+          ],
+          "Maintainer": "Natanael Copa \u003cncopa@alpinelinux.org\u003e",
+          "DependsOn": [
+            "libcrypto3@3.3.2-r0",
+            "musl@1.2.5-r0"
+          ],
+          "Layer": {
+            "DiffID": "sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8"
+          },
+          "Digest": "sha1:5dd7435b217a4f82c2320879582d7c266a9c4b20",
+          "Digests": [
+            {
+              "Digest": "sha1:5dd7435b217a4f82c2320879582d7c266a9c4b20",
+              "Source": "apk-installed-db"
+            }
+          ],
+          "InstalledFiles": [
+            "lib/libssl.so.3",
+            "usr/lib/libssl.so.3"
+          ],
+          "AnalyzedBy": "apk"
+        }
+      ],
       "Vulnerabilities": [
         {
           "VulnerabilityID": "CVE-2024-9143",
@@ -345,7 +382,7 @@ $ trivy image -f json -o results.json alpine:latest
           "PkgName": "libcrypto3",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libcrypto3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3",
-            "UID": "f705555b49cd2259"
+            "UID": "6046f49632a11363"
           },
           "InstalledVersion": "3.3.2-r0",
           "FixedVersion": "3.3.2-r1",
@@ -397,7 +434,7 @@ $ trivy image -f json -o results.json alpine:latest
           "PkgName": "libssl3",
           "PkgIdentifier": {
             "PURL": "pkg:apk/alpine/libssl3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3",
-            "UID": "c4a39ef718e71832"
+            "UID": "c063faeb15a10ea8"
           },
           "InstalledVersion": "3.3.2-r0",
           "FixedVersion": "3.3.2-r1",
@@ -453,6 +490,11 @@ $ trivy image -f json -o results.json alpine:latest
 </details>
 
 `VulnerabilityID`, `PkgName`, `InstalledVersion`, and `Severity` in `Vulnerabilities` are always filled with values, but other fields might be empty.
+
+The `Digests` field of each package in `Packages` holds the [package digests](../supply-chain/package-digests.md).
+
+!!! warning
+    The `Digest` field of a package is deprecated. Use `Digests` instead. `Digest` holds a single value without its source and is not filled for digests from newer sources, such as `go-module-h1`.
 
 ### SARIF
 |     Scanner      | Supported |

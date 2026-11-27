@@ -131,7 +131,7 @@ It possibly produces false positives.
 See [the caveat](#stdlib-vulnerabilities) for details.
 
 ## Module Checksums
-Trivy records the h1 checksum of a Go module as a SHA-256 digest of the package with the `go-module-h1` source. For a replaced module, Trivy reports the replacement and its checksum. The h1 checksum is a SHA-256 hash over the list of the module files and their SHA-256 hashes, so it does not match the SHA-256 of the module zip file. See [go.sum files](https://go.dev/ref/mod#go-sum-files) for details.
+Trivy records the h1 checksum of a Go module as a SHA-256 [digest](../../supply-chain/package-digests.md) of the package with the `go-module-h1` source. For a replaced module, Trivy reports the replacement and its checksum. The h1 checksum is a SHA-256 hash over the list of the module files and their SHA-256 hashes, so it does not match the SHA-256 of the module zip file. See [go.sum files](https://go.dev/ref/mod#go-sum-files) for details.
 
 For Go modules, Trivy takes the checksum from the `go.sum` file next to `go.mod`. A module gets no checksum if `go.sum` has only its `/go.mod` line, because that line covers only the `go.mod` file of the module.
 
