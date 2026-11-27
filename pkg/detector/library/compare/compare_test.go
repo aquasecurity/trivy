@@ -1,6 +1,7 @@
 package compare_test
 
 import (
+	"sync"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -177,4 +178,58 @@ func TestGenericComparer_IsVulnerable(t *testing.T) {
 			assert.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func TestGenericComparer_IsVulnerable_DoesNotMutateInputSlices(t *testing.T) {
+	vuln := make([]string, 1, 4)
+	vuln[0] = "<2.0.0"
+	vulnBacking := vuln[:cap(vuln)]
+	vulnBacking[1] = "sentinel-vuln"
+
+	patched := make([]string, 1, 4)
+	patched[0] = ">=2.0.0"
+	patchedBacking := patched[:cap(patched)]
+	patchedBacking[1] = "sentinel-patched"
+
+	advisory := types.Advisory{
+		VulnerableVersions: vuln,
+		PatchedVersions:    patched,
+		UnaffectedVersions: []string{"=0.5.0"},
+	}
+
+	v := compare.GenericComparer{}
+	assert.True(t, v.IsVulnerable("1.0.0", advisory))
+	assert.False(t, v.IsVulnerable("2.0.0", advisory))
+	assert.False(t, v.IsVulnerable("0.5.0", advisory))
+
+	assert.Equal(t, []string{"<2.0.0", "sentinel-vuln", "", ""}, vulnBacking)
+	assert.Equal(t, []string{">=2.0.0", "sentinel-patched", "", ""}, patchedBacking)
+}
+
+func TestGenericComparer_IsVulnerable_Concurrent(t *testing.T) {
+	vuln := make([]string, 1, 4)
+	vuln[0] = "<2.0.0"
+	patched := make([]string, 1, 4)
+	patched[0] = ">=2.0.0"
+	unaffected := make([]string, 1, 4)
+	unaffected[0] = "=0.5.0"
+
+	advisory := types.Advisory{
+		VulnerableVersions: vuln,
+		PatchedVersions:    patched,
+		UnaffectedVersions: unaffected,
+	}
+
+	v := compare.GenericComparer{}
+	var wg sync.WaitGroup
+	for range 16 {
+		wg.Go(func() {
+			for range 100 {
+				assert.True(t, v.IsVulnerable("1.0.0", advisory))
+				assert.False(t, v.IsVulnerable("2.0.0", advisory))
+				assert.False(t, v.IsVulnerable("0.5.0", advisory))
+			}
+		})
+	}
+	wg.Wait()
 }
