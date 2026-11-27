@@ -1,0 +1,220 @@
+- bucket: "pip::Echo Upstream Test"
+  pairs:
+    - bucket: echomergepip
+      pairs:
+        - key: CVE-2026-10101
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10102
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10103
+          value:
+            VulnerableVersions:
+              - "==1.2.3"
+- bucket: "echo pip::Echo OSV"
+  pairs:
+    - bucket: echomergepip
+      pairs:
+        - key: CVE-2026-10101
+          value:
+            VendorIDs:
+              - ECHO-1010-1010-1010
+            PatchedVersions:
+              - "1.2.3+echo.1"
+            VulnerableVersions:
+              - "<1.2.3+echo.1"
+
+- bucket: "maven::Echo Upstream Test"
+  pairs:
+    - bucket: "com.example:echo-merge"
+      pairs:
+        - key: CVE-2026-10201
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10202
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10203
+          value:
+            VulnerableVersions:
+              - "<=1.2.3"
+- bucket: "echo maven::Echo OSV"
+  pairs:
+    - bucket: "com.example:echo-merge"
+      pairs:
+        - key: CVE-2026-10201
+          value:
+            VendorIDs:
+              - ECHO-1020-1020-1020
+            PatchedVersions:
+              - "1.2.3+echo.1"
+            VulnerableVersions:
+              - "<1.2.3+echo.1"
+
+- bucket: "npm::Echo Upstream Test"
+  pairs:
+    - bucket: echo-merge-npm
+      pairs:
+        - key: GHSA-1111-2222-3333
+          value:
+            VendorIDs:
+              - CVE-2026-10301
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10302
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10303
+          value:
+            VulnerableVersions:
+              - "<=1.2.3"
+- bucket: "echo npm::Echo OSV"
+  pairs:
+    - bucket: echo-merge-npm
+      pairs:
+        - key: CVE-2026-10301
+          value:
+            VendorIDs:
+              - GHSA-1111-2222-3333
+              - ECHO-1030-1030-1030
+            PatchedVersions:
+              - "1.2.3+echo.1"
+            VulnerableVersions:
+              - "<1.2.3+echo.1"
+
+- bucket: "nuget::Echo Upstream Test"
+  pairs:
+    - bucket: echo.merge.nuget
+      pairs:
+        - key: CVE-2026-10401
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10402
+          value:
+            PatchedVersions:
+              - "1.2.4"
+            VulnerableVersions:
+              - "<1.2.4"
+        - key: CVE-2026-10403
+          value:
+            VulnerableVersions:
+              - "<=1.2.3"
+- bucket: "echo nuget::Echo OSV"
+  pairs:
+    - bucket: echo.merge.nuget
+      pairs:
+        - key: CVE-2026-10401
+          value:
+            VendorIDs:
+              - ECHO-1040-1040-1040
+            PatchedVersions:
+              - "1.2.3+echo.1"
+            VulnerableVersions:
+              - "<1.2.3+echo.1"
+
+- bucket: "go::Echo Upstream Test"
+  pairs:
+    - bucket: example.com/echo-merge
+      pairs:
+        - key: CVE-2026-10501
+          value:
+            PatchedVersions:
+              - "v1.2.4"
+            VulnerableVersions:
+              - "<v1.2.4"
+        - key: CVE-2026-10502
+          value:
+            PatchedVersions:
+              - "v1.2.4"
+            VulnerableVersions:
+              - "<v1.2.4"
+        - key: CVE-2026-10503
+          value:
+            VulnerableVersions:
+              - "<=v1.2.3"
+- bucket: "echo go::Echo OSV"
+  pairs:
+    - bucket: example.com/echo-merge
+      pairs:
+        - key: CVE-2026-10501
+          value:
+            VendorIDs:
+              - ECHO-1050-1050-1050
+            PatchedVersions:
+              - "v1.2.3+echo.1"
+            VulnerableVersions:
+              - "<v1.2.3+echo.1"
+
+- bucket: data-source
+  pairs:
+    - key: "pip::Echo Upstream Test"
+      value:
+        ID: "echo-upstream-test"
+        Name: "Echo Upstream Test"
+        URL: "https://example.com/upstream"
+    - key: "maven::Echo Upstream Test"
+      value:
+        ID: "echo-upstream-test"
+        Name: "Echo Upstream Test"
+        URL: "https://example.com/upstream"
+    - key: "npm::Echo Upstream Test"
+      value:
+        ID: "echo-upstream-test"
+        Name: "Echo Upstream Test"
+        URL: "https://example.com/upstream"
+    - key: "nuget::Echo Upstream Test"
+      value:
+        ID: "echo-upstream-test"
+        Name: "Echo Upstream Test"
+        URL: "https://example.com/upstream"
+    - key: "go::Echo Upstream Test"
+      value:
+        ID: "echo-upstream-test"
+        Name: "Echo Upstream Test"
+        URL: "https://example.com/upstream"
+    - key: "echo pip::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv/all.zip"
+    - key: "echo maven::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv/all.zip"
+    - key: "echo npm::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv/all.zip"
+    - key: "echo nuget::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv/all.zip"
+    - key: "echo go::Echo OSV"
+      value:
+        ID: "echo-osv"
+        Name: "Echo OSV"
+        URL: "https://advisory.echohq.com/osv/all.zip"

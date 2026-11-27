@@ -29,7 +29,13 @@ Same as [Debian](debian.md#license).
 
 ## Language Packages
 Echo provides patched versions of language packages.
-Trivy identifies them by the version suffix and uses Echo's own security advisories from the [Echo OSV feed][osv-feed] for them instead of the upstream ones.
+Trivy identifies them by the version suffix and checks both upstream advisories and Echo's own advisories from the [Echo OSV feed][osv-feed].
+Upstream advisories are evaluated against the base version before `+echo.N`, while Echo advisories are evaluated against the full Echo version.
+When Echo has an advisory with the same primary vulnerability ID, the Echo advisory replaces the upstream one so that Echo fixes are taken into account.
+Unrelated upstream advisories remain in the scan, and an upstream advisory is used when there is no active Echo advisory for that vulnerability.
+
+If a version-specific `not_applicable` decision is published only as a withdrawn Echo OSV record, Trivy has no active Echo advisory to apply and reports a matching upstream advisory.
+Known non-applicable findings can be filtered with [VEX](../../supply-chain/vex/index.md).
 
 | Ecosystem                        | Version Suffix | Example                                                   |
 |----------------------------------|----------------|-----------------------------------------------------------|

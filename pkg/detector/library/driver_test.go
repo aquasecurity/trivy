@@ -25,6 +25,16 @@ func TestDriver_Detect(t *testing.T) {
 		pkgName string
 		pkgVer  string
 	}
+	upstreamTestDataSource := &dbTypes.DataSource{
+		ID:   "echo-upstream-test",
+		Name: "Echo Upstream Test",
+		URL:  "https://example.com/upstream",
+	}
+	echoTestDataSource := &dbTypes.DataSource{
+		ID:   "echo-osv",
+		Name: "Echo OSV",
+		URL:  "https://advisory.echohq.com/osv/all.zip",
+	}
 	tests := []struct {
 		name     string
 		fixtures []string
@@ -669,7 +679,9 @@ func TestDriver_Detect(t *testing.T) {
 			want: nil,
 		},
 		{
-			name: "echo pip package ignores upstream advisories",
+			// Withdrawn Echo entries are not stored in the vulnerability DB, so
+			// they follow the same path as a package with no Echo advisory.
+			name: "echo pip package with no active Echo advisory falls back to upstream",
 			fixtures: []string{
 				"testdata/fixtures/pip.yaml",
 				"testdata/fixtures/echo.yaml",
@@ -680,7 +692,19 @@ func TestDriver_Detect(t *testing.T) {
 				pkgName: "Django",
 				pkgVer:  "4.2.1+echo.1",
 			},
-			want: nil,
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2023-36053",
+					PkgName:          "Django",
+					InstalledVersion: "4.2.1+echo.1",
+					FixedVersion:     "4.2.3",
+					DataSource: &dbTypes.DataSource{
+						ID:   vulnerability.GHSA,
+						Name: "GitHub Security Advisory Pip",
+						URL:  "https://github.com/advisories?query=type%3Areviewed+ecosystem%3Apip",
+					},
+				},
+			},
 		},
 		{
 			name: "echo maven package below both fixes",
@@ -994,6 +1018,170 @@ func TestDriver_Detect(t *testing.T) {
 				pkgVer:  "8.0.0",
 			},
 			want: nil,
+		},
+		{
+			name:     "echo pip package keeps unrelated upstream advisories",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.PythonPkg,
+			args: args{
+				pkgName: "echomergepip",
+				pkgVer:  "1.2.3+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-10102",
+					PkgName:          "echomergepip",
+					InstalledVersion: "1.2.3+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10103",
+					PkgName:          "echomergepip",
+					InstalledVersion: "1.2.3+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
+		},
+		{
+			name:     "echo maven package compares upstream inclusive range against base version",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.Jar,
+			args: args{
+				pkgName: "com.example:echo-merge",
+				pkgVer:  "1.2.3+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-10202",
+					PkgName:          "com.example:echo-merge",
+					InstalledVersion: "1.2.3+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10203",
+					PkgName:          "com.example:echo-merge",
+					InstalledVersion: "1.2.3+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
+		},
+		{
+			name:     "echo maven package reports Echo and upstream advisories together",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.Jar,
+			args: args{
+				pkgName: "com.example:echo-merge",
+				pkgVer:  "1.2.2+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID: "CVE-2026-10201",
+					VendorIDs: []string{
+						"ECHO-1020-1020-1020",
+					},
+					PkgName:          "com.example:echo-merge",
+					InstalledVersion: "1.2.2+echo.1",
+					FixedVersion:     "1.2.3+echo.1",
+					DataSource:       echoTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10202",
+					PkgName:          "com.example:echo-merge",
+					InstalledVersion: "1.2.2+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10203",
+					PkgName:          "com.example:echo-merge",
+					InstalledVersion: "1.2.2+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
+		},
+		{
+			name:     "echo npm package keeps a different primary ID even when aliases overlap",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.NodePkg,
+			args: args{
+				pkgName: "echo-merge-npm",
+				pkgVer:  "1.2.3+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-10302",
+					PkgName:          "echo-merge-npm",
+					InstalledVersion: "1.2.3+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10303",
+					PkgName:          "echo-merge-npm",
+					InstalledVersion: "1.2.3+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID: "GHSA-1111-2222-3333",
+					VendorIDs: []string{
+						"CVE-2026-10301",
+					},
+					PkgName:          "echo-merge-npm",
+					InstalledVersion: "1.2.3+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
+		},
+		{
+			name:     "echo nuget package keeps unrelated upstream advisories",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.DotNetCore,
+			args: args{
+				pkgName: "Echo.Merge.NuGet",
+				pkgVer:  "1.2.3+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-10402",
+					PkgName:          "Echo.Merge.NuGet",
+					InstalledVersion: "1.2.3+echo.1",
+					FixedVersion:     "1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10403",
+					PkgName:          "Echo.Merge.NuGet",
+					InstalledVersion: "1.2.3+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
+		},
+		{
+			name:     "echo go package keeps unrelated upstream advisories",
+			fixtures: []string{"testdata/fixtures/echo-upstream.yaml"},
+			libType:  ftypes.GoModule,
+			args: args{
+				pkgName: "example.com/echo-merge",
+				pkgVer:  "v1.2.3+echo.1",
+			},
+			want: []types.DetectedVulnerability{
+				{
+					VulnerabilityID:  "CVE-2026-10502",
+					PkgName:          "example.com/echo-merge",
+					InstalledVersion: "v1.2.3+echo.1",
+					FixedVersion:     "v1.2.4",
+					DataSource:       upstreamTestDataSource,
+				},
+				{
+					VulnerabilityID:  "CVE-2026-10503",
+					PkgName:          "example.com/echo-merge",
+					InstalledVersion: "v1.2.3+echo.1",
+					DataSource:       upstreamTestDataSource,
+				},
+			},
 		},
 	}
 	for _, tt := range tests {
