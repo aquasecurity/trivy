@@ -12,6 +12,7 @@ import (
 	"github.com/aquasecurity/trivy-db/pkg/vulnsrc/vulnerability"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/bitnami"
+	"github.com/aquasecurity/trivy/pkg/detector/library/compare/jdk"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/maven"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/npm"
 	"github.com/aquasecurity/trivy/pkg/detector/library/compare/pep440"
@@ -42,6 +43,9 @@ func NewDriver(libType ftypes.LangType) (Driver, bool) {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		eco = ecosystem.Maven
 		comparer = maven.Comparer{}
+	case ftypes.JDK:
+		eco = ecosystem.Type("openjdk")
+		comparer = jdk.Comparer{}
 	case ftypes.Npm, ftypes.Yarn, ftypes.Pnpm, ftypes.Bun, ftypes.NodePkg, ftypes.JavaScript:
 		eco = ecosystem.Npm
 		comparer = npm.Comparer{}

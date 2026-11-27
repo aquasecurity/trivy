@@ -180,6 +180,11 @@ func (p *PackageURL) LangType() ftypes.LangType {
 		return ftypes.Julia
 	case packageurl.TypeBitnami:
 		return ftypes.Bitnami
+	case packageurl.TypeGeneric:
+		if p.Namespace == "" && p.Name == "openjdk" {
+			return ftypes.JDK
+		}
+		return TypeUnknown
 	case TypeK8s:
 		switch p.Namespace {
 		case NamespaceEKS:
@@ -455,6 +460,8 @@ func purlType(t ftypes.TargetType) string {
 	switch t {
 	case ftypes.Jar, ftypes.Pom, ftypes.Gradle, ftypes.Sbt:
 		return packageurl.TypeMaven
+	case ftypes.JDK:
+		return packageurl.TypeGeneric
 	case ftypes.Bundler, ftypes.GemSpec:
 		return packageurl.TypeGem
 	case ftypes.NuGet, ftypes.DotNetCore, ftypes.PackagesProps:

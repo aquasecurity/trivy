@@ -1,14 +1,15 @@
 # Java
-Trivy supports four types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml`, `*gradle.lockfile` and `*.sbt.lock` files.
+Trivy supports five types of Java scanning: `JAR/WAR/PAR/EAR`, `pom.xml`, `*gradle.lockfile`, `*.sbt.lock`, and `<JAVA_HOME>/release` files.
 
 Each artifact supports the following scanners:
 
-| Artifact         | SBOM | Vulnerability | License |
-|------------------|:----:|:-------------:|:-------:|
-| JAR/WAR/PAR/EAR  |  ✓   |       ✓       |    ✓[^9]    |
-| pom.xml          |  ✓   |       ✓       |    ✓    |
-| *gradle.lockfile |  ✓   |       ✓       |    ✓    |
-| *.sbt.lock       |  ✓   |       ✓       |    -    |
+| Artifact             | SBOM | Vulnerability | License |
+|----------------------|:----:|:-------------:|:-------:|
+| JAR/WAR/PAR/EAR      |  ✓   |       ✓       |    ✓[^9]    |
+| pom.xml              |  ✓   |       ✓       |    ✓    |
+| *gradle.lockfile     |  ✓   |       ✓       |    ✓    |
+| *.sbt.lock           |  ✓   |       ✓       |    -    |
+| `<JAVA_HOME>/release` |  ✓   |       ✓       |    -    |
 
 The following table provides an outline of the features Trivy offers.
 
@@ -169,6 +170,12 @@ Make sure that you have cache[^8] directory to find licenses from `*.pom` depend
 
 !!!note
     All necessary files are checked locally. SBT file scanning doesn't require internet access.
+
+## Java runtime
+
+Trivy detects unpackaged OpenJDK-based Java runtimes (such as Eclipse Temurin, Amazon Corretto, Azul Zulu, Liberica, and `jlink` custom runtime images) by parsing `<JAVA_HOME>/release` metadata files (`JAVA_VERSION`, `JAVA_RUNTIME_VERSION`, `IMPLEMENTOR`, and `MODULES`).
+
+Detected runtimes are reported with type `jdk`, normalized to JEP 322 version format (for example, `17.0.13+11`), and assigned a `pkg:generic/openjdk@<version>` PURL in SBOM reports. Vulnerability matching queries the `openjdk` advisory ecosystem in `trivy-db`.
 
 [^1]: Uses maven repository to get information about dependencies. Internet access required.
 [^2]: It means `*.jar`, `*.war`, `*.par` and `*.ear` file

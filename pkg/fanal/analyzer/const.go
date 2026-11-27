@@ -60,6 +60,7 @@ const (
 
 	// Java
 	TypeJar        Type = "jar"
+	TypeJDK        Type = "jdk"
 	TypePom        Type = "pom"
 	TypeGradleLock Type = "gradle-lockfile"
 	TypeSbtLock    Type = "sbt-lockfile"
@@ -202,6 +203,7 @@ var (
 		TypeComposer,
 		TypeComposerVendor,
 		TypeJar,
+		TypeJDK,
 		TypePom,
 		TypeGradleLock,
 		TypeSbtLock,
@@ -267,6 +269,7 @@ var (
 		TypePythonPkg,
 		TypeGoBinary,
 		TypeJar,
+		TypeJDK,
 		TypeRustBinary,
 		TypeComposerVendor,
 	}
