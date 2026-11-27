@@ -265,9 +265,9 @@ http_download_curl() {
   # "|| rc=$?" keeps "set -e" from exiting silently when curl itself fails
   # (e.g. exit code 6: could not resolve host), so the URL can be reported.
   if [ -z "$header" ]; then
-    code=$(curl -w '%{http_code}' -sL -o "$local_file" "$source_url") || rc=$?
+    code=$(curl -w '%{http_code}' -sSL -o "$local_file" "$source_url") || rc=$?
   else
-    code=$(curl -w '%{http_code}' -sL -H "$header" -o "$local_file" "$source_url") || rc=$?
+    code=$(curl -w '%{http_code}' -sSL -H "$header" -o "$local_file" "$source_url") || rc=$?
   fi
   if [ "$rc" -ne 0 ]; then
     log_err "failed to download ${source_url} (curl exit code ${rc})"
