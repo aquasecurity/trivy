@@ -30,7 +30,7 @@ func adaptPostgreSQLServer(resource *terraform.Block, module *terraform.Module) 
 	}
 
 	configs := module.GetReferencingResources(resource, "azurerm_postgresql_configuration", "server_name")
-	config := adaptPostgreSQLConfig(resource, configs, "connection_throttling")
+	config := adaptPostgreSQLConfig(resource, configs, "connection_throttling", false)
 	return database.PostgreSQLServer{
 		Metadata: resource.GetMetadata(),
 		Server: database.Server{
@@ -64,7 +64,9 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 	// By default, the server enforces secure connections using TLS 1.2
 	// Flexible server configurations use server_id instead of server_name
 	configBlocks := module.GetReferencingResources(resource, "azurerm_postgresql_flexible_server_configuration", "server_id")
-	config := adaptPostgreSQLConfig(resource, configBlocks, "connection_throttle.enable")
+	// Logging parameters are on by default on flexible servers.
+	// https://learn.microsoft.com/en-us/azure/postgresql/parameters/parameters-reporting-logging-what-log
+	config := adaptPostgreSQLConfig(resource, configBlocks, "connection_throttle.enable", true)
 	params := parseServerParameters(configBlocks, resource.GetMetadata(), "ssl_min_protocol_version")
 
 	return database.PostgreSQLServer{
@@ -89,7 +91,7 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 	}
 }
 
-func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.Block, throttlingParam string) database.PostgresSQLConfig {
+func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.Block, throttlingParam string, loggingDefault bool) database.PostgresSQLConfig {
 	var defaultMetadata iacTypes.Metadata
 	if resource != nil {
 		defaultMetadata = resource.GetMetadata()
@@ -99,10 +101,10 @@ func adaptPostgreSQLConfig(resource *terraform.Block, configBlocks []*terraform.
 
 	config := database.PostgresSQLConfig{
 		Metadata:             defaultMetadata,
-		LogCheckpoints:       iacTypes.BoolDefault(false, defaultMetadata),
+		LogCheckpoints:       iacTypes.BoolDefault(loggingDefault, defaultMetadata),
 		ConnectionThrottling: iacTypes.BoolDefault(false, defaultMetadata),
-		LogConnections:       iacTypes.BoolDefault(false, defaultMetadata),
-		LogDisconnections:    iacTypes.BoolDefault(false, defaultMetadata),
+		LogConnections:       iacTypes.BoolDefault(loggingDefault, defaultMetadata),
+		LogDisconnections:    iacTypes.BoolDefault(loggingDefault, defaultMetadata),
 	}
 
 	for _, configBlock := range configBlocks {
