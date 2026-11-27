@@ -245,6 +245,95 @@ func Test_rpmPkgAnalyzer_listPkgs(t *testing.T) {
 			},
 		},
 		{
+			name: "Amazon Corretto package built for Amazon Linux",
+			mock: mock{
+				packages: []*rpmdb.PackageInfo{
+					{
+						Name:      "java-21-amazon-corretto-headless",
+						Epoch:     new(1),
+						Version:   "21.0.12+13",
+						Release:   "1.amzn2023.1",
+						Arch:      "x86_64",
+						SourceRpm: "java-21-amazon-corretto-21.0.12+13-1.amzn2023.1.src.rpm",
+						DirNames: []string{
+							"/usr/lib/jvm/java-21-amazon-corretto/bin/",
+						},
+						DirIndexes: []int32{
+							0,
+						},
+						BaseNames: []string{
+							"java",
+						},
+						Vendor: "Amazon",
+					},
+				},
+			},
+			wantPkgs: types.Packages{
+				{
+					ID:         "java-21-amazon-corretto-headless@21.0.12+13-1.amzn2023.1.x86_64",
+					Name:       "java-21-amazon-corretto-headless",
+					Epoch:      1,
+					Version:    "21.0.12+13",
+					Release:    "1.amzn2023.1",
+					Arch:       "x86_64",
+					SrcName:    "java-21-amazon-corretto",
+					SrcEpoch:   1,
+					SrcVersion: "21.0.12+13",
+					SrcRelease: "1.amzn2023.1",
+					Maintainer: "Amazon",
+					Repository: types.PackageRepository{Class: types.RepositoryClassOfficial},
+					InstalledFiles: []string{
+						"/usr/lib/jvm/java-21-amazon-corretto/bin/java",
+					},
+				},
+			},
+			wantFiles: []string{
+				"/usr/lib/jvm/java-21-amazon-corretto/bin/java",
+			},
+		},
+		{
+			// Corretto's own repository also ships generic RPMs for other distributions.
+			name: "Amazon Corretto package not built for Amazon Linux",
+			mock: mock{
+				packages: []*rpmdb.PackageInfo{
+					{
+						Name:      "java-21-amazon-corretto-devel",
+						Epoch:     new(1),
+						Version:   "21.0.12.12",
+						Release:   "1",
+						Arch:      "x86_64",
+						SourceRpm: "java-21-amazon-corretto-devel-21.0.12.12-1.src.rpm",
+						DirNames: []string{
+							"/usr/lib/jvm/java-21-amazon-corretto/bin/",
+						},
+						DirIndexes: []int32{
+							0,
+						},
+						BaseNames: []string{
+							"javac",
+						},
+						Vendor: "Amazon",
+					},
+				},
+			},
+			wantPkgs: types.Packages{
+				{
+					ID:         "java-21-amazon-corretto-devel@21.0.12.12-1.x86_64",
+					Name:       "java-21-amazon-corretto-devel",
+					Epoch:      1,
+					Version:    "21.0.12.12",
+					Release:    "1",
+					Arch:       "x86_64",
+					SrcName:    "java-21-amazon-corretto-devel",
+					SrcEpoch:   1,
+					SrcVersion: "21.0.12.12",
+					SrcRelease: "1",
+					Maintainer: "Amazon",
+					Repository: types.PackageRepository{Class: types.RepositoryClassThirdParty},
+				},
+			},
+		},
+		{
 			name: "invalid source rpm",
 			mock: mock{
 				packages: []*rpmdb.PackageInfo{
