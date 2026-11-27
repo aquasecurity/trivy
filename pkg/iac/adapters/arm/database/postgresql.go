@@ -9,11 +9,31 @@ import (
 	iacTypes "github.com/aquasecurity/trivy/pkg/iac/types"
 )
 
+const postgreSQLServerType = "Microsoft.DBforPostgreSQL/servers"
+
 func adaptPostgreSQLServers(deployment azure.Deployment) (databases []database.PostgreSQLServer) {
-	for _, resource := range deployment.GetResourcesByType("Microsoft.DBforPostgreSQL/servers") {
+	for _, resource := range deployment.GetResourcesByType(postgreSQLServerType) {
 		databases = append(databases, adaptPostgreSQLServer(resource, deployment))
 	}
-
+	if rules := orphanFirewallRules(deployment, postgreSQLServerType); len(rules) > 0 {
+		metadata := iacTypes.NewUnmanagedMetadata()
+		databases = append(databases, database.PostgreSQLServer{
+			Metadata: metadata,
+			Server:   orphanage(rules),
+			Config: database.PostgresSQLConfig{
+				Metadata:             metadata,
+				LogCheckpoints:       iacTypes.BoolDefault(false, metadata),
+				ConnectionThrottling: iacTypes.BoolDefault(false, metadata),
+				LogConnections:       iacTypes.BoolDefault(false, metadata),
+				LogDisconnections:    iacTypes.BoolDefault(false, metadata),
+			},
+			GeoRedundantBackupEnabled: iacTypes.BoolDefault(false, metadata),
+			ThreatDetectionPolicy: database.ThreatDetectionPolicy{
+				Metadata: metadata,
+				Enabled:  iacTypes.BoolDefault(false, metadata),
+			},
+		})
+	}
 	return databases
 }
 
@@ -31,7 +51,7 @@ func adaptPostgreSQLServer(resource azure.Resource, deployment azure.Deployment)
 			EnableSSLEnforcement:      properties.GetMapValue("sslEnforcement").AsBoolValue(false, resource.Metadata),
 			MinimumTLSVersion:         properties.GetMapValue("minimalTlsVersion").AsStringValue("TLSEnforcementDisabled", resource.Metadata),
 			EnablePublicNetworkAccess: properties.GetMapValue("publicNetworkAccess").AsBoolValue(false, resource.Metadata),
-			FirewallRules:             addFirewallRule(resource),
+			FirewallRules:             adaptFirewallRules(resource, deployment),
 		},
 		Config:                    adaptPostgreSQLConfiguration(resource, deployment),
 		GeoRedundantBackupEnabled: iacTypes.Bool(geoRedundantBackupEnabled.EqualTo("Enabled"), geoRedundantBackup.GetMetadata()),
