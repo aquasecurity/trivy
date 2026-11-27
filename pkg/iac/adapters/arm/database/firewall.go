@@ -22,7 +22,8 @@ func orphanFirewallRules(deployment azure.Deployment, serverType string) []datab
 }
 
 // orphanage holds firewall rules whose server is unknown.
-func orphanage(metadata iacTypes.Metadata, rules []database.FirewallRule) database.Server {
+func orphanage(rules []database.FirewallRule) database.Server {
+	metadata := iacTypes.NewUnmanagedMetadata()
 	return database.Server{
 		Metadata:                  metadata,
 		EnableSSLEnforcement:      iacTypes.BoolDefault(false, metadata),

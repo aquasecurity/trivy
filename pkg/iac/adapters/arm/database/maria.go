@@ -13,8 +13,10 @@ func adaptMariaDBServers(deployment azure.Deployment) (mariaDbServers []database
 		mariaDbServers = append(mariaDbServers, adaptMariaDBServer(resource, deployment))
 	}
 	if rules := orphanFirewallRules(deployment, mariaDBServerType); len(rules) > 0 {
-		metadata := iacTypes.NewUnmanagedMetadata()
-		mariaDbServers = append(mariaDbServers, database.MariaDBServer{Metadata: metadata, Server: orphanage(metadata, rules)})
+		mariaDbServers = append(mariaDbServers, database.MariaDBServer{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Server:   orphanage(rules),
+		})
 	}
 	return mariaDbServers
 

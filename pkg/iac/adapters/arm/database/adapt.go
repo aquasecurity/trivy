@@ -22,8 +22,10 @@ func adaptMySQLServers(deployment azure.Deployment) (mysqlDbServers []database.M
 		mysqlDbServers = append(mysqlDbServers, adaptMySQLServer(resource, deployment))
 	}
 	if rules := orphanFirewallRules(deployment, mysqlServerType); len(rules) > 0 {
-		metadata := iacTypes.NewUnmanagedMetadata()
-		mysqlDbServers = append(mysqlDbServers, database.MySQLServer{Metadata: metadata, Server: orphanage(metadata, rules)})
+		mysqlDbServers = append(mysqlDbServers, database.MySQLServer{
+			Metadata: iacTypes.NewUnmanagedMetadata(),
+			Server:   orphanage(rules),
+		})
 	}
 	return mysqlDbServers
 }
