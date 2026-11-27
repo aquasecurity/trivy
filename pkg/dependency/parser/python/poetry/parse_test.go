@@ -39,6 +39,15 @@ func TestParser_Parse(t *testing.T) {
 			wantDeps: poetryV2FlaskDeps,
 			wantErr:  assert.NoError,
 		},
+		{
+			// pandas 3 requires numpy with one constraint per python_version
+			// marker, which poetry writes as an array of inline tables.
+			name:     "dependency with an array of constraints",
+			file:     "testdata/poetry_constraint_array.lock",
+			wantPkgs: poetryConstraintArray,
+			wantDeps: poetryConstraintArrayDeps,
+			wantErr:  assert.NoError,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -104,6 +113,45 @@ func TestParseDependency(t *testing.T) {
 				"test": {"5.0.0"},
 			},
 			want: "test@5.0.0",
+		},
+		{
+			// poetry writes one inline table per marker when a dependency has
+			// different constraints for different environments.
+			name:        "version range as an array of json entries",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{"version": ">=1.0.0", "markers": "python_version < \"3.11\""},
+				map[string]any{"version": ">=2.0.0", "markers": "python_version >= \"3.11\""},
+			},
+			pkgsVersions: map[string][]string{
+				"test": {"2.5.0"},
+			},
+			want: "test@2.5.0",
+		},
+		{
+			// the version can satisfy any one of the constraints
+			name:        "array of json entries, first constraint matches",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{"version": ">=1.0.0", "markers": "python_version < \"3.11\""},
+				map[string]any{"version": ">=3.0.0", "markers": "python_version >= \"3.11\""},
+			},
+			pkgsVersions: map[string][]string{
+				"test": {"2.5.0"},
+			},
+			want: "test@2.5.0",
+		},
+		{
+			name:        "array of json entries, no constraint matches",
+			packageName: "test",
+			versionRange: []any{
+				map[string]any{"version": ">=4.0.0"},
+				map[string]any{"version": ">=5.0.0"},
+			},
+			pkgsVersions: map[string][]string{
+				"test": {"2.5.0"},
+			},
+			wantErr: "no matched version found",
 		},
 		{
 			name:         "pkgsVersions doesn't contain required version",

@@ -65,4 +65,21 @@ var (
 		},
 		{ID: "werkzeug@3.1.3", DependsOn: []string{"markupsafe@3.0.2"}},
 	}
+
+	// pandas 3 requires numpy with one constraint per python_version marker,
+	// which poetry writes as an array of inline tables:
+	//
+	//	[package.dependencies]
+	//	numpy = [
+	//	    {version = ">=1.26.0", markers = "python_version < \"3.14\""},
+	//	    {version = ">=2.3.3", markers = "python_version >= \"3.14\""},
+	//	]
+	poetryConstraintArray = []ftypes.Package{
+		{ID: "numpy@2.5.3", Name: "numpy", Version: "2.5.3"},
+		{ID: "pandas@3.0.6", Name: "pandas", Version: "3.0.6"},
+	}
+
+	poetryConstraintArrayDeps = []ftypes.Dependency{
+		{ID: "pandas@3.0.6", DependsOn: []string{"numpy@2.5.3"}},
+	}
 )
