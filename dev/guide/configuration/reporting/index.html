@@ -5026,6 +5026,34 @@ You're not viewing the latest version of the documentation.
   
   
   
+    <li class="md-nav__item">
+      <a href="../../supply-chain/package-digests/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Package Digests
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
     
     
     
@@ -5040,10 +5068,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_2" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_3" >
         
           
-          <label class="md-nav__link" for="__nav_4_6_2" id="__nav_4_6_2_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_6_3" id="__nav_4_6_3_label" tabindex="0">
             
   
   
@@ -5061,8 +5089,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_2_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_6_2">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_3_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6_3">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -5184,10 +5212,10 @@ You're not viewing the latest version of the documentation.
       
         
         
-        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_3" >
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_6_4" >
         
           
-          <label class="md-nav__link" for="__nav_4_6_3" id="__nav_4_6_3_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4_6_4" id="__nav_4_6_4_label" tabindex="0">
             
   
   
@@ -5205,8 +5233,8 @@ You're not viewing the latest version of the documentation.
             <span class="md-nav__icon md-icon"></span>
           </label>
         
-        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_3_label" aria-expanded="false">
-          <label class="md-nav__title" for="__nav_4_6_3">
+        <nav class="md-nav" data-md-level="3" aria-labelledby="__nav_4_6_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_6_4">
             <span class="md-nav__icon md-icon"></span>
             
   
@@ -9516,6 +9544,43 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
       &quot;Target&quot;: &quot;alpine:latest (alpine 3.20.3)&quot;,
       &quot;Class&quot;: &quot;os-pkgs&quot;,
       &quot;Type&quot;: &quot;alpine&quot;,
+      &quot;Packages&quot;: [
+        {
+          &quot;ID&quot;: &quot;libssl3@3.3.2-r0&quot;,
+          &quot;Name&quot;: &quot;libssl3&quot;,
+          &quot;Identifier&quot;: {
+            &quot;PURL&quot;: &quot;pkg:apk/alpine/libssl3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3&quot;,
+            &quot;UID&quot;: &quot;c063faeb15a10ea8&quot;
+          },
+          &quot;Version&quot;: &quot;3.3.2-r0&quot;,
+          &quot;Arch&quot;: &quot;aarch64&quot;,
+          &quot;SrcName&quot;: &quot;openssl&quot;,
+          &quot;SrcVersion&quot;: &quot;3.3.2-r0&quot;,
+          &quot;Licenses&quot;: [
+            &quot;Apache-2.0&quot;
+          ],
+          &quot;Maintainer&quot;: &quot;Natanael Copa \u003cncopa@alpinelinux.org\u003e&quot;,
+          &quot;DependsOn&quot;: [
+            &quot;libcrypto3@3.3.2-r0&quot;,
+            &quot;musl@1.2.5-r0&quot;
+          ],
+          &quot;Layer&quot;: {
+            &quot;DiffID&quot;: &quot;sha256:651d9022c23486dfbd396c13db293af6845731cbd098a5f5606db4bc9f5573e8&quot;
+          },
+          &quot;Digest&quot;: &quot;sha1:5dd7435b217a4f82c2320879582d7c266a9c4b20&quot;,
+          &quot;Digests&quot;: [
+            {
+              &quot;Digest&quot;: &quot;sha1:5dd7435b217a4f82c2320879582d7c266a9c4b20&quot;,
+              &quot;Source&quot;: &quot;apk-installed-db&quot;
+            }
+          ],
+          &quot;InstalledFiles&quot;: [
+            &quot;lib/libssl.so.3&quot;,
+            &quot;usr/lib/libssl.so.3&quot;
+          ],
+          &quot;AnalyzedBy&quot;: &quot;apk&quot;
+        }
+      ],
       &quot;Vulnerabilities&quot;: [
         {
           &quot;VulnerabilityID&quot;: &quot;CVE-2024-9143&quot;,
@@ -9523,7 +9588,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
           &quot;PkgName&quot;: &quot;libcrypto3&quot;,
           &quot;PkgIdentifier&quot;: {
             &quot;PURL&quot;: &quot;pkg:apk/alpine/libcrypto3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3&quot;,
-            &quot;UID&quot;: &quot;f705555b49cd2259&quot;
+            &quot;UID&quot;: &quot;6046f49632a11363&quot;
           },
           &quot;InstalledVersion&quot;: &quot;3.3.2-r0&quot;,
           &quot;FixedVersion&quot;: &quot;3.3.2-r1&quot;,
@@ -9575,7 +9640,7 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
           &quot;PkgName&quot;: &quot;libssl3&quot;,
           &quot;PkgIdentifier&quot;: {
             &quot;PURL&quot;: &quot;pkg:apk/alpine/libssl3@3.3.2-r0?arch=aarch64\u0026distro=3.20.3&quot;,
-            &quot;UID&quot;: &quot;c4a39ef718e71832&quot;
+            &quot;UID&quot;: &quot;c063faeb15a10ea8&quot;
           },
           &quot;InstalledVersion&quot;: &quot;3.3.2-r0&quot;,
           &quot;FixedVersion&quot;: &quot;3.3.2-r1&quot;,
@@ -9630,6 +9695,11 @@ Also, <strong>glob-parent@3.1.0</strong> with some vulnerabilities is included t
 </details>
 
 <p><code>VulnerabilityID</code>, <code>PkgName</code>, <code>InstalledVersion</code>, and <code>Severity</code> in <code>Vulnerabilities</code> are always filled with values, but other fields might be empty.</p>
+<p>The <code>Digests</code> field of each package in <code>Packages</code> holds the <a href="../../supply-chain/package-digests/">package digests</a>.</p>
+<div class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>The <code>Digest</code> field of a package is deprecated. Use <code>Digests</code> instead. <code>Digest</code> holds a single value without its source and is not filled for digests from newer sources, such as <code>go-module-h1</code>.</p>
+</div>
 <h3 id="sarif">SARIF<a class="headerlink" href="#sarif" title="Permanent link">&para;</a></h3>
 <table>
 <thead>
