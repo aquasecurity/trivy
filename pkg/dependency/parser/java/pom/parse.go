@@ -96,6 +96,8 @@ type Parser struct {
 	logger          *log.Logger
 	rootPath        string
 	cache           pomCache
+	importCache     pomCache        // POMs imported into dependencyManagement are resolved without dependencies, so they are cached separately
+	notFoundPOMs    set.Set[string] // POMs not fetched from remote repositories (not found or failed), keyed by repository URL and POM path
 	localRepository string
 	remoteRepos     repositories
 	offline         bool
@@ -158,6 +160,8 @@ func NewParser(filePath string, opts ...option) *Parser {
 		logger:          log.WithPrefix("pom"),
 		rootPath:        filepath.Clean(filePath),
 		cache:           newPOMCache(),
+		importCache:     newPOMCache(),
+		notFoundPOMs:    set.New[string](),
 		localRepository: localRepository,
 		remoteRepos:     remoteRepos,
 		offline:         o.offline,
@@ -303,14 +307,14 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 			}
 		}
 
-		result, err := p.resolve(ctx, art, rootDepManagement)
+		result, err := p.resolve(ctx, art, rootDepManagement, false)
 		if err != nil {
 			return nil, nil, xerrors.Errorf("resolve error (%s): %w", art, err)
 		}
 
 		if art.Relationship == ftypes.RelationshipRoot || art.Relationship == ftypes.RelationshipWorkspace {
 			// Managed dependencies in the root POM affect transitive dependencies
-			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement)
+			rootDepManagement, err = p.resolveDepManagement(ctx, result.properties, result.dependencyManagement, result.artifact.Repositories, set.New[string]())
 			if err != nil {
 				return nil, nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 			}
@@ -324,7 +328,7 @@ func (p *Parser) parseRoot(ctx context.Context, root artifact, uniqModules set.S
 
 		// Parse, cache, and enqueue modules.
 		for _, relativePath := range result.modules {
-			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath, root.Repositories)
+			moduleArtifact, err := p.parseModule(ctx, result.filePath, relativePath)
 			if err != nil {
 				p.logger.Debug("Unable to parse the module",
 					log.FilePath(result.filePath), log.Err(err))
@@ -403,16 +407,17 @@ func depVersion(depName string, uniqArtifacts map[string]artifact) string {
 	return ""
 }
 
-func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string, repos []repository) (artifact, error) {
+func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath string) (artifact, error) {
 	// modulePath: "root/" + "module/" => "root/module"
 	module, err := p.openRelativePom(currentPath, relativePath)
 	if err != nil {
 		return artifact{}, xerrors.Errorf("unable to open the relative path: %w", err)
 	}
 
+	// As in Maven, repositories of an aggregator POM are not used for its modules,
+	// unless the module inherits them from the aggregator POM as its parent.
 	result, err := p.analyze(ctx, module, analysisOptions{
 		rootFilePath: module.filePath,
-		repositories: repos,
 	})
 	if err != nil {
 		return artifact{}, xerrors.Errorf("analyze error: %w", err)
@@ -428,9 +433,14 @@ func (p *Parser) parseModule(ctx context.Context, currentPath, relativePath stri
 	return moduleArtifact, nil
 }
 
-func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency) (analysisResult, error) {
+func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []pomDependency, isImportedArt bool) (analysisResult, error) {
+	cache := p.cache
+	if isImportedArt {
+		cache = p.importCache
+	}
+
 	// If the artifact is found in cache, it is returned.
-	if result := p.cache.get(art); result != nil {
+	if result := cache.get(art); result != nil {
 		return *result, nil
 	}
 
@@ -453,16 +463,21 @@ func (p *Parser) resolve(ctx context.Context, art artifact, rootDepManagement []
 	}
 
 	result, err := p.analyze(ctx, pomContent, analysisOptions{
-		exclusions:    art.Exclusions,
-		depManagement: rootDepManagement,
-		rootFilePath:  art.RootFilePath,
-		repositories:  art.Repositories,
+		exclusions:       art.Exclusions,
+		depManagement:    rootDepManagement,
+		rootFilePath:     art.RootFilePath,
+		repositories:     art.Repositories,
+		skipDependencies: isImportedArt,
 	})
 	if err != nil {
 		return analysisResult{}, xerrors.Errorf("analyze error: %w", err)
 	}
 
-	p.cache.put(art, result)
+	// As in Maven, an imported (from depManagement) POM that was not found is not cached,
+	// because another POM importing it may declare other repositories where it can be found.
+	if pomContent != nil || !isImportedArt {
+		cache.put(art, result)
+	}
 	return result, nil
 }
 
@@ -476,10 +491,11 @@ type analysisResult struct {
 }
 
 type analysisOptions struct {
-	exclusions    set.Set[string]
-	depManagement []pomDependency // from the root POM
-	rootFilePath  string          // File path of the root POM or module POM
-	repositories  []repository    // Repositories inherited from parent
+	exclusions       set.Set[string]
+	depManagement    []pomDependency // from the root POM
+	rootFilePath     string          // File path of the root POM or module POM
+	repositories     []repository    // Repositories from upper-level POMs
+	skipDependencies bool            // skipDependencies skips resolving dependencies, e.g. for POMs imported into dependencyManagement
 }
 
 func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (analysisResult, error) {
@@ -490,30 +506,37 @@ func (p *Parser) analyze(ctx context.Context, pom *pom, opts analysisOptions) (a
 		opts.exclusions = set.New[string]()
 	}
 
-	// Get repositories from current POM and merge with inherited ones
-	pomRepos := pom.repositories(p.servers)
-	opts.repositories = lo.UniqBy(append(pomRepos, opts.repositories...), func(r repository) url.URL {
-		return r.url
-	})
-
 	// Resolve parent POM
-	// TODO handle repos from parents
 	if err := p.resolveParent(ctx, pom, opts.repositories); err != nil {
 		return analysisResult{}, xerrors.Errorf("pom resolve error: %w", err)
 	}
 
+	// Repositories of this POM, including the ones from its parent POMs
+	pomRepos := pom.repositories(p.servers)
+
+	// As in Maven, repositories of this POM take precedence over the ones with the same ID from upper-level POMs
+	// when resolving the POMs it imports, but not when resolving its dependencies.
+	// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L402
+	// cf. https://github.com/apache/maven-resolver/blob/maven-resolver-1.9.22/maven-resolver-impl/src/main/java/org/eclipse/aether/internal/impl/collect/df/DfDependencyCollector.java#L329-L332
+	importRepos := mergeRepositories(pomRepos, opts.repositories)
+	opts.repositories = mergeRepositories(opts.repositories, pomRepos)
+
 	// Resolve dependencies
 	props := pom.properties()
 	depManagement := pom.content.DependencyManagement.Dependencies.Dependency
-	deps, err := p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, opts)
-	if err != nil {
-		return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
+	var deps []artifact
+	if !opts.skipDependencies {
+		var err error
+		deps, err = p.parseDependencies(ctx, pom.content.Dependencies.Dependency, props, depManagement, importRepos, opts)
+		if err != nil {
+			return analysisResult{}, xerrors.Errorf("unable to parse dependencies: %w", err)
+		}
+		deps = p.filterDependencies(deps, opts.exclusions)
 	}
-	deps = p.filterDependencies(deps, opts.exclusions)
 
 	art := pom.artifact()
 	art.RootFilePath = opts.rootFilePath
-	art.Repositories = opts.repositories
+	art.Repositories = importRepos // used to resolve the POMs imported by this POM
 
 	return analysisResult{
 		filePath:             pom.filePath,
@@ -532,6 +555,9 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 	}
 
 	// Parse parent POM
+	// The parent POM is also searched in the repositories of this POM.
+	// Repositories from child POMs take precedence over parent repositories with the same ID.
+	pomRepos = mergeRepositories(pomRepos, pom.repositories(p.servers))
 	parent, err := p.parseParent(ctx, pom.filePath, pom.content.Parent, pomRepos)
 	if err != nil {
 		return xerrors.Errorf("parent error: %w", err)
@@ -555,6 +581,10 @@ func (p *Parser) resolveParent(ctx context.Context, pom *pom, pomRepos []reposit
 		pom.content.Dependencies.Dependency,
 		parent.content.Dependencies.Dependency)
 
+	// Merge repositories.
+	// A repository disabled in this POM also hides the one with the same ID from the parent POM.
+	pom.content.Repositories = mergePomRepositories(pom.content.Repositories, parent.content.Repositories)
+
 	return nil
 }
 
@@ -575,7 +605,7 @@ func (p *Parser) mergeDependencyManagements(depManagements ...[]pomDependency) [
 }
 
 func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, props map[string]string, depManagement []pomDependency,
-	opts analysisOptions,
+	importRepos []repository, opts analysisOptions,
 ) ([]artifact, error) {
 	// Imported POMs often have no dependencies, so dependencyManagement resolution can be skipped.
 	if len(deps) == 0 {
@@ -584,7 +614,7 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 	var err error
 	// Resolve dependencyManagement
-	depManagement, err = p.resolveDepManagement(ctx, props, depManagement)
+	depManagement, err = p.resolveDepManagement(ctx, props, depManagement, importRepos, set.New[string]())
 	if err != nil {
 		return nil, xerrors.Errorf("unable to resolve dep management: %w", err)
 	}
@@ -606,9 +636,16 @@ func (p *Parser) parseDependencies(ctx context.Context, deps []pomDependency, pr
 
 // resolveDepManagement resolves depManagement, including imported POMs.
 // It returns resolved depManagement with variables evaluated.
+// imported tracks POMs in the current chain of imports to break import cycles.
+// As in Maven, a POM is removed from it after its import is resolved,
+// so a previously not found POM can be resolved again when imported by another POM
+// (e.g. with other repositories).
+// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1259
 // It continues to resolve even if an error occurs while resolving an imported POM,
 // but it returns an error if a context is canceled or the deadline is exceeded.
-func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency) ([]pomDependency, error) {
+func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]string, depManagement []pomDependency,
+	repos []repository, imported set.Set[string],
+) ([]pomDependency, error) {
 	var newDepManagement, imports []pomDependency
 	for _, dep := range depManagement {
 		// cf. https://howtodoinjava.com/maven/maven-dependency-scopes/#import
@@ -624,20 +661,34 @@ func (p *Parser) resolveDepManagement(ctx context.Context, props map[string]stri
 	// cf. https://maven.apache.org/guides/introduction/introduction-to-dependency-mechanism.html#importing-dependencies
 	for _, imp := range imports {
 		art := newArtifact(imp.GroupID, imp.ArtifactID, imp.Version, nil, props)
-		result, err := p.resolve(ctx, art, nil)
+		if imported.Contains(art.String()) {
+			p.logger.Debug("Skipping import cycle", log.String("artifact", art.String()))
+			continue
+		}
+		imported.Append(art.String())
+		art.Repositories = slices.Clone(repos) // avoid sharing
+
+		// As in Maven, only dependencyManagement of the imported POM is used,
+		// so its dependencies, including ones inherited from parent POMs, are not resolved.
+		// Resolving them would resolve their dependencyManagement and could import the same POM again,
+		// bypassing the check for import cycles.
+		// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/building/DefaultModelBuilder.java#L1241
+		result, err := p.resolve(ctx, art, nil, true)
 		if shouldReturnError(err) {
 			return nil, err
-		} else if err != nil {
+		} else if err != nil || result.artifact.IsEmpty() {
+			imported.Remove(art.String())
 			continue
 		}
 
 		// We need to recursively check all nested depManagements,
 		// so that we don't miss dependencies on nested depManagements with `Import` scope.
 		newProps := utils.MergeMaps(props, result.properties)
-		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement)
+		result.dependencyManagement, err = p.resolveDepManagement(ctx, newProps, result.dependencyManagement, result.artifact.Repositories, imported)
 		if err != nil {
 			return nil, err
 		}
+		imported.Remove(art.String())
 		for k, dd := range result.dependencyManagement {
 			// Evaluate variables and overwrite dependencyManagement
 			result.dependencyManagement[k] = dd.Resolve(newProps, nil, nil)
@@ -654,6 +705,30 @@ func (p *Parser) mergeProperties(child, parent properties) properties {
 func (p *Parser) mergeDependencies(child, parent []pomDependency) []pomDependency {
 	return lo.UniqBy(append(child, parent...), func(d pomDependency) string {
 		return d.Name()
+	})
+}
+
+// mergeRepositories merges repositories in order of priority and removes repositories with duplicate IDs.
+// Repositories without an ID are deduplicated by URL.
+func mergeRepositories(repos ...[]repository) []repository {
+	return lo.UniqBy(slices.Concat(repos...), func(r repository) string {
+		// Maven requires the repository ID, so fall back to the URL to keep repositories without one
+		if r.id == "" {
+			return r.url.String()
+		}
+		return r.id
+	})
+}
+
+// mergePomRepositories merges repository declarations of a child POM and its parent POM by ID, the child taking precedence.
+// cf. https://github.com/apache/maven/blob/maven-3.9.9/maven-model-builder/src/main/java/org/apache/maven/model/merge/MavenModelMerger.java#L237
+func mergePomRepositories(child, parent []pomRepository) []pomRepository {
+	return lo.UniqBy(slices.Concat(child, parent), func(r pomRepository) string {
+		// Maven requires the repository ID, so fall back to the URL to keep repositories without one
+		if r.ID == "" {
+			return r.URL
+		}
+		return r.ID
 	})
 }
 
@@ -873,6 +948,14 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 			}
 			seen.Append(candidate.url.String())
 
+			// As in Maven Resolver, a POM that was not found in a repository or failed to be fetched from it
+			// is not requested from it again.
+			// cf. https://github.com/apache/maven-resolver/blob/maven-resolver-1.9.22/maven-resolver-impl/src/main/java/org/eclipse/aether/internal/impl/DefaultUpdateCheckManager.java#L183
+			notFoundKey := candidate.url.String() + "|" + path.Join(paths...)
+			if p.notFoundPOMs.Contains(notFoundKey) {
+				continue
+			}
+
 			repoPaths := slices.Clone(paths) // Clone slice to avoid overwriting last element of `paths`
 			if snapshot {
 				pomFileName, err := p.fetchPomFileNameFromMavenMetadata(ctx, candidate, repoPaths)
@@ -896,6 +979,7 @@ func (p *Parser) fetchPOMFromRemoteRepositories(ctx context.Context, paths []str
 				}
 				return nil, wrapWithRateLimitTargets(xerrors.Errorf("fetch repository error: %w", err), rateLimitTargets)
 			} else if fetched == nil {
+				p.notFoundPOMs.Append(notFoundKey)
 				continue
 			}
 			return fetched, nil

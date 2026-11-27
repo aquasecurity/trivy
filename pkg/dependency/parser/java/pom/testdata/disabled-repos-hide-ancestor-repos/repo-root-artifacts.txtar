@@ -1,0 +1,121 @@
+Root repository: the parent POMs of the scanned POM and of its dependency, and the dependency managed by the parent POM.
+The parent POMs declare the repositories disabled in the scanned POM or the dependency POM, where their own parent POMs are published.
+The dependency has no dependencies, so its repositories are only used to resolve its parent POMs.
+
+-- org/example/example-parent/1.0.0/example-parent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-grandparent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>example-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <repository>
+            <id>corp</id>
+            <url>REPO_DISABLED_URL</url>
+        </repository>
+        <repository>
+            <id>corp-releases</id>
+            <url>REPO_DISABLED_URL</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-api</artifactId>
+                <version>1.0.0</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+</project>
+
+-- org/example/example-api/1.0.0/example-api-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-api</artifactId>
+    <version>1.0.0</version>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+</project>
+
+-- org/example/example-dep/1.0.0/example-dep-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-dep-parent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>example-dep</artifactId>
+
+    <repositories>
+        <!-- disables the repository with the same ID declared in the parent POM -->
+        <repository>
+            <id>dep-corp</id>
+            <url>REPO_DISABLED_URL</url>
+            <releases>
+                <enabled>false</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <licenses>
+        <license>
+            <name>License from reporoot</name>
+        </license>
+    </licenses>
+</project>
+
+-- org/example/example-dep-parent/1.0.0/example-dep-parent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>example-dep-grandparent</artifactId>
+        <version>1.0.0</version>
+    </parent>
+
+    <artifactId>example-dep-parent</artifactId>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <!-- disabled in the scanned POM -->
+        <repository>
+            <id>corp</id>
+            <url>REPO_DISABLED_URL</url>
+        </repository>
+        <!-- disabled in the child POM -->
+        <repository>
+            <id>dep-corp</id>
+            <url>REPO_DISABLED_URL</url>
+        </repository>
+    </repositories>
+</project>

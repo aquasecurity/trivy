@@ -1,0 +1,25 @@
+Disabled repository (declared in the parent POMs, disabled by ID in their child POMs): the grandparent POMs, which must not be fetched from it.
+
+-- org/example/example-grandparent/1.0.0/example-grandparent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-grandparent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+</project>
+
+-- org/example/example-dep-grandparent/1.0.0/example-dep-grandparent-1.0.0.pom --
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>org.example</groupId>
+    <artifactId>example-dep-grandparent</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+</project>

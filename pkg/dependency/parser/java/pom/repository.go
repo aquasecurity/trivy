@@ -37,6 +37,7 @@ var mavenCentralRepo = repository{
 	releaseEnabled: true,
 }
 
+// resolvePomRepos also returns disabled repositories, so that they hide repositories with the same ID, as in Maven.
 func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 	logger := log.WithPrefix("pom")
 	var repos []repository
@@ -49,17 +50,16 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			snapshotEnabled: rep.SnapshotsEnabled == trueString || rep.SnapshotsEnabled == "",
 		}
 
-		// Add only enabled repositories
-		if !r.releaseEnabled && !r.snapshotEnabled {
-			continue
-		}
-
 		repoURL, err := url.Parse(rep.URL)
 		if err != nil {
 			if ue, ok := errors.AsType[*url.Error](err); ok {
 				err = ue.Unwrap()
 			}
 			logger.Debug("Unable to parse remote repository url", log.String("id", rep.ID), log.Err(err))
+			continue
+		}
+		if !repoURL.IsAbs() {
+			logger.Debug("Remote repository url must be absolute", log.String("id", rep.ID), log.String("url", rep.URL))
 			continue
 		}
 
@@ -72,7 +72,8 @@ func resolvePomRepos(servers []Server, pomRepos []pomRepository) []repository {
 			}
 		}
 
-		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", repoURL.Redacted()))
+		logger.Debug("Adding repository", log.String("id", rep.ID), log.String("url", repoURL.Redacted()),
+			log.Bool("releases", r.releaseEnabled), log.Bool("snapshots", r.snapshotEnabled))
 		r.url = *repoURL
 		repos = append(repos, r)
 	}

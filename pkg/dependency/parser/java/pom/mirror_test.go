@@ -13,6 +13,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy/pkg/log"
+	"github.com/aquasecurity/trivy/pkg/set"
 )
 
 func Test_mirror_matches(t *testing.T) {
@@ -794,9 +795,10 @@ func Test_fetchPOMFromRemoteRepositories_rejectedCredentials(t *testing.T) {
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
 			for range tt.parsers {
 				p := &Parser{
-					logger:     logger,
-					mirrors:    resolveMirrors(settingsMirrors, servers, nil),
-					httpClient: http.DefaultClient,
+					logger:       logger,
+					mirrors:      resolveMirrors(settingsMirrors, servers, nil),
+					httpClient:   http.DefaultClient,
+					notFoundPOMs: set.New[string](),
 				}
 				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, tt.snapshot, repos)
 				if tt.wantErr != "" {
@@ -845,14 +847,16 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 	// can only be observed end-to-end through HTTP: that mirrorFor is applied to the
 	// fetch loop, that mirror credentials reach the remote request as Basic Auth, that
 	// a settings.xml -> trivy.yaml chain routes the fetch through to the final mirror,
-	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, and that a
-	// 429 is returned only when every mirror is rate-limited.
+	// that the fetch falls back to the next trivy.yaml mirror on 404 or 429, that a
+	// 429 is returned only when every mirror is rate-limited, and that a POM not found
+	// in a mirror is not requested from it again.
 	tests := []struct {
 		name            string
 		mirrorPatterns  []string
 		mirrorWithCreds bool
 		wantBasicAuth   string
 		configMirrors   map[string][]string // trivy.yaml mirrors, by server role: source-role -> []mirror-role
+		refetch         bool                // fetch the same POM again after the first fetch
 		wantHits        map[string]int      // expected request count per server role
 		wantErr         string              // non-empty: fetch must fail with an error containing this
 		wantWarn        string              // non-empty: the logged output must contain this text
@@ -879,6 +883,14 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 			mirrorPatterns: []string{"*"},
 			configMirrors:  map[string][]string{"mirror": {"dead", "chain"}},
 			wantHits:       map[string]int{"dead": 1, "chain": 1},
+		},
+		{
+			// The POM is fetched twice; the mirror that 404'd the first time is not requested again.
+			name:           "trivy.yaml fallback: not found POM is not requested again",
+			mirrorPatterns: []string{"*"},
+			configMirrors:  map[string][]string{"mirror": {"dead", "chain"}},
+			refetch:        true,
+			wantHits:       map[string]int{"dead": 1, "chain": 2},
 		},
 		{
 			// A POM that fails to parse is not retried against another repository: the
@@ -986,18 +998,25 @@ func Test_fetchPOMFromRemoteRepositories_mirror(t *testing.T) {
 
 			var logBuf bytes.Buffer
 			p := &Parser{
-				logger:     log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
-				mirrors:    resolved,
-				httpClient: http.DefaultClient,
+				logger:       log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
+				mirrors:      resolved,
+				httpClient:   http.DefaultClient,
+				notFoundPOMs: set.New[string](),
 			}
 
 			paths := []string{"com", "example", "example-api", "1.0.0", "example-api-1.0.0.pom"}
-			got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
-			if tt.wantErr != "" {
-				require.Regexp(t, tt.wantErr, err)
-			} else {
-				require.NoError(t, err)
-				require.NotNil(t, got)
+			fetch := func() {
+				got, err := p.fetchPOMFromRemoteRepositories(t.Context(), paths, false, []repository{pomRepo})
+				if tt.wantErr != "" {
+					require.Regexp(t, tt.wantErr, err)
+				} else {
+					require.NoError(t, err)
+					require.NotNil(t, got)
+				}
+			}
+			fetch()
+			if tt.refetch {
+				fetch()
 			}
 
 			for role := range servers {
@@ -1068,8 +1087,9 @@ func Test_fetchPOMFromRemoteRepositories_invalidMetadata(t *testing.T) {
 
 	var logBuf bytes.Buffer
 	p := &Parser{
-		logger:     log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
-		httpClient: http.DefaultClient,
+		logger:       log.New(log.NewHandler(&logBuf, nil)).With(log.Prefix("pom")),
+		httpClient:   http.DefaultClient,
+		notFoundPOMs: set.New[string](),
 	}
 
 	paths := []string{"com", "example", "example-api", "1.0.0-SNAPSHOT", "example-api-1.0.0-SNAPSHOT.pom"}
@@ -1131,9 +1151,10 @@ func Test_fetchPOMFromRemoteRepositories_mirrorPolicy(t *testing.T) {
 			t.Cleanup(srv.Close)
 
 			p := &Parser{
-				logger:     log.WithPrefix("pom"),
-				mirrors:    resolveMirrors([]Mirror{{ID: "m1", URL: srv.URL, MirrorOf: "*"}}, nil, nil),
-				httpClient: http.DefaultClient,
+				logger:       log.WithPrefix("pom"),
+				mirrors:      resolveMirrors([]Mirror{{ID: "m1", URL: srv.URL, MirrorOf: "*"}}, nil, nil),
+				httpClient:   http.DefaultClient,
+				notFoundPOMs: set.New[string](),
 			}
 
 			paths := []string{"com", "example", "example-api", tt.version, "example-api-" + tt.version + ".pom"}

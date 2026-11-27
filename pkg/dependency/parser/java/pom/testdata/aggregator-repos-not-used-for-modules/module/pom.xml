@@ -1,0 +1,52 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- the module doesn't inherit from the aggregator -->
+    <parent>
+        <groupId>org.example</groupId>
+        <artifactId>company-parent</artifactId>
+        <version>1.0.0</version>
+        <relativePath/>
+    </parent>
+
+    <artifactId>module</artifactId>
+
+    <repositories>
+        <repository>
+            <id>corp</id>
+            <url>REPO_ROOT_URL</url>
+        </repository>
+    </repositories>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.example</groupId>
+                <artifactId>example-bom</artifactId>
+                <version>1.0.0</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <!-- version from the parent POM -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api</artifactId>
+        </dependency>
+        <!-- version from the BOM -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api2</artifactId>
+        </dependency>
+        <!-- published only to a repository of the aggregator POM, so it is not found -->
+        <dependency>
+            <groupId>org.example</groupId>
+            <artifactId>example-api3</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+    </dependencies>
+</project>

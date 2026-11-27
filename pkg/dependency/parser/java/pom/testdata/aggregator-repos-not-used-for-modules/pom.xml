@@ -1,0 +1,26 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>com.example</groupId>
+    <artifactId>aggregator</artifactId>
+    <version>1.0.0</version>
+    <packaging>pom</packaging>
+
+    <repositories>
+        <!-- the module declares the same ID with another URL -->
+        <repository>
+            <id>corp</id>
+            <url>REPO_AGGREGATOR_URL</url>
+        </repository>
+        <!-- the module declares no repository with this ID -->
+        <repository>
+            <id>aggregator-other</id>
+            <url>REPO_AGGREGATOR_OTHER_URL</url>
+        </repository>
+    </repositories>
+
+    <modules>
+        <module>module</module>
+    </modules>
+</project>
