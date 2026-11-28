@@ -77,7 +77,8 @@ func adaptPostgreSQLFlexibleServer(resource *terraform.Block, module *terraform.
 				AsBoolValueOrDefault(true, resource),
 			FirewallRules: firewallRules,
 		},
-		Config: config,
+		Version: resource.GetAttribute("version").AsStringValueOrDefault("", resource),
+		Config:  config,
 		GeoRedundantBackupEnabled: resource.GetAttribute("geo_redundant_backup_enabled").
 			AsBoolValueOrDefault(false, resource),
 
