@@ -112,7 +112,7 @@ func majorVersion(osVer string) string {
 	}
 	// The format `2023.xxx.xxxx` can be used.
 	major := osver.Major(fields[0])
-	if major != "2" && major != "2022" && major != "2023" {
+	if major != "2" && major != "2022" && major != "2023" && major != "2027" {
 		return "1"
 	}
 	return major
