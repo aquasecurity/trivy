@@ -7,8 +7,6 @@ import (
 	"errors"
 	"fmt"
 	"io/fs"
-	"iter"
-	"strconv"
 	"strings"
 
 	ftypes "github.com/aquasecurity/trivy/pkg/fanal/types"
@@ -143,7 +141,7 @@ type metadataCollector struct {
 
 func (c *metadataCollector) After(dec *jsontext.Decoder, obj any, loc ftypes.Location) {
 	ptr := dec.StackPointer()
-	ref := buildNodeRef(ptr.Tokens())
+	ref := buildNodeRef(dec)
 	rng := types.NewRange(c.path, loc.StartLine, loc.EndLine, "", c.fsys)
 
 	md := types.NewMetadata(rng, ref)
@@ -179,20 +177,24 @@ func (c *metadataCollector) findClosestValidParent(path jsontext.Pointer) (jsont
 	}
 }
 
-func buildNodeRef(seq iter.Seq[string]) string {
+// buildNodeRef builds a reference to the most recently decoded value,
+// such as "resources[0].properties". Array indexes go in brackets,
+// object names go after a dot, even when a name is a number.
+func buildNodeRef(dec *jsontext.Decoder) string {
 	var sb strings.Builder
-	for el := range seq {
-		if _, err := strconv.Atoi(el); err == nil {
-			sb.WriteString("[")
-			sb.WriteString(el)
-			sb.WriteString("]")
-		} else {
-			if sb.Len() > 0 {
-				sb.WriteString(".")
-			}
-			sb.WriteString(el)
+	level := 0
+	for tok := range dec.StackPointer().Tokens() {
+		level++
+		if kind, _ := dec.StackIndex(level); kind == jsontext.KindBeginArray {
+			sb.WriteByte('[')
+			sb.WriteString(tok)
+			sb.WriteByte(']')
+			continue
 		}
-
+		if sb.Len() > 0 {
+			sb.WriteByte('.')
+		}
+		sb.WriteString(tok)
 	}
 	return sb.String()
 }
