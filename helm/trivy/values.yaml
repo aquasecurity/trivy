@@ -52,6 +52,10 @@ affinity: {}
 ## Ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
 tolerations: []
 
+## Annotations for the statefulset itself
+## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
+statefulsetAnnotations: {}
+
 ## Annotations for pods created by statefulset
 ## Ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 podAnnotations: {}

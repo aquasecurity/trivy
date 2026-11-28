@@ -2,6 +2,10 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "trivy.fullname" . }}
+  {{- with .Values.statefulsetAnnotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   labels:
 {{ include "trivy.labels" . | indent 4 }}
     {{- with .Values.trivy.labels }}
