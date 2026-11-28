@@ -219,6 +219,7 @@ func Test_Adapt(t *testing.T) {
 			terraform: `
 			resource "azurerm_postgresql_flexible_server" "example" {
 				name                = "example-flexible"
+				version             = "17"
 			  
 				public_network_access_enabled    = true
 			  }
@@ -274,6 +275,7 @@ func Test_Adapt(t *testing.T) {
 								},
 							},
 						},
+						Version: iacTypes.StringTest("17"),
 						Config: database.PostgresSQLConfig{
 							LogConnections:       iacTypes.BoolTest(true),
 							LogCheckpoints:       iacTypes.BoolTest(true),

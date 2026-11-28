@@ -5151,6 +5151,10 @@
         "threatdetectionpolicy": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.azure.database.ThreatDetectionPolicy"
+        },
+        "version": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
         }
       }
     },

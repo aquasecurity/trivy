@@ -24,6 +24,7 @@ type MySQLServer struct {
 type PostgreSQLServer struct {
 	Metadata iacTypes.Metadata
 	Server
+	Version                   iacTypes.StringValue
 	Config                    PostgresSQLConfig
 	GeoRedundantBackupEnabled iacTypes.BoolValue
 	ThreatDetectionPolicy     ThreatDetectionPolicy
