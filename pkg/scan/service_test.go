@@ -1,6 +1,7 @@
 package scan_test
 
 import (
+	"path/filepath"
 	"testing"
 	"time"
 
@@ -10,11 +11,14 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"github.com/aquasecurity/trivy-db/pkg/db"
+	"github.com/aquasecurity/trivy-db/pkg/metadata"
 	dbTypes "github.com/aquasecurity/trivy-db/pkg/types"
+	javadb "github.com/aquasecurity/trivy-java-db/pkg/db"
 	"github.com/aquasecurity/trivy/internal/dbtest"
 	"github.com/aquasecurity/trivy/internal/testutil"
 	"github.com/aquasecurity/trivy/pkg/cache"
 	"github.com/aquasecurity/trivy/pkg/clock"
+	trivydb "github.com/aquasecurity/trivy/pkg/db"
 	"github.com/aquasecurity/trivy/pkg/fanal/applier"
 	"github.com/aquasecurity/trivy/pkg/fanal/artifact"
 	image2 "github.com/aquasecurity/trivy/pkg/fanal/artifact/image"
@@ -55,7 +59,7 @@ func TestScanner_ScanArtifact(t *testing.T) {
 			fixtures:  []string{"local/testdata/fixtures/happy.yaml"},
 			want: tTypes.Report{
 				SchemaVersion: 2,
-				Trivy:         tTypes.TrivyInfo{Version: "dev"},
+				Trivy:         tTypes.TrivyInfo{VersionInfo: tTypes.VersionInfo{Version: "dev"}},
 				CreatedAt:     time.Date(2021, 8, 25, 12, 20, 30, 5, time.UTC),
 				ArtifactID:    "sha256:574abdaf07824449b1277ec1e7e67659cc869bbf97fd95447812b55644350a21", // hash(ImageID:index.docker.io/library/alpine) from RepoTag alpine:3.11
 				ArtifactName:  "../fanal/test/testdata/alpine-311.tar.gz",
@@ -460,6 +464,74 @@ func TestService_generateArtifactID(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			got := s.GenerateArtifactID(tt.artifactInfo)
+			assert.Equal(t, tt.want, got)
+		})
+	}
+}
+
+func TestBuildTrivyInfo(t *testing.T) {
+	// Seed the cache directory with vulnerability DB and Java DB metadata
+	cacheDir := t.TempDir()
+	dbMeta := metadata.Metadata{
+		Version:      2,
+		NextUpdate:   time.Date(2024, 1, 2, 0, 0, 0, 0, time.UTC),
+		UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+		DownloadedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+	}
+	require.NoError(t, metadata.NewClient(trivydb.Dir(cacheDir)).Update(dbMeta))
+
+	javaDBMeta := metadata.Metadata{
+		Version:      1,
+		NextUpdate:   time.Date(2024, 1, 4, 0, 0, 0, 0, time.UTC),
+		UpdatedAt:    time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+		DownloadedAt: time.Date(2024, 1, 1, 12, 0, 0, 0, time.UTC),
+	}
+	javaDBMetaClient := javadb.NewMetadata(filepath.Join(cacheDir, "java-db"))
+	require.NoError(t, javaDBMetaClient.Update(javadb.Metadata(javaDBMeta)))
+
+	serverInfo := tTypes.VersionInfo{
+		Version:         "0.99.0",
+		VulnerabilityDB: &dbMeta,
+	}
+
+	tests := []struct {
+		name       string
+		options    tTypes.ScanOptions
+		serverInfo tTypes.VersionInfo
+		want       tTypes.TrivyInfo
+	}{
+		{
+			name: "standalone mode",
+			options: tTypes.ScanOptions{
+				CacheDir: cacheDir,
+			},
+			want: tTypes.TrivyInfo{
+				VersionInfo: tTypes.VersionInfo{
+					Version:         "dev",
+					VulnerabilityDB: &dbMeta,
+					JavaDB:          &javaDBMeta,
+				},
+			},
+		},
+		{
+			name: "client/server mode",
+			options: tTypes.ScanOptions{
+				CacheDir: cacheDir,
+				IsRemote: true,
+			},
+			serverInfo: serverInfo,
+			want: tTypes.TrivyInfo{
+				VersionInfo: tTypes.VersionInfo{
+					Version: "dev",
+					JavaDB:  &javaDBMeta,
+				},
+				Server: serverInfo,
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got := scan.BuildTrivyInfo(tt.options, tt.serverInfo)
 			assert.Equal(t, tt.want, got)
 		})
 	}

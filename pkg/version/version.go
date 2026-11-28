@@ -18,6 +18,7 @@ type VersionOption func(*versionOptions)
 
 type versionOptions struct {
 	forServer bool
+	forClient bool
 }
 
 // Server returns a VersionOption that excludes JavaDB and CheckBundle
@@ -25,6 +26,14 @@ type versionOptions struct {
 func Server() VersionOption {
 	return func(o *versionOptions) {
 		o.forServer = true
+	}
+}
+
+// Client returns a VersionOption that excludes VulnerabilityDB
+// from version info, as it is managed on the server side in client/server mode.
+func Client() VersionOption {
+	return func(o *versionOptions) {
+		o.forClient = true
 	}
 }
 
@@ -38,17 +47,20 @@ func NewVersionInfo(cacheDir string, opts ...VersionOption) types.VersionInfo {
 	var javadbMeta *metadata.Metadata
 	var pbMeta *types.BundleMetadata
 
-	mc := metadata.NewClient(db.Dir(cacheDir))
-	meta, err := mc.Get()
-	if err != nil {
-		log.Debug("Failed to get DB metadata", log.Err(err))
-	}
-	if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
-		dbMeta = &metadata.Metadata{
-			Version:      meta.Version,
-			NextUpdate:   meta.NextUpdate.UTC(),
-			UpdatedAt:    meta.UpdatedAt.UTC(),
-			DownloadedAt: meta.DownloadedAt.UTC(),
+	// Skip VulnerabilityDB for client mode as it is managed on the server side
+	if !options.forClient {
+		mc := metadata.NewClient(db.Dir(cacheDir))
+		meta, err := mc.Get()
+		if err != nil {
+			log.Debug("Failed to get DB metadata", log.Err(err))
+		}
+		if !meta.UpdatedAt.IsZero() && !meta.NextUpdate.IsZero() && meta.Version != 0 {
+			dbMeta = &metadata.Metadata{
+				Version:      meta.Version,
+				NextUpdate:   meta.NextUpdate.UTC(),
+				UpdatedAt:    meta.UpdatedAt.UTC(),
+				DownloadedAt: meta.DownloadedAt.UTC(),
+			}
 		}
 	}
 

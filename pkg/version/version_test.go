@@ -54,6 +54,24 @@ func TestNewVersionInfo(t *testing.T) {
 				CheckBundle: nil,
 			},
 		},
+		{
+			name: "client mode excludes VulnerabilityDB",
+			opts: []VersionOption{Client()},
+			want: types.VersionInfo{
+				Version:         "dev",
+				VulnerabilityDB: nil,
+				JavaDB: &metadata.Metadata{
+					Version:      1,
+					NextUpdate:   time.Date(2023, 7, 28, 1, 3, 52, 169192565, time.UTC),
+					UpdatedAt:    time.Date(2023, 7, 25, 1, 3, 52, 169192765, time.UTC),
+					DownloadedAt: time.Date(2023, 7, 25, 9, 37, 48, 906152000, time.UTC),
+				},
+				CheckBundle: &types.BundleMetadata{
+					Digest:       "sha256:829832357626da2677955e3b427191212978ba20012b6eaa03229ca28569ae43",
+					DownloadedAt: time.Date(2023, 7, 23, 16, 40, 33, 122462000, time.UTC),
+				},
+			},
+		},
 	}
 
 	for _, tt := range tests {
