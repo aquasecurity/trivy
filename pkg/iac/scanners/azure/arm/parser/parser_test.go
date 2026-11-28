@@ -44,9 +44,8 @@ func TestParser_Parse(t *testing.T) {
   "resources": []
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				root := createMetadata(fsys, filename, 0, 0, "", nil)
-				metadata := createMetadata(fsys, filename, 1, 13, "", &root)
-				storageMetadata := createMetadata(fsys, filename, 5, 10, "parameters.storagePrefix", &metadata)
+				metadata := createMetadata(fsys, filename, 1, 13, "", nil)
+				storageMetadata := createMetadata(fsys, filename, 5, 10, "parameters.storagePrefix", nil)
 
 				return azure.Deployment{
 					Metadata:    metadata,
@@ -79,9 +78,8 @@ func TestParser_Parse(t *testing.T) {
   "resources": []
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				root := createMetadata(fsys, filename, 0, 0, "", nil)
-				metadata := createMetadata(fsys, filename, 1, 12, "", &root)
-				storageMetadata := createMetadata(fsys, filename, 5, 9, "parameters.storagePrefix", &metadata)
+				metadata := createMetadata(fsys, filename, 1, 12, "", nil)
+				storageMetadata := createMetadata(fsys, filename, 5, 9, "parameters.storagePrefix", nil)
 
 				return azure.Deployment{
 					Metadata:    metadata,
@@ -148,10 +146,9 @@ func TestParser_Parse(t *testing.T) {
 ]
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil)
-				fileMetadata := createMetadata(fsys, filename, 1, 46, "", &rootMetadata)
+				fileMetadata := createMetadata(fsys, filename, 1, 46, "", nil)
 
-				resourceMetadata := createMetadata(fsys, filename, 6, 44, "resources[0]", &fileMetadata)
+				resourceMetadata := createMetadata(fsys, filename, 6, 44, "resources[0]", nil)
 
 				propertiesMetadata := createMetadata(fsys, filename, 27, 43, "resources[0].properties", &resourceMetadata)
 				customDomainMetadata := createMetadata(fsys, filename, 29, 34, "resources[0].properties.customDomain", &propertiesMetadata)
@@ -236,9 +233,8 @@ func TestParser_Parse(t *testing.T) {
   }
 }`,
 			want: func(fsys fs.FS) azure.Deployment {
-				rootMetadata := createMetadata(fsys, filename, 0, 0, "", nil)
-				fileMetadata := createMetadata(fsys, filename, 1, 14, "", &rootMetadata)
-				resourceMetadata := createMetadata(fsys, filename, 6, 12, "resources.myacc", &fileMetadata)
+				fileMetadata := createMetadata(fsys, filename, 1, 14, "", nil)
+				resourceMetadata := createMetadata(fsys, filename, 6, 12, "resources.myacc", nil)
 				return azure.Deployment{
 					Metadata:    fileMetadata,
 					TargetScope: azure.ScopeResourceGroup,

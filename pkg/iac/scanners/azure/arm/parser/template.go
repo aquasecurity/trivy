@@ -126,12 +126,6 @@ func ParseTemplate(fsys fs.FS, path string) (*Template, error) {
 		return nil, fmt.Errorf("unmarshal template: %w", err)
 	}
 	mc.linkParentMetadata()
-
-	rootMetadata := types.NewMetadata(
-		types.NewRange(path, 0, 0, "", fsys),
-		"",
-	)
-	template.Metadata.SetParentPtr(&rootMetadata)
 	return &template, nil
 }
 
@@ -168,15 +162,12 @@ func (c *metadataCollector) linkParentMetadata() {
 }
 
 func (c *metadataCollector) findClosestValidParent(path jsontext.Pointer) (jsontext.Pointer, bool) {
-	for {
-		path = path.Parent()
+	for path = path.Parent(); path != ""; path = path.Parent() {
 		if md, ok := c.entries[path]; ok && md != nil && isValidMetadata(md) {
 			return path, true
 		}
-		if path == "" {
-			return "", false
-		}
 	}
+	return "", false
 }
 
 func buildNodeRef(seq iter.Seq[string]) string {
