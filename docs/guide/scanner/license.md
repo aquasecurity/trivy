@@ -185,6 +185,8 @@ Total: 282 (UNKNOWN: 81, LOW: 97, MEDIUM: 24, HIGH: 58, CRITICAL: 22)
 ```
 
 ### Custom Classification
+Each category you set in `trivy.yaml` replaces that category's built-in list. Licenses you list explicitly are removed from the remaining built-in lists. For example, `license.forbidden: [MIT]` moves MIT out of `notice` without requiring you to copy the `notice` list. License names are matched case-insensitively; listing the same license in two configured categories is an error.
+
 You can generate the default config by the `--generate-default-config` flag and customize the license classification.
 For example, if you want to forbid only AGPL-3.0, you can leave it under `forbidden` and move other licenses to another classification.
 

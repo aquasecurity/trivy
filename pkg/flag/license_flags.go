@@ -1,7 +1,13 @@
 package flag
 
 import (
+	"slices"
+	"strings"
+
+	"golang.org/x/xerrors"
+
 	"github.com/aquasecurity/trivy/pkg/fanal/types"
+	"github.com/aquasecurity/trivy/pkg/licensing"
 	"github.com/aquasecurity/trivy/pkg/licensing/expression"
 )
 
@@ -116,14 +122,55 @@ func (f *LicenseFlagGroup) Flags() []Flagger {
 	}
 }
 
+// License IDs are case-insensitive, but the scanner interprets text patterns as regular expressions.
+func licenseCategoryKey(name string) string {
+	if strings.HasPrefix(name, licensing.LicenseTextPrefix) {
+		return name
+	}
+	return strings.ToLower(name)
+}
+
 func (f *LicenseFlagGroup) ToOptions(opts *Options) error {
+	// Keep categories ordered so conflicting explicit assignments produce a stable error.
+	categories := []struct {
+		category types.LicenseCategory
+		flag     *Flag[[]string]
+	}{
+		{types.CategoryForbidden, f.LicenseForbidden},
+		{types.CategoryRestricted, f.LicenseRestricted},
+		{types.CategoryReciprocal, f.LicenseReciprocal},
+		{types.CategoryNotice, f.LicenseNotice},
+		{types.CategoryPermissive, f.LicensePermissive},
+		{types.CategoryUnencumbered, f.LicenseUnencumbered},
+	}
+
 	licenseCategories := make(map[types.LicenseCategory][]string)
-	licenseCategories[types.CategoryForbidden] = f.LicenseForbidden.Value()
-	licenseCategories[types.CategoryRestricted] = f.LicenseRestricted.Value()
-	licenseCategories[types.CategoryReciprocal] = f.LicenseReciprocal.Value()
-	licenseCategories[types.CategoryNotice] = f.LicenseNotice.Value()
-	licenseCategories[types.CategoryPermissive] = f.LicensePermissive.Value()
-	licenseCategories[types.CategoryUnencumbered] = f.LicenseUnencumbered.Value()
+	explicitCategories := make(map[string]types.LicenseCategory)
+	for _, c := range categories {
+		licenseCategories[c.category] = slices.Clone(c.flag.Value())
+		if !c.flag.IsSet() {
+			continue
+		}
+		for _, license := range c.flag.Value() {
+			name := licenseCategoryKey(license)
+			if previous, ok := explicitCategories[name]; ok && previous != c.category {
+				return xerrors.Errorf("license %q is explicitly configured in both %q and %q categories", license, previous, c.category)
+			}
+			explicitCategories[name] = c.category
+		}
+	}
+
+	// Explicit lists replace their category's defaults and take precedence over
+	// other categories' defaults, regardless of the license name's case.
+	for _, c := range categories {
+		if c.flag.IsSet() {
+			continue
+		}
+		licenseCategories[c.category] = slices.DeleteFunc(licenseCategories[c.category], func(license string) bool {
+			_, ok := explicitCategories[licenseCategoryKey(license)]
+			return ok
+		})
+	}
 
 	opts.LicenseOptions = LicenseOptions{
 		LicenseFull:            f.LicenseFull.Value(),
