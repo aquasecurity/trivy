@@ -28,6 +28,13 @@ func UniquePackages(pkgs []ftypes.Package) []ftypes.Package {
 				unique[identifier] = l
 			}
 
+			// The same package can be direct for one target and transitive for another
+			// (e.g. multi-targeted NuGet projects). Direct wins.
+			if pkg.Relationship == ftypes.RelationshipDirect && l.Relationship == ftypes.RelationshipIndirect {
+				l.Relationship = ftypes.RelationshipDirect
+				unique[identifier] = l
+			}
+
 			if len(pkg.Locations) > 0 {
 				// merge locations
 				l.Locations = append(l.Locations, pkg.Locations...)
