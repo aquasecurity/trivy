@@ -15,6 +15,7 @@ type Cluster struct {
 	MasterAuthorizedNetworks MasterAuthorizedNetworks
 	NetworkPolicy            NetworkPolicy
 	PrivateCluster           PrivateCluster
+	ControlPlaneEndpoints    ControlPlaneEndpoints
 	LoggingService           iacTypes.StringValue
 	MonitoringService        iacTypes.StringValue
 	MasterAuth               MasterAuth
@@ -69,6 +70,16 @@ type ClientCertificate struct {
 type PrivateCluster struct {
 	Metadata           iacTypes.Metadata
 	EnablePrivateNodes iacTypes.BoolValue
+}
+
+type ControlPlaneEndpoints struct {
+	Metadata    iacTypes.Metadata
+	IPEndpoints IPEndpoints
+}
+
+type IPEndpoints struct {
+	Metadata iacTypes.Metadata
+	Enabled  iacTypes.BoolValue
 }
 
 type NetworkPolicy struct {

@@ -6896,6 +6896,10 @@
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.AutoScaling"
         },
+        "controlplaneendpoints": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.ControlPlaneEndpoints"
+        },
         "datapathprovider": {
           "type": "object",
           "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.StringValue"
@@ -6961,6 +6965,19 @@
         }
       }
     },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.ControlPlaneEndpoints": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "ipendpoints": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.IPEndpoints"
+        }
+      }
+    },
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.GKE": {
       "type": "object",
       "properties": {
@@ -6974,6 +6991,19 @@
       }
     },
     "github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.IPAllocationPolicy": {
+      "type": "object",
+      "properties": {
+        "__defsec_metadata": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.Metadata"
+        },
+        "enabled": {
+          "type": "object",
+          "$ref": "#/definitions/github.com.aquasecurity.trivy.pkg.iac.types.BoolValue"
+        }
+      }
+    },
+    "github.com.aquasecurity.trivy.pkg.iac.providers.google.gke.IPEndpoints": {
       "type": "object",
       "properties": {
         "__defsec_metadata": {
